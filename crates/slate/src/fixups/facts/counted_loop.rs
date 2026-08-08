@@ -2,9 +2,9 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, BindingId, CountedLoopBound, CountedLoopFact, CountedLoopIndexUse, CountedLoopStart,
-    CountedLoopStep, CountedSliceLoopFact, FixupFacts, FunctionId, LoopId, LoopKind, LoopSite,
-    PathSegment, SliceLoopAccess,
+    self, AstPath, BindingFact, BindingId, CountedLoopBound, CountedLoopFact, CountedLoopIndexUse,
+    CountedLoopStart, CountedLoopStep, CountedSliceLoopFact, FixupFacts, FunctionId, LoopFact,
+    LoopId, LoopKind, LoopSite, PathSegment, SliceLoopAccess,
 };
 use crate::fixups::idents::{expr_ident_count, stmt_ident_count};
 use crate::rust_ast::{
@@ -21,47 +21,55 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        collect_for_function(function, f, facts);
+        let (counted, sliced) = collect_for_function(function, f, &facts.bindings, &facts.loops);
+        facts.counted_loops.extend(counted);
+        facts.counted_slice_loops.extend(sliced);
     }
 }
 
 /// Counted (and counted-slice) loops for one function's body, independent
 /// of any other function's facts - the entry point `slate-04q.75.56.8`
 /// (incremental facts) needs to re-derive one function's loop facts
-/// without a whole-program walk. Pushes straight into `facts.counted_loops`
-/// / `facts.counted_slice_loops`, same as the whole-program pass; the
-/// caller is responsible for clearing that function's stale entries first
-/// if this isn't the initial whole-program collection.
+/// without a whole-program walk.
 pub(in crate::fixups) fn collect_for_function(
     function: FunctionId,
     f: &FnDef,
-    facts: &mut FixupFacts,
-) {
-    let mut collector = Collector::new(function, facts);
+    bindings: &[BindingFact],
+    loops: &[LoopFact],
+) -> (Vec<CountedLoopFact>, Vec<CountedSliceLoopFact>) {
+    let mut collector = Collector::new(function, bindings, loops);
     for (index, param) in f.params.iter().enumerate() {
         if slice_elem_ty(&param.ty).is_some()
-            && let Some(binding) = collector.facts.binding_by_param_index(function, index)
+            && let Some(binding) =
+                facts::binding_by_param_index(collector.bindings, function, index)
         {
             collector.slices.insert(param.name.to_string(), binding);
         }
     }
     collector.body(&f.body, &mut Vec::new());
+    (collector.counted_loops, collector.counted_slice_loops)
 }
 
 struct Collector<'a> {
     function: FunctionId,
-    facts: &'a mut FixupFacts,
+    bindings: &'a [BindingFact],
+    loops: &'a [LoopFact],
     slices: BTreeMap<String, BindingId>,
     len_aliases: BTreeMap<String, BindingId>,
+    counted_loops: Vec<CountedLoopFact>,
+    counted_slice_loops: Vec<CountedSliceLoopFact>,
 }
 
 impl<'a> Collector<'a> {
-    fn new(function: FunctionId, facts: &'a mut FixupFacts) -> Self {
+    fn new(function: FunctionId, bindings: &'a [BindingFact], loops: &'a [LoopFact]) -> Self {
         Self {
             function,
-            facts,
+            bindings,
+            loops,
             slices: BTreeMap::new(),
             len_aliases: BTreeMap::new(),
+            counted_loops: Vec::new(),
+            counted_slice_loops: Vec::new(),
         }
     }
 
@@ -86,9 +94,12 @@ impl<'a> Collector<'a> {
             } => {
                 let ast_path = AstPath(path.to_vec());
                 if ty.as_ref().is_some_and(|ty| slice_elem_ty(ty).is_some())
-                    && let Some(binding) =
-                        self.facts
-                            .binding_by_local_path(self.function, name.as_str(), &ast_path)
+                    && let Some(binding) = facts::binding_by_local_path(
+                        self.bindings,
+                        self.function,
+                        name.as_str(),
+                        &ast_path,
+                    )
                 {
                     self.slices.insert(name.to_string(), binding);
                 }
@@ -144,12 +155,12 @@ impl<'a> Collector<'a> {
             if let Some(candidate) =
                 self.counted_loop_candidate(pair, parent_path, body_segment, index)
             {
-                self.facts.counted_loops.push(candidate);
+                self.counted_loops.push(candidate);
             }
             if let Some(candidate) =
                 self.slice_loop_candidate(pair, parent_path, body_segment, index)
             {
-                self.facts.counted_slice_loops.push(candidate);
+                self.counted_slice_loops.push(candidate);
             }
         }
     }
@@ -188,8 +199,12 @@ impl<'a> Collector<'a> {
         index_path.push(body_segment);
         index_path.push(PathSegment::Stmt(index_stmt));
         let index_path = AstPath(index_path);
-        self.facts
-            .binding_by_local_path(self.function, index_name.as_str(), &index_path)?;
+        facts::binding_by_local_path(
+            self.bindings,
+            self.function,
+            index_name.as_str(),
+            &index_path,
+        )?;
         let bound = self.range_bound(range.bound, index_name.as_str())?;
 
         let mut loop_path = parent_path.to_vec();
@@ -254,9 +269,12 @@ impl<'a> Collector<'a> {
         index_path.push(body_segment);
         index_path.push(PathSegment::Stmt(index_stmt));
         let index_path = AstPath(index_path);
-        let index =
-            self.facts
-                .binding_by_local_path(self.function, index_name.as_str(), &index_path)?;
+        let index = facts::binding_by_local_path(
+            self.bindings,
+            self.function,
+            index_name.as_str(),
+            &index_path,
+        )?;
 
         let mut loop_path = parent_path.to_vec();
         loop_path.push(body_segment);
@@ -293,8 +311,7 @@ impl<'a> Collector<'a> {
     }
 
     fn loop_by_path(&self, path: &AstPath) -> Option<LoopId> {
-        self.facts
-            .loops
+        self.loops
             .iter()
             .find(|loop_fact| {
                 loop_fact.function == self.function

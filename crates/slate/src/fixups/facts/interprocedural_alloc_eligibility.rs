@@ -2,7 +2,7 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use crate::fixups::facts::heap_ownership;
 use crate::fixups::facts::{
-    AllocProvenance, AstPath, BindingFact, CalleeAllocSummaryFact, FixupFacts, FunctionId,
+    self, AllocProvenance, AstPath, BindingFact, CalleeAllocSummaryFact, FixupFacts, FunctionId,
     HeapAllocationKind, HeapExtent, HeapInitKind, HeapReadSafety, InterproceduralAllocCallerFact,
     InterproceduralAllocEligibilityFact, PathSegment,
 };
@@ -305,10 +305,6 @@ fn find_call_allocation(
     resolved: &BTreeMap<FunctionId, (ResolvedSummary, FunctionId)>,
     by_name: &BTreeMap<&str, FunctionId>,
 ) -> Option<CallAllocationOutcome> {
-    let local_facts = FixupFacts {
-        bindings: caller.bindings.to_vec(),
-        ..FixupFacts::default()
-    };
     let body = caller.body;
     for allocation_index in start..body.len() {
         let Some(call_alloc) =
@@ -317,9 +313,12 @@ fn find_call_allocation(
             continue;
         };
         let allocation_path = AstPath(vec![PathSegment::Stmt(allocation_index)]);
-        let Some(allocation_temp) =
-            local_facts.binding_by_local_path(caller.id, &call_alloc.temp_name, &allocation_path)
-        else {
+        let Some(allocation_temp) = facts::binding_by_local_path(
+            caller.bindings,
+            caller.id,
+            &call_alloc.temp_name,
+            &allocation_path,
+        ) else {
             continue;
         };
         for assign_index in allocation_index + 1..body.len() {
@@ -349,7 +348,7 @@ fn find_call_allocation(
             let outcome = heap_ownership::heap_uses_are_owned(
                 caller.id,
                 body,
-                &local_facts,
+                caller.bindings,
                 pointer_name,
                 &candidate,
             );

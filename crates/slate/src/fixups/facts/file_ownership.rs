@@ -2,8 +2,8 @@ use std::collections::BTreeSet;
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, BindingId, FileOpenMode, FileOwnershipFact, FileUseFact, FileUseKind, FixupFacts,
-    FunctionId, PathSegment,
+    self, AstPath, BindingFact, BindingId, FileOpenMode, FileOwnershipFact, FileUseFact,
+    FileUseKind, FixupFacts, FunctionId, PathSegment,
 };
 use crate::function_identity::{Known, known_call};
 use crate::rust_ast::{
@@ -19,7 +19,7 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        all.extend(collect_for_function(function, &f.body, facts));
+        all.extend(collect_for_function(function, &f.body, &facts.bindings));
     }
     facts.file_ownership = all;
 }
@@ -27,7 +27,7 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
 pub(in crate::fixups) fn collect_for_function(
     function: FunctionId,
     body: &[IndentStmt],
-    facts: &FixupFacts,
+    bindings: &[BindingFact],
 ) -> Vec<FileOwnershipFact> {
     let mut all = Vec::new();
     for (index, pair) in body.windows(2).enumerate() {
@@ -35,10 +35,12 @@ pub(in crate::fixups) fn collect_for_function(
             continue;
         };
         let handle_path = AstPath(vec![PathSegment::Stmt(index)]);
-        let Some(handle) = facts.binding_by_local_path(function, handle_name, &handle_path) else {
+        let Some(handle) =
+            facts::binding_by_local_path(bindings, function, handle_name, &handle_path)
+        else {
             continue;
         };
-        let Some(open) = find_open(function, body, facts, index + 1, handle_name) else {
+        let Some(open) = find_open(function, body, bindings, index + 1, handle_name) else {
             continue;
         };
         all.push(FileOwnershipFact {
@@ -72,7 +74,7 @@ struct OpenCandidate {
 fn find_open(
     function: FunctionId,
     body: &[IndentStmt],
-    facts: &FixupFacts,
+    bindings: &[BindingFact],
     start: usize,
     handle_name: &str,
 ) -> Option<OpenCandidate> {
@@ -80,7 +82,8 @@ fn find_open(
         let Some(open) = fopen_temp(&body[open_index].stmt) else {
             continue;
         };
-        let open_temp = facts.binding_by_local_path(
+        let open_temp = facts::binding_by_local_path(
+            bindings,
             function,
             open.temp_name.as_str(),
             &AstPath(vec![PathSegment::Stmt(open_index)]),
@@ -94,7 +97,7 @@ fn find_open(
                 continue;
             }
             let (close_index, close_temp, uses) =
-                file_uses_are_owned(function, body, facts, handle_name, assign_index)?;
+                file_uses_are_owned(function, body, bindings, handle_name, assign_index)?;
             return Some(OpenCandidate {
                 open_index,
                 assign_index,
@@ -166,7 +169,7 @@ fn assigns_opened_handle(stmt: &Stmt, handle_name: &str, open_temp: &str) -> boo
 fn file_uses_are_owned(
     function: FunctionId,
     body: &[IndentStmt],
-    facts: &FixupFacts,
+    bindings: &[BindingFact],
     handle_name: &str,
     assign_index: usize,
 ) -> Option<(usize, Option<BindingId>, Vec<FileUseFact>)> {
@@ -196,7 +199,7 @@ fn file_uses_are_owned(
                 }
                 close = Some((
                     index,
-                    close_temp_before(function, body, facts, index, handle_name),
+                    close_temp_before(function, body, bindings, index, handle_name),
                 ));
             } else if close.is_some() {
                 return None;
@@ -252,13 +255,14 @@ fn handle_alias_temp<'a>(stmt: &'a Stmt, names: &BTreeSet<String>) -> Option<&'a
 fn close_temp_before(
     function: FunctionId,
     body: &[IndentStmt],
-    facts: &FixupFacts,
+    bindings: &[BindingFact],
     index: usize,
     handle_name: &str,
 ) -> Option<BindingId> {
     let prev_index = index.checked_sub(1)?;
     let alias = direct_handle_alias(&body.get(prev_index)?.stmt, handle_name)?;
-    facts.binding_by_local_path(
+    facts::binding_by_local_path(
+        bindings,
         function,
         alias,
         &AstPath(vec![PathSegment::Stmt(prev_index)]),

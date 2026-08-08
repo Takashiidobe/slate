@@ -2,7 +2,8 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    ArrayElementPointerOriginFact, AstPath, BindingId, FixupFacts, FunctionId, PathSegment, Site,
+    self, ArrayElementPointerOriginFact, AstPath, BindingFact, BindingId, BindingTypeFact,
+    DefUseFact, FixupFacts, FunctionId, PathSegment, Site,
 };
 use crate::rust_ast::{
     Block, Expr, FnDef, Ident, IndentStmt, Item, Program, RustValue, Stmt, Type,
@@ -18,7 +19,13 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        all.extend(collect_for_function(function, f, facts));
+        all.extend(collect_for_function(
+            function,
+            f,
+            &facts.bindings,
+            &facts.binding_types,
+            &facts.def_use,
+        ));
     }
     facts.array_element_pointer_origins = all;
 }
@@ -26,9 +33,11 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
 pub(in crate::fixups) fn collect_for_function(
     function: FunctionId,
     f: &FnDef,
-    facts: &FixupFacts,
+    bindings: &[BindingFact],
+    binding_types: &[BindingTypeFact],
+    def_use: &[DefUseFact],
 ) -> Vec<ArrayElementPointerOriginFact> {
-    let mut collector = Collector::new(function, facts);
+    let mut collector = Collector::new(function, bindings, binding_types, def_use);
     collector.enter_scope();
     collector.body(&f.body, &mut Vec::new(), false);
     collector.exit_scope();
@@ -37,7 +46,9 @@ pub(in crate::fixups) fn collect_for_function(
 
 struct Collector<'a> {
     function: FunctionId,
-    facts: &'a FixupFacts,
+    bindings: &'a [BindingFact],
+    binding_types: &'a [BindingTypeFact],
+    def_use: &'a [DefUseFact],
     scopes: Vec<BTreeMap<String, BindingId>>,
     candidates: Vec<Candidate>,
 }
@@ -63,10 +74,17 @@ struct OriginSource {
 }
 
 impl<'a> Collector<'a> {
-    fn new(function: FunctionId, facts: &'a FixupFacts) -> Self {
+    fn new(
+        function: FunctionId,
+        bindings: &'a [BindingFact],
+        binding_types: &'a [BindingTypeFact],
+        def_use: &'a [DefUseFact],
+    ) -> Self {
         Self {
             function,
-            facts,
+            bindings,
+            binding_types,
+            def_use,
             scopes: Vec::new(),
             candidates: Vec::new(),
         }
@@ -83,15 +101,15 @@ impl<'a> Collector<'a> {
     fn finish(self) -> Vec<ArrayElementPointerOriginFact> {
         let Self {
             function,
-            facts,
+            def_use,
             candidates,
             ..
         } = self;
         let pointers_with_overwritten_init_origins =
-            overwritten_init_origin_pointers(facts, &candidates);
+            overwritten_init_origin_pointers(def_use, &candidates);
         candidates
             .into_iter()
-            .filter(|candidate| pointer_write_shape_is_unambiguous(facts, candidate))
+            .filter(|candidate| pointer_write_shape_is_unambiguous(def_use, candidate))
             .filter(|candidate| {
                 !pointers_with_overwritten_init_origins.contains(&candidate.pointer)
             })
@@ -213,9 +231,8 @@ impl<'a> Collector<'a> {
 
     fn collect_let_origin(&mut self, name: &str, init: &Expr, path: &[PathSegment]) {
         let ast_path = AstPath(path.to_vec());
-        let Some(pointer) = self
-            .facts
-            .binding_by_local_path(self.function, name, &ast_path)
+        let Some(pointer) =
+            facts::binding_by_local_path(self.bindings, self.function, name, &ast_path)
         else {
             return;
         };
@@ -268,9 +285,8 @@ impl<'a> Collector<'a> {
             return;
         }
         let ast_path = AstPath(path.to_vec());
-        if let Some(binding) = self
-            .facts
-            .binding_by_local_path(self.function, name, &ast_path)
+        if let Some(binding) =
+            facts::binding_by_local_path(self.bindings, self.function, name, &ast_path)
             && let Some(scope) = self.scopes.last_mut()
         {
             scope.insert(name.to_string(), binding);
@@ -285,29 +301,26 @@ impl<'a> Collector<'a> {
     }
 
     fn binding_written_at(&self, name: &str, path: &AstPath) -> Option<BindingId> {
-        self.facts
-            .bindings
+        self.bindings
             .iter()
             .filter(|binding| binding.function == self.function && binding.name == name)
             .find(|binding| {
-                self.facts
-                    .def_use(binding.id)
+                facts::def_use_of(self.def_use, binding.id)
                     .is_some_and(|def_use| def_use.writes.iter().any(|write| write == path))
             })
             .map(|binding| binding.id)
     }
 
     fn binding_is_pointer(&self, binding: BindingId) -> bool {
-        self.facts
-            .binding_types
+        self.binding_types
             .iter()
             .find(|fact| fact.binding == binding)
             .is_some_and(|fact| fact.rendered.starts_with('*'))
     }
 }
 
-fn pointer_write_shape_is_unambiguous(facts: &FixupFacts, candidate: &Candidate) -> bool {
-    let Some(def_use) = facts.def_use(candidate.pointer) else {
+fn pointer_write_shape_is_unambiguous(def_use_facts: &[DefUseFact], candidate: &Candidate) -> bool {
+    let Some(def_use) = facts::def_use_of(def_use_facts, candidate.pointer) else {
         return false;
     };
     match candidate.kind {
@@ -319,15 +332,14 @@ fn pointer_write_shape_is_unambiguous(facts: &FixupFacts, candidate: &Candidate)
 }
 
 fn overwritten_init_origin_pointers(
-    facts: &FixupFacts,
+    def_use: &[DefUseFact],
     candidates: &[Candidate],
 ) -> BTreeSet<BindingId> {
     candidates
         .iter()
         .filter(|candidate| matches!(candidate.kind, CandidateKind::LetInit))
         .filter(|candidate| {
-            facts
-                .def_use(candidate.pointer)
+            facts::def_use_of(def_use, candidate.pointer)
                 .is_some_and(|def_use| !def_use.writes.is_empty())
         })
         .map(|candidate| candidate.pointer)

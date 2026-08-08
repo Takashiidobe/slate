@@ -2,8 +2,8 @@ use std::collections::BTreeSet;
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, FixupFacts, FunctionId, PathSegment, PointerComparisonFact, PointerComparisonKind,
-    PointerOptionSafetyFact, Site,
+    self, AstPath, BindingFact, BindingTypeFact, FixupFacts, FunctionId, PathSegment,
+    PointerComparisonFact, PointerComparisonKind, PointerOptionSafetyFact, Site,
 };
 use crate::rust_ast::{
     BinOp, CLibType, Expr, FnDef, IndentStmt, Item, Program, RustValue, Stmt, Type,
@@ -25,10 +25,17 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         safety.extend(collect_safety_for_function(
             function,
             f,
-            facts,
+            &facts.bindings,
+            &facts.binding_types,
             &union_records,
         ));
-        collect_comparisons_for_function(function, f, facts, &mut comparisons);
+        collect_comparisons_for_function(
+            function,
+            f,
+            &facts.bindings,
+            &facts.binding_types,
+            &mut comparisons,
+        );
     }
     facts.pointer_option_safety = safety;
     facts.pointer_comparisons = comparisons;
@@ -37,12 +44,13 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
 pub(in crate::fixups) fn collect_for_function(
     function: FunctionId,
     f: &FnDef,
-    facts: &FixupFacts,
+    bindings: &[BindingFact],
+    binding_types: &[BindingTypeFact],
     union_records: &BTreeSet<String>,
 ) -> (Vec<PointerOptionSafetyFact>, Vec<PointerComparisonFact>) {
-    let safety = collect_safety_for_function(function, f, facts, union_records);
+    let safety = collect_safety_for_function(function, f, bindings, binding_types, union_records);
     let mut comparisons = Vec::new();
-    collect_comparisons_for_function(function, f, facts, &mut comparisons);
+    collect_comparisons_for_function(function, f, bindings, binding_types, &mut comparisons);
     (safety, comparisons)
 }
 
@@ -60,7 +68,8 @@ pub(in crate::fixups) fn union_record_names(program: &Program) -> BTreeSet<Strin
 fn collect_safety_for_function(
     function: FunctionId,
     f: &FnDef,
-    facts: &FixupFacts,
+    bindings: &[BindingFact],
+    binding_types: &[BindingTypeFact],
     union_records: &BTreeSet<String>,
 ) -> Vec<PointerOptionSafetyFact> {
     let mut disqualified = BTreeSet::new();
@@ -68,15 +77,20 @@ fn collect_safety_for_function(
     walk::body_exprs(&f.body, &mut |expr| {
         check_arithmetic_and_casts(expr, &mut disqualified);
     });
-    walk_stmts_for_union_sourcing(&f.body, facts, function, union_records, &mut disqualified);
+    walk_stmts_for_union_sourcing(
+        &f.body,
+        bindings,
+        binding_types,
+        function,
+        union_records,
+        &mut disqualified,
+    );
 
-    facts
-        .bindings
+    bindings
         .iter()
         .filter(|binding| binding.function == function)
         .filter(|binding| {
-            facts
-                .binding_type_ast(binding.id)
+            facts::binding_type_ast(binding_types, binding.id)
                 .is_some_and(|ty| matches!(ty, Type::Ptr { .. }))
         })
         .map(|binding| PointerOptionSafetyFact {
@@ -111,19 +125,28 @@ fn check_arithmetic_and_casts(expr: &Expr, disqualified: &mut BTreeSet<String>) 
 
 fn walk_stmts_for_union_sourcing(
     body: &[IndentStmt],
-    facts: &FixupFacts,
+    bindings: &[BindingFact],
+    binding_types: &[BindingTypeFact],
     function: FunctionId,
     union_records: &BTreeSet<String>,
     disqualified: &mut BTreeSet<String>,
 ) {
     for indent in body {
-        walk_stmt_for_union_sourcing(&indent.stmt, facts, function, union_records, disqualified);
+        walk_stmt_for_union_sourcing(
+            &indent.stmt,
+            bindings,
+            binding_types,
+            function,
+            union_records,
+            disqualified,
+        );
     }
 }
 
 fn walk_stmt_for_union_sourcing(
     stmt: &Stmt,
-    facts: &FixupFacts,
+    bindings: &[BindingFact],
+    binding_types: &[BindingTypeFact],
     function: FunctionId,
     union_records: &BTreeSet<String>,
     disqualified: &mut BTreeSet<String>,
@@ -137,7 +160,8 @@ fn walk_stmt_for_union_sourcing(
             check_union_source(
                 name.as_str(),
                 init,
-                facts,
+                bindings,
+                binding_types,
                 function,
                 union_records,
                 disqualified,
@@ -150,7 +174,8 @@ fn walk_stmt_for_union_sourcing(
             check_union_source(
                 name.as_str(),
                 value,
-                facts,
+                bindings,
+                binding_types,
                 function,
                 union_records,
                 disqualified,
@@ -159,20 +184,28 @@ fn walk_stmt_for_union_sourcing(
         _ => {}
     }
     walk::nested_bodies_with_path(stmt, &mut Vec::new(), &mut |nested, _| {
-        walk_stmts_for_union_sourcing(nested, facts, function, union_records, disqualified);
+        walk_stmts_for_union_sourcing(
+            nested,
+            bindings,
+            binding_types,
+            function,
+            union_records,
+            disqualified,
+        );
     });
 }
 
 fn check_union_source(
     name: &str,
     source: &Expr,
-    facts: &FixupFacts,
+    bindings: &[BindingFact],
+    binding_types: &[BindingTypeFact],
     function: FunctionId,
     union_records: &BTreeSet<String>,
     disqualified: &mut BTreeSet<String>,
 ) {
     if let Expr::Field { base, .. } = peel_casts(source)
-        && is_union_typed(base, facts, function, union_records)
+        && is_union_typed(base, bindings, binding_types, function, union_records)
     {
         disqualified.insert(name.to_string());
     }
@@ -180,17 +213,18 @@ fn check_union_source(
 
 fn is_union_typed(
     base: &Expr,
-    facts: &FixupFacts,
+    bindings: &[BindingFact],
+    binding_types: &[BindingTypeFact],
     function: FunctionId,
     union_records: &BTreeSet<String>,
 ) -> bool {
     let Expr::Var(name) = peel_casts(base) else {
         return false;
     };
-    let Some(binding) = facts.binding_named(function, name.as_str()) else {
+    let Some(binding) = facts::binding_named(bindings, function, name.as_str()) else {
         return false;
     };
-    let Some(ty) = facts.binding_type_ast(binding) else {
+    let Some(ty) = facts::binding_type_ast(binding_types, binding) else {
         return false;
     };
     record_name(ty).is_some_and(|record_name| union_records.contains(record_name))
@@ -233,18 +267,23 @@ fn is_null_expr(expr: &Expr) -> bool {
     matches!(peel_casts(expr), Expr::Value(RustValue::NullPtr))
 }
 
-fn is_pointer_expr(facts: &FixupFacts, function: FunctionId, expr: &Expr) -> bool {
+fn is_pointer_expr(
+    bindings: &[BindingFact],
+    binding_types: &[BindingTypeFact],
+    function: FunctionId,
+    expr: &Expr,
+) -> bool {
     let Expr::Var(name) = peel_casts(expr) else {
         return false;
     };
-    facts
-        .binding_named(function, name.as_str())
-        .and_then(|binding| facts.binding_type_ast(binding))
+    facts::binding_named(bindings, function, name.as_str())
+        .and_then(|binding| facts::binding_type_ast(binding_types, binding))
         .is_some_and(|ty| matches!(ty, Type::Ptr { .. }))
 }
 
 fn comparison_kind(
-    facts: &FixupFacts,
+    bindings: &[BindingFact],
+    binding_types: &[BindingTypeFact],
     function: FunctionId,
     lhs: &Expr,
     rhs: &Expr,
@@ -255,12 +294,16 @@ fn comparison_kind(
         return None;
     }
     if lhs_null {
-        return is_pointer_expr(facts, function, rhs).then_some(PointerComparisonKind::NullCompare);
+        return is_pointer_expr(bindings, binding_types, function, rhs)
+            .then_some(PointerComparisonKind::NullCompare);
     }
     if rhs_null {
-        return is_pointer_expr(facts, function, lhs).then_some(PointerComparisonKind::NullCompare);
+        return is_pointer_expr(bindings, binding_types, function, lhs)
+            .then_some(PointerComparisonKind::NullCompare);
     }
-    if is_pointer_expr(facts, function, lhs) && is_pointer_expr(facts, function, rhs) {
+    if is_pointer_expr(bindings, binding_types, function, lhs)
+        && is_pointer_expr(bindings, binding_types, function, rhs)
+    {
         return Some(PointerComparisonKind::IdentityCompare);
     }
     None
@@ -269,7 +312,8 @@ fn comparison_kind(
 fn collect_comparisons_for_function(
     function: FunctionId,
     f: &FnDef,
-    facts: &FixupFacts,
+    bindings: &[BindingFact],
+    binding_types: &[BindingTypeFact],
     out: &mut Vec<PointerComparisonFact>,
 ) {
     let mut path: Vec<PathSegment> = Vec::new();
@@ -279,7 +323,7 @@ fn collect_comparisons_for_function(
             lhs,
             rhs,
         } = expr
-            && let Some(kind) = comparison_kind(facts, function, lhs, rhs)
+            && let Some(kind) = comparison_kind(bindings, binding_types, function, lhs, rhs)
         {
             out.push(PointerComparisonFact {
                 site: Site {

@@ -2,7 +2,8 @@ use std::collections::BTreeMap;
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, BindingId, BindingKind, DefUseFact, FixupFacts, FunctionId, PathSegment,
+    self, AstPath, BindingFact, BindingId, BindingKind, DefUseFact, FixupFacts, FunctionId,
+    PathSegment,
 };
 use crate::rust_ast::{
     AsmOperand, AtomicPlace, Block, Expr, FnDef, Ident, IndentStmt, Item, Pattern, Program, Stmt,
@@ -19,7 +20,7 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        all.extend(collect_for_function(function, f, facts));
+        all.extend(collect_for_function(function, f, &facts.bindings));
     }
     facts.def_use = all;
 }
@@ -27,9 +28,9 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
 pub(in crate::fixups) fn collect_for_function(
     function: FunctionId,
     f: &FnDef,
-    facts: &FixupFacts,
+    bindings: &[BindingFact],
 ) -> Vec<DefUseFact> {
-    let mut collector = Collector::new(function, facts);
+    let mut collector = Collector::new(function, bindings);
     collector.enter_root_scope();
     collector.body(&f.body, &mut Vec::new(), false);
     collector.finish()
@@ -37,7 +38,7 @@ pub(in crate::fixups) fn collect_for_function(
 
 struct Collector<'a> {
     function: FunctionId,
-    facts: &'a FixupFacts,
+    bindings: &'a [BindingFact],
     scopes: Vec<BTreeMap<String, Option<BindingId>>>,
     by_binding: BTreeMap<BindingId, BindingSummary>,
 }
@@ -49,10 +50,10 @@ struct BindingSummary {
 }
 
 impl<'a> Collector<'a> {
-    fn new(function: FunctionId, facts: &'a FixupFacts) -> Self {
+    fn new(function: FunctionId, bindings: &'a [BindingFact]) -> Self {
         Self {
             function,
-            facts,
+            bindings,
             scopes: Vec::new(),
             by_binding: BTreeMap::new(),
         }
@@ -61,7 +62,6 @@ impl<'a> Collector<'a> {
     fn enter_root_scope(&mut self) {
         self.scopes.push(BTreeMap::new());
         let params: Vec<_> = self
-            .facts
             .bindings
             .iter()
             .filter(|binding| binding.function == self.function)
@@ -76,8 +76,7 @@ impl<'a> Collector<'a> {
     }
 
     fn finish(self) -> Vec<DefUseFact> {
-        self.facts
-            .bindings
+        self.bindings
             .iter()
             .filter(|binding| binding.function == self.function)
             .map(|binding| {
@@ -425,8 +424,7 @@ impl<'a> Collector<'a> {
     }
 
     fn local_binding(&self, name: &str, path: &[PathSegment]) -> Option<BindingId> {
-        self.facts
-            .binding_by_local_path(self.function, name, &AstPath(path.to_vec()))
+        facts::binding_by_local_path(self.bindings, self.function, name, &AstPath(path.to_vec()))
     }
 
     fn shadow_pattern(&mut self, pattern: &Pattern) {

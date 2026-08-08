@@ -2,8 +2,8 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, BindingId, BindingKind, ConstValue, FixupFacts, FunctionId, PathSegment, Site,
-    ValueFact, ValueSubject,
+    self, AstPath, BindingFact, BindingId, BindingKind, ConstValue, FixupFacts, FunctionId,
+    PathSegment, Site, ValueFact, ValueSubject,
 };
 use crate::rust_ast::{
     BinOp, Block, Expr, FnDef, IndentStmt, Item, Pattern, Prim, Program, RustValue, Stmt, Type,
@@ -20,22 +20,20 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        all.extend(collect_for_function(function, f, facts));
+        all.extend(collect_for_function(function, f, &facts.bindings));
     }
     facts.values = all;
 }
 
 /// Values for one function's body, independent of any other function's
 /// facts - the entry point `slate-04q.75.56.8` (incremental facts) needs to
-/// re-derive one function's values without a whole-program walk. Still
-/// needs read access to `facts` (for `binding_by_local_path`, populated by
-/// the earlier function/binding walk), just not write access.
+/// re-derive one function's values without a whole-program walk.
 pub(in crate::fixups) fn collect_for_function(
     function: FunctionId,
     f: &FnDef,
-    facts: &FixupFacts,
+    bindings: &[BindingFact],
 ) -> Vec<ValueFact> {
-    let mut collector = Collector::new(function, facts);
+    let mut collector = Collector::new(function, bindings);
     collector.enter_root_scope();
     collector.body(&f.body, &mut Vec::new(), false);
     collector.values
@@ -43,17 +41,17 @@ pub(in crate::fixups) fn collect_for_function(
 
 struct Collector<'a> {
     function: FunctionId,
-    facts: &'a FixupFacts,
+    bindings: &'a [BindingFact],
     scopes: Vec<BTreeMap<String, Option<BindingId>>>,
     values_by_binding: BTreeMap<BindingId, BTreeSet<ConstValue>>,
     values: Vec<ValueFact>,
 }
 
 impl<'a> Collector<'a> {
-    fn new(function: FunctionId, facts: &'a FixupFacts) -> Self {
+    fn new(function: FunctionId, bindings: &'a [BindingFact]) -> Self {
         Self {
             function,
-            facts,
+            bindings,
             scopes: Vec::new(),
             values_by_binding: BTreeMap::new(),
             values: Vec::new(),
@@ -63,7 +61,6 @@ impl<'a> Collector<'a> {
     fn enter_root_scope(&mut self) {
         self.scopes.push(BTreeMap::new());
         let params: Vec<_> = self
-            .facts
             .bindings
             .iter()
             .filter(|binding| binding.function == self.function)
@@ -448,8 +445,7 @@ impl<'a> Collector<'a> {
     }
 
     fn local_binding(&self, name: &str, path: &[PathSegment]) -> Option<BindingId> {
-        self.facts
-            .binding_by_local_path(self.function, name, &AstPath(path.to_vec()))
+        facts::binding_by_local_path(self.bindings, self.function, name, &AstPath(path.to_vec()))
     }
 
     fn assign(&mut self, target: &Expr, values: BTreeSet<ConstValue>, path: &mut Vec<PathSegment>) {

@@ -90,11 +90,7 @@ impl DefinitionsInput {
 impl FunctionInput {
     #[salsa::tracked(returns(ref))]
     fn def_use(self, db: &dyn FixupDb) -> Vec<DefUseFact> {
-        let local_facts = FixupFacts {
-            bindings: self.bindings(db).clone(),
-            ..FixupFacts::default()
-        };
-        facts::def_use::collect_for_function(*self.function(db), self.body(db), &local_facts)
+        facts::def_use::collect_for_function(*self.function(db), self.body(db), self.bindings(db))
     }
 
     #[salsa::tracked(returns(ref))]
@@ -104,36 +100,27 @@ impl FunctionInput {
 
     #[salsa::tracked(returns(ref))]
     fn values(self, db: &dyn FixupDb) -> Vec<ValueFact> {
-        let local_facts = FixupFacts {
-            bindings: self.bindings(db).clone(),
-            ..FixupFacts::default()
-        };
-        facts::values::collect_for_function(*self.function(db), self.body(db), &local_facts)
+        facts::values::collect_for_function(*self.function(db), self.body(db), self.bindings(db))
     }
 
     #[salsa::tracked(returns(ref))]
     fn strings(self, db: &dyn FixupDb) -> facts::strings::Collected {
-        let local_facts = FixupFacts {
-            bindings: self.bindings(db).clone(),
-            binding_types: self.binding_types(db).clone(),
-            ..FixupFacts::default()
-        };
-        facts::strings::collect_for_function(*self.function(db), self.body(db), &local_facts)
+        facts::strings::collect_for_function(
+            *self.function(db),
+            self.body(db),
+            self.bindings(db),
+            self.binding_types(db),
+        )
     }
 
     #[salsa::tracked(returns(ref))]
     fn counted_loops(self, db: &dyn FixupDb) -> (Vec<CountedLoopFact>, Vec<CountedSliceLoopFact>) {
-        let mut local_facts = FixupFacts {
-            bindings: self.bindings(db).clone(),
-            loops: self.loops(db).clone(),
-            ..FixupFacts::default()
-        };
         facts::counted_loop::collect_for_function(
             *self.function(db),
             self.body(db),
-            &mut local_facts,
-        );
-        (local_facts.counted_loops, local_facts.counted_slice_loops)
+            self.bindings(db),
+            self.loops(db),
+        )
     }
 
     #[salsa::tracked(returns(ref))]
@@ -142,18 +129,42 @@ impl FunctionInput {
     }
 
     #[salsa::tracked(returns(ref))]
-    fn casts(self, db: &dyn FixupDb) -> Vec<CastFact> {
-        let local_facts = FixupFacts {
-            bindings: self.bindings(db).clone(),
-            functions: vec![FunctionFact {
-                id: *self.function(db),
-                name: self.body(db).name.clone(),
-                item_index: 0,
-            }],
-            call_signatures: vec![self.local_call_signature(db).clone()],
-            ..FixupFacts::default()
-        };
-        facts::casts::collect_for_function(*self.function(db), self.body(db), &local_facts)
+    fn own_callsites(
+        self,
+        db: &dyn FixupDb,
+        all_functions: AllFunctions,
+        definitions: DefinitionsInput,
+    ) -> Vec<CallsiteFact> {
+        let function = *self.function(db);
+        all_functions
+            .callsites(db, definitions)
+            .iter()
+            .filter(|fact| fact.site.function == function)
+            .cloned()
+            .collect()
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn casts(
+        self,
+        db: &dyn FixupDb,
+        all_functions: AllFunctions,
+        definitions: DefinitionsInput,
+    ) -> Vec<CastFact> {
+        let functions = vec![FunctionFact {
+            id: *self.function(db),
+            name: self.body(db).name.clone(),
+            item_index: 0,
+        }];
+        let call_signatures = vec![self.local_call_signature(db).clone()];
+        facts::casts::collect_for_function(
+            *self.function(db),
+            self.body(db),
+            self.bindings(db),
+            &functions,
+            &call_signatures,
+            self.own_callsites(db, all_functions, definitions),
+        )
     }
 
     #[salsa::tracked(returns(ref))]
@@ -168,39 +179,31 @@ impl FunctionInput {
 
     #[salsa::tracked(returns(ref))]
     fn borrow_alias(self, db: &dyn FixupDb) -> Vec<BorrowAliasFact> {
-        let local_facts = FixupFacts {
-            bindings: self.bindings(db).clone(),
-            ..FixupFacts::default()
-        };
-        facts::borrow_alias::collect_for_function(*self.function(db), self.body(db), &local_facts)
+        facts::borrow_alias::collect_for_function(
+            *self.function(db),
+            self.body(db),
+            self.bindings(db),
+        )
     }
 
     #[salsa::tracked(returns(ref))]
     fn array_element_pointer_origins(self, db: &dyn FixupDb) -> Vec<ArrayElementPointerOriginFact> {
-        let local_facts = FixupFacts {
-            bindings: self.bindings(db).clone(),
-            binding_types: self.binding_types(db).clone(),
-            def_use: self.def_use(db).clone(),
-            ..FixupFacts::default()
-        };
         facts::array_element_pointer_origin::collect_for_function(
             *self.function(db),
             self.body(db),
-            &local_facts,
+            self.bindings(db),
+            self.binding_types(db),
+            self.def_use(db),
         )
     }
 
     #[salsa::tracked(returns(ref))]
     fn null_check_dominance(self, db: &dyn FixupDb) -> Vec<NullCheckDominanceFact> {
-        let local_facts = FixupFacts {
-            bindings: self.bindings(db).clone(),
-            control_flow: self.control_flow(db).clone(),
-            ..FixupFacts::default()
-        };
         facts::null_check_dominance::collect_for_function(
             *self.function(db),
             self.body(db),
-            &local_facts,
+            self.bindings(db),
+            self.control_flow(db),
         )
     }
 
@@ -215,15 +218,11 @@ impl FunctionInput {
         db: &dyn FixupDb,
         definitions: DefinitionsInput,
     ) -> (Vec<PointerOptionSafetyFact>, Vec<PointerComparisonFact>) {
-        let local_facts = FixupFacts {
-            bindings: self.bindings(db).clone(),
-            binding_types: self.binding_types(db).clone(),
-            ..FixupFacts::default()
-        };
         facts::pointer_option_safety::collect_for_function(
             *self.function(db),
             self.body(db),
-            &local_facts,
+            self.bindings(db),
+            self.binding_types(db),
             definitions.union_records(db),
         )
     }
@@ -233,66 +232,50 @@ impl FunctionInput {
         self,
         db: &dyn FixupDb,
     ) -> (Vec<OptionBoxLocalCandidate>, Vec<OptionBoxComparison>) {
-        let local_facts = FixupFacts {
-            bindings: self.bindings(db).clone(),
-            ..FixupFacts::default()
-        };
         facts::option_box_locals::collect_for_function(
             *self.function(db),
             self.body(db),
-            &local_facts,
+            self.bindings(db),
         )
     }
 
     #[salsa::tracked(returns(ref))]
     fn buffer_pointer_fields(self, db: &dyn FixupDb) -> Vec<BufferPointerFieldFact> {
-        let local_facts = FixupFacts {
-            bindings: self.bindings(db).clone(),
-            binding_types: self.binding_types(db).clone(),
-            ..FixupFacts::default()
-        };
         facts::buffer_cursor::collect_for_function(
             *self.function(db),
             &self.body(db).body,
-            &local_facts,
+            self.bindings(db),
+            self.binding_types(db),
         )
     }
 
     #[salsa::tracked(returns(ref))]
     fn heap_ownership(self, db: &dyn FixupDb) -> Vec<HeapOwnershipFact> {
-        let local_facts = FixupFacts {
-            bindings: self.bindings(db).clone(),
-            ..FixupFacts::default()
-        };
         facts::heap_ownership::collect_for_function(
             *self.function(db),
             &self.body(db).body,
-            &local_facts,
+            self.bindings(db),
         )
     }
 
     #[salsa::tracked(returns(ref))]
     fn file_ownership(self, db: &dyn FixupDb) -> Vec<FileOwnershipFact> {
-        let local_facts = FixupFacts {
-            bindings: self.bindings(db).clone(),
-            ..FixupFacts::default()
-        };
         facts::file_ownership::collect_for_function(
             *self.function(db),
             &self.body(db).body,
-            &local_facts,
+            self.bindings(db),
         )
     }
 
     #[salsa::tracked(returns(ref))]
     fn printf_calls(self, db: &dyn FixupDb) -> Vec<PrintfCallFact> {
         let strings = self.strings(db);
-        let local_facts = FixupFacts {
-            string_buffers: strings.buffers.clone(),
-            string_pointer_views: strings.pointer_views.clone(),
-            ..FixupFacts::default()
-        };
-        facts::printf::collect_for_function(*self.function(db), self.body(db), &local_facts)
+        facts::printf::collect_for_function(
+            *self.function(db),
+            self.body(db),
+            &strings.buffers,
+            &strings.pointer_views,
+        )
     }
 
     #[salsa::tracked(returns(ref))]
@@ -805,8 +788,9 @@ impl SalsaFacts {
         path: &AstPath,
     ) -> Option<&CastFact> {
         let input = *self.functions.get(&function)?;
+        let definitions = self.definitions?;
         input
-            .casts(&self.db)
+            .casts(&self.db, self.all_functions, definitions)
             .iter()
             .find(|fact| &fact.site.path == path)
     }

@@ -1,8 +1,8 @@
 use crate::fixups::facts::walk;
 use crate::fixups::facts::{
-    AstPath, BindingId, FixupFacts, FunctionId, HeapAllocationKind, HeapExtent, HeapInitKind,
-    HeapOwnershipFact, HeapReadSafety, HeapReallocFact, HeapResizeKind, HeapUseFact, HeapUseKind,
-    PathSegment,
+    self, AstPath, BindingFact, BindingId, FixupFacts, FunctionId, HeapAllocationKind, HeapExtent,
+    HeapInitKind, HeapOwnershipFact, HeapReadSafety, HeapReallocFact, HeapResizeKind, HeapUseFact,
+    HeapUseKind, PathSegment,
 };
 use crate::function_identity::{Known, known_call};
 use crate::rust_ast::{
@@ -29,7 +29,7 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
         let Some(function) = facts.function_by_item_index(item_index) else {
             continue;
         };
-        all.extend(collect_for_function(function, &f.body, facts));
+        all.extend(collect_for_function(function, &f.body, &facts.bindings));
     }
     facts.heap_ownership = all;
 }
@@ -37,7 +37,7 @@ pub(in crate::fixups) fn collect_facts(program: &Program, facts: &mut FixupFacts
 pub(in crate::fixups) fn collect_for_function(
     function: FunctionId,
     body: &[IndentStmt],
-    facts: &FixupFacts,
+    bindings: &[BindingFact],
 ) -> Vec<HeapOwnershipFact> {
     let mut out = Vec::new();
     for (index, pair) in body.windows(2).enumerate() {
@@ -45,12 +45,13 @@ pub(in crate::fixups) fn collect_for_function(
             continue;
         };
         let pointer_path = AstPath(vec![PathSegment::Stmt(index)]);
-        let Some(pointer) = facts.binding_by_local_path(function, pointer_name, &pointer_path)
+        let Some(pointer) =
+            facts::binding_by_local_path(bindings, function, pointer_name, &pointer_path)
         else {
             continue;
         };
         let Some(candidate) =
-            find_allocation(function, body, facts, index + 1, pointer_name, &elem_ty)
+            find_allocation(function, body, bindings, index + 1, pointer_name, &elem_ty)
         else {
             continue;
         };
@@ -97,7 +98,7 @@ pub(super) struct Candidate {
 fn find_allocation(
     function: FunctionId,
     body: &[IndentStmt],
-    facts: &FixupFacts,
+    bindings: &[BindingFact],
     start: usize,
     pointer_name: &str,
     elem_ty: &Type,
@@ -112,11 +113,15 @@ fn find_allocation(
             continue;
         };
         let allocation_path = AstPath(vec![PathSegment::Stmt(allocation_index)]);
-        let allocation_temp =
-            facts.binding_by_local_path(function, &allocation_call.name, &allocation_path)?;
+        let allocation_temp = facts::binding_by_local_path(
+            bindings,
+            function,
+            &allocation_call.name,
+            &allocation_path,
+        )?;
         let size_temp = temp_binding_before(
             function,
-            facts,
+            bindings,
             body,
             allocation_index,
             allocation_call.size_name.as_deref(),
@@ -147,7 +152,7 @@ fn find_allocation(
                 reallocations: Vec::new(),
             };
             let (free_index, free_temp, aliases, uses, reallocations, read_safety) =
-                heap_uses_are_owned(function, body, facts, pointer_name, &candidate)?;
+                heap_uses_are_owned(function, body, bindings, pointer_name, &candidate)?;
             candidate.free_index = free_index?;
             candidate.free_temp = free_temp;
             candidate.aliases = aliases;
@@ -293,7 +298,7 @@ fn temp_init_at<'a>(body: &'a [IndentStmt], index: usize, name: &str) -> Option<
 
 fn temp_binding_before(
     function: FunctionId,
-    facts: &FixupFacts,
+    bindings: &[BindingFact],
     body: &[IndentStmt],
     index: usize,
     name: Option<&str>,
@@ -303,7 +308,12 @@ fn temp_binding_before(
         return None;
     }
     temp_init_before(body, index, name)?;
-    facts.binding_by_local_path(function, name, &AstPath(vec![PathSegment::Stmt(index - 1)]))
+    facts::binding_by_local_path(
+        bindings,
+        function,
+        name,
+        &AstPath(vec![PathSegment::Stmt(index - 1)]),
+    )
 }
 
 fn strip_casts(expr: &Expr) -> &Expr {
@@ -441,7 +451,7 @@ fn block_tail_free_arg(block: &Block) -> Option<&Expr> {
 pub(super) fn heap_uses_are_owned(
     function: FunctionId,
     body: &[IndentStmt],
-    facts: &FixupFacts,
+    bindings: &[BindingFact],
     pointer_name: &str,
     candidate: &Candidate,
 ) -> Option<OwnedHeapUses> {
@@ -465,7 +475,7 @@ pub(super) fn heap_uses_are_owned(
         if let Some(realloc) = realloc_at(
             function,
             body,
-            facts,
+            bindings,
             index,
             pointer_name,
             &aliases,
@@ -482,7 +492,8 @@ pub(super) fn heap_uses_are_owned(
             if free.is_some() {
                 return None;
             }
-            let binding = facts.binding_by_local_path(
+            let binding = facts::binding_by_local_path(
+                bindings,
                 function,
                 alias,
                 &AstPath(vec![PathSegment::Stmt(index)]),
@@ -496,7 +507,7 @@ pub(super) fn heap_uses_are_owned(
             if free.is_some() {
                 return None;
             }
-            let free_temp = free_temp_before(function, body, facts, index, pointer_name);
+            let free_temp = free_temp_before(function, body, bindings, index, pointer_name);
             uses.push(HeapUseFact {
                 path: AstPath(vec![PathSegment::Stmt(index)]),
                 kind: HeapUseKind::Free,
@@ -583,13 +594,14 @@ fn pointer_alias_temp_from_any<'a>(stmt: &'a Stmt, names: &BTreeSet<String>) -> 
 fn free_temp_before(
     function: FunctionId,
     body: &[IndentStmt],
-    facts: &FixupFacts,
+    bindings: &[BindingFact],
     index: usize,
     pointer_name: &str,
 ) -> Option<BindingId> {
     let prev_index = index.checked_sub(1)?;
     let alias = pointer_alias_temp(&body.get(prev_index)?.stmt, pointer_name)?;
-    facts.binding_by_local_path(
+    facts::binding_by_local_path(
+        bindings,
         function,
         alias,
         &AstPath(vec![PathSegment::Stmt(prev_index)]),
@@ -604,7 +616,7 @@ struct ReallocAt {
 fn realloc_at(
     function: FunctionId,
     body: &[IndentStmt],
-    facts: &FixupFacts,
+    bindings: &[BindingFact],
     index: usize,
     pointer_name: &str,
     aliases: &BTreeSet<String>,
@@ -637,17 +649,20 @@ fn realloc_at(
     if !assigns_allocated_pointer(&body.get(assign_index)?.stmt, pointer_name, allocation_name) {
         return None;
     }
-    let source_temp = facts.binding_by_local_path(
+    let source_temp = facts::binding_by_local_path(
+        bindings,
         function,
         source_name,
         &AstPath(vec![PathSegment::Stmt(index)]),
     );
-    let allocation_temp = facts.binding_by_local_path(
+    let allocation_temp = facts::binding_by_local_path(
+        bindings,
         function,
         allocation_name,
         &AstPath(vec![PathSegment::Stmt(realloc_index)]),
     )?;
-    let size_temp = facts.binding_by_local_path(
+    let size_temp = facts::binding_by_local_path(
+        bindings,
         function,
         size_name,
         &AstPath(vec![PathSegment::Stmt(size_index)]),
