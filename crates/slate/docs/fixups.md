@@ -230,24 +230,25 @@ including when one statement edit removes the container of another edit.
 
 ## Scheduling
 
-Build a plan from one immutable `Program` and fresh `FixupFacts` snapshot, then
-apply it after the query context is dropped:
+Build a plan from one immutable `Program` and a resolved `SalsaFacts`
+snapshot, then apply it after the query context is dropped:
 
 ```rust
-let facts::AnalyzedProgram { facts, .. } = facts::analyze(&program);
+incremental.resolve(&program);
 let plan = {
-    let query = query::QueryContext::new(&program, &facts);
+    let query = query::QueryContext::new(&program, &incremental);
     let mut builder = query::ItemPlanBuilder::new();
     builder.add_rule(&query, &query::rules::memchr::calls());
     builder.finish()
 };
-plan.apply(&mut program, &facts, logger).changed
+plan.apply(&mut program, &incremental, logger).changed
 ```
 
-Use `ItemPlanBuilder` and `plan.apply(&mut program, &facts, logger)` for every
-matcher-driven rule, including expression, binding, definition, function, and
-statement matches. Add several rules to one builder only when they intentionally
-share a snapshot; overlapping edit sets are rejected across item kinds.
+Use `ItemPlanBuilder` and `plan.apply(&mut program, &incremental, logger)` for
+every matcher-driven rule, including expression, binding, definition,
+function, and statement matches. Add several rules to one builder only when
+they intentionally share a snapshot; overlapping edit sets are rejected across
+item kinds.
 
 One accepted `EditSet` is transactional. Every anchor is validated against the
 unchanged input before mutation, and a missing or stale anchor rejects that
@@ -270,8 +271,10 @@ Top-level insertion uses `EditSet::insert_items` with the immutable snapshot's
 item count, applies in reverse source order after removals, and marks touched
 items unbounded because insertion renumbers every later item.
 
-Recompute facts before the next fact-dependent query. Place definition deletion
-after the final pass that can remove a user.
+Mark the touched items (or `mark_everything_dirty()`) and call
+`incremental.resolve(&program)` before the next fact-dependent query, so
+salsa resyncs only the functions an edit actually touched. Place definition
+deletion after the final pass that can remove a user.
 
 ## Lowering-like rules
 
