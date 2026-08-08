@@ -42,7 +42,7 @@ fn libc_shim_args(target: &str) -> Vec<String> {
     match libc_shim_dir() {
         Some(dir) => {
             let mut args = vec!["-nostdlibinc".into(), "-isystem".into(), dir];
-            if !target.ends_with("windows-msvc") {
+            if !target.ends_with("windows-msvc") && !target.ends_with("-android") {
                 for fallback in system_fallback_include_dirs() {
                     args.push("-idirafter".into());
                     args.push(fallback);
@@ -237,12 +237,14 @@ fn target_features(target: &str) -> Result<TargetFeatures, String> {
         ("WORDSIZE", &wordsize),
         ("ENDIAN", endian),
     ];
-    Ok(TargetFeatures {
-        names: values
-            .into_iter()
-            .map(|(family, value)| format!("__SLATE_{family}_{}", feature_suffix(value)))
-            .collect(),
-    })
+    let mut names = values
+        .into_iter()
+        .map(|(family, value)| format!("__SLATE_{family}_{}", feature_suffix(value)))
+        .collect::<Vec<_>>();
+    if triple.env == Some(Env::Android) {
+        names.push("__SLATE_PLATFORM_ANDROID".into());
+    }
+    Ok(TargetFeatures { names })
 }
 
 fn active_target() -> String {
@@ -250,6 +252,24 @@ fn active_target() -> String {
         .ok()
         .filter(|target| !target.trim().is_empty())
         .unwrap_or_else(|| env!("SLATE_BUILD_TARGET").to_string())
+}
+
+fn android_api(target: &str) -> Result<Option<u32>, String> {
+    let triple = Triple::parse(target).map_err(|e| format!("invalid target `{target}`: {e}"))?;
+    if triple.env != Some(Env::Android) {
+        return Ok(None);
+    }
+    let value = std::env::var("SLATE_ANDROID_API")
+        .map_err(|_| "Android targets require SLATE_ANDROID_API".to_string())?;
+    let api = value
+        .parse::<u32>()
+        .map_err(|_| format!("SLATE_ANDROID_API must be an integer, got `{value}`"))?;
+    if api < 21 {
+        return Err(format!(
+            "SLATE_ANDROID_API must be at least 21 for the 64-bit Bionic profile, got {api}"
+        ));
+    }
+    Ok(Some(api))
 }
 
 pub fn uses_msvc_abi() -> bool {
@@ -270,7 +290,12 @@ pub fn target_args() -> Result<Vec<String>, String> {
     let target = active_target();
     let mut args = libc_shim_args(&target);
     args.extend(target_features(&target)?.define_args());
-    let (clang_target, abi_args) = clang_target(&target);
+    let api = android_api(&target)?;
+    if let Some(api) = api {
+        args.push(format!("-D__SLATE_ANDROID_API__={api}"));
+    }
+    let clang_target_name = api.map_or_else(|| target.clone(), |api| format!("{target}{api}"));
+    let (clang_target, abi_args) = clang_target(&clang_target_name);
     args.push("-target".into());
     args.push(clang_target.into());
     args.extend(abi_args.iter().map(|arg| (*arg).into()));

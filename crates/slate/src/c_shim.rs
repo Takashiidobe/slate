@@ -23,6 +23,7 @@ fn c_type_for_tag(tag: &str) -> String {
         "f64" => "double",
         "bool" => "_Bool",
         "ld" => "double",
+        "lq" => "long double",
         _ => "void *",
     }
     .to_string()

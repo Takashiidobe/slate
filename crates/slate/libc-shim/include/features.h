@@ -24,9 +24,23 @@
 
 #if defined(__SLATE_LIBC_GLIBC) + defined(__SLATE_LIBC_MUSL) +                 \
         defined(__SLATE_LIBC_MINGW) + defined(__SLATE_LIBC_MSVC) +             \
-        defined(__SLATE_LIBC_GENERIC) !=                                       \
+        defined(__SLATE_LIBC_BIONIC) + defined(__SLATE_LIBC_GENERIC) !=         \
     1
 #error "Slate requires one supported target libc."
+#endif
+
+#if defined(__SLATE_LIBC_BIONIC)
+#if !defined(__SLATE_PLATFORM_ANDROID)
+#error "The Bionic libc profile requires the Android platform."
+#elif !defined(__SLATE_ANDROID_API__)
+#error "The Bionic libc profile requires __SLATE_ANDROID_API__."
+#elif __SLATE_ANDROID_API__ < 21
+#error "The Bionic libc profile requires Android API 21 or newer."
+#endif
+#endif
+
+#if defined(__SLATE_PLATFORM_ANDROID) && !defined(__SLATE_LIBC_BIONIC)
+#error "The Android platform requires the Bionic libc profile."
 #endif
 
 #if defined(__SLATE_OBJ_ELF) + defined(__SLATE_OBJ_COFF) +                     \

@@ -94,7 +94,9 @@ Requires a CIR-enabled Clang (`CLANG_ENABLE_CIR=ON`). Local build lives at
 and `SLATE_CIR_OPT`.
 
 Target selection can be shared across the CIR and AST Clang invocations with
-`SLATE_TARGET=<triple>` and extra flags in `SLATE_CLANG_ARGS`.
+`SLATE_TARGET=<triple>` and extra flags in `SLATE_CLANG_ARGS`. Android targets
+also require `SLATE_ANDROID_API=<level>`; the 64-bit Bionic baseline starts at
+API 21.
 
 The external pinned Microsoft CRT and UCRT header oracle used for MSVC work is
 bootstrapped under `target/`; see [msvc-sysroot.md](msvc-sysroot.md).
