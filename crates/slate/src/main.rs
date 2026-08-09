@@ -7,6 +7,9 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitCode};
 
+#[global_allocator]
+static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
+
 fn usage() -> ExitCode {
     eprintln!("usage: slate <command> [file.c]");
     eprintln!("  emit-cir    print ClangIR (generic form)");

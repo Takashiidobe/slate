@@ -278,6 +278,30 @@ impl<'db> FunctionInput<'db> {
     }
 
     #[salsa::tracked(returns(ref))]
+    fn string_buffers_by_path(
+        self,
+        db: &dyn FixupDb,
+    ) -> BTreeMap<AstPath, facts::StringBufferFact<'db>> {
+        self.strings(db)
+            .buffers
+            .iter()
+            .map(|fact| (fact.site.path.clone(), fact.clone()))
+            .collect()
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn string_libc_uses_by_path(
+        self,
+        db: &dyn FixupDb,
+    ) -> BTreeMap<AstPath, facts::StringLibcUseFact<'db>> {
+        self.strings(db)
+            .libc_uses
+            .iter()
+            .map(|fact| (fact.site.path.clone(), fact.clone()))
+            .collect()
+    }
+
+    #[salsa::tracked(returns(ref))]
     pub(in crate::fixups) fn counted_loops(
         self,
         db: &dyn FixupDb,
@@ -334,6 +358,19 @@ impl<'db> FunctionInput<'db> {
             &call_signatures,
             self.own_callsites(db, all_functions, definitions),
         )
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn casts_by_path(
+        self,
+        db: &dyn FixupDb,
+        all_functions: ProgramInput,
+        definitions: ProgramInput,
+    ) -> BTreeMap<AstPath, CastFact<'db>> {
+        self.casts(db, all_functions, definitions)
+            .iter()
+            .map(|fact| (fact.site.path.clone(), fact.clone()))
+            .collect()
     }
 
     #[salsa::tracked(returns(ref))]
@@ -433,6 +470,19 @@ impl<'db> FunctionInput<'db> {
     }
 
     #[salsa::tracked(returns(ref))]
+    fn pointer_option_safety_by_binding(
+        self,
+        db: &dyn FixupDb,
+        definitions: ProgramInput,
+    ) -> BTreeMap<BindingId<'db>, PointerOptionSafetyFact<'db>> {
+        self.pointer_option_safety(db, definitions)
+            .0
+            .iter()
+            .map(|fact| (fact.binding, *fact))
+            .collect()
+    }
+
+    #[salsa::tracked(returns(ref))]
     pub(in crate::fixups) fn option_box(
         self,
         db: &dyn FixupDb,
@@ -495,6 +545,17 @@ impl<'db> FunctionInput<'db> {
     }
 
     #[salsa::tracked(returns(ref))]
+    fn ascii_numeric_strings_by_binding(
+        self,
+        db: &dyn FixupDb,
+    ) -> BTreeMap<BindingId<'db>, AsciiNumericStringFact<'db>> {
+        self.ascii_numeric_strings(db)
+            .iter()
+            .map(|fact| (fact.binding, fact.clone()))
+            .collect()
+    }
+
+    #[salsa::tracked(returns(ref))]
     pub(in crate::fixups) fn callee_alloc_summary(
         self,
         db: &dyn FixupDb,
@@ -531,6 +592,17 @@ impl<'db> FunctionInput<'db> {
     #[salsa::tracked(returns(ref))]
     fn c_string_literals(self, db: &dyn FixupDb) -> Vec<CStringLiteralFact<'db>> {
         facts::c_strings::collect_for_function(self.function_id(db), self.body(db))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn c_string_literals_by_receiver(
+        self,
+        db: &dyn FixupDb,
+    ) -> BTreeMap<AstPath, CStringLiteralFact<'db>> {
+        self.c_string_literals(db)
+            .iter()
+            .map(|fact| (fact.receiver_path.clone(), fact.clone()))
+            .collect()
     }
 
     #[salsa::tracked(returns(ref))]
@@ -1060,11 +1132,7 @@ impl SalsaFacts {
         path: &AstPath,
     ) -> Option<&facts::StringBufferFact<'_>> {
         let input = self.function_input(function)?;
-        input
-            .strings(&self.db)
-            .buffers
-            .iter()
-            .find(|buffer| &buffer.site.path == path)
+        input.string_buffers_by_path(&self.db).get(path)
     }
 
     pub(in crate::fixups) fn string_pointer_views(
@@ -1083,11 +1151,7 @@ impl SalsaFacts {
         path: &AstPath,
     ) -> Option<&facts::StringLibcUseFact<'_>> {
         let input = self.function_input(function)?;
-        input
-            .strings(&self.db)
-            .libc_uses
-            .iter()
-            .find(|libc| &libc.site.path == path)
+        input.string_libc_uses_by_path(&self.db).get(path)
     }
 
     pub(in crate::fixups) fn liftable_string_bindings(
@@ -1153,9 +1217,8 @@ impl SalsaFacts {
     ) -> Option<&CastFact<'_>> {
         let input = self.function_input(function)?;
         input
-            .casts(&self.db, self.program, self.program)
-            .iter()
-            .find(|fact| &fact.site.path == path)
+            .casts_by_path(&self.db, self.program, self.program)
+            .get(path)
     }
 
     pub(in crate::fixups) fn place(
@@ -1258,17 +1321,15 @@ impl SalsaFacts {
         self.program.atomic_locals(&self.db)
     }
 
-    pub(in crate::fixups) fn pointer_option_safety_of(
-        &self,
-        function: FunctionId<'_>,
-        binding: BindingId<'_>,
-    ) -> Option<&PointerOptionSafetyFact<'_>> {
+    pub(in crate::fixups) fn pointer_option_safety_of<'a>(
+        &'a self,
+        function: FunctionId<'a>,
+        binding: BindingId<'a>,
+    ) -> Option<&'a PointerOptionSafetyFact<'a>> {
         let input = self.function_input(function)?;
         input
-            .pointer_option_safety(&self.db, self.program)
-            .0
-            .iter()
-            .find(|fact| fact.binding == binding)
+            .pointer_option_safety_by_binding(&self.db, self.program)
+            .get(&binding)
     }
 
     #[expect(
@@ -1295,9 +1356,8 @@ impl SalsaFacts {
     ) -> Option<&CStringLiteralFact<'_>> {
         let input = self.function_input(function)?;
         input
-            .c_string_literals(&self.db)
-            .iter()
-            .find(|fact| &fact.receiver_path == receiver_path)
+            .c_string_literals_by_receiver(&self.db)
+            .get(receiver_path)
     }
 
     pub(in crate::fixups) fn printf_calls(
@@ -1428,7 +1488,6 @@ impl SalsaFacts {
         let Some(input) = self.function_input(function) else {
             return Vec::new();
         };
-        let query_path = facts::def_use_query_path(path);
         let by_binding = input.def_use_by_binding(&self.db);
         input
             .binding_ids_by_name(&self.db)
@@ -1439,7 +1498,7 @@ impl SalsaFacts {
             .filter(|fact| {
                 fact.reads
                     .iter()
-                    .any(|read| facts::walk::paths_overlap(&read.0, &query_path.0))
+                    .any(|read| facts::def_use_query_path_overlaps(path, &read.0))
             })
             .map(|fact| fact.binding)
             .collect()
@@ -1454,7 +1513,6 @@ impl SalsaFacts {
         let Some(input) = self.function_input(function) else {
             return Vec::new();
         };
-        let query_path = facts::def_use_query_path(path);
         let by_binding = input.def_use_by_binding(&self.db);
         input
             .binding_ids_by_name(&self.db)
@@ -1465,7 +1523,7 @@ impl SalsaFacts {
             .filter(|fact| {
                 fact.writes
                     .iter()
-                    .any(|write| facts::walk::paths_overlap(&write.0, &query_path.0))
+                    .any(|write| facts::def_use_query_path_overlaps(path, &write.0))
             })
             .map(|fact| fact.binding)
             .collect()
@@ -1489,15 +1547,13 @@ impl SalsaFacts {
             .collect()
     }
 
-    pub(in crate::fixups) fn ascii_numeric_string(
-        &self,
-        binding: BindingId<'_>,
-    ) -> Option<&AsciiNumericStringFact<'_>> {
-        self.program.functions(&self.db).iter().find_map(|&input| {
-            input
-                .ascii_numeric_strings(&self.db)
-                .iter()
-                .find(|fact| fact.binding == binding)
-        })
+    pub(in crate::fixups) fn ascii_numeric_string<'a>(
+        &'a self,
+        binding: BindingId<'a>,
+    ) -> Option<&'a AsciiNumericStringFact<'a>> {
+        let input = self.function_input(*binding.function(&self.db))?;
+        input
+            .ascii_numeric_strings_by_binding(&self.db)
+            .get(&binding)
     }
 }
