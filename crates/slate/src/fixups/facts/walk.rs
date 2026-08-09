@@ -1096,14 +1096,12 @@ impl BaseWalk {
         Collector::new(db).collect(program)
     }
 
-    pub(in crate::fixups) fn function_by_item_index(
-        &self,
-        item_index: usize,
-    ) -> Option<FunctionId<'_>> {
-        self.functions
-            .iter()
-            .find(|function| function.item_index == item_index)
-            .map(|function| FunctionId::from_id(function.id))
+    pub(in crate::fixups) fn for_function(
+        db: &dyn crate::fixups::salsa::FixupDb,
+        function: salsa::Id,
+        f: &FnDef,
+    ) -> Self {
+        Collector::new(db).collect_function(function, f)
     }
 
     pub(in crate::fixups) fn function_item_index(&self, function: FunctionId<'_>) -> Option<usize> {
@@ -1120,13 +1118,6 @@ impl BaseWalk {
             .iter()
             .find(|fact| fact.id == id)
             .map(|fact| fact.name.as_str())
-    }
-
-    pub(in crate::fixups) fn function_by_name(&self, name: &str) -> Option<FunctionId<'_>> {
-        self.functions
-            .iter()
-            .find(|fact| fact.name == name)
-            .map(|fact| FunctionId::from_id(fact.id))
     }
 
     pub(in crate::fixups) fn function_facts<'db>(&self) -> Vec<FunctionFact<'db>> {
@@ -1171,6 +1162,11 @@ impl<'a> Collector<'a> {
 
     fn collect(mut self, program: &Program) -> BaseWalk {
         self.program(program);
+        self.base
+    }
+
+    fn collect_function(mut self, function: salsa::Id, f: &FnDef) -> BaseWalk {
+        self.function(function, f);
         self.base
     }
 

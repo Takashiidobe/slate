@@ -6533,12 +6533,11 @@ fn function_input_at<'db>(
     db: &'db dyn FixupDb,
     item_index: usize,
 ) -> Option<FunctionInput<'db>> {
-    let function = program.base_walk(db).function_by_item_index(item_index)?;
     program
         .functions(db)
         .iter()
         .copied()
-        .find(|input| input.function(db) == function)
+        .find(|input| input.item_index(db) == item_index)
 }
 
 fn constant_values<T: Ord>(

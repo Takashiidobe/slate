@@ -21,6 +21,7 @@ use crate::fixups::query::{
 };
 use crate::rust_ast::{Expr, FnDef, Item, Program};
 use salsa::Setter;
+use salsa::plumbing::AsId;
 use std::collections::{BTreeMap, BTreeSet};
 
 #[salsa::db]
@@ -42,6 +43,14 @@ impl FixupDb for Database {}
 pub(in crate::fixups) struct ProgramInput {
     #[returns(ref)]
     pub(in crate::fixups) program: Program,
+    #[returns(ref)]
+    pub(in crate::fixups) items: Vec<ItemInput>,
+}
+
+#[salsa::input]
+pub(in crate::fixups) struct ItemInput {
+    #[returns(ref)]
+    pub(in crate::fixups) item: Item,
 }
 
 #[salsa::interned]
@@ -50,6 +59,10 @@ pub(in crate::fixups) struct FunctionInput<'db> {
     pub(in crate::fixups) program: ProgramInput,
     #[returns(copy)]
     pub(in crate::fixups) function: FunctionId<'db>,
+    #[returns(copy)]
+    pub(in crate::fixups) item: ItemInput,
+    #[returns(copy)]
+    pub(in crate::fixups) item_index: usize,
 }
 
 #[salsa::tracked]
@@ -61,10 +74,30 @@ impl<'db> ProgramInput {
 
     #[salsa::tracked(returns(ref))]
     pub(in crate::fixups) fn functions(self, db: &'db dyn FixupDb) -> Vec<FunctionInput<'db>> {
-        self.base_walk(db)
-            .function_facts()
-            .into_iter()
-            .map(|fact| FunctionInput::new(db, self, fact.id))
+        self.items(db)
+            .iter()
+            .enumerate()
+            .filter_map(|(item_index, &item_input)| match item_input.item(db) {
+                Item::Fn(f) => {
+                    let function = FunctionId::new(db, f.name.clone());
+                    Some(FunctionInput::new(
+                        db, self, function, item_input, item_index,
+                    ))
+                }
+                _ => None,
+            })
+            .collect()
+    }
+
+    #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn function_facts(self, db: &'db dyn FixupDb) -> Vec<FunctionFact<'db>> {
+        self.functions(db)
+            .iter()
+            .map(|input| FunctionFact {
+                id: input.function(db),
+                name: input.function(db).name(db).to_string(),
+                item_index: input.item_index(db),
+            })
             .collect()
     }
 
@@ -149,26 +182,20 @@ impl<'db> FunctionInput<'db> {
 
     #[salsa::tracked(returns(ref))]
     pub(in crate::fixups) fn body(self, db: &dyn FixupDb) -> FnDef {
-        let name = self.function(db).name(db);
-        self.program(db)
-            .program(db)
-            .items
-            .iter()
-            .find_map(|item| match item {
-                Item::Fn(body) if body.name == *name => Some(body.clone()),
-                _ => None,
-            })
-            .expect("interned function must exist in the program")
+        match self.item(db).item(db) {
+            Item::Fn(body) => body.clone(),
+            _ => unreachable!("FunctionInput must reference an Item::Fn"),
+        }
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn function_walk(self, db: &dyn FixupDb) -> facts::walk::BaseWalk {
+        facts::walk::BaseWalk::for_function(db, self.function(db).as_id(), self.body(db))
     }
 
     #[salsa::tracked(returns(ref))]
     pub(in crate::fixups) fn bindings_typed(self, db: &'db dyn FixupDb) -> Vec<BindingFact<'db>> {
-        self.program(db)
-            .base_walk(db)
-            .binding_facts()
-            .into_iter()
-            .filter(|fact| fact.function == self.function(db))
-            .collect()
+        self.function_walk(db).binding_facts()
     }
 
     #[salsa::tracked(returns(ref))]
@@ -197,13 +224,7 @@ impl<'db> FunctionInput<'db> {
         self,
         db: &'db dyn FixupDb,
     ) -> Vec<BindingTypeFact<'db>> {
-        let bindings: BTreeSet<_> = self.bindings_typed(db).iter().map(|fact| fact.id).collect();
-        self.program(db)
-            .base_walk(db)
-            .binding_type_facts()
-            .into_iter()
-            .filter(|fact| bindings.contains(&fact.binding))
-            .collect()
+        self.function_walk(db).binding_type_facts()
     }
 
     #[salsa::tracked(returns(ref))]
@@ -217,12 +238,7 @@ impl<'db> FunctionInput<'db> {
 
     #[salsa::tracked(returns(ref))]
     fn loops_typed(self, db: &'db dyn FixupDb) -> Vec<LoopFact<'db>> {
-        self.program(db)
-            .base_walk(db)
-            .loop_facts()
-            .into_iter()
-            .filter(|fact| fact.function == self.function(db))
-            .collect()
+        self.function_walk(db).loop_facts()
     }
 
     #[salsa::tracked(returns(ref))]
@@ -865,17 +881,36 @@ impl<'db> ProgramInput {
 pub(in crate::fixups) struct SalsaFacts {
     db: Database,
     program: ProgramInput,
+    items: Vec<ItemInput>,
 }
 
 impl SalsaFacts {
     pub(in crate::fixups) fn new_empty() -> Self {
         let db = Database::default();
-        let program = ProgramInput::new(&db, Program::default());
-        Self { db, program }
+        let program = ProgramInput::new(&db, Program::default(), Vec::new());
+        Self {
+            db,
+            program,
+            items: Vec::new(),
+        }
     }
 
     pub(in crate::fixups) fn set_program(&mut self, program: &Program) {
         self.program.set_program(&mut self.db).to(program.clone());
+        if self.items.len() != program.items.len() {
+            self.items = program
+                .items
+                .iter()
+                .map(|item| ItemInput::new(&self.db, item.clone()))
+                .collect();
+            self.program.set_items(&mut self.db).to(self.items.clone());
+        } else {
+            for (handle, item) in self.items.iter().zip(program.items.iter()) {
+                if handle.item(&self.db) != item {
+                    handle.set_item(&mut self.db).to(item.clone());
+                }
+            }
+        }
     }
 
     pub(in crate::fixups) fn byte_source<'db>(
@@ -1428,26 +1463,38 @@ impl SalsaFacts {
         item_index: usize,
     ) -> Option<FunctionId<'_>> {
         self.program
-            .base_walk(&self.db)
-            .function_by_item_index(item_index)
+            .function_facts(&self.db)
+            .iter()
+            .find(|fact| fact.item_index == item_index)
+            .map(|fact| fact.id)
     }
 
     pub(in crate::fixups) fn function_item_index(&self, function: FunctionId<'_>) -> Option<usize> {
         self.program
-            .base_walk(&self.db)
-            .function_item_index(function)
+            .function_facts(&self.db)
+            .iter()
+            .find(|fact| fact.id == function)
+            .map(|fact| fact.item_index)
     }
 
     pub(in crate::fixups) fn function_name(&self, function: FunctionId<'_>) -> Option<&str> {
-        self.program.base_walk(&self.db).function_name(function)
+        self.program
+            .function_facts(&self.db)
+            .iter()
+            .find(|fact| fact.id == function)
+            .map(|fact| fact.name.as_str())
     }
 
     pub(in crate::fixups) fn function_by_name(&self, name: &str) -> Option<FunctionId<'_>> {
-        self.program.base_walk(&self.db).function_by_name(name)
+        self.program
+            .function_facts(&self.db)
+            .iter()
+            .find(|fact| fact.name == name)
+            .map(|fact| fact.id)
     }
 
     pub(in crate::fixups) fn function_facts(&self) -> Vec<FunctionFact<'_>> {
-        self.program.base_walk(&self.db).function_facts()
+        self.program.function_facts(&self.db).clone()
     }
 
     pub(in crate::fixups) fn binding_facts(&self) -> Vec<BindingFact<'_>> {
