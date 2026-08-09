@@ -1005,7 +1005,6 @@ pub const CLIB_RECORD_TYPES: &[CLibType] = &[
         1,
         CLibInitializer::ScalarZero,
     ),
-    CLibType::new("stat", "libc::stat", 8, CLibInitializer::Zeroed),
     CLibType::new(
         "timespec",
         "libc::timespec",

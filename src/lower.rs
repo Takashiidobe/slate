@@ -34,6 +34,39 @@ const WEAK_ANY_LINKAGE: i64 = 4;
 const HIDDEN_VISIBILITY: i64 = 1;
 const PROTECTED_VISIBILITY: i64 = 2;
 
+const SHIM_RECORD_TYPES: &[(&str, &str)] = &[("stat", "__slate_stat")];
+
+fn shim_record_rust_name(name: &str) -> Option<&'static str> {
+    SHIM_RECORD_TYPES
+        .iter()
+        .find_map(|(c_name, rust_name)| (*c_name == name).then_some(*rust_name))
+}
+
+fn rust_record_name(name: &str) -> String {
+    shim_record_rust_name(name)
+        .map(str::to_string)
+        .unwrap_or_else(|| sanitize_ident(name).into_string())
+}
+
+pub fn shim_records_for_module(cir: &Module, c: &Unit) -> Vec<crate::c_ast::Record> {
+    let referenced: BTreeSet<&str> = cir
+        .aliases
+        .values()
+        .filter_map(|ty| cir_record_name(ty))
+        .collect();
+    c.named_header_records
+        .iter()
+        .filter_map(|record| {
+            let rust_name = shim_record_rust_name(&record.name)?;
+            referenced.contains(record.name.as_str()).then(|| {
+                let mut record = record.clone();
+                record.name = rust_name.to_string();
+                record
+            })
+        })
+        .collect()
+}
+
 fn linkage_is_external(op: &Op) -> bool {
     matches!(attr_int(op, "linkage").unwrap_or(0), 0 | WEAK_ANY_LINKAGE)
 }
@@ -260,6 +293,7 @@ pub fn lower(cir: &Module, c: &Unit, ctx: &mut Ctx) -> Program {
 
 pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &ProjectInfo) -> Program {
     let mut anon_records = anon_local_records(cir);
+    let shim_records = shim_records_for_module(cir, c);
     let cir_record_names: BTreeSet<String> = cir
         .aliases
         .values()
@@ -276,6 +310,12 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
             && clib_record_type(&record.name).is_none()
             && anon_record_names.insert(name)
         {
+            anon_records.push(record.clone());
+        }
+    }
+    for record in &shim_records {
+        let name = sanitize_ident(&record.name).into_string();
+        if !project.shared_records.contains(&name) && anon_record_names.insert(name) {
             anon_records.push(record.clone());
         }
     }
@@ -300,6 +340,11 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         } else {
             records.entry(name).or_insert_with(|| record.clone());
         }
+    }
+    for record in shim_records {
+        records
+            .entry(sanitize_ident(&record.name).into_string())
+            .or_insert(record);
     }
     reconcile_anonymous_member_types(cir, &mut records);
     let mut lowerer = Lowerer {
@@ -2334,6 +2379,10 @@ impl<'a> Lowerer<'a> {
     }
 }
 
+pub fn is_clib_record_type(name: &str) -> bool {
+    clib_record_type(name).is_some()
+}
+
 fn clib_record_type(name: &str) -> Option<CLibType> {
     CLIB_RECORD_TYPES
         .iter()
@@ -2386,7 +2435,7 @@ fn c_type_to_type(ty: &crate::c_ast::CType) -> Type {
         CType::Array(inner, None) => ptr(inner),
         CType::Record(name) => clib_record_type(name)
             .map(Type::CLib)
-            .unwrap_or_else(|| Type::Custom(sanitize_ident(name).into_string())),
+            .unwrap_or_else(|| Type::Custom(rust_record_name(name))),
         CType::Enum(name) => Type::Custom(sanitize_ident(name).into_string()),
     }
 }
@@ -9232,7 +9281,7 @@ fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> T
         if (expanded.starts_with("!cir.struct<{") || expanded.starts_with("!cir.union<{"))
             && let Some(name) = ty.strip_prefix("!rec_")
         {
-            return Type::Custom(sanitize_ident(name).into_string());
+            return Type::Custom(rust_record_name(name));
         }
         return rust_type_with_aliases(expanded, aliases);
     }
@@ -9310,7 +9359,7 @@ fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> T
     } else if let Some(name) = cir_record_name(ty) {
         clib_record_type(name)
             .map(Type::CLib)
-            .unwrap_or_else(|| Type::Custom(sanitize_ident(name).into_string()))
+            .unwrap_or_else(|| Type::Custom(rust_record_name(name)))
     } else {
         Type::Prim(Prim::I32)
     }

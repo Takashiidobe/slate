@@ -357,6 +357,13 @@ fn project_translation_shares_long_double_types() {
 }
 
 #[test]
+fn project_translation_shares_shim_record_types() {
+    let rs_dir = build_and_diff("shared_stat");
+    let types = std::fs::read_to_string(rs_dir.join("types.rs")).expect("read types.rs");
+    assert!(types.contains("pub struct __slate_stat"));
+}
+
+#[test]
 fn project_translation_shares_anonymous_record_types() {
     build_and_diff("shared_anonymous_record");
 }
