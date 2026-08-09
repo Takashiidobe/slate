@@ -12,6 +12,26 @@
 #define __NULL ((void *)0)
 #endif
 
+#if defined(__SLATE_LIBC_DARWIN)
+typedef unsigned short     __mode_t;
+typedef int                __pid_t;
+typedef unsigned int       __uid_t;
+typedef unsigned int       __gid_t;
+typedef int                __dev_t;
+typedef unsigned short     __nlink_t;
+typedef unsigned int       __useconds_t;
+typedef int                __clockid_t;
+typedef void              *__timer_t;
+typedef unsigned long      __clock_t;
+typedef int                __key_t;
+typedef unsigned int       __id_t;
+typedef int                __daddr_t;
+typedef char              *__caddr_t;
+typedef unsigned char      __sa_family_t;
+typedef unsigned int       __socklen_t;
+typedef long long          __regoff_t;
+typedef int                __error_t;
+#else
 typedef unsigned int       __mode_t;
 typedef int                __pid_t;
 typedef unsigned int       __uid_t;
@@ -30,6 +50,7 @@ typedef unsigned char      __sa_family_t;
 typedef unsigned int       __socklen_t;
 typedef long               __regoff_t;
 typedef int                __error_t;
+#endif
 
 #ifdef __WINT_TYPE__
 typedef __WINT_TYPE__ __wint_t;
@@ -43,14 +64,21 @@ typedef __WCHAR_TYPE__ __slate_wchar_t;
 typedef int __slate_wchar_t;
 #endif
 
-#if !defined(__SLATE_LIBC_MSVC)
+#if defined(__SLATE_LIBC_DARWIN)
+typedef unsigned int __sigset_t;
+#elif !defined(__SLATE_LIBC_MSVC)
 typedef struct {
   unsigned long __bits[128 / sizeof(unsigned long)];
 } __sigset_t;
 #endif
 
+#if defined(__SLATE_LIBC_DARWIN)
+typedef int          __wctrans_t;
+typedef unsigned int __wctype_t;
+#else
 typedef const int    *__wctrans_t;
 typedef unsigned long __wctype_t;
+#endif
 
 typedef signed char    __int8_t;
 typedef unsigned char  __uint8_t;
@@ -69,7 +97,35 @@ typedef unsigned int   __uint_least32_t;
 typedef signed char   __int_fast8_t;
 typedef unsigned char __uint_fast8_t;
 
-#if defined(__SLATE_LIBC_MSVC)
+#if defined(__SLATE_LIBC_DARWIN)
+typedef unsigned long      __size_t;
+typedef long               __ssize_t;
+typedef long long          __off_t;
+typedef long long          __off64_t;
+typedef long               __time_t;
+typedef int                __suseconds_t;
+typedef unsigned long long __ino_t;
+typedef unsigned long long __ino64_t;
+typedef int                __blksize_t;
+typedef long long          __blkcnt_t;
+typedef long long          __blkcnt64_t;
+typedef unsigned int       __fsblkcnt_t;
+typedef unsigned int       __fsfilcnt_t;
+typedef long long          __int64_t;
+typedef unsigned long long __uint64_t;
+typedef long long          __int_least64_t;
+typedef unsigned long long __uint_least64_t;
+typedef short              __int_fast16_t;
+typedef unsigned short     __uint_fast16_t;
+typedef int                __int_fast32_t;
+typedef unsigned int       __uint_fast32_t;
+typedef long long          __int_fast64_t;
+typedef unsigned long long __uint_fast64_t;
+typedef long               __intptr_t;
+typedef unsigned long      __uintptr_t;
+typedef long               __intmax_t;
+typedef unsigned long      __uintmax_t;
+#elif defined(__SLATE_LIBC_MSVC)
 typedef __SIZE_TYPE__          __size_t;
 typedef __PTRDIFF_TYPE__       __ssize_t;
 typedef long long              __off_t;
@@ -162,6 +218,14 @@ struct __locale_struct {
   const struct __locale_map *cat[6];
 };
 
+#if defined(__SLATE_LIBC_DARWIN)
+typedef union {
+  char      __mbstate8[128];
+  long long __mbstateL;
+} __mbstate_t;
+
+typedef __off_t __fpos_t;
+#else
 typedef struct {
   int __count;
   union {
@@ -174,6 +238,7 @@ typedef struct __fpos_t {
   __off_t     __pos;
   __mbstate_t __state;
 } __fpos_t;
+#endif
 
 typedef union {
 #if defined(__SLATE_ARCH_AARCH64) && !defined(__SLATE_LIBC_MUSL)
@@ -405,6 +470,9 @@ struct timespec {
 #if defined(__NEED_FILE) && !defined(__DEFINED_FILE)
 #if defined(__SLATE_LIBC_MSVC)
 #include <bits/msvc/types.h>
+#elif defined(__SLATE_LIBC_DARWIN)
+typedef struct __sFILE FILE;
+#define __DEFINED_FILE
 #else
 typedef struct FILE FILE;
 #define __DEFINED_FILE

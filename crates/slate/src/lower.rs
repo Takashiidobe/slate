@@ -696,6 +696,7 @@ struct FunctionLowerer<'a, 'b> {
     forward_allocas: BTreeSet<String>,
     forward_values: BTreeMap<String, Expr>,
     immutable_temps: BTreeSet<String>,
+    va_allocas: BTreeSet<String>,
     va_places: BTreeMap<String, String>,
     va_args_param: Option<String>,
     layout_queries: VecDeque<LayoutQuery>,
@@ -1742,6 +1743,13 @@ impl<'a> Lowerer<'a> {
             .unwrap_or_default()
             .into();
         let asm_gotos: VecDeque<_> = self.asm_gotos.get(name).cloned().unwrap_or_default().into();
+        let mut function_ops = Vec::new();
+        collect_region_ops_recursive(op, &mut function_ops);
+        let va_allocas = function_ops
+            .iter()
+            .filter(|op| matches!(op.kind(), CirOpKind::VaStart | CirOpKind::VaArg))
+            .filter_map(|op| op.operands.first().cloned())
+            .collect();
         let mut f = FunctionLowerer {
             parent: self,
             values: BTreeMap::new(),
@@ -1767,6 +1775,7 @@ impl<'a> Lowerer<'a> {
             forward_allocas: forwardable_temp_allocas(op.regions.first()?),
             forward_values: BTreeMap::new(),
             immutable_temps: BTreeSet::new(),
+            va_allocas,
             va_places: BTreeMap::new(),
             va_args_param,
             layout_queries,
@@ -2317,7 +2326,9 @@ fn c_type_to_type(ty: &crate::c_ast::CType) -> Type {
             _ => Prim::I32,
         }),
         CType::Float { bits: 32 } => Type::Prim(Prim::F32),
-        CType::Float { bits: 80 } if crate::cir::emit::uses_msvc_abi() => Type::Prim(Prim::F64),
+        CType::Float { bits: 80 } if crate::cir::emit::uses_f64_long_double_abi() => {
+            Type::Prim(Prim::F64)
+        }
         CType::Float { bits: 80 } => Type::LongDouble,
         CType::Float { bits: 128 } => Type::Prim(Prim::F128),
         CType::Float { .. } => Type::Prim(Prim::F64),
@@ -2907,10 +2918,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         // a `va_list` local becomes a Rust `VaList`, assigned by `va_start`.
-        if op
-            .ty
-            .as_deref()
-            .is_some_and(|ty| ty.contains("__va_list_tag") || ty.contains("rec___va_list"))
+        if self.va_allocas.contains(result)
+            || op
+                .ty
+                .as_deref()
+                .is_some_and(|ty| ty.contains("__va_list_tag") || ty.contains("rec___va_list"))
         {
             self.slots.insert(result.clone(), name.clone());
             self.va_places.insert(result.clone(), name.clone());
@@ -6400,6 +6412,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         arg_types: &[&str],
         prefix: usize,
     ) -> bool {
+        if crate::cir::emit::uses_f64_long_double_abi() {
+            return false;
+        }
         if !arg_types[prefix..].iter().any(|ty| is_long_double(ty)) {
             return false;
         }
@@ -8824,7 +8839,7 @@ fn is_quad_long_double(ty: &str) -> bool {
 }
 
 fn is_wrapped_long_double(ty: &str) -> bool {
-    is_long_double(ty) && !is_quad_long_double(ty)
+    is_long_double(ty) && !is_quad_long_double(ty) && !crate::cir::emit::uses_f64_long_double_abi()
 }
 
 fn is_format_string_arg(ty: &str) -> bool {
@@ -9172,7 +9187,7 @@ fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> T
         Type::Prim(Prim::F64)
     } else if ty == "!cir.f128" || is_quad_long_double(ty) {
         Type::Prim(Prim::F128)
-    } else if is_long_double(ty) && crate::cir::emit::uses_msvc_abi() {
+    } else if is_long_double(ty) && crate::cir::emit::uses_f64_long_double_abi() {
         Type::Prim(Prim::F64)
     } else if is_long_double(ty) {
         Type::LongDouble

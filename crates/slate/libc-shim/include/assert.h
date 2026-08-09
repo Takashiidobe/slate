@@ -13,6 +13,10 @@
           (_wassert(__SLATE_WIDE(#__VA_ARGS__), __SLATE_WIDE(__FILE__),        \
                     (unsigned)__LINE__),                                       \
            0)))
+#elif defined(__SLATE_LIBC_DARWIN)
+#define assert(...)                                                            \
+  ((void)((__VA_ARGS__) ||                                                     \
+          (__assert_rtn(__func__, __FILE__, __LINE__, #__VA_ARGS__), 0)))
 #else
 #define assert(...)                                                            \
   ((void)((__VA_ARGS__) ||                                                     \
@@ -25,6 +29,8 @@
 
 #if defined(__SLATE_LIBC_MSVC)
 void _wassert(const __WCHAR_TYPE__ *, const __WCHAR_TYPE__ *, unsigned int);
+#elif defined(__SLATE_LIBC_DARWIN)
+_Noreturn void __assert_rtn(const char *, const char *, int, const char *);
 #else
 _Noreturn void __assert_fail(const char *, const char *, int, const char *);
 #endif

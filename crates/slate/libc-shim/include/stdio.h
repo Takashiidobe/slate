@@ -48,6 +48,26 @@
 #define TMP_MAX      10000
 #define L_tmpnam     20
 
+#if defined(__SLATE_LIBC_DARWIN)
+typedef __fpos_t fpos_t;
+
+extern FILE *__stdinp;
+extern FILE *__stdoutp;
+extern FILE *__stderrp;
+
+#define stdin  __stdinp
+#define stdout __stdoutp
+#define stderr __stderrp
+
+#undef FOPEN_MAX
+#undef FILENAME_MAX
+#undef TMP_MAX
+#undef L_tmpnam
+#define FOPEN_MAX    20
+#define FILENAME_MAX 1024
+#define TMP_MAX      308915776
+#define L_tmpnam     1024
+#else
 typedef union _G_fpos64_t {
   char      __opaque[16];
   long long __lldata;
@@ -61,6 +81,7 @@ extern FILE *const stderr;
 #define stdin  (stdin)
 #define stdout (stdout)
 #define stderr (stderr)
+#endif
 
 FILE *fopen(const char *__restrict, const char *__restrict);
 FILE *freopen(const char *__restrict, const char *__restrict, FILE *__restrict);

@@ -17,14 +17,25 @@ fn fixtures_dir() -> PathBuf {
 enum FixtureFlavor {
     Default,
     Bionic,
+    Macos,
     Msvc,
 }
 
 impl FixtureFlavor {
+    fn name(self) -> &'static str {
+        match self {
+            FixtureFlavor::Default => "default",
+            FixtureFlavor::Bionic => "bionic",
+            FixtureFlavor::Macos => "macos",
+            FixtureFlavor::Msvc => "msvc",
+        }
+    }
+
     fn target(self) -> Option<&'static str> {
         match self {
             FixtureFlavor::Default => None,
             FixtureFlavor::Bionic => Some("aarch64-linux-android21"),
+            FixtureFlavor::Macos => Some("arm64-apple-macos11.0"),
             FixtureFlavor::Msvc => Some("x86_64-pc-windows-msvc"),
         }
     }
@@ -44,6 +55,17 @@ impl FixtureFlavor {
                 "-D__SLATE_ENDIAN_LITTLE",
                 "-D__SLATE_ANDROID_API__=21",
                 "-DEXPECT_AARCH64",
+            ],
+            FixtureFlavor::Macos => &[
+                "-D_SLATE_LIBC",
+                "-D__SLATE_ARCH_AARCH64",
+                "-D__SLATE_VENDOR_APPLE",
+                "-D__SLATE_KERNEL_DARWIN",
+                "-D__SLATE_PLATFORM_MACOS",
+                "-D__SLATE_LIBC_DARWIN",
+                "-D__SLATE_OBJ_MACHO",
+                "-D__SLATE_WORDSIZE_64",
+                "-D__SLATE_ENDIAN_LITTLE",
             ],
             FixtureFlavor::Msvc => &[
                 "-D_SLATE_LIBC",
@@ -95,6 +117,12 @@ fn fixtures() -> Vec<Fixture> {
     collect_fixtures(
         &dir.join("bionic"),
         FixtureFlavor::Bionic,
+        &selected,
+        &mut fixtures,
+    );
+    collect_fixtures(
+        &dir.join("macos"),
+        FixtureFlavor::Macos,
         &selected,
         &mut fixtures,
     );
@@ -166,8 +194,9 @@ fn run_cross_target_fixture(
     target: &str,
     path: &Path,
 ) -> Result<(), String> {
+    let artifact_name = format!("{name}_{}", flavor.name());
     compile_for_target(
-        name,
+        &artifact_name,
         target,
         &[libc_shim_dir()],
         flavor.shim_defines(),
@@ -218,7 +247,69 @@ fn run_cross_target_fixture(
         compile_for_target(&format!("{name}_xwin"), target, &[crt, ucrt], &[], path)
             .map_err(|e| format!("xwin oracle compile failed:\n{e}"))?;
     }
+    if flavor == FixtureFlavor::Macos
+        && name == "fundamental_types"
+        && let Ok(sdk) = std::env::var("SLATE_MACOS_SDK")
+        && !sdk.trim().is_empty()
+    {
+        let object_file = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("target/test-cache/cross_target_fixture_fundamental_types_macos_sdk.o");
+        let output = Command::new(clang())
+            .args(["-xc", "-c", "--target=arm64-apple-macos11.0", "-isysroot"])
+            .arg(sdk)
+            .arg("-o")
+            .arg(object_file)
+            .arg(path)
+            .output()
+            .map_err(|e| format!("spawn {}: {e}", clang()))?;
+        if !output.status.success() {
+            return Err(format!(
+                "macOS SDK oracle compile failed:\n{}",
+                String::from_utf8_lossy(&output.stderr)
+            ));
+        }
+    }
     Ok(())
+}
+
+fn cargo_check_generated_for_target(name: &str, rust: &str, target: &str) -> Result<(), String> {
+    let libdir = Command::new("rustc")
+        .args(["--print", "target-libdir", "--target", target])
+        .output()
+        .map_err(|e| format!("spawn rustc: {e}"))?;
+    let libdir = PathBuf::from(String::from_utf8_lossy(&libdir.stdout).trim());
+    if !libdir.is_dir() {
+        eprintln!("skipping {target} cargo check: Rust target is not installed");
+        return Ok(());
+    }
+    let project = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("target/difftest-cross-check")
+        .join(name);
+    support::write_if_changed(
+        project.join("Cargo.toml"),
+        format!(
+            "[package]\nname = \"{name}\"\nversion = \"0.0.0\"\nedition = \"2024\"\n\n[dependencies]\nlibc = \"0.2\"\n"
+        )
+        .as_bytes(),
+    )
+    .map_err(|e| format!("write cross-check manifest: {e}"))?;
+    support::write_if_changed(project.join("src/main.rs"), rust.as_bytes())
+        .map_err(|e| format!("write cross-check source: {e}"))?;
+    let output = Command::new("cargo")
+        .args(["check", "--quiet", "--manifest-path"])
+        .arg(project.join("Cargo.toml"))
+        .args(["--target", target, "--target-dir"])
+        .arg(project.join("target"))
+        .output()
+        .map_err(|e| format!("spawn cargo check: {e}"))?;
+    if output.status.success() {
+        Ok(())
+    } else {
+        Err(format!(
+            "generated Rust cargo check failed for {target}:\n{}",
+            String::from_utf8_lossy(&output.stderr)
+        ))
+    }
 }
 
 fn android_ndk_clang() -> Option<PathBuf> {
@@ -334,6 +425,7 @@ fn explicit_targets_define_slate_feature_macros() {
         ("x86_64-unknown-linux-gnu", "EXPECT_LINUX_GLIBC_X86_64"),
         ("aarch64-unknown-linux-musl", "EXPECT_LINUX_MUSL_AARCH64"),
         ("riscv64-unknown-linux-gnu", "EXPECT_LINUX_GLIBC_RISCV64"),
+        ("aarch64-apple-darwin", "EXPECT_MACOS_DARWIN_AARCH64"),
     ] {
         let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
             .args(["translate", &format!("-D{expected}=1")])
@@ -347,6 +439,35 @@ fn explicit_targets_define_slate_feature_macros() {
             String::from_utf8_lossy(&output.stderr)
         );
     }
+}
+
+#[test]
+fn macos_fundamental_fixture_translates_with_darwin_abi_types() {
+    let fixture = fixtures_dir().join("macos/fundamental_types.c");
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .args(["translate", fixture.to_str().unwrap()])
+        .env("SLATE_TARGET", "aarch64-apple-darwin")
+        .output()
+        .expect("translate macOS fundamental fixture");
+    assert!(
+        output.status.success(),
+        "macOS translation failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let rust = String::from_utf8(output.stdout).expect("generated Rust is UTF-8");
+    assert!(rust.contains("fn darwin_import("));
+    assert!(rust.contains("_0: u64"));
+    assert!(rust.contains("_1: i64"));
+    assert!(rust.contains("_2: i64"));
+    assert!(rust.contains("_3: u64"));
+    assert!(rust.contains("_4: i32"));
+    assert!(rust.contains("_5: i64"));
+    assert!(rust.contains("_6: u64"));
+    assert!(rust.contains("_7: f64"));
+    assert!(!rust.contains("f128"));
+    assert!(rust.contains("next_arg::<i32>()"));
+    cargo_check_generated_for_target("slate_macos_fundamental", &rust, "aarch64-apple-darwin")
+        .unwrap();
 }
 
 #[test]

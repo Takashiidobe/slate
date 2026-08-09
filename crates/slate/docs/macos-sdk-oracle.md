@@ -5,6 +5,12 @@ Slate's AArch64 macOS support starts at macOS 11.0. The Rust target remains
 `arm64-apple-macos11.0` target so API availability does not silently follow the
 host's deployment setting.
 
+The initial declaration profile is tracked in
+`libc-shim/macos-basic-headers.txt`. It covers fundamental types and a narrow
+ISO C surface. POSIX and Darwin extension headers are added only after their
+layouts, signatures, availability, and symbol identities are verified by the
+area tickets.
+
 The installed macOS SDK is the ABI authority. On macOS it is discovered with
 `xcrun --sdk macosx --show-sdk-path`. On other hosts, set `SLATE_MACOS_SDK` to
 an existing `MacOSX.sdk` directory. The repository does not acquire, copy, or

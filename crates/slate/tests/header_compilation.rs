@@ -66,6 +66,7 @@ impl Architecture {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum LibcVariant {
     Bionic,
+    Darwin,
     Musl,
     Glibc,
     Msvc,
@@ -75,6 +76,7 @@ impl LibcVariant {
     fn name(&self) -> &'static str {
         match self {
             LibcVariant::Bionic => "bionic",
+            LibcVariant::Darwin => "darwin",
             LibcVariant::Musl => "musl",
             LibcVariant::Glibc => "glibc",
             LibcVariant::Msvc => "msvc",
@@ -97,6 +99,19 @@ impl TestConfig {
     }
 
     fn preprocessor_defines(&self) -> Vec<String> {
+        if self.libc == LibcVariant::Darwin {
+            return vec![
+                "-D_SLATE_LIBC".to_string(),
+                "-D__SLATE_ARCH_AARCH64".to_string(),
+                "-D__SLATE_VENDOR_APPLE".to_string(),
+                "-D__SLATE_KERNEL_DARWIN".to_string(),
+                "-D__SLATE_PLATFORM_MACOS".to_string(),
+                "-D__SLATE_LIBC_DARWIN".to_string(),
+                "-D__SLATE_OBJ_MACHO".to_string(),
+                "-D__SLATE_WORDSIZE_64".to_string(),
+                "-D__SLATE_ENDIAN_LITTLE".to_string(),
+            ];
+        }
         if self.libc == LibcVariant::Msvc {
             return vec![
                 "-D_SLATE_LIBC".to_string(),
@@ -128,6 +143,7 @@ impl TestConfig {
                 LibcVariant::Musl => "-D__SLATE_LIBC_MUSL",
                 LibcVariant::Glibc => "-D__SLATE_LIBC_GLIBC",
                 LibcVariant::Bionic => "-D__SLATE_LIBC_BIONIC",
+                LibcVariant::Darwin => unreachable!(),
                 LibcVariant::Msvc => unreachable!(),
             }
             .to_string(),
@@ -148,6 +164,7 @@ impl TestConfig {
                 _ => unreachable!(),
             }),
             LibcVariant::Msvc => Some("x86_64-pc-windows-msvc"),
+            LibcVariant::Darwin => Some("arm64-apple-macos11.0"),
             LibcVariant::Musl | LibcVariant::Glibc => None,
         }
     }
@@ -167,6 +184,16 @@ fn msvc_headers() -> Vec<String> {
     let manifest = Path::new(env!("CARGO_MANIFEST_DIR")).join("libc-shim/msvc-basic-headers.txt");
     fs::read_to_string(manifest)
         .expect("read MSVC header manifest")
+        .lines()
+        .filter(|line| !line.is_empty())
+        .map(str::to_string)
+        .collect()
+}
+
+fn macos_headers() -> Vec<String> {
+    let manifest = Path::new(env!("CARGO_MANIFEST_DIR")).join("libc-shim/macos-basic-headers.txt");
+    fs::read_to_string(manifest)
+        .expect("read macOS header manifest")
         .lines()
         .filter(|line| !line.is_empty())
         .map(str::to_string)
@@ -325,6 +352,30 @@ fn bionic_basic_header_manifest_compiles_for_64_bit_targets() {
         );
         compile_test_program(&config, &source).unwrap();
     }
+}
+
+#[test]
+fn macos_basic_header_manifest_compiles_for_aarch64() {
+    let headers = macos_headers();
+    for forbidden in [
+        "dirent.h",
+        "pthread.h",
+        "signal.h",
+        "sys/socket.h",
+        "sys/stat.h",
+        "unistd.h",
+    ] {
+        assert!(!headers.iter().any(|header| header == forbidden));
+    }
+    let config = TestConfig::new(Architecture::Aarch64, LibcVariant::Darwin);
+    let includes = headers
+        .iter()
+        .map(|header| format!("#include <{header}>\n"))
+        .collect::<String>();
+    let source = format!(
+        "{includes}\n_Static_assert(sizeof(wchar_t) == 4, \"wchar_t\");\n_Static_assert(sizeof(long double) == 8, \"long double\");\n_Static_assert(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ == 110000, \"deployment\");\nint main(void) {{ return 0; }}\n"
+    );
+    compile_test_program(&config, &source).unwrap();
 }
 
 #[test]

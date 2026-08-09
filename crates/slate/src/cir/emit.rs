@@ -42,7 +42,11 @@ fn libc_shim_args(target: &str) -> Vec<String> {
     match libc_shim_dir() {
         Some(dir) => {
             let mut args = vec!["-nostdlibinc".into(), "-isystem".into(), dir];
-            if !target.ends_with("windows-msvc") && !target.ends_with("-android") {
+            let kernel = Triple::parse(target).ok().map(|triple| triple.kernel);
+            if !target.ends_with("windows-msvc")
+                && !target.ends_with("-android")
+                && kernel != Some(Kernel::Darwin)
+            {
                 for fallback in system_fallback_include_dirs() {
                     args.push("-idirafter".into());
                     args.push(fallback);
@@ -160,6 +164,9 @@ fn libc_name(triple: &Triple) -> &'static str {
     if triple.kernel == Kernel::Linux && env.is_some_and(|env| env.starts_with("gnu")) {
         return "glibc";
     }
+    if triple.kernel == Kernel::Darwin && triple.vendor == Some(Vendor::Apple) {
+        return "darwin";
+    }
     if env.is_some_and(|env| env.starts_with("musl")) {
         return "musl";
     }
@@ -214,6 +221,8 @@ fn clang_target(target: &str) -> (&str, &'static [&'static str]) {
                 "-fwritable-strings",
             ],
         )
+    } else if target == "aarch64-apple-darwin" {
+        ("arm64-apple-macos11.0", &[])
     } else {
         (target, &[])
     }
@@ -244,6 +253,9 @@ fn target_features(target: &str) -> Result<TargetFeatures, String> {
     if triple.env == Some(Env::Android) {
         names.push("__SLATE_PLATFORM_ANDROID".into());
     }
+    if triple.kernel == Kernel::Darwin && triple.vendor == Some(Vendor::Apple) {
+        names.push("__SLATE_PLATFORM_MACOS".into());
+    }
     Ok(TargetFeatures { names })
 }
 
@@ -272,8 +284,11 @@ fn android_api(target: &str) -> Result<Option<u32>, String> {
     Ok(Some(api))
 }
 
-pub fn uses_msvc_abi() -> bool {
-    active_target() == "x86_64-pc-windows-msvc"
+pub fn uses_f64_long_double_abi() -> bool {
+    matches!(
+        active_target().as_str(),
+        "aarch64-apple-darwin" | "x86_64-pc-windows-msvc"
+    )
 }
 
 pub fn target_override_args(target: &str) -> Result<Vec<String>, String> {

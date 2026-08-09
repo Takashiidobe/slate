@@ -1166,6 +1166,7 @@ fn slate_target_cfg(macro_name: &str) -> Option<Cfg> {
     if let Some(value) = macro_name.strip_prefix("__SLATE_PLATFORM_") {
         return match value {
             "ANDROID" => Some(opt("target_os", "android")),
+            "MACOS" => Some(opt("target_os", "macos")),
             _ => None,
         };
     }
@@ -1176,6 +1177,7 @@ fn slate_target_cfg(macro_name: &str) -> Option<Cfg> {
             "MINGW" => Some(opt("target_env", "gnu")),
             "MSVC" => Some(opt("target_env", "msvc")),
             "BIONIC" => Some(Cfg::All(Vec::new())),
+            "DARWIN" => Some(opt("target_os", "macos")),
             // no Rust target_env distinguishes a generic libc; treat as unconstrained
             "GENERIC" => Some(Cfg::All(Vec::new())),
             _ => None,
