@@ -265,6 +265,49 @@ fn library_project_creates_cargo_crate_without_main() {
 }
 
 #[test]
+fn library_project_source_manifest_selects_translation_units() {
+    let dir = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures.library")
+        .join("source_manifest");
+    let work = support::test_cache_root().join("cross-tu/library-source-manifest");
+    let crate_dir = work.join("crate");
+    let _ = std::fs::remove_dir_all(&work);
+
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .args(["translate-project", "--lib", "--source-manifest"])
+        .arg(dir.join("sources.txt"))
+        .arg(&dir)
+        .arg(&crate_dir)
+        .output()
+        .expect("run slate translate-project --lib --source-manifest");
+    assert!(
+        output.status.success(),
+        "translate-project --lib --source-manifest failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    let lib_rs = std::fs::read_to_string(crate_dir.join("src/lib.rs")).expect("read lib.rs");
+    assert!(lib_rs.contains("pub mod xmlparse;"));
+    assert!(lib_rs.contains("pub mod random_getrandom;"));
+    assert!(!lib_rs.contains("xmltok_impl"));
+    assert!(!lib_rs.contains("random_rand_s"));
+    assert!(!crate_dir.join("src/xmltok_impl.rs").exists());
+    assert!(!crate_dir.join("src/random_rand_s.rs").exists());
+    assert!(!crate_dir.join("tests/upstream_suite.rs").exists());
+
+    let check = std::process::Command::new("cargo")
+        .args(["check", "--quiet", "--lib", "--manifest-path"])
+        .arg(crate_dir.join("Cargo.toml"))
+        .output()
+        .expect("cargo check generated lib crate");
+    assert!(
+        check.status.success(),
+        "generated manifest-selected lib crate should type-check:\n{}",
+        String::from_utf8_lossy(&check.stderr)
+    );
+}
+
+#[test]
 fn uart_library_preserves_exported_volatile_io() {
     let dir = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests/fixtures.library")
