@@ -877,7 +877,26 @@ impl ItemPlanBuilder {
     ) -> &mut Self {
         let identity = rule.identity.clone();
         let mut selected_sites = Vec::<EditSetSite>::new();
-        for item in query_items(query, rule.matcher.domain()) {
+        let timing = FixupTiming::new();
+        let items_start = std::time::Instant::now();
+        let items = query_items(query, rule.matcher.domain());
+        timing.report(items_start.elapsed(), || {
+            format!(
+                "[fixup-timing] {:?} query_items rule={identity:?} count={}",
+                items_start.elapsed(),
+                items.len()
+            )
+        });
+        for (item_position, item) in items.into_iter().enumerate() {
+            if item_position % 200 == 0 {
+                timing.log(|| {
+                    format!(
+                        "[fixup-timing] heartbeat rule={identity:?} item={item_position} elapsed={:?}",
+                        items_start.elapsed()
+                    )
+                });
+            }
+            let candidate_start = std::time::Instant::now();
             let Some(capture) = rule.matcher.matches(query, &item) else {
                 continue;
             };
@@ -914,6 +933,13 @@ impl ItemPlanBuilder {
                         .iter()
                         .any(|selected| selected.overlaps(&site))
                 {
+                    timing.report(candidate_start.elapsed(), || {
+                        format!(
+                            "[fixup-timing] {:?} rule={identity:?} anchor={:?}",
+                            candidate_start.elapsed(),
+                            capture.anchor()
+                        )
+                    });
                     continue;
                 }
                 selected_sites.push(site);
@@ -925,6 +951,13 @@ impl ItemPlanBuilder {
                     rejections: rejected_cases,
                 });
             }
+            timing.report(candidate_start.elapsed(), || {
+                format!(
+                    "[fixup-timing] {:?} rule={identity:?} anchor={:?}",
+                    candidate_start.elapsed(),
+                    capture.anchor()
+                )
+            });
         }
         self
     }
@@ -932,6 +965,32 @@ impl ItemPlanBuilder {
     pub(in crate::fixups) fn finish(self) -> ItemPlan {
         ItemPlan {
             plan: self.builder.finish(),
+        }
+    }
+}
+
+struct FixupTiming {
+    threshold: Option<std::time::Duration>,
+}
+
+impl FixupTiming {
+    fn new() -> Self {
+        let threshold = std::env::var("SLATE_FIXUP_TIMING")
+            .ok()
+            .and_then(|millis| millis.parse().ok())
+            .map(std::time::Duration::from_millis);
+        Self { threshold }
+    }
+
+    fn report(&self, elapsed: std::time::Duration, message: impl FnOnce() -> String) {
+        if self.threshold.is_some_and(|threshold| elapsed >= threshold) {
+            eprintln!("{}", message());
+        }
+    }
+
+    fn log(&self, message: impl FnOnce() -> String) {
+        if self.threshold.is_some() {
+            eprintln!("{}", message());
         }
     }
 }

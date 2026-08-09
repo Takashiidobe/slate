@@ -956,6 +956,22 @@ fn translate_fixture(tmp: &Path, fixture: &str) -> String {
 }
 
 #[test]
+fn dense_temp_chain_translates_within_a_bounded_time() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-dense-temp-chain");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let start = std::time::Instant::now();
+    translate_fixture(&tmp, "dense_temp_chain_completes_in_bounded_time");
+    let elapsed = start.elapsed();
+    assert!(
+        elapsed < std::time::Duration::from_secs(20),
+        "translation took {elapsed:?}, expected a couple of seconds; \
+         fixups/query fact lookups likely regressed to O(n^2) or worse \
+         (see slate-xzn6.4)"
+    );
+}
+
+#[test]
 fn gnu_empty_struct_emits_zero_sized_rust_type() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-gnu-empty-struct");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");

@@ -1346,13 +1346,16 @@ impl SalsaFacts {
         };
         let query_path = facts::def_use_query_path(path);
         let bindings = input.bindings_typed(&self.db);
+        let matching_ids: Vec<_> = bindings
+            .iter()
+            .filter(|binding| binding.name == name)
+            .map(|binding| binding.id)
+            .collect();
         input
             .def_use(&self.db)
             .iter()
             .filter(|fact| {
-                bindings
-                    .iter()
-                    .any(|binding| binding.id == fact.binding && binding.name == name)
+                matching_ids.contains(&fact.binding)
                     && fact
                         .reads
                         .iter()
@@ -1373,13 +1376,16 @@ impl SalsaFacts {
         };
         let query_path = facts::def_use_query_path(path);
         let bindings = input.bindings_typed(&self.db);
+        let matching_ids: Vec<_> = bindings
+            .iter()
+            .filter(|binding| binding.name == name)
+            .map(|binding| binding.id)
+            .collect();
         input
             .def_use(&self.db)
             .iter()
             .filter(|fact| {
-                bindings
-                    .iter()
-                    .any(|binding| binding.id == fact.binding && binding.name == name)
+                matching_ids.contains(&fact.binding)
                     && fact
                         .writes
                         .iter()
