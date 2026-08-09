@@ -3,6 +3,7 @@
 
 #include <features.h>
 
+#define __NEED_clockid_t
 #define __NEED_time_t
 #define __NEED_struct_timespec
 #define __NEED_mode_t
@@ -22,12 +23,15 @@ int    sem_getvalue(sem_t *__restrict, int *__restrict);
 int    sem_init(sem_t *, int, unsigned);
 sem_t *sem_open(const char *, int, ...);
 int    sem_post(sem_t *);
+int    sem_clockwait(sem_t *__restrict, clockid_t,
+                     const struct timespec *__restrict);
 int    sem_timedwait(sem_t *__restrict, const struct timespec *__restrict);
 int    sem_trywait(sem_t *);
 int    sem_unlink(const char *);
 int    sem_wait(sem_t *);
 
 #if _REDIR_TIME64
+__REDIR(sem_clockwait, __sem_clockwait_time64);
 __REDIR(sem_timedwait, __sem_timedwait_time64);
 #endif
 
