@@ -879,7 +879,7 @@ pub(super) enum EffectSubject {
     Stmt,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
 pub(super) enum ControlFlowSubject {
     Body,
     Block,
