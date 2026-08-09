@@ -17,6 +17,7 @@ pub struct Unit {
     pub enums: Vec<Enum>,
     pub records: Vec<Record>,
     pub anonymous_header_records: Vec<Record>,
+    pub named_header_records: Vec<Record>,
     pub functions: Vec<Function>,
     pub weak_refs: Vec<WeakRefAttribute>,
     call_bindings: HashMap<Loc, CallBinding>,
@@ -490,6 +491,7 @@ fn parse_json_with_record_roots(
     let mut enums = Vec::new();
     let mut records = Vec::new();
     let mut anonymous_header_records = Vec::new();
+    let mut named_header_records = Vec::new();
     let mut functions = Vec::new();
     let mut weak_refs = Vec::new();
     collect_enums(&root, source_file, record_roots, &enum_typedefs, &mut enums);
@@ -500,6 +502,7 @@ fn parse_json_with_record_roots(
         &plugin_events.pack_attributes,
         &mut records,
         &mut anonymous_header_records,
+        &mut named_header_records,
     );
     let source_text = (!source_file.is_empty())
         .then(|| std::fs::read_to_string(source_file).ok())
@@ -528,6 +531,7 @@ fn parse_json_with_record_roots(
         enums,
         records,
         anonymous_header_records,
+        named_header_records,
         functions,
         weak_refs,
         call_bindings,
@@ -713,6 +717,7 @@ fn collect_records(
     pack_attributes: &[PackAttribute],
     out: &mut Vec<Record>,
     anonymous_header_out: &mut Vec<Record>,
+    named_header_out: &mut Vec<Record>,
 ) {
     if kind(node) == Some("RecordDecl")
         && (is_source_node(node, source_file) || is_in_record_roots(node, record_roots))
@@ -723,6 +728,14 @@ fn collect_records(
         && let Some(record) = extract_record(node, None, source_file, pack_attributes)
     {
         out.push(record);
+    } else if kind(node) == Some("RecordDecl")
+        && node
+            .get("completeDefinition")
+            .and_then(Value::as_bool)
+            .unwrap_or(false)
+        && let Some(record) = extract_record(node, None, source_file, pack_attributes)
+    {
+        named_header_out.push(record);
     }
     let kids = children(node);
     for (i, child) in kids.iter().enumerate() {
@@ -758,6 +771,7 @@ fn collect_records(
             pack_attributes,
             out,
             anonymous_header_out,
+            named_header_out,
         );
     }
 }

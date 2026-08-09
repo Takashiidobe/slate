@@ -265,7 +265,7 @@ fn collect_record_type_names(ty: &c_ast::CType, out: &mut BTreeSet<String>) {
                 collect_record_type_names(param, out);
             }
         }
-        c_ast::CType::Record(name) => {
+        c_ast::CType::Record(name) if !lower::is_clib_record_type(name) => {
             out.insert(rust_ident(name));
         }
         _ => {}
@@ -704,6 +704,12 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
                 .entry(rust_ident(&record.name))
                 .or_insert_with(|| record.clone());
         }
+        for record in lower::shim_records_for_module(&module, &unit) {
+            collect_record_field_type_names(&record, &mut referenced_record_types);
+            shared_records
+                .entry(rust_ident(&record.name))
+                .or_insert(record);
+        }
         loaded_modules.push((stem.clone(), path.clone(), module, unit, warning_items));
     }
     for name in referenced_record_types {
@@ -931,6 +937,9 @@ fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
                     .or_insert_with(|| (record.clone(), 0));
                 entry.1 += 1;
             }
+        }
+        for record in lower::shim_records_for_module(&module, &unit) {
+            record_occurrences.insert(rust_ident(&record.name), (record, usize::MAX));
         }
     }
     let all_records: BTreeMap<_, _> = record_occurrences
