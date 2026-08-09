@@ -364,11 +364,30 @@ pub fn target_args() -> Result<Vec<String>, String> {
 /// `-D`/`-U`, etc.). Used by the preprocessing oracle to decide which
 /// conditional branch is active for a given invocation.
 pub fn predefined_macros(extra_args: &[String]) -> Result<BTreeMap<String, String>, String> {
+    query_macros(Path::new("/dev/null"), extra_args)
+}
+
+pub fn preprocess_diagnostics(src: &Path, extra_args: &[String]) -> Result<(bool, String), String> {
+    let out = Command::new(clang())
+        .args(["-E", "-x", "c"])
+        .args(target_args()?)
+        .args(extra_args)
+        .arg(src)
+        .args(["-o", "/dev/null"])
+        .output()
+        .map_err(|error| format!("spawn {}: {error}", clang()))?;
+    Ok((
+        out.status.success(),
+        String::from_utf8_lossy(&out.stderr).into_owned(),
+    ))
+}
+
+fn query_macros(src: &Path, extra_args: &[String]) -> Result<BTreeMap<String, String>, String> {
     let out = Command::new(clang())
         .args(["-dM", "-E", "-x", "c"])
         .args(target_args()?)
         .args(extra_args)
-        .arg("/dev/null")
+        .arg(src)
         .output()
         .map_err(|e| format!("spawn {}: {e}", clang()))?;
     if !out.status.success() {

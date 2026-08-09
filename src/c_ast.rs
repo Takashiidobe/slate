@@ -470,10 +470,18 @@ pub fn parse_file_with_args(src: &Path, extra_args: &[String]) -> Result<Unit, S
 }
 
 pub fn parse_file_with_project_records(src: &Path, project_root: &Path) -> Result<Unit, String> {
+    parse_file_with_project_records_and_args(src, project_root, &[])
+}
+
+pub fn parse_file_with_project_records_and_args(
+    src: &Path,
+    project_root: &Path,
+    extra_args: &[String],
+) -> Result<Unit, String> {
     let project_root = project_root
         .canonicalize()
         .map_err(|e| format!("canonicalize {}: {e}", project_root.display()))?;
-    let (json, plugin_events) = run_clang_ast_dump(src, &[])?;
+    let (json, plugin_events) = run_clang_ast_dump(src, extra_args)?;
     parse_json_with_record_roots(
         &json,
         &src.to_string_lossy(),

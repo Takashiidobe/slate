@@ -308,6 +308,219 @@ fn library_project_source_manifest_selects_translation_units() {
 }
 
 #[test]
+fn library_project_merges_normalized_compile_command_variants() {
+    let dir = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures.library")
+        .join("compile_commands");
+    let work = support::test_cache_root().join("cross-tu/library-compile-commands");
+    let host_build = work.join("host-build");
+    let other_build = work.join("other-build");
+    let crate_dir = work.join("crate");
+    let _ = std::fs::remove_dir_all(&work);
+    std::fs::create_dir_all(&host_build).expect("create host build directory");
+    std::fs::create_dir_all(&other_build).expect("create other build directory");
+    std::fs::write(host_build.join("config.h"), "#define CONFIGURED_VALUE 32\n")
+        .expect("write host config");
+    std::fs::write(
+        other_build.join("config.h"),
+        "#define CONFIGURED_VALUE 64\n",
+    )
+    .expect("write other config");
+
+    let configured = dir.join("configured.c");
+    let host_commands = serde_json::json!([
+        {
+            "directory": dir,
+            "file": "configured.c",
+            "arguments": [
+                "clang", "-std=c23", "-I", host_build, "-MD", "-MF", "configured.d",
+                "-c", "configured.c", "-o", "configured.o"
+            ]
+        },
+        {
+            "directory": dir,
+            "file": "host_only.c",
+            "arguments": [
+                "clang", "-std=c23", "-I", host_build, "-c", "host_only.c", "-o", "host_only.o"
+            ]
+        }
+    ]);
+    let host_database = host_build.join("compile_commands.json");
+    std::fs::write(
+        &host_database,
+        serde_json::to_vec(&host_commands).expect("encode host commands"),
+    )
+    .expect("write host commands");
+
+    let (other_target, other_arch) = if std::env::consts::ARCH == "aarch64" {
+        ("x86_64-linux-gnu", "x86_64")
+    } else {
+        ("aarch64-linux-gnu", "aarch64")
+    };
+    let other_command = format!(
+        "clang -std=c23 -target {other_target} -I{} -c {} -o configured.o",
+        other_build.display(),
+        configured.display()
+    );
+    let other_commands = serde_json::json!([{
+        "directory": other_build,
+        "file": configured,
+        "command": other_command
+    }]);
+    let other_database = other_build.join("compile_commands.json");
+    std::fs::write(
+        &other_database,
+        serde_json::to_vec(&other_commands).expect("encode other commands"),
+    )
+    .expect("write other commands");
+
+    let direct = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("translate")
+        .arg("-I")
+        .arg(&host_build)
+        .arg(&configured)
+        .env("SLATE_RAW_LOWER", "1")
+        .output()
+        .expect("translate configured source directly");
+    assert!(
+        direct.status.success(),
+        "configured source translation failed:\n{}",
+        String::from_utf8_lossy(&direct.stderr)
+    );
+
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .args(["translate-project", "--lib", "--compile-commands"])
+        .arg(&host_database)
+        .arg("--compile-commands")
+        .arg(&other_database)
+        .arg(&dir)
+        .arg(&crate_dir)
+        .output()
+        .expect("run slate translate-project --lib --compile-commands");
+    assert!(
+        output.status.success(),
+        "translate-project --lib --compile-commands failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    let configured_rs =
+        std::fs::read_to_string(crate_dir.join("src/configured.rs")).expect("read configured.rs");
+    assert!(configured_rs.contains("32"));
+    assert!(configured_rs.contains("64"));
+    assert!(configured_rs.contains(&format!("target_arch = \"{}\"", std::env::consts::ARCH)));
+    assert!(configured_rs.contains(&format!("target_arch = \"{other_arch}\"")));
+
+    let host_only_rs =
+        std::fs::read_to_string(crate_dir.join("src/host_only.rs")).expect("read host_only.rs");
+    assert!(host_only_rs.contains(&format!("target_arch = \"{}\"", std::env::consts::ARCH)));
+    let lib_rs = std::fs::read_to_string(crate_dir.join("src/lib.rs")).expect("read lib.rs");
+    assert!(lib_rs.contains(&format!("target_arch = \"{}\"", std::env::consts::ARCH)));
+    assert!(lib_rs.contains("pub mod host_only;"));
+
+    let reversed_crate = work.join("crate-reversed");
+    let reversed = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .args(["translate-project", "--lib", "--compile-commands"])
+        .arg(&other_database)
+        .arg("--compile-commands")
+        .arg(&host_database)
+        .arg(&dir)
+        .arg(&reversed_crate)
+        .output()
+        .expect("run slate with reversed compile commands");
+    assert!(
+        reversed.status.success(),
+        "reversed compile commands failed:\n{}",
+        String::from_utf8_lossy(&reversed.stderr)
+    );
+    for file in ["configured.rs", "host_only.rs", "lib.rs"] {
+        let forward = std::fs::read(crate_dir.join("src").join(file)).expect("read forward file");
+        let reversed =
+            std::fs::read(reversed_crate.join("src").join(file)).expect("read reversed file");
+        assert_eq!(forward, reversed, "compile command order changed {file}");
+    }
+
+    let check = std::process::Command::new("cargo")
+        .args(["check", "--quiet", "--lib", "--manifest-path"])
+        .arg(crate_dir.join("Cargo.toml"))
+        .output()
+        .expect("cargo check generated library");
+    assert!(
+        check.status.success(),
+        "generated library should compile:\n{}",
+        String::from_utf8_lossy(&check.stderr)
+    );
+}
+
+#[test]
+fn library_compile_commands_preserve_active_fatal_directives() {
+    let dir = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures.library")
+        .join("compile_commands");
+    let work = support::test_cache_root().join("cross-tu/library-compile-commands-error");
+    let build = work.join("build");
+    let crate_dir = work.join("crate");
+    let _ = std::fs::remove_dir_all(&work);
+    std::fs::create_dir_all(&build).expect("create build directory");
+    std::fs::write(build.join("config.h"), "").expect("write empty config");
+    let configured = dir.join("configured.c");
+    let commands = serde_json::json!([{
+        "directory": build,
+        "file": configured,
+        "arguments": ["clang", "-I", build, "-c", configured, "-o", "configured.o"]
+    }]);
+    let database = build.join("compile_commands.json");
+    std::fs::write(
+        &database,
+        serde_json::to_vec(&commands).expect("encode commands"),
+    )
+    .expect("write commands");
+
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .args(["translate-project", "--lib", "--compile-commands"])
+        .arg(&database)
+        .arg(&dir)
+        .arg(&crate_dir)
+        .output()
+        .expect("run slate with active fatal directive");
+    assert!(!output.status.success());
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(stderr.contains("CONFIGURED_VALUE must be provided by the configured build"));
+    assert!(!stderr.contains("cannot determine whether #error"));
+}
+
+#[test]
+fn library_compile_commands_reject_invalid_shell_commands() {
+    let dir = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures.library")
+        .join("compile_commands");
+    let work = support::test_cache_root().join("cross-tu/library-compile-commands-invalid");
+    let crate_dir = work.join("crate");
+    let _ = std::fs::remove_dir_all(&work);
+    std::fs::create_dir_all(&work).expect("create work directory");
+    let commands = serde_json::json!([{
+        "directory": dir,
+        "file": "configured.c",
+        "command": "clang 'unterminated"
+    }]);
+    let database = work.join("compile_commands.json");
+    std::fs::write(
+        &database,
+        serde_json::to_vec(&commands).expect("encode commands"),
+    )
+    .expect("write commands");
+
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .args(["translate-project", "--lib", "--compile-commands"])
+        .arg(&database)
+        .arg(&dir)
+        .arg(&crate_dir)
+        .output()
+        .expect("run slate with invalid compile command");
+    assert!(!output.status.success());
+    assert!(String::from_utf8_lossy(&output.stderr).contains("invalid shell quoting"));
+}
+
+#[test]
 fn uart_library_preserves_exported_volatile_io() {
     let dir = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests/fixtures.library")

@@ -606,6 +606,41 @@ pub fn record_file(source: &str, clang_args: &[String]) -> Result<Preprocessing,
     Ok(record(source, &macros))
 }
 
+pub fn record_translation_unit(
+    path: &Path,
+    source: &str,
+    clang_args: &[String],
+) -> Result<Preprocessing, String> {
+    let mut pp = record_file(source, clang_args)?;
+    if pp
+        .directives
+        .iter()
+        .any(|directive| directive.name == DirectiveName::Error && directive.active.is_none())
+    {
+        let (success, stderr) = crate::cir::emit::preprocess_diagnostics(path, clang_args)?;
+        let path = path
+            .canonicalize()
+            .unwrap_or_else(|_| path.to_path_buf())
+            .to_string_lossy()
+            .into_owned();
+        for directive in &mut pp.directives {
+            if directive.name != DirectiveName::Error || directive.active.is_some() {
+                continue;
+            }
+            directive.active = if success {
+                Some(false)
+            } else {
+                let prefix = format!("{path}:{}:", directive.line_start);
+                stderr
+                    .lines()
+                    .any(|line| line.starts_with(&prefix))
+                    .then_some(true)
+            };
+        }
+    }
+    Ok(pp)
+}
+
 struct ChainBuilder {
     depth: usize,
     open_line: usize,

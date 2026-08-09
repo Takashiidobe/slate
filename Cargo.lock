@@ -442,6 +442,7 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_stacker",
+ "shlex",
  "thiserror",
  "triplers",
 ]
