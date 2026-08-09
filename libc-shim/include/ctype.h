@@ -23,6 +23,34 @@ int isxdigit(int c);
 int tolower(int c);
 int toupper(int c);
 
+#if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
+    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+
+#define __NEED_locale_t
+#include <bits/types.h>
+
+int isalnum_l(int, locale_t);
+int isalpha_l(int, locale_t);
+int isblank_l(int, locale_t);
+int iscntrl_l(int, locale_t);
+int isdigit_l(int, locale_t);
+int isgraph_l(int, locale_t);
+int islower_l(int, locale_t);
+int isprint_l(int, locale_t);
+int ispunct_l(int, locale_t);
+int isspace_l(int, locale_t);
+int isupper_l(int, locale_t);
+int isxdigit_l(int, locale_t);
+int tolower_l(int, locale_t);
+int toupper_l(int, locale_t);
+
+int isascii(int);
+int toascii(int);
+int _tolower(int);
+int _toupper(int);
+
+#endif
+
 #if defined(__SLATE_LIBC_MSVC)
 #include <bits/msvc/locale/ctype.h>
 #include <bits/msvc/wchar/wctype.h>
