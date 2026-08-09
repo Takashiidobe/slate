@@ -106,28 +106,28 @@ int   rand_r(unsigned int *seed);
 #endif
 
 #if defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
-char          *realpath(const char *restrict path, char *restrict resolved_path);
-long           random(void);
-void           srandom(unsigned int seed);
-char          *initstate(unsigned int seed, char *state, size_t size);
-char          *setstate(char *state);
-int            putenv(char *string);
-int            posix_openpt(int flags);
-int            grantpt(int fd);
-int            unlockpt(int fd);
-char          *ptsname(int fd);
-char          *l64a(long value);
-long           a64l(const char *s);
-void           setkey(const char *key);
-double         drand48(void);
-double         erand48(unsigned short xsubi[3]);
-long           lrand48(void);
-long           nrand48(unsigned short xsubi[3]);
-long           mrand48(void);
-long           jrand48(unsigned short xsubi[3]);
-void           srand48(long seedval);
+char  *realpath(const char *restrict path, char *restrict resolved_path);
+long   random(void);
+void   srandom(unsigned int seed);
+char  *initstate(unsigned int seed, char *state, size_t size);
+char  *setstate(char *state);
+int    putenv(char *string);
+int    posix_openpt(int flags);
+int    grantpt(int fd);
+int    unlockpt(int fd);
+char  *ptsname(int fd);
+char  *l64a(long value);
+long   a64l(const char *s);
+void   setkey(const char *key);
+double drand48(void);
+double erand48(unsigned short xsubi[3]);
+long   lrand48(void);
+long   nrand48(unsigned short xsubi[3]);
+long   mrand48(void);
+long   jrand48(unsigned short xsubi[3]);
+void   srand48(long seedval);
 unsigned short *seed48(unsigned short seed16v[3]);
-void           lcong48(unsigned short param[7]);
+void            lcong48(unsigned short param[7]);
 #endif
 
 #if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
@@ -145,16 +145,16 @@ void  qsort_r(void *base, size_t nmemb, size_t size,
 #endif
 
 #ifdef _GNU_SOURCE
-int    ptsname_r(int fd, char *buf, size_t buflen);
-char  *ecvt(double number, int ndigits, int *decpt, int *sign);
-char  *fcvt(double number, int ndigits, int *decpt, int *sign);
-char  *gcvt(double number, int ndigit, char *buf);
-char  *secure_getenv(const char *name);
+int   ptsname_r(int fd, char *buf, size_t buflen);
+char *ecvt(double number, int ndigits, int *decpt, int *sign);
+char *fcvt(double number, int ndigits, int *decpt, int *sign);
+char *gcvt(double number, int ndigit, char *buf);
+char *secure_getenv(const char *name);
 struct __locale_struct;
-float strtof_l(const char *restrict nptr, char **restrict endptr,
-               struct __locale_struct *locale);
-double strtod_l(const char *restrict nptr, char **restrict endptr,
-                struct __locale_struct *locale);
+float       strtof_l(const char *restrict nptr, char **restrict endptr,
+                     struct __locale_struct *locale);
+double      strtod_l(const char *restrict nptr, char **restrict endptr,
+                     struct __locale_struct *locale);
 long double strtold_l(const char *restrict nptr, char **restrict endptr,
                       struct __locale_struct *locale);
 #endif
