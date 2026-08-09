@@ -17,8 +17,6 @@
 #define SEEK_DATA 3
 #define SEEK_HOLE 4
 
-#define NULL ((void *)0)
-
 #define __NEED_size_t
 #define __NEED_ssize_t
 #define __NEED_uid_t
@@ -26,6 +24,7 @@
 #define __NEED_off_t
 #define __NEED_pid_t
 #define __NEED_intptr_t
+#define __NEED_NULL
 #include <bits/types.h>
 
 int   pipe(int[2]);
