@@ -2308,6 +2308,13 @@ impl<'a> Lowerer<'a> {
                 ty: ty.clone(),
             });
         }
+        if matches!(ty, Type::FnPtr { .. }) {
+            return Some(Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
+                func: Box::new(Expr::Var("Some".into())),
+                args: vec![Expr::Var(sanitize_ident(target))],
+            });
+        }
         let Type::Ptr { mutable, .. } = ty else {
             return None;
         };
@@ -8034,11 +8041,20 @@ fn collect_region_ops_recursive<'a>(op: &'a Op, out: &mut Vec<&'a Op>) {
 fn c_abi_function_targets(op: &Op) -> BTreeSet<String> {
     let mut ops = Vec::new();
     collect_region_ops_recursive(op, &mut ops);
-    ops.into_iter()
+    let mut targets: BTreeSet<String> = ops
+        .iter()
         .filter(|op| op.kind() == CirOpKind::GetGlobal)
         .filter(|op| op_result_type(op).is_some_and(is_cir_function_pointer_type))
         .filter_map(|op| attr_symbol_ref(op, "name").map(str::to_string))
-        .collect()
+        .collect();
+    for init in ops
+        .iter()
+        .filter(|op| op.kind() == CirOpKind::Global)
+        .filter_map(|op| attr_str(op, "initial_value"))
+    {
+        targets.extend(parse_cir_global_views(init).into_iter().map(str::to_string));
+    }
+    targets
 }
 
 fn attr_str<'a>(op: &'a Op, key: &str) -> Option<&'a str> {
@@ -9940,6 +9956,12 @@ fn parse_cir_global_view(s: &str) -> Option<&str> {
     let s = s.trim_start().strip_prefix("#cir.global_view<@")?;
     let end = s.find('>')?;
     Some(s[..end].trim_matches('"'))
+}
+
+fn parse_cir_global_views(s: &str) -> Vec<&str> {
+    s.match_indices("#cir.global_view<@")
+        .filter_map(|(start, _)| parse_cir_global_view(&s[start..]))
+        .collect()
 }
 
 fn parse_cir_global_view_array(s: &str) -> Vec<&str> {
