@@ -315,8 +315,27 @@ impl<'db> FunctionInput<'db> {
     }
 
     #[salsa::tracked(returns(ref))]
+    fn places_by_path(self, db: &dyn FixupDb) -> BTreeMap<AstPath, PlaceFact<'db>> {
+        self.places(db)
+            .iter()
+            .map(|fact| (fact.site.path.clone(), fact.clone()))
+            .collect()
+    }
+
+    #[salsa::tracked(returns(ref))]
     fn control_flow(self, db: &dyn FixupDb) -> Vec<ControlFlowFact<'db>> {
         facts::control_flow::collect_for_function(self.function_id(db), self.body(db))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn control_flow_by_key(
+        self,
+        db: &dyn FixupDb,
+    ) -> BTreeMap<(ControlFlowSubject, AstPath), ControlFlowFact<'db>> {
+        self.control_flow(db)
+            .iter()
+            .map(|fact| ((fact.subject, fact.site.path.clone()), fact.clone()))
+            .collect()
     }
 
     #[salsa::tracked(returns(ref))]
@@ -1080,10 +1099,7 @@ impl SalsaFacts {
         path: &AstPath,
     ) -> Option<&PlaceFact<'_>> {
         let input = self.function_input(function)?;
-        input
-            .places(&self.db)
-            .iter()
-            .find(|fact| &fact.site.path == path)
+        input.places_by_path(&self.db).get(path)
     }
 
     pub(in crate::fixups) fn control_flow(
@@ -1094,9 +1110,8 @@ impl SalsaFacts {
     ) -> Option<&ControlFlowFact<'_>> {
         let input = self.function_input(function)?;
         input
-            .control_flow(&self.db)
-            .iter()
-            .find(|fact| fact.subject == subject && &fact.site.path == path)
+            .control_flow_by_key(&self.db)
+            .get(&(subject, path.clone()))
     }
 
     pub(in crate::fixups) fn borrow_alias_reasons(

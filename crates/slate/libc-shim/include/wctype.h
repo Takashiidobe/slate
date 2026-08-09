@@ -26,8 +26,6 @@
 #undef WEOF
 #define WEOF 0xffffffffU
 
-#undef iswdigit
-
 int       iswalnum(wint_t);
 int       iswalpha(wint_t);
 int       iswblank(wint_t);
@@ -46,9 +44,6 @@ wint_t    towlower(wint_t);
 wint_t    towupper(wint_t);
 wctrans_t wctrans(const char *);
 wctype_t  wctype(const char *);
-
-#undef iswdigit
-#define iswdigit(a) (0 ? iswdigit(a) : ((unsigned)(a) - '0') < 10)
 
 #if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
     defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
