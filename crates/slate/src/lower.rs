@@ -240,7 +240,9 @@ pub fn required_features(module: &Module) -> BTreeSet<Feature> {
         }
         if op.kind() == CirOpKind::Func {
             let function_type = attr_str(op, "function_type").unwrap_or("");
-            if function_type_is_variadic(function_type) {
+            if function_type_is_variadic(function_type)
+                || function_type_contains_va_list(function_type)
+            {
                 features.insert(Feature::CVariadic);
             }
         } else if op.kind() == CirOpKind::Global
@@ -6371,6 +6373,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         {
                             arg
                         }
+                        Some(Type::VaList) => arg,
                         Some(ty) => Expr::Cast {
                             expr: Box::new(arg),
                             ty: ty.clone(),
@@ -9185,6 +9188,9 @@ fn ops_have_direct_continue(ops: &[Op]) -> bool {
 
 fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> Type {
     let ty = cir_ty.trim();
+    if is_cir_va_list_type(ty) {
+        return Type::VaList;
+    }
     if let Some(expanded) = aliases.get(ty) {
         if (expanded.starts_with("!cir.struct<{") || expanded.starts_with("!cir.union<{"))
             && let Some(name) = ty.strip_prefix("!rec_")
@@ -9271,6 +9277,26 @@ fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> T
     } else {
         Type::Prim(Prim::I32)
     }
+}
+
+fn is_cir_va_list_record_type(ty: &str) -> bool {
+    cir_record_name(ty).is_some_and(|name| {
+        name == "__va_list_tag" || name == "__va_list" || name == "__builtin_va_list"
+    })
+}
+
+fn is_cir_va_list_type(ty: &str) -> bool {
+    let ty = ty.trim();
+    is_cir_va_list_record_type(ty)
+        || cir_ptr_inner(ty).is_some_and(is_cir_va_list_record_type)
+        || parse_cir_array_type(ty)
+            .is_some_and(|(elem, len)| len == 1 && is_cir_va_list_record_type(&elem))
+}
+
+fn function_type_contains_va_list(ty: &str) -> bool {
+    ty.contains("!rec___va_list_tag")
+        || ty.contains("!rec___va_list")
+        || ty.contains("!rec___builtin_va_list")
 }
 
 fn cir_fn_type_to_type(ty: &str, aliases: &BTreeMap<String, String>) -> Option<Type> {
