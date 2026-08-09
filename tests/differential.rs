@@ -2669,7 +2669,15 @@ fn ctype_classify_calls_in_boolean_context_use_ascii_methods() {
     assert!(rust.contains("!(") && rust.contains(").is_ascii_alphabetic()"));
     assert!(rust.contains("is_ascii_whitespace() || "));
     assert!(rust.contains("is_ascii_graphic() || "));
-    assert!(rust.contains("println!(\"{}\", unsafe { isalpha("));
+    assert!(rust.contains("unsafe { isalpha("));
+    assert_eq!(rust.matches("unsafe { isalpha(").count(), 1);
+    for function in [
+        "isdigit", "isupper", "islower", "isalnum", "isxdigit", "ispunct", "iscntrl", "isgraph",
+        "isprint", "isspace",
+    ] {
+        assert!(!rust.contains(&format!("unsafe {{ {function}(")));
+        assert!(!rust.contains(&format!("fn {function}(")));
+    }
 }
 
 #[test]

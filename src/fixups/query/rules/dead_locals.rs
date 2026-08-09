@@ -1,3 +1,4 @@
+use crate::fixups::facts::EffectKind;
 use crate::fixups::trace::Pass;
 use crate::rust_ast::{Expr, Stmt};
 
@@ -29,7 +30,12 @@ pub(in crate::fixups) fn rewrite(pass: Pass) -> QueryRule<StatementSequence<1>> 
         if !discardable_known_method(init) {
             let statement = matched.statement(0);
             let effects = case.fact(|query| query.statement_effects(&statement))?;
-            case.require(effects.effects.is_empty())?;
+            case.require(
+                effects
+                    .effects
+                    .iter()
+                    .all(|effect| matches!(effect, EffectKind::ReadOnlyCall)),
+            )?;
         }
         Ok(EditSet::replace_statements(
             matched.target().clone(),

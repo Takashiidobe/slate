@@ -1,9 +1,15 @@
 #ifndef _SLATE_FENV_H
 #define _SLATE_FENV_H
 
-#define __STDC_VERSION_FENV_H__ 202311L
-
 #include <features.h>
+
+#if defined(__SLATE_LIBC_MSVC)
+
+#include <bits/msvc/fenv.h>
+
+#else
+
+#define __STDC_VERSION_FENV_H__ 202311L
 
 #include <bits/fenv.h>
 
@@ -25,5 +31,7 @@ int feupdateenv(const fenv_t *envp);
 
 int fegetmode(femode_t *modep);
 int fesetmode(const femode_t *modep);
+
+#endif
 
 #endif

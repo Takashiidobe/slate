@@ -3,6 +3,12 @@
 
 #include <features.h>
 
+#if defined(__SLATE_LIBC_MSVC)
+
+#include <bits/msvc/math.h>
+
+#else
+
 #define __NEED_float_t
 #define __NEED_double_t
 #include <bits/types.h>
@@ -91,5 +97,7 @@ double      tan(double x);
 double      tanh(double x);
 double      trunc(double x);
 long double truncl(long double x);
+
+#endif
 
 #endif

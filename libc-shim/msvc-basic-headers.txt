@@ -1,9 +1,11 @@
 assert.h
 ctype.h
 errno.h
+fenv.h
 float.h
 limits.h
 locale.h
+math.h
 stdarg.h
 signal.h
 stddef.h
