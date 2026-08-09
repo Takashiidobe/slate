@@ -1,14 +1,14 @@
 #include <math.h>
 
 #define TYPE_IS(expression, ...)                                               \
-  _Static_assert(                                                             \
+  _Static_assert(                                                              \
       __builtin_types_compatible_p(__typeof__(expression), __VA_ARGS__),       \
       #expression)
-#define UNARY(name, type) TYPE_IS(&name, type (*)(type))
-#define BINARY(name, type) TYPE_IS(&name, type (*)(type, type))
+#define UNARY(name, type)   TYPE_IS(&name, type (*)(type))
+#define BINARY(name, type)  TYPE_IS(&name, type (*)(type, type))
 #define TERNARY(name, type) TYPE_IS(&name, type (*)(type, type, type))
 
-#define CHECK_REAL_FAMILY(suffix, type)                                       \
+#define CHECK_REAL_FAMILY(suffix, type)                                        \
   UNARY(acos##suffix, type);                                                   \
   UNARY(acosh##suffix, type);                                                  \
   UNARY(asin##suffix, type);                                                   \

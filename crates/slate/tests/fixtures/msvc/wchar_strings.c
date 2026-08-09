@@ -1,7 +1,7 @@
 #include <wchar.h>
 
 #define TYPE_IS(expression, ...)                                               \
-  _Static_assert(                                                             \
+  _Static_assert(                                                              \
       __builtin_types_compatible_p(__typeof__(expression), __VA_ARGS__),       \
       #expression)
 
@@ -35,8 +35,7 @@ TYPE_IS(&wmemset, wchar_t *(*)(wchar_t *, wchar_t, size_t));
 TYPE_IS(&_wcserror, wchar_t *(*)(int));
 TYPE_IS(&__wcserror, wchar_t *(*)(const wchar_t *));
 TYPE_IS(&_wcsicmp, int (*)(const wchar_t *, const wchar_t *));
-TYPE_IS(&_wcsicmp_l,
-        int (*)(const wchar_t *, const wchar_t *, _locale_t));
+TYPE_IS(&_wcsicmp_l, int (*)(const wchar_t *, const wchar_t *, _locale_t));
 TYPE_IS(&_wcsnicmp, int (*)(const wchar_t *, const wchar_t *, size_t));
 TYPE_IS(&_wcsnicmp_l,
         int (*)(const wchar_t *, const wchar_t *, size_t, _locale_t));
@@ -48,14 +47,11 @@ TYPE_IS(&_wcslwr_l, wchar_t *(*)(wchar_t *, _locale_t));
 TYPE_IS(&_wcsupr, wchar_t *(*)(wchar_t *));
 TYPE_IS(&_wcsupr_l, wchar_t *(*)(wchar_t *, _locale_t));
 TYPE_IS(&wcsxfrm, size_t (*)(wchar_t *, const wchar_t *, size_t));
-TYPE_IS(&_wcsxfrm_l,
-        size_t (*)(wchar_t *, const wchar_t *, size_t, _locale_t));
+TYPE_IS(&_wcsxfrm_l, size_t (*)(wchar_t *, const wchar_t *, size_t, _locale_t));
 TYPE_IS(&wcscoll, int (*)(const wchar_t *, const wchar_t *));
-TYPE_IS(&_wcscoll_l,
-        int (*)(const wchar_t *, const wchar_t *, _locale_t));
+TYPE_IS(&_wcscoll_l, int (*)(const wchar_t *, const wchar_t *, _locale_t));
 TYPE_IS(&_wcsicoll, int (*)(const wchar_t *, const wchar_t *));
-TYPE_IS(&_wcsicoll_l,
-        int (*)(const wchar_t *, const wchar_t *, _locale_t));
+TYPE_IS(&_wcsicoll_l, int (*)(const wchar_t *, const wchar_t *, _locale_t));
 TYPE_IS(&_wcsncoll, int (*)(const wchar_t *, const wchar_t *, size_t));
 TYPE_IS(&_wcsncoll_l,
         int (*)(const wchar_t *, const wchar_t *, size_t, _locale_t));

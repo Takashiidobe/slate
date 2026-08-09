@@ -2,7 +2,7 @@
 #include <stddef.h>
 
 #define TYPE_IS(expression, ...)                                               \
-  _Static_assert(                                                             \
+  _Static_assert(                                                              \
       __builtin_types_compatible_p(__typeof__(expression), __VA_ARGS__),       \
       #expression)
 

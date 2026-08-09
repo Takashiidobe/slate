@@ -33,7 +33,7 @@ struct tm {
   int tm_yday;
   int tm_isdst;
 #if !defined(__SLATE_LIBC_MSVC)
-  long        __tm_gmtoff;
+  long __tm_gmtoff;
 #if defined(__SLATE_LIBC_DARWIN)
   char *__tm_zone;
 #else

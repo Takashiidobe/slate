@@ -21,12 +21,12 @@ typedef char invalid_slate_kernel[-1];
 #if defined(__SLATE_LIBC_GLIBC) + defined(__SLATE_LIBC_MUSL) +                 \
         defined(__SLATE_LIBC_MINGW) + defined(__SLATE_LIBC_MSVC) +             \
         defined(__SLATE_LIBC_BIONIC) + defined(__SLATE_LIBC_DARWIN) +          \
-        defined(__SLATE_LIBC_GENERIC) !=                                        \
+        defined(__SLATE_LIBC_GENERIC) !=                                       \
     1
 typedef char invalid_slate_libc[-1];
 #endif
 
-#if defined(EXPECT_MACOS_DARWIN_AARCH64) &&                                   \
+#if defined(EXPECT_MACOS_DARWIN_AARCH64) &&                                    \
     (!defined(__SLATE_ARCH_AARCH64) || !defined(__SLATE_VENDOR_APPLE) ||       \
      !defined(__SLATE_KERNEL_DARWIN) || !defined(__SLATE_PLATFORM_MACOS) ||    \
      !defined(__SLATE_LIBC_DARWIN) || !defined(__SLATE_OBJ_MACHO) ||           \

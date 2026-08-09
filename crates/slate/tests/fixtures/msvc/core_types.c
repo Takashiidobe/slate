@@ -26,7 +26,7 @@ int year_from_time(time_t when) {
 }
 
 static volatile sig_atomic_t last_signal;
-void record_signal(int sig) { last_signal = sig; }
+void                         record_signal(int sig) { last_signal = sig; }
 
 void install_handler(void) { signal(SIGABRT, record_signal); }
 

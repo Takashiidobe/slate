@@ -550,12 +550,17 @@ fn collect_typedefs(node: &Value, out: &mut HashMap<String, String>) {
 fn collect_enum_typedefs(node: &Value, out: &mut HashMap<String, String>) {
     let kids = children(node);
     for (i, child) in kids.iter().enumerate() {
-        if kind(child) == Some("EnumDecl")
-            && let Some(tag) = child.get("name").and_then(Value::as_str)
-            && !tag.is_empty()
-            && let Some(alias) = next_enum_typedef_name(&kids, i + 1, tag)
-        {
-            out.entry(tag.to_string()).or_insert(alias);
+        if kind(child) == Some("EnumDecl") {
+            let tag = child.get("name").and_then(Value::as_str).unwrap_or("");
+            if !tag.is_empty()
+                && let Some(alias) = next_enum_typedef_name(&kids, i + 1, tag)
+            {
+                out.entry(tag.to_string()).or_insert(alias);
+            } else if let Some(id) = child.get("id").and_then(Value::as_str)
+                && let Some(alias) = next_anonymous_enum_typedef_name(&kids, i + 1)
+            {
+                out.entry(id.to_string()).or_insert(alias);
+            }
         }
         collect_enum_typedefs(child, out);
     }
@@ -923,12 +928,27 @@ fn next_enum_typedef_name(kids: &[&Value], start: usize, tag: &str) -> Option<St
     (ty == format!("enum {tag}")).then(|| name.to_string())
 }
 
+fn next_anonymous_enum_typedef_name(kids: &[&Value], start: usize) -> Option<String> {
+    let sibling = kids.get(start)?;
+    if kind(sibling) != Some("TypedefDecl") {
+        return None;
+    }
+    let name = sibling.get("name")?.as_str()?;
+    (qual_type(sibling)? == format!("enum {name}")).then(|| name.to_string())
+}
+
 fn extract_enum(node: &Value, enum_typedefs: &HashMap<String, String>) -> Option<Enum> {
     let tag = node.get("name").and_then(Value::as_str).map(str::to_string);
     let name = tag
         .as_deref()
         .and_then(|tag| enum_typedefs.get(tag))
         .cloned()
+        .or_else(|| {
+            node.get("id")
+                .and_then(Value::as_str)
+                .and_then(|id| enum_typedefs.get(id))
+                .cloned()
+        })
         .or_else(|| tag.clone())?;
     if name.is_empty() {
         return None;
@@ -1618,12 +1638,49 @@ fn same_source_file(file: &str, source_file: &str) -> bool {
 }
 
 fn is_in_record_roots(node: &Value, record_roots: &[PathBuf]) -> bool {
-    !record_roots.is_empty()
-        && source_files(node).into_iter().any(|file| {
-            record_roots
-                .iter()
-                .any(|root| Path::new(file).starts_with(root))
-        })
+    if record_roots.is_empty() {
+        return false;
+    }
+    let locations = [
+        node.get("loc"),
+        node.get("range").and_then(|range| range.get("begin")),
+        node.get("range").and_then(|range| range.get("end")),
+    ];
+    let direct_files: Vec<_> = locations
+        .iter()
+        .flat_map(|location| direct_source_files(*location))
+        .collect();
+    let files = if direct_files.is_empty() {
+        locations
+            .iter()
+            .filter_map(|location| {
+                location
+                    .and_then(|location| location.get("includedFrom"))
+                    .and_then(|included| included.get("file"))
+                    .and_then(Value::as_str)
+            })
+            .collect()
+    } else {
+        direct_files
+    };
+    files.into_iter().any(|file| {
+        record_roots
+            .iter()
+            .any(|root| Path::new(file).starts_with(root))
+    })
+}
+
+fn direct_source_files(node: Option<&Value>) -> Vec<&str> {
+    let Some(node) = node else {
+        return Vec::new();
+    };
+    let mut files = Vec::new();
+    if let Some(file) = node.get("file").and_then(Value::as_str) {
+        files.push(file);
+    }
+    files.extend(direct_source_files(node.get("spellingLoc")));
+    files.extend(direct_source_files(node.get("expansionLoc")));
+    files
 }
 
 fn source_files(node: &Value) -> Vec<&str> {

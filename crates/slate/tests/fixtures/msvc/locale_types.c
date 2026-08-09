@@ -3,7 +3,7 @@
 #include <wctype.h>
 
 #define TYPE_IS(expression, ...)                                               \
-  _Static_assert(                                                             \
+  _Static_assert(                                                              \
       __builtin_types_compatible_p(__typeof__(expression), __VA_ARGS__),       \
       #expression)
 
@@ -63,8 +63,7 @@ _Static_assert(_Alignof(__crt_locale_pointers) == 8,
                "__crt_locale_pointers alignment");
 _Static_assert(offsetof(__crt_locale_pointers, locinfo) == 0, "locinfo");
 _Static_assert(offsetof(__crt_locale_pointers, mbcinfo) == 8, "mbcinfo");
-_Static_assert(__builtin_types_compatible_p(_locale_t,
-                                            __crt_locale_pointers *),
+_Static_assert(__builtin_types_compatible_p(_locale_t, __crt_locale_pointers *),
                "_locale_t");
 
 _Static_assert(sizeof(struct lconv) == 152, "lconv size");
@@ -84,11 +83,11 @@ TYPE_IS(&localeconv, struct lconv *(*)(void));
 TYPE_IS(&_lock_locales, void (*)(void));
 TYPE_IS(&_unlock_locales, void (*)(void));
 TYPE_IS(&_configthreadlocale, int (*)(int));
-TYPE_IS(&_get_current_locale, _locale_t(*)(void));
-TYPE_IS(&_create_locale, _locale_t(*)(int, const char *));
+TYPE_IS(&_get_current_locale, _locale_t (*)(void));
+TYPE_IS(&_create_locale, _locale_t (*)(int, const char *));
 TYPE_IS(&_free_locale, void (*)(_locale_t));
 TYPE_IS(&_wsetlocale, wchar_t *(*)(int, const wchar_t *));
-TYPE_IS(&_wcreate_locale, _locale_t(*)(int, const wchar_t *));
+TYPE_IS(&_wcreate_locale, _locale_t (*)(int, const wchar_t *));
 TYPE_IS(&___lc_locale_name_func, wchar_t **(*)(void));
 TYPE_IS(&___lc_codepage_func, unsigned int (*)(void));
 TYPE_IS(&___lc_collate_cp_func, unsigned int (*)(void));

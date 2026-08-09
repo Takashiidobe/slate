@@ -7,7 +7,7 @@
 #endif
 
 #define TYPE_IS(expression, ...)                                               \
-  _Static_assert(                                                             \
+  _Static_assert(                                                              \
       __builtin_types_compatible_p(__typeof__(expression), __VA_ARGS__),       \
       #expression)
 
@@ -50,8 +50,7 @@ _Static_assert(offsetof(struct _exception, type) == 0, "_exception type");
 _Static_assert(offsetof(struct _exception, name) == 8, "_exception name");
 _Static_assert(offsetof(struct _exception, arg1) == 16, "_exception arg1");
 _Static_assert(offsetof(struct _exception, arg2) == 24, "_exception arg2");
-_Static_assert(offsetof(struct _exception, retval) == 32,
-               "_exception retval");
+_Static_assert(offsetof(struct _exception, retval) == 32, "_exception retval");
 
 TYPE_IS(HUGE_VAL, double);
 TYPE_IS(HUGE_VALF, float);

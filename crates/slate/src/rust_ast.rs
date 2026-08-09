@@ -82,6 +82,7 @@ impl Cfg {
 pub struct StructDef {
     pub attrs: Vec<Attr>,
     pub vis: Visibility,
+    pub field_vis: Visibility,
     pub generics: Vec<GenericParam>,
     pub name: String,
     pub fields: StructFields,

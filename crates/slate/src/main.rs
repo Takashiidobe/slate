@@ -718,6 +718,8 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
     }
     let shared_record_names: BTreeSet<String> = shared_records.keys().cloned().collect();
     let shared_enum_names: BTreeSet<String> = shared_enums.keys().cloned().collect();
+    let shared_long_double =
+        lower::shared_types_use_long_double(&shared_records.values().cloned().collect::<Vec<_>>());
 
     let project = lower::ProjectInfo {
         cross_module: defined,
@@ -726,6 +728,7 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
         shared_enums: shared_enum_names,
         shared_type_module: Some("types".into()),
         shared_type_crate: None,
+        shared_long_double,
         cross_module_crate: None,
         unsafe_functions,
         crate_features,
@@ -826,6 +829,7 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
                 shared_enums: project.shared_enums.clone(),
                 shared_type_module: Some("types".into()),
                 shared_type_crate: Some(package.clone()),
+                shared_long_double: project.shared_long_double,
                 cross_module_crate: Some(package.clone()),
                 crate_features: project.crate_features.clone(),
                 emit_pub: true,
@@ -887,6 +891,8 @@ fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
     let mut crate_features = BTreeSet::new();
     let mut root: Option<String> = None;
     let mut has_setlocale = false;
+    let mut record_occurrences: BTreeMap<String, (c_ast::Record, usize)> = BTreeMap::new();
+    let mut enum_occurrences: BTreeMap<String, (c_ast::Enum, usize)> = BTreeMap::new();
     for (stem, path) in &modules {
         reject_active_unsupported_file(path, "translate-project")?;
         let module = cir::parse_module(&cir::emit_generic(path)?)?;
@@ -905,18 +911,88 @@ fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
         has_setlocale |= lower::declared_functions(&module)
             .iter()
             .any(|name| name == "setlocale");
+        let unit = c_ast::parse_file_with_project_records(path, dir)?;
+        let mut seen_enums = BTreeSet::new();
+        for enm in &unit.enums {
+            let name = rust_ident(&enm.name);
+            if seen_enums.insert(name.clone()) {
+                let entry = enum_occurrences
+                    .entry(name)
+                    .or_insert_with(|| (enm.clone(), 0));
+                entry.1 += 1;
+            }
+        }
+        let mut seen_records = BTreeSet::new();
+        for record in &unit.records {
+            let name = rust_ident(&record.name);
+            if seen_records.insert(name.clone()) {
+                let entry = record_occurrences
+                    .entry(name)
+                    .or_insert_with(|| (record.clone(), 0));
+                entry.1 += 1;
+            }
+        }
     }
+    let all_records: BTreeMap<_, _> = record_occurrences
+        .iter()
+        .map(|(name, (record, _))| (name.clone(), record.clone()))
+        .collect();
+    let mut shared_records: BTreeMap<_, _> = record_occurrences
+        .into_iter()
+        .filter_map(|(name, (record, count))| (count > 1).then_some((name, record)))
+        .collect();
+    let shared_enums: BTreeMap<_, _> = enum_occurrences
+        .into_iter()
+        .filter_map(|(name, (enm, count))| (count > 1).then_some((name, enm)))
+        .collect();
+    let mut referenced_record_types = BTreeSet::new();
+    for record in shared_records.values() {
+        collect_record_field_type_names(record, &mut referenced_record_types);
+    }
+    while let Some(name) = referenced_record_types.pop_first() {
+        if shared_records.contains_key(&name) {
+            continue;
+        }
+        let record = all_records.get(&name).cloned().unwrap_or(c_ast::Record {
+            name: name.clone(),
+            comments: Vec::new(),
+            kind: c_ast::RecordKind::Struct,
+            fields: Vec::new(),
+            packed: None,
+            align: None,
+        });
+        collect_record_field_type_names(&record, &mut referenced_record_types);
+        shared_records.insert(name, record);
+    }
+    let shared_record_names: BTreeSet<String> = shared_records.keys().cloned().collect();
+    let shared_enum_names: BTreeSet<String> = shared_enums.keys().cloned().collect();
+    let shared_long_double =
+        lower::shared_types_use_long_double(&shared_records.values().cloned().collect::<Vec<_>>());
     let fixup_skip = if has_setlocale {
         fixups::SkipSet::skip(fixups::Pass::CTypeLibc)
     } else {
         fixups::SkipSet::none()
     };
     let root = root.ok_or("translate-project: no unit defines main")?;
-    let siblings: Vec<String> = modules
+    for module in defined.values_mut() {
+        if *module == root {
+            module.clear();
+        }
+    }
+    for module in defined_globals.values_mut() {
+        if *module == root {
+            module.clear();
+        }
+    }
+    let mut siblings: Vec<String> = modules
         .iter()
         .map(|(stem, _)| stem.clone())
         .filter(|stem| *stem != root)
         .collect();
+    let has_shared_types = !shared_records.is_empty() || !shared_enums.is_empty();
+    if has_shared_types {
+        siblings.push("types".into());
+    }
 
     std::fs::create_dir_all(out_dir).map_err(|e| format!("create {}: {e}", out_dir.display()))?;
 
@@ -934,10 +1010,11 @@ fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
             } else {
                 Vec::new()
             },
-            shared_records: BTreeSet::new(),
-            shared_enums: BTreeSet::new(),
-            shared_type_module: None,
+            shared_records: shared_record_names.clone(),
+            shared_enums: shared_enum_names.clone(),
+            shared_type_module: has_shared_types.then(|| "types".into()),
             shared_type_crate: None,
+            shared_long_double,
             cross_module_crate: None,
             emit_pub: true,
             crate_features: if is_root {
@@ -1008,6 +1085,15 @@ fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
         };
         let output = out_dir.join(file).with_extension("rs");
         std::fs::write(&output, program.emit())
+            .map_err(|e| format!("write {}: {e}", output.display()))?;
+        written.push(output);
+    }
+
+    if has_shared_types {
+        let records: Vec<_> = shared_records.into_values().collect();
+        let enums: Vec<_> = shared_enums.into_values().collect();
+        let output = out_dir.join("types.rs");
+        std::fs::write(&output, lower::lower_shared_types(&records, &enums).emit())
             .map_err(|e| format!("write {}: {e}", output.display()))?;
         written.push(output);
     }

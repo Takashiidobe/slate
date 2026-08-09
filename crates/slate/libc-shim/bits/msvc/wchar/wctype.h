@@ -18,7 +18,7 @@
 #define _ALPHA    (0x0100 | _UPPER | _LOWER)
 
 const unsigned short *__pctype_func(void);
-const wctype_t        *__pwctype_func(void);
+const wctype_t       *__pwctype_func(void);
 
 #define _pctype  (__pctype_func())
 #define _pwctype (__pwctype_func())

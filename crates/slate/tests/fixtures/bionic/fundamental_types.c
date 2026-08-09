@@ -53,7 +53,7 @@ long call_bionic_import(size_t size, ptrdiff_t difference, intptr_t signed_ptr,
 
 int bionic_variadic_count(int count, ...) {
   va_list values;
-  int total = 0;
+  int     total = 0;
   va_start(values, count);
   for (int i = 0; i < count; ++i)
     total += va_arg(values, int);

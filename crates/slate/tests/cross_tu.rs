@@ -332,6 +332,41 @@ fn cross_tu_functions() {
 }
 
 #[test]
+fn project_translation_escapes_rust_keywords() {
+    build_and_diff("keyword_project_idents");
+}
+
+#[test]
+fn sibling_can_call_function_defined_in_root_translation_unit() {
+    build_and_diff("root_tu_symbol");
+}
+
+#[test]
+fn project_translation_shares_record_types() {
+    build_and_diff("shared_record");
+}
+
+#[test]
+fn project_translation_shares_enum_types() {
+    build_and_diff("shared_enum");
+}
+
+#[test]
+fn project_translation_shares_long_double_types() {
+    build_and_diff("shared_long_double");
+}
+
+#[test]
+fn project_translation_shares_anonymous_record_types() {
+    build_and_diff("shared_anonymous_record");
+}
+
+#[test]
+fn project_translation_shares_function_pointer_types() {
+    build_and_diff("shared_function_pointer");
+}
+
+#[test]
 fn ctype_libc_fixup_stays_off_when_a_sibling_tu_changes_locale() {
     let rs_dir = build_and_diff("ctype_locale");
 

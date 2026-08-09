@@ -92,6 +92,30 @@ impl<W: Write> Codegen<W> {
         self.out
     }
 
+    fn ident(&mut self, name: &str) -> fmt::Result {
+        if name.starts_with("r#") || matches!(name, "crate" | "self" | "Self" | "super") {
+            return self.out.write_str(name);
+        }
+        if matches!(name, "true" | "false") {
+            self.out.write_str(name)?;
+            return self.out.write_char('_');
+        }
+        if is_rust_keyword(name) {
+            self.out.write_str("r#")?;
+        }
+        self.out.write_str(name)
+    }
+
+    fn ident_path(&mut self, path: &str) -> fmt::Result {
+        for (index, segment) in path.split("::").enumerate() {
+            if index > 0 {
+                self.out.write_str("::")?;
+            }
+            self.ident(segment)?;
+        }
+        Ok(())
+    }
+
     pub fn program(&mut self, program: &Program) -> fmt::Result {
         for (i, item) in program.items.iter().enumerate() {
             if i > 0 {
@@ -113,7 +137,11 @@ impl<W: Write> Codegen<W> {
                     self.out.write_str("]\n")?;
                 }
             }
-            Item::Mod { name } => writeln!(self.out, "mod {name};")?,
+            Item::Mod { name } => {
+                self.out.write_str("mod ")?;
+                self.ident(name.as_str())?;
+                self.out.write_str(";\n")?;
+            }
             Item::Use { path } => {
                 self.out.write_str("use ")?;
                 self.path(path)?;
@@ -135,7 +163,8 @@ impl<W: Write> Codegen<W> {
                 if *mutable {
                     self.out.write_str("mut ")?;
                 }
-                write!(self.out, "{name}: ")?;
+                self.ident(name)?;
+                self.out.write_str(": ")?;
                 self.ty(ty)?;
                 self.out.write_str(" = ")?;
                 self.expr(init)?;
@@ -148,7 +177,9 @@ impl<W: Write> Codegen<W> {
                 init,
             } => {
                 self.attrs(attrs)?;
-                write!(self.out, "const {name}: ")?;
+                self.out.write_str("const ")?;
+                self.ident(name)?;
+                self.out.write_str(": ")?;
                 self.ty(ty)?;
                 self.out.write_str(" = ")?;
                 self.expr(init)?;
@@ -167,7 +198,8 @@ impl<W: Write> Codegen<W> {
             Item::Struct(s) => self.struct_def(s)?,
             Item::Impl(im) => self.impl_block(im)?,
             Item::Macro { name, args } => {
-                write!(self.out, "{name}!(")?;
+                self.ident_path(name)?;
+                self.out.write_str("!(")?;
                 self.args(args)?;
                 self.out.write_str(");\n")?;
             }
@@ -233,7 +265,9 @@ impl<W: Write> Codegen<W> {
             self.abi(abi)?;
             self.out.write_char(' ')?;
         }
-        write!(self.out, "fn {}(", f.name)?;
+        self.out.write_str("fn ")?;
+        self.ident(&f.name)?;
+        self.out.write_char('(')?;
         for (i, p) in f.params.iter().enumerate() {
             if i > 0 {
                 self.out.write_str(", ")?;
@@ -241,7 +275,8 @@ impl<W: Write> Codegen<W> {
             if p.mutable {
                 self.out.write_str("mut ")?;
             }
-            write!(self.out, "{}: ", p.name)?;
+            self.ident(&p.name)?;
+            self.out.write_str(": ")?;
             self.ty(&p.ty)?;
         }
         self.out.write_char(')')?;
@@ -287,7 +322,9 @@ impl<W: Write> Codegen<W> {
         if let Some(vis) = r.vis.keyword() {
             write!(self.out, "{vis} ")?;
         }
-        writeln!(self.out, "{kw} {} {{", r.name)?;
+        write!(self.out, "{kw} ")?;
+        self.ident(&r.name)?;
+        self.out.write_str(" {\n")?;
         for field in &r.fields {
             for comment in &field.comments {
                 self.comment(comment, 1)?;
@@ -296,7 +333,8 @@ impl<W: Write> Codegen<W> {
             if let Some(vis) = r.field_vis.keyword() {
                 write!(self.out, "{vis} ")?;
             }
-            write!(self.out, "{}: ", field.name.as_str())?;
+            self.ident(field.name.as_str())?;
+            self.out.write_str(": ")?;
             self.ty(&field.ty)?;
             self.out.write_str(",\n")?;
         }
@@ -311,12 +349,16 @@ impl<W: Write> Codegen<W> {
         if let Some(vis) = e.vis.keyword() {
             write!(self.out, "{vis} ")?;
         }
-        writeln!(self.out, "enum {} {{", e.name)?;
+        self.out.write_str("enum ")?;
+        self.ident(&e.name)?;
+        self.out.write_str(" {\n")?;
         for variant in &e.variants {
             for comment in &variant.comments {
                 self.comment(comment, 1)?;
             }
-            writeln!(self.out, "    {} = {},", variant.name, variant.value)?;
+            self.out.write_str("    ")?;
+            self.ident(&variant.name)?;
+            writeln!(self.out, " = {},", variant.value)?;
         }
         self.out.write_str("}\n\n")
     }
@@ -326,7 +368,8 @@ impl<W: Write> Codegen<W> {
         if let Some(vis) = s.vis.keyword() {
             write!(self.out, "{vis} ")?;
         }
-        write!(self.out, "struct {}", s.name)?;
+        self.out.write_str("struct ")?;
+        self.ident(&s.name)?;
         self.generics(&s.generics)?;
         match &s.fields {
             StructFields::Tuple(tys) => {
@@ -335,6 +378,9 @@ impl<W: Write> Codegen<W> {
                     if i > 0 {
                         self.out.write_str(", ")?;
                     }
+                    if let Some(vis) = s.field_vis.keyword() {
+                        write!(self.out, "{vis} ")?;
+                    }
                     self.ty(ty)?;
                 }
                 self.out.write_str(");\n")
@@ -342,7 +388,12 @@ impl<W: Write> Codegen<W> {
             StructFields::Named(fields) => {
                 self.out.write_str(" {\n")?;
                 for (name, ty) in fields {
-                    write!(self.out, "{INDENT}{name}: ")?;
+                    self.out.write_str(INDENT)?;
+                    if let Some(vis) = s.field_vis.keyword() {
+                        write!(self.out, "{vis} ")?;
+                    }
+                    self.ident(name)?;
+                    self.out.write_str(": ")?;
                     self.ty(ty)?;
                     self.out.write_str(",\n")?;
                 }
@@ -458,7 +509,7 @@ impl<W: Write> Codegen<W> {
             if i > 0 {
                 self.out.write_str(", ")?;
             }
-            self.out.write_str(&g.name)?;
+            self.ident(&g.name)?;
             for (j, bound) in g.bounds.iter().enumerate() {
                 self.out.write_str(if j == 0 { ": " } else { " + " })?;
                 self.trait_bound(bound)?;
@@ -475,7 +526,8 @@ impl<W: Write> Codegen<W> {
                 if i > 0 {
                     self.out.write_str(", ")?;
                 }
-                write!(self.out, "{name} = ")?;
+                self.ident(name)?;
+                self.out.write_str(" = ")?;
                 self.ty(ty)?;
             }
             self.out.write_char('>')?;
@@ -495,7 +547,9 @@ impl<W: Write> Codegen<W> {
         for item in &im.items {
             match item {
                 ImplItem::AssocType { name, ty } => {
-                    write!(self.out, "{INDENT}type {name} = ")?;
+                    write!(self.out, "{INDENT}type ")?;
+                    self.ident(name)?;
+                    self.out.write_str(" = ")?;
                     self.ty(ty)?;
                     self.out.write_str(";\n")?;
                 }
@@ -506,7 +560,9 @@ impl<W: Write> Codegen<W> {
     }
 
     fn method(&mut self, m: &Method) -> fmt::Result {
-        write!(self.out, "{INDENT}fn {}(", m.name)?;
+        write!(self.out, "{INDENT}fn ")?;
+        self.ident(&m.name)?;
+        self.out.write_char('(')?;
         let mut first = true;
         let self_kw = match m.self_kind {
             SelfKind::None => None,
@@ -523,7 +579,8 @@ impl<W: Write> Codegen<W> {
                 self.out.write_str(", ")?;
             }
             first = false;
-            write!(self.out, "{}: ", p.name)?;
+            self.ident(&p.name)?;
+            self.out.write_str(": ")?;
             self.ty(&p.ty)?;
         }
         self.out.write_char(')')?;
@@ -541,12 +598,15 @@ impl<W: Write> Codegen<W> {
     fn extern_decl(&mut self, decl: &ExternDecl) -> fmt::Result {
         match decl {
             ExternDecl::Fn(f) => {
-                write!(self.out, "fn {}(", f.name)?;
+                self.out.write_str("fn ")?;
+                self.ident(&f.name)?;
+                self.out.write_char('(')?;
                 for (i, p) in f.params.iter().enumerate() {
                     if i > 0 {
                         self.out.write_str(", ")?;
                     }
-                    write!(self.out, "{}: ", p.name)?;
+                    self.ident(&p.name)?;
+                    self.out.write_str(": ")?;
                     self.ty(&p.ty)?;
                 }
                 if f.variadic {
@@ -580,7 +640,8 @@ impl<W: Write> Codegen<W> {
                 if *mutable {
                     self.out.write_str("mut ")?;
                 }
-                write!(self.out, "{name}: ")?;
+                self.ident(name)?;
+                self.out.write_str(": ")?;
                 self.ty(ty)?;
                 self.out.write_str(";\n")
             }
@@ -618,7 +679,7 @@ impl<W: Write> Codegen<W> {
                 if *mutable {
                     self.out.write_str("mut ")?;
                 }
-                self.out.write_str(name)?;
+                self.ident(name)?;
                 if let Some(ty) = ty {
                     self.out.write_str(": ")?;
                     self.ty(ty)?;
@@ -644,7 +705,7 @@ impl<W: Write> Codegen<W> {
                 if *mutable {
                     self.out.write_str("mut ")?;
                 }
-                self.out.write_str(name)?;
+                self.ident(name)?;
                 if let Some(ty) = ty {
                     self.out.write_str(": ")?;
                     self.ty(ty)?;
@@ -883,7 +944,7 @@ impl<W: Write> Codegen<W> {
             Expr::ByteStr(bytes) => self.out.write_str(&byte_string_literal(bytes)),
             Expr::CStr(bytes) => self.out.write_str(&c_string_literal(bytes)),
             Expr::Path(p) => self.path(p),
-            Expr::Var(s) => self.out.write_str(s.as_str()),
+            Expr::Var(s) => self.ident(s.as_str()),
             Expr::Unary { op, expr } => {
                 self.out.write_str(op.spelling())?;
                 self.prefix_operand(expr)
@@ -916,7 +977,9 @@ impl<W: Write> Codegen<W> {
             }
             Expr::MethodCall { recv, method, args } => {
                 self.expr_prec(recv, PREC_CALL)?;
-                write!(self.out, ".{method}(")?;
+                self.out.write_char('.')?;
+                self.ident(method)?;
+                self.out.write_char('(')?;
                 self.args(args)?;
                 self.out.write_char(')')
             }
@@ -927,7 +990,9 @@ impl<W: Write> Codegen<W> {
                 args,
             } => {
                 self.expr_prec(recv, PREC_CALL)?;
-                write!(self.out, ".{method}::<")?;
+                self.out.write_char('.')?;
+                self.ident(method)?;
+                self.out.write_str("::<")?;
                 for (i, ty) in type_args.iter().enumerate() {
                     if i > 0 {
                         self.out.write_str(", ")?;
@@ -940,7 +1005,8 @@ impl<W: Write> Codegen<W> {
             }
             Expr::Field { base, field } => {
                 self.expr_prec(base, PREC_CALL)?;
-                write!(self.out, ".{field}")
+                self.out.write_char('.')?;
+                self.ident(field)
             }
             Expr::TupleField { base, index } => {
                 self.expr_prec(base, PREC_CALL)?;
@@ -961,18 +1027,21 @@ impl<W: Write> Codegen<W> {
                 self.out.write_char(']')
             }
             Expr::StructLit { name, fields } => {
-                write!(self.out, "{name} {{ ")?;
+                self.ident_path(name)?;
+                self.out.write_str(" { ")?;
                 for (i, (field, value)) in fields.iter().enumerate() {
                     if i > 0 {
                         self.out.write_str(", ")?;
                     }
-                    write!(self.out, "{field}: ")?;
+                    self.ident(field)?;
+                    self.out.write_str(": ")?;
                     self.expr(value)?;
                 }
                 self.out.write_str(" }")
             }
             Expr::TupleStructLit { name, fields } => {
-                write!(self.out, "{name}(")?;
+                self.ident_path(name)?;
+                self.out.write_char('(')?;
                 self.args(fields)?;
                 self.out.write_char(')')
             }
@@ -999,7 +1068,8 @@ impl<W: Write> Codegen<W> {
                 self.out.write_char(']')
             }
             Expr::Macro { name, args } => {
-                write!(self.out, "{name}!(")?;
+                self.ident_path(name)?;
+                self.out.write_str("!(")?;
                 self.args(args)?;
                 self.out.write_char(')')
             }
@@ -1009,7 +1079,7 @@ impl<W: Write> Codegen<W> {
                     if i > 0 {
                         self.out.write_str(", ")?;
                     }
-                    self.out.write_str(param.as_str())?;
+                    self.ident(param.as_str())?;
                 }
                 self.out.write_str("| ")?;
                 self.expr(body)
@@ -1208,7 +1278,7 @@ impl<W: Write> Codegen<W> {
                 self.expr(ptr)?;
                 self.out.write_char(')')
             }
-            AtomicPlace::Local(name) => self.out.write_str(name.as_str()),
+            AtomicPlace::Local(name) => self.ident(name.as_str()),
         }
     }
 
@@ -1266,7 +1336,7 @@ impl<W: Write> Codegen<W> {
     fn pattern(&mut self, pattern: &crate::rust_ast::Pattern) -> fmt::Result {
         match pattern {
             crate::rust_ast::Pattern::Wildcard => self.out.write_char('_'),
-            crate::rust_ast::Pattern::Binding(name) => self.out.write_str(name.as_str()),
+            crate::rust_ast::Pattern::Binding(name) => self.ident(name.as_str()),
             crate::rust_ast::Pattern::I64(n) => write!(self.out, "{n}"),
             crate::rust_ast::Pattern::I128(n) => write!(self.out, "{n}"),
             crate::rust_ast::Pattern::U128(n) => write!(self.out, "{n}"),
@@ -1274,7 +1344,7 @@ impl<W: Write> Codegen<W> {
                 write!(self.out, "{start}..={end}")
             }
             crate::rust_ast::Pattern::TupleStruct { name, fields } => {
-                self.out.write_str(name.as_str())?;
+                self.ident_path(name.as_str())?;
                 self.out.write_char('(')?;
                 for (i, field) in fields.iter().enumerate() {
                     if i > 0 {
@@ -1292,7 +1362,7 @@ impl<W: Write> Codegen<W> {
             if i > 0 {
                 self.out.write_str("::")?;
             }
-            self.out.write_str(segment.as_str())?;
+            self.ident(segment.as_str())?;
         }
         Ok(())
     }
@@ -1300,9 +1370,9 @@ impl<W: Write> Codegen<W> {
     fn ty(&mut self, ty: &Type) -> fmt::Result {
         match ty {
             Type::Prim(p) => self.out.write_str(p.spelling()),
-            Type::Custom(n) => self.out.write_str(n),
+            Type::Custom(n) => self.ident_path(n),
             Type::LongDouble => self.out.write_str("LongDouble"),
-            Type::TyVar(name) => self.out.write_str(name.as_str()),
+            Type::TyVar(name) => self.ident(name.as_str()),
             Type::CLib(c) => self.out.write_str(c.path()),
             Type::Complex(inner) => {
                 self.out.write_str("Complex<")?;
@@ -1310,7 +1380,7 @@ impl<W: Write> Codegen<W> {
                 self.out.write_char('>')
             }
             Type::Generic { name, args } => {
-                self.out.write_str(name)?;
+                self.ident_path(name)?;
                 self.out.write_char('<')?;
                 for (i, arg) in args.iter().enumerate() {
                     if i > 0 {
@@ -1403,6 +1473,62 @@ pub fn cfg_to_string(cfg: &Cfg) -> String {
     let mut cg = Codegen::new(String::new());
     cg.cfg(cfg).expect("writing to a String never fails");
     cg.into_inner()
+}
+
+fn is_rust_keyword(name: &str) -> bool {
+    matches!(
+        name,
+        "as" | "break"
+            | "const"
+            | "continue"
+            | "crate"
+            | "else"
+            | "enum"
+            | "extern"
+            | "false"
+            | "fn"
+            | "for"
+            | "if"
+            | "impl"
+            | "in"
+            | "let"
+            | "loop"
+            | "match"
+            | "mod"
+            | "move"
+            | "mut"
+            | "pub"
+            | "ref"
+            | "return"
+            | "self"
+            | "Self"
+            | "static"
+            | "struct"
+            | "super"
+            | "trait"
+            | "true"
+            | "type"
+            | "unsafe"
+            | "use"
+            | "where"
+            | "while"
+            | "async"
+            | "await"
+            | "dyn"
+            | "abstract"
+            | "become"
+            | "box"
+            | "do"
+            | "final"
+            | "macro"
+            | "override"
+            | "priv"
+            | "typeof"
+            | "unsized"
+            | "virtual"
+            | "yield"
+            | "try"
+    )
 }
 
 fn byte_string_literal(bytes: &[u8]) -> String {
