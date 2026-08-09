@@ -23,7 +23,9 @@ fn usage() -> ExitCode {
     eprintln!("  translate   [clang args...] <file.c>  C -> Rust");
     eprintln!("  translate-directives   experimental multi-config C -> Rust");
     eprintln!("  record-cfg   <file.c> [clang args...]  print preprocessor cfg regions as JSON");
-    eprintln!("  translate-project  <dir> <out_dir>  cross-TU C dir -> Rust modules");
+    eprintln!(
+        "  translate-project [--target <triple>]... <dir> <out_dir>  cross-TU C dir -> Rust modules"
+    );
     eprintln!(
         "  translate-project --lib  <project_dir> <crate_dir>  cross-TU C library -> Cargo crate"
     );
@@ -63,9 +65,9 @@ fn main() -> ExitCode {
                 }
                 _ => usage(),
             },
-            Some(dir) => match args.get(3) {
-                Some(out) => run(translate_project(Path::new(dir), Path::new(out))),
-                _ => usage(),
+            Some(_) => match args.get(3) {
+                Some(_) => run(translate_project_command(&args[2..])),
+                None => usage(),
             },
             None => usage(),
         },
@@ -283,23 +285,53 @@ struct TargetVariant {
     clang_args: Vec<String>,
 }
 
-fn target_variants() -> Vec<TargetVariant> {
-    let mut variants = Vec::new();
-    for (arch, triple) in [
-        ("x86_64", "x86_64-linux-gnu"),
-        ("aarch64", "aarch64-linux-gnu"),
-        ("riscv64", "riscv64-linux-gnu"),
-    ] {
-        variants.push(TargetVariant {
-            cfg: rust_ast::Cfg::Opt {
-                key: "target_arch".into(),
-                value: arch.into(),
-            },
-            clang_args: cir::emit::target_override_args(triple)
-                .expect("built-in Slate target variant is valid"),
-        });
+fn target_cfg(target: &str) -> Result<rust_ast::Cfg, String> {
+    let target = cir::emit::target_config(target)?;
+    Ok(rust_ast::Cfg::All(vec![
+        rust_ast::Cfg::Opt {
+            key: "target_arch".into(),
+            value: target.arch.into(),
+        },
+        rust_ast::Cfg::Opt {
+            key: "target_endian".into(),
+            value: target.endian.into(),
+        },
+        rust_ast::Cfg::Opt {
+            key: "target_env".into(),
+            value: target.env.into(),
+        },
+        rust_ast::Cfg::Opt {
+            key: "target_os".into(),
+            value: target.os.into(),
+        },
+        rust_ast::Cfg::Opt {
+            key: "target_pointer_width".into(),
+            value: target.pointer_width,
+        },
+        rust_ast::Cfg::Opt {
+            key: "target_vendor".into(),
+            value: target.vendor.into(),
+        },
+    ]))
+}
+
+fn target_variants(extra_targets: &[String]) -> Result<Vec<TargetVariant>, String> {
+    let active = cir::emit::active_target();
+    let mut variants = vec![TargetVariant {
+        cfg: target_cfg(&active)?,
+        clang_args: Vec::new(),
+    }];
+    let mut seen = BTreeSet::from([target_cfg(&active)?]);
+    for target in extra_targets {
+        let cfg = target_cfg(target)?;
+        if seen.insert(cfg.clone()) {
+            variants.push(TargetVariant {
+                cfg,
+                clang_args: cir::emit::target_override_args(target)?,
+            });
+        }
     }
-    variants
+    Ok(variants)
 }
 
 fn merge_target_programs(variants: &[(rust_ast::Cfg, rust_ast::Program)]) -> rust_ast::Program {
@@ -402,10 +434,15 @@ fn merge_target_programs(variants: &[(rust_ast::Cfg, rust_ast::Program)]) -> rus
         }
     }
 
-    rust_ast::Program {
-        items,
-        shims: baseline.shims.clone(),
-    }
+    let shims = variants
+        .iter()
+        .flat_map(|(_, program)| &program.shims)
+        .cloned()
+        .collect::<BTreeSet<_>>()
+        .into_iter()
+        .collect();
+
+    rust_ast::Program { items, shims }
 }
 
 fn cargo() -> String {
@@ -887,7 +924,41 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
 /// units) into separate Rust module files under `out_dir`. The unit defining
 /// `main` becomes the crate root `main.rs` and declares the other units with
 /// `mod`; a prototype resolved to a sibling unit becomes a module import.
+fn translate_project_command(args: &[String]) -> Result<String, String> {
+    let mut paths = Vec::new();
+    let mut targets = Vec::new();
+    let mut index = 0;
+    while index < args.len() {
+        match args[index].as_str() {
+            "--target" => {
+                index += 1;
+                let target = args
+                    .get(index)
+                    .ok_or_else(|| "--target requires a target triple".to_string())?;
+                targets.push(target.clone());
+            }
+            flag if flag.starts_with('-') => {
+                return Err(format!("unknown translate-project option: {flag}"));
+            }
+            path => paths.push(path),
+        }
+        index += 1;
+    }
+    if paths.len() != 2 {
+        return Err("translate-project requires an input directory and output directory".into());
+    }
+    translate_project_with_targets(Path::new(paths[0]), Path::new(paths[1]), &targets)
+}
+
 fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
+    translate_project_with_targets(dir, out_dir, &[])
+}
+
+fn translate_project_with_targets(
+    dir: &Path,
+    out_dir: &Path,
+    extra_targets: &[String],
+) -> Result<String, String> {
     let modules = collect_c_modules(dir)?;
 
     // pass 1: which unit defines which function/global, and which owns `main`.
@@ -1006,8 +1077,9 @@ fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
     std::fs::create_dir_all(out_dir).map_err(|e| format!("create {}: {e}", out_dir.display()))?;
 
     // pass 2: lower each unit with project-wide knowledge and write its module.
-    let targets = target_variants();
+    let targets = target_variants(extra_targets)?;
     let mut written = Vec::new();
+    let mut shims: BTreeMap<String, rust_ast::ExternFnDecl> = BTreeMap::new();
     for (stem, path) in &modules {
         let is_root = *stem == root;
         let project = lower::ProjectInfo {
@@ -1078,6 +1150,11 @@ fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
             variant_programs.push((target.cfg.clone(), fixups::apply_with(program, &fixup_skip)));
         }
         let mut program = merge_target_programs(&variant_programs);
+        for shim in &program.shims {
+            shims
+                .entry(shim.name.clone())
+                .or_insert_with(|| shim.clone());
+        }
         let source =
             std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
         let pp = preprocess::record_file(&source, &[])?;
@@ -1105,6 +1182,19 @@ fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
         std::fs::write(&output, lower::lower_shared_types(&records, &enums).emit())
             .map_err(|e| format!("write {}: {e}", output.display()))?;
         written.push(output);
+    }
+
+    let shim_output = out_dir.join("slate_shims.c");
+    if shims.is_empty() {
+        if shim_output.exists() {
+            std::fs::remove_file(&shim_output)
+                .map_err(|e| format!("remove {}: {e}", shim_output.display()))?;
+        }
+    } else {
+        let shims: Vec<_> = shims.into_values().collect();
+        std::fs::write(&shim_output, c_shim::render_shim_c_source(&shims))
+            .map_err(|e| format!("write {}: {e}", shim_output.display()))?;
+        written.push(shim_output);
     }
 
     Ok(written

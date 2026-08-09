@@ -259,11 +259,50 @@ fn target_features(target: &str) -> Result<TargetFeatures, String> {
     Ok(TargetFeatures { names })
 }
 
-fn active_target() -> String {
+pub fn active_target() -> String {
     std::env::var("SLATE_TARGET")
         .ok()
         .filter(|target| !target.trim().is_empty())
         .unwrap_or_else(|| env!("SLATE_BUILD_TARGET").to_string())
+}
+
+pub struct TargetConfig {
+    pub arch: &'static str,
+    pub endian: &'static str,
+    pub env: &'static str,
+    pub os: &'static str,
+    pub pointer_width: String,
+    pub vendor: &'static str,
+}
+
+pub fn target_config(target: &str) -> Result<TargetConfig, String> {
+    let triple = Triple::parse(target).map_err(|e| format!("invalid target `{target}`: {e}"))?;
+    let arch = arch_name(triple.arch)?;
+    let vendor = vendor_name(triple.vendor)?;
+    let os = if triple.env == Some(Env::Android) {
+        "android"
+    } else {
+        match triple.kernel {
+            Kernel::Linux => "linux",
+            Kernel::Darwin => "macos",
+            Kernel::Win32 => "windows",
+            kernel => return Err(format!("unsupported Slate target kernel {kernel:?}")),
+        }
+    };
+    let env = match triple.env {
+        Some(Env::MSVC) => "msvc",
+        Some(env) if env.canonicalize().starts_with("gnu") => "gnu",
+        Some(env) if env.canonicalize().starts_with("musl") => "musl",
+        _ => "",
+    };
+    Ok(TargetConfig {
+        arch,
+        endian: "little",
+        env,
+        os,
+        pointer_width: triple.bitness().to_string(),
+        vendor,
+    })
 }
 
 fn android_api(target: &str) -> Result<Option<u32>, String> {

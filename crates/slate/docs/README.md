@@ -99,6 +99,12 @@ also require `SLATE_ANDROID_API=<level>`; the 64-bit Bionic baseline starts at
 API 21. `SLATE_TARGET=aarch64-apple-darwin` selects the narrow AArch64 macOS
 profile at the macOS 11.0 deployment baseline.
 
+`translate-project <dir> <out_dir>` lowers only the active `SLATE_TARGET`, or
+Slate's own build target when that variable is unset. Repeatable
+`--target <triple>` options add cfg-gated project variants; each triple selects
+its architecture, endianness, libc environment, operating system, vendor, and
+pointer width as one ABI configuration.
+
 The external pinned Microsoft CRT and UCRT header oracle used for MSVC work is
 bootstrapped under `target/`; see [msvc-sysroot.md](msvc-sysroot.md).
 
