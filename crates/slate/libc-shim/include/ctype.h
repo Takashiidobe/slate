@@ -16,4 +16,8 @@ int isxdigit(int c);
 int tolower(int c);
 int toupper(int c);
 
+#if defined(__SLATE_LIBC_MSVC)
+#include <bits/msvc/locale/ctype.h>
+#endif
+
 #endif

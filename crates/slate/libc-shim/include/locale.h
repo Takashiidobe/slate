@@ -1,6 +1,17 @@
 #ifndef _SLATE_LOCALE_H
 #define _SLATE_LOCALE_H
 
+#include <features.h>
+
+#if defined(__SLATE_LIBC_MSVC)
+
+#define __NEED_wchar_t
+#include <bits/types.h>
+
+#include <bits/msvc/locale.h>
+
+#else
+
 #define LC_CTYPE    0
 #define LC_NUMERIC  1
 #define LC_TIME     2
@@ -41,5 +52,7 @@ struct lconv {
 
 char         *setlocale(int category, const char *locale);
 struct lconv *localeconv(void);
+
+#endif
 
 #endif

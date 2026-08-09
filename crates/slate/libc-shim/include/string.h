@@ -91,4 +91,8 @@ void *memrchr(const void *, int, size_t);
 void *mempcpy(void *, const void *, size_t);
 #endif
 
+#if defined(__SLATE_LIBC_MSVC)
+#include <bits/msvc/locale/string.h>
+#endif
+
 #endif
