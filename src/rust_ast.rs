@@ -948,25 +948,71 @@ pub enum Type {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum CLibType {
-    Void,
-    File,
-    MbState,
-    PthreadAttr,
-    Timespec,
+pub enum CLibInitializer {
+    ScalarZero,
+    Zeroed,
+    Fields(&'static [&'static str]),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct CLibType {
+    c_name: &'static str,
+    rust_path: &'static str,
+    alignment: u32,
+    initializer: CLibInitializer,
 }
 
 impl CLibType {
-    pub fn path(self) -> &'static str {
-        match self {
-            CLibType::Void => "core::ffi::c_void",
-            CLibType::File => "libc::FILE",
-            CLibType::MbState => "libc::mbstate_t",
-            CLibType::PthreadAttr => "libc::pthread_attr_t",
-            CLibType::Timespec => "libc::timespec",
+    pub const VOID: Self = Self::new("void", "core::ffi::c_void", 1, CLibInitializer::ScalarZero);
+
+    pub const fn new(
+        c_name: &'static str,
+        rust_path: &'static str,
+        alignment: u32,
+        initializer: CLibInitializer,
+    ) -> Self {
+        Self {
+            c_name,
+            rust_path,
+            alignment,
+            initializer,
         }
     }
+
+    pub fn c_name(self) -> &'static str {
+        self.c_name
+    }
+
+    pub fn path(self) -> &'static str {
+        self.rust_path
+    }
+
+    pub fn alignment(self) -> u32 {
+        self.alignment
+    }
+
+    pub fn initializer(self) -> CLibInitializer {
+        self.initializer
+    }
 }
+
+pub const CLIB_RECORD_TYPES: &[CLibType] = &[
+    CLibType::new("FILE", "libc::FILE", 1, CLibInitializer::ScalarZero),
+    CLibType::new("mbstate_t", "libc::mbstate_t", 4, CLibInitializer::Zeroed),
+    CLibType::new(
+        "pthread_attr_t",
+        "libc::pthread_attr_t",
+        1,
+        CLibInitializer::ScalarZero,
+    ),
+    CLibType::new("stat", "libc::stat", 8, CLibInitializer::Zeroed),
+    CLibType::new(
+        "timespec",
+        "libc::timespec",
+        8,
+        CLibInitializer::Fields(&["tv_sec", "tv_nsec"]),
+    ),
+];
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Prim {

@@ -899,7 +899,7 @@ pub(crate) fn ptr(mutable: bool, inner: Type) -> Type {
 }
 
 pub(crate) fn void_ptr(mutable: bool) -> Type {
-    ptr(mutable, Type::CLib(CLibType::Void))
+    ptr(mutable, Type::CLib(CLibType::VOID))
 }
 
 pub(crate) fn null_mut() -> Expr {
