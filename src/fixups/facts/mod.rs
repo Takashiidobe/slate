@@ -984,6 +984,33 @@ pub(in crate::fixups) fn def_use_query_path(path: &AstPath) -> AstPath {
     )
 }
 
+pub(in crate::fixups) fn def_use_query_path_overlaps(
+    query_path: &AstPath,
+    other: &[PathSegment],
+) -> bool {
+    let filtered = query_path
+        .0
+        .iter()
+        .filter(|segment| !matches!(segment, PathSegment::Expr(_)));
+    segments_overlap(filtered, other.iter())
+}
+
+fn segments_overlap<'a>(
+    mut a: impl Iterator<Item = &'a PathSegment>,
+    mut b: impl Iterator<Item = &'a PathSegment>,
+) -> bool {
+    loop {
+        match (a.next(), b.next()) {
+            (Some(x), Some(y)) => {
+                if x != y {
+                    return false;
+                }
+            }
+            _ => return true,
+        }
+    }
+}
+
 pub(in crate::fixups) fn binding_by_param_index<'db>(
     bindings: &[BindingFact<'db>],
     function: FunctionId<'db>,
