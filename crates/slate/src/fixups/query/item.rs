@@ -5,8 +5,8 @@ use crate::fixups::facts::{AstPath, PathSegment};
 use crate::fixups::salsa::SalsaFacts;
 use crate::fixups::support::walk as mut_walk;
 use crate::fixups::trace::{
-    Pass, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet, fact, function_path_location,
-    path_location,
+    Pass, ProgramSummary, RewriteEvent, TraceLocation, TraceLogger, TraceSnippet, fact,
+    function_path_location, path_location,
 };
 use crate::rust_ast::{Expr, ExternDecl, IndentStmt, Item, Program};
 
@@ -859,14 +859,18 @@ fn nested_within(rest: &[PathSegment], start: usize, end: usize) -> bool {
     matches!(rest.first(), Some(PathSegment::Stmt(index)) if (start..end).contains(index))
 }
 
+const MAX_EDITS_PER_ROUND_PER_STMT: usize = 5;
+
 pub(in crate::fixups) struct ItemPlanBuilder {
     builder: PlanBuilder<EditSet>,
+    max_edits: usize,
 }
 
 impl ItemPlanBuilder {
     pub(in crate::fixups) fn new() -> Self {
         Self {
             builder: PlanBuilder::new(),
+            max_edits: usize::MAX,
         }
     }
 
@@ -876,6 +880,12 @@ impl ItemPlanBuilder {
         rule: &QueryRule<M>,
     ) -> &mut Self {
         let identity = rule.identity.clone();
+        let stmts = ProgramSummary::from_program(query.snapshot_program()).stmts;
+        self.max_edits = self.max_edits.min(
+            stmts
+                .saturating_mul(MAX_EDITS_PER_ROUND_PER_STMT)
+                .max(MAX_EDITS_PER_ROUND_PER_STMT),
+        );
         let mut selected_sites = Vec::<EditSetSite>::new();
         let timing = FixupTiming::new();
         let items_start = std::time::Instant::now();
@@ -964,7 +974,7 @@ impl ItemPlanBuilder {
 
     pub(in crate::fixups) fn finish(self) -> ItemPlan {
         ItemPlan {
-            plan: self.builder.finish(),
+            plan: self.builder.finish(self.max_edits),
         }
     }
 }
@@ -2284,7 +2294,7 @@ mod tests {
             });
         }
         ItemPlan {
-            plan: builder.finish(),
+            plan: builder.finish(usize::MAX),
         }
     }
 

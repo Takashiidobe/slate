@@ -73,11 +73,9 @@ impl<E: EditTarget> PlanBuilder<E> {
         self.diagnostics.push(diagnostic);
     }
 
-    /// Groups proposals by target site, drops sites with more than one
-    /// contender (`AmbiguousTarget`), then drops any pair of surviving edits
-    /// whose sites overlap (`OverlappingTargets`). Both checks emit a
-    /// diagnostic for the edits they drop.
-    pub(super) fn finish(self) -> Plan<E> {
+    const OVERLAP_WINDOW: usize = 64;
+
+    pub(super) fn finish(self, max_edits: usize) -> Plan<E> {
         let mut diagnostics = self.diagnostics;
         let mut grouped = BTreeMap::<E::Site, Vec<PlannedEdit<E>>>::new();
         for proposal in self.proposals {
@@ -108,9 +106,11 @@ impl<E: EditTarget> PlanBuilder<E> {
             }
         }
         edits.sort_by_key(|edit| edit.edit.site());
+        edits.truncate(max_edits);
         let mut overlapping = BTreeSet::new();
         for first in 0..edits.len() {
-            for second in first + 1..edits.len() {
+            let window_end = (first + 1 + Self::OVERLAP_WINDOW).min(edits.len());
+            for second in first + 1..window_end {
                 let first_site = edits[first].edit.site();
                 let second_site = edits[second].edit.site();
                 if first_site.overlaps(&second_site) {
