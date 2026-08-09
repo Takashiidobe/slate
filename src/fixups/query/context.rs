@@ -1342,6 +1342,38 @@ impl<'db> ProgramInput {
     }
 
     #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn all_binding_refs(self, db: &'db dyn FixupDb) -> Vec<BindingRef<'db>> {
+        self.functions(db)
+            .iter()
+            .flat_map(|&input| {
+                let item_index = input.item_index(db);
+                let function_name = input.function(db).name(db).to_string();
+                let types: BTreeMap<_, _> = input
+                    .binding_types_typed(db)
+                    .iter()
+                    .map(|fact| (fact.binding, fact.ty.clone()))
+                    .collect();
+                input
+                    .bindings_typed(db)
+                    .iter()
+                    .map(move |binding| BindingRef {
+                        item_index,
+                        function_name: function_name.clone(),
+                        name: binding.name.clone(),
+                        definition: binding.path.clone(),
+                        kind: match binding.kind {
+                            BindingKind::Param { index } => BindingCategory::Parameter { index },
+                            BindingKind::Local => BindingCategory::Local,
+                        },
+                        ty: types.get(&binding.id).cloned(),
+                        id: binding.id,
+                    })
+                    .collect::<Vec<_>>()
+            })
+            .collect()
+    }
+
+    #[salsa::tracked(returns(ref))]
     pub(in crate::fixups) fn reference_domain(
         self,
         db: &dyn FixupDb,
@@ -3564,8 +3596,9 @@ impl<'snapshot> QueryContext<'snapshot> {
         }
         let binding = self
             .all_bindings()
-            .into_iter()
+            .iter()
             .find(|binding| binding.id == candidates[0])
+            .cloned()
             .ok_or_else(|| {
                 Rejection::new(
                     predicate,
@@ -4567,30 +4600,8 @@ impl<'snapshot> QueryContext<'snapshot> {
             .collect()
     }
 
-    pub(in crate::fixups) fn all_bindings(&self) -> Vec<BindingRef<'snapshot>> {
-        self.salsa()
-            .binding_facts()
-            .iter()
-            .filter_map(|binding| {
-                let item_index = self.salsa().function_item_index(binding.function)?;
-                Some(BindingRef {
-                    item_index,
-                    function_name: self
-                        .salsa()
-                        .function_name(binding.function)
-                        .unwrap_or_default()
-                        .to_string(),
-                    name: binding.name.clone(),
-                    definition: binding.path.clone(),
-                    kind: match binding.kind {
-                        BindingKind::Param { index } => BindingCategory::Parameter { index },
-                        BindingKind::Local => BindingCategory::Local,
-                    },
-                    ty: self.salsa().binding_type_ast(binding.id),
-                    id: binding.id,
-                })
-            })
-            .collect()
+    pub(in crate::fixups) fn all_bindings(&self) -> &'snapshot [BindingRef<'snapshot>] {
+        self.salsa().all_binding_refs()
     }
 
     pub(in crate::fixups) fn function_def(
@@ -5062,8 +5073,9 @@ impl<'snapshot> QueryContext<'snapshot> {
         let mut proof = self.function_snapshot(function)?;
         let bindings = self
             .all_bindings()
-            .into_iter()
+            .iter()
             .filter(|binding| binding.item_index == function.item_index)
+            .cloned()
             .collect();
         Ok(Proof::new(bindings, std::mem::take(&mut proof.evidence)))
     }
@@ -5098,12 +5110,15 @@ impl<'snapshot> QueryContext<'snapshot> {
 
     pub(in crate::fixups) fn all_parameters(&self) -> Vec<ParameterRef<'snapshot>> {
         self.all_bindings()
-            .into_iter()
+            .iter()
             .filter_map(|binding| {
                 let BindingCategory::Parameter { index } = binding.kind else {
                     return None;
                 };
-                Some(ParameterRef { binding, index })
+                Some(ParameterRef {
+                    binding: binding.clone(),
+                    index,
+                })
             })
             .collect()
     }

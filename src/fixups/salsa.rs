@@ -13,8 +13,8 @@ use crate::fixups::facts::{
     ValueFact,
 };
 use crate::fixups::query::{
-    AnonymousStructSet, AtomicPromotionSet, BufferPointerFields, ByteSource, ByteView, CallRecord,
-    DefinitionGroup, DefinitionGroupUsers, DefinitionSite, DefinitionUsers, ExprSite,
+    AnonymousStructSet, AtomicPromotionSet, BindingRef, BufferPointerFields, ByteSource, ByteView,
+    CallRecord, DefinitionGroup, DefinitionGroupUsers, DefinitionSite, DefinitionUsers, ExprSite,
     FileOwnershipFacts, FunctionRef, HeapOwnershipFacts, InterproceduralAllocCallerInput,
     LazySingletonSet, NulPosition, OptionBoxComparisonInput, OptionBoxLocalPlanInput,
     PtrLenPlanSet, QueryResult, ReferenceDomain, SliceLoopFact, StableExpr, StatementRef,
@@ -1486,14 +1486,6 @@ impl SalsaFacts {
             .map(|fact| fact.id)
     }
 
-    pub(in crate::fixups) fn function_item_index(&self, function: FunctionId<'_>) -> Option<usize> {
-        self.program
-            .function_facts(&self.db)
-            .iter()
-            .find(|fact| fact.id == function)
-            .map(|fact| fact.item_index)
-    }
-
     pub(in crate::fixups) fn function_name(&self, function: FunctionId<'_>) -> Option<&str> {
         self.program
             .function_facts(&self.db)
@@ -1514,8 +1506,8 @@ impl SalsaFacts {
         self.program.function_facts(&self.db).clone()
     }
 
-    pub(in crate::fixups) fn binding_facts(&self) -> Vec<BindingFact<'_>> {
-        self.program.base_walk(&self.db).binding_facts()
+    pub(in crate::fixups) fn all_binding_refs(&self) -> &[BindingRef<'_>] {
+        self.program.all_binding_refs(&self.db)
     }
 
     pub(in crate::fixups) fn binding_by_local_path<'db>(
