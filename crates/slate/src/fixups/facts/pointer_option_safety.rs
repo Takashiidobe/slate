@@ -202,7 +202,7 @@ fn is_zero_constant(expr: &Expr) -> bool {
 fn is_int_or_void_ptr(ty: &Type) -> bool {
     match ty {
         Type::Prim(prim) => !matches!(prim, crate::rust_ast::Prim::Bool),
-        Type::Ptr { inner, .. } => matches!(&**inner, Type::CLib(CLibType::Void)),
+        Type::Ptr { inner, .. } => matches!(&**inner, Type::CLib(CLibType::VOID)),
         _ => false,
     }
 }

@@ -6,11 +6,11 @@ use crate::ctx::Ctx;
 use crate::function_identity::{CallBinding, FunctionIdentity};
 use crate::rust_ast::{
     Abi, AsmDialect, AsmOperand, AsmReg, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType,
-    Attr as RustAttr, BinOp, CLibType, Cfg, CrateAttr, Derive, EnumConst, EnumDef, Expr,
-    ExprMatchArm, ExternDecl, ExternFnDecl, Feature, FnDef, FnParam, GenericParam, Ident,
-    ImplBlock, ImplItem, IndentStmt, InlineAsm, Item, Label, Lint, MatchArm, Method, Path, Pattern,
-    Prim, Program, RecordDef, RecordField, Repr, RustValue, SelfKind, StdTrait, Stmt, StructDef,
-    StructFields, TraitBound, Type, UnaryOp, UsedKind, Visibility,
+    Attr as RustAttr, BinOp, CLIB_RECORD_TYPES, CLibInitializer, CLibType, Cfg, CrateAttr, Derive,
+    EnumConst, EnumDef, Expr, ExprMatchArm, ExternDecl, ExternFnDecl, Feature, FnDef, FnParam,
+    GenericParam, Ident, ImplBlock, ImplItem, IndentStmt, InlineAsm, Item, Label, Lint, MatchArm,
+    Method, Path, Pattern, Prim, Program, RecordDef, RecordField, Repr, RustValue, SelfKind,
+    StdTrait, Stmt, StructDef, StructFields, TraitBound, Type, UnaryOp, UsedKind, Visibility,
 };
 use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
 
@@ -477,8 +477,7 @@ fn type_alignment(ty: &Type) -> u32 {
         | Type::FnPtr { .. }
         | Type::Ref { .. }
         | Type::VaList => 8,
-        Type::CLib(CLibType::MbState) => 4,
-        Type::CLib(CLibType::Timespec) => 8,
+        Type::CLib(ty) => ty.alignment(),
         Type::Prim(Prim::I128 | Prim::U128 | Prim::F128) | Type::LongDouble => 16,
         Type::Array { elem, .. } => type_alignment(elem),
         Type::Complex(inner) => type_alignment(inner),
@@ -2127,21 +2126,26 @@ impl<'a> Lowerer<'a> {
                 elem: Box::new(self.default_value_expr(elem)),
                 len: *len as usize,
             },
-            Type::CLib(CLibType::Timespec) => Expr::StructLit {
-                name: "libc::timespec".into(),
-                fields: vec![
-                    ("tv_sec".into(), Expr::Value(RustValue::I64(0))),
-                    ("tv_nsec".into(), Expr::Value(RustValue::I64(0))),
-                ],
-            },
-            Type::CLib(CLibType::MbState) => Expr::Unsafe(Box::new(crate::rust_ast::Block {
-                stmts: Vec::new(),
-                tail: Some(Box::new(Expr::Call {
-                    binding: crate::function_identity::CallBinding::Generated,
-                    func: Box::new(Expr::Var("std::mem::zeroed::<libc::mbstate_t>".into())),
-                    args: Vec::new(),
+            Type::CLib(ty) => match ty.initializer() {
+                CLibInitializer::ScalarZero => Expr::Value(RustValue::I64(0)),
+                CLibInitializer::Zeroed => Expr::Unsafe(Box::new(crate::rust_ast::Block {
+                    stmts: Vec::new(),
+                    tail: Some(Box::new(Expr::Call {
+                        binding: crate::function_identity::CallBinding::Generated,
+                        func: Box::new(Expr::Var(
+                            format!("std::mem::zeroed::<{}>", ty.path()).into(),
+                        )),
+                        args: Vec::new(),
+                    })),
                 })),
-            })),
+                CLibInitializer::Fields(fields) => Expr::StructLit {
+                    name: ty.path().into(),
+                    fields: fields
+                        .iter()
+                        .map(|field| ((*field).into(), Expr::Value(RustValue::I64(0))))
+                        .collect(),
+                },
+            },
             _ => default_value_for_type(ty),
         }
     }
@@ -2331,13 +2335,10 @@ impl<'a> Lowerer<'a> {
 }
 
 fn clib_record_type(name: &str) -> Option<CLibType> {
-    Some(match name {
-        "FILE" => CLibType::File,
-        "mbstate_t" => CLibType::MbState,
-        "pthread_attr_t" => CLibType::PthreadAttr,
-        "timespec" => CLibType::Timespec,
-        _ => return None,
-    })
+    CLIB_RECORD_TYPES
+        .iter()
+        .copied()
+        .find(|ty| ty.c_name() == name)
 }
 
 fn c_type_to_type(ty: &crate::c_ast::CType) -> Type {
@@ -2370,7 +2371,7 @@ fn c_type_to_type(ty: &crate::c_ast::CType) -> Type {
         CType::Float { .. } => Type::Prim(Prim::F64),
         CType::Ptr(inner) if matches!(&**inner, CType::Void) => Type::Ptr {
             mutable: true,
-            inner: Box::new(Type::CLib(CLibType::Void)),
+            inner: Box::new(Type::CLib(CLibType::VOID)),
         },
         CType::Ptr(inner) => ptr(inner),
         CType::FuncPtr { ret, params } => Type::FnPtr {
@@ -4831,7 +4832,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or(Type::Ptr {
                 mutable: true,
-                inner: Box::new(Type::CLib(CLibType::Void)),
+                inner: Box::new(Type::CLib(CLibType::VOID)),
             });
         let addr = if non_null { 1 } else { 0 };
         self.materialize_expr(
@@ -9035,7 +9036,7 @@ fn complex_prelude() -> Vec<Item> {
 fn memchr_prelude() -> Item {
     let void_ptr = |mutable| Type::Ptr {
         mutable,
-        inner: Box::new(Type::CLib(CLibType::Void)),
+        inner: Box::new(Type::CLib(CLibType::VOID)),
     };
     let u8_const_ptr = Type::Ptr {
         mutable: false,
@@ -9202,7 +9203,7 @@ fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> T
     if ty == "()" || ty.is_empty() {
         Type::Unit
     } else if ty == "!void" || ty == "!cir.void" {
-        Type::CLib(CLibType::Void)
+        Type::CLib(CLibType::VOID)
     } else if ty == "!cir.bool" {
         Type::Prim(Prim::Bool)
     } else if ty == "!s32i" || ty == "!cir.int<s, 32>" {
