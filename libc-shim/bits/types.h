@@ -349,20 +349,32 @@ typedef __slate_wchar_t wchar_t;
 #undef __NEED_wchar_t
 
 #if defined(__NEED_wctrans_t) && !defined(__DEFINED_wctrans_t)
+#if defined(__SLATE_LIBC_MSVC)
+#include <bits/msvc/types.h>
+#else
 typedef __wctrans_t wctrans_t;
 #define __DEFINED_wctrans_t
+#endif
 #endif
 #undef __NEED_wctrans_t
 
 #if defined(__NEED_wctype_t) && !defined(__DEFINED_wctype_t)
+#if defined(__SLATE_LIBC_MSVC)
+#include <bits/msvc/types.h>
+#else
 typedef __wctype_t wctype_t;
 #define __DEFINED_wctype_t
+#endif
 #endif
 #undef __NEED_wctype_t
 
 #if defined(__NEED_wint_t) && !defined(__DEFINED_wint_t)
+#if defined(__SLATE_LIBC_MSVC)
+#include <bits/msvc/types.h>
+#else
 typedef __wint_t wint_t;
 #define __DEFINED_wint_t
+#endif
 #endif
 #undef __NEED_wint_t
 
@@ -401,8 +413,12 @@ typedef struct FILE FILE;
 #undef __NEED_FILE
 
 #if defined(__NEED_mbstate_t) && !defined(__DEFINED_mbstate_t)
+#if defined(__SLATE_LIBC_MSVC)
+#include <bits/msvc/types.h>
+#else
 typedef __mbstate_t mbstate_t;
 #define __DEFINED_mbstate_t
+#endif
 #endif
 #undef __NEED_mbstate_t
 

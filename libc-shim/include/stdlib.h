@@ -79,4 +79,8 @@ void *bsearch(const void *key, const void *base, size_t nmemb, size_t size,
 size_t mbstowcs(wchar_t *restrict dst, const char *restrict src, size_t len);
 size_t wcstombs(char *restrict dst, const wchar_t *restrict src, size_t len);
 
+#if defined(__SLATE_LIBC_MSVC)
+#include <bits/msvc/locale/stdlib.h>
+#endif
+
 #endif

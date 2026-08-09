@@ -3,6 +3,7 @@ ctype.h
 errno.h
 float.h
 limits.h
+locale.h
 stdarg.h
 signal.h
 stddef.h
