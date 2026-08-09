@@ -9552,7 +9552,14 @@ fn cir_type_to_ctype(ty: &str, aliases: &BTreeMap<String, String>) -> crate::c_a
         "!cir.bool" => return CType::Bool,
         "!cir.float" => return CType::Float { bits: 32 },
         "!cir.double" => return CType::Float { bits: 64 },
+        "!cir.f128" => return CType::Float { bits: 128 },
         _ => {}
+    }
+    if is_quad_long_double(ty) {
+        return CType::Float { bits: 128 };
+    }
+    if is_long_double(ty) {
+        return CType::Float { bits: 80 };
     }
     if let Some((signed, bits)) = parse_cir_int_type(ty) {
         return CType::Int { signed, bits };

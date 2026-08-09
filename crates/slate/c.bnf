@@ -65,7 +65,8 @@
 <stmt> ::= <declaration> | <assignment> | <compound_assignment> | <atomic_stmt> | <for_loop> | <while_loop> | <if_stmt> | <switch_stmt> | <call_stmt> | <return_stmt> | <break_stmt> | <continue_stmt> | <goto_stmt> | <labeled_stmt> ;
 
 <declaration> ::= <scalar_declaration> | <array_declaration> ;
-<scalar_declaration> ::= <type> <ident> "=" <expr> ";" | "_Alignas" "(" <int> ")" <type> <ident> "=" <expr> ";" | "static _Thread_local" <type> <ident> <global_init> ";" ;
+<scalar_declaration> ::= <type> <ident> "=" <expr> ";" | "_Alignas" "(" <int> ")" <type> <ident> "=" <expr> ";" | "static _Thread_local" <type> <ident> <global_init> ";" | <anonymous_union_declaration> ;
+<anonymous_union_declaration> ::= "union" "{" <field_list> "}" <ident> ";" ;
 <array_declaration> ::= <type> <ident> "[" <array_bound> "]" ";" | "static" <type> <ident> "[" "]" "=" <string_literal> ";" ;
 <array_bound> ::= <int> | <ident> ;
 <assignment> ::= <lvalue> "=" <expr> ";" ;
