@@ -1,15 +1,16 @@
 use crate::fixups::facts::{
     self, AnonymousStructFact, ArrayElementPointerOriginFact, AsciiNumericStringFact, AstPath,
-    AtomicGlobalFact, AtomicLocalFact, BindingFact, BindingId, BindingTypeFact, BorrowAliasFact,
-    BorrowAliasReason, BorrowAliasState, BufferPointerFieldFact, CStringLiteralFact, CallArgFact,
-    CallSignatureFact, CalleeAllocSummaryFact, CallsiteFact, CastFact, ControlFlowFact,
-    ControlFlowSubject, CountedLoopFact, CountedSliceLoopFact, DefUseFact, EffectFact,
-    EffectSubject, FileOwnershipFact, FunctionFact, FunctionId, HeapOwnershipFact,
-    InterproceduralAllocCallerFact, InterproceduralAllocEligibilityFact, LazyInitSingletonFact,
-    LoopFact, NullCheckDominanceFact, OptionBoxComparison, OptionBoxLocalCandidate, PlaceFact,
-    PointerComparisonFact, PointerOptionSafetyFact, PrintfCallFact, PtrLenSliceFact, SignatureId,
-    StaticDeclFact, StringCopyRewriteFact, StringLiftPlanFact, StringParamLiftFact,
-    StringRecoveryCandidate, StructFieldOwnershipFact, ValueFact,
+    AtomicGlobalFact, AtomicLocalFact, BindingFact, BindingId, BindingKind, BindingTypeFact,
+    BorrowAliasFact, BorrowAliasReason, BorrowAliasState, BufferPointerFieldFact,
+    CStringLiteralFact, CallArgFact, CallSignatureFact, CalleeAllocSummaryFact, CallsiteFact,
+    CastFact, ControlFlowFact, ControlFlowSubject, CountedLoopFact, CountedSliceLoopFact,
+    DefUseFact, EffectFact, EffectSubject, FileOwnershipFact, FunctionFact, FunctionId,
+    HeapOwnershipFact, InterproceduralAllocCallerFact, InterproceduralAllocEligibilityFact,
+    LazyInitSingletonFact, LoopFact, NullCheckDominanceFact, OptionBoxComparison,
+    OptionBoxLocalCandidate, PlaceFact, PointerComparisonFact, PointerOptionSafetyFact,
+    PrintfCallFact, PtrLenSliceFact, SignatureId, StaticDeclFact, StringCopyRewriteFact,
+    StringLiftPlanFact, StringParamLiftFact, StringRecoveryCandidate, StructFieldOwnershipFact,
+    ValueFact,
 };
 use crate::fixups::query::{
     AnonymousStructSet, AtomicPromotionSet, BufferPointerFields, ByteSource, ByteView, CallRecord,
@@ -64,6 +65,14 @@ impl<'db> ProgramInput {
             .function_facts()
             .into_iter()
             .map(|fact| FunctionInput::new(db, self, fact.id))
+            .collect()
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn functions_by_name(self, db: &'db dyn FixupDb) -> BTreeMap<String, FunctionInput<'db>> {
+        self.functions(db)
+            .iter()
+            .map(|&input| (input.function(db).name(db).to_string(), input))
             .collect()
     }
 
@@ -175,6 +184,15 @@ impl<'db> FunctionInput<'db> {
     }
 
     #[salsa::tracked(returns(ref))]
+    fn local_bindings_by_path(self, db: &'db dyn FixupDb) -> BTreeMap<AstPath, BindingId<'db>> {
+        self.bindings_typed(db)
+            .iter()
+            .filter(|binding| binding.kind == BindingKind::Local)
+            .map(|binding| (binding.path.clone(), binding.id))
+            .collect()
+    }
+
+    #[salsa::tracked(returns(ref))]
     pub(in crate::fixups) fn binding_types_typed(
         self,
         db: &'db dyn FixupDb,
@@ -185,6 +203,15 @@ impl<'db> FunctionInput<'db> {
             .binding_type_facts()
             .into_iter()
             .filter(|fact| bindings.contains(&fact.binding))
+            .collect()
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn binding_type_ast_index(self, db: &'db dyn FixupDb) -> BTreeMap<BindingId<'db>, usize> {
+        self.binding_types_typed(db)
+            .iter()
+            .enumerate()
+            .map(|(index, fact)| (fact.binding, index))
             .collect()
     }
 
@@ -956,11 +983,7 @@ impl SalsaFacts {
 
     fn function_input<'db>(&'db self, function: FunctionId<'_>) -> Option<FunctionInput<'db>> {
         let name = function.name(&self.db);
-        self.program
-            .functions(&self.db)
-            .iter()
-            .copied()
-            .find(|input| input.function(&self.db).name(&self.db) == name)
+        self.program.functions_by_name(&self.db).get(name).copied()
     }
 
     pub(in crate::fixups) fn def_use<'a>(
@@ -1357,22 +1380,22 @@ impl SalsaFacts {
         path: &AstPath,
     ) -> Option<BindingId<'db>> {
         let input = self.function_input(function)?;
-        facts::binding_by_local_path(input.bindings_typed(&self.db), function, name, path)
+        let id = *input.local_bindings_by_path(&self.db).get(path)?;
+        (id.name(&self.db) == name).then_some(id)
     }
 
     pub(in crate::fixups) fn binding_type_ast(
         &self,
         binding: BindingId<'_>,
     ) -> Option<crate::rust_ast::Type> {
-        self.program.functions(&self.db).iter().find_map(|&input| {
-            facts::binding_type_ast(input.binding_types_typed(&self.db), binding).cloned()
-        })
+        let input = self.function_input(*binding.function(&self.db))?;
+        let index = *input.binding_type_ast_index(&self.db).get(&binding)?;
+        Some(input.binding_types_typed(&self.db)[index].ty.clone())
     }
 
     pub(in crate::fixups) fn binding_name(&self, binding: BindingId<'_>) -> Option<String> {
-        self.program.functions(&self.db).iter().find_map(|&input| {
-            facts::binding_name(input.bindings_typed(&self.db), binding).map(str::to_string)
-        })
+        let input = self.function_input(*binding.function(&self.db))?;
+        facts::binding_name(input.bindings_typed(&self.db), binding).map(str::to_string)
     }
 
     pub(in crate::fixups) fn bindings_read_under(
