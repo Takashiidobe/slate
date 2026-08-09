@@ -238,6 +238,21 @@ struct cpu_set_t;
 int pthread_getaffinity_np(pthread_t, size_t, struct cpu_set_t *);
 int pthread_setaffinity_np(pthread_t, size_t, const struct cpu_set_t *);
 int pthread_getattr_np(pthread_t, pthread_attr_t *);
+int pthread_setname_np(pthread_t, const char *);
+int pthread_getname_np(pthread_t, char *, size_t);
+int pthread_getattr_default_np(pthread_attr_t *);
+int pthread_setattr_default_np(const pthread_attr_t *);
+int pthread_tryjoin_np(pthread_t, void **);
+int pthread_timedjoin_np(pthread_t, void **, const struct timespec *);
+#endif
+
+#if _REDIR_TIME64
+__REDIR(pthread_mutex_timedlock, __pthread_mutex_timedlock_time64);
+__REDIR(pthread_cond_timedwait, __pthread_cond_timedwait_time64);
+__REDIR(pthread_rwlock_timedrdlock, __pthread_rwlock_timedrdlock_time64);
+__REDIR(pthread_rwlock_timedwrlock, __pthread_rwlock_timedwrlock_time64);
+#ifdef _GNU_SOURCE
+__REDIR(pthread_timedjoin_np, __pthread_timedjoin_np_time64);
 #endif
 
 #endif
