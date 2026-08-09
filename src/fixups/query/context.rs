@@ -3621,11 +3621,11 @@ impl<'snapshot> QueryContext<'snapshot> {
             })?;
         let mut uses = Vec::new();
         for site in self
-            .expression_sites()
-            .into_iter()
+            .expression_sites
+            .iter()
             .filter(|site| site.item_index == binding.item_index)
         {
-            let Some(Expr::Var(name)) = self.expr(&site) else {
+            let Some(Expr::Var(name)) = self.expr(site) else {
                 continue;
             };
             if name.as_str() != binding.name {
@@ -3647,7 +3647,7 @@ impl<'snapshot> QueryContext<'snapshot> {
             };
             if let Some(access) = access {
                 uses.push(BindingUse {
-                    site: UseSiteRef::Expression(ExpressionRef { site }),
+                    site: UseSiteRef::Expression(ExpressionRef { site: site.clone() }),
                     access,
                 });
             }
