@@ -1,3 +1,4 @@
+use serde::Deserialize;
 use serde_json::Value;
 use std::cell::RefCell;
 use std::collections::{BTreeSet, HashMap};
@@ -487,8 +488,11 @@ fn parse_json_with_record_roots(
     record_roots: &[PathBuf],
     mut plugin_events: PluginEvents,
 ) -> Result<Unit, String> {
-    let root: Value =
-        serde_json::from_str(json).map_err(|e| format!("parse clang AST JSON: {e}"))?;
+    let mut deserializer = serde_json::Deserializer::from_str(json);
+    deserializer.disable_recursion_limit();
+    let deserializer = serde_stacker::Deserializer::new(&mut deserializer);
+    let root =
+        Value::deserialize(deserializer).map_err(|e| format!("parse clang AST JSON: {e}"))?;
     let mut typedefs = HashMap::new();
     collect_typedefs(&root, &mut typedefs);
     TYPEDEFS.with(|table| *table.borrow_mut() = typedefs);
