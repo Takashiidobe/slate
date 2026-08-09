@@ -558,6 +558,7 @@ fn collect_enum_typedefs(node: &Value, out: &mut HashMap<String, String>) {
                 out.entry(tag.to_string()).or_insert(alias);
             } else if let Some(id) = child.get("id").and_then(Value::as_str)
                 && let Some(alias) = next_anonymous_enum_typedef_name(&kids, i + 1)
+                    .or_else(|| next_anonymous_enum_field_name(&kids, i + 1))
             {
                 out.entry(id.to_string()).or_insert(alias);
             }
@@ -569,7 +570,14 @@ fn collect_enum_typedefs(node: &Value, out: &mut HashMap<String, String>) {
 fn collect_enum_const_ids(node: &Value, out: &mut HashMap<String, (String, String, i64)>) {
     if kind(node) == Some("EnumDecl") {
         let tag = node.get("name").and_then(Value::as_str).unwrap_or("");
-        let enum_name = enum_rust_name(tag);
+        let enum_name = if tag.is_empty() {
+            node.get("id")
+                .and_then(Value::as_str)
+                .and_then(lookup_enum_name)
+                .unwrap_or_default()
+        } else {
+            enum_rust_name(tag)
+        };
         if !enum_name.is_empty() {
             let mut next_value = 0;
             for child in children(node) {
@@ -935,6 +943,16 @@ fn next_anonymous_enum_typedef_name(kids: &[&Value], start: usize) -> Option<Str
     }
     let name = sibling.get("name")?.as_str()?;
     (qual_type(sibling)? == format!("enum {name}")).then(|| name.to_string())
+}
+
+fn next_anonymous_enum_field_name(kids: &[&Value], start: usize) -> Option<String> {
+    let sibling = kids.get(start)?;
+    if kind(sibling) != Some("FieldDecl") {
+        return None;
+    }
+    let name = qual_type(sibling)?.strip_prefix("enum ")?;
+    (name.starts_with("(unnamed at ") || name.starts_with("(anonymous at "))
+        .then(|| name.to_string())
 }
 
 fn extract_enum(node: &Value, enum_typedefs: &HashMap<String, String>) -> Option<Enum> {
@@ -1475,13 +1493,11 @@ fn lookup_typedef(name: &str) -> Option<String> {
 }
 
 fn enum_rust_name(name: &str) -> String {
-    ENUM_TYPEDEFS.with(|table| {
-        table
-            .borrow()
-            .get(name)
-            .cloned()
-            .unwrap_or_else(|| name.to_string())
-    })
+    lookup_enum_name(name).unwrap_or_else(|| name.to_string())
+}
+
+fn lookup_enum_name(name: &str) -> Option<String> {
+    ENUM_TYPEDEFS.with(|table| table.borrow().get(name).cloned())
 }
 
 fn parse_function_pointer_qual_type(s: &str) -> Option<(CType, Vec<CType>)> {
@@ -1493,7 +1509,7 @@ fn parse_function_pointer_qual_type(s: &str) -> Option<(CType, Vec<CType>)> {
 fn parse_function_qual_type(s: &str) -> Option<(CType, Vec<CType>)> {
     let open = s.find('(')?;
     let ret = s[..open].trim();
-    if ret.is_empty() || ret.contains('*') || matches!(ret, "struct" | "union" | "enum") {
+    if ret.is_empty() || matches!(ret, "struct" | "union" | "enum") {
         return None;
     }
     let params = s[open + 1..].strip_suffix(')')?.trim();

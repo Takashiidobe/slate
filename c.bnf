@@ -39,7 +39,8 @@
 <struct_decl> ::= "struct" <ident> "{" <field_list> "};" | "struct" <ident> "{" "};" ;
 <union_decl> ::= "union" <ident> "{" <field_list> "};" ;
 <field_list> ::= <field> <field_list> | <pack_directive> <field_list> | <field> ;
-<field> ::= <type> <ident> ";" | <type> <ident> "[" "]" ";" | "_Alignas" "(" <int> ")" <type> <ident> ";" | <anonymous_record_member> ;
+<field> ::= <type> <ident> ";" | <type> <ident> "[" "]" ";" | "_Alignas" "(" <int> ")" <type> <ident> ";" | <anonymous_enum_field> | <anonymous_record_member> ;
+<anonymous_enum_field> ::= "enum" "{" <enumerator_list> "}" <ident> ";" ;
 <anonymous_record_member> ::= "struct" "{" <field_list> "};" | "union" "{" <field_list> "};" ;
 
 <global_decl> ::= <storage_class> <type> <ident> <global_init> ";" | <type> <ident> <global_init> ";" | "extern" <type> <ident> ";" | "extern _Thread_local" <type> <ident> ";" ;
