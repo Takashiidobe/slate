@@ -465,7 +465,25 @@ impl<'db> Collector<'db> {
 fn call_effect(expr: &Expr) -> EffectKind {
     if matches!(
         known_call(expr),
-        Some(Known::StrLen | Known::StrCmp | Known::StrNCmp | Known::MemCmp)
+        Some(
+            Known::StrLen
+                | Known::StrCmp
+                | Known::StrNCmp
+                | Known::MemCmp
+                | Known::ToUpper
+                | Known::ToLower
+                | Known::IsAlpha
+                | Known::IsDigit
+                | Known::IsUpper
+                | Known::IsLower
+                | Known::IsAlnum
+                | Known::IsXDigit
+                | Known::IsPunct
+                | Known::IsCntrl
+                | Known::IsGraph
+                | Known::IsPrint
+                | Known::IsSpace
+        )
     ) {
         return EffectKind::ReadOnlyCall;
     }
