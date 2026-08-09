@@ -1,0 +1,2 @@
+src/xmlparse.c
+src/random_getrandom.c

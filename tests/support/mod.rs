@@ -65,7 +65,7 @@ codegen-units = 256
     )
 }
 
-fn test_cache_root() -> PathBuf {
+pub fn test_cache_root() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("target/test-cache")
 }
 

@@ -105,6 +105,18 @@ Slate's own build target when that variable is unset. Repeatable
 its architecture, endianness, libc environment, operating system, vendor, and
 pointer width as one ABI configuration.
 
+Library projects can select their configured translation units explicitly:
+
+```bash
+cargo run -- translate-project --lib --source-manifest sources.txt project crate
+```
+
+The manifest contains one `.c` path per line, resolved relative to the project
+directory. Blank lines and lines beginning with `#` are ignored. Explicit
+source mode translates only those files and does not auto-discover the
+project's `tests/` directory, so included `.c` fragments and inactive platform
+backends are not treated as standalone translation units.
+
 The external pinned Microsoft CRT and UCRT header oracle used for MSVC work is
 bootstrapped under `target/`; see [msvc-sysroot.md](msvc-sysroot.md).
 

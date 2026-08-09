@@ -27,7 +27,7 @@ fn usage() -> ExitCode {
         "  translate-project [--target <triple>]... <dir> <out_dir>  cross-TU C dir -> Rust modules"
     );
     eprintln!(
-        "  translate-project --lib  <project_dir> <crate_dir>  cross-TU C library -> Cargo crate"
+        "  translate-project --lib [--source-manifest <file>] <project_dir> <crate_dir>  cross-TU C library -> Cargo crate"
     );
     ExitCode::from(2)
 }
@@ -59,12 +59,7 @@ fn main() -> ExitCode {
             None => usage(),
         },
         Some("translate-project") => match args.get(2).map(String::as_str) {
-            Some("--lib") => match (args.get(3), args.get(4)) {
-                (Some(dir), Some(out)) => {
-                    run(translate_project_lib_crate(Path::new(dir), Path::new(out)))
-                }
-                _ => usage(),
-            },
+            Some("--lib") => run(translate_project_lib_command(&args[3..])),
             Some(_) => match args.get(3) {
                 Some(_) => run(translate_project_command(&args[2..])),
                 None => usage(),
@@ -234,6 +229,76 @@ fn collect_c_modules(dir: &Path) -> Result<Vec<(String, PathBuf)>, String> {
             .and_then(|s| s.to_str())
             .ok_or_else(|| format!("bad file stem: {}", path.display()))?;
         modules.push((rust_ident(stem), path));
+    }
+    modules.sort();
+    Ok(modules)
+}
+
+fn collect_c_modules_from_manifest(
+    project_dir: &Path,
+    manifest: &Path,
+) -> Result<Vec<(String, PathBuf)>, String> {
+    let source = std::fs::read_to_string(manifest)
+        .map_err(|e| format!("read source manifest {}: {e}", manifest.display()))?;
+    let mut modules = Vec::new();
+    let mut paths = BTreeSet::new();
+    let mut stems = BTreeMap::new();
+    for (index, entry) in source.lines().enumerate() {
+        let entry = entry.trim();
+        if entry.is_empty() || entry.starts_with('#') {
+            continue;
+        }
+        let relative = Path::new(entry);
+        let path = if relative.is_absolute() {
+            relative.to_path_buf()
+        } else {
+            project_dir.join(relative)
+        };
+        if path.extension().and_then(|extension| extension.to_str()) != Some("c") {
+            return Err(format!(
+                "source manifest {}:{} does not name a .c file: {}",
+                manifest.display(),
+                index + 1,
+                entry
+            ));
+        }
+        if !path.is_file() {
+            return Err(format!(
+                "source manifest {}:{} file does not exist: {}",
+                manifest.display(),
+                index + 1,
+                path.display()
+            ));
+        }
+        if !paths.insert(path.clone()) {
+            return Err(format!(
+                "source manifest {}:{} repeats {}",
+                manifest.display(),
+                index + 1,
+                entry
+            ));
+        }
+        let stem = path
+            .file_stem()
+            .and_then(|stem| stem.to_str())
+            .map(rust_ident)
+            .ok_or_else(|| format!("bad file stem: {}", path.display()))?;
+        if let Some(previous) = stems.insert(stem.clone(), path.clone()) {
+            return Err(format!(
+                "source manifest {} maps both {} and {} to module {}",
+                manifest.display(),
+                previous.display(),
+                path.display(),
+                stem
+            ));
+        }
+        modules.push((stem, path));
+    }
+    if modules.is_empty() {
+        return Err(format!(
+            "source manifest {} contains no C translation units",
+            manifest.display()
+        ));
     }
     modules.sort();
     Ok(modules)
@@ -671,14 +736,59 @@ fn project_warning_items(
     Ok(items)
 }
 
+fn translate_project_lib_command(args: &[String]) -> Result<String, String> {
+    let mut paths = Vec::new();
+    let mut source_manifest = None;
+    let mut index = 0;
+    while index < args.len() {
+        match args[index].as_str() {
+            "--source-manifest" => {
+                index += 1;
+                let manifest = args
+                    .get(index)
+                    .ok_or_else(|| "--source-manifest requires a file".to_string())?;
+                if source_manifest.replace(PathBuf::from(manifest)).is_some() {
+                    return Err("--source-manifest may only be specified once".into());
+                }
+            }
+            flag if flag.starts_with('-') => {
+                return Err(format!("unknown translate-project --lib option: {flag}"));
+            }
+            path => paths.push(path),
+        }
+        index += 1;
+    }
+    if paths.len() != 2 {
+        return Err(
+            "translate-project --lib requires a project directory and crate directory".into(),
+        );
+    }
+    translate_project_lib_crate_with_manifest(
+        Path::new(paths[0]),
+        Path::new(paths[1]),
+        source_manifest.as_deref(),
+    )
+}
+
 fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<String, String> {
+    translate_project_lib_crate_with_manifest(project_dir, crate_dir, None)
+}
+
+fn translate_project_lib_crate_with_manifest(
+    project_dir: &Path,
+    crate_dir: &Path,
+    source_manifest: Option<&Path>,
+) -> Result<String, String> {
     let nested_src = project_dir.join("src");
     let src_dir = if nested_src.is_dir() {
         nested_src.as_path()
     } else {
         project_dir
     };
-    let modules = collect_c_modules(src_dir)?;
+    let modules = match source_manifest {
+        Some(manifest) => collect_c_modules_from_manifest(project_dir, manifest)?,
+        None => collect_c_modules(src_dir)?,
+    };
     if modules.is_empty() {
         return Err(format!(
             "translate-project --lib: no C files in {}",
@@ -775,7 +885,8 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
     };
 
     let tests_dir = project_dir.join("tests");
-    if tests_dir.is_dir() {
+    let translate_tests = source_manifest.is_none() && tests_dir.is_dir();
+    if translate_tests {
         for (_, path) in collect_c_modules(&tests_dir)? {
             let module = cir::parse_module(&cir::emit_generic(&path)?)?;
             has_setlocale |= lower::declared_functions(&module)
@@ -841,7 +952,7 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
     written.push(lib_rs_path);
 
     let mut test_modules = Vec::new();
-    if tests_dir.is_dir() {
+    if translate_tests {
         let crate_tests = crate_dir.join("tests");
         std::fs::create_dir_all(&crate_tests)
             .map_err(|e| format!("create {}: {e}", crate_tests.display()))?;
