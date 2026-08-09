@@ -232,13 +232,13 @@ pub fn compile_rs_project(
         let path = entry
             .map_err(|e| format!("read {} entry: {e}", rs_dir.display()))?
             .path();
-        if path.extension().and_then(|e| e.to_str()) == Some("rs") {
+        if matches!(path.extension().and_then(|e| e.to_str()), Some("rs" | "c")) {
             let name = path.file_name().expect("rs file name");
             std::fs::copy(&path, project.join("src").join(name))
                 .map_err(|e| format!("copy {} to project: {e}", path.display()))?;
         }
     }
-    write_long_double_shim(&project)?;
+    write_project_shim_build(&project)?;
 
     let target_dir = test_target_dir_for_project(&project);
     std::fs::create_dir_all(&target_dir)
@@ -585,6 +585,23 @@ void __slate_strtold(char *nptr, char **endptr, double *out) {
     write_if_changed(project.join("src/slate_long_double.c"), source.as_bytes())
         .map(|_| ())
         .map_err(|e| format!("write slate_long_double.c: {e}"))
+}
+
+fn write_project_shim_build(project: &Path) -> Result<(), String> {
+    if !project.join("src/slate_shims.c").is_file() {
+        return Ok(());
+    }
+    write_if_changed(
+        project.join("build.rs"),
+        r#"fn main() {
+    println!("cargo:rerun-if-changed=src/slate_shims.c");
+    cc::Build::new().file("src/slate_shims.c").compile("slate_shims");
+}
+"#
+        .as_bytes(),
+    )
+    .map(|_| ())
+    .map_err(|e| format!("write build.rs: {e}"))
 }
 
 fn collect_long_double_shim_names(

@@ -78,6 +78,45 @@ fn project_translation_rejects_active_unsupported_directives() {
     assert!(stderr.contains("STDC FENV_ACCESS ON"));
 }
 
+#[test]
+fn project_translation_defaults_to_the_active_target() {
+    let dir = fixture_dir("project_strtold");
+    let out_dir = cross_tu_work_dir("host-only-project").join("rs");
+    let _ = std::fs::remove_dir_all(&out_dir);
+    support::translate_project(&dir, &out_dir).expect("translate host project");
+
+    let parse = std::fs::read_to_string(out_dir.join("parse.rs")).expect("read parse.rs");
+    assert!(!parse.contains("target_arch ="));
+}
+
+#[test]
+fn project_translation_adds_explicit_target_variants() {
+    let dir = fixture_dir("project_strtold");
+    let out_dir = cross_tu_work_dir("extra-target-project").join("rs");
+    let _ = std::fs::remove_dir_all(&out_dir);
+    let (target, added_arch) = if std::env::consts::ARCH == "aarch64" {
+        ("x86_64-linux-gnu", "x86_64")
+    } else {
+        ("aarch64-linux-gnu", "aarch64")
+    };
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .args(["translate-project", "--target", target])
+        .arg(&dir)
+        .arg(&out_dir)
+        .env("SLATE_CLANG_ARGS", "-std=c23")
+        .output()
+        .expect("translate multi-target project");
+    assert!(
+        output.status.success(),
+        "translate-project failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    let parse = std::fs::read_to_string(out_dir.join("parse.rs")).expect("read parse.rs");
+    assert!(parse.contains(&format!("target_arch = \"{}\"", std::env::consts::ARCH)));
+    assert!(parse.contains(&format!("target_arch = \"{added_arch}\"")));
+}
+
 fn assert_binary_sections(binary: &Path, sections: &[&str]) {
     let out = std::process::Command::new("readelf")
         .args(["-S", "--wide"])
@@ -354,6 +393,13 @@ fn project_translation_shares_enum_types() {
 #[test]
 fn project_translation_shares_long_double_types() {
     build_and_diff("shared_long_double");
+}
+
+#[test]
+fn project_translation_emits_required_long_double_shims() {
+    let rs_dir = build_and_diff("project_strtold");
+    let shim = std::fs::read_to_string(rs_dir.join("slate_shims.c")).expect("read slate_shims.c");
+    assert!(shim.contains("void __slate_strtold"));
 }
 
 #[test]
