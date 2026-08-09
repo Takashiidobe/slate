@@ -375,6 +375,17 @@ impl<'db> FunctionInput<'db> {
     }
 
     #[salsa::tracked(returns(ref))]
+    fn borrow_alias_by_binding(
+        self,
+        db: &dyn FixupDb,
+    ) -> BTreeMap<BindingId<'db>, BorrowAliasFact<'db>> {
+        self.borrow_alias(db)
+            .iter()
+            .map(|fact| (fact.binding, fact.clone()))
+            .collect()
+    }
+
+    #[salsa::tracked(returns(ref))]
     fn array_element_pointer_origins(
         self,
         db: &dyn FixupDb,
@@ -629,6 +640,37 @@ impl<'db> ProgramInput {
             ));
         }
         all
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn callsite_index(
+        self,
+        db: &dyn FixupDb,
+        definitions: ProgramInput,
+    ) -> BTreeMap<(FunctionId<'db>, AstPath), usize> {
+        self.callsites(db, definitions)
+            .iter()
+            .enumerate()
+            .map(|(index, fact)| ((fact.site.function, fact.site.path.clone()), index))
+            .collect()
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn call_arg_index(
+        self,
+        db: &dyn FixupDb,
+        definitions: ProgramInput,
+    ) -> BTreeMap<(FunctionId<'db>, AstPath), (usize, usize)> {
+        let mut by_path = BTreeMap::new();
+        for (callsite_index, callsite) in self.callsites(db, definitions).iter().enumerate() {
+            for (arg_index, arg) in callsite.args.iter().enumerate() {
+                by_path.insert(
+                    (callsite.site.function, arg.path.clone()),
+                    (callsite_index, arg_index),
+                );
+            }
+        }
+        by_path
     }
 
     #[salsa::tracked(returns(ref))]
@@ -1137,16 +1179,15 @@ impl SalsaFacts {
             .get(&(subject, path.clone()))
     }
 
-    pub(in crate::fixups) fn borrow_alias_reasons(
-        &self,
-        function: FunctionId<'_>,
-        binding: BindingId<'_>,
-    ) -> Option<&BTreeSet<BorrowAliasReason>> {
+    pub(in crate::fixups) fn borrow_alias_reasons<'a>(
+        &'a self,
+        function: FunctionId<'a>,
+        binding: BindingId<'a>,
+    ) -> Option<&'a BTreeSet<BorrowAliasReason>> {
         let input = self.function_input(function)?;
         input
-            .borrow_alias(&self.db)
-            .iter()
-            .find(|fact| fact.binding == binding)
+            .borrow_alias_by_binding(&self.db)
+            .get(&binding)
             .map(|fact| &fact.reasons)
     }
 
@@ -1154,29 +1195,15 @@ impl SalsaFacts {
         &self,
         binding: BindingId<'_>,
     ) -> bool {
-        let Some(function) = self.program.functions(&self.db).iter().find_map(|&input| {
-            input
-                .bindings_typed(&self.db)
-                .iter()
-                .any(|fact| fact.id == binding)
-                .then(|| input.function(&self.db))
-        }) else {
-            return false;
-        };
-        self.binding_requires_mut(function, binding)
+        self.binding_requires_mut(*binding.function(&self.db), binding)
     }
 
     pub(in crate::fixups) fn borrow_alias_reasons_by_binding(
         &self,
         binding: BindingId<'_>,
     ) -> Option<BTreeSet<BorrowAliasReason>> {
-        self.program.functions(&self.db).iter().find_map(|&input| {
-            input
-                .borrow_alias(&self.db)
-                .iter()
-                .find(|fact| fact.binding == binding)
-                .map(|fact| fact.reasons.clone())
-        })
+        self.borrow_alias_reasons(*binding.function(&self.db), binding)
+            .cloned()
     }
 
     pub(in crate::fixups) fn binding_requires_mut(
@@ -1187,24 +1214,22 @@ impl SalsaFacts {
         let Some(input) = self.function_input(function) else {
             return false;
         };
-        let borrow_alias = input.borrow_alias(&self.db);
+        let borrow_alias = input.borrow_alias_by_binding(&self.db);
         let is_mut = |id: BindingId<'_>| {
             borrow_alias
-                .iter()
-                .find(|fact| fact.binding == id)
+                .get(&id)
                 .is_some_and(|fact| fact.state != BorrowAliasState::ReadOnly)
         };
         if is_mut(binding) {
             return true;
         }
-        let bindings = input.bindings_typed(&self.db);
-        let Some(target) = bindings.iter().find(|b| b.id == binding) else {
+        let Some(same_name) = input
+            .binding_ids_by_name(&self.db)
+            .get(binding.name(&self.db).as_str())
+        else {
             return false;
         };
-        bindings
-            .iter()
-            .filter(|other| other.name == target.name)
-            .any(|other| is_mut(other.id))
+        same_name.iter().any(|&other| is_mut(other))
     }
 
     pub(in crate::fixups) fn array_element_pointer_origins(
@@ -1294,10 +1319,11 @@ impl SalsaFacts {
         function: FunctionId<'_>,
         path: &AstPath,
     ) -> Option<CallsiteFact<'_>> {
-        self.callsites()
-            .iter()
-            .find(|fact| fact.site.function == function && &fact.site.path == path)
-            .cloned()
+        let index = *self
+            .program
+            .callsite_index(&self.db, self.program)
+            .get(&(function, path.clone()))?;
+        Some(self.callsites()[index].clone())
     }
 
     pub(in crate::fixups) fn call_arg_at(
@@ -1305,17 +1331,12 @@ impl SalsaFacts {
         function: FunctionId<'_>,
         path: &AstPath,
     ) -> Option<(CallsiteFact<'_>, CallArgFact)> {
-        self.callsites().iter().find_map(|callsite| {
-            if callsite.site.function != function {
-                return None;
-            }
-            callsite
-                .args
-                .iter()
-                .find(|arg| &arg.path == path)
-                .cloned()
-                .map(|arg| (callsite.clone(), arg))
-        })
+        let &(callsite_index, arg_index) = self
+            .program
+            .call_arg_index(&self.db, self.program)
+            .get(&(function, path.clone()))?;
+        let callsite = &self.callsites()[callsite_index];
+        Some((callsite.clone(), callsite.args[arg_index].clone()))
     }
 
     pub(in crate::fixups) fn ptr_len_slices(&self) -> &[PtrLenSliceFact<'_>] {
