@@ -20,7 +20,7 @@ enum truly_dead { DEAD_A, DEAD_B };
 enum color { RED, GREEN, BLUE };
 
 static int hidden_static = 5;
-static int live_static = 7;
+static int live_static   = 7;
 
 int compute(void) {
   int x = hidden_static;

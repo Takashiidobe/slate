@@ -774,6 +774,7 @@ fn rewrite_item(
                     Attr::Derive(vec![Derive::Clone, Derive::Copy]),
                 ],
                 vis: record.vis,
+                field_vis: record.field_vis,
                 generics: vec![],
                 name: plan.generated_name,
                 fields: StructFields::Tuple(

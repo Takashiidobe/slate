@@ -67,7 +67,7 @@ void      _free_locale(_locale_t);
 wchar_t  *_wsetlocale(int, const wchar_t *);
 _locale_t _wcreate_locale(int, const wchar_t *);
 
-wchar_t **___lc_locale_name_func(void);
+wchar_t    **___lc_locale_name_func(void);
 unsigned int ___lc_codepage_func(void);
 unsigned int ___lc_collate_cp_func(void);
 

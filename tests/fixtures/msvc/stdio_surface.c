@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 #define TYPE_IS(expression, ...)                                               \
-  _Static_assert(                                                             \
+  _Static_assert(                                                              \
       __builtin_types_compatible_p(__typeof__(expression), __VA_ARGS__),       \
       #expression)
 
@@ -129,8 +129,7 @@ TYPE_IS(&_vsnprintf, int (*)(char *, size_t, const char *, va_list));
 TYPE_IS(&_vsnprintf_c, int (*)(char *, size_t, const char *, va_list));
 TYPE_IS(&_snprintf, int (*)(char *, size_t, const char *, ...));
 TYPE_IS(&_snprintf_c, int (*)(char *, size_t, const char *, ...));
-TYPE_IS(&_vsprintf_p,
-        int (*)(char *, size_t, const char *, va_list));
+TYPE_IS(&_vsprintf_p, int (*)(char *, size_t, const char *, va_list));
 TYPE_IS(&_sprintf_p, int (*)(char *, size_t, const char *, ...));
 TYPE_IS(&_snscanf, int (*)(const char *, size_t, const char *, ...));
 TYPE_IS(&tempnam, char *(*)(const char *, const char *));

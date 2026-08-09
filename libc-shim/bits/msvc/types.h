@@ -24,7 +24,7 @@ typedef struct __crt_locale_pointers *_locale_t;
 
 #endif
 
-#if defined(__NEED_msvc_locale_layouts) &&                              \
+#if defined(__NEED_msvc_locale_layouts) &&                                     \
     !defined(__DEFINED_msvc_locale_layouts)
 typedef struct __crt_locale_data_public {
   const unsigned short *_locale_pctype;

@@ -23,6 +23,7 @@ pub struct ProjectInfo {
     pub shared_enums: BTreeSet<String>,
     pub shared_type_module: Option<String>,
     pub shared_type_crate: Option<String>,
+    pub shared_long_double: bool,
     pub cross_module_crate: Option<String>,
     pub unsafe_functions: BTreeSet<String>,
     pub crate_features: BTreeSet<Feature>,
@@ -379,27 +380,36 @@ pub fn lower_shared_types(
     records: &[crate::c_ast::Record],
     enums: &[crate::c_ast::Enum],
 ) -> Program {
-    let items = std::iter::once(Item::CrateAttrs(vec![CrateAttr::Allow(vec![
+    let mut items = vec![Item::CrateAttrs(vec![CrateAttr::Allow(vec![
         Lint::DeadCode,
         Lint::Unused,
         Lint::NonSnakeCase,
         Lint::NonUpperCaseGlobals,
-    ])]))
-    .chain(
+    ])])];
+    if shared_types_use_long_double(records) {
+        items.extend(long_double_prelude(Visibility::Pub));
+    }
+    items.extend(
         enums
             .iter()
             .filter_map(|enm| lower_enum_def(enm, Visibility::Pub).map(Item::Enum)),
-    )
-    .chain(
+    );
+    items.extend(
         records
             .iter()
             .flat_map(|record| lower_record_def(record, Visibility::Pub, Visibility::Pub, true)),
-    )
-    .collect();
+    );
     Program {
         items,
         ..Program::default()
     }
+}
+
+pub fn shared_types_use_long_double(records: &[crate::c_ast::Record]) -> bool {
+    records
+        .iter()
+        .flat_map(|record| &record.fields)
+        .any(|field| ctype_uses_long_double(&field.ty))
 }
 
 fn lower_enum_def(enm: &crate::c_ast::Enum, vis: Visibility) -> Option<EnumDef> {
@@ -544,6 +554,7 @@ fn lower_packed_aligned_wrapper(
             RustAttr::Derive(vec![Derive::Clone, Derive::Copy]),
         ],
         vis,
+        field_vis,
         generics: vec![],
         name: name.to_string(),
         fields: StructFields::Tuple(vec![Type::Custom(inner_name.clone())]),
@@ -795,6 +806,19 @@ impl Val {
 }
 
 impl<'a> Lowerer<'a> {
+    fn cross_module_path(&self, module: &str, name: &str) -> Path {
+        let root = self
+            .project
+            .cross_module_crate
+            .as_deref()
+            .unwrap_or("crate");
+        if module.is_empty() {
+            Path::new([Ident::from(root), Ident::from(name)])
+        } else {
+            Path::new([Ident::from(root), Ident::from(module), Ident::from(name)])
+        }
+    }
+
     fn call_binding(&self, op: &Op, direct: bool) -> CallBinding {
         if !direct {
             return CallBinding::Indirect;
@@ -922,10 +946,17 @@ impl<'a> Lowerer<'a> {
         self.ctor_calls = hooks.ctors;
         self.dtor_calls = hooks.dtors;
         self.used_symbols = collect_used_symbols(&ops);
-        for op in &ops {
-            if op.kind() == CirOpKind::Global {
-                self.collect_global(op);
-            }
+        for op in ops.iter().filter(|op| {
+            op.kind() == CirOpKind::Global
+                && attr_str(op, "sym_name").is_some_and(|name| name.starts_with(".str"))
+        }) {
+            self.collect_global(op);
+        }
+        for op in ops.iter().filter(|op| {
+            op.kind() == CirOpKind::Global
+                && !attr_str(op, "sym_name").is_some_and(|name| name.starts_with(".str"))
+        }) {
+            self.collect_global(op);
         }
         for global in self.globals.values() {
             let global_external_def = self.project.emit_pub && global.external;
@@ -975,17 +1006,8 @@ impl<'a> Lowerer<'a> {
         let mut extern_decls = Vec::new();
         for (name, global) in &self.extern_globals {
             if let Some(module) = self.project.cross_module_globals.get(name) {
-                let root = self
-                    .project
-                    .cross_module_crate
-                    .as_deref()
-                    .unwrap_or("crate");
                 self.cross_uses.push(Item::Use {
-                    path: Path::new([
-                        Ident::from(root),
-                        Ident::from(module.as_str()),
-                        Ident::from(name.as_str()),
-                    ]),
+                    path: self.cross_module_path(module, name),
                 });
                 continue;
             }
@@ -1056,17 +1078,8 @@ impl<'a> Lowerer<'a> {
                 continue;
             }
             if let Some(module) = self.project.cross_module.get(name) {
-                let root = self
-                    .project
-                    .cross_module_crate
-                    .as_deref()
-                    .unwrap_or("crate");
                 self.cross_uses.push(Item::Use {
-                    path: Path::new([
-                        Ident::from(root),
-                        Ident::from(module.as_str()),
-                        Ident::from(name),
-                    ]),
+                    path: self.cross_module_path(module, name),
                 });
                 continue;
             }
@@ -1172,8 +1185,8 @@ impl<'a> Lowerer<'a> {
                     .collect(),
             });
         }
-        if self.uses_long_double.get() {
-            items.splice(1..1, long_double_prelude());
+        if self.uses_long_double.get() && !self.project.shared_long_double {
+            items.splice(1..1, long_double_prelude(Visibility::Private));
         }
         if self.uses_complex.get() {
             items.splice(1..1, complex_prelude());
@@ -1207,6 +1220,15 @@ impl<'a> Lowerer<'a> {
                         Ident::from(root),
                         Ident::from(module.as_str()),
                         Ident::from(record.as_str()),
+                    ]),
+                });
+            }
+            if self.project.shared_long_double {
+                wiring.push(Item::Use {
+                    path: Path::new([
+                        Ident::from(root),
+                        Ident::from(module.as_str()),
+                        Ident::from(LONG_DOUBLE_TY),
                     ]),
                 });
             }
@@ -2265,6 +2287,8 @@ impl<'a> Lowerer<'a> {
             ])))
         } else if let Some(target) = parse_cir_global_view(raw) {
             self.global_view_init_expr(target, ty)
+        } else if let Some(fp) = parse_cir_fp(raw) {
+            Some(typed_fp_literal_expr(Some(ty), fp))
         } else {
             parse_cir_scalar_expr(raw)
         }
@@ -2844,6 +2868,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.parent.generated_alloca_frames.push(StructDef {
             attrs: vec![RustAttr::Repr(vec![Repr::C])],
             vis: Visibility::Private,
+            field_vis: Visibility::Private,
             generics: Vec::new(),
             name: frame_name.clone(),
             fields: StructFields::Tuple(fields),
@@ -8801,7 +8826,7 @@ fn long_double_binary(trait_: StdTrait, op: BinOp) -> Item {
 
 // x86-64 SysV wants size 16 / align 16 for long double; align(16) on an f64
 // newtype gives that layout while arithmetic stays f64-precision (tier 1).
-fn long_double_prelude() -> Vec<Item> {
+fn long_double_prelude(vis: Visibility) -> Vec<Item> {
     let neg_arg = Expr::Unary {
         op: UnaryOp::Neg,
         expr: Box::new(long_double_field("self")),
@@ -8817,7 +8842,8 @@ fn long_double_prelude() -> Vec<Item> {
                     Derive::PartialOrd,
                 ]),
             ],
-            vis: Visibility::Private,
+            vis,
+            field_vis: vis,
             generics: vec![],
             name: LONG_DOUBLE_TY.into(),
             fields: StructFields::Tuple(vec![Type::Prim(Prim::F64)]),
@@ -8957,6 +8983,7 @@ fn complex_prelude() -> Vec<Item> {
                 RustAttr::Derive(vec![Derive::Clone, Derive::Copy, Derive::PartialEq]),
             ],
             vis: Visibility::Private,
+            field_vis: Visibility::Private,
             generics: vec![GenericParam {
                 name: "T".into(),
                 bounds: vec![],
@@ -10026,6 +10053,11 @@ fn parse_cir_uint128(s: &str) -> Option<u128> {
 }
 
 fn parse_cir_bool(s: &str) -> Option<bool> {
+    match s.trim() {
+        "#true" => return Some(true),
+        "#false" => return Some(false),
+        _ => {}
+    }
     let start = s.find("#cir.bool<")? + "#cir.bool<".len();
     let rest = &s[start..];
     let end = rest.find('>')?;
@@ -10181,66 +10213,8 @@ fn sanitize_ident(s: &str) -> Ident {
     // `crate`/`self`/`Self`/`super` can't be raw identifiers, so mangle them instead.
     if matches!(out.as_str(), "crate" | "self" | "Self" | "super") {
         out.push('_');
-    } else if is_rust_keyword(&out) {
-        out = format!("r#{out}");
     }
     Ident::from(out)
-}
-
-fn is_rust_keyword(s: &str) -> bool {
-    matches!(
-        s,
-        "as" | "break"
-            | "const"
-            | "continue"
-            | "crate"
-            | "else"
-            | "enum"
-            | "extern"
-            | "false"
-            | "fn"
-            | "for"
-            | "if"
-            | "impl"
-            | "in"
-            | "let"
-            | "loop"
-            | "match"
-            | "mod"
-            | "move"
-            | "mut"
-            | "pub"
-            | "ref"
-            | "return"
-            | "self"
-            | "Self"
-            | "static"
-            | "struct"
-            | "super"
-            | "trait"
-            | "true"
-            | "type"
-            | "unsafe"
-            | "use"
-            | "where"
-            | "while"
-            | "async"
-            | "await"
-            | "dyn"
-            | "abstract"
-            | "become"
-            | "box"
-            | "do"
-            | "final"
-            | "macro"
-            | "override"
-            | "priv"
-            | "typeof"
-            | "unsized"
-            | "virtual"
-            | "yield"
-            | "try"
-    )
 }
 
 fn split_top_level_arrow(s: &str) -> Option<(&str, &str)> {

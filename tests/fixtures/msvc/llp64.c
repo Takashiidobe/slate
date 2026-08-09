@@ -20,7 +20,7 @@ extern long long imported_msvc(size_t, ptrdiff_t, intptr_t, uintptr_t, wchar_t,
                                long, long long, long double);
 
 long long call_imported_msvc(size_t size, ptrdiff_t difference,
-                             intptr_t signed_pointer,
+                             intptr_t  signed_pointer,
                              uintptr_t unsigned_pointer, wchar_t wide,
                              long narrow_long, long long wide_long,
                              long double real) {

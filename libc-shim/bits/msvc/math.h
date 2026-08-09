@@ -7,11 +7,11 @@ typedef float  float_t;
 typedef double double_t;
 
 struct _exception {
-  int     type;
-  char   *name;
-  double  arg1;
-  double  arg2;
-  double  retval;
+  int    type;
+  char  *name;
+  double arg1;
+  double arg2;
+  double retval;
 };
 
 struct _complex {
@@ -78,7 +78,7 @@ int   _dpcomp(double, double);
 int   _ldpcomp(long double, long double);
 int   _fdpcomp(float, float);
 
-#define __SLATE_MSVC_REAL_FAMILY(suffix, type)                                \
+#define __SLATE_MSVC_REAL_FAMILY(suffix, type)                                 \
   type acos##suffix(type);                                                     \
   type acosh##suffix(type);                                                    \
   type asin##suffix(type);                                                     \
@@ -170,35 +170,35 @@ double      scalbn(double, int);
 float       scalbnf(float, int);
 long double scalbnl(long double, int);
 
-int    _matherr(struct _exception *);
-int    abs(int);
-long   labs(long);
-long long llabs(long long);
-double atof(const char *);
-double _atof_l(const char *, _locale_t);
-double _cabs(struct _complex);
-double _chgsign(double);
-float  _chgsignf(float);
+int         _matherr(struct _exception *);
+int         abs(int);
+long        labs(long);
+long long   llabs(long long);
+double      atof(const char *);
+double      _atof_l(const char *, _locale_t);
+double      _cabs(struct _complex);
+double      _chgsign(double);
+float       _chgsignf(float);
 long double _chgsignl(long double);
-double _copysign(double, double);
-float  _copysignf(float, float);
+double      _copysign(double, double);
+float       _copysignf(float, float);
 long double _copysignl(long double, long double);
-double _hypot(double, double);
-float  _hypotf(float, float);
+double      _hypot(double, double);
+float       _hypotf(float, float);
 long double _hypotl(long double, long double);
-float  _logbf(float);
-float  _nextafterf(float, float);
-int    _finitef(float);
-int    _isnanf(float);
-int    _fpclassf(float);
-int    _set_FMA3_enable(int);
-int    _get_FMA3_enable(void);
-double _j0(double);
-double _j1(double);
-double _jn(int, double);
-double _y0(double);
-double _y1(double);
-double _yn(int, double);
+float       _logbf(float);
+float       _nextafterf(float, float);
+int         _finitef(float);
+int         _isnanf(float);
+int         _fpclassf(float);
+int         _set_FMA3_enable(int);
+int         _get_FMA3_enable(void);
+double      _j0(double);
+double      _j1(double);
+double      _jn(int, double);
+double      _y0(double);
+double      _y1(double);
+double      _yn(int, double);
 
 #if defined(_USE_MATH_DEFINES)
 #define _MATH_DEFINES_DEFINED

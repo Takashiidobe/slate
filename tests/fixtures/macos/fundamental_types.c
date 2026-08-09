@@ -42,7 +42,8 @@ _Static_assert(__builtin_types_compatible_p(fpos_t, long long), "fpos_t type");
 _Static_assert(LDBL_MANT_DIG == 53, "long double mantissa");
 _Static_assert(LDBL_MAX_EXP == 1024, "long double exponent");
 _Static_assert(__builtin_types_compatible_p(int64_t, long long), "int64_t");
-_Static_assert(__builtin_types_compatible_p(int_fast16_t, short), "int_fast16_t");
+_Static_assert(__builtin_types_compatible_p(int_fast16_t, short),
+               "int_fast16_t");
 _Static_assert(__builtin_types_compatible_p(int_fast32_t, int), "int_fast32_t");
 _Static_assert(__builtin_types_compatible_p(int_fast64_t, long long),
                "int_fast64_t");
@@ -93,7 +94,7 @@ long call_darwin_import(size_t size, ptrdiff_t difference, intptr_t signed_ptr,
 
 int darwin_variadic_count(int count, ...) {
   va_list values;
-  int total = 0;
+  int     total = 0;
   va_start(values, count);
   for (int i = 0; i < count; ++i)
     total += va_arg(values, int);

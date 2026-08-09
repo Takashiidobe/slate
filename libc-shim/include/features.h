@@ -25,7 +25,7 @@
 #if defined(__SLATE_LIBC_GLIBC) + defined(__SLATE_LIBC_MUSL) +                 \
         defined(__SLATE_LIBC_MINGW) + defined(__SLATE_LIBC_MSVC) +             \
         defined(__SLATE_LIBC_BIONIC) + defined(__SLATE_LIBC_DARWIN) +          \
-        defined(__SLATE_LIBC_GENERIC) !=                                        \
+        defined(__SLATE_LIBC_GENERIC) !=                                       \
     1
 #error "Slate requires one supported target libc."
 #endif
@@ -84,8 +84,7 @@
 #endif
 
 #if !defined(__SLATE_LIBC_MSVC) && !defined(__SLATE_LIBC_DARWIN) &&            \
-    !defined(_POSIX_SOURCE) &&                                                 \
-    !defined(_POSIX_C_SOURCE) &&                                               \
+    !defined(_POSIX_SOURCE) && !defined(_POSIX_C_SOURCE) &&                    \
     !defined(_XOPEN_SOURCE) && !defined(_GNU_SOURCE) &&                        \
     !defined(_BSD_SOURCE) && !defined(__STRICT_ANSI__)
 #define _BSD_SOURCE   1
