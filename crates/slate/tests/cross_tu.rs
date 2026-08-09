@@ -360,6 +360,10 @@ fn cross_tu_functions() {
         "cross-TU prototype should import from sibling, not extern C"
     );
     assert!(
+        main_rs.contains("use crate::math::square;\nuse crate::math::cube;\n\n"),
+        "consecutive imports should form one block"
+    );
+    assert!(
         !main_rs.contains("fn square"),
         "definition must live in its own module, not the root"
     );
@@ -652,6 +656,9 @@ fn gnu_symbol_pragmas_preserve_cross_tu_linkage() {
     );
     assert!(symbols_rs.contains("#[unsafe(no_mangle)]\npub extern \"C\" fn pragma_weak_target"));
     assert!(symbols_rs.contains("#[unsafe(no_mangle)]\npub extern \"C\" fn pragma_actual"));
+    assert!(main_rs.contains(
+        "mod strong;\nmod symbols;\n\nuse crate::strong::pragma_weak_alias;\nuse crate::symbols::pragma_actual;\n\n"
+    ));
     assert!(main_rs.contains("use crate::strong::pragma_weak_alias;"));
     assert!(main_rs.contains("use crate::symbols::pragma_actual;"));
     assert!(!main_rs.contains("pragma_renamed"));
