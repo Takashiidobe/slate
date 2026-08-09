@@ -1024,7 +1024,8 @@ fn query_items<'query>(
     if domain == QueryDomain::Binding {
         return query
             .all_bindings()
-            .into_iter()
+            .iter()
+            .cloned()
             .map(QueryItem::Binding)
             .collect();
     }
