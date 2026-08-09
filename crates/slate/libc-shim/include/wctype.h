@@ -3,6 +3,17 @@
 
 #include <features.h>
 
+#if defined(__SLATE_LIBC_MSVC)
+
+#define __NEED_wint_t
+#define __NEED_wctype_t
+#define __NEED_wctrans_t
+#include <bits/types.h>
+
+#include <bits/msvc/wctype.h>
+
+#else
+
 #define __NEED_wint_t
 #define __NEED_wctype_t
 #if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
@@ -59,6 +70,8 @@ wint_t    towupper_l(wint_t, locale_t);
 wint_t    towctrans_l(wint_t, wctrans_t, locale_t);
 wctrans_t wctrans_l(const char *, locale_t);
 wctype_t  wctype_l(const char *, locale_t);
+#endif
+
 #endif
 
 #endif

@@ -167,5 +167,6 @@ int   unlink(const char *);
 #define _CRT_INTERNAL_SCANF_LEGACY_MSVCRT_COMPATIBILITY (1ULL << 2)
 
 #include <bits/msvc/locale/stdio.h>
+#include <bits/msvc/wchar/stdio.h>
 
 #endif

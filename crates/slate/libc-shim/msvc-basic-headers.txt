@@ -12,3 +12,5 @@ stdio.h
 stdlib.h
 string.h
 time.h
+wchar.h
+wctype.h

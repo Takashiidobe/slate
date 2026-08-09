@@ -81,6 +81,7 @@ size_t wcstombs(char *restrict dst, const wchar_t *restrict src, size_t len);
 
 #if defined(__SLATE_LIBC_MSVC)
 #include <bits/msvc/locale/stdlib.h>
+#include <bits/msvc/wchar/stdlib.h>
 #endif
 
 #endif

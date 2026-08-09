@@ -93,6 +93,7 @@ void *mempcpy(void *, const void *, size_t);
 
 #if defined(__SLATE_LIBC_MSVC)
 #include <bits/msvc/locale/string.h>
+#include <bits/msvc/wchar/string.h>
 #endif
 
 #endif
