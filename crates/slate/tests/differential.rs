@@ -2580,7 +2580,7 @@ fn assignment_places_cover_slots_globals_members_elements_and_derefs() {
 }
 
 #[test]
-fn preserves_documentation_comments_on_enums() {
+fn preserves_full_comments_on_declarations() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-comments");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
     let c_src = fixtures_dir().join("comments.c");
@@ -2592,8 +2592,29 @@ fn preserves_documentation_comments_on_enums() {
     assert!(rust.contains("#[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]\nenum Mode"));
     assert!(rust.contains("    /// disable processing\n    MODE_OFF = 0,"));
     assert!(rust.contains("    /// enable processing\n    MODE_ON = 1,"));
-    assert!(rust.contains("/// stores a selected mode\n#[repr(C)]"));
+    assert!(rust.contains("/// stores a selected mode\n/// names holder records\n#[repr(C)]"));
     assert!(rust.contains("    /// current mode value\n    mode: Mode,"));
+    assert!(rust.contains("/// counts completed operations\nstatic mut completed_count"));
+    assert!(rust.contains(
+        "/// increments a value and records the operation\n/// stores the intermediate result\nfn increment"
+    ));
+    for comment in [
+        "selects an operating mode",
+        "disable processing",
+        "enable processing",
+        "stores a selected mode",
+        "names holder records",
+        "current mode value",
+        "counts completed operations",
+        "increments a value and records the operation",
+        "stores the intermediate result",
+    ] {
+        assert_eq!(
+            rust.matches(comment).count(),
+            1,
+            "duplicate comment: {comment}"
+        );
+    }
 }
 
 #[test]

@@ -347,12 +347,7 @@ fn merge_target_programs(variants: &[(rust_ast::Cfg, rust_ast::Program)]) -> rus
         }
     }
 
-    let skip_kinds = |item: &rust_ast::Item| {
-        matches!(
-            item,
-            rust_ast::Item::CrateAttrs(_) | rust_ast::Item::Comment(_)
-        )
-    };
+    let skip_kinds = |item: &rust_ast::Item| matches!(item, rust_ast::Item::CrateAttrs(_));
 
     let item_id = |item: &rust_ast::Item| {
         (

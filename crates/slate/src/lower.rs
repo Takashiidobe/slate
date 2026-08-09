@@ -6,11 +6,12 @@ use crate::ctx::Ctx;
 use crate::function_identity::{CallBinding, FunctionIdentity};
 use crate::rust_ast::{
     Abi, AsmDialect, AsmOperand, AsmReg, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType,
-    Attr as RustAttr, BinOp, CLIB_RECORD_TYPES, CLibInitializer, CLibType, Cfg, CrateAttr, Derive,
-    EnumConst, EnumDef, Expr, ExprMatchArm, ExternDecl, ExternFnDecl, Feature, FnDef, FnParam,
-    GenericParam, Ident, ImplBlock, ImplItem, IndentStmt, InlineAsm, Item, Label, Lint, MatchArm,
-    Method, Path, Pattern, Prim, Program, RecordDef, RecordField, Repr, RustValue, SelfKind,
-    StdTrait, Stmt, StructDef, StructFields, TraitBound, Type, UnaryOp, UsedKind, Visibility,
+    Attr as RustAttr, BinOp, CLIB_RECORD_TYPES, CLibInitializer, CLibType, Cfg, Comment, CrateAttr,
+    Derive, EnumConst, EnumDef, Expr, ExprMatchArm, ExternDecl, ExternFnDecl, Feature, FnDef,
+    FnParam, GenericParam, Ident, ImplBlock, ImplItem, IndentStmt, InlineAsm, Item, Label, Lint,
+    MatchArm, Method, Path, Pattern, Prim, Program, RecordDef, RecordField, Repr, RustValue,
+    SelfKind, StdTrait, Stmt, StructDef, StructFields, TraitBound, Type, UnaryOp, UsedKind,
+    Visibility,
 };
 use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
 
@@ -347,6 +348,32 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
             .or_insert(record);
     }
     reconcile_anonymous_member_types(cir, &mut records);
+    let mut declaration_comments: BTreeMap<(String, String), Vec<Comment>> = BTreeMap::new();
+    for declaration in &c.declaration_comments {
+        let Some(name) = &declaration.name else {
+            continue;
+        };
+        let name = sanitize_ident(name).into_string();
+        let comment = Comment {
+            lines: declaration.lines.clone(),
+        };
+        if declaration.kind != "FunctionDecl"
+            && let Some(function) = &declaration.function
+        {
+            declaration_comments
+                .entry((
+                    "FunctionDecl".into(),
+                    sanitize_ident(function).into_string(),
+                ))
+                .or_default()
+                .push(comment);
+        } else {
+            declaration_comments
+                .entry((declaration.kind.clone(), name))
+                .or_default()
+                .push(comment);
+        }
+    }
     let mut lowerer = Lowerer {
         ctx,
         aliases: cir.aliases.clone(),
@@ -367,6 +394,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         records,
         enums,
         anon_records,
+        declaration_comments,
         globals: BTreeMap::new(),
         extern_globals: BTreeMap::new(),
         strings: BTreeMap::new(),
@@ -695,6 +723,7 @@ struct Lowerer<'a> {
     records: BTreeMap<String, crate::c_ast::Record>,
     enums: BTreeMap<String, crate::c_ast::Enum>,
     anon_records: Vec<crate::c_ast::Record>,
+    declaration_comments: BTreeMap<(String, String), Vec<Comment>>,
     globals: BTreeMap<String, GlobalVar>,
     extern_globals: BTreeMap<String, ExternGlobal>,
     strings: BTreeMap<String, Vec<u8>>,
@@ -855,6 +884,16 @@ impl Val {
 }
 
 impl<'a> Lowerer<'a> {
+    fn declaration_comment_items(&self, kind: &str, name: &str) -> Vec<Item> {
+        self.declaration_comments
+            .get(&(kind.to_string(), sanitize_ident(name).into_string()))
+            .into_iter()
+            .flatten()
+            .cloned()
+            .map(Item::Comment)
+            .collect()
+    }
+
     fn cross_module_path(&self, module: &str, name: &str) -> Path {
         let root = self
             .project
@@ -1042,6 +1081,7 @@ impl<'a> Lowerer<'a> {
                 attrs.push(RustAttr::ThreadLocal);
                 self.uses_thread_local.set(true);
             }
+            items.extend(self.declaration_comment_items("VarDecl", &global.name));
             items.push(Item::Static {
                 attrs,
                 vis: global_vis,
@@ -1205,12 +1245,14 @@ impl<'a> Lowerer<'a> {
             if op.kind() != CirOpKind::Func {
                 continue;
             }
+            let name = attr_str(op, "sym_name").unwrap_or_default();
             let item = if region_ops(op).is_empty() {
                 self.lower_func_alias(op, &ops)
             } else {
                 self.lower_func(op)
             };
             if let Some(item) = item {
+                items.extend(self.declaration_comment_items("FunctionDecl", name));
                 items.push(item);
             }
         }
