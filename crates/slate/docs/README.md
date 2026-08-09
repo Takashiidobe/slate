@@ -117,6 +117,26 @@ source mode translates only those files and does not auto-discover the
 project's `tests/` directory, so included `.c` fragments and inactive platform
 backends are not treated as standalone translation units.
 
+Configured library builds can instead provide one or more compilation
+databases:
+
+```bash
+cargo run -- translate-project --lib \
+  --compile-commands build-linux/compile_commands.json \
+  --compile-commands build-android/compile_commands.json \
+  project crate
+```
+
+Each command is normalized into a translation unit, target, and semantic Clang
+arguments. Compiler, output, dependency-file, and source operands are removed;
+relative paths are resolved against the command's `directory`. Slate prefers
+the JSON `arguments` form and shell-splits `command` as a fallback. Commands
+for different targets remain separate through CIR and AST lowering and are
+merged into cfg-gated Rust. Translation units present in only some databases
+produce cfg-gated modules. Two different command configurations for the same
+translation unit and Rust target are rejected because Slate cannot express
+that distinction as a target cfg.
+
 The external pinned Microsoft CRT and UCRT header oracle used for MSVC work is
 bootstrapped under `target/`; see [msvc-sysroot.md](msvc-sysroot.md).
 

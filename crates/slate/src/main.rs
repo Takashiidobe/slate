@@ -1,7 +1,7 @@
 use slate::effects::interp::interpret_program_main;
 use slate::{
-    api, c_ast, c_shim, cir, codegen, ctx, directive_translate, effects, fixups, lower, preprocess,
-    rust_ast,
+    api, c_ast, c_shim, cir, codegen, compile_commands, ctx, directive_translate, effects, fixups,
+    lower, preprocess, rust_ast,
 };
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
@@ -27,7 +27,7 @@ fn usage() -> ExitCode {
         "  translate-project [--target <triple>]... <dir> <out_dir>  cross-TU C dir -> Rust modules"
     );
     eprintln!(
-        "  translate-project --lib [--source-manifest <file>] <project_dir> <crate_dir>  cross-TU C library -> Cargo crate"
+        "  translate-project --lib [--source-manifest <file>|--compile-commands <file>...] <project_dir> <crate_dir>  cross-TU C library -> Cargo crate"
     );
     ExitCode::from(2)
 }
@@ -739,6 +739,7 @@ fn project_warning_items(
 fn translate_project_lib_command(args: &[String]) -> Result<String, String> {
     let mut paths = Vec::new();
     let mut source_manifest = None;
+    let mut compile_command_paths = Vec::new();
     let mut index = 0;
     while index < args.len() {
         match args[index].as_str() {
@@ -751,6 +752,13 @@ fn translate_project_lib_command(args: &[String]) -> Result<String, String> {
                     return Err("--source-manifest may only be specified once".into());
                 }
             }
+            "--compile-commands" => {
+                index += 1;
+                let commands = args
+                    .get(index)
+                    .ok_or_else(|| "--compile-commands requires a file".to_string())?;
+                compile_command_paths.push(PathBuf::from(commands));
+            }
             flag if flag.starts_with('-') => {
                 return Err(format!("unknown translate-project --lib option: {flag}"));
             }
@@ -761,6 +769,16 @@ fn translate_project_lib_command(args: &[String]) -> Result<String, String> {
     if paths.len() != 2 {
         return Err(
             "translate-project --lib requires a project directory and crate directory".into(),
+        );
+    }
+    if source_manifest.is_some() && !compile_command_paths.is_empty() {
+        return Err("--source-manifest and --compile-commands cannot be used together".into());
+    }
+    if !compile_command_paths.is_empty() {
+        return translate_project_lib_crate_with_compile_commands(
+            Path::new(paths[0]),
+            Path::new(paths[1]),
+            &compile_command_paths,
         );
     }
     translate_project_lib_crate_with_manifest(
@@ -1016,6 +1034,286 @@ fn translate_project_lib_crate_with_manifest(
         crate_dir,
         &package_name(crate_dir),
         &test_modules,
+        uses_slate_support,
+        !shims.is_empty(),
+    )?;
+
+    Ok(written
+        .into_iter()
+        .map(|path| format!("wrote {}\n", path.display()))
+        .collect())
+}
+
+#[derive(Default)]
+struct LibraryVariantFacts {
+    defined: BTreeMap<String, String>,
+    defined_globals: BTreeMap<String, String>,
+    unsafe_functions: BTreeSet<String>,
+    crate_features: BTreeSet<rust_ast::Feature>,
+    has_setlocale: bool,
+}
+
+struct LoadedLibraryVariant {
+    cfg: rust_ast::Cfg,
+    stem: String,
+    path: PathBuf,
+    module: cir::ir::Module,
+    unit: c_ast::Unit,
+    warning_items: Vec<rust_ast::Item>,
+}
+
+fn compile_command_args(command: &compile_commands::CompileCommand) -> Result<Vec<String>, String> {
+    let mut args = cir::emit::target_override_args(&command.target)?;
+    args.extend(command.args.iter().cloned());
+    Ok(args)
+}
+
+fn translate_project_lib_crate_with_compile_commands(
+    project_dir: &Path,
+    crate_dir: &Path,
+    database_paths: &[PathBuf],
+) -> Result<String, String> {
+    let commands = compile_commands::read(database_paths)?;
+    let mut command_map = BTreeMap::new();
+    let mut paths_by_stem = BTreeMap::new();
+    let mut variant_targets = BTreeMap::new();
+    for command in commands {
+        let stem = command
+            .file
+            .file_stem()
+            .and_then(|stem| stem.to_str())
+            .map(rust_ident)
+            .ok_or_else(|| format!("bad file stem: {}", command.file.display()))?;
+        if let Some(previous) = paths_by_stem.insert(stem.clone(), command.file.clone())
+            && previous != command.file
+        {
+            return Err(format!(
+                "compile commands map both {} and {} to module {}",
+                previous.display(),
+                command.file.display(),
+                stem
+            ));
+        }
+        let cfg = target_cfg(&command.target)?;
+        if let Some(previous) =
+            command_map.insert((command.file.clone(), cfg.clone()), command.clone())
+            && previous.args != command.args
+        {
+            return Err(format!(
+                "compile commands provide conflicting variants for {} and target {}",
+                command.file.display(),
+                command.target
+            ));
+        }
+        variant_targets.insert(cfg, command.target);
+    }
+
+    init_lib_crate(crate_dir)?;
+    let crate_src = crate_dir.join("src");
+    std::fs::create_dir_all(&crate_src)
+        .map_err(|error| format!("create {}: {error}", crate_src.display()))?;
+
+    let mut loaded = Vec::new();
+    let mut facts: BTreeMap<rust_ast::Cfg, LibraryVariantFacts> = BTreeMap::new();
+    let mut shared_records = BTreeMap::new();
+    let mut shared_enums = BTreeMap::new();
+    let mut referenced_record_types = BTreeSet::new();
+    let mut uses_slate_support = false;
+    for ((path, cfg), command) in &command_map {
+        let stem = path
+            .file_stem()
+            .and_then(|stem| stem.to_str())
+            .map(rust_ident)
+            .ok_or_else(|| format!("bad file stem: {}", path.display()))?;
+        let args = compile_command_args(command)?;
+        let source = std::fs::read_to_string(path)
+            .map_err(|error| format!("read {}: {error}", path.display()))?;
+        let pp = preprocess::record_translation_unit(path, &source, &args)?;
+        reject_active_unsupported(&pp, "translate-project --lib --compile-commands")?;
+        let warning_items = project_warning_items(
+            &pp,
+            "translate-project --lib --compile-commands",
+            directive_translate::WarningBackend::SupportMacro,
+        )?;
+        uses_slate_support |= !warning_items.is_empty();
+        let module = cir::parse_module(&cir::emit_generic_with_args(path, &args)?)?;
+        let variant_facts = facts.entry(cfg.clone()).or_default();
+        for symbol in lower::defined_functions(&module) {
+            variant_facts.defined.insert(symbol, stem.clone());
+        }
+        for symbol in lower::defined_globals(&module) {
+            variant_facts.defined_globals.insert(symbol, stem.clone());
+        }
+        variant_facts
+            .unsafe_functions
+            .extend(lower::unsafe_defined_functions(&module));
+        variant_facts
+            .crate_features
+            .extend(lower::required_features(&module));
+        variant_facts.has_setlocale |= lower::declared_functions(&module)
+            .iter()
+            .any(|name| name == "setlocale");
+        let unit = c_ast::parse_file_with_project_records_and_args(path, project_dir, &args)?;
+        for enm in &unit.enums {
+            shared_enums
+                .entry(rust_ident(&enm.name))
+                .or_insert_with(|| enm.clone());
+        }
+        for record in &unit.records {
+            collect_record_field_type_names(record, &mut referenced_record_types);
+            shared_records
+                .entry(rust_ident(&record.name))
+                .or_insert_with(|| record.clone());
+        }
+        for record in lower::shim_records_for_module(&module, &unit) {
+            collect_record_field_type_names(&record, &mut referenced_record_types);
+            shared_records
+                .entry(rust_ident(&record.name))
+                .or_insert(record);
+        }
+        loaded.push(LoadedLibraryVariant {
+            cfg: cfg.clone(),
+            stem,
+            path: path.clone(),
+            module,
+            unit,
+            warning_items,
+        });
+    }
+    for name in referenced_record_types {
+        shared_records.entry(name.clone()).or_insert(c_ast::Record {
+            name,
+            comments: Vec::new(),
+            kind: c_ast::RecordKind::Struct,
+            fields: Vec::new(),
+            packed: None,
+            align: None,
+        });
+    }
+
+    let shared_record_names: BTreeSet<_> = shared_records.keys().cloned().collect();
+    let shared_enum_names: BTreeSet<_> = shared_enums.keys().cloned().collect();
+    let shared_long_double =
+        lower::shared_types_use_long_double(&shared_records.values().cloned().collect::<Vec<_>>());
+    let has_setlocale = facts.values().any(|facts| facts.has_setlocale);
+    let fixup_skip = if has_setlocale {
+        fixups::SkipSet::skip(fixups::Pass::CTypeLibc)
+    } else {
+        fixups::SkipSet::none()
+    };
+    let cfgs: Vec<_> = variant_targets.keys().cloned().collect();
+    let crate_features: BTreeSet<_> = facts
+        .values()
+        .flat_map(|facts| facts.crate_features.iter().copied())
+        .collect();
+
+    let mut loaded_by_stem: BTreeMap<String, Vec<LoadedLibraryVariant>> = BTreeMap::new();
+    for variant in loaded {
+        loaded_by_stem
+            .entry(variant.stem.clone())
+            .or_default()
+            .push(variant);
+    }
+    let mut shims = BTreeMap::new();
+    let mut written = Vec::new();
+    for (stem, variants) in &loaded_by_stem {
+        let mut programs = Vec::new();
+        for cfg in &cfgs {
+            let Some(variant) = variants.iter().find(|variant| &variant.cfg == cfg) else {
+                programs.push((cfg.clone(), rust_ast::Program::default()));
+                continue;
+            };
+            let variant_facts = facts.get(cfg).expect("variant facts");
+            let project = lower::ProjectInfo {
+                cross_module: variant_facts.defined.clone(),
+                cross_module_globals: variant_facts.defined_globals.clone(),
+                shared_records: shared_record_names.clone(),
+                shared_enums: shared_enum_names.clone(),
+                shared_type_module: Some("types".into()),
+                shared_type_crate: None,
+                shared_long_double,
+                cross_module_crate: None,
+                unsafe_functions: variant_facts.unsafe_functions.clone(),
+                crate_features: crate_features.clone(),
+                child_modules: Vec::new(),
+                emit_pub: true,
+            };
+            let mut context = ctx::Ctx::default();
+            let mut program =
+                lower::lower_with_project(&variant.module, &variant.unit, &mut context, &project);
+            for diagnostic in &context.diagnostics.items {
+                eprintln!("{:?}: {}", diagnostic.severity, diagnostic.message);
+            }
+            if context.diagnostics.has_errors() {
+                return Err(format!("lowering failed for {}", variant.path.display()));
+            }
+            directive_translate::insert_directive_items(
+                &mut program,
+                variant.warning_items.clone(),
+            );
+            programs.push((cfg.clone(), fixups::apply_with(program, &fixup_skip)));
+        }
+        let program = merge_target_programs(&programs);
+        for shim in &program.shims {
+            shims
+                .entry(shim.name.clone())
+                .or_insert_with(|| shim.clone());
+        }
+        let output = crate_src.join(stem).with_extension("rs");
+        std::fs::write(&output, program.emit())
+            .map_err(|error| format!("write {}: {error}", output.display()))?;
+        written.push(output);
+    }
+
+    let has_shared_types = !shared_records.is_empty() || !shared_enums.is_empty();
+    if has_shared_types {
+        let records: Vec<_> = shared_records.into_values().collect();
+        let enums: Vec<_> = shared_enums.into_values().collect();
+        let output = crate_src.join("types.rs");
+        std::fs::write(&output, lower::lower_shared_types(&records, &enums).emit())
+            .map_err(|error| format!("write {}: {error}", output.display()))?;
+        written.push(output);
+    }
+
+    let mut lib_rs = String::new();
+    for feature in &crate_features {
+        lib_rs.push_str(&format!("#![feature({})]\n", feature.spelling()));
+    }
+    if has_shared_types {
+        lib_rs.push_str("pub mod types;\n");
+    }
+    for (stem, variants) in &loaded_by_stem {
+        let present: Vec<_> = cfgs
+            .iter()
+            .filter(|cfg| variants.iter().any(|variant| &variant.cfg == *cfg))
+            .cloned()
+            .collect();
+        if present.len() != cfgs.len() {
+            let cfg = if present.len() == 1 {
+                present.into_iter().next().unwrap()
+            } else {
+                rust_ast::Cfg::Any(present)
+            };
+            lib_rs.push_str(&format!("#[cfg({})]\n", cfg.render()));
+        }
+        lib_rs.push_str(&format!("pub mod {stem};\n"));
+    }
+    let lib_rs_path = crate_src.join("lib.rs");
+    std::fs::write(&lib_rs_path, lib_rs)
+        .map_err(|error| format!("write {}: {error}", lib_rs_path.display()))?;
+    written.push(lib_rs_path);
+
+    if uses_slate_support {
+        write_slate_support(crate_dir)?;
+    }
+    let shims: Vec<_> = shims.into_values().collect();
+    if !shims.is_empty() {
+        write_c_shims(crate_dir, &shims)?;
+    }
+    write_lib_crate_manifest(
+        crate_dir,
+        &package_name(crate_dir),
+        &[],
         uses_slate_support,
         !shims.is_empty(),
     )?;

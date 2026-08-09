@@ -23,7 +23,7 @@ pub fn lowered_program_with_args(
 ) -> Result<(cir::ir::Module, rust_ast::Program), String> {
     let source =
         std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
-    let pp = preprocess::record_file(&source, extra_args)?;
+    let pp = preprocess::record_translation_unit(path, &source, extra_args)?;
     reject_active_unsupported(&pp, "translate")?;
     let diagnostics: Vec<_> = pp
         .directives
@@ -128,7 +128,7 @@ pub fn reject_active_unsupported(
 pub fn reject_active_unsupported_file(path: &Path, context: &str) -> Result<(), String> {
     let source =
         std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
-    let pp = preprocess::record_file(&source, &[])?;
+    let pp = preprocess::record_translation_unit(path, &source, &[])?;
     reject_active_unsupported(&pp, context)
 }
 

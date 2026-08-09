@@ -3,6 +3,7 @@ pub mod c_ast;
 pub mod c_shim;
 pub mod cir;
 pub mod codegen;
+pub mod compile_commands;
 pub mod ctx;
 pub mod directive_translate;
 pub mod effects;
