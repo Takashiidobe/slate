@@ -873,7 +873,7 @@ pub(super) enum SliceLoopAccess {
     Mutable,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
 pub(super) enum EffectSubject {
     Expr,
     Stmt,
@@ -954,10 +954,10 @@ pub(super) enum LoopKind {
     For,
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
 pub(super) struct AstPath(pub(super) Vec<PathSegment>);
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, salsa::SalsaValue)]
 pub(super) enum PathSegment {
     Stmt(usize),
     Then,

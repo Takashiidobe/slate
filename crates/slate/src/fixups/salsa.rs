@@ -163,6 +163,18 @@ impl<'db> FunctionInput<'db> {
     }
 
     #[salsa::tracked(returns(ref))]
+    fn binding_ids_by_name(self, db: &'db dyn FixupDb) -> BTreeMap<String, Vec<BindingId<'db>>> {
+        let mut by_name = BTreeMap::<String, Vec<BindingId<'db>>>::new();
+        for binding in self.bindings_typed(db) {
+            by_name
+                .entry(binding.name.clone())
+                .or_default()
+                .push(binding.id);
+        }
+        by_name
+    }
+
+    #[salsa::tracked(returns(ref))]
     pub(in crate::fixups) fn binding_types_typed(
         self,
         db: &'db dyn FixupDb,
@@ -196,8 +208,27 @@ impl<'db> FunctionInput<'db> {
     }
 
     #[salsa::tracked(returns(ref))]
+    fn def_use_by_binding(self, db: &dyn FixupDb) -> BTreeMap<BindingId<'db>, DefUseFact<'db>> {
+        self.def_use(db)
+            .iter()
+            .map(|fact| (fact.binding, fact.clone()))
+            .collect()
+    }
+
+    #[salsa::tracked(returns(ref))]
     pub(in crate::fixups) fn effects(self, db: &dyn FixupDb) -> Vec<EffectFact<'db>> {
         facts::effects::collect_for_function(self.function_id(db), self.body(db))
+    }
+
+    #[salsa::tracked(returns(ref))]
+    fn effects_by_key(
+        self,
+        db: &dyn FixupDb,
+    ) -> BTreeMap<(EffectSubject, AstPath), EffectFact<'db>> {
+        self.effects(db)
+            .iter()
+            .map(|fact| ((fact.subject, fact.site.path.clone()), fact.clone()))
+            .collect()
     }
 
     #[salsa::tracked(returns(ref))]
@@ -913,16 +944,13 @@ impl SalsaFacts {
             .find(|input| input.function(&self.db).name(&self.db) == name)
     }
 
-    pub(in crate::fixups) fn def_use(
-        &self,
-        function: FunctionId<'_>,
-        binding: BindingId<'_>,
-    ) -> Option<&DefUseFact<'_>> {
+    pub(in crate::fixups) fn def_use<'a>(
+        &'a self,
+        function: FunctionId<'a>,
+        binding: BindingId<'a>,
+    ) -> Option<&'a DefUseFact<'a>> {
         let input = self.function_input(function)?;
-        input
-            .def_use(&self.db)
-            .iter()
-            .find(|fact| fact.binding == binding)
+        input.def_use_by_binding(&self.db).get(&binding)
     }
 
     pub(in crate::fixups) fn effect(
@@ -932,10 +960,7 @@ impl SalsaFacts {
         path: &AstPath,
     ) -> Option<&EffectFact<'_>> {
         let input = self.function_input(function)?;
-        input
-            .effects(&self.db)
-            .iter()
-            .find(|fact| fact.subject == subject && &fact.site.path == path)
+        input.effects_by_key(&self.db).get(&(subject, path.clone()))
     }
 
     pub(in crate::fixups) fn values_for(&self, function: FunctionId<'_>) -> &[ValueFact<'_>] {
@@ -1345,21 +1370,17 @@ impl SalsaFacts {
             return Vec::new();
         };
         let query_path = facts::def_use_query_path(path);
-        let bindings = input.bindings_typed(&self.db);
-        let matching_ids: Vec<_> = bindings
-            .iter()
-            .filter(|binding| binding.name == name)
-            .map(|binding| binding.id)
-            .collect();
+        let by_binding = input.def_use_by_binding(&self.db);
         input
-            .def_use(&self.db)
-            .iter()
+            .binding_ids_by_name(&self.db)
+            .get(name)
+            .into_iter()
+            .flatten()
+            .filter_map(|id| by_binding.get(id))
             .filter(|fact| {
-                matching_ids.contains(&fact.binding)
-                    && fact
-                        .reads
-                        .iter()
-                        .any(|read| facts::walk::paths_overlap(&read.0, &query_path.0))
+                fact.reads
+                    .iter()
+                    .any(|read| facts::walk::paths_overlap(&read.0, &query_path.0))
             })
             .map(|fact| fact.binding)
             .collect()
@@ -1375,21 +1396,17 @@ impl SalsaFacts {
             return Vec::new();
         };
         let query_path = facts::def_use_query_path(path);
-        let bindings = input.bindings_typed(&self.db);
-        let matching_ids: Vec<_> = bindings
-            .iter()
-            .filter(|binding| binding.name == name)
-            .map(|binding| binding.id)
-            .collect();
+        let by_binding = input.def_use_by_binding(&self.db);
         input
-            .def_use(&self.db)
-            .iter()
+            .binding_ids_by_name(&self.db)
+            .get(name)
+            .into_iter()
+            .flatten()
+            .filter_map(|id| by_binding.get(id))
             .filter(|fact| {
-                matching_ids.contains(&fact.binding)
-                    && fact
-                        .writes
-                        .iter()
-                        .any(|write| facts::walk::paths_overlap(&write.0, &query_path.0))
+                fact.writes
+                    .iter()
+                    .any(|write| facts::walk::paths_overlap(&write.0, &query_path.0))
             })
             .map(|fact| fact.binding)
             .collect()
