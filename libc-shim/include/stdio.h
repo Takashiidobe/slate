@@ -20,6 +20,10 @@
 #define __NEED_va_list
 #include <bits/types.h>
 
+#if defined(__SLATE_LIBC_MSVC)
+#include <bits/msvc/stdio.h>
+#else
+
 #undef EOF
 #define EOF (-1)
 
@@ -40,22 +44,12 @@
 #define TMP_MAX      10000
 #define L_tmpnam     20
 
-#if defined(__SLATE_LIBC_MSVC)
-typedef long long fpos_t;
-#else
 typedef union _G_fpos64_t {
   char      __opaque[16];
   long long __lldata;
   double    __align;
 } fpos_t;
-#endif
 
-#if defined(__SLATE_LIBC_MSVC)
-FILE *__acrt_iob_func(unsigned int);
-#define stdin  (__acrt_iob_func(0))
-#define stdout (__acrt_iob_func(1))
-#define stderr (__acrt_iob_func(2))
-#else
 extern FILE *const stdin;
 extern FILE *const stdout;
 extern FILE *const stderr;
@@ -63,7 +57,6 @@ extern FILE *const stderr;
 #define stdin  (stdin)
 #define stdout (stdout)
 #define stderr (stderr)
-#endif
 
 FILE *fopen(const char *__restrict, const char *__restrict);
 FILE *freopen(const char *__restrict, const char *__restrict, FILE *__restrict);
@@ -210,6 +203,8 @@ FILE *fopencookie(void *, const char *, cookie_io_functions_t);
 #define fsetpos64 fsetpos
 #define fpos64_t  fpos_t
 #define off64_t   off_t
+#endif
+
 #endif
 
 #endif

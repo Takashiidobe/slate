@@ -391,8 +391,12 @@ struct timespec {
 #undef __NEED_struct_timespec
 
 #if defined(__NEED_FILE) && !defined(__DEFINED_FILE)
+#if defined(__SLATE_LIBC_MSVC)
+#include <bits/msvc/types.h>
+#else
 typedef struct FILE FILE;
 #define __DEFINED_FILE
+#endif
 #endif
 #undef __NEED_FILE
 
