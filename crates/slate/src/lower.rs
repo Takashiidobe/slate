@@ -3289,6 +3289,39 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .or(Some(base))
     }
 
+    fn global_array_decay_expr(&self, name: &str, result_ty: &str) -> Option<Expr> {
+        let name = sanitize_ident(name).into_string();
+        let ty = self
+            .parent
+            .globals
+            .get(&name)
+            .map(|global| &global.ty)
+            .or_else(|| {
+                self.parent
+                    .extern_globals
+                    .get(&name)
+                    .map(|global| &global.ty)
+            })?;
+        let Type::Array { elem, .. } = ty else {
+            return None;
+        };
+        let Type::Ptr { inner, .. } = self.parent.rust_type(result_ty) else {
+            return None;
+        };
+        if inner.as_ref() != elem.as_ref() {
+            return None;
+        }
+        Some(Expr::MethodCallGeneric {
+            recv: Box::new(Expr::AddrOf {
+                mutable: true,
+                expr: Box::new(Expr::Var(name.into())),
+            }),
+            method: "cast".into(),
+            type_args: vec![(**elem).clone()],
+            args: Vec::new(),
+        })
+    }
+
     fn lower_const(&mut self, op: &Op) {
         let Some(result) = op.results.first() else {
             return;
@@ -6001,7 +6034,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     ty: self.parent.rust_type(result_ty),
                 })
             }
-            Some(Val::Global(name)) => Val::Global(name),
+            Some(Val::Global(name)) => self
+                .global_array_decay_expr(&name, result_ty)
+                .map(Val::Expr)
+                .unwrap_or(Val::Global(name)),
             _ if self
                 .slot_types
                 .get(src)
