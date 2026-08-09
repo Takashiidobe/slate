@@ -43,7 +43,8 @@
 <anonymous_enum_field> ::= "enum" "{" <enumerator_list> "}" <ident> ";" ;
 <anonymous_record_member> ::= "struct" "{" <field_list> "};" | "union" "{" <field_list> "};" ;
 
-<global_decl> ::= <storage_class> <type> <ident> <global_init> ";" | <type> <ident> <global_init> ";" | "extern" <type> <ident> ";" | "extern _Thread_local" <type> <ident> ";" ;
+<global_decl> ::= <storage_class> <type> <ident> <global_init> ";" | <type> <ident> <global_init> ";" | "extern" <type> <ident> ";" | "extern _Thread_local" <type> <ident> ";" | <global_array_decl> ;
+<global_array_decl> ::= <storage_class> <type> <ident> "[" <int> "]" <global_init> ";" | "_Alignas" "(" <int> ")" <storage_class> <type> <ident> "[" <int> "]" <global_init> ";" ;
 <storage_class> ::= "static" | "_Thread_local" | "static _Thread_local" | "" ;
 <global_init> ::= "=" <const> | "=" <aggregate_init> | "" ;
 <aggregate_init> ::= "{" <const_list> "}" ;
