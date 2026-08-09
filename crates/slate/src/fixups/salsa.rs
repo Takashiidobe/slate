@@ -1086,6 +1086,23 @@ impl SalsaFacts {
         self.program.calls_in(&self.db, function.item_index).clone()
     }
 
+    pub(in crate::fixups) fn all_calls(&self) -> &[CallRecord] {
+        self.program.all_calls(&self.db)
+    }
+
+    pub(in crate::fixups) fn call_at(&self, site: &ExprSite) -> Option<CallRecord> {
+        let proof = self
+            .program
+            .calls_in(&self.db, site.item_index)
+            .as_ref()
+            .ok()?;
+        proof
+            .value
+            .iter()
+            .find(|call| &call.site == site || call.trivial_unsafe_site.as_ref() == Some(site))
+            .cloned()
+    }
+
     pub(in crate::fixups) fn proof_reference_domain(&self) -> QueryResult<ReferenceDomain> {
         self.program.reference_domain(&self.db).clone()
     }

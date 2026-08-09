@@ -102,8 +102,6 @@ pub(in crate::fixups) struct CallRecord {
 
 pub(in crate::fixups) struct QueryContext<'snapshot> {
     program: &'snapshot Program,
-    calls: BTreeMap<(CallTarget, usize), Vec<CallRecord>>,
-    calls_by_site: BTreeMap<ExprSite, CallRecord>,
     expression_sites: Vec<ExprSite>,
     var_expression_sites: BTreeMap<(usize, String), Vec<ExprSite>>,
     expression_parents: BTreeMap<ExprSite, ExprSite>,
@@ -1331,6 +1329,19 @@ impl<'db> ProgramInput {
     }
 
     #[salsa::tracked(returns(ref))]
+    pub(in crate::fixups) fn all_calls(self, db: &'db dyn FixupDb) -> Vec<CallRecord> {
+        self.functions(db)
+            .iter()
+            .flat_map(|input| {
+                self.calls_in(db, input.item_index(db))
+                    .as_ref()
+                    .map(|proof| proof.value.clone())
+                    .unwrap_or_default()
+            })
+            .collect()
+    }
+
+    #[salsa::tracked(returns(ref))]
     pub(in crate::fixups) fn reference_domain(
         self,
         db: &dyn FixupDb,
@@ -1804,8 +1815,6 @@ impl<'snapshot> QueryContext<'snapshot> {
         program: &'snapshot Program,
         salsa: &'snapshot SalsaFacts,
     ) -> Self {
-        let mut calls: BTreeMap<(CallTarget, usize), Vec<CallRecord>> = BTreeMap::new();
-        let mut calls_by_site = BTreeMap::new();
         let mut expression_sites = Vec::new();
         let mut assignment_values = BTreeSet::new();
         let mut assignment_targets = BTreeSet::new();
@@ -1814,6 +1823,9 @@ impl<'snapshot> QueryContext<'snapshot> {
         let mut symbol_uses = BTreeMap::<String, Vec<usize>>::new();
         let mut var_expression_sites = BTreeMap::<(usize, String), Vec<ExprSite>>::new();
         let mut use_domain_complete = true;
+        let mut expression_roles = BTreeMap::<ExprSite, BTreeSet<ExpressionRole>>::new();
+        let mut expression_parents = BTreeMap::<ExprSite, ExprSite>::new();
+        let mut expr_stack: Vec<ExprSite> = Vec::new();
         for (item_index, item) in program.items.iter().enumerate() {
             index_definitions(item, item_index, &mut definitions);
             use_domain_complete &= item_use_domain_complete(item);
@@ -1827,8 +1839,20 @@ impl<'snapshot> QueryContext<'snapshot> {
                     &mut assignment_role_values,
                     &mut assignment_values,
                 );
+                expr_stack.clear();
                 walk::body_exprs_with_path(&function.body, &mut Vec::new(), &mut |expr, path| {
                     let site = expression_site(item_index, path);
+                    while let Some(top) = expr_stack.last() {
+                        if site.path.0.starts_with(top.path.0.as_slice()) {
+                            break;
+                        }
+                        expr_stack.pop();
+                    }
+                    if let Some(top) = expr_stack.last() {
+                        expression_parents.insert(site.clone(), top.clone());
+                    }
+                    expr_stack.push(site.clone());
+
                     expression_sites.push(site.clone());
                     if let Expr::Var(name) = expr {
                         var_expression_sites
@@ -1836,57 +1860,25 @@ impl<'snapshot> QueryContext<'snapshot> {
                             .or_default()
                             .push(site.clone());
                     }
-                    let Expr::Call {
-                        func,
-                        args,
-                        binding,
-                    } = expr
-                    else {
-                        return;
-                    };
-                    let target = call_target(func, binding);
-                    let arg_sites = (0..args.len())
-                        .map(|index| child_site(&site, index + 1))
-                        .collect::<Vec<_>>();
-                    let evidence = vec![Evidence {
-                        predicate: Predicate::Call,
-                        site: site.clone(),
-                        detail: EvidenceDetail::IndexedCall {
-                            target: target.clone(),
-                            arity: args.len(),
-                        },
-                    }];
-                    let record = CallRecord {
-                        trivial_unsafe_site: trivial_unsafe_site(program, &site),
-                        site,
-                        target: target.clone(),
-                        args: arg_sites,
-                        evidence,
-                    };
-                    calls_by_site.insert(record.site.clone(), record.clone());
-                    if let Some(wrapper) = &record.trivial_unsafe_site {
-                        calls_by_site.insert(wrapper.clone(), record.clone());
+                    if let Expr::Call { args, .. } = expr {
+                        expression_roles
+                            .entry(site.clone())
+                            .or_default()
+                            .insert(ExpressionRole::Call);
+                        expression_roles
+                            .entry(child_site(&site, 0))
+                            .or_default()
+                            .insert(ExpressionRole::CallCallee);
+                        for index in 0..args.len() {
+                            expression_roles
+                                .entry(child_site(&site, index + 1))
+                                .or_default()
+                                .insert(ExpressionRole::CallArgument(index));
+                        }
                     }
-                    calls
-                        .entry((target.clone(), args.len()))
-                        .or_default()
-                        .push(record);
                 });
             }
         }
-        let expression_set = expression_sites.iter().cloned().collect::<BTreeSet<_>>();
-        let expression_parents = expression_sites
-            .iter()
-            .filter_map(|site| {
-                (1..site.path.0.len()).rev().find_map(|length| {
-                    let parent = expression_site(site.item_index, &site.path.0[..length]);
-                    expression_set
-                        .contains(&parent)
-                        .then(|| (site.clone(), parent))
-                })
-            })
-            .collect();
-        let mut expression_roles = BTreeMap::<ExprSite, BTreeSet<ExpressionRole>>::new();
         for site in assignment_targets {
             expression_roles
                 .entry(site)
@@ -1899,26 +1891,8 @@ impl<'snapshot> QueryContext<'snapshot> {
                 .or_default()
                 .insert(ExpressionRole::AssignmentValue);
         }
-        for call in calls_by_site.values() {
-            expression_roles
-                .entry(call.site.clone())
-                .or_default()
-                .insert(ExpressionRole::Call);
-            expression_roles
-                .entry(child_site(&call.site, 0))
-                .or_default()
-                .insert(ExpressionRole::CallCallee);
-            for (index, argument) in call.args.iter().enumerate() {
-                expression_roles
-                    .entry(argument.clone())
-                    .or_default()
-                    .insert(ExpressionRole::CallArgument(index));
-            }
-        }
         Self {
             program,
-            calls,
-            calls_by_site,
             expression_sites,
             var_expression_sites,
             expression_parents,
@@ -2183,7 +2157,7 @@ impl<'snapshot> QueryContext<'snapshot> {
     }
 
     pub(in crate::fixups) fn all_calls(&self) -> impl Iterator<Item = &CallRecord> {
-        self.calls.values().flatten()
+        self.salsa().all_calls().iter()
     }
 
     pub(in crate::fixups) fn symbol_use_count(&self, name: &str) -> usize {
@@ -3312,7 +3286,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         expression: &ExpressionRef,
     ) -> QueryResult<CallRecord> {
         let predicate = Predicate::Call;
-        let call = self.calls_by_site.get(&expression.site).ok_or_else(|| {
+        let call = self.salsa().call_at(&expression.site).ok_or_else(|| {
             Rejection::new(
                 predicate,
                 Some(expression.site.clone()),
@@ -4789,7 +4763,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         index: usize,
     ) -> QueryResult<ExpressionRef> {
         let predicate = Predicate::CallArgument;
-        let Some(indexed) = self.calls_by_site.get(&call.site) else {
+        let Some(indexed) = self.salsa().call_at(&call.site) else {
             return Err(Rejection::new(
                 predicate,
                 Some(call.site.clone()),
@@ -4797,7 +4771,7 @@ impl<'snapshot> QueryContext<'snapshot> {
                 Vec::new(),
             ));
         };
-        if indexed != call {
+        if &indexed != call {
             return Err(Rejection::new(
                 predicate,
                 Some(call.site.clone()),
