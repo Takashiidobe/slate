@@ -118,7 +118,7 @@ impl<W: Write> Codegen<W> {
 
     pub fn program(&mut self, program: &Program) -> fmt::Result {
         for (i, item) in program.items.iter().enumerate() {
-            if i > 0 {
+            if i > 0 && !same_item_group(&program.items[i - 1], item) {
                 self.out.write_char('\n')?;
             }
             self.item(item)?;
@@ -1436,6 +1436,25 @@ impl<W: Write> Codegen<W> {
             Type::Never => self.out.write_char('!'),
         }
     }
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum ItemGroup {
+    Module,
+    Use,
+}
+
+fn item_group(item: &Item) -> Option<ItemGroup> {
+    match item {
+        Item::Mod { .. } => Some(ItemGroup::Module),
+        Item::Use { .. } => Some(ItemGroup::Use),
+        Item::Cfg { item, .. } => item_group(item),
+        _ => None,
+    }
+}
+
+fn same_item_group(left: &Item, right: &Item) -> bool {
+    item_group(left).is_some_and(|group| item_group(right) == Some(group))
 }
 
 pub fn program_to_string(program: &Program) -> String {
