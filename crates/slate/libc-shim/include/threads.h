@@ -1,8 +1,13 @@
 #ifndef _SLATE_THREADS_H
 #define _SLATE_THREADS_H
 
+#include <features.h>
 #include <time.h>
 
+#define __NEED_cnd_t
+#define __NEED_mtx_t
+
+#include <bits/types.h>
 #define thread_local _Thread_local
 
 #define TSS_DTOR_ITERATIONS 4
@@ -79,5 +84,11 @@ int   tss_create(tss_t *key, tss_dtor_t dtor);
 void *tss_get(tss_t key);
 int   tss_set(tss_t key, void *val);
 void  tss_delete(tss_t key);
+
+#if _REDIR_TIME64
+__REDIR(thrd_sleep, __thrd_sleep_time64);
+__REDIR(mtx_timedlock, __mtx_timedlock_time64);
+__REDIR(cnd_timedwait, __cnd_timedwait_time64);
+#endif
 
 #endif
