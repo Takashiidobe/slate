@@ -1,6 +1,8 @@
 #ifndef _SLATE_SYS_TIMEX_H
 #define _SLATE_SYS_TIMEX_H
 
+#include <features.h>
+
 #define __NEED_clockid_t
 
 #include <bits/types.h>
