@@ -105,6 +105,7 @@ pub(in crate::fixups) struct QueryContext<'snapshot> {
     calls: BTreeMap<(CallTarget, usize), Vec<CallRecord>>,
     calls_by_site: BTreeMap<ExprSite, CallRecord>,
     expression_sites: Vec<ExprSite>,
+    var_expression_sites: BTreeMap<(usize, String), Vec<ExprSite>>,
     expression_parents: BTreeMap<ExprSite, ExprSite>,
     assignment_values: BTreeSet<ExprSite>,
     expression_roles: BTreeMap<ExprSite, BTreeSet<ExpressionRole>>,
@@ -1811,6 +1812,7 @@ impl<'snapshot> QueryContext<'snapshot> {
         let mut assignment_role_values = BTreeSet::new();
         let mut definitions = BTreeMap::<DefinitionSelector, Vec<DefinitionSite>>::new();
         let mut symbol_uses = BTreeMap::<String, Vec<usize>>::new();
+        let mut var_expression_sites = BTreeMap::<(usize, String), Vec<ExprSite>>::new();
         let mut use_domain_complete = true;
         for (item_index, item) in program.items.iter().enumerate() {
             index_definitions(item, item_index, &mut definitions);
@@ -1828,6 +1830,12 @@ impl<'snapshot> QueryContext<'snapshot> {
                 walk::body_exprs_with_path(&function.body, &mut Vec::new(), &mut |expr, path| {
                     let site = expression_site(item_index, path);
                     expression_sites.push(site.clone());
+                    if let Expr::Var(name) = expr {
+                        var_expression_sites
+                            .entry((item_index, name.as_str().to_string()))
+                            .or_default()
+                            .push(site.clone());
+                    }
                     let Expr::Call {
                         func,
                         args,
@@ -1912,6 +1920,7 @@ impl<'snapshot> QueryContext<'snapshot> {
             calls,
             calls_by_site,
             expression_sites,
+            var_expression_sites,
             expression_parents,
             assignment_values,
             expression_roles,
@@ -3620,23 +3629,16 @@ impl<'snapshot> QueryContext<'snapshot> {
                 )
             })?;
         let mut uses = Vec::new();
-        for site in self
-            .expression_sites
-            .iter()
-            .filter(|site| site.item_index == binding.item_index)
-        {
-            let Some(Expr::Var(name)) = self.expr(site) else {
-                continue;
-            };
-            if name.as_str() != binding.name {
-                continue;
-            }
-            let reads = self
-                .salsa()
-                .bindings_read_under(function, name.as_str(), &site.fact_path);
-            let writes =
+        let key = (binding.item_index, binding.name.clone());
+        for site in self.var_expression_sites.get(&key).into_iter().flatten() {
+            let reads =
                 self.salsa()
-                    .bindings_written_under(function, name.as_str(), &site.fact_path);
+                    .bindings_read_under(function, binding.name.as_str(), &site.fact_path);
+            let writes = self.salsa().bindings_written_under(
+                function,
+                binding.name.as_str(),
+                &site.fact_path,
+            );
             let read = reads.as_slice() == [binding.id];
             let write = writes.as_slice() == [binding.id];
             let access = match (read, write) {

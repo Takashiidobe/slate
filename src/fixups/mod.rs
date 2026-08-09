@@ -93,6 +93,10 @@ fn apply_with_logger(
     debug_options: DebugOptions,
 ) -> Program {
     let mut debug_done = false;
+    let step_timing_threshold = std::env::var("SLATE_FIXUP_TIMING")
+        .ok()
+        .and_then(|millis| millis.parse().ok())
+        .map(std::time::Duration::from_millis);
 
     macro_rules! step {
         ($program:ident, $pass:expr, $body:block) => {{
@@ -106,7 +110,14 @@ fn apply_with_logger(
                     $program.emit(),
                 );
             }
+            let step_start = std::time::Instant::now();
             let result = if run { Some($body) } else { None };
+            if let Some(threshold) = step_timing_threshold {
+                let elapsed = step_start.elapsed();
+                if elapsed >= threshold {
+                    eprintln!("[fixup-timing] step pass={pass:?} total={elapsed:?}");
+                }
+            }
             if tracing {
                 logger.end_pass(ProgramSummary::from_program(&$program), $program.emit());
             }
@@ -1113,12 +1124,27 @@ fn to_fixpoint_program_with_facts(
     limit: FixpointLimit,
     mut fixup: impl FnMut(&mut Program, &salsa::SalsaFacts) -> bool,
 ) {
+    let timing_threshold = std::env::var("SLATE_FIXUP_TIMING")
+        .ok()
+        .and_then(|millis| millis.parse().ok())
+        .map(std::time::Duration::from_millis);
     let mut completed_rounds = 0;
     while limit.permits(completed_rounds) {
+        let round_start = std::time::Instant::now();
         let mut round_salsa = salsa::SalsaFacts::new_empty();
         round_salsa.set_program(program);
+        let salsa_ready = round_start.elapsed();
         completed_rounds += 1;
-        if !fixup(program, &round_salsa) {
+        let changed = fixup(program, &round_salsa);
+        if let Some(threshold) = timing_threshold {
+            let elapsed = round_start.elapsed();
+            if elapsed >= threshold {
+                eprintln!(
+                    "[fixup-timing] round={completed_rounds} salsa_ready={salsa_ready:?} total={elapsed:?}"
+                );
+            }
+        }
+        if !changed {
             break;
         }
     }
