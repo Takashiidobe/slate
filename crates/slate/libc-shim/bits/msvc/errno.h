@@ -1,7 +1,7 @@
 #ifndef _SLATE_BITS_MSVC_ERRNO_H
 #define _SLATE_BITS_MSVC_ERRNO_H
 
-typedef int errno_t;
+#include <bits/msvc/types.h>
 
 #define EPERM        1
 #define ENOENT       2
