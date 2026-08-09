@@ -190,7 +190,10 @@ pub fn unsafe_defined_functions(module: &Module) -> BTreeSet<String> {
         .filter(|op| {
             op.kind() == CirOpKind::Func && !region_ops(op).is_empty() && externally_exported(op)
         })
-        .filter(|op| function_requires_unsafe_contract(op))
+        .filter(|op| {
+            function_requires_unsafe_contract(op)
+                || function_type_is_variadic(attr_str(op, "function_type").unwrap_or(""))
+        })
         .filter_map(|op| attr_str(op, "sym_name").map(str::to_string))
         .filter(|name| name != "main")
         .collect();
