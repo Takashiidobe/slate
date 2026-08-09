@@ -860,6 +860,7 @@ fn nested_within(rest: &[PathSegment], start: usize, end: usize) -> bool {
 }
 
 const MAX_EDITS_PER_ROUND_PER_STMT: usize = 5;
+const SELECTED_SITES_WINDOW: usize = 64;
 
 pub(in crate::fixups) struct ItemPlanBuilder {
     builder: PlanBuilder<EditSet>,
@@ -938,8 +939,9 @@ impl ItemPlanBuilder {
             }
             if let Some(selected) = selected {
                 let site = selected.edit.site();
+                let window_start = selected_sites.len().saturating_sub(SELECTED_SITES_WINDOW);
                 if rule.ordered_non_overlapping
-                    && selected_sites
+                    && selected_sites[window_start..]
                         .iter()
                         .any(|selected| selected.overlaps(&site))
                 {
@@ -1522,16 +1524,7 @@ fn expression_matches(
     target: &ExprSite,
     predicate: impl Fn(&Expr) -> bool,
 ) -> bool {
-    let Some(Item::Fn(function)) = program.items.get(target.item_index) else {
-        return false;
-    };
-    let mut matched = false;
-    walk::body_exprs_with_path(&function.body, &mut Vec::new(), &mut |expr, path| {
-        if path.as_slice() == target.path.0 && predicate(expr) {
-            matched = true;
-        }
-    });
-    matched
+    walk::target_expr_at_path(program, target.item_index, &target.path).is_some_and(predicate)
 }
 
 fn statement_range_exists(program: &Program, target: &StatementRange) -> bool {
