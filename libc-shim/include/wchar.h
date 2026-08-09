@@ -5,6 +5,21 @@
 
 #include <stdarg.h>
 
+#if defined(__SLATE_LIBC_MSVC)
+
+#define __NEED_wchar_t
+#define __NEED_FILE
+#define __NEED_size_t
+#define __NEED_wint_t
+#define __NEED_NULL
+#define __NEED_wctype_t
+#define __NEED_mbstate_t
+#include <bits/types.h>
+
+#include <bits/msvc/wchar.h>
+
+#else
+
 #define __NEED_wchar_t
 #define __NEED_FILE
 #define __NEED_size_t
@@ -88,5 +103,7 @@ wchar_t      *wmemmove(wchar_t *, const wchar_t *, size_t);
 wchar_t      *wmemset(wchar_t *, wchar_t, size_t);
 int           wprintf(const wchar_t *, ...);
 int           wscanf(const wchar_t *, ...);
+
+#endif
 
 #endif

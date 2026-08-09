@@ -5,6 +5,10 @@
 
 #define __NEED_FILE
 #define __NEED_size_t
+#if defined(__SLATE_LIBC_MSVC)
+#define __NEED_wchar_t
+#define __NEED_wint_t
+#endif
 
 #if __STDC_VERSION__ < 201112L
 #define __NEED_struct__IO_FILE
