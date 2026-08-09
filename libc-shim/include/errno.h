@@ -6,6 +6,13 @@
 
 int *_errno(void);
 #define errno (*_errno())
+#elif defined(__SLATE_LIBC_DARWIN)
+extern int *__error(void);
+#define errno (*__error())
+
+#define EDOM   33
+#define ERANGE 34
+#define EILSEQ 92
 #else
 extern int *__errno_location(void);
 #define errno (*__errno_location())

@@ -23,8 +23,8 @@ unset, and defines exactly one macro in each family before Clang reads the shim:
 | `__SLATE_ARCH_`     | `X86`, `X86_64`, `ARM`, `AARCH64`, `RISCV32`, `RISCV64` |
 | `__SLATE_VENDOR_`   | `UNKNOWN`, `PC`, `APPLE`                                |
 | `__SLATE_KERNEL_`   | `LINUX`, `WINDOWS`, `DARWIN`                            |
-| `__SLATE_LIBC_`     | `GLIBC`, `MUSL`, `MINGW`, `MSVC`, `BIONIC`, `GENERIC`   |
-| `__SLATE_PLATFORM_` | `ANDROID`                                               |
+| `__SLATE_LIBC_`     | `GLIBC`, `MUSL`, `MINGW`, `MSVC`, `BIONIC`, `DARWIN`, `GENERIC` |
+| `__SLATE_PLATFORM_` | `ANDROID`, `MACOS`                                      |
 | `__SLATE_OBJ_`      | `ELF`, `COFF`, `MACHO`                                  |
 | `__SLATE_WORDSIZE_` | `32`, `64`                                              |
 | `__SLATE_ENDIAN_`   | `LITTLE`, `BIG`                                         |
@@ -33,6 +33,27 @@ unset, and defines exactly one macro in each family before Clang reads the shim:
 target environment and libc are not interchangeable: a GNU Linux target maps
 to `__SLATE_LIBC_GLIBC`, while a GNU Windows target maps to
 `__SLATE_LIBC_MINGW`.
+
+## Basic AArch64 macOS profile
+
+`SLATE_TARGET=aarch64-apple-darwin` selects Apple, macOS, the Darwin kernel and
+libc, Mach-O, LP64, and little endian. Slate passes
+`arm64-apple-macos11.0` to Clang so the initial deployment baseline is stable.
+The tracked header manifest is `libc-shim/macos-basic-headers.txt`.
+
+The profile covers the compiler-provided freestanding headers and the basic
+hosted ISO C surface in `assert.h`, `ctype.h`, `errno.h`, `math.h`, `stdio.h`,
+`stdlib.h`, `string.h`, and `time.h`. It models signed 32-bit `wchar_t`,
+Darwin's exact and fast integer typedefs, signed 64-bit `time_t`, unsigned
+64-bit `clock_t`, pointer-shaped AArch64 `va_list`, and 64-bit binary64
+`long double`. Generated Rust uses `f64` for Darwin `long double` and checks
+for `aarch64-apple-darwin` without linking when that Rust target is installed.
+
+The basic manifest deliberately excludes wide and locale APIs, full `FILE`
+layout, POSIX signals, pthreads, filesystem and directory structures, sockets,
+process APIs, and Darwin symbol redirects. Those surfaces remain unavailable
+as supported macOS profiles until their dedicated ABI tickets are complete.
+The shim does not search Linux host include directories for a Darwin target.
 
 ## Basic 64-bit Android Bionic profiles
 

@@ -24,7 +24,8 @@
 
 #if defined(__SLATE_LIBC_GLIBC) + defined(__SLATE_LIBC_MUSL) +                 \
         defined(__SLATE_LIBC_MINGW) + defined(__SLATE_LIBC_MSVC) +             \
-        defined(__SLATE_LIBC_BIONIC) + defined(__SLATE_LIBC_GENERIC) !=         \
+        defined(__SLATE_LIBC_BIONIC) + defined(__SLATE_LIBC_DARWIN) +          \
+        defined(__SLATE_LIBC_GENERIC) !=                                        \
     1
 #error "Slate requires one supported target libc."
 #endif
@@ -41,6 +42,23 @@
 
 #if defined(__SLATE_PLATFORM_ANDROID) && !defined(__SLATE_LIBC_BIONIC)
 #error "The Android platform requires the Bionic libc profile."
+#endif
+
+#if defined(__SLATE_LIBC_DARWIN)
+#if !defined(__SLATE_PLATFORM_MACOS) || !defined(__SLATE_ARCH_AARCH64) ||      \
+    !defined(__SLATE_VENDOR_APPLE) || !defined(__SLATE_KERNEL_DARWIN) ||       \
+    !defined(__SLATE_OBJ_MACHO) || !defined(__SLATE_WORDSIZE_64) ||            \
+    !defined(__SLATE_ENDIAN_LITTLE)
+#error "The Darwin libc profile requires AArch64 macOS."
+#endif
+#endif
+
+#if defined(__SLATE_PLATFORM_MACOS) && !defined(__SLATE_LIBC_DARWIN)
+#error "The macOS platform requires the Darwin libc profile."
+#endif
+
+#if defined(__SLATE_PLATFORM_ANDROID) && defined(__SLATE_PLATFORM_MACOS)
+#error "Slate requires one target platform."
 #endif
 
 #if defined(__SLATE_OBJ_ELF) + defined(__SLATE_OBJ_COFF) +                     \
@@ -65,7 +83,8 @@
 #define _BSD_SOURCE 1
 #endif
 
-#if !defined(__SLATE_LIBC_MSVC) && !defined(_POSIX_SOURCE) &&                  \
+#if !defined(__SLATE_LIBC_MSVC) && !defined(__SLATE_LIBC_DARWIN) &&            \
+    !defined(_POSIX_SOURCE) &&                                                 \
     !defined(_POSIX_C_SOURCE) &&                                               \
     !defined(_XOPEN_SOURCE) && !defined(_GNU_SOURCE) &&                        \
     !defined(_BSD_SOURCE) && !defined(__STRICT_ANSI__)

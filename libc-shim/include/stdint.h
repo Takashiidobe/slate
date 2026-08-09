@@ -53,11 +53,20 @@
 #define UINT8_MAX  (0xff)
 #define UINT16_MAX (0xffff)
 #define UINT32_MAX (0xffffffffu)
+#if defined(__SLATE_LIBC_DARWIN)
+#define UINT64_MAX (0xffffffffffffffffULL)
+#else
 #define UINT64_MAX (0xffffffffffffffffu)
+#endif
 
 #define INT_FAST8_MIN  INT8_MIN
+#if defined(__SLATE_LIBC_DARWIN)
+#define INT_FAST16_MIN INT16_MIN
+#define INT_FAST32_MIN INT32_MIN
+#else
 #define INT_FAST16_MIN INT64_MIN
 #define INT_FAST32_MIN INT64_MIN
+#endif
 #define INT_FAST64_MIN INT64_MIN
 
 #define INT_LEAST8_MIN  INT8_MIN
@@ -66,8 +75,13 @@
 #define INT_LEAST64_MIN INT64_MIN
 
 #define INT_FAST8_MAX  INT8_MAX
+#if defined(__SLATE_LIBC_DARWIN)
+#define INT_FAST16_MAX INT16_MAX
+#define INT_FAST32_MAX INT32_MAX
+#else
 #define INT_FAST16_MAX INT64_MAX
 #define INT_FAST32_MAX INT64_MAX
+#endif
 #define INT_FAST64_MAX INT64_MAX
 
 #define INT_LEAST8_MAX  INT8_MAX
@@ -76,8 +90,13 @@
 #define INT_LEAST64_MAX INT64_MAX
 
 #define UINT_FAST8_MAX  UINT8_MAX
+#if defined(__SLATE_LIBC_DARWIN)
+#define UINT_FAST16_MAX UINT16_MAX
+#define UINT_FAST32_MAX UINT32_MAX
+#else
 #define UINT_FAST16_MAX UINT64_MAX
 #define UINT_FAST32_MAX UINT64_MAX
+#endif
 #define UINT_FAST64_MAX UINT64_MAX
 
 #define UINT_LEAST8_MAX  UINT8_MAX
@@ -105,10 +124,14 @@
 #define SIZE_MAX    UINT32_MAX
 #endif
 
+#if defined(__SLATE_LIBC_DARWIN)
+#define WINT_MIN INT32_MIN
+#define WINT_MAX INT32_MAX
+#elif defined(__SLATE_LIBC_MSVC)
 #define WINT_MIN 0U
-#if defined(__SLATE_LIBC_MSVC)
 #define WINT_MAX UINT16_MAX
 #else
+#define WINT_MIN 0U
 #define WINT_MAX UINT32_MAX
 #endif
 
@@ -134,7 +157,12 @@
 #define UINT16_C(c) c
 #define UINT32_C(c) c##U
 
-#if UINTPTR_MAX == UINT64_MAX
+#if defined(__SLATE_LIBC_DARWIN)
+#define INT64_C(c)   c##LL
+#define UINT64_C(c)  c##ULL
+#define INTMAX_C(c)  c##L
+#define UINTMAX_C(c) c##UL
+#elif UINTPTR_MAX == UINT64_MAX
 #define INT64_C(c)   c##L
 #define UINT64_C(c)  c##UL
 #define INTMAX_C(c)  c##L
