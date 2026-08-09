@@ -19,8 +19,17 @@ pub struct Unit {
     pub anonymous_header_records: Vec<Record>,
     pub named_header_records: Vec<Record>,
     pub functions: Vec<Function>,
+    pub declaration_comments: Vec<DeclarationComment>,
     pub weak_refs: Vec<WeakRefAttribute>,
     call_bindings: HashMap<Loc, CallBinding>,
+}
+
+#[derive(Debug, Clone)]
+pub struct DeclarationComment {
+    pub kind: String,
+    pub name: Option<String>,
+    pub function: Option<String>,
+    pub lines: Vec<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -493,6 +502,7 @@ fn parse_json_with_record_roots(
     let mut anonymous_header_records = Vec::new();
     let mut named_header_records = Vec::new();
     let mut functions = Vec::new();
+    let mut declaration_comments = Vec::new();
     let mut weak_refs = Vec::new();
     collect_enums(&root, source_file, record_roots, &enum_typedefs, &mut enums);
     collect_records(
@@ -504,9 +514,26 @@ fn parse_json_with_record_roots(
         &mut anonymous_header_records,
         &mut named_header_records,
     );
+    let mut typedef_comments = HashMap::new();
+    collect_typedef_comments(&root, source_file, record_roots, &mut typedef_comments);
+    for enm in &mut enums {
+        if let Some(lines) = typedef_comments.get(&enm.name) {
+            append_comment_lines(&mut enm.comments, lines);
+        }
+    }
+    for record in records
+        .iter_mut()
+        .chain(&mut anonymous_header_records)
+        .chain(&mut named_header_records)
+    {
+        if let Some(lines) = typedef_comments.get(&record.name) {
+            append_comment_lines(&mut record.comments, lines);
+        }
+    }
     let source_text = (!source_file.is_empty())
         .then(|| std::fs::read_to_string(source_file).ok())
         .flatten();
+    collect_declaration_comments(&root, source_file, false, None, &mut declaration_comments);
     if let Some(source) = source_text.as_deref() {
         for (offset, fact) in &mut plugin_events.calls {
             fact.loc = loc_from_offset(source, *offset);
@@ -533,9 +560,67 @@ fn parse_json_with_record_roots(
         anonymous_header_records,
         named_header_records,
         functions,
+        declaration_comments,
         weak_refs,
         call_bindings,
     })
+}
+
+fn collect_declaration_comments(
+    node: &Value,
+    source_file: &str,
+    inherited_source: bool,
+    function: Option<&str>,
+    out: &mut Vec<DeclarationComment>,
+) {
+    let in_source = inherited_source || is_source_node(node, source_file);
+    let function = if in_source && kind(node) == Some("FunctionDecl") {
+        node.get("name").and_then(Value::as_str).or(function)
+    } else {
+        function
+    };
+    if in_source {
+        let lines = attached_comment(node);
+        if !lines.is_empty() {
+            out.push(DeclarationComment {
+                kind: kind(node).unwrap_or_default().to_string(),
+                name: node.get("name").and_then(Value::as_str).map(str::to_string),
+                function: function.map(str::to_string),
+                lines,
+            });
+        }
+    }
+    for child in children(node) {
+        if kind(child) != Some("FullComment") {
+            collect_declaration_comments(child, source_file, in_source, function, out);
+        }
+    }
+}
+
+fn collect_typedef_comments(
+    node: &Value,
+    source_file: &str,
+    record_roots: &[PathBuf],
+    out: &mut HashMap<String, Vec<String>>,
+) {
+    if kind(node) == Some("TypedefDecl")
+        && (is_source_node(node, source_file) || is_in_record_roots(node, record_roots))
+        && let Some(name) = node.get("name").and_then(Value::as_str)
+    {
+        let lines = attached_comment(node);
+        if !lines.is_empty() {
+            append_comment_lines(out.entry(name.to_string()).or_default(), &lines);
+        }
+    }
+    for child in children(node) {
+        collect_typedef_comments(child, source_file, record_roots, out);
+    }
+}
+
+fn append_comment_lines(out: &mut Vec<String>, lines: &[String]) {
+    if !lines.is_empty() && !out.windows(lines.len()).any(|existing| existing == lines) {
+        out.extend_from_slice(lines);
+    }
 }
 
 fn collect_typedefs(node: &Value, out: &mut HashMap<String, String>) {

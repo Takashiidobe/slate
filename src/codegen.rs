@@ -118,7 +118,10 @@ impl<W: Write> Codegen<W> {
 
     pub fn program(&mut self, program: &Program) -> fmt::Result {
         for (i, item) in program.items.iter().enumerate() {
-            if i > 0 && !same_item_group(&program.items[i - 1], item) {
+            if i > 0
+                && !matches!(program.items[i - 1], Item::Comment(_))
+                && !same_item_group(&program.items[i - 1], item)
+            {
                 self.out.write_char('\n')?;
             }
             self.item(item)?;
