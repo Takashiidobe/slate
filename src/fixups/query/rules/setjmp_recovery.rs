@@ -1,16 +1,16 @@
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 
 use crate::fixups::support::walk;
 use crate::fixups::trace::Pass;
 use crate::function_identity::CallBinding;
 use crate::rust_ast::{
-    BinOp, Block, Expr, ExprMatchArm, Ident, IndentStmt, Item, MatchArm, Path, Pattern, Prim,
+    Abi, BinOp, Block, Expr, ExprMatchArm, Ident, IndentStmt, Item, MatchArm, Path, Pattern, Prim,
     Program, RustValue, Stmt, StructDef, StructFields, Type, Visibility,
 };
 
 use super::super::{
-    EditSet, Predicate, Proof, QueryContext, QueryResult, QueryRule, Rejection, RejectionReason,
-    WholeProgram,
+    CallRecord, EditSet, FunctionRef, Predicate, Proof, QueryContext, QueryResult, QueryRule,
+    Rejection, RejectionReason, WholeProgram,
 };
 
 pub(in crate::fixups) fn program() -> QueryRule<WholeProgram> {
@@ -61,18 +61,194 @@ fn rewrite_setjmp_recovery(query: &QueryContext<'_>) -> QueryResult<SetjmpRecove
             Vec::new(),
         ));
     }
+    let mut origin_functions = BTreeSet::new();
     for item in replacement.items.iter_mut() {
-        if let Item::Fn(f) = item {
-            rewrite_longjmp_calls_in_body(&mut f.body, &buffers);
+        if let Item::Fn(f) = item
+            && rewrite_longjmp_calls_in_body(&mut f.body, &buffers)
+        {
+            origin_functions.insert(f.name.clone());
         }
     }
     for buffer in &buffers {
         replacement.items.push(payload_struct_item(buffer));
     }
+
+    let (flip_targets, fallback) = functions_needing_unwind_abi(query, &origin_functions);
+    if fallback {
+        for item in replacement.items.iter_mut() {
+            if let Item::Fn(f) = item
+                && f.abi == Some(Abi::C)
+            {
+                f.abi = Some(Abi::CUnwind);
+            }
+        }
+        rewrite_c_abi_fn_ptr_types_in_program(&mut replacement);
+    } else {
+        for item in replacement.items.iter_mut() {
+            if let Item::Fn(f) = item
+                && flip_targets.contains(&f.name)
+                && f.abi == Some(Abi::C)
+            {
+                f.abi = Some(Abi::CUnwind);
+            }
+        }
+    }
+
     Ok(Proof::new(
         SetjmpRecoveryRewrite { replacement },
         Vec::new(),
     ))
+}
+
+fn functions_needing_unwind_abi(
+    query: &QueryContext<'_>,
+    origin_functions: &BTreeSet<String>,
+) -> (BTreeSet<String>, bool) {
+    let all_functions = query.all_functions();
+    let callers_by_item_index: BTreeMap<usize, &str> = all_functions
+        .iter()
+        .map(|function| (function.item_index, function.name.as_str()))
+        .collect();
+    let by_name: BTreeMap<&str, &FunctionRef<'_>> = all_functions
+        .iter()
+        .map(|function| (function.name.as_str(), function))
+        .collect();
+
+    let mut to_flip: BTreeSet<String> = origin_functions.clone();
+    let mut visited: BTreeSet<String> = BTreeSet::new();
+    let mut frontier: Vec<String> = origin_functions.iter().cloned().collect();
+    let mut fallback = false;
+
+    while let Some(name) = frontier.pop() {
+        if !visited.insert(name.clone()) {
+            continue;
+        }
+        let Some(function) = by_name.get(name.as_str()) else {
+            continue;
+        };
+        match query.function_reachability(function) {
+            Ok(proof) if proof.value.address_exposed => fallback = true,
+            Ok(_) => {}
+            Err(_) => fallback = true,
+        }
+        let calls: Vec<CallRecord> = match query.direct_calls(function) {
+            Ok(proof) => proof.value,
+            Err(_) => {
+                fallback = true;
+                Vec::new()
+            }
+        };
+        for call in &calls {
+            let Some(caller_name) = callers_by_item_index.get(&call.site.item_index) else {
+                continue;
+            };
+            if to_flip.insert(caller_name.to_string()) {
+                frontier.push(caller_name.to_string());
+            }
+        }
+    }
+
+    (to_flip, fallback)
+}
+
+fn rewrite_c_abi_fn_ptr_types_in_program(program: &mut Program) {
+    for item in program.items.iter_mut() {
+        match item {
+            Item::Fn(f) => {
+                for param in f.params.iter_mut() {
+                    rewrite_c_abi_type(&mut param.ty);
+                }
+                if let Some(ret) = f.ret.as_mut() {
+                    rewrite_c_abi_type(ret);
+                }
+                rewrite_c_abi_let_types(&mut f.body);
+                walk::body_exprs_mut_with(&mut f.body, &mut |expr| {
+                    rewrite_c_abi_types_in_expr_node(expr);
+                    true
+                });
+            }
+            Item::Struct(s) => rewrite_c_abi_types_in_struct_fields(&mut s.fields),
+            Item::Static { ty, init, .. } | Item::Const { ty, init, .. } => {
+                rewrite_c_abi_type(ty);
+                walk::exprs_mut_with(init, &mut |expr| {
+                    rewrite_c_abi_types_in_expr_node(expr);
+                    true
+                });
+            }
+            _ => {}
+        }
+    }
+}
+
+fn rewrite_c_abi_types_in_struct_fields(fields: &mut StructFields) {
+    match fields {
+        StructFields::Named(named) => {
+            for (_, ty) in named.iter_mut() {
+                rewrite_c_abi_type(ty);
+            }
+        }
+        StructFields::Tuple(tys) => {
+            for ty in tys.iter_mut() {
+                rewrite_c_abi_type(ty);
+            }
+        }
+    }
+}
+
+fn rewrite_c_abi_let_types(body: &mut [IndentStmt]) {
+    for indent in body.iter_mut() {
+        match &mut indent.stmt {
+            Stmt::Let { ty: Some(ty), .. } | Stmt::LetIf { ty: Some(ty), .. } => {
+                rewrite_c_abi_type(ty);
+            }
+            _ => {}
+        }
+        let mut path = Vec::new();
+        walk::nested_body_vecs_mut_with_path(&mut indent.stmt, &mut path, &mut |nested, _| {
+            rewrite_c_abi_let_types(nested);
+        });
+    }
+}
+
+fn rewrite_c_abi_types_in_expr_node(expr: &mut Expr) {
+    match expr {
+        Expr::Cast { ty, .. } => rewrite_c_abi_type(ty),
+        Expr::Transmute { from, to, .. } => {
+            rewrite_c_abi_type(from);
+            rewrite_c_abi_type(to);
+        }
+        Expr::MethodCallGeneric { type_args, .. } => {
+            for ty in type_args.iter_mut() {
+                rewrite_c_abi_type(ty);
+            }
+        }
+        _ => {}
+    }
+}
+
+fn rewrite_c_abi_type(ty: &mut Type) {
+    match ty {
+        Type::FnPtr { abi, params, ret } => {
+            if *abi == Abi::C {
+                *abi = Abi::CUnwind;
+            }
+            for param in params.iter_mut() {
+                rewrite_c_abi_type(param);
+            }
+            rewrite_c_abi_type(ret);
+        }
+        Type::Ref { inner, .. }
+        | Type::Slice(inner)
+        | Type::Ptr { inner, .. }
+        | Type::Complex(inner) => rewrite_c_abi_type(inner),
+        Type::Array { elem, .. } => rewrite_c_abi_type(elem),
+        Type::Generic { args, .. } => {
+            for arg in args.iter_mut() {
+                rewrite_c_abi_type(arg);
+            }
+        }
+        _ => {}
+    }
 }
 
 fn body_has_setjmp_guard(body: &[IndentStmt]) -> bool {
