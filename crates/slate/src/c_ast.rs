@@ -72,6 +72,13 @@ pub struct Function {
     pub macro_consts: Vec<MacroConst>,
     pub enum_consts: Vec<EnumConstRef>,
     pub asm_gotos: Vec<AsmGoto>,
+    pub local_enum_decls: Vec<LocalEnumDecl>,
+}
+
+#[derive(Debug, Clone)]
+pub struct LocalEnumDecl {
+    pub name: String,
+    pub enum_name: String,
 }
 
 #[derive(Debug, Clone)]
@@ -1134,7 +1141,30 @@ fn extract_function(
         macro_consts: collect_macro_consts(node, source_text, macro_events),
         enum_consts: collect_enum_const_refs(node, source_text, enum_const_ids),
         asm_gotos: collect_asm_gotos(node, source_text),
+        local_enum_decls: collect_local_enum_decls(node),
     })
+}
+
+fn collect_local_enum_decls(node: &Value) -> Vec<LocalEnumDecl> {
+    let mut out = Vec::new();
+    collect_local_enum_decls_at(node, &mut out);
+    out
+}
+
+fn collect_local_enum_decls_at(node: &Value, out: &mut Vec<LocalEnumDecl>) {
+    if kind(node) == Some("VarDecl")
+        && let Some(name) = node.get("name").and_then(Value::as_str)
+        && let Some(ty_str) = qual_type(node)
+        && let CType::Enum(enum_name) = parse_c_type(ty_str)
+    {
+        out.push(LocalEnumDecl {
+            name: name.to_string(),
+            enum_name,
+        });
+    }
+    for child in children(node) {
+        collect_local_enum_decls_at(child, out);
+    }
 }
 
 fn collect_layout_queries(node: &Value, source_text: Option<&str>) -> Vec<LayoutQuery> {
