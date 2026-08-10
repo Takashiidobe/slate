@@ -849,6 +849,8 @@ fn translate_project_lib_crate_with_manifest(
     let mut referenced_record_types = BTreeSet::new();
     let mut uses_slate_support = false;
     let mut has_setlocale = false;
+    let mut cross_referenced_functions: BTreeSet<String> = BTreeSet::new();
+    let mut cross_referenced_globals: BTreeSet<String> = BTreeSet::new();
     for (stem, path) in &modules {
         let source =
             std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
@@ -869,6 +871,8 @@ fn translate_project_lib_crate_with_manifest(
         }
         unsafe_functions.extend(lower::unsafe_defined_functions(&module));
         crate_features.extend(lower::required_features(&module));
+        cross_referenced_functions.extend(lower::declared_functions(&module));
+        cross_referenced_globals.extend(lower::declared_globals(&module));
         has_setlocale |= lower::declared_functions(&module)
             .iter()
             .any(|name| name == "setlocale");
@@ -920,6 +924,8 @@ fn translate_project_lib_crate_with_manifest(
         crate_features,
         child_modules: Vec::new(),
         emit_pub: true,
+        cross_referenced_functions,
+        cross_referenced_globals,
     };
 
     let tests_dir = project_dir.join("tests");
@@ -1072,6 +1078,8 @@ struct LibraryVariantFacts {
     unsafe_functions: BTreeSet<String>,
     crate_features: BTreeSet<rust_ast::Feature>,
     has_setlocale: bool,
+    cross_referenced_functions: BTreeSet<String>,
+    cross_referenced_globals: BTreeSet<String>,
 }
 
 struct LoadedLibraryVariant {
@@ -1171,6 +1179,12 @@ fn translate_project_lib_crate_with_compile_commands(
         variant_facts
             .crate_features
             .extend(lower::required_features(&module));
+        variant_facts
+            .cross_referenced_functions
+            .extend(lower::declared_functions(&module));
+        variant_facts
+            .cross_referenced_globals
+            .extend(lower::declared_globals(&module));
         variant_facts.has_setlocale |= lower::declared_functions(&module)
             .iter()
             .any(|name| name == "setlocale");
@@ -1258,6 +1272,8 @@ fn translate_project_lib_crate_with_compile_commands(
                 crate_features: crate_features.clone(),
                 child_modules: Vec::new(),
                 emit_pub: true,
+                cross_referenced_functions: variant_facts.cross_referenced_functions.clone(),
+                cross_referenced_globals: variant_facts.cross_referenced_globals.clone(),
             };
             let mut context = ctx::Ctx::default();
             let mut program =
@@ -1414,6 +1430,8 @@ fn translate_project_with_targets(
     let mut crate_features = BTreeSet::new();
     let mut root: Option<String> = None;
     let mut has_setlocale = false;
+    let mut cross_referenced_functions: BTreeSet<String> = BTreeSet::new();
+    let mut cross_referenced_globals: BTreeSet<String> = BTreeSet::new();
     let mut record_occurrences: BTreeMap<String, (c_ast::Record, usize)> = BTreeMap::new();
     let mut enum_occurrences: BTreeMap<String, (c_ast::Enum, usize)> = BTreeMap::new();
     for (stem, path) in &modules {
@@ -1431,6 +1449,8 @@ fn translate_project_with_targets(
         }
         unsafe_functions.extend(lower::unsafe_defined_functions(&module));
         crate_features.extend(lower::required_features(&module));
+        cross_referenced_functions.extend(lower::declared_functions(&module));
+        cross_referenced_globals.extend(lower::declared_globals(&module));
         has_setlocale |= lower::declared_functions(&module)
             .iter()
             .any(|name| name == "setlocale");
@@ -1552,6 +1572,8 @@ fn translate_project_with_targets(
             } else {
                 BTreeSet::new()
             },
+            cross_referenced_functions: cross_referenced_functions.clone(),
+            cross_referenced_globals: cross_referenced_globals.clone(),
         };
         let mut variant_programs = Vec::new();
         for target in &targets {
@@ -1721,6 +1743,8 @@ fn translate_project_with_compile_commands(
     let mut crate_features = BTreeSet::new();
     let mut root: Option<String> = None;
     let mut has_setlocale = false;
+    let mut cross_referenced_functions: BTreeSet<String> = BTreeSet::new();
+    let mut cross_referenced_globals: BTreeSet<String> = BTreeSet::new();
     let mut record_occurrences: BTreeMap<String, (c_ast::Record, usize)> = BTreeMap::new();
     let mut enum_occurrences: BTreeMap<String, (c_ast::Enum, usize)> = BTreeMap::new();
     for (stem, path) in &modules {
@@ -1746,6 +1770,8 @@ fn translate_project_with_compile_commands(
         }
         unsafe_functions.extend(lower::unsafe_defined_functions(&module));
         crate_features.extend(lower::required_features(&module));
+        cross_referenced_functions.extend(lower::declared_functions(&module));
+        cross_referenced_globals.extend(lower::declared_globals(&module));
         has_setlocale |= lower::declared_functions(&module)
             .iter()
             .any(|name| name == "setlocale");
@@ -1866,6 +1892,8 @@ fn translate_project_with_compile_commands(
             } else {
                 BTreeSet::new()
             },
+            cross_referenced_functions: cross_referenced_functions.clone(),
+            cross_referenced_globals: cross_referenced_globals.clone(),
         };
         let variants = variants_by_path
             .get(path)

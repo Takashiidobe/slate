@@ -29,6 +29,8 @@ pub struct ProjectInfo {
     pub unsafe_functions: BTreeSet<String>,
     pub crate_features: BTreeSet<Feature>,
     pub emit_pub: bool,
+    pub cross_referenced_functions: BTreeSet<String>,
+    pub cross_referenced_globals: BTreeSet<String>,
 }
 
 const WEAK_ANY_LINKAGE: i64 = 4;
@@ -180,7 +182,7 @@ pub fn defined_functions(module: &Module) -> Vec<String> {
         .iter()
         .filter(|op| {
             op.kind() == CirOpKind::Func
-                && externally_exported(op)
+                && linkage_is_external(op)
                 && (!region_ops(op).is_empty()
                     || attr_symbol_ref(op, "aliasee").is_some() && !linkage_is_weak(op))
         })
@@ -208,8 +210,19 @@ pub fn defined_globals(module: &Module) -> Vec<String> {
         .filter(|op| {
             op.kind() == CirOpKind::Global
                 && attr_str(op, "initial_value").is_some()
-                && externally_exported(op)
+                && linkage_is_external(op)
         })
+        .filter_map(|op| attr_str(op, "sym_name").map(|name| sanitize_ident(name).into_string()))
+        .collect()
+}
+
+pub fn declared_globals(module: &Module) -> Vec<String> {
+    let Some(module_op) = module.ops.iter().find(|op| op.name == "builtin.module") else {
+        return Vec::new();
+    };
+    region_ops(module_op)
+        .iter()
+        .filter(|op| op.kind() == CirOpKind::Global && attr_str(op, "initial_value").is_none())
         .filter_map(|op| attr_str(op, "sym_name").map(|name| sanitize_ident(name).into_string()))
         .collect()
 }
@@ -222,7 +235,7 @@ pub fn unsafe_defined_functions(module: &Module) -> BTreeSet<String> {
     let mut unsafe_functions: BTreeSet<String> = ops
         .iter()
         .filter(|op| {
-            op.kind() == CirOpKind::Func && !region_ops(op).is_empty() && externally_exported(op)
+            op.kind() == CirOpKind::Func && !region_ops(op).is_empty() && linkage_is_external(op)
         })
         .filter(|op| {
             function_requires_unsafe_contract(op)
@@ -1416,7 +1429,8 @@ impl<'a> Lowerer<'a> {
                         init,
                         alignment,
                         thread_local,
-                        external: externally_exported(op),
+                        external: externally_exported(op)
+                            || self.project.cross_referenced_globals.contains(name),
                         weak,
                         section: section.clone(),
                         used: used.clone(),
@@ -1441,7 +1455,8 @@ impl<'a> Lowerer<'a> {
                         ),
                         alignment,
                         thread_local,
-                        external: externally_exported(op),
+                        external: externally_exported(op)
+                            || self.project.cross_referenced_globals.contains(name),
                         weak,
                         section: section.clone(),
                         used: used.clone(),
@@ -1466,7 +1481,8 @@ impl<'a> Lowerer<'a> {
                             ),
                             alignment,
                             thread_local,
-                            external: externally_exported(op),
+                            external: externally_exported(op)
+                                || self.project.cross_referenced_globals.contains(name),
                             weak,
                             section: section.clone(),
                             used: used.clone(),
@@ -1487,7 +1503,8 @@ impl<'a> Lowerer<'a> {
                             init,
                             alignment,
                             thread_local,
-                            external: externally_exported(op),
+                            external: externally_exported(op)
+                                || self.project.cross_referenced_globals.contains(name),
                             weak,
                             section: section.clone(),
                             used: used.clone(),
@@ -1513,7 +1530,8 @@ impl<'a> Lowerer<'a> {
                         },
                         alignment,
                         thread_local,
-                        external: externally_exported(op),
+                        external: externally_exported(op)
+                            || self.project.cross_referenced_globals.contains(name),
                         weak,
                         section: section.clone(),
                         used: used.clone(),
@@ -1534,7 +1552,8 @@ impl<'a> Lowerer<'a> {
                         ty,
                         alignment,
                         thread_local,
-                        external: externally_exported(op),
+                        external: externally_exported(op)
+                            || self.project.cross_referenced_globals.contains(name),
                         weak,
                         section: section.clone(),
                         used: used.clone(),
@@ -1556,7 +1575,8 @@ impl<'a> Lowerer<'a> {
                         init,
                         alignment,
                         thread_local,
-                        external: externally_exported(op),
+                        external: externally_exported(op)
+                            || self.project.cross_referenced_globals.contains(name),
                         weak,
                         section: section.clone(),
                         used: used.clone(),
@@ -1566,7 +1586,8 @@ impl<'a> Lowerer<'a> {
         } else if let Some(ty) = ty
             && let Some(init) = self.render_const_value_expr(&ty, raw)
         {
-            let external = externally_exported(op);
+            let external =
+                externally_exported(op) || self.project.cross_referenced_globals.contains(name);
             self.globals.insert(
                 rust_name.clone(),
                 GlobalVar {
@@ -1611,7 +1632,8 @@ impl<'a> Lowerer<'a> {
             return None;
         }
 
-        let external_def = self.project.emit_pub && externally_exported(op);
+        let external_def = self.project.emit_pub
+            && (externally_exported(op) || self.project.cross_referenced_functions.contains(name));
         self.warn_protected_visibility(op, name);
         let attrs = symbol_attrs(
             external_def,
@@ -1794,8 +1816,10 @@ impl<'a> Lowerer<'a> {
             );
             (Visibility::Private, None, None, prelude)
         } else {
-            let external_def =
-                self.project.emit_pub && externally_exported(op) || weak_alias_target;
+            let external_def = self.project.emit_pub
+                && (externally_exported(op)
+                    || self.project.cross_referenced_functions.contains(name))
+                || weak_alias_target;
             let vis = if external_def {
                 Visibility::Pub
             } else {
@@ -1826,7 +1850,11 @@ impl<'a> Lowerer<'a> {
         let ret = if diverges { Some(Type::Never) } else { ret };
 
         let attrs = symbol_attrs(
-            !is_main && (self.project.emit_pub && externally_exported(op) || weak_alias_target),
+            !is_main
+                && (self.project.emit_pub
+                    && (externally_exported(op)
+                        || self.project.cross_referenced_functions.contains(name))
+                    || weak_alias_target),
             linkage_is_weak(op),
             attr_str(op, "section"),
             &[],
