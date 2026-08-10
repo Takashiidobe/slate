@@ -425,7 +425,7 @@ fn run_clang_ast_dump(src: &Path, extra_args: &[String]) -> Result<(String, Plug
     let mut cmd = Command::new(clang());
     let target_args = crate::cir::emit::target_args()?;
     cmd.args([
-        "-std=c23",
+        "-std=gnu23",
         "-Xclang",
         "-ast-dump=json",
         "-fsyntax-only",
