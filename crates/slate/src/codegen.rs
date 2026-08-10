@@ -4,7 +4,7 @@ use crate::rust_ast::{
     Abi, AsmDialect, AsmOperand, AsmReg, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType,
     Attr, Block, Cfg, Comment, CrateAttr, Derive, Expr, ExternDecl, FnDef, GenericParam, ImplBlock,
     ImplItem, IndentStmt, Item, Method, Path, Program, RecordDef, Repr, RustValue, SelfKind, Stmt,
-    StructDef, StructFields, TraitBound, Type,
+    StructDef, StructFields, TraitBound, TraitRef, Type,
 };
 
 const INDENT: &str = "    ";
@@ -532,8 +532,14 @@ impl<W: Write> Codegen<W> {
         self.out.write_str("impl")?;
         self.generics(&im.generics)?;
         self.out.write_char(' ')?;
-        if let Some(tr) = &im.trait_ {
-            write!(self.out, "{} for ", tr.path())?;
+        match &im.trait_ {
+            Some(TraitRef::Std(tr)) => write!(self.out, "{} for ", tr.path())?,
+            Some(TraitRef::From(from_ty)) => {
+                self.out.write_str("From<")?;
+                self.ty(from_ty)?;
+                self.out.write_str("> for ")?;
+            }
+            None => {}
         }
         self.ty(&im.self_ty)?;
         self.out.write_str(" {\n")?;
