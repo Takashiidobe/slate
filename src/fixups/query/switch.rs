@@ -46,6 +46,12 @@ fn build(parts: LoweredSwitchParts<'_>) -> Option<SwitchDispatch> {
             return None;
         }
         let (body, falls_through) = classify_case_body(&arm.body, case_name, switch_label);
+        if body
+            .iter()
+            .any(|stmt| idents::stmt_ident_count(&stmt.stmt, switch_label) > 0)
+        {
+            return None;
+        }
         cases.push(SwitchCase {
             patterns,
             is_default,

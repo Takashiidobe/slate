@@ -37,7 +37,10 @@ pub(super) fn stmt_ident_count(stmt: &Stmt, name: &str) -> usize {
             expr_ident_count(target, name) + expr_ident_count(value, name)
         }
         Stmt::Expr(expr) | Stmt::Return(Some(expr)) => expr_ident_count(expr, name),
-        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => 0,
+        Stmt::Return(None) => 0,
+        Stmt::Break(label) | Stmt::Continue(label) => label
+            .as_ref()
+            .map_or(0, |label| usize::from(label.as_str() == name)),
         Stmt::If {
             cond,
             then_body,

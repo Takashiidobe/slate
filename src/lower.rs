@@ -3900,8 +3900,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         let cond = self.operand_expr(&op.operands[0]);
-        let t = self.operand_expr(&op.operands[1]);
-        let f = self.operand_expr(&op.operands[2]);
+        let t = self.value_or_place_address_expr(&op.operands[1]);
+        let f = self.value_or_place_address_expr(&op.operands[2]);
         self.materialize_expr(
             result,
             Expr::If {
@@ -3957,7 +3957,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 for op in &block.ops {
                     if op.kind() == CirOpKind::Yield {
                         if let Some(operand) = op.operands.first() {
-                            yielded = this.operand_expr(operand);
+                            yielded = this.value_or_place_address_expr(operand);
                         }
                     } else {
                         this.lower_op(op);
@@ -7780,6 +7780,19 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return slot;
         }
         Expr::Var(sanitize_ident(operand))
+    }
+
+    fn value_or_place_address_expr(&self, operand: &str) -> Expr {
+        if self.values.contains_key(operand) || self.slot_place(operand).is_some() {
+            return self.operand_expr(operand);
+        }
+        if self.member_ptrs.contains_key(operand)
+            || self.element_ptrs.contains_key(operand)
+            || self.global_name(operand).is_some()
+        {
+            return self.pointer_operand_expr(operand);
+        }
+        self.operand_expr(operand)
     }
 
     fn slot_place(&self, operand: &str) -> Option<Expr> {
