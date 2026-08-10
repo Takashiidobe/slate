@@ -12,8 +12,8 @@ static int *add_one(int *value) {
 }
 
 int main(void) {
-  int value = 41;
+  int             value    = 41;
   struct Callback callback = {0};
-  callback.handler = add_one;
+  callback.handler         = add_one;
   printf("%d\n", *callback.handler(&value));
 }

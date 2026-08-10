@@ -93,17 +93,7 @@ impl<W: Write> Codegen<W> {
     }
 
     fn ident(&mut self, name: &str) -> fmt::Result {
-        if name.starts_with("r#") || matches!(name, "crate" | "self" | "Self" | "super") {
-            return self.out.write_str(name);
-        }
-        if matches!(name, "true" | "false") {
-            self.out.write_str(name)?;
-            return self.out.write_char('_');
-        }
-        if is_rust_keyword(name) {
-            self.out.write_str("r#")?;
-        }
-        self.out.write_str(name)
+        self.out.write_str(&escape_ident(name))
     }
 
     fn ident_path(&mut self, path: &str) -> fmt::Result {
@@ -1497,7 +1487,20 @@ pub fn cfg_to_string(cfg: &Cfg) -> String {
     cg.into_inner()
 }
 
-fn is_rust_keyword(name: &str) -> bool {
+pub fn escape_ident(name: &str) -> String {
+    if name.starts_with("r#") || matches!(name, "crate" | "self" | "Self" | "super") {
+        return name.to_string();
+    }
+    if matches!(name, "true" | "false") {
+        return format!("{name}_");
+    }
+    if is_rust_keyword(name) {
+        return format!("r#{name}");
+    }
+    name.to_string()
+}
+
+pub fn is_rust_keyword(name: &str) -> bool {
     matches!(
         name,
         "as" | "break"

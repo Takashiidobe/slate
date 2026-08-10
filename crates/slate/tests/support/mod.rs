@@ -86,13 +86,6 @@ fn test_target_dir_for_project(project: &std::path::Path) -> std::path::PathBuf 
     td
 }
 
-pub fn rs_project_bin_path(work_dir: &Path, package: &str) -> PathBuf {
-    let project = work_dir.join(format!("{package}_proj"));
-    test_target_dir_for_project(&project)
-        .join("debug")
-        .join(package)
-}
-
 pub fn test_jobs() -> usize {
     std::env::var("SLATE_TEST_JOBS")
         .ok()
@@ -192,13 +185,14 @@ pub fn compile_c_multi(srcs: &[PathBuf], out: &Path) -> Result<(), String> {
     Ok(())
 }
 
-/// Invoke `slate translate-project <dir> <out_dir>`, writing one Rust module per
-/// C translation unit (the unit with `main` becomes `main.rs`).
-pub fn translate_project(dir: &Path, out_dir: &Path) -> Result<(), String> {
+/// Invoke `slate translate-project <dir> <crate_dir>`, writing a Cargo crate
+/// (Cargo.toml, vendored `aligned`, one Rust module per C translation unit
+/// under `src/`; the unit with `main` becomes `src/main.rs`) at `crate_dir`.
+pub fn translate_project(dir: &Path, crate_dir: &Path) -> Result<(), String> {
     let o = Command::new(env!("CARGO_BIN_EXE_slate"))
         .arg("translate-project")
         .arg(dir)
-        .arg(out_dir)
+        .arg(crate_dir)
         .env("SLATE_CLANG_ARGS", c23_clang_args())
         .output()
         .map_err(|e| format!("spawn slate translate-project: {e}"))?;
@@ -211,41 +205,23 @@ pub fn translate_project(dir: &Path, out_dir: &Path) -> Result<(), String> {
     Ok(())
 }
 
-/// Compile a directory of translated Rust modules as one crate rooted at
-/// `main.rs`, so `mod`/`use crate::…` wiring across units is linked together.
-pub fn compile_rs_project(
-    rs_dir: &Path,
-    work_dir: &Path,
-    package: &str,
-) -> Result<PathBuf, String> {
-    let project = work_dir.join(format!("{package}_proj"));
-    let _ = std::fs::remove_dir_all(&project);
-    std::fs::create_dir_all(project.join("src"))
-        .map_err(|e| format!("create {}: {e}", project.display()))?;
-    std::fs::write(
-        project.join("Cargo.toml"),
-        generated_crate_manifest(package),
-    )
-    .map_err(|e| format!("write Cargo.toml: {e}"))?;
-
-    for entry in std::fs::read_dir(rs_dir).map_err(|e| format!("read {}: {e}", rs_dir.display()))? {
-        let path = entry
-            .map_err(|e| format!("read {} entry: {e}", rs_dir.display()))?
-            .path();
-        if matches!(path.extension().and_then(|e| e.to_str()), Some("rs" | "c")) {
-            let name = path.file_name().expect("rs file name");
-            std::fs::copy(&path, project.join("src").join(name))
-                .map_err(|e| format!("copy {} to project: {e}", path.display()))?;
-        }
-    }
-    write_project_shim_build(&project)?;
-
-    let target_dir = test_target_dir_for_project(&project);
+/// Build the Cargo crate `translate-project` wrote at `crate_dir`. The crate
+/// is already self-contained (Cargo.toml, vendored `aligned`, a shim build.rs
+/// if needed), so this just invokes `cargo build` and reads back the produced
+/// binary's path from cargo's own JSON build messages, rather than guessing
+/// the binary name from the crate's package name.
+pub fn compile_rs_project(crate_dir: &Path) -> Result<PathBuf, String> {
+    let target_dir = test_target_dir_for_project(crate_dir);
     std::fs::create_dir_all(&target_dir)
         .map_err(|e| format!("create {}: {e}", target_dir.display()))?;
     let o = Command::new(cargo())
-        .args(["build", "--quiet", "--manifest-path"])
-        .arg(project.join("Cargo.toml"))
+        .args([
+            "build",
+            "--quiet",
+            "--message-format=json",
+            "--manifest-path",
+        ])
+        .arg(crate_dir.join("Cargo.toml"))
         .arg("--target-dir")
         .arg(&target_dir)
         .output()
@@ -256,7 +232,29 @@ pub fn compile_rs_project(
             String::from_utf8_lossy(&o.stderr)
         ));
     }
-    Ok(target_dir.join("debug").join(package))
+    for line in String::from_utf8_lossy(&o.stdout).lines() {
+        let Ok(message) = serde_json::from_str::<serde_json::Value>(line) else {
+            continue;
+        };
+        if message.get("reason").and_then(serde_json::Value::as_str) != Some("compiler-artifact") {
+            continue;
+        }
+        let is_bin = message["target"]["kind"]
+            .as_array()
+            .is_some_and(|kinds| kinds.iter().any(|kind| kind.as_str() == Some("bin")));
+        if let (true, Some(executable)) = (
+            is_bin,
+            message
+                .get("executable")
+                .and_then(serde_json::Value::as_str),
+        ) {
+            return Ok(PathBuf::from(executable));
+        }
+    }
+    Err(format!(
+        "cargo build at {} did not report a binary artifact",
+        crate_dir.display()
+    ))
 }
 
 pub fn compile_rs_cargo(src: &Path, work_dir: &Path, package: &str) -> Result<PathBuf, String> {
@@ -585,23 +583,6 @@ void __slate_strtold(char *nptr, char **endptr, double *out) {
     write_if_changed(project.join("src/slate_long_double.c"), source.as_bytes())
         .map(|_| ())
         .map_err(|e| format!("write slate_long_double.c: {e}"))
-}
-
-fn write_project_shim_build(project: &Path) -> Result<(), String> {
-    if !project.join("src/slate_shims.c").is_file() {
-        return Ok(());
-    }
-    write_if_changed(
-        project.join("build.rs"),
-        r#"fn main() {
-    println!("cargo:rerun-if-changed=src/slate_shims.c");
-    cc::Build::new().file("src/slate_shims.c").compile("slate_shims");
-}
-"#
-        .as_bytes(),
-    )
-    .map(|_| ())
-    .map_err(|e| format!("write build.rs: {e}"))
 }
 
 fn collect_long_double_shim_names(

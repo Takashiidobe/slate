@@ -48,8 +48,8 @@ fn attempt_translate(name: &str, dir: &Path, work: &Path) -> Attempt {
             dir: dir.to_path_buf(),
             multi_bin: Some(support::MultiBinCase {
                 name: name.to_string(),
-                main_rs: out_dir.join("main.rs"),
-                common_rs: out_dir.join("common.rs"),
+                main_rs: out_dir.join("src/main.rs"),
+                common_rs: out_dir.join("src/common.rs"),
             }),
             translate_error: None,
         },

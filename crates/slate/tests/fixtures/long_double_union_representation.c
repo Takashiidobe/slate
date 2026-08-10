@@ -4,11 +4,11 @@
 static int convert(long double value) {
   union {
     long double f80;
-    uint64_t u64[2];
+    uint64_t    u64[2];
   } bits;
   bits.u64[0] = 0;
   bits.u64[1] = 0;
-  bits.f80 = value;
+  bits.f80    = value;
   return (int)bits.f80;
 }
 

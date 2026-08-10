@@ -27,7 +27,10 @@ fn usage() -> ExitCode {
     eprintln!("  translate-directives   experimental multi-config C -> Rust");
     eprintln!("  record-cfg   <file.c> [clang args...]  print preprocessor cfg regions as JSON");
     eprintln!(
-        "  translate-project [--target <triple>]... <dir> <out_dir>  cross-TU C dir -> Rust modules"
+        "  translate-project [--target <triple>]... <dir> <crate_dir>  cross-TU C dir -> Cargo binary crate"
+    );
+    eprintln!(
+        "  translate-project --compile-commands <file>... <dir> <crate_dir>  cross-TU C dir -> Cargo binary crate, driven by a compile commands database"
     );
     eprintln!(
         "  translate-project --lib [--source-manifest <file>|--compile-commands <file>...] <project_dir> <crate_dir>  cross-TU C library -> Cargo crate"
@@ -519,21 +522,19 @@ fn package_name(crate_dir: &Path) -> String {
         .map(rust_ident)
         .filter(|s| !s.is_empty())
         .unwrap_or_else(|| "slate_project".into());
-    match name.as_str() {
-        "as" | "break" | "const" | "continue" | "crate" | "else" | "enum" | "extern" | "false"
-        | "fn" | "for" | "if" | "impl" | "in" | "let" | "loop" | "match" | "mod" | "move"
-        | "mut" | "pub" | "ref" | "return" | "self" | "Self" | "static" | "struct" | "super"
-        | "trait" | "true" | "type" | "unsafe" | "use" | "where" | "while" | "async" | "await"
-        | "dyn" => format!("slate_{name}"),
-        _ => name,
+    if codegen::is_rust_keyword(&name) {
+        format!("slate_{name}")
+    } else {
+        name
     }
 }
 
-fn lib_crate_manifest(
+fn crate_manifest(
     package: &str,
     tests: &[String],
     slate_support: bool,
     c_shims: bool,
+    autobins: bool,
 ) -> String {
     let test_targets: String = tests
         .iter()
@@ -558,12 +559,13 @@ harness = false
     } else {
         ""
     };
+    let autobins_line = if autobins { "" } else { "autobins = false\n" };
     format!(
         r#"[package]
 name = "{package}"
 version = "0.0.0"
 edition = "2024"
-
+{autobins_line}
 [dependencies]
 libc = "0.2"
 aligned = {{ path = "aligned" }}
@@ -576,27 +578,39 @@ codegen-units = 256
     )
 }
 
-fn write_lib_crate_manifest(
+fn write_crate_manifest(
     crate_dir: &Path,
     package: &str,
     tests: &[String],
     slate_support: bool,
     c_shims: bool,
+    autobins: bool,
 ) -> Result<(), String> {
     std::fs::write(
         crate_dir.join("Cargo.toml"),
-        lib_crate_manifest(package, tests, slate_support, c_shims),
+        crate_manifest(package, tests, slate_support, c_shims, autobins),
     )
     .map_err(|e| format!("write {}: {e}", crate_dir.join("Cargo.toml").display()))
 }
 
-fn init_lib_crate(crate_dir: &Path) -> Result<(), String> {
+/// Scaffold a Cargo crate at `crate_dir` for translated output: `cargo init`,
+/// a manifest with the shared dependencies, and the vendored `aligned` crate.
+/// A library crate (`wants_lib`) exposes every module as `pub mod` from
+/// `lib.rs` and disables bin autodiscovery, since an incidental module named
+/// `main` must not collide with Cargo's `src/main.rs` binary detection. An
+/// executable crate keeps `src/main.rs` as its one binary entry point.
+fn init_crate(crate_dir: &Path, wants_lib: bool) -> Result<(), String> {
     std::fs::create_dir_all(crate_dir)
         .map_err(|e| format!("create {}: {e}", crate_dir.display()))?;
     let package = package_name(crate_dir);
     if !crate_dir.join("Cargo.toml").exists() {
-        let out = Command::new(cargo())
-            .args(["init", "--lib", "--vcs", "none", "--name"])
+        let mut init = Command::new(cargo());
+        init.arg("init");
+        if wants_lib {
+            init.arg("--lib");
+        }
+        let out = init
+            .args(["--vcs", "none", "--name"])
             .arg(&package)
             .arg(crate_dir)
             .output()
@@ -609,11 +623,14 @@ fn init_lib_crate(crate_dir: &Path) -> Result<(), String> {
         }
     }
 
-    write_lib_crate_manifest(crate_dir, &package, &[], false, false)?;
+    write_crate_manifest(crate_dir, &package, &[], false, false, !wants_lib)?;
     write_aligned_support(crate_dir)?;
-    let main_rs = crate_dir.join("src/main.rs");
-    if main_rs.exists() {
-        std::fs::remove_file(&main_rs).map_err(|e| format!("remove {}: {e}", main_rs.display()))?;
+    if wants_lib {
+        let main_rs = crate_dir.join("src/main.rs");
+        if main_rs.exists() {
+            std::fs::remove_file(&main_rs)
+                .map_err(|e| format!("remove {}: {e}", main_rs.display()))?;
+        }
     }
     Ok(())
 }
@@ -817,7 +834,7 @@ fn translate_project_lib_crate_with_manifest(
         ));
     }
 
-    init_lib_crate(crate_dir)?;
+    init_crate(crate_dir, true)?;
     let crate_src = crate_dir.join("src");
     std::fs::create_dir_all(&crate_src)
         .map_err(|e| format!("create {}: {e}", crate_src.display()))?;
@@ -964,7 +981,7 @@ fn translate_project_lib_crate_with_manifest(
     lib_rs.push_str(
         &modules
             .iter()
-            .map(|(stem, _)| format!("pub mod {stem};\n"))
+            .map(|(stem, _)| format!("pub mod {};\n", codegen::escape_ident(stem)))
             .collect::<String>(),
     );
     let lib_rs_path = crate_src.join("lib.rs");
@@ -1033,12 +1050,13 @@ fn translate_project_lib_crate_with_manifest(
     if !shims.is_empty() {
         write_c_shims(crate_dir, &shims)?;
     }
-    write_lib_crate_manifest(
+    write_crate_manifest(
         crate_dir,
         &package_name(crate_dir),
         &test_modules,
         uses_slate_support,
         !shims.is_empty(),
+        false,
     )?;
 
     Ok(written
@@ -1111,7 +1129,7 @@ fn translate_project_lib_crate_with_compile_commands(
         variant_targets.insert(cfg, command.target);
     }
 
-    init_lib_crate(crate_dir)?;
+    init_crate(crate_dir, true)?;
     let crate_src = crate_dir.join("src");
     std::fs::create_dir_all(&crate_src)
         .map_err(|error| format!("create {}: {error}", crate_src.display()))?;
@@ -1299,7 +1317,7 @@ fn translate_project_lib_crate_with_compile_commands(
             };
             lib_rs.push_str(&format!("#[cfg({})]\n", cfg.render()));
         }
-        lib_rs.push_str(&format!("pub mod {stem};\n"));
+        lib_rs.push_str(&format!("pub mod {};\n", codegen::escape_ident(stem)));
     }
     let lib_rs_path = crate_src.join("lib.rs");
     std::fs::write(&lib_rs_path, lib_rs)
@@ -1313,12 +1331,13 @@ fn translate_project_lib_crate_with_compile_commands(
     if !shims.is_empty() {
         write_c_shims(crate_dir, &shims)?;
     }
-    write_lib_crate_manifest(
+    write_crate_manifest(
         crate_dir,
         &package_name(crate_dir),
         &[],
         uses_slate_support,
         !shims.is_empty(),
+        false,
     )?;
 
     Ok(written
@@ -1328,12 +1347,15 @@ fn translate_project_lib_crate_with_compile_commands(
 }
 
 /// Translate a directory of `.c` files (one project spanning several translation
-/// units) into separate Rust module files under `out_dir`. The unit defining
-/// `main` becomes the crate root `main.rs` and declares the other units with
-/// `mod`; a prototype resolved to a sibling unit becomes a module import.
+/// units) into a Cargo crate at `crate_dir`, scaffolded the same way as
+/// `--lib` (Cargo.toml, vendored `aligned`, C shims). The unit defining
+/// `main` becomes `src/main.rs`, the crate's one binary entry point, and
+/// declares the other units with `mod`; a prototype resolved to a sibling
+/// unit becomes a module import.
 fn translate_project_command(args: &[String]) -> Result<String, String> {
     let mut paths = Vec::new();
     let mut targets = Vec::new();
+    let mut compile_command_paths = Vec::new();
     let mut index = 0;
     while index < args.len() {
         match args[index].as_str() {
@@ -1343,6 +1365,13 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
                     .get(index)
                     .ok_or_else(|| "--target requires a target triple".to_string())?;
                 targets.push(target.clone());
+            }
+            "--compile-commands" => {
+                index += 1;
+                let commands = args
+                    .get(index)
+                    .ok_or_else(|| "--compile-commands requires a file".to_string())?;
+                compile_command_paths.push(PathBuf::from(commands));
             }
             flag if flag.starts_with('-') => {
                 return Err(format!("unknown translate-project option: {flag}"));
@@ -1354,6 +1383,16 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
     if paths.len() != 2 {
         return Err("translate-project requires an input directory and output directory".into());
     }
+    if !compile_command_paths.is_empty() {
+        if !targets.is_empty() {
+            return Err("--target and --compile-commands cannot be used together".into());
+        }
+        return translate_project_with_compile_commands(
+            Path::new(paths[0]),
+            Path::new(paths[1]),
+            &compile_command_paths,
+        );
+    }
     translate_project_with_targets(Path::new(paths[0]), Path::new(paths[1]), &targets)
 }
 
@@ -1363,7 +1402,7 @@ fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
 
 fn translate_project_with_targets(
     dir: &Path,
-    out_dir: &Path,
+    crate_dir: &Path,
     extra_targets: &[String],
 ) -> Result<String, String> {
     let modules = collect_c_modules(dir)?;
@@ -1481,7 +1520,10 @@ fn translate_project_with_targets(
         siblings.push("types".into());
     }
 
-    std::fs::create_dir_all(out_dir).map_err(|e| format!("create {}: {e}", out_dir.display()))?;
+    init_crate(crate_dir, false)?;
+    let crate_src = crate_dir.join("src");
+    std::fs::create_dir_all(&crate_src)
+        .map_err(|e| format!("create {}: {e}", crate_src.display()))?;
 
     // pass 2: lower each unit with project-wide knowledge and write its module.
     let targets = target_variants(extra_targets)?;
@@ -1576,7 +1618,7 @@ fn translate_project_with_targets(
         } else {
             stem.clone()
         };
-        let output = out_dir.join(file).with_extension("rs");
+        let output = crate_src.join(file).with_extension("rs");
         std::fs::write(&output, program.emit())
             .map_err(|e| format!("write {}: {e}", output.display()))?;
         written.push(output);
@@ -1585,24 +1627,354 @@ fn translate_project_with_targets(
     if has_shared_types {
         let records: Vec<_> = shared_records.into_values().collect();
         let enums: Vec<_> = shared_enums.into_values().collect();
-        let output = out_dir.join("types.rs");
+        let output = crate_src.join("types.rs");
         std::fs::write(&output, lower::lower_shared_types(&records, &enums).emit())
             .map_err(|e| format!("write {}: {e}", output.display()))?;
         written.push(output);
     }
 
-    let shim_output = out_dir.join("slate_shims.c");
-    if shims.is_empty() {
-        if shim_output.exists() {
-            std::fs::remove_file(&shim_output)
-                .map_err(|e| format!("remove {}: {e}", shim_output.display()))?;
-        }
-    } else {
+    let shim_output = crate_src.join("slate_shims.c");
+    let has_shims = !shims.is_empty();
+    if has_shims {
         let shims: Vec<_> = shims.into_values().collect();
-        std::fs::write(&shim_output, c_shim::render_shim_c_source(&shims))
-            .map_err(|e| format!("write {}: {e}", shim_output.display()))?;
+        write_c_shims(crate_dir, &shims)?;
         written.push(shim_output);
+    } else if shim_output.exists() {
+        std::fs::remove_file(&shim_output)
+            .map_err(|e| format!("remove {}: {e}", shim_output.display()))?;
     }
+    write_crate_manifest(
+        crate_dir,
+        &package_name(crate_dir),
+        &[],
+        false,
+        has_shims,
+        true,
+    )?;
+
+    Ok(written
+        .into_iter()
+        .map(|path| format!("wrote {}\n", path.display()))
+        .collect())
+}
+
+/// Translate a directory of `.c` files into a Cargo crate under `crate_dir`,
+/// using per-file compiler arguments from a compile commands database
+/// instead of directory scanning and a shared clang invocation.
+fn translate_project_with_compile_commands(
+    project_dir: &Path,
+    crate_dir: &Path,
+    database_paths: &[PathBuf],
+) -> Result<String, String> {
+    let commands = compile_commands::read(database_paths)?;
+    let mut command_map: BTreeMap<(PathBuf, rust_ast::Cfg), compile_commands::CompileCommand> =
+        BTreeMap::new();
+    let mut paths_by_stem: BTreeMap<String, PathBuf> = BTreeMap::new();
+    for command in commands {
+        let stem = command
+            .file
+            .file_stem()
+            .and_then(|stem| stem.to_str())
+            .map(rust_ident)
+            .ok_or_else(|| format!("bad file stem: {}", command.file.display()))?;
+        if let Some(previous) = paths_by_stem.insert(stem.clone(), command.file.clone())
+            && previous != command.file
+        {
+            return Err(format!(
+                "compile commands map both {} and {} to module {}",
+                previous.display(),
+                command.file.display(),
+                stem
+            ));
+        }
+        let cfg = target_cfg(&command.target)?;
+        if let Some(previous) =
+            command_map.insert((command.file.clone(), cfg.clone()), command.clone())
+            && previous.args != command.args
+        {
+            return Err(format!(
+                "compile commands provide conflicting variants for {} and target {}",
+                command.file.display(),
+                command.target
+            ));
+        }
+    }
+    let modules: Vec<(String, PathBuf)> = paths_by_stem.into_iter().collect();
+    if modules.is_empty() {
+        return Err("translate-project --compile-commands: no C translation units".into());
+    }
+    let mut variants_by_path: BTreeMap<
+        PathBuf,
+        Vec<(rust_ast::Cfg, compile_commands::CompileCommand)>,
+    > = BTreeMap::new();
+    for ((path, cfg), command) in command_map {
+        variants_by_path
+            .entry(path)
+            .or_default()
+            .push((cfg, command));
+    }
+
+    // pass 1: which unit defines which function/global, and which owns `main`.
+    let mut defined: BTreeMap<String, String> = BTreeMap::new();
+    let mut defined_globals: BTreeMap<String, String> = BTreeMap::new();
+    let mut unsafe_functions = BTreeSet::new();
+    let mut crate_features = BTreeSet::new();
+    let mut root: Option<String> = None;
+    let mut has_setlocale = false;
+    let mut record_occurrences: BTreeMap<String, (c_ast::Record, usize)> = BTreeMap::new();
+    let mut enum_occurrences: BTreeMap<String, (c_ast::Enum, usize)> = BTreeMap::new();
+    for (stem, path) in &modules {
+        let variants = variants_by_path
+            .get(path)
+            .expect("module has a compile command variant");
+        let (_, primary) = &variants[0];
+        let args = compile_command_args(primary)?;
+        let source =
+            std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
+        let pp = preprocess::record_translation_unit(path, &source, &args)?;
+        reject_active_unsupported(&pp, "translate-project --compile-commands")?;
+        let module = cir::parse_module(&cir::emit_generic_with_args(path, &args)?)?;
+        for sym in lower::defined_functions(&module) {
+            if sym == "main" {
+                root = Some(stem.clone());
+            } else {
+                defined.insert(sym, stem.clone());
+            }
+        }
+        for sym in lower::defined_globals(&module) {
+            defined_globals.insert(sym, stem.clone());
+        }
+        unsafe_functions.extend(lower::unsafe_defined_functions(&module));
+        crate_features.extend(lower::required_features(&module));
+        has_setlocale |= lower::declared_functions(&module)
+            .iter()
+            .any(|name| name == "setlocale");
+        let unit = c_ast::parse_file_with_project_records_and_args(path, project_dir, &args)?;
+        let mut seen_enums = BTreeSet::new();
+        for enm in &unit.enums {
+            let name = rust_ident(&enm.name);
+            if seen_enums.insert(name.clone()) {
+                let entry = enum_occurrences
+                    .entry(name)
+                    .or_insert_with(|| (enm.clone(), 0));
+                entry.1 += 1;
+            }
+        }
+        let mut seen_records = BTreeSet::new();
+        for record in &unit.records {
+            let name = rust_ident(&record.name);
+            if seen_records.insert(name.clone()) {
+                let entry = record_occurrences
+                    .entry(name)
+                    .or_insert_with(|| (record.clone(), 0));
+                entry.1 += 1;
+            }
+        }
+        for record in lower::shim_records_for_module(&module, &unit) {
+            record_occurrences.insert(rust_ident(&record.name), (record, usize::MAX));
+        }
+    }
+    let all_records: BTreeMap<_, _> = record_occurrences
+        .iter()
+        .map(|(name, (record, _))| (name.clone(), record.clone()))
+        .collect();
+    let mut shared_records: BTreeMap<_, _> = record_occurrences
+        .into_iter()
+        .filter_map(|(name, (record, count))| (count > 1).then_some((name, record)))
+        .collect();
+    let shared_enums: BTreeMap<_, _> = enum_occurrences
+        .into_iter()
+        .filter_map(|(name, (enm, count))| (count > 1).then_some((name, enm)))
+        .collect();
+    let mut referenced_record_types = BTreeSet::new();
+    for record in shared_records.values() {
+        collect_record_field_type_names(record, &mut referenced_record_types);
+    }
+    while let Some(name) = referenced_record_types.pop_first() {
+        if shared_records.contains_key(&name) {
+            continue;
+        }
+        let record = all_records.get(&name).cloned().unwrap_or(c_ast::Record {
+            name: name.clone(),
+            comments: Vec::new(),
+            kind: c_ast::RecordKind::Struct,
+            fields: Vec::new(),
+            packed: None,
+            align: None,
+        });
+        collect_record_field_type_names(&record, &mut referenced_record_types);
+        shared_records.insert(name, record);
+    }
+    let shared_record_names: BTreeSet<String> = shared_records.keys().cloned().collect();
+    let shared_enum_names: BTreeSet<String> = shared_enums.keys().cloned().collect();
+    let shared_long_double =
+        lower::shared_types_use_long_double(&shared_records.values().cloned().collect::<Vec<_>>());
+    let fixup_skip = if has_setlocale {
+        fixups::SkipSet::skip(fixups::Pass::CTypeLibc)
+    } else {
+        fixups::SkipSet::none()
+    };
+    let root = root.ok_or("translate-project --compile-commands: no unit defines main")?;
+    for module in defined.values_mut() {
+        if *module == root {
+            module.clear();
+        }
+    }
+    for module in defined_globals.values_mut() {
+        if *module == root {
+            module.clear();
+        }
+    }
+    let mut siblings: Vec<String> = modules
+        .iter()
+        .map(|(stem, _)| stem.clone())
+        .filter(|stem| *stem != root)
+        .collect();
+    let has_shared_types = !shared_records.is_empty() || !shared_enums.is_empty();
+    if has_shared_types {
+        siblings.push("types".into());
+    }
+
+    init_crate(crate_dir, false)?;
+    let crate_src = crate_dir.join("src");
+    std::fs::create_dir_all(&crate_src)
+        .map_err(|e| format!("create {}: {e}", crate_src.display()))?;
+
+    // pass 2: lower each unit with project-wide knowledge and write its module.
+    let mut written = Vec::new();
+    let mut shims: BTreeMap<String, rust_ast::ExternFnDecl> = BTreeMap::new();
+    for (stem, path) in &modules {
+        let is_root = *stem == root;
+        let project = lower::ProjectInfo {
+            cross_module: defined.clone(),
+            cross_module_globals: defined_globals.clone(),
+            unsafe_functions: unsafe_functions.clone(),
+            child_modules: if is_root {
+                siblings.clone()
+            } else {
+                Vec::new()
+            },
+            shared_records: shared_record_names.clone(),
+            shared_enums: shared_enum_names.clone(),
+            shared_type_module: has_shared_types.then(|| "types".into()),
+            shared_type_crate: None,
+            shared_long_double,
+            cross_module_crate: None,
+            emit_pub: true,
+            crate_features: if is_root {
+                crate_features.clone()
+            } else {
+                BTreeSet::new()
+            },
+        };
+        let variants = variants_by_path
+            .get(path)
+            .expect("module has a compile command variant");
+        let mut variant_programs = Vec::new();
+        for (cfg, command) in variants {
+            let args = compile_command_args(command)?;
+            let cir_text = match cir::emit_generic_with_args(path, &args) {
+                Ok(text) => text,
+                Err(e) => {
+                    eprintln!(
+                        "translate-project --compile-commands: skipping target {:?} for {}: {e}",
+                        cfg,
+                        path.display()
+                    );
+                    continue;
+                }
+            };
+            let module = match cir::parse_module(&cir_text) {
+                Ok(m) => m,
+                Err(e) => {
+                    eprintln!(
+                        "translate-project --compile-commands: skipping target {:?} for {}: {e}",
+                        cfg,
+                        path.display()
+                    );
+                    continue;
+                }
+            };
+            let unit = match c_ast::parse_file_with_project_records_and_args(
+                path,
+                project_dir,
+                &args,
+            ) {
+                Ok(u) => u,
+                Err(e) => {
+                    eprintln!(
+                        "translate-project --compile-commands: skipping target {:?} for {}: {e}",
+                        cfg,
+                        path.display()
+                    );
+                    continue;
+                }
+            };
+            let mut ctx = ctx::Ctx::default();
+            let program = lower::lower_with_project(&module, &unit, &mut ctx, &project);
+            for d in &ctx.diagnostics.items {
+                eprintln!("{:?}: {}", d.severity, d.message);
+            }
+            if ctx.diagnostics.has_errors() {
+                return Err(format!("lowering failed for {}", path.display()));
+            }
+            variant_programs.push((cfg.clone(), fixups::apply_with(program, &fixup_skip)));
+        }
+        let mut program = merge_target_programs(&variant_programs);
+        for shim in &program.shims {
+            shims
+                .entry(shim.name.clone())
+                .or_insert_with(|| shim.clone());
+        }
+        let (_, primary) = &variants[0];
+        let primary_args = compile_command_args(primary)?;
+        let source =
+            std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
+        let pp = preprocess::record_translation_unit(path, &source, &primary_args)?;
+        let warning_items = project_warning_items(
+            &pp,
+            "translate-project --compile-commands",
+            directive_translate::WarningBackend::Standalone,
+        )?;
+        directive_translate::insert_directive_items(&mut program, warning_items);
+        let file = if is_root {
+            "main".to_string()
+        } else {
+            stem.clone()
+        };
+        let output = crate_src.join(file).with_extension("rs");
+        std::fs::write(&output, program.emit())
+            .map_err(|e| format!("write {}: {e}", output.display()))?;
+        written.push(output);
+    }
+
+    if has_shared_types {
+        let records: Vec<_> = shared_records.into_values().collect();
+        let enums: Vec<_> = shared_enums.into_values().collect();
+        let output = crate_src.join("types.rs");
+        std::fs::write(&output, lower::lower_shared_types(&records, &enums).emit())
+            .map_err(|e| format!("write {}: {e}", output.display()))?;
+        written.push(output);
+    }
+
+    let shim_output = crate_src.join("slate_shims.c");
+    let has_shims = !shims.is_empty();
+    if has_shims {
+        let shims: Vec<_> = shims.into_values().collect();
+        write_c_shims(crate_dir, &shims)?;
+        written.push(shim_output);
+    } else if shim_output.exists() {
+        std::fs::remove_file(&shim_output)
+            .map_err(|e| format!("remove {}: {e}", shim_output.display()))?;
+    }
+    write_crate_manifest(
+        crate_dir,
+        &package_name(crate_dir),
+        &[],
+        false,
+        has_shims,
+        true,
+    )?;
 
     Ok(written
         .into_iter()
