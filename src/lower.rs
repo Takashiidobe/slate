@@ -878,6 +878,7 @@ struct ElementPtr {
     unsafe_access: bool,
     unbounded: bool,
     out_of_bounds: bool,
+    elem_ty: Option<Type>,
 }
 
 #[derive(Debug, Clone)]
@@ -2001,10 +2002,13 @@ impl<'a> Lowerer<'a> {
         for stmt in prelude {
             f.push_stmt(stmt);
         }
-        for (arg, _) in &entry.args {
+        for (arg, arg_ty) in &entry.args {
             f.immutable_temps.insert(arg.clone());
             f.values
                 .insert(arg.clone(), Val::Expr(Expr::Var(arg.clone().into())));
+            if let fn_ptr_ty @ Type::FnPtr { .. } = f.parent.rust_type(arg_ty) {
+                f.loaded_field_types.insert(arg.clone(), fn_ptr_ty);
+            }
         }
         let body = op.regions.first().unwrap();
         if body.blocks.len() > 1 {
@@ -3526,9 +3530,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 ty: result_ty,
             };
         }
-        if let Some(fn_ptr_ty @ Type::FnPtr { ret, .. }) = field_ty
-            && matches!(ret.as_ref(), Type::Custom(enum_name) if self.parent.enums.contains_key(enum_name))
-        {
+        if let Some(fn_ptr_ty @ Type::FnPtr { .. }) = field_ty {
             self.loaded_field_types
                 .insert(result.clone(), fn_ptr_ty.clone());
         }
@@ -6046,6 +6048,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         {
             return self.record_field_type_by_name(record_name, field);
         }
+        if let Some(Type::Custom(record_name)) = self
+            .element_ptrs
+            .get(base_ptr)
+            .and_then(|element| element.elem_ty.as_ref())
+        {
+            return self.record_field_type_by_name(record_name, field);
+        }
         None
     }
 
@@ -6234,6 +6243,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.known_arith_value(&op.operands[1])
                 .is_some_and(|value| value >= i128::from(len))
         });
+        let elem_ty = op_result_type(op)
+            .and_then(cir_ptr_inner)
+            .map(|ty| self.parent.rust_type(ty));
         if let Some(Val::Global(name)) = self.values.get(base_ptr).cloned() {
             if let Some(labels) = self.parent.block_addr_globals.get(&name) {
                 self.block_addr_element_ptrs.insert(
@@ -6244,11 +6256,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     },
                 );
             }
-            let elem_ty = op_result_type(op)
-                .and_then(cir_ptr_inner)
-                .map(|ty| self.parent.rust_type(ty));
             let declared_len = array_len.map(|len| len as usize);
-            if let Some(base) = self.global_array_literal_expr(&name, elem_ty, declared_len) {
+            if let Some(base) = self.global_array_literal_expr(&name, elem_ty.clone(), declared_len)
+            {
                 self.element_ptrs.insert(
                     result.clone(),
                     ElementPtr {
@@ -6257,6 +6267,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         unsafe_access: false,
                         unbounded: false,
                         out_of_bounds: false,
+                        elem_ty,
                     },
                 );
                 return;
@@ -6273,6 +6284,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 unsafe_access,
                 unbounded,
                 out_of_bounds,
+                elem_ty,
             },
         );
     }
@@ -6422,10 +6434,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     ty: self.parent.rust_type(result_ty),
                 })
             }
-            Some(Val::Global(name)) => self
-                .global_array_decay_expr(&name, result_ty)
-                .map(Val::Expr)
-                .unwrap_or(Val::Global(name)),
+            Some(Val::Global(name)) => match self.global_array_decay_expr(&name, result_ty) {
+                Some(expr) => Val::Expr(expr),
+                None => Val::Expr(Expr::Cast {
+                    expr: Box::new(Expr::AddrOf {
+                        mutable: true,
+                        expr: Box::new(Expr::Var(sanitize_ident(&name))),
+                    }),
+                    ty: self.parent.rust_type(result_ty),
+                }),
+            },
             _ if self
                 .slot_types
                 .get(src)
@@ -6800,6 +6818,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         {
             return;
         }
+        let indirect_param_types = indirect_callee_operand
+            .as_deref()
+            .and_then(|operand| self.loaded_field_types.get(operand))
+            .and_then(|ty| match ty {
+                Type::FnPtr { params, .. } => Some(params.clone()),
+                _ => None,
+            });
         let call = Expr::Call {
             binding,
             func: Box::new(callee_expr),
@@ -6823,6 +6848,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     })
                     .collect()
             } else if let Some(param_types) = self.parent.function_param_types.get(&callee_name) {
+                cast_void_ptr_call_args(args, arg_types, param_types)
+            } else if let Some(param_types) = &indirect_param_types {
                 cast_void_ptr_call_args(args, arg_types, param_types)
             } else {
                 args
