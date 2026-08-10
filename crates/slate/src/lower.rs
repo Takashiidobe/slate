@@ -853,6 +853,7 @@ struct ElementPtr {
     index: Expr,
     unsafe_access: bool,
     unbounded: bool,
+    out_of_bounds: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -4098,6 +4099,22 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             BinOp::Add => Some(l + r),
             BinOp::Sub => Some(l - r),
             BinOp::Mul => Some(l * r),
+            BinOp::Div if r != 0 => Some(l / r),
+            BinOp::Rem if r != 0 => Some(l % r),
+            BinOp::BitAnd => Some(l & r),
+            BinOp::BitOr => Some(l | r),
+            BinOp::BitXor => Some(l ^ r),
+            BinOp::Shl => u32::try_from(r).ok().and_then(|shift| l.checked_shl(shift)),
+            BinOp::Shr => u32::try_from(r).ok().and_then(|shift| l.checked_shr(shift)),
+            _ => None,
+        }
+    }
+
+    fn fold_unary_arith(&self, operand: &str, op: UnaryOp) -> Option<i128> {
+        let v = self.known_arith_value(operand)?;
+        match op {
+            UnaryOp::Neg => Some(-v),
+            UnaryOp::Not => Some(!v),
             _ => None,
         }
     }
@@ -4177,6 +4194,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(value) = op.operands.first() else {
             return;
         };
+        if let Some(folded) = self.fold_unary_arith(&op.operands[0], UnaryOp::Not) {
+            self.macro_arith_values.insert(result.clone(), folded);
+        }
         let value = self.operand_expr(value);
         let ty = op_result_type(op);
         self.materialize_expr(
@@ -4196,6 +4216,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(value) = op.operands.first() else {
             return;
         };
+        if let Some(folded) = self.fold_unary_arith(&op.operands[0], UnaryOp::Neg) {
+            self.macro_arith_values.insert(result.clone(), folded);
+        }
         let value = self.operand_expr(value);
         let result_ty = op_result_type(op);
         let operand_ty = op_operand_types(op.ty.as_deref().unwrap_or(""))
@@ -5995,6 +6018,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .member_ptrs
             .get(base_ptr)
             .is_some_and(|member| matches!(&member.field_ty, Some(Type::Array { len: 0, .. })));
+        let array_len = op_operand_types(op.ty.as_deref().unwrap_or(""))
+            .into_iter()
+            .next()
+            .and_then(cir_ptr_inner)
+            .and_then(parse_cir_array_type)
+            .map(|(_, len)| len);
+        let out_of_bounds = array_len.is_some_and(|len| {
+            self.known_arith_value(&op.operands[1])
+                .is_some_and(|value| value >= i128::from(len))
+        });
         if let Some(Val::Global(name)) = self.values.get(base_ptr).cloned() {
             if let Some(labels) = self.parent.block_addr_globals.get(&name) {
                 self.block_addr_element_ptrs.insert(
@@ -6008,12 +6041,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             let elem_ty = op_result_type(op)
                 .and_then(cir_ptr_inner)
                 .map(|ty| self.parent.rust_type(ty));
-            let declared_len = op_operand_types(op.ty.as_deref().unwrap_or(""))
-                .into_iter()
-                .next()
-                .and_then(cir_ptr_inner)
-                .and_then(parse_cir_array_type)
-                .map(|(_, len)| len as usize);
+            let declared_len = array_len.map(|len| len as usize);
             if let Some(base) = self.global_array_literal_expr(&name, elem_ty, declared_len) {
                 self.element_ptrs.insert(
                     result.clone(),
@@ -6022,6 +6050,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         index,
                         unsafe_access: false,
                         unbounded: false,
+                        out_of_bounds: false,
                     },
                 );
                 return;
@@ -6037,6 +6066,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 index,
                 unsafe_access,
                 unbounded,
+                out_of_bounds,
             },
         );
     }
@@ -7867,7 +7897,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             expr: Box::new(element.index.clone()),
             ty: Type::Prim(Prim::Usize),
         };
-        if element.unbounded {
+        if element.unbounded || element.out_of_bounds {
             return Expr::Unary {
                 op: UnaryOp::Deref,
                 expr: Box::new(Expr::MethodCall {
