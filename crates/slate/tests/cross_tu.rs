@@ -765,6 +765,21 @@ fn public_pointer_deref_functions_are_unsafe() {
 }
 
 #[test]
+fn address_taken_pointer_deref_function_stays_safe_across_tus() {
+    let rs_dir = build_and_diff("unsafe_deref_callback_cross_tu");
+
+    let handler_rs = std::fs::read_to_string(rs_dir.join("handler.rs")).expect("read handler.rs");
+    assert!(
+        handler_rs.contains("pub extern \"C\" fn deref_and_add"),
+        "a function assigned to a safe C function-pointer field in another TU must stay a \
+         safe fn, even though its body dereferences a raw pointer: {handler_rs}"
+    );
+
+    let main_rs = std::fs::read_to_string(rs_dir.join("main.rs")).expect("read main.rs");
+    assert!(main_rs.contains("Some(deref_and_add)"));
+}
+
+#[test]
 fn cross_tu_variadic_calls_are_unsafe() {
     let rs_dir = build_and_diff("unsafe_variadic");
 
