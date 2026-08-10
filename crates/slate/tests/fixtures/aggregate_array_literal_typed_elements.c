@@ -1,5 +1,6 @@
-#include <stdio.h>
+#include <stdbool.h>
 #include <stddef.h>
+#include <stdio.h>
 
 struct pair {
   const char *name;
@@ -17,7 +18,18 @@ static int count_null_pairs(void) {
   return total;
 }
 
+static int count_true_flags(void) {
+  bool values[] = {true, false};
+  int total = 0;
+  for (size_t i = 0; i < sizeof(values) / sizeof(values[0]); i++) {
+    if (values[i]) {
+      total++;
+    }
+  }
+  return total;
+}
+
 int main(void) {
-  printf("%d\n", count_null_pairs());
+  printf("%d %d\n", count_null_pairs(), count_true_flags());
   return 0;
 }
