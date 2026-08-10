@@ -10,8 +10,8 @@ use crate::rust_ast::{
     Derive, EnumConst, EnumDef, Expr, ExprMatchArm, ExternDecl, ExternFnDecl, Feature, FnDef,
     FnParam, GenericParam, Ident, ImplBlock, ImplItem, IndentStmt, InlineAsm, Item, Label, Lint,
     MatchArm, Method, Path, Pattern, Prim, Program, RecordDef, RecordField, Repr, RustValue,
-    SelfKind, StdTrait, Stmt, StructDef, StructFields, TraitBound, Type, UnaryOp, UsedKind,
-    Visibility,
+    SelfKind, StdTrait, Stmt, StructDef, StructFields, TraitBound, TraitRef, Type, UnaryOp,
+    UsedKind, Visibility,
 };
 use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
 
@@ -479,6 +479,9 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
             .iter()
             .map(|function| (function.name.clone(), function.asm_gotos.clone()))
             .collect(),
+        function_return_types: BTreeMap::new(),
+        enum_wrapper_fns: std::cell::RefCell::new(BTreeMap::new()),
+        needed_enum_from_impls: std::cell::RefCell::new(BTreeSet::new()),
     };
     lowerer.lower_module(cir, c)
 }
@@ -674,7 +677,7 @@ fn lower_packed_aligned_wrapper(
     };
     let deref = Item::Impl(ImplBlock {
         generics: vec![],
-        trait_: Some(StdTrait::Deref),
+        trait_: Some(TraitRef::Std(StdTrait::Deref)),
         self_ty: Type::Custom(name.to_string()),
         items: vec![
             ImplItem::AssocType {
@@ -695,7 +698,7 @@ fn lower_packed_aligned_wrapper(
     });
     let deref_mut = Item::Impl(ImplBlock {
         generics: vec![],
-        trait_: Some(StdTrait::DerefMut),
+        trait_: Some(TraitRef::Std(StdTrait::DerefMut)),
         self_ty: Type::Custom(name.to_string()),
         items: vec![ImplItem::Method(Method {
             name: "deref_mut".into(),
@@ -788,6 +791,9 @@ struct Lowerer<'a> {
     macro_consts: BTreeMap<String, Vec<MacroConst>>,
     enum_consts: BTreeMap<String, Vec<EnumConstRef>>,
     asm_gotos: BTreeMap<String, Vec<crate::c_ast::AsmGoto>>,
+    function_return_types: BTreeMap<String, Type>,
+    enum_wrapper_fns: std::cell::RefCell<BTreeMap<String, FnDef>>,
+    needed_enum_from_impls: std::cell::RefCell<BTreeSet<(String, Type)>>,
 }
 
 struct FunctionLowerer<'a, 'b> {
@@ -1047,6 +1053,7 @@ impl<'a> Lowerer<'a> {
         self.c_abi_functions = c_abi_function_targets(module_op);
         self.c_abi_functions
             .extend(self.project.address_taken_functions.iter().cloned());
+        self.function_return_types = declared_function_return_types(module_op, &self.aliases);
         let mut assembly_strings = Vec::new();
         collect_assembly_strings(module_op, &mut assembly_strings);
         let asm_referenced_globals: BTreeSet<String> = ops
@@ -1309,6 +1316,15 @@ impl<'a> Lowerer<'a> {
             .map(Item::Struct)
             .collect();
         items.splice(1..1, storage_items);
+
+        for wrapper in self.enum_wrapper_fns.borrow().values() {
+            items.push(Item::Fn(wrapper.clone()));
+        }
+        for (enum_name, from_ty) in self.needed_enum_from_impls.borrow().iter() {
+            if let Some(item) = self.enum_from_impl_item(enum_name, from_ty) {
+                items.push(item);
+            }
+        }
 
         if !self.long_double_shims.is_empty() {
             items.push(Item::ExternBlock {
@@ -2193,6 +2209,119 @@ impl<'a> Lowerer<'a> {
         c_record_field_type(ty)
     }
 
+    fn enum_return_mismatch_wrap(&self, fn_name: &str, target_ty: &Type) -> Option<Expr> {
+        let Type::FnPtr { ret, params, .. } = target_ty else {
+            return None;
+        };
+        let Type::Custom(enum_name) = ret.as_ref() else {
+            return None;
+        };
+        if !self.enums.contains_key(enum_name) {
+            return None;
+        }
+        let source_ret = self.function_return_types.get(fn_name)?;
+        if source_ret == &Type::Custom(enum_name.clone()) {
+            return None;
+        }
+        Some(self.wrap_enum_returning_function(fn_name, source_ret.clone(), enum_name, params))
+    }
+
+    fn wrap_enum_returning_function(
+        &self,
+        fn_name: &str,
+        source_ret: Type,
+        enum_name: &str,
+        params: &[Type],
+    ) -> Expr {
+        self.needed_enum_from_impls
+            .borrow_mut()
+            .insert((enum_name.to_string(), source_ret));
+        let wrapper_name = format!("__slate_enum_wrap_{fn_name}");
+        let fn_params: Vec<FnParam> = params
+            .iter()
+            .enumerate()
+            .map(|(i, ty)| FnParam {
+                name: format!("_{i}"),
+                mutable: false,
+                ty: ty.clone(),
+            })
+            .collect();
+        let args: Vec<Expr> = fn_params
+            .iter()
+            .map(|p| Expr::Var(p.name.clone().into()))
+            .collect();
+        self.enum_wrapper_fns
+            .borrow_mut()
+            .entry(wrapper_name.clone())
+            .or_insert_with(|| FnDef {
+                attrs: Vec::new(),
+                vis: Visibility::Private,
+                unsafe_: false,
+                abi: Some(Abi::C),
+                name: wrapper_name.clone(),
+                params: fn_params,
+                ret: Some(Type::Custom(enum_name.to_string())),
+                body: vec![IndentStmt {
+                    depth: 1,
+                    stmt: Stmt::Return(Some(Expr::Call {
+                        binding: crate::function_identity::CallBinding::Generated,
+                        func: Box::new(Expr::Path(Path::new([enum_name, "from"].map(Ident::from)))),
+                        args: vec![Expr::Call {
+                            binding: crate::function_identity::CallBinding::Generated,
+                            func: Box::new(Expr::Var(sanitize_ident(fn_name))),
+                            args,
+                        }],
+                    })),
+                }],
+            });
+        Expr::Call {
+            binding: crate::function_identity::CallBinding::Generated,
+            func: Box::new(Expr::Var("Some".into())),
+            args: vec![Expr::Var(wrapper_name.into())],
+        }
+    }
+
+    fn enum_from_impl_item(&self, enum_name: &str, from_ty: &Type) -> Option<Item> {
+        let enm = self.enums.get(enum_name)?;
+        let arms = enm
+            .variants
+            .iter()
+            .map(|variant| ExprMatchArm {
+                pattern: int_pattern(variant.value as i128),
+                value: Expr::Path(Path::new([
+                    Ident::from(enum_name),
+                    Ident::from(sanitize_ident(&variant.name).as_str()),
+                ])),
+            })
+            .chain(std::iter::once(ExprMatchArm {
+                pattern: Pattern::Wildcard,
+                value: Expr::Macro {
+                    name: "unreachable".into(),
+                    args: Vec::new(),
+                },
+            }))
+            .collect();
+        Some(Item::Impl(ImplBlock {
+            generics: vec![],
+            trait_: Some(TraitRef::From(from_ty.clone())),
+            self_ty: Type::Custom(enum_name.to_string()),
+            items: vec![ImplItem::Method(Method {
+                name: "from".into(),
+                self_kind: SelfKind::None,
+                params: vec![FnParam {
+                    name: "value".into(),
+                    mutable: false,
+                    ty: from_ty.clone(),
+                }],
+                ret: Some(Type::Custom(enum_name.to_string())),
+                body: Expr::Match {
+                    expr: Box::new(Expr::Var("value".into())),
+                    arms,
+                },
+            })],
+        }))
+    }
+
     fn default_value_expr(&self, ty: &Type) -> Expr {
         match ty {
             Type::Custom(name) => {
@@ -2470,6 +2599,9 @@ impl<'a> Lowerer<'a> {
             });
         }
         if matches!(ty, Type::FnPtr { .. }) {
+            if let Some(wrapped) = self.enum_return_mismatch_wrap(target, ty) {
+                return Some(wrapped);
+            }
             return Some(Expr::Call {
                 binding: crate::function_identity::CallBinding::Generated,
                 func: Box::new(Expr::Var("Some".into())),
@@ -3175,14 +3307,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         let operand_types = op_operand_types(op.ty.as_deref().unwrap_or(""));
         let value_ty = operand_types.first().copied();
+        let ptr = &op.operands[1];
         let mut value = if value_ty.is_some_and(is_cir_function_pointer_type) {
-            self.function_pointer_operand_expr(&op.operands[0])
+            self.store_function_pointer_value(&op.operands[0], ptr)
         } else if value_ty.is_some_and(|ty| ty.starts_with("!cir.ptr<")) {
             self.pointer_operand_expr(&op.operands[0])
         } else {
             self.operand_expr(&op.operands[0])
         };
-        let ptr = &op.operands[1];
         value = self.coerce_store_value(ptr, value, &op.operands[0]);
         if self.forward_allocas.contains(ptr) {
             let value = self.forward_safe_value(value, value_ty);
@@ -8005,6 +8137,22 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         Expr::Var(sanitize_ident(operand))
     }
 
+    fn store_function_pointer_value(&mut self, operand: &str, ptr: &str) -> Expr {
+        let target_ty = self
+            .member_ptrs
+            .get(ptr)
+            .and_then(|member| member.field_ty.as_ref())
+            .cloned();
+        if let Some(target_ty) = target_ty
+            && let Some(Val::Global(fn_name)) = self.values.get(operand).cloned()
+            && !self.parent.strings.contains_key(&fn_name)
+            && let Some(wrapped) = self.parent.enum_return_mismatch_wrap(&fn_name, &target_ty)
+        {
+            return wrapped;
+        }
+        self.function_pointer_operand_expr(operand)
+    }
+
     fn function_pointer_operand_expr(&self, operand: &str) -> Expr {
         if self.function_pointer_null_values.contains(operand) {
             return Expr::Value(RustValue::None);
@@ -8346,6 +8494,24 @@ fn c_abi_function_targets(op: &Op) -> BTreeSet<String> {
         targets.extend(parse_cir_global_views(init).into_iter().map(str::to_string));
     }
     targets
+}
+
+fn declared_function_return_types(
+    op: &Op,
+    aliases: &BTreeMap<String, String>,
+) -> BTreeMap<String, Type> {
+    let mut ops = Vec::new();
+    collect_region_ops_recursive(op, &mut ops);
+    ops.iter()
+        .filter(|op| op.kind() == CirOpKind::Func)
+        .filter_map(|op| {
+            let name = attr_str(op, "sym_name")?;
+            let function_type = attr_str(op, "function_type").unwrap_or("");
+            let (_, ret_ty) = parse_function_type(function_type);
+            let ty = rust_type_with_aliases(ret_ty.as_deref().unwrap_or("()"), aliases);
+            Some((name.to_string(), ty))
+        })
+        .collect()
 }
 
 fn attr_str<'a>(op: &'a Op, key: &str) -> Option<&'a str> {
@@ -9108,7 +9274,7 @@ fn long_double_op_impl(trait_: StdTrait, params: Vec<FnParam>, arg: Expr) -> Ite
     };
     Item::Impl(ImplBlock {
         generics: vec![],
-        trait_: Some(trait_),
+        trait_: Some(TraitRef::Std(trait_)),
         self_ty: long_double_ty(),
         items: vec![
             ImplItem::AssocType {
@@ -9256,7 +9422,7 @@ fn complex_binop_impl(trait_: StdTrait, op: BinOp) -> Item {
                 assoc: vec![("Output".into(), Type::TyVar("T".into()))],
             }],
         }],
-        trait_: Some(trait_),
+        trait_: Some(TraitRef::Std(trait_)),
         self_ty: complex_ty(Type::TyVar("T".into())),
         items: vec![
             ImplItem::AssocType {

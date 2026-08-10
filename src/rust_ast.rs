@@ -269,9 +269,15 @@ impl StdTrait {
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct ImplBlock {
     pub generics: Vec<GenericParam>,
-    pub trait_: Option<StdTrait>,
+    pub trait_: Option<TraitRef>,
     pub self_ty: Type,
     pub items: Vec<ImplItem>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum TraitRef {
+    Std(StdTrait),
+    From(Type),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]

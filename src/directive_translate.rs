@@ -1,7 +1,7 @@
 use crate::preprocess::{
     self, Branch, DirectiveDisposition, DirectiveKind, DirectiveName, PredExpr, Preprocessing,
 };
-use crate::rust_ast::{Attr, Cfg, Expr, Item, Program, Type};
+use crate::rust_ast::{Attr, Cfg, Expr, Item, Program, TraitRef, Type};
 use crate::{c_ast, cir, ctx, fixups, lower};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
@@ -611,7 +611,11 @@ pub fn item_key(item: &Item) -> String {
         Item::Struct(s) => format!("struct:{}", s.name),
         Item::Impl(im) => format!(
             "impl:{}:{}",
-            im.trait_.map(|t| t.path()).unwrap_or(""),
+            match &im.trait_ {
+                Some(TraitRef::Std(t)) => t.path().to_string(),
+                Some(TraitRef::From(ty)) => format!("From<{}>", ty.render()),
+                None => String::new(),
+            },
             im.self_ty.render()
         ),
         Item::Macro { name, args } => format!(
