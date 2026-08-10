@@ -474,12 +474,18 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
             .iter()
             .map(|function| (function.name.clone(), function.enum_consts.clone()))
             .collect(),
+        local_enum_decls: c
+            .functions
+            .iter()
+            .map(|function| (function.name.clone(), function.local_enum_decls.clone()))
+            .collect(),
         asm_gotos: c
             .functions
             .iter()
             .map(|function| (function.name.clone(), function.asm_gotos.clone()))
             .collect(),
         function_return_types: BTreeMap::new(),
+        function_param_types: BTreeMap::new(),
         enum_wrapper_fns: std::cell::RefCell::new(BTreeMap::new()),
         needed_enum_from_impls: std::cell::RefCell::new(BTreeSet::new()),
     };
@@ -790,8 +796,10 @@ struct Lowerer<'a> {
     layout_queries: BTreeMap<String, Vec<LayoutQuery>>,
     macro_consts: BTreeMap<String, Vec<MacroConst>>,
     enum_consts: BTreeMap<String, Vec<EnumConstRef>>,
+    local_enum_decls: BTreeMap<String, Vec<crate::c_ast::LocalEnumDecl>>,
     asm_gotos: BTreeMap<String, Vec<crate::c_ast::AsmGoto>>,
     function_return_types: BTreeMap<String, Type>,
+    function_param_types: BTreeMap<String, Vec<Type>>,
     enum_wrapper_fns: std::cell::RefCell<BTreeMap<String, FnDef>>,
     needed_enum_from_impls: std::cell::RefCell<BTreeSet<(String, Type)>>,
 }
@@ -831,6 +839,8 @@ struct FunctionLowerer<'a, 'b> {
     asm_outputs: BTreeMap<String, Vec<Expr>>,
     asm_gotos: VecDeque<crate::c_ast::AsmGoto>,
     asm_output_places: BTreeMap<String, Expr>,
+    local_enum_types: BTreeMap<String, String>,
+    loaded_field_types: BTreeMap<String, Type>,
 }
 
 struct DispatchCtx {
@@ -1054,6 +1064,7 @@ impl<'a> Lowerer<'a> {
         self.c_abi_functions
             .extend(self.project.address_taken_functions.iter().cloned());
         self.function_return_types = declared_function_return_types(module_op, &self.aliases);
+        self.function_param_types = declared_function_param_types(module_op, &self.aliases);
         let mut assembly_strings = Vec::new();
         collect_assembly_strings(module_op, &mut assembly_strings);
         let asm_referenced_globals: BTreeSet<String> = ops
@@ -1933,6 +1944,14 @@ impl<'a> Lowerer<'a> {
             .unwrap_or_default()
             .into();
         let asm_gotos: VecDeque<_> = self.asm_gotos.get(name).cloned().unwrap_or_default().into();
+        let local_enum_types: BTreeMap<String, String> = self
+            .local_enum_decls
+            .get(name)
+            .into_iter()
+            .flatten()
+            .filter(|decl| self.enums.contains_key(&decl.enum_name))
+            .map(|decl| (decl.name.clone(), decl.enum_name.clone()))
+            .collect();
         let mut function_ops = Vec::new();
         collect_region_ops_recursive(op, &mut function_ops);
         let va_allocas = function_ops
@@ -1975,6 +1994,8 @@ impl<'a> Lowerer<'a> {
             asm_outputs: BTreeMap::new(),
             asm_gotos,
             asm_output_places: BTreeMap::new(),
+            local_enum_types,
+            loaded_field_types: BTreeMap::new(),
         };
 
         for stmt in prelude {
@@ -3263,9 +3284,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             });
             return;
         }
-        let ty = self
+        let mut ty = self
             .pointee_type(op.ty.as_deref().unwrap_or(""))
             .unwrap_or(Type::Prim(Prim::I32));
+        if matches!(ty, Type::Prim(_))
+            && let Some(enum_name) =
+                attr_str(op, "name").and_then(|c_name| self.local_enum_types.get(c_name))
+        {
+            ty = Type::Custom(enum_name.clone());
+        }
         let alignment = attr_int(op, "alignment")
             .and_then(|alignment| u32::try_from(alignment).ok())
             .filter(|alignment| *alignment > type_alignment(&ty) && !matches!(ty, Type::Custom(_)));
@@ -3483,19 +3510,27 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else {
             Self::unsafe_deref_expr(self.operand_expr(ptr))
         };
-        if let Some(member_ty) = self
+        let field_ty = self
             .member_ptrs
             .get(ptr)
             .and_then(|member| member.field_ty.as_ref())
+            .or_else(|| self.slot_types.get(ptr));
+        if let Some(field_ty) = field_ty
             && let Some(result_ty) = op_result_type(op).map(|ty| self.parent.rust_type(ty))
-            && ((self.parent.type_is_enum(member_ty) && matches!(result_ty, Type::Prim(_)))
-                || (self.parent.type_is_enum_ptr(member_ty)
+            && ((self.parent.type_is_enum(field_ty) && matches!(result_ty, Type::Prim(_)))
+                || (self.parent.type_is_enum_ptr(field_ty)
                     && matches!(result_ty, Type::Ptr { .. })))
         {
             value = Expr::Cast {
                 expr: Box::new(value),
                 ty: result_ty,
             };
+        }
+        if let Some(fn_ptr_ty @ Type::FnPtr { ret, .. }) = field_ty
+            && matches!(ret.as_ref(), Type::Custom(enum_name) if self.parent.enums.contains_key(enum_name))
+        {
+            self.loaded_field_types
+                .insert(result.clone(), fn_ptr_ty.clone());
         }
         self.materialize_expr(result, value, op_result_type(op));
     }
@@ -5949,10 +5984,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         {
             return Expr::Value(RustValue::None);
         }
-        let Some(member) = self.member_ptrs.get(ptr) else {
-            return value;
-        };
-        let Some(field_ty) = &member.field_ty else {
+        let field_ty = self
+            .member_ptrs
+            .get(ptr)
+            .and_then(|member| member.field_ty.as_ref())
+            .or_else(|| self.slot_types.get(ptr));
+        let Some(field_ty) = field_ty else {
             return value;
         };
         if let Type::Custom(enum_name) = field_ty
@@ -6401,7 +6438,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     ),
                     mutable: true,
                 };
-                if result_ty.starts_with("!cir.ptr<") {
+                let elem_ty_matches = result_ty
+                    .strip_prefix("!cir.ptr<")
+                    .and_then(|s| s.strip_suffix('>'))
+                    .is_some_and(|pointee| {
+                        matches!(
+                            self.slot_types.get(src),
+                            Some(Type::Array { elem, .. })
+                                if **elem == self.parent.rust_type(pointee)
+                        )
+                    });
+                if elem_ty_matches {
                     Val::Expr(array_ptr)
                 } else {
                     Val::Expr(Expr::Cast {
@@ -6646,7 +6693,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 },
             };
         }
-        let (callee_name, callee_expr, arg_operands, arg_types) =
+        let (callee_name, callee_expr, arg_operands, arg_types, indirect_callee_operand) =
             if let Some(callee) = direct_callee {
                 let callee_expr = if external_weak_call {
                     Expr::MethodCall {
@@ -6662,6 +6709,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     callee_expr,
                     op.operands.as_slice(),
                     operand_types.as_slice(),
+                    None,
                 )
             } else {
                 let Some((callee_operand, arg_operands)) = op.operands.split_first() else {
@@ -6676,6 +6724,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     },
                     arg_operands,
                     operand_types.get(1..).unwrap_or(&[]),
+                    Some(callee_operand.clone()),
                 )
             };
         let args = arg_operands
@@ -6773,6 +6822,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         None => arg,
                     })
                     .collect()
+            } else if let Some(param_types) = self.parent.function_param_types.get(&callee_name) {
+                cast_void_ptr_call_args(args, arg_types, param_types)
             } else {
                 args
             },
@@ -6790,7 +6841,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         };
 
         if let Some(result) = op.results.first() {
-            self.materialize_expr(result, expr, op_result_type(op));
+            let indirect_ret_ty = indirect_callee_operand
+                .and_then(|operand| self.loaded_field_types.get(&operand))
+                .and_then(|ty| match ty {
+                    Type::FnPtr { ret, .. } => Some(ret.as_ref().clone()),
+                    _ => None,
+                });
+            match indirect_ret_ty {
+                Some(ty) => self.materialize_expr_as(result, expr, ty),
+                None => self.materialize_expr(result, expr, op_result_type(op)),
+            }
         } else {
             self.push_stmt(Stmt::Expr(expr));
         }
@@ -8002,10 +8062,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn materialize_expr(&mut self, result: &str, expr: Expr, cir_ty: Option<&str>) {
-        let name = self.next_temp();
         let ty = cir_ty
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or(Type::Prim(Prim::I32));
+        self.materialize_expr_as(result, expr, ty);
+    }
+
+    fn materialize_expr_as(&mut self, result: &str, expr: Expr, ty: Type) {
+        let name = self.next_temp();
         self.push_stmt(Stmt::Let {
             name: name.clone(),
             mutable: false,
@@ -8142,15 +8206,30 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .member_ptrs
             .get(ptr)
             .and_then(|member| member.field_ty.as_ref())
+            .or_else(|| self.slot_types.get(ptr))
             .cloned();
-        if let Some(target_ty) = target_ty
+        let operand_is_named_function = matches!(self.values.get(operand), Some(Val::Global(_)));
+        if let Some(target_ty) = target_ty.clone()
             && let Some(Val::Global(fn_name)) = self.values.get(operand).cloned()
             && !self.parent.strings.contains_key(&fn_name)
             && let Some(wrapped) = self.parent.enum_return_mismatch_wrap(&fn_name, &target_ty)
         {
             return wrapped;
         }
-        self.function_pointer_operand_expr(operand)
+        let value = self.function_pointer_operand_expr(operand);
+        if !operand_is_named_function
+            && let Some(Type::FnPtr { ret, .. }) = target_ty
+            && matches!(ret.as_ref(), Type::Custom(enum_name) if self.parent.enums.contains_key(enum_name))
+        {
+            return Self::unsafe_expr(Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
+                func: Box::new(Expr::Path(Path::new(
+                    ["std", "mem", "transmute"].map(Ident::from),
+                ))),
+                args: vec![value],
+            });
+        }
+        value
     }
 
     fn function_pointer_operand_expr(&self, operand: &str) -> Expr {
@@ -8494,6 +8573,27 @@ fn c_abi_function_targets(op: &Op) -> BTreeSet<String> {
         targets.extend(parse_cir_global_views(init).into_iter().map(str::to_string));
     }
     targets
+}
+
+fn declared_function_param_types(
+    op: &Op,
+    aliases: &BTreeMap<String, String>,
+) -> BTreeMap<String, Vec<Type>> {
+    let mut ops = Vec::new();
+    collect_region_ops_recursive(op, &mut ops);
+    ops.iter()
+        .filter(|op| op.kind() == CirOpKind::Func)
+        .filter_map(|op| {
+            let name = attr_str(op, "sym_name")?;
+            let function_type = attr_str(op, "function_type").unwrap_or("");
+            let (param_tys, _) = parse_function_type(function_type);
+            let params = param_tys
+                .iter()
+                .map(|ty| rust_type_with_aliases(ty, aliases))
+                .collect();
+            Some((name.to_string(), params))
+        })
+        .collect()
 }
 
 fn declared_function_return_types(
@@ -9843,6 +9943,41 @@ fn is_cir_function_pointer_type(ty: &str) -> bool {
         .strip_prefix("!cir.ptr<")
         .and_then(|s| s.strip_suffix('>'))
         .is_some_and(|inner| inner.trim().starts_with("!cir.func<"))
+}
+
+fn is_cir_void_pointer_type(ty: &str) -> bool {
+    ty.trim()
+        .strip_prefix("!cir.ptr<")
+        .and_then(|s| s.strip_suffix('>'))
+        .is_some_and(|inner| matches!(inner.trim(), "!void" | "!cir.void"))
+}
+
+fn is_void_ptr_type(ty: &Type) -> bool {
+    matches!(ty, Type::Ptr { inner, .. } if matches!(**inner, Type::CLib(c) if c == CLibType::VOID))
+}
+
+fn cast_void_ptr_call_args(args: Vec<Expr>, arg_types: &[&str], param_types: &[Type]) -> Vec<Expr> {
+    args.into_iter()
+        .enumerate()
+        .map(|(i, arg)| {
+            let Some(param_ty) = param_types.get(i).filter(|ty| is_void_ptr_type(ty)) else {
+                return arg;
+            };
+            let Some(arg_ty) = arg_types.get(i) else {
+                return arg;
+            };
+            if is_cir_function_pointer_type(arg_ty) || is_cir_void_pointer_type(arg_ty) {
+                return arg;
+            }
+            if !arg_ty.starts_with("!cir.ptr<") {
+                return arg;
+            }
+            Expr::Cast {
+                expr: Box::new(arg),
+                ty: param_ty.clone(),
+            }
+        })
+        .collect()
 }
 
 fn parse_cir_array_type(ty: &str) -> Option<(String, u64)> {
