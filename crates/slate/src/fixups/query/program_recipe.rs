@@ -365,6 +365,7 @@ fn fflush_fn_decl() -> ExternDecl {
         }],
         variadic: false,
         ret: Some(Type::parse("i32")),
+        safe: false,
     })
 }
 

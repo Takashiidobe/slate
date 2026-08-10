@@ -591,6 +591,9 @@ impl<W: Write> Codegen<W> {
     fn extern_decl(&mut self, decl: &ExternDecl) -> fmt::Result {
         match decl {
             ExternDecl::Fn(f) => {
+                if f.safe {
+                    self.out.write_str("safe ")?;
+                }
                 self.out.write_str("fn ")?;
                 self.ident(&f.name)?;
                 self.out.write_char('(')?;

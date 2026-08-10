@@ -1257,6 +1257,7 @@ impl<'a> Lowerer<'a> {
                         ],
                         variadic: false,
                         ret: None,
+                        safe: false,
                     });
             } else {
                 extern_decls.push(ExternDecl::Fn(decl));
@@ -2144,6 +2145,7 @@ impl<'a> Lowerer<'a> {
             params,
             variadic,
             ret: ret_ast,
+            safe: self.c_abi_functions.contains(name),
         };
         (decl, param_types, ret_ty)
     }
@@ -6226,6 +6228,25 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     ty: self.parent.rust_type(result_ty),
                 })
             }
+            Some(Val::Global(name))
+                if result_ty.starts_with("!cir.ptr<")
+                    && !is_cir_function_pointer_type(result_ty)
+                    && !self.parent.strings.contains_key(&name)
+                    && !self.parent.const_arrays.contains_key(&name)
+                    && !self
+                        .parent
+                        .globals
+                        .contains_key(&sanitize_ident(&name).into_string())
+                    && !self
+                        .parent
+                        .extern_globals
+                        .contains_key(&sanitize_ident(&name).into_string()) =>
+            {
+                Val::Expr(Expr::Cast {
+                    expr: Box::new(Expr::Var(sanitize_ident(&name))),
+                    ty: self.parent.rust_type(result_ty),
+                })
+            }
             Some(Val::Global(name)) => self
                 .global_array_decay_expr(&name, result_ty)
                 .map(Val::Expr)
@@ -6732,6 +6753,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     .collect(),
                 variadic: false,
                 ret: Some(Type::Prim(Prim::I32)),
+                safe: false,
             });
         let call_args = args
             .iter()
@@ -9252,6 +9274,7 @@ fn complex_runtime_decl(name: &str, prim: Prim) -> ExternDecl {
         params: vec![param("a"), param("b"), param("c"), param("d")],
         variadic: false,
         ret: Some(complex_ty(Type::Prim(prim))),
+        safe: false,
     })
 }
 
