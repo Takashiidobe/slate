@@ -338,6 +338,13 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         .iter()
         .map(|record| (sanitize_ident(&record.name).into_string(), record.clone()))
         .collect();
+    let local_collisions = resolve_local_record_collisions(cir, &c.records);
+    let local_record_extras: BTreeSet<String> = local_collisions
+        .keys()
+        .filter(|key| !records.contains_key(*key))
+        .cloned()
+        .collect();
+    records.extend(local_collisions);
     let enums: BTreeMap<String, crate::c_ast::Enum> = c
         .enums
         .iter()
@@ -405,6 +412,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         external_weak_targets: BTreeSet::new(),
         weak_aliases: BTreeMap::new(),
         records,
+        local_record_extras,
         enums,
         anon_records,
         declaration_comments,
@@ -734,6 +742,7 @@ struct Lowerer<'a> {
     external_weak_targets: BTreeSet<String>,
     weak_aliases: BTreeMap<String, String>,
     records: BTreeMap<String, crate::c_ast::Record>,
+    local_record_extras: BTreeSet<String>,
     enums: BTreeMap<String, crate::c_ast::Enum>,
     anon_records: Vec<crate::c_ast::Record>,
     declaration_comments: BTreeMap<(String, String), Vec<Comment>>,
@@ -983,6 +992,14 @@ impl<'a> Lowerer<'a> {
             let name = sanitize_ident(&record.name).into_string();
             let record = self.records.get(&name).cloned().unwrap_or(record);
             if !record.fields.is_empty() {
+                items.extend(self.lower_record(&record));
+            }
+        }
+        for name in self.local_record_extras.clone() {
+            if self.project.shared_records.contains(&name) {
+                continue;
+            }
+            if let Some(record) = self.records.get(&name).cloned() {
                 items.extend(self.lower_record(&record));
             }
         }
@@ -9829,6 +9846,122 @@ fn collect_anon_bitfield_slots(
         for region in &op.regions {
             for block in &region.blocks {
                 collect_anon_bitfield_slots(&block.ops, aliases, member_slots, bitfield_slots);
+            }
+        }
+    }
+}
+
+fn resolve_local_record_collisions(
+    cir: &Module,
+    ast_records: &[crate::c_ast::Record],
+) -> BTreeMap<String, crate::c_ast::Record> {
+    let mut by_name: BTreeMap<String, Vec<&crate::c_ast::Record>> = BTreeMap::new();
+    for record in ast_records {
+        by_name
+            .entry(sanitize_ident(&record.name).into_string())
+            .or_default()
+            .push(record);
+    }
+    by_name.retain(|_, records| records.len() > 1);
+    if by_name.is_empty() {
+        return BTreeMap::new();
+    }
+
+    let mut field_names: BTreeMap<(String, i64), String> = BTreeMap::new();
+    collect_local_record_field_names(&cir.ops, &cir.aliases, &mut field_names);
+
+    let mut resolved = BTreeMap::new();
+    for (base_sanitized, mut candidates) in by_name {
+        let mut family: Vec<(String, Vec<String>)> = Vec::new();
+        for (alias_key, expanded) in &cir.aliases {
+            let Some(cir_name) = cir_record_name(expanded) else {
+                continue;
+            };
+            if sanitize_ident(cir_record_base_name(cir_name)).into_string() != base_sanitized {
+                continue;
+            }
+            let (Some(open), Some(close)) = (expanded.find('{'), expanded.rfind('}')) else {
+                continue;
+            };
+            let field_count = split_top_level(&expanded[open + 1..close], ',')
+                .iter()
+                .filter(|field| !field.trim().is_empty())
+                .count();
+            let mut names = Vec::with_capacity(field_count);
+            for index in 0..field_count {
+                let Some(name) = field_names.get(&(alias_key.clone(), index as i64)) else {
+                    names.clear();
+                    break;
+                };
+                names.push(name.clone());
+            }
+            family.push((sanitize_ident(cir_name).into_string(), names));
+        }
+        for (rust_key, wanted_names) in &family {
+            if wanted_names.is_empty() {
+                continue;
+            }
+            if let Some(pos) = candidates.iter().position(|record| {
+                record
+                    .fields
+                    .iter()
+                    .map(|field| field.name.as_str())
+                    .eq(wanted_names.iter().map(String::as_str))
+            }) {
+                let mut matched = candidates.remove(pos).clone();
+                matched.name = rust_key.clone();
+                resolved.insert(rust_key.clone(), matched);
+            }
+        }
+    }
+    resolved
+}
+
+fn cir_record_base_name(name: &str) -> &str {
+    match name.rsplit_once('.') {
+        Some((base, suffix))
+            if !suffix.is_empty() && suffix.bytes().all(|b| b.is_ascii_digit()) =>
+        {
+            base
+        }
+        _ => name,
+    }
+}
+
+fn any_alias_key(ty: &str, aliases: &BTreeMap<String, String>) -> Option<String> {
+    let ty = ty.trim();
+    let expanded = aliases.get(ty)?;
+    cir_record_name(expanded).or_else(|| ty.strip_prefix("!rec_"))?;
+    Some(ty.to_string())
+}
+
+fn collect_local_record_field_names(
+    ops: &[Op],
+    aliases: &BTreeMap<String, String>,
+    field_names: &mut BTreeMap<(String, i64), String>,
+) {
+    for op in ops {
+        if op.kind() == CirOpKind::GetMember
+            && let (Some(key), Some(index), Some(name)) = (
+                op.ty
+                    .as_deref()
+                    .and_then(split_top_level_arrow)
+                    .and_then(|(inputs, _)| inputs.trim().strip_prefix('(')?.strip_suffix(')'))
+                    .and_then(|inputs| split_top_level(inputs, ',').first().copied())
+                    .and_then(cir_ptr_pointee)
+                    .and_then(|pointee| any_alias_key(pointee, aliases)),
+                op.attrs.get("index_attr").and_then(Attr::as_int),
+                op.attrs
+                    .get("name")
+                    .and_then(Attr::as_str)
+                    .filter(|name| !name.is_empty()),
+            )
+        {
+            field_names.insert((key, index), name.to_string());
+        }
+        for region in &op.regions {
+            for block in &region.blocks {
+                collect_local_record_field_names(&block.ops, aliases, field_names);
             }
         }
     }
