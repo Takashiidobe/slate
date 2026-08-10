@@ -39,6 +39,7 @@ pub(in crate::fixups) mod ptr_len;
 pub(in crate::fixups) mod range_loop;
 pub(in crate::fixups) mod remove_mut;
 pub(in crate::fixups) mod retval;
+pub(in crate::fixups) mod setjmp_recovery;
 pub(in crate::fixups) mod singleton_scopes;
 pub(in crate::fixups) mod slice_index;
 pub(in crate::fixups) mod slice_loop;

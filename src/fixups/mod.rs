@@ -1147,6 +1147,18 @@ fn apply_with_logger(
         incremental.set_program(&program);
         report.changed
     });
+
+    step!(program, Pass::SetjmpRecovery, {
+        let plan = {
+            let query = query::QueryContext::new(&program, &incremental);
+            let mut builder = query::ItemPlanBuilder::new();
+            builder.add_rule(&query, &query::rules::setjmp_recovery::program());
+            builder.finish()
+        };
+        plan.apply(&mut program, &incremental, logger);
+        incremental.set_program(&program);
+    });
+
     let _ = debug_done;
     program.clone()
 }

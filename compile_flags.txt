@@ -1,6 +1,7 @@
 -nostdlibinc
 -isystem
 include
+-std=c23
 -D__SLATE_ARCH_X86_64
 -D__SLATE_VENDOR_UNKNOWN
 -D__SLATE_KERNEL_LINUX

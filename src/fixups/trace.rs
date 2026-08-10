@@ -70,6 +70,7 @@ pub enum Pass {
     FinalReturns,
     MainZeroExit,
     PruneUnusedDefinitions,
+    SetjmpRecovery,
 }
 
 impl Pass {
@@ -139,6 +140,7 @@ impl Pass {
         Pass::FinalReturns,
         Pass::MainZeroExit,
         Pass::PruneUnusedDefinitions,
+        Pass::SetjmpRecovery,
     ];
 
     pub fn name(self) -> &'static str {
@@ -204,6 +206,7 @@ impl Pass {
             Pass::ConstantConditions => "constant_conditions",
             Pass::LibcExit => "libc_exit",
             Pass::PruneUnusedDefinitions => "prune_unused_definitions",
+            Pass::SetjmpRecovery => "setjmp_recovery",
             Pass::UnusedItems => "unused_items",
             Pass::UnusedParams => "unused_params",
             Pass::FinalReturns => "final_returns",
@@ -274,6 +277,7 @@ impl Pass {
             "constant_conditions" => Pass::ConstantConditions,
             "libc_exit" => Pass::LibcExit,
             "prune_unused_definitions" => Pass::PruneUnusedDefinitions,
+            "setjmp_recovery" => Pass::SetjmpRecovery,
             "unused_items" => Pass::UnusedItems,
             "unused_params" => Pass::UnusedParams,
             "final_returns" => Pass::FinalReturns,
