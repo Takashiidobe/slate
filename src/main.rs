@@ -24,6 +24,9 @@ fn usage() -> ExitCode {
         "  fixup-debug  <file.c> [--up-to-pass <pass>|--only-pass <pass>|--debug-only-pass <pass>]  print fixup pass trace"
     );
     eprintln!("  translate   [clang args...] <file.c>  C -> Rust");
+    eprintln!(
+        "  translate-lowered  <file.c>  C -> Rust, raw lowered output with no fixup passes applied"
+    );
     eprintln!("  translate-directives   experimental multi-config C -> Rust");
     eprintln!("  record-cfg   <file.c> [clang args...]  print preprocessor cfg regions as JSON");
     eprintln!(
@@ -54,6 +57,10 @@ fn main() -> ExitCode {
         Some("fixup-debug") => run(fixup_debug(&args[2..])),
         Some("translate") => match args[2..].split_last() {
             Some((path, clang_args)) => run(translate_with_clang_args(Path::new(path), clang_args)),
+            None => usage(),
+        },
+        Some("translate-lowered") => match args.get(2) {
+            Some(path) => run(lowered_rust(Path::new(path))),
             None => usage(),
         },
         Some("translate-directives") => match args.get(2) {
