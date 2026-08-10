@@ -265,6 +265,66 @@ fn library_project_creates_cargo_crate_without_main() {
     );
 }
 
+/// `-fvisibility=hidden` (real libexpat build flag) controls ELF dynamic-export
+/// visibility only, not in-crate callability -- slate must not treat a hidden
+/// function as an opaque external and strip its "unused" parameter.
+#[test]
+fn library_project_resolves_hidden_visibility_cross_tu_callback() {
+    let dir = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures.library")
+        .join("hidden_visibility_callback");
+    let work = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("target/cross-tu")
+        .join("hidden-visibility-callback");
+    let crate_dir = work.join("crate");
+    let _ = std::fs::remove_dir_all(&crate_dir);
+
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .args(["translate-project", "--lib"])
+        .arg(&dir)
+        .arg(&crate_dir)
+        .env("SLATE_CLANG_ARGS", "-fvisibility=hidden")
+        .output()
+        .expect("run slate translate-project --lib");
+    assert!(
+        output.status.success(),
+        "translate-project --lib failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    let handler_rs =
+        std::fs::read_to_string(crate_dir.join("src/handler.rs")).expect("read handler.rs");
+    assert!(
+        handler_rs.contains("fn add_ignore_b(a: i32, b: i32) -> i32"),
+        "add_ignore_b must keep both parameters -- its address is taken as a \
+         callback_fn in a sibling TU, so the signature is load-bearing even \
+         though `b` is unused in this function's own body:\n{handler_rs}"
+    );
+
+    let user_rs = std::fs::read_to_string(crate_dir.join("src/user.rs")).expect("read user.rs");
+    assert!(
+        user_rs.contains("use crate::handler::add_ignore_b;"),
+        "user.rs should import the real in-crate definition rather than \
+         re-declaring add_ignore_b as an external FFI stub:\n{user_rs}"
+    );
+    assert!(
+        !user_rs.contains("unsafe extern \"C\" {"),
+        "add_ignore_b/set_handler are both defined in this project -- \
+         hidden ELF visibility shouldn't force an opaque extern block:\n{user_rs}"
+    );
+
+    let check = std::process::Command::new("cargo")
+        .args(["check", "--quiet", "--lib", "--manifest-path"])
+        .arg(crate_dir.join("Cargo.toml"))
+        .output()
+        .expect("cargo check generated lib crate");
+    assert!(
+        check.status.success(),
+        "generated lib crate should type-check:\n{}",
+        String::from_utf8_lossy(&check.stderr)
+    );
+}
+
 #[test]
 fn library_project_source_manifest_selects_translation_units() {
     let dir = Path::new(env!("CARGO_MANIFEST_DIR"))
