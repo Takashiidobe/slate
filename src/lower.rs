@@ -10630,6 +10630,7 @@ fn split_top_level_arrow(s: &str) -> Option<(&str, &str)> {
     while i + 1 < bytes.len() {
         match bytes[i] as char {
             '<' => angle += 1,
+            '>' if i > 0 && bytes[i - 1] == b'-' => {}
             '>' => angle = angle.saturating_sub(1),
             '(' => paren += 1,
             ')' => paren = paren.saturating_sub(1),
@@ -10648,9 +10649,11 @@ fn split_top_level(s: &str, delimiter: char) -> Vec<&str> {
     let mut start = 0usize;
     let mut angle = 0usize;
     let mut paren = 0usize;
+    let mut prev = '\0';
     for (i, c) in s.char_indices() {
         match c {
             '<' => angle += 1,
+            '>' if prev == '-' => {}
             '>' => angle = angle.saturating_sub(1),
             '(' => paren += 1,
             ')' => paren = paren.saturating_sub(1),
@@ -10660,6 +10663,7 @@ fn split_top_level(s: &str, delimiter: char) -> Vec<&str> {
             }
             _ => {}
         }
+        prev = c;
     }
     parts.push(&s[start..]);
     parts
