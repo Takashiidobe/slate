@@ -3964,8 +3964,19 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         let cond = self.operand_expr(&op.operands[0]);
-        let t = self.value_or_place_address_expr(&op.operands[1]);
-        let f = self.value_or_place_address_expr(&op.operands[2]);
+        let result_ty = op_result_type(op);
+        let t = self.fn_ptr_aware_operand_expr(
+            &op.operands[1],
+            result_ty,
+            Self::function_pointer_operand_expr,
+            Self::value_or_place_address_expr,
+        );
+        let f = self.fn_ptr_aware_operand_expr(
+            &op.operands[2],
+            result_ty,
+            Self::function_pointer_operand_expr,
+            Self::value_or_place_address_expr,
+        );
         self.materialize_expr(
             result,
             Expr::If {
@@ -6324,22 +6335,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         let operand_types = op_operand_types(op.ty.as_deref().unwrap_or(""));
-        let lhs = if operand_types
-            .first()
-            .is_some_and(|ty| is_cir_function_pointer_type(ty))
-        {
-            self.function_pointer_byte_operand_expr(&op.operands[0])
-        } else {
-            self.pointer_operand_expr(&op.operands[0])
-        };
-        let rhs = if operand_types
-            .get(1)
-            .is_some_and(|ty| is_cir_function_pointer_type(ty))
-        {
-            self.function_pointer_byte_operand_expr(&op.operands[1])
-        } else {
-            self.pointer_operand_expr(&op.operands[1])
-        };
+        let lhs = self.fn_ptr_aware_operand_expr(
+            &op.operands[0],
+            operand_types.first().copied(),
+            Self::function_pointer_byte_operand_expr,
+            Self::pointer_operand_expr,
+        );
+        let rhs = self.fn_ptr_aware_operand_expr(
+            &op.operands[1],
+            operand_types.get(1).copied(),
+            Self::function_pointer_byte_operand_expr,
+            Self::pointer_operand_expr,
+        );
         let ty = op_result_type(op)
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or(Type::Prim(Prim::I64));
@@ -6369,11 +6376,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .first()
             .is_some_and(|ty| is_cir_function_pointer_type(ty))
             && op_result_type(op).is_some_and(is_cir_function_pointer_type);
-        let base = if function_pointer_stride {
-            self.function_pointer_byte_operand_expr(&op.operands[0])
-        } else {
-            self.pointer_operand_expr(&op.operands[0])
-        };
+        let base = self.fn_ptr_aware_operand_expr(
+            &op.operands[0],
+            function_pointer_stride
+                .then(|| operand_types.first().copied())
+                .flatten(),
+            Self::function_pointer_byte_operand_expr,
+            Self::pointer_operand_expr,
+        );
         let index = self.operand_expr(&op.operands[1]);
         let (method, args) = self.ptr_stride_method_and_args(op, index);
         let stride = Self::unsafe_expr(Expr::MethodCall {
@@ -7977,6 +7987,20 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             }
             Some(value) => value.to_expr(&self.parent.strings),
             None => self.operand_expr(operand),
+        }
+    }
+
+    fn fn_ptr_aware_operand_expr(
+        &self,
+        operand: &str,
+        ty: Option<&str>,
+        fn_ptr_expr: fn(&Self, &str) -> Expr,
+        plain_expr: fn(&Self, &str) -> Expr,
+    ) -> Expr {
+        if ty.is_some_and(is_cir_function_pointer_type) {
+            fn_ptr_expr(self, operand)
+        } else {
+            plain_expr(self, operand)
         }
     }
 
