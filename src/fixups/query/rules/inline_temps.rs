@@ -2,7 +2,7 @@ use crate::fixups::facts::{EffectKind, Purity};
 use crate::fixups::idents::{expr_ident, expr_ident_count};
 use crate::fixups::support::walk;
 use crate::fixups::trace::Pass;
-use crate::rust_ast::{Expr, Prim, RustValue, Stmt, Type};
+use crate::rust_ast::{Expr, Prim, RustValue, Stmt, Type, UnaryOp};
 
 use super::super::item::StatementRef;
 use super::super::{
@@ -145,11 +145,49 @@ fn apply<'db>(
     if is_receiver_use(&consumer_stmt, &binding.name) {
         case.require(allowed_receiver)?;
     }
+    if let Some(root) = root_var(&init) {
+        case.require(!macro_arg_alias_conflict(&consumer_stmt, root))?;
+    }
 
     let mut edits = EditSet::new();
     edits.push_replace_expression(use_expression.site, init);
     edits.push_replace_statement(binding.item_index, binding.definition.clone(), None);
     Ok(edits)
+}
+
+fn root_var(expr: &Expr) -> Option<&str> {
+    match expr {
+        Expr::Var(name) => Some(name.as_str()),
+        Expr::Field { base, .. } | Expr::TupleField { base, .. } | Expr::Index { base, .. } => {
+            root_var(base)
+        }
+        Expr::Unary {
+            op: UnaryOp::Deref,
+            expr,
+        }
+        | Expr::Cast { expr, .. } => root_var(expr),
+        Expr::Block(block) | Expr::Unsafe(block) if block.stmts.is_empty() => {
+            block.tail.as_deref().and_then(root_var)
+        }
+        _ => None,
+    }
+}
+
+fn macro_arg_alias_conflict(stmt: &Stmt, root: &str) -> bool {
+    walk::stmt_expr_any(stmt, &mut |expr| {
+        let Expr::Macro { args, .. } = expr else {
+            return false;
+        };
+        args.iter().any(|arg| {
+            walk::expr_any(arg, &mut |sub| {
+                matches!(
+                    sub,
+                    Expr::AddrOf { mutable: true, expr }
+                        if root_var(expr) == Some(root)
+                )
+            })
+        })
+    })
 }
 
 fn is_atomic_result(expr: &Expr, effects: &ExpressionEffects) -> bool {

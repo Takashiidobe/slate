@@ -1566,9 +1566,18 @@ fn parse_c_type(s: &str) -> CType {
         } else {
             CType::Ptr(Box::new(inner))
         }
-    } else if let Some((inner, size)) = s.split_once('[') {
-        let size = size.trim_end_matches(']').parse().ok();
-        CType::Array(Box::new(parse_c_type(inner.trim())), size)
+    } else if let Some(bracket_pos) = s.find('[') {
+        let inner = &s[..bracket_pos];
+        let rest = &s[bracket_pos..];
+        let close = rest.find(']').unwrap_or(rest.len());
+        let size = rest[1..close].trim().parse().ok();
+        let after = &rest[close + 1..];
+        let elem_type = if after.is_empty() {
+            parse_c_type(inner.trim())
+        } else {
+            parse_c_type(&format!("{} {}", inner.trim(), after))
+        };
+        CType::Array(Box::new(elem_type), size)
     } else if let Some(name) = s.strip_prefix("union ") {
         CType::Record(name.trim().to_string())
     } else if let Some(name) = s.strip_prefix("struct ") {
