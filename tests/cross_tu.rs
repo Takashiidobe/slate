@@ -23,9 +23,10 @@ fn c_sources(dir: &Path) -> Vec<PathBuf> {
     srcs
 }
 
-/// Translate a multi-TU fixture into Rust modules, then diff the C (all units
-/// linked) against the Rust (all modules built as one crate). Returns the
-/// directory of generated `.rs` modules for per-test structural assertions.
+/// Translate a multi-TU fixture into a Cargo crate, then diff the C (all
+/// units linked) against the Rust (the crate's binary). Returns the crate's
+/// `src/` directory of generated `.rs` modules for per-test structural
+/// assertions.
 fn build_and_diff(name: &str) -> PathBuf {
     let dir = fixture_dir(name);
     let work = Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -40,7 +41,7 @@ fn build_and_diff(name: &str) -> PathBuf {
     let _ = std::fs::remove_dir_all(&rs_dir);
     support::translate_project(&dir, &rs_dir).expect("translate project");
 
-    let rs_bin = support::compile_rs_project(&rs_dir, &work, name).expect("compile Rust");
+    let rs_bin = support::compile_rs_project(&rs_dir).expect("compile Rust");
 
     let run_dir = work.join("run");
     let _ = std::fs::remove_dir_all(&run_dir);
@@ -50,7 +51,7 @@ fn build_and_diff(name: &str) -> PathBuf {
     let r = support::run_with_config(&rs_bin, &cfg, &run_dir).expect("run Rust");
     support::compare_runs(&c, &r, false).expect("C and Rust outputs differ");
 
-    rs_dir
+    rs_dir.join("src")
 }
 
 fn cross_tu_work_dir(name: &str) -> PathBuf {
@@ -85,7 +86,7 @@ fn project_translation_defaults_to_the_active_target() {
     let _ = std::fs::remove_dir_all(&out_dir);
     support::translate_project(&dir, &out_dir).expect("translate host project");
 
-    let parse = std::fs::read_to_string(out_dir.join("parse.rs")).expect("read parse.rs");
+    let parse = std::fs::read_to_string(out_dir.join("src/parse.rs")).expect("read parse.rs");
     assert!(!parse.contains("target_arch ="));
 }
 
@@ -112,7 +113,7 @@ fn project_translation_adds_explicit_target_variants() {
         String::from_utf8_lossy(&output.stderr)
     );
 
-    let parse = std::fs::read_to_string(out_dir.join("parse.rs")).expect("read parse.rs");
+    let parse = std::fs::read_to_string(out_dir.join("src/parse.rs")).expect("read parse.rs");
     assert!(parse.contains(&format!("target_arch = \"{}\"", std::env::consts::ARCH)));
     assert!(parse.contains(&format!("target_arch = \"{added_arch}\"")));
 }
@@ -783,10 +784,8 @@ fn cross_tu_globals() {
         "an externally-linked global must survive unused_items pruning even with no in-project references"
     );
     assert_binary_sections(&work.join("c_bin"), &[".slate_data", ".slate_fn"]);
-    assert_binary_sections(
-        &support::rs_project_bin_path(&work, "globals"),
-        &[".slate_data", ".slate_fn"],
-    );
+    let rs_bin = support::compile_rs_project(&work.join("rs")).expect("compile Rust");
+    assert_binary_sections(&rs_bin, &[".slate_data", ".slate_fn"]);
 }
 
 #[test]
@@ -816,7 +815,7 @@ fn used_and_retain_attrs_preserve_dead_statics() {
     let symbols = &["used_only", "used_and_retained"];
     assert_binary_symbols(&work.join("c_bin"), symbols);
     assert_binary_lacks_symbols(&work.join("c_bin"), &["retain_only"]);
-    let rs_bin = support::rs_project_bin_path(&work, "used_retain");
+    let rs_bin = support::compile_rs_project(&work.join("rs")).expect("compile Rust");
     assert_binary_symbols(&rs_bin, symbols);
     assert_binary_lacks_symbols(&rs_bin, &["retain_only"]);
 }

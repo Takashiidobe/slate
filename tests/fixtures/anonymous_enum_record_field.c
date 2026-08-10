@@ -6,6 +6,6 @@ struct Conditional {
 
 int main(void) {
   struct Conditional conditional = {IN_THEN};
-  conditional.ctx = IN_ELSE;
+  conditional.ctx                = IN_ELSE;
   printf("%d %d\n", (int)conditional.ctx, IN_ELIF);
 }

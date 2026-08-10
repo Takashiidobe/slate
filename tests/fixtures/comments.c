@@ -28,5 +28,7 @@ static int increment(int value) {
 
 int main(void) {
   struct Holder holder = {MODE_ON};
-  return holder.mode == MODE_ON && increment(1) == 2 && completed_count == 2 ? 0 : 1;
+  return holder.mode == MODE_ON && increment(1) == 2 && completed_count == 2
+             ? 0
+             : 1;
 }
