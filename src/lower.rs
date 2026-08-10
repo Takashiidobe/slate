@@ -1487,16 +1487,16 @@ impl<'a> Lowerer<'a> {
         } else if let Some(elems) = parse_cir_const_array_elems(raw) {
             if is_c_global && let Some(ty) = ty {
                 if let Some((_, len)) = parse_rust_array_type(&ty.render()) {
+                    let default = match &ty {
+                        Type::Array { elem, .. } => self.default_value_expr(elem),
+                        _ => Expr::Value(RustValue::I64(0)),
+                    };
                     self.globals.insert(
                         rust_name.clone(),
                         GlobalVar {
                             name: rust_name,
                             ty,
-                            init: render_array_literal_expr(
-                                &elems,
-                                len as usize,
-                                Expr::Value(RustValue::I64(0)),
-                            ),
+                            init: render_array_literal_expr(&elems, len as usize, default),
                             alignment,
                             thread_local,
                             external: externally_exported(op)
@@ -1557,8 +1557,10 @@ impl<'a> Lowerer<'a> {
                 );
             } else if elem == "!s8i" && name.starts_with(".str") {
                 self.strings.insert(name.to_string(), vec![0; len as usize]);
-            } else {
+            } else if parse_cir_int_type(&elem).is_some() {
                 self.const_arrays.insert(name.to_string(), Vec::new());
+            } else {
+                self.const_zero_globals.insert(name.to_string());
             }
         } else if raw.trim_start().starts_with("#cir.zero") {
             if is_c_global && let Some(ty) = ty {
@@ -3251,10 +3253,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         Expr::Value(RustValue::I64(0)),
                     ))
                 } else if let Some(elems) = self.parent.const_arrays.get(name) {
+                    let default = match self.slot_types.get(dst) {
+                        Some(Type::Array { elem, .. }) => self.default_value_expr(elem),
+                        _ => Expr::Value(RustValue::I64(0)),
+                    };
                     Some(render_array_literal_expr(
                         elems,
                         dst_len.unwrap_or(elems.len()),
-                        Expr::Value(RustValue::I64(0)),
+                        default,
                     ))
                 } else if let Some(raw) = self.parent.const_aggregates.get(name) {
                     let ty = self.slot_types.get(dst)?;
@@ -6094,11 +6100,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             ))
         } else if let Some(elems) = self.parent.const_arrays.get(name) {
             let len = declared_len.unwrap_or(elems.len());
-            Some(render_array_literal_expr(
-                elems,
-                len,
-                Expr::Value(RustValue::I64(0)),
-            ))
+            let default = elem_ty
+                .as_ref()
+                .map(|ty| self.default_value_expr(ty))
+                .unwrap_or(Expr::Value(RustValue::I64(0)));
+            Some(render_array_literal_expr(elems, len, default))
         } else {
             None
         }
@@ -6167,6 +6173,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     .map_or((Type::Prim(Prim::I32), elems.len()), |(elem, len)| {
                         (self.parent.rust_type(&elem), len as usize)
                     });
+                let default = self.default_value_expr(&elem_ty);
                 let mut typed: Vec<Expr> = elems.clone();
                 if let Some(first) = typed.first_mut() {
                     *first = Expr::Cast {
@@ -6177,11 +6184,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 let ptr_ty = self.parent.rust_type(result_ty);
                 Val::Expr(Expr::Cast {
                     expr: Box::new(Expr::ArrayPtr {
-                        array: Box::new(render_array_literal_expr(
-                            &typed,
-                            len,
-                            Expr::Value(RustValue::I64(0)),
-                        )),
+                        array: Box::new(render_array_literal_expr(&typed, len, default)),
                         mutable: false,
                     }),
                     ty: ptr_ty,
