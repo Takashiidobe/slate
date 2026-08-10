@@ -2431,6 +2431,12 @@ impl<'a> Lowerer<'a> {
             Some(Expr::ArrayLit(out))
         } else if raw.starts_with("#cir.zero") {
             Some(self.default_value_expr(ty))
+        } else if raw.starts_with("#cir.ptr<null>") {
+            Some(if matches!(ty, Type::FnPtr { .. }) {
+                Expr::Value(RustValue::None)
+            } else {
+                Expr::Value(RustValue::NullPtr)
+            })
         } else if let Type::Custom(name) = ty
             && let Some(enm) = self.enums.get(name)
             && let Some(value) = parse_cir_int(raw)
