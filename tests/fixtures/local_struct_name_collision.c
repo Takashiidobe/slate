@@ -41,7 +41,26 @@ static int sum_flags(void) {
   return total;
 }
 
+static int sum_movements(void) {
+  struct TestCase {
+    int expectedMovementInChars;
+    const char *input;
+  };
+
+  struct TestCase cases[] = {
+      {1, "x"},
+      {2, "yy"},
+      {3, "zzz"},
+  };
+
+  int total = 0;
+  for (int i = 0; i < 3; i++) {
+    total += cases[i].expectedMovementInChars + (int)cases[i].input[0];
+  }
+  return total;
+}
+
 int main(void) {
-  printf("%d %d\n", sum_docs(), sum_flags());
+  printf("%d %d %d\n", sum_docs(), sum_flags(), sum_movements());
   return 0;
 }
