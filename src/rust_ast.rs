@@ -352,6 +352,7 @@ pub struct ExternFnDecl {
     pub params: Vec<FnParam>,
     pub variadic: bool,
     pub ret: Option<Type>,
+    pub safe: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
