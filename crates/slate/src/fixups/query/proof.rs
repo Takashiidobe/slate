@@ -85,6 +85,7 @@ pub(in crate::fixups) enum Predicate {
     HeapOwnershipFacts,
     FileOwnershipFacts,
     PtrLenSlice,
+    SetjmpRecovery,
     StringParamLift,
     ValueGuard,
     StringBuffer,

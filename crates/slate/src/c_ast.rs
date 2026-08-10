@@ -862,7 +862,8 @@ fn collect_records(
                     })
             {
                 out.push(record);
-            } else if let Some(record) = next_referenced_anonymous_typedef_name(&kids, i + 1)
+            } else if let Some(record) = next_anonymous_field_name(&kids, i + 1)
+                .or_else(|| next_referenced_anonymous_typedef_name(&kids, i + 1))
                 .and_then(|name| extract_record(child, Some(name), source_file, pack_attributes))
             {
                 anonymous_header_out.push(record);

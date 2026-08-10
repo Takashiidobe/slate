@@ -58,7 +58,7 @@ cc = "1"
 
 [profile.dev]
 overflow-checks = false
-panic = "abort"
+panic = "unwind"
 codegen-units = 256
 "#,
         aligned_path().display()
@@ -527,8 +527,12 @@ pub fn build_multi_bin_batch(cases: &[MultiBinCase], project: &Path) -> Result<S
     Ok(String::from_utf8_lossy(&o.stderr).into_owned())
 }
 
+const RUST_UNCAUGHT_PANIC_EXIT: i32 = 101;
+
 pub fn compare_runs(c: &Run, r: &Run, compare_stderr: bool) -> Result<(), String> {
-    if c.exit != r.exit {
+    let exit_matches =
+        c.exit == r.exit || (c.exit.is_none() && r.exit == Some(RUST_UNCAUGHT_PANIC_EXIT));
+    if !exit_matches {
         return Err(format!(
             "exit code differs: C={:?} Rust={:?}",
             c.exit, r.exit

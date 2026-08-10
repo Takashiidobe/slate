@@ -108,6 +108,7 @@ pub(super) fn predicate_name(predicate: Predicate) -> &'static str {
         Predicate::FunctionReachability => "function_reachability",
         Predicate::FunctionCallDomain => "function_call_domain",
         Predicate::CallArgument => "call_argument",
+        Predicate::SetjmpRecovery => "setjmp_recovery",
         Predicate::StringParamLift => "string_param_lift",
     }
 }
