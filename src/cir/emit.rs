@@ -422,7 +422,7 @@ pub fn emit_generic_with_args(src: &Path, extra_args: &[String]) -> Result<Strin
     cmd.args([
         "-fclangir",
         "-emit-cir",
-        "-std=c23",
+        "-std=gnu23",
         "-Xclang",
         "-disable-llvm-passes",
         "-S",
