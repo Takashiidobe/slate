@@ -6280,7 +6280,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     ty: self.parent.rust_type(result_ty),
                 })
             }
-            _ if result_ty.starts_with("!cir.ptr<") && operand_ty.starts_with("!cir.ptr<") => {
+            _ if result_ty.starts_with("!cir.ptr<")
+                && operand_ty.starts_with("!cir.ptr<")
+                && !(is_cir_function_pointer_type(result_ty)
+                    && !is_cir_function_pointer_type(operand_ty)) =>
+            {
                 Val::Expr(Expr::Cast {
                     expr: Box::new(self.pointer_operand_expr(src)),
                     ty: self.parent.rust_type(result_ty),
@@ -6288,7 +6292,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             }
             _ if operand_ty.starts_with("!cir.ptr<")
                 && result_ty != "!cir.bool"
-                && !is_cir_function_pointer_type(operand_ty) =>
+                && !is_cir_function_pointer_type(operand_ty)
+                && !is_cir_function_pointer_type(result_ty) =>
             {
                 Val::Expr(Expr::Cast {
                     expr: Box::new(self.pointer_operand_expr(src)),
