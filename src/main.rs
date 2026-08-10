@@ -851,6 +851,7 @@ fn translate_project_lib_crate_with_manifest(
     let mut has_setlocale = false;
     let mut cross_referenced_functions: BTreeSet<String> = BTreeSet::new();
     let mut cross_referenced_globals: BTreeSet<String> = BTreeSet::new();
+    let mut address_taken_functions: BTreeSet<String> = BTreeSet::new();
     for (stem, path) in &modules {
         let source =
             std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
@@ -870,6 +871,7 @@ fn translate_project_lib_crate_with_manifest(
             defined_globals.insert(sym, stem.clone());
         }
         unsafe_functions.extend(lower::unsafe_defined_functions(&module));
+        address_taken_functions.extend(lower::address_taken_functions(&module));
         crate_features.extend(lower::required_features(&module));
         cross_referenced_functions.extend(lower::declared_functions(&module));
         cross_referenced_globals.extend(lower::declared_globals(&module));
@@ -911,6 +913,18 @@ fn translate_project_lib_crate_with_manifest(
     let shared_long_double =
         lower::shared_types_use_long_double(&shared_records.values().cloned().collect::<Vec<_>>());
 
+    let tests_dir = project_dir.join("tests");
+    let translate_tests = source_manifest.is_none() && tests_dir.is_dir();
+    if translate_tests {
+        for (_, path) in collect_c_modules(&tests_dir)? {
+            let module = cir::parse_module(&cir::emit_generic(&path)?)?;
+            has_setlocale |= lower::declared_functions(&module)
+                .iter()
+                .any(|name| name == "setlocale");
+            address_taken_functions.extend(lower::address_taken_functions(&module));
+        }
+    }
+
     let project = lower::ProjectInfo {
         cross_module: defined,
         cross_module_globals: defined_globals,
@@ -926,18 +940,8 @@ fn translate_project_lib_crate_with_manifest(
         emit_pub: true,
         cross_referenced_functions,
         cross_referenced_globals,
+        address_taken_functions,
     };
-
-    let tests_dir = project_dir.join("tests");
-    let translate_tests = source_manifest.is_none() && tests_dir.is_dir();
-    if translate_tests {
-        for (_, path) in collect_c_modules(&tests_dir)? {
-            let module = cir::parse_module(&cir::emit_generic(&path)?)?;
-            has_setlocale |= lower::declared_functions(&module)
-                .iter()
-                .any(|name| name == "setlocale");
-        }
-    }
     let fixup_skip = if has_setlocale {
         fixups::SkipSet::skip(fixups::Pass::CTypeLibc)
     } else {
@@ -1018,6 +1022,7 @@ fn translate_project_lib_crate_with_manifest(
                 cross_module: project.cross_module.clone(),
                 cross_module_globals: project.cross_module_globals.clone(),
                 unsafe_functions: project.unsafe_functions.clone(),
+                address_taken_functions: project.address_taken_functions.clone(),
                 shared_records: project.shared_records.clone(),
                 shared_enums: project.shared_enums.clone(),
                 shared_type_module: Some("types".into()),
@@ -1076,6 +1081,7 @@ struct LibraryVariantFacts {
     defined: BTreeMap<String, String>,
     defined_globals: BTreeMap<String, String>,
     unsafe_functions: BTreeSet<String>,
+    address_taken_functions: BTreeSet<String>,
     crate_features: BTreeSet<rust_ast::Feature>,
     has_setlocale: bool,
     cross_referenced_functions: BTreeSet<String>,
@@ -1177,6 +1183,9 @@ fn translate_project_lib_crate_with_compile_commands(
             .unsafe_functions
             .extend(lower::unsafe_defined_functions(&module));
         variant_facts
+            .address_taken_functions
+            .extend(lower::address_taken_functions(&module));
+        variant_facts
             .crate_features
             .extend(lower::required_features(&module));
         variant_facts
@@ -1269,6 +1278,7 @@ fn translate_project_lib_crate_with_compile_commands(
                 shared_long_double,
                 cross_module_crate: None,
                 unsafe_functions: variant_facts.unsafe_functions.clone(),
+                address_taken_functions: variant_facts.address_taken_functions.clone(),
                 crate_features: crate_features.clone(),
                 child_modules: Vec::new(),
                 emit_pub: true,
@@ -1432,6 +1442,7 @@ fn translate_project_with_targets(
     let mut has_setlocale = false;
     let mut cross_referenced_functions: BTreeSet<String> = BTreeSet::new();
     let mut cross_referenced_globals: BTreeSet<String> = BTreeSet::new();
+    let mut address_taken_functions: BTreeSet<String> = BTreeSet::new();
     let mut record_occurrences: BTreeMap<String, (c_ast::Record, usize)> = BTreeMap::new();
     let mut enum_occurrences: BTreeMap<String, (c_ast::Enum, usize)> = BTreeMap::new();
     for (stem, path) in &modules {
@@ -1448,6 +1459,7 @@ fn translate_project_with_targets(
             defined_globals.insert(sym, stem.clone());
         }
         unsafe_functions.extend(lower::unsafe_defined_functions(&module));
+        address_taken_functions.extend(lower::address_taken_functions(&module));
         crate_features.extend(lower::required_features(&module));
         cross_referenced_functions.extend(lower::declared_functions(&module));
         cross_referenced_globals.extend(lower::declared_globals(&module));
@@ -1555,6 +1567,7 @@ fn translate_project_with_targets(
             cross_module: defined.clone(),
             cross_module_globals: defined_globals.clone(),
             unsafe_functions: unsafe_functions.clone(),
+            address_taken_functions: address_taken_functions.clone(),
             child_modules: if is_root {
                 siblings.clone()
             } else {
@@ -1745,6 +1758,7 @@ fn translate_project_with_compile_commands(
     let mut has_setlocale = false;
     let mut cross_referenced_functions: BTreeSet<String> = BTreeSet::new();
     let mut cross_referenced_globals: BTreeSet<String> = BTreeSet::new();
+    let mut address_taken_functions: BTreeSet<String> = BTreeSet::new();
     let mut record_occurrences: BTreeMap<String, (c_ast::Record, usize)> = BTreeMap::new();
     let mut enum_occurrences: BTreeMap<String, (c_ast::Enum, usize)> = BTreeMap::new();
     for (stem, path) in &modules {
@@ -1769,6 +1783,7 @@ fn translate_project_with_compile_commands(
             defined_globals.insert(sym, stem.clone());
         }
         unsafe_functions.extend(lower::unsafe_defined_functions(&module));
+        address_taken_functions.extend(lower::address_taken_functions(&module));
         crate_features.extend(lower::required_features(&module));
         cross_referenced_functions.extend(lower::declared_functions(&module));
         cross_referenced_globals.extend(lower::declared_globals(&module));
@@ -1875,6 +1890,7 @@ fn translate_project_with_compile_commands(
             cross_module: defined.clone(),
             cross_module_globals: defined_globals.clone(),
             unsafe_functions: unsafe_functions.clone(),
+            address_taken_functions: address_taken_functions.clone(),
             child_modules: if is_root {
                 siblings.clone()
             } else {

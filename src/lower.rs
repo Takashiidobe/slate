@@ -31,6 +31,7 @@ pub struct ProjectInfo {
     pub emit_pub: bool,
     pub cross_referenced_functions: BTreeSet<String>,
     pub cross_referenced_globals: BTreeSet<String>,
+    pub address_taken_functions: BTreeSet<String>,
 }
 
 const WEAK_ANY_LINKAGE: i64 = 4;
@@ -188,6 +189,13 @@ pub fn defined_functions(module: &Module) -> Vec<String> {
         })
         .filter_map(|op| attr_str(op, "sym_name").map(str::to_string))
         .collect()
+}
+
+pub fn address_taken_functions(module: &Module) -> BTreeSet<String> {
+    let Some(module_op) = module.ops.iter().find(|op| op.name == "builtin.module") else {
+        return BTreeSet::new();
+    };
+    c_abi_function_targets(module_op)
 }
 
 pub fn declared_functions(module: &Module) -> Vec<String> {
@@ -1037,6 +1045,8 @@ impl<'a> Lowerer<'a> {
             .cloned()
             .collect();
         self.c_abi_functions = c_abi_function_targets(module_op);
+        self.c_abi_functions
+            .extend(self.project.address_taken_functions.iter().cloned());
         let mut assembly_strings = Vec::new();
         collect_assembly_strings(module_op, &mut assembly_strings);
         let asm_referenced_globals: BTreeSet<String> = ops
@@ -1271,6 +1281,9 @@ impl<'a> Lowerer<'a> {
         }
         self.unsafe_functions
             .extend(unsafe_defined_functions(module));
+        for name in &self.c_abi_functions {
+            self.unsafe_functions.remove(name);
+        }
 
         for op in &ops {
             if op.kind() != CirOpKind::Func {
@@ -1883,8 +1896,7 @@ impl<'a> Lowerer<'a> {
         if linkage_is_weak(op) {
             self.uses_linkage.set(true);
         }
-        let unsafe_ = is_variadic
-            || self.unsafe_functions.contains(name) && !self.c_abi_functions.contains(name);
+        let unsafe_ = is_variadic || self.unsafe_functions.contains(name);
         let layout_queries: VecDeque<_> = self
             .layout_queries
             .get(name)
