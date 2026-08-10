@@ -1560,8 +1560,9 @@ fn parse_c_type(s: &str) -> CType {
     if s == "void" {
         CType::Void
     } else if let Some(inner) = s.strip_suffix('*') {
-        let inner = parse_c_type(inner.trim());
-        if matches!(inner, CType::FuncPtr { .. }) {
+        let inner_str = inner.trim();
+        let inner = parse_c_type(inner_str);
+        if matches!(inner, CType::FuncPtr { .. }) && resolves_to_bare_function_type(inner_str) {
             inner
         } else {
             CType::Ptr(Box::new(inner))
@@ -1610,6 +1611,21 @@ fn lookup_typedef(name: &str) -> Option<String> {
         let underlying = table.borrow().get(name)?.clone();
         (underlying != name).then_some(underlying)
     })
+}
+
+fn resolves_to_bare_function_type(s: &str) -> bool {
+    let s = strip_type_qualifiers(s.trim());
+    let s = strip_trailing_type_qualifiers(s);
+    if parse_function_pointer_qual_type(s).is_some() {
+        return false;
+    }
+    if parse_function_qual_type(s).is_some() {
+        return true;
+    }
+    match lookup_typedef(s) {
+        Some(underlying) => resolves_to_bare_function_type(&underlying),
+        None => false,
+    }
 }
 
 fn enum_rust_name(name: &str) -> String {
