@@ -707,6 +707,28 @@ fn project_translation_shares_record_types() {
 }
 
 #[test]
+fn same_named_local_structs_in_different_tus_stay_distinct() {
+    let rs_dir = build_and_diff("local_struct_cross_file_collision");
+
+    let a_rs = std::fs::read_to_string(rs_dir.join("a.rs")).expect("read a.rs");
+    assert!(a_rs.contains("struct Item"));
+    assert!(a_rs.contains("value"));
+    assert!(a_rs.contains("weight"));
+
+    let b_rs = std::fs::read_to_string(rs_dir.join("b.rs")).expect("read b.rs");
+    assert!(b_rs.contains("struct Item"));
+    assert!(b_rs.contains("label"));
+    assert!(b_rs.contains("score"));
+
+    let types_rs = std::fs::read_to_string(rs_dir.join("types.rs")).unwrap_or_default();
+    assert!(
+        !types_rs.contains("struct Item"),
+        "differently-shaped same-named local structs must not be hoisted into a shared \
+         types.rs definition: {types_rs}"
+    );
+}
+
+#[test]
 fn project_translation_shares_enum_types() {
     build_and_diff("shared_enum");
 }

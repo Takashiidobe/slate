@@ -351,6 +351,15 @@ fn collect_record_field_type_names(record: &c_ast::Record, out: &mut BTreeSet<St
     }
 }
 
+fn records_have_same_shape(a: &c_ast::Record, b: &c_ast::Record) -> bool {
+    a.kind == b.kind
+        && a.fields.len() == b.fields.len()
+        && a.fields
+            .iter()
+            .zip(&b.fields)
+            .all(|(x, y)| x.name == y.name && x.ty == y.ty && x.bit_width == y.bit_width)
+}
+
 struct TargetVariant {
     cfg: rust_ast::Cfg,
     clang_args: Vec<String>,
@@ -845,6 +854,7 @@ fn translate_project_lib_crate_with_manifest(
     let mut unsafe_functions = BTreeSet::new();
     let mut crate_features = BTreeSet::new();
     let mut shared_records = BTreeMap::new();
+    let mut record_shape_conflicts: BTreeSet<String> = BTreeSet::new();
     let mut shared_enums = BTreeMap::new();
     let mut referenced_record_types = BTreeSet::new();
     let mut uses_slate_support = false;
@@ -886,9 +896,16 @@ fn translate_project_lib_crate_with_manifest(
         }
         for record in &unit.records {
             collect_record_field_type_names(record, &mut referenced_record_types);
-            shared_records
-                .entry(rust_ident(&record.name))
-                .or_insert_with(|| record.clone());
+            let key = rust_ident(&record.name);
+            match shared_records.get(&key) {
+                Some(existing) if !records_have_same_shape(existing, record) => {
+                    record_shape_conflicts.insert(key);
+                }
+                Some(_) => {}
+                None => {
+                    shared_records.insert(key, record.clone());
+                }
+            }
         }
         for record in lower::shim_records_for_module(&module, &unit) {
             collect_record_field_type_names(&record, &mut referenced_record_types);
@@ -908,6 +925,7 @@ fn translate_project_lib_crate_with_manifest(
             align: None,
         });
     }
+    shared_records.retain(|name, _| !record_shape_conflicts.contains(name));
     let shared_record_names: BTreeSet<String> = shared_records.keys().cloned().collect();
     let shared_enum_names: BTreeSet<String> = shared_enums.keys().cloned().collect();
     let shared_long_double =
@@ -1151,6 +1169,7 @@ fn translate_project_lib_crate_with_compile_commands(
     let mut loaded = Vec::new();
     let mut facts: BTreeMap<rust_ast::Cfg, LibraryVariantFacts> = BTreeMap::new();
     let mut shared_records = BTreeMap::new();
+    let mut record_shape_conflicts: BTreeSet<String> = BTreeSet::new();
     let mut shared_enums = BTreeMap::new();
     let mut referenced_record_types = BTreeSet::new();
     let mut uses_slate_support = false;
@@ -1205,9 +1224,16 @@ fn translate_project_lib_crate_with_compile_commands(
         }
         for record in &unit.records {
             collect_record_field_type_names(record, &mut referenced_record_types);
-            shared_records
-                .entry(rust_ident(&record.name))
-                .or_insert_with(|| record.clone());
+            let key = rust_ident(&record.name);
+            match shared_records.get(&key) {
+                Some(existing) if !records_have_same_shape(existing, record) => {
+                    record_shape_conflicts.insert(key);
+                }
+                Some(_) => {}
+                None => {
+                    shared_records.insert(key, record.clone());
+                }
+            }
         }
         for record in lower::shim_records_for_module(&module, &unit) {
             collect_record_field_type_names(&record, &mut referenced_record_types);
@@ -1234,6 +1260,7 @@ fn translate_project_lib_crate_with_compile_commands(
             align: None,
         });
     }
+    shared_records.retain(|name, _| !record_shape_conflicts.contains(name));
 
     let shared_record_names: BTreeSet<_> = shared_records.keys().cloned().collect();
     let shared_enum_names: BTreeSet<_> = shared_enums.keys().cloned().collect();
@@ -1444,6 +1471,7 @@ fn translate_project_with_targets(
     let mut cross_referenced_globals: BTreeSet<String> = BTreeSet::new();
     let mut address_taken_functions: BTreeSet<String> = BTreeSet::new();
     let mut record_occurrences: BTreeMap<String, (c_ast::Record, usize)> = BTreeMap::new();
+    let mut record_shape_conflicts: BTreeSet<String> = BTreeSet::new();
     let mut enum_occurrences: BTreeMap<String, (c_ast::Enum, usize)> = BTreeMap::new();
     for (stem, path) in &modules {
         reject_active_unsupported_file(path, "translate-project")?;
@@ -1481,10 +1509,17 @@ fn translate_project_with_targets(
         for record in &unit.records {
             let name = rust_ident(&record.name);
             if seen_records.insert(name.clone()) {
-                let entry = record_occurrences
-                    .entry(name)
-                    .or_insert_with(|| (record.clone(), 0));
-                entry.1 += 1;
+                match record_occurrences.get_mut(&name) {
+                    Some(entry) => {
+                        if !records_have_same_shape(&entry.0, record) {
+                            record_shape_conflicts.insert(name);
+                        }
+                        entry.1 += 1;
+                    }
+                    None => {
+                        record_occurrences.insert(name, (record.clone(), 1));
+                    }
+                }
             }
         }
         for record in lower::shim_records_for_module(&module, &unit) {
@@ -1497,7 +1532,9 @@ fn translate_project_with_targets(
         .collect();
     let mut shared_records: BTreeMap<_, _> = record_occurrences
         .into_iter()
-        .filter_map(|(name, (record, count))| (count > 1).then_some((name, record)))
+        .filter_map(|(name, (record, count))| {
+            (count > 1 && !record_shape_conflicts.contains(&name)).then_some((name, record))
+        })
         .collect();
     let shared_enums: BTreeMap<_, _> = enum_occurrences
         .into_iter()
@@ -1508,7 +1545,7 @@ fn translate_project_with_targets(
         collect_record_field_type_names(record, &mut referenced_record_types);
     }
     while let Some(name) = referenced_record_types.pop_first() {
-        if shared_records.contains_key(&name) {
+        if shared_records.contains_key(&name) || record_shape_conflicts.contains(&name) {
             continue;
         }
         let record = all_records.get(&name).cloned().unwrap_or(c_ast::Record {
@@ -1760,6 +1797,7 @@ fn translate_project_with_compile_commands(
     let mut cross_referenced_globals: BTreeSet<String> = BTreeSet::new();
     let mut address_taken_functions: BTreeSet<String> = BTreeSet::new();
     let mut record_occurrences: BTreeMap<String, (c_ast::Record, usize)> = BTreeMap::new();
+    let mut record_shape_conflicts: BTreeSet<String> = BTreeSet::new();
     let mut enum_occurrences: BTreeMap<String, (c_ast::Enum, usize)> = BTreeMap::new();
     for (stem, path) in &modules {
         let variants = variants_by_path
@@ -1805,10 +1843,17 @@ fn translate_project_with_compile_commands(
         for record in &unit.records {
             let name = rust_ident(&record.name);
             if seen_records.insert(name.clone()) {
-                let entry = record_occurrences
-                    .entry(name)
-                    .or_insert_with(|| (record.clone(), 0));
-                entry.1 += 1;
+                match record_occurrences.get_mut(&name) {
+                    Some(entry) => {
+                        if !records_have_same_shape(&entry.0, record) {
+                            record_shape_conflicts.insert(name);
+                        }
+                        entry.1 += 1;
+                    }
+                    None => {
+                        record_occurrences.insert(name, (record.clone(), 1));
+                    }
+                }
             }
         }
         for record in lower::shim_records_for_module(&module, &unit) {
@@ -1821,7 +1866,9 @@ fn translate_project_with_compile_commands(
         .collect();
     let mut shared_records: BTreeMap<_, _> = record_occurrences
         .into_iter()
-        .filter_map(|(name, (record, count))| (count > 1).then_some((name, record)))
+        .filter_map(|(name, (record, count))| {
+            (count > 1 && !record_shape_conflicts.contains(&name)).then_some((name, record))
+        })
         .collect();
     let shared_enums: BTreeMap<_, _> = enum_occurrences
         .into_iter()
@@ -1832,7 +1879,7 @@ fn translate_project_with_compile_commands(
         collect_record_field_type_names(record, &mut referenced_record_types);
     }
     while let Some(name) = referenced_record_types.pop_first() {
-        if shared_records.contains_key(&name) {
+        if shared_records.contains_key(&name) || record_shape_conflicts.contains(&name) {
             continue;
         }
         let record = all_records.get(&name).cloned().unwrap_or(c_ast::Record {
