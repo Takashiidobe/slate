@@ -1,6 +1,5 @@
-use slate::effects::interp::interpret_program_main;
 use slate::frontend::{self, c_ast, c_shim, directive_translate, preprocess};
-use slate::{api, cir, codegen, compile_commands, ctx, effects, fixups, rust_ast};
+use slate::{api, cir, codegen, compile_commands, ctx, fixups, rust_ast};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitCode};
@@ -14,9 +13,6 @@ fn usage() -> ExitCode {
     eprintln!("  emit-fixtures  write every supported test fixture to sibling .generated dirs");
     eprintln!(
         "  emit-lowered-fixtures  write raw lowered test fixtures to tests/fixtures.lowered.generated/"
-    );
-    eprintln!(
-        "  compare-effects-rust-rust  <file.c>  compare raw lowered Rust effects to fixuped Rust effects"
     );
     eprintln!(
         "  fixup-debug  <file.c> [--up-to-pass <pass>|--only-pass <pass>|--debug-only-pass <pass>]  print fixup pass trace"
@@ -48,10 +44,6 @@ fn main() -> ExitCode {
         },
         Some("emit-fixtures") => run(emit_fixtures()),
         Some("emit-lowered-fixtures") => run(emit_lowered_fixtures()),
-        Some("compare-effects-rust-rust") => match args.get(2) {
-            Some(path) => run(compare_effects_rust_rust(Path::new(path))),
-            None => usage(),
-        },
         Some("fixup-debug") => run(fixup_debug(&args[2..])),
         Some("translate") => match args[2..].split_last() {
             Some((path, clang_args)) => run(translate_with_clang_args(Path::new(path), clang_args)),
@@ -116,46 +108,6 @@ fn reject_active_unsupported(pp: &preprocess::Preprocessing, context: &str) -> R
 
 fn reject_active_unsupported_file(path: &Path, context: &str) -> Result<(), String> {
     api::reject_active_unsupported_file(path, context)
-}
-
-fn compare_traces(
-    left_name: &str,
-    right_name: &str,
-    left: &effects::EffectTrace,
-    right: &effects::EffectTrace,
-) -> Result<(), String> {
-    effects::interpreter::compare(left, right).map_err(|divergence| {
-        format!("{divergence}\n{left_name} trace: {left:#?}\n{right_name} trace: {right:#?}")
-    })
-}
-
-fn run_effect_compare(check: impl FnOnce() -> Result<(), String>) -> Result<String, String> {
-    check().map(|()| "ok\n".to_string())
-}
-
-fn effect_extraction_error(
-    mode: &str,
-    path: &Path,
-    side: &str,
-    reason: impl std::fmt::Display,
-) -> String {
-    format!(
-        "effect extraction failed\nmode: {mode}\nfixture: {}\nside: {side}\nreason: {reason}",
-        path.display()
-    )
-}
-
-fn compare_effects_rust_rust(path: &Path) -> Result<String, String> {
-    run_effect_compare(|| {
-        let mode = "compare-effects-rust-rust";
-        let (_, program) = lowered_program(path)?;
-        let raw_trace = interpret_program_main(&program)
-            .map_err(|err| effect_extraction_error(mode, path, "raw rust_ast", err))?;
-        let fixed_program = fixups::apply_with(program, &fixups::SkipSet::none());
-        let fixed_trace = interpret_program_main(&fixed_program)
-            .map_err(|err| effect_extraction_error(mode, path, "fixuped rust_ast", err))?;
-        compare_traces("raw rust_ast", "fixuped rust_ast", &raw_trace, &fixed_trace)
-    })
 }
 
 fn fixup_debug(args: &[String]) -> Result<String, String> {

@@ -3,7 +3,6 @@ pub mod cir;
 pub mod codegen;
 pub mod compile_commands;
 pub mod ctx;
-pub mod effects;
 pub mod fixups;
 pub mod frontend;
 pub mod function_identity;
