@@ -10,8 +10,8 @@ use crate::rust_ast::{
     Derive, EnumConst, EnumDef, Expr, ExprMatchArm, ExternDecl, ExternFnDecl, Feature, FnDef,
     FnParam, GenericParam, Ident, ImplBlock, ImplItem, IndentStmt, InlineAsm, Item, Label, Lint,
     MatchArm, Method, Path, Pattern, Prim, Program, RecordDef, RecordField, Repr, RustValue,
-    SelfKind, StdTrait, Stmt, StructDef, StructFields, TraitBound, TraitRef, Type, UnaryOp,
-    UsedKind, Visibility,
+    SelfKind, StdTrait, Stmt, StructDef, StructFields, SupportModule, TraitBound, TraitRef, Type,
+    UnaryOp, UsedKind, Visibility,
 };
 use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
 
@@ -235,6 +235,50 @@ pub fn declared_globals(module: &Module) -> Vec<String> {
         .collect()
 }
 
+fn allocate_global_rust_names(
+    module: &Module,
+    records: &BTreeMap<String, crate::c_ast::Record>,
+    enums: &BTreeMap<String, crate::c_ast::Enum>,
+) -> BTreeMap<String, String> {
+    let Some(module_op) = module.ops.iter().find(|op| op.name == "builtin.module") else {
+        return BTreeMap::new();
+    };
+    let symbols: BTreeSet<String> = region_ops(module_op)
+        .iter()
+        .filter_map(|op| attr_str(op, "sym_name"))
+        .map(|name| sanitize_ident(name).into_string())
+        .collect();
+    let type_names: BTreeSet<String> = records.keys().chain(enums.keys()).cloned().collect();
+    let mut used = symbols.clone();
+    used.extend(type_names.iter().cloned());
+    let globals: BTreeSet<String> = region_ops(module_op)
+        .iter()
+        .filter(|op| op.kind() == CirOpKind::Global)
+        .filter_map(|op| attr_str(op, "sym_name").map(str::to_string))
+        .collect();
+    let mut names = BTreeMap::new();
+    for source_name in globals {
+        let base = sanitize_ident(&source_name).into_string();
+        if !type_names.contains(&base) {
+            continue;
+        }
+        let mut suffix = 0;
+        let rust_name = loop {
+            let candidate = if suffix == 0 {
+                format!("{base}__value")
+            } else {
+                format!("{base}__value{suffix}")
+            };
+            if used.insert(candidate.clone()) {
+                break candidate;
+            }
+            suffix += 1;
+        };
+        names.insert(source_name, rust_name);
+    }
+    names
+}
+
 pub fn unsafe_defined_functions(module: &Module) -> BTreeSet<String> {
     let Some(module_op) = module.ops.iter().find(|op| op.name == "builtin.module") else {
         return BTreeSet::new();
@@ -381,6 +425,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
             anon_records.push(record);
         }
     }
+    let global_rust_names = allocate_global_rust_names(cir, &records, &enums);
     let mut declaration_comments: BTreeMap<(String, String), Vec<Comment>> = BTreeMap::new();
     for declaration in &c.declaration_comments {
         let Some(name) = &declaration.name else {
@@ -429,6 +474,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         enums,
         anon_records,
         declaration_comments,
+        global_rust_names,
         globals: BTreeMap::new(),
         extern_globals: BTreeMap::new(),
         strings: BTreeMap::new(),
@@ -457,6 +503,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
             .and_then(rust_target_arch)
             .map(str::to_string),
         variadic_defs: BTreeSet::new(),
+        boxed_variadic_defs: BTreeSet::new(),
         c_abi_functions: BTreeSet::new(),
         project: project.clone(),
         unsafe_functions: project.unsafe_functions.clone(),
@@ -768,6 +815,7 @@ struct Lowerer<'a> {
     enums: BTreeMap<String, crate::c_ast::Enum>,
     anon_records: Vec<crate::c_ast::Record>,
     declaration_comments: BTreeMap<(String, String), Vec<Comment>>,
+    global_rust_names: BTreeMap<String, String>,
     globals: BTreeMap<String, GlobalVar>,
     extern_globals: BTreeMap<String, ExternGlobal>,
     strings: BTreeMap<String, Vec<u8>>,
@@ -791,6 +839,7 @@ struct Lowerer<'a> {
     uses_memchr: std::cell::Cell<bool>,
     target_arch: Option<String>,
     variadic_defs: BTreeSet<String>,
+    boxed_variadic_defs: BTreeSet<String>,
     c_abi_functions: BTreeSet<String>,
     project: ProjectInfo,
     unsafe_functions: BTreeSet<String>,
@@ -837,6 +886,7 @@ struct FunctionLowerer<'a, 'b> {
     va_allocas: BTreeSet<String>,
     va_places: BTreeMap<String, String>,
     va_args_param: Option<String>,
+    boxed_va_args: bool,
     layout_queries: VecDeque<LayoutQuery>,
     macro_consts: VecDeque<MacroConst>,
     enum_consts: VecDeque<EnumConstRef>,
@@ -903,6 +953,7 @@ struct BlockAddrElementPtr {
 
 #[derive(Debug, Clone)]
 struct GlobalVar {
+    source_name: String,
     name: String,
     ty: Type,
     init: Expr,
@@ -916,6 +967,7 @@ struct GlobalVar {
 
 #[derive(Debug, Clone)]
 struct ExternGlobal {
+    source_name: String,
     ty: Type,
     thread_local: bool,
 }
@@ -946,6 +998,13 @@ impl Val {
 }
 
 impl<'a> Lowerer<'a> {
+    fn rust_global_name(&self, name: &str) -> String {
+        self.global_rust_names
+            .get(name)
+            .cloned()
+            .unwrap_or_else(|| sanitize_ident(name).into_string())
+    }
+
     fn declaration_comment_items(&self, kind: &str, name: &str) -> Vec<Item> {
         self.declaration_comments
             .get(&(kind.to_string(), sanitize_ident(name).into_string()))
@@ -1151,11 +1210,18 @@ impl<'a> Lowerer<'a> {
                 global.section.as_deref(),
                 &global.used,
             );
+            if global.name != global.source_name
+                && let Some(no_mangle) = attrs
+                    .iter()
+                    .position(|attr| matches!(attr, RustAttr::NoMangle))
+            {
+                attrs[no_mangle] = RustAttr::ExportName(global.source_name.clone());
+            }
             if global.thread_local {
                 attrs.push(RustAttr::ThreadLocal);
                 self.uses_thread_local.set(true);
             }
-            items.extend(self.declaration_comment_items("VarDecl", &global.name));
+            items.extend(self.declaration_comment_items("VarDecl", &global.source_name));
             items.push(Item::Static {
                 attrs,
                 vis: global_vis,
@@ -1168,18 +1234,22 @@ impl<'a> Lowerer<'a> {
 
         let mut extern_decls = Vec::new();
         for (name, global) in &self.extern_globals {
-            if let Some(module) = self.project.cross_module_globals.get(name) {
+            if let Some(module) = self.project.cross_module_globals.get(&global.source_name) {
                 self.cross_uses.push(Item::Use {
                     path: self.cross_module_path(module, name),
                 });
                 continue;
             }
             extern_decls.push(ExternDecl::Static {
-                attrs: if global.thread_local {
-                    vec![RustAttr::ThreadLocal]
-                } else {
-                    Vec::new()
-                },
+                attrs: global
+                    .thread_local
+                    .then_some(RustAttr::ThreadLocal)
+                    .into_iter()
+                    .chain(
+                        (name != &global.source_name)
+                            .then(|| RustAttr::LinkName(global.source_name.clone())),
+                    )
+                    .collect(),
                 mutable: true,
                 name: name.clone(),
                 ty: global.ty.clone(),
@@ -1309,9 +1379,36 @@ impl<'a> Lowerer<'a> {
                 && attr_str(op, "sym_name").is_some_and(|name| name != "main")
                 && function_type_is_variadic(attr_str(op, "function_type").unwrap_or(""))
             {
-                self.variadic_defs
-                    .insert(attr_str(op, "sym_name").unwrap().to_string());
+                let name = attr_str(op, "sym_name").unwrap().to_string();
+                self.variadic_defs.insert(name.clone());
+                if !self.project.emit_pub && !self.c_abi_functions.contains(&name) {
+                    self.boxed_variadic_defs.insert(name);
+                }
             }
+        }
+        if !self.boxed_variadic_defs.is_empty() {
+            items.push(Item::SupportModule(SupportModule {
+                name: "__slate_variadic".into(),
+                source: r#"#[derive(Clone)]
+struct __SlateVaArgs {
+    args: std::rc::Rc<Vec<Box<dyn std::any::Any>>>,
+    index: usize,
+}
+
+impl __SlateVaArgs {
+    fn new(args: Vec<Box<dyn std::any::Any>>) -> Self {
+        Self { args: std::rc::Rc::new(args), index: 0 }
+    }
+
+    fn next_arg<T: Copy + 'static>(&mut self) -> T {
+        let value = *self.args[self.index].downcast_ref::<T>().unwrap();
+        self.index += 1;
+        value
+    }
+}"#
+                .into(),
+                exports: Vec::new(),
+            }));
         }
         self.unsafe_functions
             .extend(unsafe_defined_functions(module));
@@ -1461,7 +1558,7 @@ impl<'a> Lowerer<'a> {
                 ));
             return;
         }
-        let rust_name = sanitize_ident(name).into_string();
+        let rust_name = self.rust_global_name(name);
         let ty = attr_str(op, "sym_type").map(|ty| self.rust_type(ty));
         let alignment = ty.as_ref().and_then(|ty| {
             attr_int(op, "alignment")
@@ -1479,7 +1576,7 @@ impl<'a> Lowerer<'a> {
         let section = attr_str(op, "section").map(str::to_owned);
         let used = self
             .used_symbols
-            .get(&rust_name)
+            .get(&sanitize_ident(name).into_string())
             .cloned()
             .unwrap_or_default();
         let is_c_global = !name.starts_with("__") && !name.starts_with(".str");
@@ -1487,17 +1584,24 @@ impl<'a> Lowerer<'a> {
             let Some(ty) = ty else {
                 return;
             };
-            self.extern_globals
-                .insert(rust_name, ExternGlobal { ty, thread_local });
+            self.extern_globals.insert(
+                rust_name,
+                ExternGlobal {
+                    source_name: name.to_string(),
+                    ty,
+                    thread_local,
+                },
+            );
             return;
         };
         if let Some(labels) = parse_cir_block_addr_labels(raw) {
-            self.block_addr_globals.insert(name.to_string(), labels);
+            self.block_addr_globals.insert(rust_name.clone(), labels);
             if is_c_global && let Some(ty) = ty {
                 let init = self.default_value_expr(&ty);
                 self.globals.insert(
                     rust_name.clone(),
                     GlobalVar {
+                        source_name: name.to_string(),
                         name: rust_name,
                         ty,
                         init,
@@ -1520,6 +1624,7 @@ impl<'a> Lowerer<'a> {
                 self.globals.insert(
                     rust_name.clone(),
                     GlobalVar {
+                        source_name: name.to_string(),
                         name: rust_name,
                         ty,
                         init: render_array_literal_expr(
@@ -1550,6 +1655,7 @@ impl<'a> Lowerer<'a> {
                     self.globals.insert(
                         rust_name.clone(),
                         GlobalVar {
+                            source_name: name.to_string(),
                             name: rust_name,
                             ty,
                             init: render_array_literal_expr(&elems, len as usize, default),
@@ -1572,6 +1678,7 @@ impl<'a> Lowerer<'a> {
                     self.globals.insert(
                         rust_name.clone(),
                         GlobalVar {
+                            source_name: name.to_string(),
                             name: rust_name,
                             ty,
                             init,
@@ -1596,6 +1703,7 @@ impl<'a> Lowerer<'a> {
                 self.globals.insert(
                     rust_name.clone(),
                     GlobalVar {
+                        source_name: name.to_string(),
                         name: rust_name,
                         ty,
                         init: Expr::ArrayRepeat {
@@ -1623,6 +1731,7 @@ impl<'a> Lowerer<'a> {
                 self.globals.insert(
                     rust_name.clone(),
                     GlobalVar {
+                        source_name: name.to_string(),
                         name: rust_name,
                         init: self.default_value_expr(&ty),
                         ty,
@@ -1646,6 +1755,7 @@ impl<'a> Lowerer<'a> {
                 self.globals.insert(
                     rust_name.clone(),
                     GlobalVar {
+                        source_name: name.to_string(),
                         name: rust_name,
                         ty,
                         init,
@@ -1667,6 +1777,7 @@ impl<'a> Lowerer<'a> {
             self.globals.insert(
                 rust_name.clone(),
                 GlobalVar {
+                    source_name: name.to_string(),
                     name: rust_name,
                     ty,
                     init,
@@ -1855,6 +1966,7 @@ impl<'a> Lowerer<'a> {
         let entry = op.regions.first()?.blocks.first()?;
         let is_main = name == "main";
         let is_variadic = !is_main && function_type_is_variadic(function_type);
+        let boxed_variadic = self.boxed_variadic_defs.contains(name);
 
         let mut params = entry
             .args
@@ -1875,7 +1987,11 @@ impl<'a> Lowerer<'a> {
             params.push(FnParam {
                 name: param.clone(),
                 mutable: true,
-                ty: Type::Variadic,
+                ty: if boxed_variadic {
+                    Type::Custom("__SlateVaArgs".into())
+                } else {
+                    Type::Variadic
+                },
             });
             Some(param)
         } else {
@@ -1901,13 +2017,17 @@ impl<'a> Lowerer<'a> {
             } else {
                 Visibility::Private
             };
-            let abi = if external_def || is_variadic || self.c_abi_functions.contains(name) {
+            let abi = if !boxed_variadic
+                && (external_def || is_variadic || self.c_abi_functions.contains(name))
+            {
                 Some(Abi::C)
             } else {
                 None
             };
             if is_variadic {
-                self.uses_c_variadic.set(true);
+                if !boxed_variadic {
+                    self.uses_c_variadic.set(true);
+                }
                 self.variadic_defs.insert(name.to_string());
             }
             let ret = Some(self.rust_type(ret_ty.as_deref().unwrap_or("()")));
@@ -2006,6 +2126,7 @@ impl<'a> Lowerer<'a> {
             va_allocas,
             va_places: BTreeMap::new(),
             va_args_param,
+            boxed_va_args: boxed_variadic,
             layout_queries,
             macro_consts,
             enum_consts,
@@ -2582,6 +2703,16 @@ impl<'a> Lowerer<'a> {
                     ))
                 }
             }
+        } else if let Some(bytes) = parse_cir_const_array(raw) {
+            let Type::Array { elem, len } = ty else {
+                return None;
+            };
+            let elems = byte_array_elems(&bytes, ty);
+            Some(render_array_literal_expr(
+                &elems,
+                *len as usize,
+                self.default_value_expr(elem),
+            ))
         } else if raw.starts_with("#cir.const_array<[") {
             let Type::Array { elem, len } = ty else {
                 return None;
@@ -3354,7 +3485,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.push_stmt(Stmt::Let {
                 name,
                 mutable: true,
-                ty: Some(Type::VaList),
+                ty: Some(if self.boxed_va_args {
+                    Type::Custom("__SlateVaArgs".into())
+                } else {
+                    Type::VaList
+                }),
                 init: None,
             });
             return;
@@ -5858,6 +5993,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .trim_matches('"')
             .to_string();
         let name = self.parent.weak_refs.get(&name).cloned().unwrap_or(name);
+        let name = self
+            .parent
+            .global_rust_names
+            .get(&name)
+            .cloned()
+            .unwrap_or(name);
         self.values.insert(result.clone(), Val::Global(name));
     }
 
@@ -6833,7 +6974,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     Some(callee_operand.clone()),
                 )
             };
-        let args = arg_operands
+        let mut args = arg_operands
             .iter()
             .zip(arg_types.iter().copied())
             .map(|(operand, ty)| self.call_arg_expr(operand, ty))
@@ -6913,6 +7054,27 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 Type::FnPtr { params, .. } => Some(params.clone()),
                 _ => None,
             });
+        if self.parent.boxed_variadic_defs.contains(&callee_name) {
+            let fixed = self
+                .parent
+                .function_param_types
+                .get(&callee_name)
+                .map_or(0, Vec::len);
+            let variadic = args.split_off(fixed.min(args.len()));
+            let boxed = variadic
+                .into_iter()
+                .map(|arg| Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
+                    func: Box::new(Expr::Var("Box::new".into())),
+                    args: vec![arg],
+                })
+                .collect();
+            args.push(Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
+                func: Box::new(Expr::Var("__SlateVaArgs::new".into())),
+                args: vec![Expr::VecLit(boxed)],
+            });
+        }
         let call = Expr::Call {
             binding,
             func: Box::new(callee_expr),
@@ -9973,9 +10135,9 @@ fn parse_function_type(s: &str) -> (Vec<String>, Option<String>) {
     else {
         return (Vec::new(), None);
     };
-    let Some((params, ret)) = split_top_level_arrow(inner) else {
-        return (Vec::new(), None);
-    };
+    let (params, ret) = split_top_level_arrow(inner)
+        .map(|(params, ret)| (params, Some(ret.trim().to_string())))
+        .unwrap_or((inner, None));
     let params = params.trim().trim_start_matches('(').trim_end_matches(')');
     let params = split_top_level(params, ',')
         .into_iter()
@@ -9983,12 +10145,9 @@ fn parse_function_type(s: &str) -> (Vec<String>, Option<String>) {
         .filter(|s| !s.is_empty() && *s != "...")
         .map(str::to_string)
         .collect();
-    (params, Some(ret.trim().to_string()))
+    (params, ret)
 }
 
-/// Whether a `!cir.func<..>` type declares any parameters. Void-returning
-/// functions have no `->` in the printed type, so this can't reuse
-/// `parse_function_type` (which treats a missing arrow as "nothing parsed").
 fn function_type_has_params(s: &str) -> bool {
     let Some(inner) = s
         .strip_prefix("!cir.func<")

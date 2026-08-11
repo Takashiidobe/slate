@@ -6,7 +6,6 @@
 
 
 
-case_00204: `static mut hfa11: hfa11 = hfa11 { ... }` — a global variable and its anonymous-struct-derived type end up with the same identifier, which collides in Rust's single namespace (legal in C's separate tag/ordinary namespaces).
 
 
 case_00209: `int (*fp)()` called with one argument — pre-C23 K&R "unspecified parameters" semantics; slate always parses with `-std=c23`, under which `()` means zero parameters, so clang itself rejects the call before slate ever sees CIR. Not fixable without also supporting an older `-std=` mode.
