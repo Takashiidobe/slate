@@ -1959,16 +1959,20 @@ impl<'a> Lowerer<'a> {
             .unwrap_or_default()
             .into();
         let asm_gotos: VecDeque<_> = self.asm_gotos.get(name).cloned().unwrap_or_default().into();
-        let local_enum_types: BTreeMap<String, String> = self
-            .local_enum_decls
-            .get(name)
-            .into_iter()
-            .flatten()
-            .filter(|decl| self.enums.contains_key(&decl.enum_name))
-            .map(|decl| (decl.name.clone(), decl.enum_name.clone()))
-            .collect();
         let mut function_ops = Vec::new();
         collect_region_ops_recursive(op, &mut function_ops);
+        let local_enum_decls = self
+            .local_enum_decls
+            .get(name)
+            .map_or(&[][..], Vec::as_slice);
+        let integer_enum_locals =
+            enum_locals_requiring_integer_storage(local_enum_decls, &self.enums, &function_ops);
+        let local_enum_types: BTreeMap<String, String> = local_enum_decls
+            .iter()
+            .filter(|decl| self.enums.contains_key(&decl.enum_name))
+            .filter(|decl| !integer_enum_locals.contains(&decl.name))
+            .map(|decl| (decl.name.clone(), decl.enum_name.clone()))
+            .collect();
         let va_allocas = function_ops
             .iter()
             .filter(|op| matches!(op.kind(), CirOpKind::VaStart | CirOpKind::VaArg))
@@ -8749,7 +8753,20 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if is_cir_function_pointer_type(ty) {
             self.function_pointer_operand_expr(operand)
         } else if ty.starts_with("!cir.ptr<") {
-            self.pointer_operand_expr(operand)
+            let expr = self.pointer_operand_expr(operand);
+            if self
+                .slot_types
+                .get(operand)
+                .is_some_and(|slot_ty| self.parent.type_is_enum(slot_ty))
+                && matches!(self.parent.rust_type(ty), Type::Ptr { .. })
+            {
+                Expr::Cast {
+                    expr: Box::new(expr),
+                    ty: self.parent.rust_type(ty),
+                }
+            } else {
+                expr
+            }
         } else {
             self.operand_expr(operand)
         }
@@ -9044,6 +9061,54 @@ fn collect_region_ops_recursive<'a>(op: &'a Op, out: &mut Vec<&'a Op>) {
         out.push(child);
         collect_region_ops_recursive(child, out);
     }
+}
+
+fn enum_locals_requiring_integer_storage(
+    declarations: &[crate::c_ast::LocalEnumDecl],
+    enums: &BTreeMap<String, crate::c_ast::Enum>,
+    ops: &[&Op],
+) -> BTreeSet<String> {
+    let declared: BTreeMap<_, _> = declarations
+        .iter()
+        .map(|declaration| (declaration.name.as_str(), declaration.enum_name.as_str()))
+        .collect();
+    let slots: BTreeMap<_, _> = ops
+        .iter()
+        .filter(|op| op.kind() == CirOpKind::Alloca)
+        .filter_map(|op| {
+            let result = op.results.first()?;
+            let name = attr_str(op, "name")?;
+            declared
+                .contains_key(name)
+                .then_some((result.as_str(), name))
+        })
+        .collect();
+    let constants: BTreeMap<_, _> = ops
+        .iter()
+        .filter(|op| op.kind() == CirOpKind::Const)
+        .filter_map(|op| {
+            let result = op.results.first()?;
+            let value = attr_str(op, "value").and_then(parse_cir_int)?;
+            Some((result.as_str(), value))
+        })
+        .collect();
+    ops.iter()
+        .filter(|op| op.kind() == CirOpKind::Store)
+        .filter_map(|op| {
+            let [value, slot, ..] = op.operands.as_slice() else {
+                return None;
+            };
+            let name = slots.get(slot.as_str())?;
+            let enum_name = declared.get(name)?;
+            let value = constants.get(value.as_str())?;
+            let enm = enums.get(*enum_name)?;
+            (!enm
+                .variants
+                .iter()
+                .any(|variant| i128::from(variant.value) == *value))
+            .then(|| (*name).to_string())
+        })
+        .collect()
 }
 
 fn c_abi_function_targets(op: &Op) -> BTreeSet<String> {
