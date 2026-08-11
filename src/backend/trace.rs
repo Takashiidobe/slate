@@ -589,8 +589,8 @@ impl TraceLogger for CollectingLogger {
         if changed && events.is_empty() {
             events.push(generic_pass_changed_event(
                 active.pass,
-                &active.before,
-                &after,
+                active.before,
+                after,
                 &active.before_emit,
                 &after_emit,
             ));
@@ -617,8 +617,8 @@ impl TraceLogger for CollectingLogger {
 
 fn generic_pass_changed_event(
     pass: Pass,
-    before: &ProgramSummary,
-    after: &ProgramSummary,
+    before: ProgramSummary,
+    after: ProgramSummary,
     before_emit: &str,
     after_emit: &str,
 ) -> RewriteEvent {
@@ -644,7 +644,7 @@ fn generic_pass_changed_event(
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct ProgramSummary {
     pub items: usize,
     pub stmts: usize,
