@@ -2,8 +2,60 @@ use crate::backend::rust_ast::Cfg;
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
+use thiserror::Error;
 
 static NEXT_SANITIZED_INPUT: AtomicU64 = AtomicU64::new(0);
+
+#[derive(Debug, Error)]
+pub enum PreprocessError {
+    #[error("directive span {start}..{end} is outside {source_len} bytes of source")]
+    DirectiveSpan {
+        start: usize,
+        end: usize,
+        source_len: usize,
+    },
+    #[error("create {path}: {source}")]
+    CreateTempDir {
+        path: PathBuf,
+        #[source]
+        source: std::io::Error,
+    },
+    #[error("could not allocate a temporary directory for sanitized Clang input")]
+    TempDirExhausted,
+    #[error("write sanitized Clang input {path}: {source}")]
+    WriteSanitizedInput {
+        path: PathBuf,
+        #[source]
+        source: std::io::Error,
+    },
+    #[error("get current directory: {source}")]
+    CurrentDir {
+        #[source]
+        source: std::io::Error,
+    },
+    #[error("encode VFS overlay: {source}")]
+    EncodeOverlay {
+        #[source]
+        source: serde_json::Error,
+    },
+    #[error("write VFS overlay {path}: {source}")]
+    WriteOverlay {
+        path: PathBuf,
+        #[source]
+        source: std::io::Error,
+    },
+    #[error("query predefined macros: {source}")]
+    PredefinedMacros {
+        #[source]
+        source: crate::cir::EmitError,
+    },
+    #[error("run preprocessing diagnostics for {path}: {source}")]
+    Diagnostics {
+        path: PathBuf,
+        #[source]
+        source: crate::cir::EmitError,
+    },
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DirectiveKind {
@@ -424,7 +476,7 @@ pub fn clang_input(
     path: &Path,
     source: &str,
     directives: &[&DirectiveRecord],
-) -> Result<ClangInput, String> {
+) -> Result<ClangInput, PreprocessError> {
     if directives.is_empty() {
         return Ok(ClangInput {
             extra_args: Vec::new(),
@@ -437,11 +489,10 @@ pub fn clang_input(
     for directive in directives {
         for byte in bytes
             .get_mut(directive.byte_start..directive.byte_end)
-            .ok_or_else(|| {
-                format!(
-                    "directive span {}..{} is outside {} bytes of source",
-                    directive.byte_start, directive.byte_end, source_len
-                )
+            .ok_or(PreprocessError::DirectiveSpan {
+                start: directive.byte_start,
+                end: directive.byte_end,
+                source_len,
             })?
         {
             if *byte != b'\n' && *byte != b'\r' {
@@ -457,13 +508,17 @@ pub fn clang_input(
     };
     let sanitized_path = temp_dir.join("source.c");
     let overlay_path = temp_dir.join("overlay.json");
-    std::fs::write(&sanitized_path, bytes)
-        .map_err(|e| format!("write {}: {e}", sanitized_path.display()))?;
+    std::fs::write(&sanitized_path, bytes).map_err(|source| {
+        PreprocessError::WriteSanitizedInput {
+            path: sanitized_path.clone(),
+            source,
+        }
+    })?;
     let virtual_path = if path.is_absolute() {
         path.to_path_buf()
     } else {
         std::env::current_dir()
-            .map_err(|e| format!("get current directory: {e}"))?
+            .map_err(|source| PreprocessError::CurrentDir { source })?
             .join(path)
     };
     let overlay = serde_json::json!({
@@ -477,9 +532,12 @@ pub fn clang_input(
     });
     std::fs::write(
         &overlay_path,
-        serde_json::to_vec(&overlay).map_err(|e| format!("encode VFS overlay: {e}"))?,
+        serde_json::to_vec(&overlay).map_err(|source| PreprocessError::EncodeOverlay { source })?,
     )
-    .map_err(|e| format!("write {}: {e}", overlay_path.display()))?;
+    .map_err(|source| PreprocessError::WriteOverlay {
+        path: overlay_path.clone(),
+        source,
+    })?;
 
     input.extra_args = vec![
         "-ivfsoverlay".to_string(),
@@ -488,7 +546,7 @@ pub fn clang_input(
     Ok(input)
 }
 
-fn create_sanitized_temp_dir() -> Result<PathBuf, String> {
+fn create_sanitized_temp_dir() -> Result<PathBuf, PreprocessError> {
     for _ in 0..100 {
         let id = NEXT_SANITIZED_INPUT.fetch_add(1, Ordering::Relaxed);
         let path =
@@ -496,10 +554,10 @@ fn create_sanitized_temp_dir() -> Result<PathBuf, String> {
         match std::fs::create_dir(&path) {
             Ok(()) => return Ok(path),
             Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {}
-            Err(error) => return Err(format!("create {}: {error}", path.display())),
+            Err(source) => return Err(PreprocessError::CreateTempDir { path, source }),
         }
     }
-    Err("could not allocate a temporary directory for sanitized Clang input".into())
+    Err(PreprocessError::TempDirExhausted)
 }
 
 pub fn record(source: &str, macros: &BTreeMap<String, String>) -> Preprocessing {
@@ -699,9 +757,9 @@ fn collect_unmapped(expr: &PredExpr, out: &mut Vec<String>) {
 }
 
 /// Convenience: query Clang's predefined macros for `clang_args` and record.
-pub fn record_file(source: &str, clang_args: &[String]) -> Result<Preprocessing, String> {
-    let macros =
-        crate::cir::emit::predefined_macros(clang_args).map_err(|error| error.to_string())?;
+pub fn record_file(source: &str, clang_args: &[String]) -> Result<Preprocessing, PreprocessError> {
+    let macros = crate::cir::emit::predefined_macros(clang_args)
+        .map_err(|source| PreprocessError::PredefinedMacros { source })?;
     Ok(record(source, &macros))
 }
 
@@ -709,7 +767,7 @@ pub fn record_translation_unit(
     path: &Path,
     source: &str,
     clang_args: &[String],
-) -> Result<Preprocessing, String> {
+) -> Result<Preprocessing, PreprocessError> {
     let mut pp = record_file(source, clang_args)?;
     if pp
         .directives
@@ -717,7 +775,10 @@ pub fn record_translation_unit(
         .any(|directive| directive.name == DirectiveName::Error && directive.active.is_none())
     {
         let (success, stderr) = crate::cir::emit::preprocess_diagnostics(path, clang_args)
-            .map_err(|error| error.to_string())?;
+            .map_err(|source| PreprocessError::Diagnostics {
+                path: path.to_path_buf(),
+                source,
+            })?;
         let path = path
             .canonicalize()
             .unwrap_or_else(|_| path.to_path_buf())

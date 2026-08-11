@@ -25,7 +25,8 @@ pub fn lowered_program_with_args(
 ) -> Result<(cir::ir::Module, rust_ast::Program), String> {
     let source =
         std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
-    let pp = preprocess::record_translation_unit(path, &source, extra_args)?;
+    let pp = preprocess::record_translation_unit(path, &source, extra_args)
+        .map_err(|error| error.to_string())?;
     reject_active_unsupported(&pp, "translate")?;
     let diagnostics: Vec<_> = pp
         .directives
@@ -47,14 +48,15 @@ pub fn lowered_program_with_args(
             ));
         }
     }
-    let input = preprocess::clang_input(path, &source, &diagnostics)?;
+    let input =
+        preprocess::clang_input(path, &source, &diagnostics).map_err(|error| error.to_string())?;
     let all_args: Vec<String> = extra_args
         .iter()
         .cloned()
         .chain(input.extra_args().iter().cloned())
         .collect();
     let module = cir::emit_module(path, &all_args).map_err(|error| error.to_string())?;
-    let unit = c_ast::parse_file_with_args(path, &all_args)?;
+    let unit = c_ast::parse_file_with_args(path, &all_args).map_err(|error| error.to_string())?;
 
     let mut ctx = ctx::Ctx::default();
     let mut program = frontend::lower(&module, &unit, &mut ctx);
@@ -129,7 +131,8 @@ pub fn reject_active_unsupported(
 pub fn reject_active_unsupported_file(path: &Path, context: &str) -> Result<(), String> {
     let source =
         std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
-    let pp = preprocess::record_translation_unit(path, &source, &[])?;
+    let pp = preprocess::record_translation_unit(path, &source, &[])
+        .map_err(|error| error.to_string())?;
     reject_active_unsupported(&pp, context)
 }
 
