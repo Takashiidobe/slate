@@ -129,7 +129,7 @@ fn apply<'db>(
         case.require(early_effectful_consumer(&consumer_stmt, &binding.name))?;
     }
     let allowed_receiver =
-        is_option_receiver_use(&consumer_stmt, &binding.name, binding_type.as_ref());
+        is_option_receiver_use(&consumer_stmt, &binding.name, binding_type.as_ref(), &init);
     let allowed_argument = is_allowed_argument_use(
         &consumer_stmt,
         &binding.name,
@@ -274,8 +274,8 @@ fn is_receiver_use(stmt: &Stmt, name: &str) -> bool {
     })
 }
 
-fn is_option_receiver_use(stmt: &Stmt, name: &str, ty: Option<&Type>) -> bool {
-    if !ty.is_some_and(is_option_like_type) {
+fn is_option_receiver_use(stmt: &Stmt, name: &str, ty: Option<&Type>, init: &Expr) -> bool {
+    if !ty.is_some_and(is_option_like_type) || matches!(init, Expr::Value(RustValue::None)) {
         return false;
     }
     walk::stmt_expr_any(stmt, &mut |expr| {
