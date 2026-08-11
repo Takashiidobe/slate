@@ -78,6 +78,20 @@ location (`file:line:col`):
   extracted into structured source context, with raw JSON retained.
 - **C source text** — for comments and naming during final readability polish.
 
+## Error ownership
+
+Library failures stay typed until they reach a user-facing boundary. Each
+subsystem owns its error enum: CIR parsing and emission, preprocessing, Clang
+AST loading, compile-command decoding, and directive translation. Concrete I/O,
+JSON, target-triple, and nested subsystem failures remain available through the
+standard error source chain; tool status, stderr, source paths, directive
+locations, predicates, and lowering diagnostics remain structured fields.
+
+`api::Error` aggregates translation failures without converting them to text.
+The `slate` binary converts typed errors to their `Display` output through its
+single `cli_result` adapter, and the test harness may do the same when reporting
+a failed case. Library modules do not use `String` as an error type.
+
 ## Docs
 
 - [fixups.md](fixups.md) — how to state
