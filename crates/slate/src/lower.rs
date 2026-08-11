@@ -2785,6 +2785,18 @@ impl __SlateVaArgs {
         let Type::Ptr { mutable, .. } = ty else {
             return None;
         };
+        if self.function_return_types.contains_key(target) {
+            return Some(Expr::Cast {
+                expr: Box::new(Expr::Cast {
+                    expr: Box::new(Expr::Var(sanitize_ident(target))),
+                    ty: Type::Ptr {
+                        mutable: false,
+                        inner: Box::new(Type::Unit),
+                    },
+                }),
+                ty: ty.clone(),
+            });
+        }
         Some(Expr::Cast {
             expr: Box::new(Expr::AddrOf {
                 mutable: *mutable,
@@ -3626,15 +3638,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     /// aggregate local relies on the `Copy` derive of arrays and `#[repr(C)]`
     /// structs. Returns `None` when the source is opaque (raw pointer copy).
     fn copy_source_value(&self, dst: &str, src: &str) -> Option<Expr> {
-        let dst_len = self
-            .slot_types
-            .get(dst)
-            .and_then(type_array_len)
-            .map(|len| len as usize);
+        let dst_ty = self.slot_types.get(dst).or_else(|| {
+            self.member_ptrs
+                .get(dst)
+                .and_then(|member| member.field_ty.as_ref())
+        });
+        let dst_len = dst_ty.and_then(type_array_len).map(|len| len as usize);
         match self.values.get(src) {
             Some(Val::Global(name)) => {
                 if let Some(bytes) = self.parent.strings.get(name) {
-                    let ty = self.slot_types.get(dst)?;
+                    let ty = dst_ty?;
                     let elems = byte_array_elems(bytes, ty);
                     Some(render_array_literal_expr(
                         &elems,
@@ -3642,7 +3655,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         Expr::Value(RustValue::I64(0)),
                     ))
                 } else if let Some(elems) = self.parent.const_arrays.get(name) {
-                    let default = match self.slot_types.get(dst) {
+                    let default = match dst_ty {
                         Some(Type::Array { elem, .. }) => self.default_value_expr(elem),
                         _ => Expr::Value(RustValue::I64(0)),
                     };
@@ -3652,12 +3665,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         default,
                     ))
                 } else if let Some(raw) = self.parent.const_aggregates.get(name) {
-                    let ty = self.slot_types.get(dst)?;
+                    let ty = dst_ty?;
                     self.render_const_value_expr(ty, raw)
                 } else if self.parent.const_zero_globals.contains(name) {
-                    self.slot_types
-                        .get(dst)
-                        .map(|ty| self.default_value_expr(ty))
+                    dst_ty.map(|ty| self.default_value_expr(ty))
                 } else {
                     None
                 }

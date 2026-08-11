@@ -800,7 +800,12 @@ fn rewrite_item(
             )
         }
         Item::Static { ty, init, .. } | Item::Const { ty, init, .. } => {
-            rewrite_type(ty, plans) | rewrite_expr(init, global_types, plans, record_fields)
+            let mut changed = rewrite_type(ty, plans);
+            walk::exprs_mut_with(init, &mut |expr| {
+                changed |= rewrite_expr(expr, global_types, plans, record_fields);
+                true
+            });
+            changed
         }
         Item::Struct(record) => rewrite_struct_def(record, plans),
         Item::Impl(block) => {
