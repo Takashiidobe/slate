@@ -10535,8 +10535,14 @@ fn cir_fn_type_to_type(ty: &str, aliases: &BTreeMap<String, String>) -> Option<T
     let params = split_top_level(params, ',')
         .into_iter()
         .map(str::trim)
-        .filter(|s| !s.is_empty() && *s != "...")
-        .map(|param| rust_type_with_aliases(param, aliases))
+        .filter(|s| !s.is_empty())
+        .map(|param| {
+            if param == "..." {
+                Type::Variadic
+            } else {
+                rust_type_with_aliases(param, aliases)
+            }
+        })
         .collect::<Vec<_>>();
     let ret = rust_type_with_aliases(ret.trim(), aliases);
     Some(Type::FnPtr {
