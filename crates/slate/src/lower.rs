@@ -3776,6 +3776,23 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.materialize_expr(result, Expr::Value(RustValue::Bool(b)), result_ty);
             return;
         }
+        if let Some((signed, _)) = result_ty.and_then(parse_cir_int_type)
+            && let Type::Prim(prim) = self.parent.rust_type(result_ty.unwrap())
+        {
+            let value = if signed {
+                parse_cir_int(raw)
+                    .filter(|value| i32::try_from(*value).is_err())
+                    .map(|value| Expr::Value(RustValue::TypedInt(value, prim)))
+            } else {
+                parse_cir_uint128(raw)
+                    .filter(|value| i32::try_from(*value).is_err())
+                    .map(|value| Expr::Value(RustValue::TypedUInt(value, prim)))
+            };
+            if let Some(value) = value {
+                self.materialize_expr(result, value, result_ty);
+                return;
+            }
+        }
         if raw.starts_with("#cir.ptr<null>") {
             let value = if result_ty.is_some_and(is_cir_function_pointer_type) {
                 self.function_pointer_null_values.insert(result.clone());

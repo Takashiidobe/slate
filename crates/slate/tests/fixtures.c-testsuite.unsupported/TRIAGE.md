@@ -1,4 +1,3 @@
-case_00133, case_00134, case_00135: literal out of range for `i32` — an unsigned constant like `4294967295` (UINT_MAX) is emitted without a type suffix and inferred as `i32` instead of the C source's unsigned type, so the literal overflows.
 
 case_00136: `#ifdef`/`#undef`/`#error` nesting — clang's preprocessor never reaches the `#error bad branch` line, but the generated Rust contains a literal `compile_error!("bad branch")`, so slate's branch selection for this directive nest disagrees with clang's.
 
