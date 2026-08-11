@@ -3,7 +3,6 @@
 
 
 
-case_00186: `sprintf(buf, "->%02d<-\n", n)` — zero-padded width in an sprintf format string; matches the printf width/precision gap already tracked as a known limitation. Rust binary is killed by a signal (no exit code) rather than mismatching output.
 
 case_00189: `static mut fprintfptr: Option<extern "C" fn(*mut FILE, *mut i8) -> i32> = Some(fprintf)` — function-pointer-typed global initialized from `fprintf`'s real (variadic) signature; the recovered type doesn't match.
 

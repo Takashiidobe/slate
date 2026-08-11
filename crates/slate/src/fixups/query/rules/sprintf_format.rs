@@ -1,6 +1,6 @@
 use crate::fixups::trace::Pass;
-use crate::function_identity::{Known, known_call};
-use crate::rust_ast::{Expr, IndentStmt, Prim, RustValue, Stmt, Type};
+use crate::function_identity::{CallBinding, Known, known_call};
+use crate::rust_ast::{Expr, Ident, IndentStmt, Path, Prim, RustValue, Stmt, Type};
 
 use super::super::{
     BindingAccess, BindingRef, CallRecord, CallTarget, EditSet, ExprSite, ExpressionRef, Field,
@@ -59,7 +59,8 @@ fn rewrite_case(
     })?;
     let fill_stmt_root = case.fact(|query| query.statement_expression(&fill_stmt, 0))?;
     case.require(fill_stmt_root.site == fill_target)?;
-    require_no_buffer_use_before_fill(case, &buf_binding, &buf_var_site, &fill_stmt)?;
+    let nested_fill =
+        require_no_buffer_use_before_fill(case, &buf_binding, &buf_var_site, &fill_stmt)?;
 
     let fact = case.fact(|query| query.printf_call_at(&call.site))?;
     let rest = call
@@ -99,17 +100,61 @@ fn rewrite_case(
     })?;
 
     let mut edits = EditSet::new();
-    edits.push_replace_statement(buf_binding.item_index, buf_binding.definition.clone(), None);
-    replace_fill_call_with_declaration(
-        case,
-        &buf_binding,
-        buf_mutable,
-        &fill_stmt,
-        format_expr,
-        &mut edits,
-    )?;
+    if nested_fill {
+        replace_nested_fill(case, &buf_binding, &fill_stmt, format_expr, &mut edits)?;
+    } else {
+        edits.push_replace_statement(buf_binding.item_index, buf_binding.definition.clone(), None);
+        replace_fill_call_with_declaration(
+            case,
+            &buf_binding,
+            buf_mutable,
+            &fill_stmt,
+            format_expr,
+            &mut edits,
+        )?;
+    }
     reconcile_other_uses(case, &buf_binding, &buf_var_site, &mut edits)?;
     Ok(edits)
+}
+
+fn replace_nested_fill<'db>(
+    case: &mut ItemCaseContext<'_, '_>,
+    buf_binding: &BindingRef<'db>,
+    fill_stmt: &StatementRef,
+    format_expr: Expr,
+    edits: &mut EditSet,
+) -> Result<(), Rejection> {
+    edits.push_replace_statement(
+        buf_binding.item_index,
+        buf_binding.definition.clone(),
+        Some(Stmt::Let {
+            name: buf_binding.name.clone(),
+            mutable: true,
+            ty: Some(Type::Custom("String".into())),
+            init: Some(Expr::Call {
+                func: Box::new(Expr::Path(Path::new(["String", "new"].map(Ident::from)))),
+                args: Vec::new(),
+                binding: CallBinding::Generated,
+            }),
+        }),
+    );
+    let indent = case.fact(|query| query.statement(fill_stmt))?;
+    if let Stmt::Let { .. } = &indent.stmt {
+        let binding = case.fact(|query| query.statement_binding(fill_stmt))?;
+        let uses = case.fact(|query| query.binding_uses(&binding))?;
+        case.require(uses.uses.is_empty())?;
+    } else {
+        case.require(matches!(indent.stmt, Stmt::Expr(_)))?;
+    }
+    edits.push_replace_statement(
+        fill_stmt.item_index,
+        fill_stmt.path.clone(),
+        Some(Stmt::Assign {
+            target: Expr::Var(buf_binding.name.clone().into()),
+            value: format_expr,
+        }),
+    );
+    Ok(())
 }
 
 fn replace_fill_call_with_declaration<'db>(
@@ -190,13 +235,17 @@ fn require_no_buffer_use_before_fill<'db>(
     buf_binding: &BindingRef<'db>,
     fill_var_site: &ExprSite,
     fill_stmt: &StatementRef,
-) -> Result<(), Rejection> {
+) -> Result<bool, Rejection> {
     let decl_stmt = StatementRef {
         item_index: buf_binding.item_index,
         path: buf_binding.definition.clone(),
     };
-    case.require(decl_stmt.container() == fill_stmt.container())?;
-    let between = case.fact(|query| query.statements_between(&decl_stmt, fill_stmt))?;
+    let nested_fill = decl_stmt.container() != fill_stmt.container();
+    let between = if nested_fill {
+        Vec::new()
+    } else {
+        case.fact(|query| query.statements_between(&decl_stmt, fill_stmt))?
+    };
     let uses = case.fact(|query| query.binding_uses(buf_binding))?;
     for usage in &uses.uses {
         let Some(expr_ref) = usage.expression() else {
@@ -206,9 +255,14 @@ fn require_no_buffer_use_before_fill<'db>(
             continue;
         }
         let usage_stmt = case.fact(|query| query.enclosing_statement(expr_ref))?;
-        case.require(!between.iter().any(|stmt| stmt.path == usage_stmt.path))?;
+        if nested_fill {
+            case.require(usage_stmt.container() == fill_stmt.container())?;
+            case.require(usage_stmt.index() > fill_stmt.index())?;
+        } else {
+            case.require(!between.iter().any(|stmt| stmt.path == usage_stmt.path))?;
+        }
     }
-    Ok(())
+    Ok(nested_fill)
 }
 
 fn reconcile_other_uses<'db>(
