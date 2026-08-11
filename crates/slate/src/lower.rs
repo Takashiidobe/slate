@@ -841,7 +841,6 @@ struct FunctionLowerer<'a, 'b> {
     asm_output_places: BTreeMap<String, Expr>,
     local_enum_types: BTreeMap<String, String>,
     loaded_field_types: BTreeMap<String, Type>,
-    goto_closures: BTreeMap<String, (String, Vec<String>)>,
 }
 
 struct DispatchCtx {
@@ -849,6 +848,9 @@ struct DispatchCtx {
     state_var: String,
     label_to_state: BTreeMap<String, usize>,
     block_to_state: BTreeMap<String, usize>,
+    cross_block_names: BTreeMap<String, String>,
+    block_args: BTreeMap<usize, Vec<String>>,
+    pending_hoists: Vec<IndentStmt>,
 }
 
 struct LoopFrame {
@@ -1998,7 +2000,6 @@ impl<'a> Lowerer<'a> {
             asm_output_places: BTreeMap::new(),
             local_enum_types,
             loaded_field_types: BTreeMap::new(),
-            goto_closures: BTreeMap::new(),
         };
 
         for stmt in prelude {
@@ -2017,74 +2018,6 @@ impl<'a> Lowerer<'a> {
             let returns_value = !matches!(ret, None | Some(Type::Unit));
             f.lower_dispatch(body, returns_value);
         } else {
-            let goto_labels: BTreeSet<&str> = function_ops
-                .iter()
-                .filter(|op| op.kind() == CirOpKind::Goto)
-                .filter_map(|op| attr_str(op, "label"))
-                .collect();
-            let extractable: Vec<(&str, &[Op])> = goto_labels
-                .into_iter()
-                .filter_map(|label| {
-                    let tail = find_goto_label_tail(body, label)?;
-                    tail.last()
-                        .is_some_and(|op| op.kind() == CirOpKind::Return)
-                        .then_some((label, tail))
-                })
-                .collect();
-            if !extractable.is_empty() {
-                for op in &entry.ops {
-                    if op.kind() == CirOpKind::Alloca {
-                        f.lower_alloca(op);
-                        if let Some(result) = op.results.first() {
-                            f.hoisted.insert(result.clone());
-                        }
-                    }
-                }
-            }
-            for (label, tail) in extractable {
-                let free_names: Vec<String> = free_cir_operands(tail)
-                    .into_iter()
-                    .filter(|ssa| f.hoisted.contains(ssa))
-                    .filter_map(|ssa| f.slots.get(&ssa).cloned())
-                    .collect();
-                let tail_region = Region {
-                    blocks: vec![Block {
-                        label: None,
-                        args: Vec::new(),
-                        ops: tail.to_vec(),
-                    }],
-                };
-                let mut stmts: Vec<IndentStmt> = free_names
-                    .iter()
-                    .map(|name| {
-                        FunctionLowerer::indent_stmt(Stmt::Let {
-                            name: name.clone(),
-                            mutable: true,
-                            ty: None,
-                            init: Some(Expr::Var(name.clone().into())),
-                        })
-                    })
-                    .collect();
-                stmts.extend(f.capture_body(|this| this.lower_region_ops(&tail_region)));
-                let closure_name = format!("__goto_{label}");
-                f.push_stmt(Stmt::Let {
-                    name: closure_name.clone(),
-                    mutable: false,
-                    ty: None,
-                    init: Some(Expr::Closure {
-                        params: free_names
-                            .iter()
-                            .map(|name| Ident::from(name.as_str()))
-                            .collect(),
-                        body: Box::new(Expr::Block(Box::new(crate::rust_ast::Block {
-                            stmts,
-                            tail: None,
-                        }))),
-                    }),
-                });
-                f.goto_closures
-                    .insert(label.to_string(), (closure_name, free_names));
-            }
             f.lower_block(entry);
         }
         if diverges && matches!(f.body.last().map(|s| &s.stmt), Some(Stmt::Return(None))) {
@@ -2983,7 +2916,53 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 }
             }
             self.lower_op(op);
+            self.force_cross_block_materialization(op);
             index += 1;
+        }
+    }
+
+    fn force_cross_block_materialization(&mut self, op: &Op) {
+        if self.dispatch.is_none() {
+            return;
+        }
+        for result in &op.results {
+            let Some(name) = self
+                .dispatch
+                .as_ref()
+                .unwrap()
+                .cross_block_names
+                .get(result)
+                .cloned()
+            else {
+                continue;
+            };
+            let already_materialized = matches!(
+                self.values.get(result),
+                Some(Val::Expr(Expr::Var(v))) if v.as_str() == name
+            );
+            if already_materialized {
+                continue;
+            }
+            let Some(Val::Expr(current)) = self.values.get(result).cloned() else {
+                continue;
+            };
+            let ty = op_result_type(op)
+                .map(|ty| self.parent.rust_type(ty))
+                .unwrap_or(Type::Prim(Prim::I32));
+            let default = self.default_value_expr(&ty);
+            self.dispatch
+                .as_mut()
+                .unwrap()
+                .pending_hoists
+                .push(Self::indent_stmt(Stmt::Let {
+                    name: name.clone(),
+                    mutable: true,
+                    ty: Some(ty),
+                    init: Some(default),
+                }));
+            self.push_stmt(Self::assign_stmt(Expr::Var(name.clone().into()), current));
+            self.values
+                .insert(result.clone(), Val::Expr(Expr::Var(name.into())));
         }
     }
 
@@ -3155,6 +3134,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::CleanupScope => self.lower_cleanup_scope(op),
             CirOpKind::If => self.lower_if(op),
             CirOpKind::Switch => self.lower_switch(op),
+            CirOpKind::SwitchFlat => self.lower_switch_flat(op),
             CirOpKind::For => self.lower_for(op),
             CirOpKind::While => self.lower_while(op),
             CirOpKind::Do => self.lower_do(op),
@@ -3162,6 +3142,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::Continue => self.lower_continue(),
             CirOpKind::Goto => self.lower_goto(op),
             CirOpKind::Br => self.lower_br(op),
+            CirOpKind::Brcond => self.lower_brcond(op),
             CirOpKind::IndirectBr => self.lower_indirect_br(op),
             CirOpKind::VecExtract => self.lower_vec_extract(op),
             CirOpKind::VecInsert => self.lower_vec_insert(op),
@@ -8052,8 +8033,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             state_var: state_var.clone(),
             label_to_state,
             block_to_state,
+            cross_block_names: BTreeMap::new(),
+            block_args: BTreeMap::new(),
+            pending_hoists: Vec::new(),
         });
-
         for block in &body.blocks {
             for op in &block.ops {
                 if op.kind() == CirOpKind::Alloca {
@@ -8063,6 +8046,44 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     }
                 }
             }
+        }
+        for ssa in &cross_block_live_values(body) {
+            if self.hoisted.contains(ssa) {
+                continue;
+            }
+            let name = self.next_temp();
+            self.values
+                .insert(ssa.clone(), Val::Expr(Expr::Var(name.clone().into())));
+            self.dispatch
+                .as_mut()
+                .unwrap()
+                .cross_block_names
+                .insert(ssa.clone(), name);
+        }
+        for (i, block) in body.blocks.iter().enumerate() {
+            if i == 0 || block.args.is_empty() {
+                continue;
+            }
+            let mut names = Vec::new();
+            for (arg_ssa, arg_ty) in &block.args {
+                let name = self.next_temp();
+                let ty = self.parent.rust_type(arg_ty);
+                let default = self.default_value_expr(&ty);
+                self.values
+                    .insert(arg_ssa.clone(), Val::Expr(Expr::Var(name.clone().into())));
+                self.dispatch
+                    .as_mut()
+                    .unwrap()
+                    .pending_hoists
+                    .push(Self::indent_stmt(Stmt::Let {
+                        name: name.clone(),
+                        mutable: true,
+                        ty: Some(ty),
+                        init: Some(default),
+                    }));
+                names.push(name);
+            }
+            self.dispatch.as_mut().unwrap().block_args.insert(i, names);
         }
 
         let mut arms = Vec::new();
@@ -8092,6 +8113,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             pattern: Pattern::Wildcard,
             body: vec![Self::indent_stmt(fallthrough)],
         });
+        let pending_hoists = std::mem::take(&mut self.dispatch.as_mut().unwrap().pending_hoists);
+        for hoist in pending_hoists {
+            self.body.push(hoist);
+        }
         self.push_stmt(Stmt::Let {
             name: state_var.clone(),
             mutable: true,
@@ -8109,43 +8134,27 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn lower_goto(&mut self, op: &Op) {
-        let Some(label) = attr_str(op, "label") else {
-            self.emit_todo("cir.goto: missing label");
+        let Some(dispatch) = &self.dispatch else {
             return;
         };
-        if let Some(dispatch) = &self.dispatch {
-            let target = dispatch.label_to_state.get(label).map(|state| {
+        let target = attr_str(op, "label")
+            .and_then(|l| dispatch.label_to_state.get(l))
+            .map(|state| {
                 (
                     *state,
                     dispatch.state_var.clone(),
                     dispatch.loop_label.clone(),
                 )
             });
-            match target {
-                Some((state, state_var, loop_label)) => {
-                    self.push_assign(
-                        Expr::Var(state_var.into()),
-                        Expr::Value(RustValue::I64(state as i64)),
-                    );
-                    self.push_stmt(Stmt::Continue(Some(loop_label)));
-                }
-                None => self.emit_todo("cir.goto: unknown label"),
+        match target {
+            Some((state, state_var, loop_label)) => {
+                self.push_assign(
+                    Expr::Var(state_var.into()),
+                    Expr::Value(RustValue::I64(state as i64)),
+                );
+                self.push_stmt(Stmt::Continue(Some(loop_label)));
             }
-            return;
-        }
-        match self.goto_closures.get(label).cloned() {
-            Some((closure_name, free_names)) => {
-                let call = Expr::Call {
-                    binding: crate::function_identity::CallBinding::Generated,
-                    func: Box::new(Expr::Var(closure_name.into())),
-                    args: free_names
-                        .into_iter()
-                        .map(|name| Expr::Var(name.into()))
-                        .collect(),
-                };
-                self.push_stmt(Stmt::Return(Some(call)));
-            }
-            None => self.emit_todo("cir.goto: unsupported cross-region jump"),
+            None => self.emit_todo("cir.goto: unknown label"),
         }
     }
 
@@ -8174,10 +8183,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     *state,
                     dispatch.state_var.clone(),
                     dispatch.loop_label.clone(),
+                    dispatch.block_args.get(state).cloned(),
                 )
             });
         match target {
-            Some((state, state_var, loop_label)) => {
+            Some((state, state_var, loop_label, arg_names)) => {
+                if let Some(names) = arg_names {
+                    for (name, operand) in names.iter().zip(op.operands.iter()) {
+                        let value = self.operand_expr(operand);
+                        self.push_stmt(Self::assign_stmt(Expr::Var(name.clone().into()), value));
+                    }
+                }
                 self.push_assign(
                     Expr::Var(state_var.into()),
                     Expr::Value(RustValue::I64(state as i64)),
@@ -8207,6 +8223,157 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
+    fn lower_brcond(&mut self, op: &Op) {
+        let Some(dispatch) = &self.dispatch else {
+            self.emit_todo("cir.brcond: not in dispatch context");
+            return;
+        };
+        let Some(cond) = op.operands.first() else {
+            self.emit_todo("cir.brcond: missing operand");
+            return;
+        };
+        let cond_expr = self.operand_expr(cond);
+        let [true_bb, false_bb] = op.successors.as_slice() else {
+            self.emit_todo("cir.brcond: expected two successors");
+            return;
+        };
+        let (Some(true_state), Some(false_state)) = (
+            dispatch.block_to_state.get(true_bb).copied(),
+            dispatch.block_to_state.get(false_bb).copied(),
+        ) else {
+            self.emit_todo("cir.brcond: unknown successor");
+            return;
+        };
+        let state_var = dispatch.state_var.clone();
+        let loop_label = dispatch.loop_label.clone();
+        let true_args = dispatch.block_args.get(&true_state).cloned();
+        let false_args = dispatch.block_args.get(&false_state).cloned();
+        let mut groups = successor_operand_groups(op).into_iter();
+        let true_ops = groups.next().unwrap_or_default();
+        let false_ops = groups.next().unwrap_or_default();
+
+        let mut then_body = Vec::new();
+        if let Some(names) = &true_args {
+            for (name, operand) in names.iter().zip(true_ops.iter()) {
+                let value = self.operand_expr(operand);
+                then_body.push(Self::indent_stmt(Self::assign_stmt(
+                    Expr::Var(name.clone().into()),
+                    value,
+                )));
+            }
+        }
+        then_body.push(Self::indent_stmt(Self::assign_stmt(
+            Expr::Var(state_var.clone().into()),
+            Expr::Value(RustValue::I64(true_state as i64)),
+        )));
+        let mut else_body = Vec::new();
+        if let Some(names) = &false_args {
+            for (name, operand) in names.iter().zip(false_ops.iter()) {
+                let value = self.operand_expr(operand);
+                else_body.push(Self::indent_stmt(Self::assign_stmt(
+                    Expr::Var(name.clone().into()),
+                    value,
+                )));
+            }
+        }
+        else_body.push(Self::indent_stmt(Self::assign_stmt(
+            Expr::Var(state_var.into()),
+            Expr::Value(RustValue::I64(false_state as i64)),
+        )));
+        self.push_stmt(Stmt::If {
+            cond: cond_expr,
+            then_body,
+            else_body,
+        });
+        self.push_stmt(Stmt::Continue(Some(loop_label)));
+    }
+
+    fn lower_switch_flat(&mut self, op: &Op) {
+        let Some(dispatch) = &self.dispatch else {
+            self.emit_todo("cir.switch.flat: not in dispatch context");
+            return;
+        };
+        let Some(selector) = op.operands.first() else {
+            self.emit_todo("cir.switch.flat: missing operand");
+            return;
+        };
+        let selector_expr = self.operand_expr(selector);
+        let Some((default_bb, case_bbs)) = op.successors.split_first() else {
+            self.emit_todo("cir.switch.flat: missing successors");
+            return;
+        };
+        let Some(default_state) = dispatch.block_to_state.get(default_bb).copied() else {
+            self.emit_todo("cir.switch.flat: unknown default successor");
+            return;
+        };
+        let case_values = attr_i64_array(op, "caseValues").unwrap_or_default();
+        let state_var = dispatch.state_var.clone();
+        let loop_label = dispatch.loop_label.clone();
+        let mut case_states = Vec::new();
+        for bb in case_bbs {
+            let Some(state) = dispatch.block_to_state.get(bb).copied() else {
+                self.emit_todo("cir.switch.flat: unknown case successor");
+                return;
+            };
+            case_states.push(state);
+        }
+        let default_args = dispatch.block_args.get(&default_state).cloned();
+        let case_args: Vec<Option<Vec<String>>> = case_states
+            .iter()
+            .map(|state| dispatch.block_args.get(state).cloned())
+            .collect();
+        let mut operand_groups = successor_operand_groups(op).into_iter();
+        let default_ops = operand_groups.next().unwrap_or_default();
+        let mut arms = Vec::new();
+        for ((value, state), (names, ops)) in case_values
+            .iter()
+            .zip(case_states.iter())
+            .zip(case_args.iter().zip(operand_groups))
+        {
+            let mut body = Vec::new();
+            if let Some(names) = names {
+                for (name, operand) in names.iter().zip(ops.iter()) {
+                    let value_expr = self.operand_expr(operand);
+                    body.push(Self::indent_stmt(Self::assign_stmt(
+                        Expr::Var(name.clone().into()),
+                        value_expr,
+                    )));
+                }
+            }
+            body.push(Self::indent_stmt(Self::assign_stmt(
+                Expr::Var(state_var.clone().into()),
+                Expr::Value(RustValue::I64(*state as i64)),
+            )));
+            arms.push(MatchArm {
+                pattern: int_pattern(*value as i128),
+                body,
+            });
+        }
+        let mut default_body = Vec::new();
+        if let Some(names) = &default_args {
+            for (name, operand) in names.iter().zip(default_ops.iter()) {
+                let value_expr = self.operand_expr(operand);
+                default_body.push(Self::indent_stmt(Self::assign_stmt(
+                    Expr::Var(name.clone().into()),
+                    value_expr,
+                )));
+            }
+        }
+        default_body.push(Self::indent_stmt(Self::assign_stmt(
+            Expr::Var(state_var.into()),
+            Expr::Value(RustValue::I64(default_state as i64)),
+        )));
+        arms.push(MatchArm {
+            pattern: Pattern::Wildcard,
+            body: default_body,
+        });
+        self.push_stmt(Stmt::Match {
+            expr: selector_expr,
+            arms,
+        });
+        self.push_stmt(Stmt::Continue(Some(loop_label)));
+    }
+
     fn materialize_expr(&mut self, result: &str, expr: Expr, cir_ty: Option<&str>) {
         let ty = cir_ty
             .map(|ty| self.parent.rust_type(ty))
@@ -8215,6 +8382,25 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn materialize_expr_as(&mut self, result: &str, expr: Expr, ty: Type) {
+        if let Some(name) = self
+            .dispatch
+            .as_ref()
+            .and_then(|dispatch| dispatch.cross_block_names.get(result).cloned())
+        {
+            let default = self.default_value_expr(&ty);
+            self.dispatch
+                .as_mut()
+                .unwrap()
+                .pending_hoists
+                .push(Self::indent_stmt(Stmt::Let {
+                    name: name.clone(),
+                    mutable: true,
+                    ty: Some(ty),
+                    init: Some(default),
+                }));
+            self.push_stmt(Self::assign_stmt(Expr::Var(name.into()), expr));
+            return;
+        }
         let name = self.next_temp();
         self.push_stmt(Stmt::Let {
             name: name.clone(),
@@ -8653,43 +8839,44 @@ fn region_ops(op: &Op) -> Vec<&Op> {
         .collect()
 }
 
-fn free_cir_operands(ops: &[Op]) -> BTreeSet<String> {
-    let mut defined = BTreeSet::new();
-    let mut used = BTreeSet::new();
-    fn walk(ops: &[Op], defined: &mut BTreeSet<String>, used: &mut BTreeSet<String>) {
+fn cross_block_live_values(body: &Region) -> BTreeSet<String> {
+    fn walk(
+        ops: &[Op],
+        block_index: usize,
+        def_block: &mut BTreeMap<String, usize>,
+        used_in: &mut BTreeMap<String, BTreeSet<usize>>,
+    ) {
         for op in ops {
-            used.extend(op.operands.iter().cloned());
-            defined.extend(op.results.iter().cloned());
+            for result in &op.results {
+                def_block.entry(result.clone()).or_insert(block_index);
+            }
+            for operand in &op.operands {
+                used_in
+                    .entry(operand.clone())
+                    .or_default()
+                    .insert(block_index);
+            }
             for region in &op.regions {
                 for block in &region.blocks {
-                    defined.extend(block.args.iter().map(|(name, _)| name.clone()));
-                    walk(&block.ops, defined, used);
+                    walk(&block.ops, block_index, def_block, used_in);
                 }
             }
         }
     }
-    walk(ops, &mut defined, &mut used);
-    used.difference(&defined).cloned().collect()
-}
-
-fn find_goto_label_tail<'a>(region: &'a Region, label: &str) -> Option<&'a [Op]> {
-    for block in &region.blocks {
-        if let Some(index) = block
-            .ops
-            .iter()
-            .position(|op| op.kind() == CirOpKind::Label && attr_str(op, "label") == Some(label))
-        {
-            return Some(&block.ops[index + 1..]);
-        }
-        for op in &block.ops {
-            for nested in &op.regions {
-                if let Some(tail) = find_goto_label_tail(nested, label) {
-                    return Some(tail);
-                }
-            }
-        }
+    let mut def_block: BTreeMap<String, usize> = BTreeMap::new();
+    let mut used_in: BTreeMap<String, BTreeSet<usize>> = BTreeMap::new();
+    for (i, block) in body.blocks.iter().enumerate() {
+        walk(&block.ops, i, &mut def_block, &mut used_in);
     }
-    None
+    def_block
+        .into_iter()
+        .filter(|(ssa, def_i)| {
+            used_in
+                .get(ssa)
+                .is_some_and(|uses| uses.iter().any(|used_block| used_block != def_i))
+        })
+        .map(|(ssa, _)| ssa)
+        .collect()
 }
 
 fn collect_used_symbols(ops: &[&Op]) -> BTreeMap<String, Vec<UsedKind>> {
@@ -9131,6 +9318,66 @@ fn attr_int(op: &Op, key: &str) -> Option<i64> {
     op.attrs.get(key).and_then(Attr::as_int)
 }
 
+fn successor_operand_groups(op: &Op) -> Vec<Vec<String>> {
+    match op.kind() {
+        CirOpKind::Br => vec![op.operands.clone()],
+        CirOpKind::Brcond => {
+            let segments = attr_i64_array(op, "operandSegmentSizes").unwrap_or_default();
+            let cond_n = segments.first().copied().unwrap_or(1).max(0) as usize;
+            let true_n = segments.get(1).copied().unwrap_or(0).max(0) as usize;
+            let true_ops = op
+                .operands
+                .get(cond_n..cond_n + true_n)
+                .unwrap_or_default()
+                .to_vec();
+            let false_ops = op
+                .operands
+                .get(cond_n + true_n..)
+                .unwrap_or_default()
+                .to_vec();
+            vec![true_ops, false_ops]
+        }
+        CirOpKind::SwitchFlat => {
+            let segments = attr_i64_array(op, "operandSegmentSizes").unwrap_or_default();
+            let case_segments = attr_i64_array(op, "case_operand_segments").unwrap_or_default();
+            let selector_n = segments.first().copied().unwrap_or(1).max(0) as usize;
+            let mut groups = Vec::new();
+            let mut index = selector_n;
+            for count in &case_segments {
+                let count = (*count).max(0) as usize;
+                groups.push(
+                    op.operands
+                        .get(index..index + count)
+                        .unwrap_or_default()
+                        .to_vec(),
+                );
+                index += count;
+            }
+            let default_ops = op.operands.get(index..).unwrap_or_default().to_vec();
+            let mut result = vec![default_ops];
+            result.extend(groups);
+            result
+        }
+        _ => Vec::new(),
+    }
+}
+
+fn attr_i64_array(op: &Op, key: &str) -> Option<Vec<i64>> {
+    let Attr::Array(values) = op.attrs.get(key)? else {
+        return None;
+    };
+    Some(
+        values
+            .iter()
+            .filter_map(|value| match value {
+                Attr::Int(n) => Some(*n),
+                Attr::Raw(raw) => parse_cir_int(raw).map(|n| n as i64),
+                _ => None,
+            })
+            .collect(),
+    )
+}
+
 fn attr_int_array(op: &Op, key: &str) -> Option<Vec<u64>> {
     let Attr::Array(values) = op.attrs.get(key)? else {
         return None;
@@ -9381,8 +9628,10 @@ fn block_diverges(block: &Block) -> bool {
             op.kind(),
             CirOpKind::Return
                 | CirOpKind::Br
+                | CirOpKind::Brcond
                 | CirOpKind::IndirectBr
                 | CirOpKind::Goto
+                | CirOpKind::SwitchFlat
                 | CirOpKind::Trap
                 | CirOpKind::Unreachable
         )

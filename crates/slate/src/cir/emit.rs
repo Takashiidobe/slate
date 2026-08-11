@@ -417,6 +417,33 @@ pub fn emit_generic(src: &Path) -> Result<String, String> {
 }
 
 pub fn emit_generic_with_args(src: &Path, extra_args: &[String]) -> Result<String, String> {
+    emit_generic_with_args_and_cir_opt_flags(src, extra_args, &[])
+}
+
+/// Like `emit_generic_with_args`, but also flattens every function in the
+/// translation unit into a plain multi-block CFG (`cir.switch.flat`,
+/// `cir.brcond`, real `cir.br` edges in place of `cir.goto`/`cir.label`)
+/// instead of ClangIR's usual nested structured form. Only meant to be
+/// re-run on translation units that need it (see `cir::flatten`) — applying
+/// this to every function unconditionally would flatten goto-free functions
+/// too, which lowers to a correct but far uglier `loop { match state {..} }`
+/// dispatch instead of native Rust control flow.
+pub fn emit_generic_with_args_flattened(
+    src: &Path,
+    extra_args: &[String],
+) -> Result<String, String> {
+    emit_generic_with_args_and_cir_opt_flags(
+        src,
+        extra_args,
+        &["--cir-flatten-cfg", "--cir-goto-solver"],
+    )
+}
+
+fn emit_generic_with_args_and_cir_opt_flags(
+    src: &Path,
+    extra_args: &[String],
+    cir_opt_flags: &[&str],
+) -> Result<String, String> {
     let mut cmd = Command::new(clang());
     let target_args = target_args()?;
     cmd.args([
@@ -449,6 +476,7 @@ pub fn emit_generic_with_args(src: &Path, extra_args: &[String]) -> Result<Strin
     // a no-op stub in the current CIR build, so it would raise nothing. Revisit
     // if it lands.
     let mut child = Command::new(cir_opt())
+        .args(cir_opt_flags)
         .arg("--mlir-print-op-generic")
         .arg("--mlir-print-debuginfo")
         .stdin(Stdio::piped())

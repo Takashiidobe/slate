@@ -894,7 +894,7 @@ fn translate_project_lib_crate_with_manifest(
             directive_translate::WarningBackend::SupportMacro,
         )?;
         uses_slate_support |= !warning_items.is_empty();
-        let module = cir::parse_module(&cir::emit_generic(path)?)?;
+        let module = cir::emit_module(path, &[])?;
         for sym in lower::defined_functions(&module) {
             defined.insert(sym, stem.clone());
         }
@@ -956,7 +956,7 @@ fn translate_project_lib_crate_with_manifest(
     let translate_tests = source_manifest.is_none() && tests_dir.is_dir();
     if translate_tests {
         for (_, path) in collect_c_modules(&tests_dir)? {
-            let module = cir::parse_module(&cir::emit_generic(&path)?)?;
+            let module = cir::emit_module(&path, &[])?;
             has_setlocale |= lower::declared_functions(&module)
                 .iter()
                 .any(|name| name == "setlocale");
@@ -1054,7 +1054,7 @@ fn translate_project_lib_crate_with_manifest(
                 directive_translate::WarningBackend::SupportMacro,
             )?;
             uses_slate_support |= !warning_items.is_empty();
-            let module = cir::parse_module(&cir::emit_generic(&path)?)?;
+            let module = cir::emit_module(&path, &[])?;
             let unit = c_ast::parse_file_with_project_records(&path, project_dir)?;
             let test_project = lower::ProjectInfo {
                 cross_module: project.cross_module.clone(),
@@ -1210,7 +1210,7 @@ fn translate_project_lib_crate_with_compile_commands(
             directive_translate::WarningBackend::SupportMacro,
         )?;
         uses_slate_support |= !warning_items.is_empty();
-        let module = cir::parse_module(&cir::emit_generic_with_args(path, &args)?)?;
+        let module = cir::emit_module(path, &args)?;
         let variant_facts = facts.entry(cfg.clone()).or_default();
         for symbol in lower::defined_functions(&module) {
             variant_facts.defined.insert(symbol, stem.clone());
@@ -1494,7 +1494,7 @@ fn translate_project_with_targets(
     let mut enum_occurrences: BTreeMap<String, (c_ast::Enum, usize)> = BTreeMap::new();
     for (stem, path) in &modules {
         reject_active_unsupported_file(path, "translate-project")?;
-        let module = cir::parse_module(&cir::emit_generic(path)?)?;
+        let module = cir::emit_module(path, &[])?;
         for sym in lower::defined_functions(&module) {
             if sym == "main" {
                 root = Some(stem.clone());
@@ -1648,18 +1648,7 @@ fn translate_project_with_targets(
         };
         let mut variant_programs = Vec::new();
         for target in &targets {
-            let cir_text = match cir::emit_generic_with_args(path, &target.clang_args) {
-                Ok(text) => text,
-                Err(e) => {
-                    eprintln!(
-                        "translate-project: skipping target {:?} for {}: {e}",
-                        target.cfg,
-                        path.display()
-                    );
-                    continue;
-                }
-            };
-            let module = match cir::parse_module(&cir_text) {
+            let module = match cir::emit_module(path, &target.clang_args) {
                 Ok(m) => m,
                 Err(e) => {
                     eprintln!(
@@ -1827,7 +1816,7 @@ fn translate_project_with_compile_commands(
             std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
         let pp = preprocess::record_translation_unit(path, &source, &args)?;
         reject_active_unsupported(&pp, "translate-project --compile-commands")?;
-        let module = cir::parse_module(&cir::emit_generic_with_args(path, &args)?)?;
+        let module = cir::emit_module(path, &args)?;
         for sym in lower::defined_functions(&module) {
             if sym == "main" {
                 root = Some(stem.clone());
@@ -1984,18 +1973,7 @@ fn translate_project_with_compile_commands(
         let mut variant_programs = Vec::new();
         for (cfg, command) in variants {
             let args = compile_command_args(command)?;
-            let cir_text = match cir::emit_generic_with_args(path, &args) {
-                Ok(text) => text,
-                Err(e) => {
-                    eprintln!(
-                        "translate-project --compile-commands: skipping target {:?} for {}: {e}",
-                        cfg,
-                        path.display()
-                    );
-                    continue;
-                }
-            };
-            let module = match cir::parse_module(&cir_text) {
+            let module = match cir::emit_module(path, &args) {
                 Ok(m) => m,
                 Err(e) => {
                     eprintln!(
