@@ -775,7 +775,8 @@ pub fn translate_with_args(
     extra_args: &[String],
 ) -> Result<(), String> {
     ensure_c23_clang_args();
-    let rust = slate::api::translate_with_args(c_src, extra_args)?;
+    let rust =
+        slate::api::translate_with_args(c_src, extra_args).map_err(|error| error.to_string())?;
     write_if_changed(rs_out, rust.as_bytes())
         .map(|_| ())
         .map_err(|e| format!("write {}: {e}", rs_out.display()))
