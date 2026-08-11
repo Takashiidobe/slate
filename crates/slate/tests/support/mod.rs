@@ -42,6 +42,10 @@ fn aligned_path() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("vendor/aligned")
 }
 
+fn bitint_path() -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("vendor/bitint")
+}
+
 fn generated_crate_manifest(name: &str) -> String {
     format!(
         r#"[package]
@@ -52,6 +56,7 @@ edition = "2024"
 [dependencies]
 libc = "0.2"
 aligned = {{ path = "{}" }}
+bitint = {{ path = "{}" }}
 bitfields = "3.0.0"
 
 [build-dependencies]
@@ -62,7 +67,8 @@ overflow-checks = false
 panic = "unwind"
 codegen-units = 256
 "#,
-        aligned_path().display()
+        aligned_path().display(),
+        bitint_path().display()
     )
 }
 

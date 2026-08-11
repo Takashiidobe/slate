@@ -110,9 +110,62 @@ pub(super) fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, St
         clib_record_type(name)
             .map(Type::CLib)
             .unwrap_or_else(|| Type::Custom(rust_record_name(name)))
+    } else if let Some((signed, bits)) = parse_cir_int_type(ty) {
+        bitint_type(signed, bits)
     } else {
         Type::Prim(Prim::I32)
     }
+}
+
+// `_BitInt(N)` for N outside {8, 16, 32, 64, 128} has no native Rust integer
+// type; lower it to the vendored `bitint` crate's fixed-width wrapping
+// integer, sized to the exact C bit width (LIMBS = ceil(bits / 64)).
+pub(super) fn bitint_type(signed: bool, bits: u32) -> Type {
+    let limbs = bits.div_ceil(64);
+    Type::Generic {
+        name: (if signed {
+            "bitint::BInt"
+        } else {
+            "bitint::BUint"
+        })
+        .into(),
+        args: vec![
+            Type::Custom(bits.to_string()),
+            Type::Custom(limbs.to_string()),
+        ],
+    }
+}
+
+pub(super) fn bitint_generic_parts(ty: &Type) -> Option<(&str, &str, &str)> {
+    let Type::Generic { name, args } = ty else {
+        return None;
+    };
+    if name != "bitint::BInt" && name != "bitint::BUint" {
+        return None;
+    }
+    let [Type::Custom(bits), Type::Custom(limbs)] = args.as_slice() else {
+        return None;
+    };
+    Some((name.as_str(), bits.as_str(), limbs.as_str()))
+}
+
+// `bitint::{BInt,BUint}` are ordinary structs, not native Rust integer
+// types, so a bare numeric literal can't coerce into them the way it
+// coerces into e.g. `u32`; every construction goes through `from_i128`.
+pub(super) fn bitint_from_i128_expr(ty: &Type, value: i128) -> Option<Expr> {
+    let (name, bits, limbs) = bitint_generic_parts(ty)?;
+    Some(Expr::Call {
+        binding: crate::function_identity::CallBinding::Generated,
+        func: Box::new(Expr::Var(
+            format!("{name}::<{bits}, {limbs}>::from_i128").into(),
+        )),
+        args: vec![Expr::Value(RustValue::I128(value))],
+    })
+}
+
+pub(super) fn bitint_zero_expr(ty: &Type) -> Option<Expr> {
+    let (name, bits, limbs) = bitint_generic_parts(ty)?;
+    Some(Expr::Var(format!("{name}::<{bits}, {limbs}>::ZERO").into()))
 }
 
 pub(super) fn is_cir_va_list_record_type(ty: &str) -> bool {
