@@ -483,7 +483,7 @@ fn translate_one(path: &Path, clang_args: &[String]) -> Result<Translation, Stri
     let input = preprocess::clang_input(path, &source, &sanitized)?;
     let mut frontend_args = clang_args.to_vec();
     frontend_args.extend_from_slice(input.extra_args());
-    let module = cir::emit_module(path, &frontend_args)?;
+    let module = cir::emit_module(path, &frontend_args).map_err(|error| error.to_string())?;
     let unit = c_ast::parse_file_with_args(path, &frontend_args)?;
     let item_lines = item_lines(&unit);
 

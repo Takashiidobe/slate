@@ -700,7 +700,8 @@ fn collect_unmapped(expr: &PredExpr, out: &mut Vec<String>) {
 
 /// Convenience: query Clang's predefined macros for `clang_args` and record.
 pub fn record_file(source: &str, clang_args: &[String]) -> Result<Preprocessing, String> {
-    let macros = crate::cir::emit::predefined_macros(clang_args)?;
+    let macros =
+        crate::cir::emit::predefined_macros(clang_args).map_err(|error| error.to_string())?;
     Ok(record(source, &macros))
 }
 
@@ -715,7 +716,8 @@ pub fn record_translation_unit(
         .iter()
         .any(|directive| directive.name == DirectiveName::Error && directive.active.is_none())
     {
-        let (success, stderr) = crate::cir::emit::preprocess_diagnostics(path, clang_args)?;
+        let (success, stderr) = crate::cir::emit::preprocess_diagnostics(path, clang_args)
+            .map_err(|error| error.to_string())?;
         let path = path
             .canonicalize()
             .unwrap_or_else(|_| path.to_path_buf())

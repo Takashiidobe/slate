@@ -1,9 +1,20 @@
 use std::collections::BTreeMap;
 use std::path::Path;
 
-use super::emit::{emit_generic_with_args, emit_generic_with_args_flattened};
+use super::emit::{
+    EmitError, Tool, ToolOperation, emit_generic_with_args, emit_generic_with_args_flattened,
+};
 use super::ir::{Attr, CirOpKind, Module, Op};
-use super::parse::parse_module;
+use super::parse::{ParseError, parse_module};
+use thiserror::Error;
+
+#[derive(Debug, Error)]
+pub enum ModuleError {
+    #[error(transparent)]
+    Emit(#[from] EmitError),
+    #[error(transparent)]
+    Parse(#[from] ParseError),
+}
 
 fn sym_name(op: &Op) -> Option<&str> {
     match op.attrs.get("sym_name")? {
@@ -113,13 +124,20 @@ fn merge_flattened_functions(module: &mut Module, flat_module: &Module) {
 /// asm goto, top-level-labeled functions), are left completely untouched —
 /// the extra cir-opt invocation only happens at all when the first parse
 /// finds at least one goto-bearing structured function.
-pub fn emit_module(src: &Path, extra_args: &[String]) -> Result<Module, String> {
+pub fn emit_module(src: &Path, extra_args: &[String]) -> Result<Module, ModuleError> {
     let generic = match emit_generic_with_args(src, extra_args) {
         Ok(generic) => generic,
-        Err(error) if error.contains("does not dominate this use") => {
-            return parse_module(&emit_generic_with_args_flattened(src, extra_args)?);
+        Err(EmitError::ToolFailed {
+            tool: Tool::Clang,
+            operation: ToolOperation::EmitCir,
+            stderr,
+            ..
+        }) if stderr.contains("does not dominate this use") => {
+            return Ok(parse_module(&emit_generic_with_args_flattened(
+                src, extra_args,
+            )?)?);
         }
-        Err(error) => return Err(error),
+        Err(error) => return Err(error.into()),
     };
     let mut module = parse_module(&generic)?;
     if module_needs_flattening(&module) {

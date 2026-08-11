@@ -1,7 +1,88 @@
 use super::ir::{Attr, Block, Module, Op, Region};
 use std::collections::BTreeMap;
+use thiserror::Error;
 
-pub fn parse_module(text: &str) -> Result<Module, String> {
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ParseContext {
+    OperandList,
+    SuccessorList,
+    RegionList,
+    BlockArgumentList,
+}
+
+impl std::fmt::Display for ParseContext {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::OperandList => f.write_str("operand"),
+            Self::SuccessorList => f.write_str("successor"),
+            Self::RegionList => f.write_str("region"),
+            Self::BlockArgumentList => f.write_str("block arg"),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ParseConstruct {
+    OperandList,
+    SuccessorList,
+    RegionList,
+    BlockArgumentList,
+    StringLiteral,
+    AttributeDictionary,
+    BalancedGroup,
+}
+
+impl std::fmt::Display for ParseConstruct {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::OperandList => f.write_str("operand list"),
+            Self::SuccessorList => f.write_str("successor list"),
+            Self::RegionList => f.write_str("region list"),
+            Self::BlockArgumentList => f.write_str("block argument list"),
+            Self::StringLiteral => f.write_str("string literal"),
+            Self::AttributeDictionary => f.write_str("<{...}> attribute dictionary"),
+            Self::BalancedGroup => f.write_str("balanced group"),
+        }
+    }
+}
+
+#[derive(Debug, Error)]
+pub enum ParseErrorKind {
+    #[error("expected ',' or '=' after SSA result")]
+    ExpectedResultSeparator,
+    #[error("unexpected {context} character '{found}'")]
+    UnexpectedCharacter { context: ParseContext, found: char },
+    #[error("unterminated {construct}")]
+    Unterminated { construct: ParseConstruct },
+    #[error("expected result count")]
+    InvalidResultCount {
+        value: String,
+        #[source]
+        source: std::num::ParseIntError,
+    },
+    #[error("expected identifier")]
+    ExpectedIdentifier,
+    #[error("expected operation name")]
+    ExpectedOperationName,
+    #[error("expected '{expected}', found '{found}'")]
+    ExpectedCharacter { expected: char, found: char },
+    #[error("expected '{expected}', found EOF")]
+    ExpectedCharacterAtEof { expected: char },
+    #[error("expected {expected:?}")]
+    ExpectedText { expected: String },
+}
+
+#[derive(Debug, Error)]
+#[error("{kind} at {line}:{column}")]
+pub struct ParseError {
+    pub offset: usize,
+    pub line: usize,
+    pub column: usize,
+    #[source]
+    pub kind: ParseErrorKind,
+}
+
+pub fn parse_module(text: &str) -> Result<Module, ParseError> {
     Parser::new(text).parse_module()
 }
 
@@ -15,7 +96,7 @@ impl<'a> Parser<'a> {
         Self { text, pos: 0 }
     }
 
-    fn parse_module(mut self) -> Result<Module, String> {
+    fn parse_module(mut self) -> Result<Module, ParseError> {
         let mut ops = Vec::new();
         let mut aliases = BTreeMap::new();
         while !self.eof() {
@@ -40,7 +121,7 @@ impl<'a> Parser<'a> {
         Some((name.trim().to_string(), value.trim().to_string()))
     }
 
-    fn parse_op(&mut self) -> Result<Op, String> {
+    fn parse_op(&mut self) -> Result<Op, ParseError> {
         self.skip_ws();
         let results = if self.peek() == Some('%') {
             let results = self.parse_results()?;
@@ -108,7 +189,7 @@ impl<'a> Parser<'a> {
         })
     }
 
-    fn parse_results(&mut self) -> Result<Vec<String>, String> {
+    fn parse_results(&mut self) -> Result<Vec<String>, ParseError> {
         let mut results = Vec::new();
         loop {
             self.skip_ws();
@@ -128,13 +209,13 @@ impl<'a> Parser<'a> {
                     self.bump();
                 }
                 Some('=') => break,
-                _ => return Err(self.error("expected ',' or '=' after SSA result")),
+                _ => return Err(self.error(ParseErrorKind::ExpectedResultSeparator)),
             }
         }
         Ok(results)
     }
 
-    fn parse_operands(&mut self) -> Result<Vec<String>, String> {
+    fn parse_operands(&mut self) -> Result<Vec<String>, ParseError> {
         self.skip_ws();
         self.expect_char('(')?;
         let mut operands = Vec::new();
@@ -149,14 +230,23 @@ impl<'a> Parser<'a> {
                 Some(',') => {
                     self.bump();
                 }
-                Some(c) => return Err(self.error(&format!("unexpected operand character '{c}'"))),
-                None => return Err(self.error("unterminated operand list")),
+                Some(found) => {
+                    return Err(self.error(ParseErrorKind::UnexpectedCharacter {
+                        context: ParseContext::OperandList,
+                        found,
+                    }));
+                }
+                None => {
+                    return Err(self.error(ParseErrorKind::Unterminated {
+                        construct: ParseConstruct::OperandList,
+                    }));
+                }
             }
         }
         Ok(operands)
     }
 
-    fn parse_successor_list(&mut self) -> Result<Vec<String>, String> {
+    fn parse_successor_list(&mut self) -> Result<Vec<String>, ParseError> {
         self.expect_char('[')?;
         let mut successors = Vec::new();
         loop {
@@ -178,14 +268,23 @@ impl<'a> Parser<'a> {
                 Some(',') => {
                     self.bump();
                 }
-                Some(c) => return Err(self.error(&format!("unexpected successor character '{c}'"))),
-                None => return Err(self.error("unterminated successor list")),
+                Some(found) => {
+                    return Err(self.error(ParseErrorKind::UnexpectedCharacter {
+                        context: ParseContext::SuccessorList,
+                        found,
+                    }));
+                }
+                None => {
+                    return Err(self.error(ParseErrorKind::Unterminated {
+                        construct: ParseConstruct::SuccessorList,
+                    }));
+                }
             }
         }
         Ok(successors)
     }
 
-    fn parse_region_list(&mut self) -> Result<Vec<Region>, String> {
+    fn parse_region_list(&mut self) -> Result<Vec<Region>, ParseError> {
         self.expect_char('(')?;
         let mut regions = Vec::new();
         loop {
@@ -199,14 +298,23 @@ impl<'a> Parser<'a> {
                 Some(',') => {
                     self.bump();
                 }
-                Some(c) => return Err(self.error(&format!("unexpected region character '{c}'"))),
-                None => return Err(self.error("unterminated region list")),
+                Some(found) => {
+                    return Err(self.error(ParseErrorKind::UnexpectedCharacter {
+                        context: ParseContext::RegionList,
+                        found,
+                    }));
+                }
+                None => {
+                    return Err(self.error(ParseErrorKind::Unterminated {
+                        construct: ParseConstruct::RegionList,
+                    }));
+                }
             }
         }
         Ok(regions)
     }
 
-    fn parse_region(&mut self) -> Result<Region, String> {
+    fn parse_region(&mut self) -> Result<Region, ParseError> {
         self.expect_char('{')?;
         let mut blocks = Vec::<Block>::new();
         while !self.eof() {
@@ -230,7 +338,7 @@ impl<'a> Parser<'a> {
         Ok(Region { blocks })
     }
 
-    fn parse_block_header(&mut self) -> Result<Block, String> {
+    fn parse_block_header(&mut self) -> Result<Block, ParseError> {
         self.expect_char('^')?;
         let label = self.parse_ident()?;
         self.skip_ws();
@@ -248,7 +356,7 @@ impl<'a> Parser<'a> {
         })
     }
 
-    fn parse_block_args(&mut self) -> Result<Vec<(String, String)>, String> {
+    fn parse_block_args(&mut self) -> Result<Vec<(String, String)>, ParseError> {
         self.expect_char('(')?;
         let mut args = Vec::new();
         loop {
@@ -269,29 +377,42 @@ impl<'a> Parser<'a> {
                 Some(',') => {
                     self.bump();
                 }
-                Some(c) => return Err(self.error(&format!("unexpected block arg character '{c}'"))),
-                None => return Err(self.error("unterminated block argument list")),
+                Some(found) => {
+                    return Err(self.error(ParseErrorKind::UnexpectedCharacter {
+                        context: ParseContext::BlockArgumentList,
+                        found,
+                    }));
+                }
+                None => {
+                    return Err(self.error(ParseErrorKind::Unterminated {
+                        construct: ParseConstruct::BlockArgumentList,
+                    }));
+                }
             }
         }
         Ok(args)
     }
 
-    fn parse_ssa_name(&mut self) -> Result<String, String> {
+    fn parse_ssa_name(&mut self) -> Result<String, ParseError> {
         self.expect_char('%')?;
         self.parse_ident()
     }
 
-    fn parse_result_count(&mut self) -> Result<usize, String> {
+    fn parse_result_count(&mut self) -> Result<usize, ParseError> {
         let start = self.pos;
         while self.peek().is_some_and(|c| c.is_ascii_digit()) {
             self.bump();
         }
-        self.text[start..self.pos]
-            .parse()
-            .map_err(|_| self.error("expected result count"))
+        let value = &self.text[start..self.pos];
+        value.parse().map_err(|source| {
+            self.error(ParseErrorKind::InvalidResultCount {
+                value: value.to_string(),
+                source,
+            })
+        })
     }
 
-    fn parse_ident(&mut self) -> Result<String, String> {
+    fn parse_ident(&mut self) -> Result<String, ParseError> {
         let start = self.pos;
         while let Some(c) = self.peek() {
             if c.is_ascii_alphanumeric() || matches!(c, '_' | '.' | '-' | '$' | '#') {
@@ -301,13 +422,13 @@ impl<'a> Parser<'a> {
             }
         }
         if self.pos == start {
-            Err(self.error("expected identifier"))
+            Err(self.error(ParseErrorKind::ExpectedIdentifier))
         } else {
             Ok(self.text[start..self.pos].to_string())
         }
     }
 
-    fn parse_bare_word(&mut self) -> Result<String, String> {
+    fn parse_bare_word(&mut self) -> Result<String, ParseError> {
         let start = self.pos;
         while let Some(c) = self.peek() {
             if c.is_whitespace() || matches!(c, '(' | ')' | '{' | '}' | '<' | '>' | ':' | ',') {
@@ -316,13 +437,13 @@ impl<'a> Parser<'a> {
             self.bump();
         }
         if self.pos == start {
-            Err(self.error("expected operation name"))
+            Err(self.error(ParseErrorKind::ExpectedOperationName))
         } else {
             Ok(self.text[start..self.pos].to_string())
         }
     }
 
-    fn parse_string(&mut self) -> Result<String, String> {
+    fn parse_string(&mut self) -> Result<String, ParseError> {
         self.expect_char('"')?;
         let mut s = String::new();
         while let Some(c) = self.bump() {
@@ -337,10 +458,12 @@ impl<'a> Parser<'a> {
                 _ => s.push(c),
             }
         }
-        Err(self.error("unterminated string literal"))
+        Err(self.error(ParseErrorKind::Unterminated {
+            construct: ParseConstruct::StringLiteral,
+        }))
     }
 
-    fn take_balanced_attr_dict(&mut self) -> Result<String, String> {
+    fn take_balanced_attr_dict(&mut self) -> Result<String, ParseError> {
         self.expect_str("<{")?;
         let start = self.pos;
         let mut brace_depth = 1usize;
@@ -384,10 +507,12 @@ impl<'a> Parser<'a> {
                 }
             }
         }
-        Err(self.error("unterminated <{...}> attribute dictionary"))
+        Err(self.error(ParseErrorKind::Unterminated {
+            construct: ParseConstruct::AttributeDictionary,
+        }))
     }
 
-    fn take_balanced(&mut self, open: char, close: char) -> Result<String, String> {
+    fn take_balanced(&mut self, open: char, close: char) -> Result<String, ParseError> {
         self.expect_char(open)?;
         let start = self.pos - open.len_utf8();
         let mut depth = 1usize;
@@ -416,7 +541,9 @@ impl<'a> Parser<'a> {
                 _ => {}
             }
         }
-        Err(self.error("unterminated balanced group"))
+        Err(self.error(ParseErrorKind::Unterminated {
+            construct: ParseConstruct::BalancedGroup,
+        }))
     }
 
     fn take_until_top_level(&mut self, terminators: &[char]) -> String {
@@ -529,20 +656,22 @@ impl<'a> Parser<'a> {
         self.text[start..self.pos].trim()
     }
 
-    fn expect_char(&mut self, expected: char) -> Result<(), String> {
+    fn expect_char(&mut self, expected: char) -> Result<(), ParseError> {
         match self.bump() {
             Some(c) if c == expected => Ok(()),
-            Some(c) => Err(self.error(&format!("expected '{expected}', found '{c}'"))),
-            None => Err(self.error(&format!("expected '{expected}', found EOF"))),
+            Some(found) => Err(self.error(ParseErrorKind::ExpectedCharacter { expected, found })),
+            None => Err(self.error(ParseErrorKind::ExpectedCharacterAtEof { expected })),
         }
     }
 
-    fn expect_str(&mut self, expected: &str) -> Result<(), String> {
+    fn expect_str(&mut self, expected: &str) -> Result<(), ParseError> {
         if self.starts_with(expected) {
             self.pos += expected.len();
             Ok(())
         } else {
-            Err(self.error(&format!("expected {expected:?}")))
+            Err(self.error(ParseErrorKind::ExpectedText {
+                expected: expected.to_string(),
+            }))
         }
     }
 
@@ -564,7 +693,7 @@ impl<'a> Parser<'a> {
         self.pos >= self.text.len()
     }
 
-    fn error(&self, msg: &str) -> String {
+    fn error(&self, kind: ParseErrorKind) -> ParseError {
         let line = self.text[..self.pos]
             .bytes()
             .filter(|b| *b == b'\n')
@@ -574,7 +703,12 @@ impl<'a> Parser<'a> {
             .rsplit('\n')
             .next()
             .map_or(1, |s| s.chars().count() + 1);
-        format!("{msg} at {line}:{col}")
+        ParseError {
+            offset: self.pos,
+            line,
+            column: col,
+            kind,
+        }
     }
 }
 
