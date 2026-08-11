@@ -1,6 +1,5 @@
 
 
-case_00143: Duff's device (case labels interleaved inside a `do { ... } while` body) — switch/loop lowering produces wrong runtime behavior (C exits 0, Rust exits 1) rather than a build failure.
 
 case_00159: `None.unwrap()()` — a NULL function-pointer call site recovered as `Option<fn>` loses the concrete function type, so type inference on the call fails.
 

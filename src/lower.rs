@@ -870,6 +870,12 @@ struct SwitchCase<'a> {
     region: &'a Region,
 }
 
+struct DuffSwitch<'a> {
+    cases: Vec<SwitchCase<'a>>,
+    prefix: Vec<&'a Op>,
+    condition: &'a Region,
+}
+
 #[derive(Debug, Clone)]
 struct MemberPtr {
     base: Expr,
@@ -7860,6 +7866,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.emit_todo("cir.switch");
             return;
         };
+        if self.lower_duff_switch(selector, region) {
+            return;
+        }
         let cases: Vec<_> = region
             .blocks
             .iter()
@@ -7949,6 +7958,89 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             }),
         ];
         self.push_stmt(Stmt::Scope { body });
+    }
+
+    fn lower_duff_switch(&mut self, selector: &str, region: &Region) -> bool {
+        let Some(duff) = duff_switch(region) else {
+            return false;
+        };
+        let n = self.label_counter;
+        self.label_counter += 1;
+        let case_name = format!("__switch_case{n}");
+        let mut selector_arms = Vec::new();
+        for (index, case) in duff.cases.iter().enumerate() {
+            for pattern in &case.patterns {
+                selector_arms.push(ExprMatchArm {
+                    pattern: pattern.clone(),
+                    value: Expr::Value(RustValue::I64(index as i64)),
+                });
+            }
+        }
+        selector_arms.push(ExprMatchArm {
+            pattern: Pattern::Wildcard,
+            value: Expr::Value(RustValue::I64(-1)),
+        });
+        let loop_body = self.capture_body(|this| {
+            this.loop_stack.push(LoopFrame {
+                break_label: None,
+                continue_label: None,
+                is_loop: true,
+            });
+            for index in 0..duff.cases.len() {
+                let then_body = this.capture_body(|this| {
+                    if index == 0 {
+                        for op in &duff.prefix {
+                            this.lower_op(op);
+                            this.force_cross_block_materialization(op);
+                        }
+                    } else {
+                        this.lower_region_ops(duff.cases[index].region);
+                    }
+                });
+                this.push_stmt(Stmt::If {
+                    cond: Expr::Binary {
+                        op: BinOp::Le,
+                        lhs: Box::new(Expr::Var(case_name.clone().into())),
+                        rhs: Box::new(Expr::Value(RustValue::I64(index as i64))),
+                    },
+                    then_body,
+                    else_body: Vec::new(),
+                });
+            }
+            this.loop_stack.pop();
+            this.push_assign(
+                Expr::Var(case_name.clone().into()),
+                Expr::Value(RustValue::I64(0)),
+            );
+            let condition = this.lower_condition_region_expr(duff.condition);
+            this.push_stmt(Self::guard_break(condition, None));
+        });
+        self.push_stmt(Stmt::Scope {
+            body: vec![
+                Self::indent_stmt(Stmt::Let {
+                    name: case_name.clone(),
+                    mutable: true,
+                    ty: Some(Type::Prim(Prim::I32)),
+                    init: Some(Expr::Match {
+                        expr: Box::new(self.operand_expr(selector)),
+                        arms: selector_arms,
+                    }),
+                }),
+                Self::indent_stmt(Stmt::If {
+                    cond: Expr::Binary {
+                        op: BinOp::Ge,
+                        lhs: Box::new(Expr::Var(case_name.into())),
+                        rhs: Box::new(Expr::Value(RustValue::I64(0))),
+                    },
+                    then_body: vec![Self::indent_stmt(Stmt::Loop {
+                        label: None,
+                        body: loop_body,
+                    })],
+                    else_body: Vec::new(),
+                }),
+            ],
+        });
+        true
     }
 
     fn lower_for(&mut self, op: &Op) {
@@ -9644,6 +9736,59 @@ fn switch_case(op: &Op) -> Option<SwitchCase<'_>> {
         is_default,
         region,
     })
+}
+
+fn duff_switch(region: &Region) -> Option<DuffSwitch<'_>> {
+    let ops = transparent_region_ops(region)?;
+    let [outer] = ops.as_slice() else {
+        return None;
+    };
+    let outer_case = switch_case(outer)?;
+    let do_op = transparent_single_op(outer_case.region, CirOpKind::Do)?;
+    let [body, condition, ..] = do_op.regions.as_slice() else {
+        return None;
+    };
+    let body_ops = transparent_region_ops(body)?;
+    let first_case = body_ops
+        .iter()
+        .position(|op| op.kind() == CirOpKind::Case)?;
+    let prefix = body_ops[..first_case].to_vec();
+    let nested: Option<Vec<_>> = body_ops[first_case..]
+        .iter()
+        .map(|op| switch_case(op))
+        .collect();
+    let mut cases = vec![outer_case];
+    cases.extend(nested?);
+    Some(DuffSwitch {
+        cases,
+        prefix,
+        condition,
+    })
+}
+
+fn transparent_single_op(region: &Region, kind: CirOpKind) -> Option<&Op> {
+    let ops = transparent_region_ops(region)?;
+    let [op] = ops.as_slice() else {
+        return None;
+    };
+    (op.kind() == kind).then_some(*op)
+}
+
+fn transparent_region_ops(region: &Region) -> Option<Vec<&Op>> {
+    let [block] = region.blocks.as_slice() else {
+        return None;
+    };
+    let ops: Vec<_> = block
+        .ops
+        .iter()
+        .filter(|op| op.kind() != CirOpKind::Yield)
+        .collect();
+    if let [op] = ops.as_slice()
+        && op.kind() == CirOpKind::Scope
+    {
+        return transparent_region_ops(op.regions.first()?);
+    }
+    Some(ops)
 }
 
 /// Whether a dispatch block ends in its own control transfer (so the dispatch
