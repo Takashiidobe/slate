@@ -322,13 +322,45 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             );
             return;
         }
+        let is_wrapping_int = matches!(
+            &rust_ty,
+            Type::Prim(
+                Prim::I8
+                    | Prim::I16
+                    | Prim::I32
+                    | Prim::I64
+                    | Prim::I128
+                    | Prim::Isize
+                    | Prim::U8
+                    | Prim::U16
+                    | Prim::U32
+                    | Prim::U64
+                    | Prim::U128
+                    | Prim::Usize
+            )
+        );
         let expr = if operand_ty == "!cir.bool" {
-            Expr::Unary {
-                op: UnaryOp::Neg,
-                expr: Box::new(Expr::Cast {
-                    expr: Box::new(value),
-                    ty: rust_ty,
-                }),
+            let cast = Expr::Cast {
+                expr: Box::new(value),
+                ty: rust_ty,
+            };
+            if is_wrapping_int {
+                Expr::MethodCall {
+                    recv: Box::new(cast),
+                    method: "wrapping_neg".into(),
+                    args: vec![],
+                }
+            } else {
+                Expr::Unary {
+                    op: UnaryOp::Neg,
+                    expr: Box::new(cast),
+                }
+            }
+        } else if is_wrapping_int {
+            Expr::MethodCall {
+                recv: Box::new(value),
+                method: "wrapping_neg".into(),
+                args: vec![],
             }
         } else {
             Expr::Unary {
