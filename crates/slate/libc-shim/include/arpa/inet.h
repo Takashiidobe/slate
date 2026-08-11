@@ -2,7 +2,7 @@
 #define _SLATE_ARPA_INET_H
 
 #include <features.h>
-// #include <netinet/in.h>
+#include <netinet/in.h>
 
 #define __NEED_uint16_t
 #define __NEED_uint32_t

@@ -1,4 +1,4 @@
-struct user_fpregs_struct {
+typedef struct user_fpregs_struct {
   unsigned short int cwd;
   unsigned short int swd;
   unsigned short int ftw;
@@ -10,7 +10,7 @@ struct user_fpregs_struct {
   unsigned int       st_space[32];
   unsigned int       xmm_space[64];
   unsigned int       padding[24];
-};
+} elf_fpregset_t;
 
 struct user_regs_struct {
   unsigned long r15;
@@ -41,6 +41,9 @@ struct user_regs_struct {
   unsigned long fs;
   unsigned long gs;
 };
+
+#define ELF_NGREG 27
+typedef unsigned long long elf_greg_t, elf_gregset_t[ELF_NGREG];
 
 struct user {
   struct user_regs_struct    regs;
