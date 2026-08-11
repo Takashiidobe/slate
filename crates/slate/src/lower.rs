@@ -1389,19 +1389,42 @@ impl<'a> Lowerer<'a> {
         if !self.boxed_variadic_defs.is_empty() {
             items.push(Item::SupportModule(SupportModule {
                 name: "__slate_variadic".into(),
-                source: r#"#[derive(Clone)]
+                source: r#"struct __SlateVaArg {
+    value: Box<dyn std::any::Any>,
+    size: usize,
+}
+
+impl __SlateVaArg {
+    fn new<T: 'static>(value: T) -> Self {
+        Self { value: Box::new(value), size: std::mem::size_of::<T>() }
+    }
+
+    fn read<T: Copy + 'static>(&self) -> T {
+        if let Some(value) = self.value.downcast_ref::<T>() {
+            return *value;
+        }
+        assert_eq!(self.size, std::mem::size_of::<T>());
+        unsafe {
+            std::ptr::read_unaligned(
+                (self.value.as_ref() as *const dyn std::any::Any) as *const () as *const T,
+            )
+        }
+    }
+}
+
+#[derive(Clone)]
 struct __SlateVaArgs {
-    args: std::rc::Rc<Vec<Box<dyn std::any::Any>>>,
+    args: std::rc::Rc<Vec<__SlateVaArg>>,
     index: usize,
 }
 
 impl __SlateVaArgs {
-    fn new(args: Vec<Box<dyn std::any::Any>>) -> Self {
+    fn new(args: Vec<__SlateVaArg>) -> Self {
         Self { args: std::rc::Rc::new(args), index: 0 }
     }
 
     fn next_arg<T: Copy + 'static>(&mut self) -> T {
-        let value = *self.args[self.index].downcast_ref::<T>().unwrap();
+        let value = self.args[self.index].read::<T>();
         self.index += 1;
         value
     }
@@ -6004,12 +6027,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .trim_matches('"')
             .to_string();
         let name = self.parent.weak_refs.get(&name).cloned().unwrap_or(name);
-        let name = self
-            .parent
-            .global_rust_names
-            .get(&name)
-            .cloned()
-            .unwrap_or(name);
+        let name = if self.parent.strings.contains_key(&name)
+            || self.parent.const_arrays.contains_key(&name)
+            || self.parent.const_aggregates.contains_key(&name)
+            || self.parent.const_zero_globals.contains(&name)
+        {
+            name
+        } else {
+            self.parent.rust_global_name(&name)
+        };
         self.values.insert(result.clone(), Val::Global(name));
     }
 
@@ -7086,7 +7112,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 .into_iter()
                 .map(|arg| Expr::Call {
                     binding: crate::function_identity::CallBinding::Generated,
-                    func: Box::new(Expr::Var("Box::new".into())),
+                    func: Box::new(Expr::Var("__SlateVaArg::new".into())),
                     args: vec![arg],
                 })
                 .collect();

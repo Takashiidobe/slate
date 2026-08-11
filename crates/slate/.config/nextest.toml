@@ -15,3 +15,7 @@ default-filter = '''
     + binary_id(=slate::header_compilation)
   )
 '''
+
+[[profile.default.overrides]]
+filter = 'test(serial_temp_chain_translates_within_a_bounded_time)'
+threads-required = "num-test-threads"
