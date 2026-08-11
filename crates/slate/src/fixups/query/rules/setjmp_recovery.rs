@@ -108,7 +108,12 @@ fn flip_unwind_abi_single_program(
             &address_exposed,
             &flipped_names,
         );
-        seeds = flipped_names.into_iter().chain(siblings).collect();
+        let indirect_callers = functions_with_cunwind_indirect_calls(single, &flipped_shapes);
+        seeds = flipped_names
+            .into_iter()
+            .chain(siblings)
+            .chain(indirect_callers)
+            .collect();
     }
     let flipped_shapes = cunwind_shapes(std::slice::from_ref(&*replacement));
     rewrite_c_abi_fn_ptr_types_matching_shapes(replacement, &flipped_shapes);
@@ -126,7 +131,12 @@ pub(in crate::fixups) fn propagate_unwind_abi_across_project(programs: &mut [Pro
             &address_exposed,
             &flipped_names,
         );
-        let seeds: BTreeSet<String> = flipped_names.into_iter().chain(siblings).collect();
+        let indirect_callers = functions_with_cunwind_indirect_calls(programs, &flipped_shapes);
+        let seeds: BTreeSet<String> = flipped_names
+            .into_iter()
+            .chain(siblings)
+            .chain(indirect_callers)
+            .collect();
         if seeds == previous {
             break;
         }
@@ -188,6 +198,140 @@ fn address_exposed_c_abi_functions_matching_shapes(
             _ => None,
         })
         .collect()
+}
+
+fn functions_with_cunwind_indirect_calls(
+    programs: &[Program],
+    shapes: &BTreeSet<(Vec<Type>, Type)>,
+) -> BTreeSet<String> {
+    if shapes.is_empty() {
+        return BTreeSet::new();
+    }
+    let mut field_shapes: BTreeMap<String, (Vec<Type>, Type)> = BTreeMap::new();
+    let mut global_shapes: BTreeMap<String, (Vec<Type>, Type)> = BTreeMap::new();
+    for program in programs {
+        for item in &program.items {
+            match item {
+                Item::Struct(s) => {
+                    if let StructFields::Named(fields) = &s.fields {
+                        for (name, ty) in fields {
+                            if let Some(shape) = fn_ptr_shape_in_type(ty) {
+                                field_shapes.insert(name.clone(), shape);
+                            }
+                        }
+                    }
+                }
+                Item::Record(r) => {
+                    for field in &r.fields {
+                        if let Some(shape) = fn_ptr_shape_in_type(&field.ty) {
+                            field_shapes.insert(field.name.as_str().to_string(), shape);
+                        }
+                    }
+                }
+                Item::Static { name, ty, .. } | Item::Const { name, ty, .. } => {
+                    if let Some(shape) = fn_ptr_shape_in_type(ty) {
+                        global_shapes.insert(name.clone(), shape);
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
+
+    let mut result = BTreeSet::new();
+    for program in programs {
+        for item in &program.items {
+            let Item::Fn(f) = item else { continue };
+            let mut local_shapes = BTreeMap::new();
+            for param in &f.params {
+                if let Some(shape) = fn_ptr_shape_in_type(&param.ty) {
+                    local_shapes.insert(param.name.clone(), shape);
+                }
+            }
+            collect_local_fn_ptr_shapes(&f.body, &mut local_shapes);
+            let found = walk::body_expr_any(&f.body, &mut |expr| {
+                let Expr::Call {
+                    func,
+                    binding: CallBinding::Indirect,
+                    ..
+                } = expr
+                else {
+                    return false;
+                };
+                resolve_indirect_callee_shape(func, &local_shapes, &global_shapes, &field_shapes)
+                    .is_some_and(|shape| shapes.contains(&shape))
+            });
+            if found {
+                result.insert(f.name.clone());
+            }
+        }
+    }
+    result
+}
+
+fn collect_local_fn_ptr_shapes(
+    body: &[IndentStmt],
+    shapes: &mut BTreeMap<String, (Vec<Type>, Type)>,
+) {
+    for indent in body {
+        let named_ty = match &indent.stmt {
+            Stmt::Let {
+                name, ty: Some(ty), ..
+            }
+            | Stmt::LetIf {
+                name, ty: Some(ty), ..
+            } => Some((name.clone(), ty)),
+            _ => None,
+        };
+        if let Some((name, ty)) = named_ty
+            && let Some(shape) = fn_ptr_shape_in_type(ty)
+        {
+            shapes.insert(name, shape);
+        }
+        walk::nested_bodies_with_path(&indent.stmt, &mut Vec::new(), &mut |nested, _| {
+            collect_local_fn_ptr_shapes(nested, shapes);
+        });
+    }
+}
+
+fn resolve_indirect_callee_shape(
+    func: &Expr,
+    local_shapes: &BTreeMap<String, (Vec<Type>, Type)>,
+    global_shapes: &BTreeMap<String, (Vec<Type>, Type)>,
+    field_shapes: &BTreeMap<String, (Vec<Type>, Type)>,
+) -> Option<(Vec<Type>, Type)> {
+    match func {
+        Expr::Var(name) => local_shapes
+            .get(name.as_str())
+            .or_else(|| global_shapes.get(name.as_str()))
+            .cloned(),
+        Expr::Field { field, .. } => field_shapes.get(field.as_str()).cloned(),
+        Expr::MethodCall { recv, .. } | Expr::MethodCallGeneric { recv, .. } => {
+            resolve_indirect_callee_shape(recv, local_shapes, global_shapes, field_shapes)
+        }
+        Expr::Unary { expr, .. }
+        | Expr::Cast { expr, .. }
+        | Expr::Ref { expr, .. }
+        | Expr::AddrOf { expr, .. } => {
+            resolve_indirect_callee_shape(expr, local_shapes, global_shapes, field_shapes)
+        }
+        Expr::Unsafe(block) | Expr::Block(block) => {
+            let tail = block.tail.as_deref()?;
+            resolve_indirect_callee_shape(tail, local_shapes, global_shapes, field_shapes)
+        }
+        _ => None,
+    }
+}
+
+fn fn_ptr_shape_in_type(ty: &Type) -> Option<(Vec<Type>, Type)> {
+    match ty {
+        Type::FnPtr { params, ret, .. } => Some((params.clone(), (**ret).clone())),
+        Type::Generic { args, .. } => args.iter().find_map(fn_ptr_shape_in_type),
+        Type::Ref { inner, .. } | Type::Ptr { inner, .. } | Type::Complex(inner) => {
+            fn_ptr_shape_in_type(inner)
+        }
+        _ => None,
+    }
 }
 
 fn propagate_unwind_abi_with_seeds(program: &mut Program, seeds: &BTreeSet<String>) {
