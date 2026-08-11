@@ -481,12 +481,29 @@ fn parse_flow(
                 });
             }
             _ => {
+                if stmt_contains_dispatch_continue(&stmts[i].stmt, loop_label) {
+                    return None;
+                }
                 prefix.push(stmts[i].clone());
                 i += 1;
             }
         }
     }
     None
+}
+
+fn stmt_contains_dispatch_continue(stmt: &Stmt, loop_label: &str) -> bool {
+    if matches!(stmt, Stmt::Continue(Some(label)) if label.as_str() == loop_label) {
+        return true;
+    }
+    let mut found = false;
+    crate::fixups::support::walk::nested_bodies_with_path(stmt, &mut Vec::new(), &mut |body, _| {
+        found = found
+            || body
+                .iter()
+                .any(|stmt| stmt_contains_dispatch_continue(&stmt.stmt, loop_label));
+    });
+    found
 }
 
 fn has_asm_label_transfer(stmt: &Stmt, state_var: &str, loop_label: &str) -> bool {
