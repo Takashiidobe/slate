@@ -88,7 +88,7 @@ fn run(result: Result<String, String>) -> ExitCode {
 }
 
 fn emit_cir(path: &Path) -> Result<String, String> {
-    cir::emit_generic(path)
+    cir::emit_generic(path).map_err(|error| error.to_string())
 }
 
 fn translate(path: &Path) -> Result<String, String> {
@@ -324,7 +324,7 @@ struct TargetVariant {
 }
 
 fn target_cfg(target: &str) -> Result<rust_ast::Cfg, String> {
-    let target = cir::emit::target_config(target)?;
+    let target = cir::emit::target_config(target).map_err(|error| error.to_string())?;
     Ok(rust_ast::Cfg::All(vec![
         rust_ast::Cfg::Opt {
             key: "target_arch".into(),
@@ -365,7 +365,8 @@ fn target_variants(extra_targets: &[String]) -> Result<Vec<TargetVariant>, Strin
         if seen.insert(cfg.clone()) {
             variants.push(TargetVariant {
                 cfg,
-                clang_args: cir::emit::target_override_args(target)?,
+                clang_args: cir::emit::target_override_args(target)
+                    .map_err(|error| error.to_string())?,
             });
         }
     }
@@ -845,7 +846,7 @@ fn translate_project_lib_crate_with_manifest(
             directive_translate::WarningBackend::SupportMacro,
         )?;
         uses_slate_support |= !warning_items.is_empty();
-        let module = cir::emit_module(path, &[])?;
+        let module = cir::emit_module(path, &[]).map_err(|error| error.to_string())?;
         for sym in frontend::defined_functions(&module) {
             defined.insert(sym, stem.clone());
         }
@@ -908,7 +909,7 @@ fn translate_project_lib_crate_with_manifest(
     let translate_tests = source_manifest.is_none() && tests_dir.is_dir();
     if translate_tests {
         for (_, path) in collect_c_modules(&tests_dir)? {
-            let module = cir::emit_module(&path, &[])?;
+            let module = cir::emit_module(&path, &[]).map_err(|error| error.to_string())?;
             has_setlocale |= frontend::declared_functions(&module)
                 .iter()
                 .any(|name| name == "setlocale");
@@ -1006,7 +1007,7 @@ fn translate_project_lib_crate_with_manifest(
                 directive_translate::WarningBackend::SupportMacro,
             )?;
             uses_slate_support |= !warning_items.is_empty();
-            let module = cir::emit_module(&path, &[])?;
+            let module = cir::emit_module(&path, &[]).map_err(|error| error.to_string())?;
             let unit = c_ast::parse_file_with_project_records(&path, project_dir)?;
             let test_project = frontend::ProjectInfo {
                 cross_module: project.cross_module.clone(),
@@ -1088,7 +1089,8 @@ struct LoadedLibraryVariant {
 }
 
 fn compile_command_args(command: &compile_commands::CompileCommand) -> Result<Vec<String>, String> {
-    let mut args = cir::emit::target_override_args(&command.target)?;
+    let mut args =
+        cir::emit::target_override_args(&command.target).map_err(|error| error.to_string())?;
     args.extend(command.args.iter().cloned());
     Ok(args)
 }
@@ -1162,7 +1164,7 @@ fn translate_project_lib_crate_with_compile_commands(
             directive_translate::WarningBackend::SupportMacro,
         )?;
         uses_slate_support |= !warning_items.is_empty();
-        let module = cir::emit_module(path, &args)?;
+        let module = cir::emit_module(path, &args).map_err(|error| error.to_string())?;
         let variant_facts = facts.entry(cfg.clone()).or_default();
         for symbol in frontend::defined_functions(&module) {
             variant_facts.defined.insert(symbol, stem.clone());
@@ -1451,7 +1453,7 @@ fn translate_project_with_targets(
     let mut enum_occurrences: BTreeMap<String, (c_ast::Enum, usize)> = BTreeMap::new();
     for (stem, path) in &modules {
         reject_active_unsupported_file(path, "translate-project")?;
-        let module = cir::emit_module(path, &[])?;
+        let module = cir::emit_module(path, &[]).map_err(|error| error.to_string())?;
         for sym in frontend::defined_functions(&module) {
             if sym == "main" {
                 root = Some(stem.clone());
@@ -1777,7 +1779,7 @@ fn translate_project_with_compile_commands(
             std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
         let pp = preprocess::record_translation_unit(path, &source, &args)?;
         reject_active_unsupported(&pp, "translate-project --compile-commands")?;
-        let module = cir::emit_module(path, &args)?;
+        let module = cir::emit_module(path, &args).map_err(|error| error.to_string())?;
         for sym in frontend::defined_functions(&module) {
             if sym == "main" {
                 root = Some(stem.clone());

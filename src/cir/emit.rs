@@ -13,8 +13,107 @@
 
 use std::collections::BTreeMap;
 use std::path::Path;
-use std::process::{Command, Stdio};
+use std::process::{Command, ExitStatus, Stdio};
+use thiserror::Error;
 use triplers::{ArchPart, Canonicalizable, Env, Kernel, Triple, Vendor};
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Tool {
+    Clang,
+    CirOpt,
+}
+
+impl std::fmt::Display for Tool {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Clang => f.write_str("clang"),
+            Self::CirOpt => f.write_str("cir-opt"),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ToolOperation {
+    Preprocess,
+    MacroDump,
+    EmitCir,
+    OptimizeCir,
+}
+
+impl std::fmt::Display for ToolOperation {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Preprocess => f.write_str("clang -E"),
+            Self::MacroDump => f.write_str("clang -dM -E"),
+            Self::EmitCir => f.write_str("clang -emit-cir"),
+            Self::OptimizeCir => f.write_str("cir-opt"),
+        }
+    }
+}
+
+#[derive(Debug, Error)]
+pub enum TargetError {
+    #[error("invalid target `{target}`: {source}")]
+    InvalidTriple {
+        target: String,
+        #[source]
+        source: triplers::ParseError,
+    },
+    #[error("unsupported Slate target architecture {arch:?}")]
+    UnsupportedArchitecture { arch: ArchPart },
+    #[error("unsupported Slate target vendor {vendor:?}")]
+    UnsupportedVendor { vendor: Vendor },
+    #[error("unsupported Slate target kernel {kernel:?}")]
+    UnsupportedKernel { kernel: Kernel },
+    #[error("Android targets require SLATE_ANDROID_API")]
+    MissingAndroidApi {
+        #[source]
+        source: std::env::VarError,
+    },
+    #[error("SLATE_ANDROID_API must be an integer, got `{value}`")]
+    InvalidAndroidApi {
+        value: String,
+        #[source]
+        source: std::num::ParseIntError,
+    },
+    #[error("SLATE_ANDROID_API must be at least 21 for the 64-bit Bionic profile, got {api}")]
+    AndroidApiTooLow { api: u32 },
+}
+
+#[derive(Debug, Error)]
+pub enum EmitError {
+    #[error(transparent)]
+    Target(#[from] TargetError),
+    #[error("spawn {command}: {source}")]
+    Spawn {
+        tool: Tool,
+        operation: ToolOperation,
+        command: String,
+        #[source]
+        source: std::io::Error,
+    },
+    #[error("write to {tool}: {source}")]
+    WriteInput {
+        tool: Tool,
+        operation: ToolOperation,
+        #[source]
+        source: std::io::Error,
+    },
+    #[error("wait {tool}: {source}")]
+    Wait {
+        tool: Tool,
+        operation: ToolOperation,
+        #[source]
+        source: std::io::Error,
+    },
+    #[error("{operation} failed:\n{stderr}")]
+    ToolFailed {
+        tool: Tool,
+        operation: ToolOperation,
+        status: ExitStatus,
+        stderr: String,
+    },
+}
 
 fn home() -> String {
     std::env::var("HOME").expect("HOME not set")
@@ -141,14 +240,14 @@ fn feature_suffix(value: &str) -> String {
         .collect()
 }
 
-fn arch_name(arch: ArchPart) -> Result<&'static str, String> {
+fn arch_name(arch: ArchPart) -> Result<&'static str, TargetError> {
     match arch {
         ArchPart::X86(_) => Ok("x86"),
         ArchPart::Amd64(_) => Ok("x86_64"),
         ArchPart::Arm(_) => Ok("arm"),
         ArchPart::Aarch64(_) => Ok("aarch64"),
         ArchPart::Riscv(riscv) => Ok(riscv.canonicalize()),
-        _ => Err(format!("unsupported Slate target architecture {arch:?}")),
+        _ => Err(TargetError::UnsupportedArchitecture { arch }),
     }
 }
 
@@ -177,19 +276,19 @@ fn libc_name(triple: &Triple) -> &'static str {
     }
 }
 
-fn vendor_name(vendor: Option<Vendor>) -> Result<&'static str, String> {
+fn vendor_name(vendor: Option<Vendor>) -> Result<&'static str, TargetError> {
     match vendor {
         None | Some(Vendor::Unknown) => Ok("unknown"),
         Some(Vendor::PC) => Ok("pc"),
         Some(Vendor::Apple) => Ok("apple"),
-        Some(vendor) => Err(format!("unsupported Slate target vendor {vendor:?}")),
+        Some(vendor) => Err(TargetError::UnsupportedVendor { vendor }),
     }
 }
 
-fn kernel_name(kernel: Kernel) -> Result<&'static str, String> {
+fn kernel_name(kernel: Kernel) -> Result<&'static str, TargetError> {
     match kernel {
         Kernel::Linux | Kernel::Win32 | Kernel::Darwin => Ok(kernel.canonicalize()),
-        _ => Err(format!("unsupported Slate target kernel {kernel:?}")),
+        _ => Err(TargetError::UnsupportedKernel { kernel }),
     }
 }
 
@@ -228,8 +327,15 @@ fn clang_target(target: &str) -> (&str, &'static [&'static str]) {
     }
 }
 
-fn target_features(target: &str) -> Result<TargetFeatures, String> {
-    let triple = Triple::parse(target).map_err(|e| format!("invalid target `{target}`: {e}"))?;
+fn parse_target(target: &str) -> Result<Triple, TargetError> {
+    Triple::parse(target).map_err(|source| TargetError::InvalidTriple {
+        target: target.to_string(),
+        source,
+    })
+}
+
+fn target_features(target: &str) -> Result<TargetFeatures, TargetError> {
+    let triple = parse_target(target)?;
     let arch = arch_name(triple.arch)?;
     let vendor = vendor_name(triple.vendor)?;
     let kernel = kernel_name(triple.kernel)?;
@@ -275,8 +381,8 @@ pub struct TargetConfig {
     pub vendor: &'static str,
 }
 
-pub fn target_config(target: &str) -> Result<TargetConfig, String> {
-    let triple = Triple::parse(target).map_err(|e| format!("invalid target `{target}`: {e}"))?;
+pub fn target_config(target: &str) -> Result<TargetConfig, TargetError> {
+    let triple = parse_target(target)?;
     let arch = arch_name(triple.arch)?;
     let vendor = vendor_name(triple.vendor)?;
     let os = if triple.env == Some(Env::Android) {
@@ -286,7 +392,7 @@ pub fn target_config(target: &str) -> Result<TargetConfig, String> {
             Kernel::Linux => "linux",
             Kernel::Darwin => "macos",
             Kernel::Win32 => "windows",
-            kernel => return Err(format!("unsupported Slate target kernel {kernel:?}")),
+            kernel => return Err(TargetError::UnsupportedKernel { kernel }),
         }
     };
     let env = match triple.env {
@@ -305,20 +411,21 @@ pub fn target_config(target: &str) -> Result<TargetConfig, String> {
     })
 }
 
-fn android_api(target: &str) -> Result<Option<u32>, String> {
-    let triple = Triple::parse(target).map_err(|e| format!("invalid target `{target}`: {e}"))?;
+fn android_api(target: &str) -> Result<Option<u32>, TargetError> {
+    let triple = parse_target(target)?;
     if triple.env != Some(Env::Android) {
         return Ok(None);
     }
     let value = std::env::var("SLATE_ANDROID_API")
-        .map_err(|_| "Android targets require SLATE_ANDROID_API".to_string())?;
+        .map_err(|source| TargetError::MissingAndroidApi { source })?;
     let api = value
         .parse::<u32>()
-        .map_err(|_| format!("SLATE_ANDROID_API must be an integer, got `{value}`"))?;
+        .map_err(|source| TargetError::InvalidAndroidApi {
+            value: value.clone(),
+            source,
+        })?;
     if api < 21 {
-        return Err(format!(
-            "SLATE_ANDROID_API must be at least 21 for the 64-bit Bionic profile, got {api}"
-        ));
+        return Err(TargetError::AndroidApiTooLow { api });
     }
     Ok(Some(api))
 }
@@ -330,7 +437,7 @@ pub fn uses_f64_long_double_abi() -> bool {
     )
 }
 
-pub fn target_override_args(target: &str) -> Result<Vec<String>, String> {
+pub fn target_override_args(target: &str) -> Result<Vec<String>, TargetError> {
     let mut args = target_features(&active_target())?.undef_args();
     args.extend(target_features(target)?.define_args());
     let (clang_target, abi_args) = clang_target(target);
@@ -340,7 +447,7 @@ pub fn target_override_args(target: &str) -> Result<Vec<String>, String> {
     Ok(args)
 }
 
-pub fn target_args() -> Result<Vec<String>, String> {
+pub fn target_args() -> Result<Vec<String>, TargetError> {
     let target = active_target();
     let mut args = libc_shim_args(&target);
     args.extend(target_features(&target)?.define_args());
@@ -363,38 +470,55 @@ pub fn target_args() -> Result<Vec<String>, String> {
 /// Query the macro environment Clang predefines for `extra_args` (target,
 /// `-D`/`-U`, etc.). Used by the preprocessing oracle to decide which
 /// conditional branch is active for a given invocation.
-pub fn predefined_macros(extra_args: &[String]) -> Result<BTreeMap<String, String>, String> {
+pub fn predefined_macros(extra_args: &[String]) -> Result<BTreeMap<String, String>, EmitError> {
     query_macros(Path::new("/dev/null"), extra_args)
 }
 
-pub fn preprocess_diagnostics(src: &Path, extra_args: &[String]) -> Result<(bool, String), String> {
-    let out = Command::new(clang())
+pub fn preprocess_diagnostics(
+    src: &Path,
+    extra_args: &[String],
+) -> Result<(bool, String), EmitError> {
+    let command = clang();
+    let out = Command::new(&command)
         .args(["-E", "-x", "c"])
         .args(target_args()?)
         .args(extra_args)
         .arg(src)
         .args(["-o", "/dev/null"])
         .output()
-        .map_err(|error| format!("spawn {}: {error}", clang()))?;
+        .map_err(|source| EmitError::Spawn {
+            tool: Tool::Clang,
+            operation: ToolOperation::Preprocess,
+            command,
+            source,
+        })?;
     Ok((
         out.status.success(),
         String::from_utf8_lossy(&out.stderr).into_owned(),
     ))
 }
 
-fn query_macros(src: &Path, extra_args: &[String]) -> Result<BTreeMap<String, String>, String> {
-    let out = Command::new(clang())
+fn query_macros(src: &Path, extra_args: &[String]) -> Result<BTreeMap<String, String>, EmitError> {
+    let command = clang();
+    let out = Command::new(&command)
         .args(["-dM", "-E", "-x", "c"])
         .args(target_args()?)
         .args(extra_args)
         .arg(src)
         .output()
-        .map_err(|e| format!("spawn {}: {e}", clang()))?;
+        .map_err(|source| EmitError::Spawn {
+            tool: Tool::Clang,
+            operation: ToolOperation::MacroDump,
+            command,
+            source,
+        })?;
     if !out.status.success() {
-        return Err(format!(
-            "clang -dM -E failed:\n{}",
-            String::from_utf8_lossy(&out.stderr)
-        ));
+        return Err(EmitError::ToolFailed {
+            tool: Tool::Clang,
+            operation: ToolOperation::MacroDump,
+            status: out.status,
+            stderr: String::from_utf8_lossy(&out.stderr).into_owned(),
+        });
     }
     let mut macros = BTreeMap::new();
     for line in String::from_utf8_lossy(&out.stdout).lines() {
@@ -412,11 +536,11 @@ fn query_macros(src: &Path, extra_args: &[String]) -> Result<BTreeMap<String, St
 
 /// Emit high-level ClangIR (pre-CFG-flattening, passes disabled) for `src` and
 /// return it in MLIR generic form.
-pub fn emit_generic(src: &Path) -> Result<String, String> {
+pub fn emit_generic(src: &Path) -> Result<String, EmitError> {
     emit_generic_with_args(src, &[])
 }
 
-pub fn emit_generic_with_args(src: &Path, extra_args: &[String]) -> Result<String, String> {
+pub fn emit_generic_with_args(src: &Path, extra_args: &[String]) -> Result<String, EmitError> {
     emit_generic_with_args_and_cir_opt_flags(src, extra_args, &[])
 }
 
@@ -431,7 +555,7 @@ pub fn emit_generic_with_args(src: &Path, extra_args: &[String]) -> Result<Strin
 pub fn emit_generic_with_args_flattened(
     src: &Path,
     extra_args: &[String],
-) -> Result<String, String> {
+) -> Result<String, EmitError> {
     emit_generic_with_args_and_cir_opt_flags(
         src,
         extra_args,
@@ -447,8 +571,9 @@ fn emit_generic_with_args_and_cir_opt_flags(
     src: &Path,
     extra_args: &[String],
     cir_opt_flags: &[&str],
-) -> Result<String, String> {
-    let mut cmd = Command::new(clang());
+) -> Result<String, EmitError> {
+    let clang_command = clang();
+    let mut cmd = Command::new(&clang_command);
     let target_args = target_args()?;
     cmd.args([
         "-fclangir",
@@ -464,14 +589,19 @@ fn emit_generic_with_args_and_cir_opt_flags(
     .args(extra_args)
     .arg(src)
     .stderr(Stdio::piped());
-    let clang_out = cmd
-        .output()
-        .map_err(|e| format!("spawn {}: {e}", clang()))?;
+    let clang_out = cmd.output().map_err(|source| EmitError::Spawn {
+        tool: Tool::Clang,
+        operation: ToolOperation::EmitCir,
+        command: clang_command,
+        source,
+    })?;
     if !clang_out.status.success() {
-        return Err(format!(
-            "clang -emit-cir failed:\n{}",
-            String::from_utf8_lossy(&clang_out.stderr)
-        ));
+        return Err(EmitError::ToolFailed {
+            tool: Tool::Clang,
+            operation: ToolOperation::EmitCir,
+            status: clang_out.status,
+            stderr: String::from_utf8_lossy(&clang_out.stderr).into_owned(),
+        });
     }
 
     // TODO: cir-opt could run `--cir-idiom-recognizer` here to raise raw
@@ -479,7 +609,8 @@ fn emit_generic_with_args_and_cir_opt_flags(
     // pattern-match downstream), but the pass's recognizeStandardLibraryCall is
     // a no-op stub in the current CIR build, so it would raise nothing. Revisit
     // if it lands.
-    let mut child = Command::new(cir_opt())
+    let cir_opt_command = cir_opt();
+    let mut child = Command::new(&cir_opt_command)
         .args(cir_opt_flags)
         .arg("--mlir-print-op-generic")
         .arg("--mlir-print-debuginfo")
@@ -487,22 +618,35 @@ fn emit_generic_with_args_and_cir_opt_flags(
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .spawn()
-        .map_err(|e| format!("spawn {}: {e}", cir_opt()))?;
+        .map_err(|source| EmitError::Spawn {
+            tool: Tool::CirOpt,
+            operation: ToolOperation::OptimizeCir,
+            command: cir_opt_command,
+            source,
+        })?;
     use std::io::Write;
     child
         .stdin
         .take()
         .unwrap()
         .write_all(&clang_out.stdout)
-        .map_err(|e| format!("write to cir-opt: {e}"))?;
-    let out = child
-        .wait_with_output()
-        .map_err(|e| format!("wait cir-opt: {e}"))?;
+        .map_err(|source| EmitError::WriteInput {
+            tool: Tool::CirOpt,
+            operation: ToolOperation::OptimizeCir,
+            source,
+        })?;
+    let out = child.wait_with_output().map_err(|source| EmitError::Wait {
+        tool: Tool::CirOpt,
+        operation: ToolOperation::OptimizeCir,
+        source,
+    })?;
     if !out.status.success() {
-        return Err(format!(
-            "cir-opt failed:\n{}",
-            String::from_utf8_lossy(&out.stderr)
-        ));
+        return Err(EmitError::ToolFailed {
+            tool: Tool::CirOpt,
+            operation: ToolOperation::OptimizeCir,
+            status: out.status,
+            stderr: String::from_utf8_lossy(&out.stderr).into_owned(),
+        });
     }
     Ok(String::from_utf8_lossy(&out.stdout).into_owned())
 }
