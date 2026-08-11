@@ -1,0 +1,17 @@
+[profile.libc]
+default-filter = '''
+  binary_id(=slate::libc_shim_suite)
+  + binary_id(=slate::libc_test_api_suite)
+  + binary_id(=slate::libc_test_functional_suite)
+  + binary_id(=slate::header_compilation)
+'''
+
+[profile.lang]
+default-filter = '''
+  not (
+    binary_id(=slate::libc_shim_suite)
+    + binary_id(=slate::libc_test_api_suite)
+    + binary_id(=slate::libc_test_functional_suite)
+    + binary_id(=slate::header_compilation)
+  )
+'''
