@@ -2,7 +2,6 @@
 
 
 
-case_00170: mismatched types passing an enum through a helper expecting a pointer-sized int — enum representation/cast bug.
 
 case_00186: `sprintf(buf, "->%02d<-\n", n)` — zero-padded width in an sprintf format string; matches the printf width/precision gap already tracked as a known limitation. Rust binary is killed by a signal (no exit code) rather than mismatching output.
 
