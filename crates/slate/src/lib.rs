@@ -7,5 +7,4 @@ pub mod effects;
 pub mod fixups;
 pub mod frontend;
 pub mod function_identity;
-pub mod macros;
 pub mod rust_ast;
