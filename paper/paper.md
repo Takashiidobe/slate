@@ -102,53 +102,8 @@ have no ordering dependency.
 ### Verification
 
 A transpiler requires rigorous testing to prove it can translate
-programs. The authors test slate in multiple ways; we run fuzz tests,
-differential tests, verification through alive, and effect based testing.
-Of these, the effect based testing approach is the most important, so we
-expound upon it here.
-
-There are many ways to prove that a provided rewrite is valid. One way
-is to compile the code to some similar representation, and shunt
-validity to that system. If we compile two programs, and they have the
-same assembly representation, then we can say that the compiler
-considers the functions equivalent. However, this approach is only valid
-under the rules of the given compiler. For a particular rewrite, we may
-want to change a pointer and a length pair into a rust Vec. In
-that case, we have changed the arguments (ptr + word sized integer) into
-a struct (ptr, size, capacity). These are not the same for our given
-compiler (Clang), and so we cannot compile both programs and compare
-them for equality.
-
-One way to loosen this requirement for equality is to define a set of
-Effects that we wish to compare for equality.
-
-Take these two programs, which put the value `1` on the heap, and then
-print it out.
-
-```c
-int* v = malloc(sizeof(int) * 1);
-v[0] = 1;
-printf("%d\n", v[0]);
-```
-
-```rust
-let v = vec![1];
-println!("{}", v[0]);
-```
-
-These programs both print `1` to `stdout` and allocate memory on the
-heap to store the value `1`. Even though these programs do not have the
-same stack layout, or use the same printing functionality, if we only
-observe effects to stdout, and the heap, these programs are equivalent.
-If we also care about memory on the stack, these are not equivalent,
-since the C program only allocates a pointer on the stack, whereas the
-rust version will allocate a pointer and two word sized integers on the
-stack.
-
-If we create an interpreter which interprets both the program
-pre-transformation and the program post-transformation, and notes every
-effect that changed that matters to the environment, then it is possible
-to say that transforming the program is ok.
+programs. Slate uses differential tests that compile and run both the C
+source and generated Rust, then require identical stdout and exit codes.
 
 ## Some cons
 

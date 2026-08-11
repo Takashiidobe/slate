@@ -2982,8 +2982,8 @@ fn memchr_calls_rewrite_only_with_proven_extent_and_nul_range() {
 fn memchr_zero_use_query_prunes_the_generated_helper() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-memchr-zero-users");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
-    let c_src = fixtures_dir().join("effects_nullable_pointer.c");
-    let generated = tmp.join("effects_nullable_pointer.generated.rs");
+    let c_src = fixtures_dir().join("memchr_nullable_pointer.c");
+    let generated = tmp.join("memchr_nullable_pointer.generated.rs");
     support::translate(&c_src, &generated).expect("translate nullable pointer fixture");
     let rust = std::fs::read_to_string(&generated).expect("read generated nullable pointer rust");
 
