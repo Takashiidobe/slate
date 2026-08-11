@@ -838,7 +838,7 @@ fn translate_project_lib_crate_with_manifest(
     for (stem, path) in &modules {
         let source =
             std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
-        let pp = preprocess::record_file(&source, &[])?;
+        let pp = preprocess::record_file(&source, &[]).map_err(|error| error.to_string())?;
         reject_active_unsupported(&pp, "translate-project --lib")?;
         let warning_items = project_warning_items(
             &pp,
@@ -861,7 +861,8 @@ fn translate_project_lib_crate_with_manifest(
         has_setlocale |= frontend::declared_functions(&module)
             .iter()
             .any(|name| name == "setlocale");
-        let unit = c_ast::parse_file_with_project_records(path, project_dir)?;
+        let unit = c_ast::parse_file_with_project_records(path, project_dir)
+            .map_err(|error| error.to_string())?;
         for enm in &unit.enums {
             shared_enums
                 .entry(rust_ident(&enm.name))
@@ -999,7 +1000,7 @@ fn translate_project_lib_crate_with_manifest(
         for (stem, path) in collect_c_modules(&tests_dir)? {
             let source = std::fs::read_to_string(&path)
                 .map_err(|e| format!("read {}: {e}", path.display()))?;
-            let pp = preprocess::record_file(&source, &[])?;
+            let pp = preprocess::record_file(&source, &[]).map_err(|error| error.to_string())?;
             reject_active_unsupported(&pp, "translate-project --lib")?;
             let warning_items = project_warning_items(
                 &pp,
@@ -1008,7 +1009,8 @@ fn translate_project_lib_crate_with_manifest(
             )?;
             uses_slate_support |= !warning_items.is_empty();
             let module = cir::emit_module(&path, &[]).map_err(|error| error.to_string())?;
-            let unit = c_ast::parse_file_with_project_records(&path, project_dir)?;
+            let unit = c_ast::parse_file_with_project_records(&path, project_dir)
+                .map_err(|error| error.to_string())?;
             let test_project = frontend::ProjectInfo {
                 cross_module: project.cross_module.clone(),
                 cross_module_globals: project.cross_module_globals.clone(),
@@ -1156,7 +1158,8 @@ fn translate_project_lib_crate_with_compile_commands(
         let args = compile_command_args(command)?;
         let source = std::fs::read_to_string(path)
             .map_err(|error| format!("read {}: {error}", path.display()))?;
-        let pp = preprocess::record_translation_unit(path, &source, &args)?;
+        let pp = preprocess::record_translation_unit(path, &source, &args)
+            .map_err(|error| error.to_string())?;
         reject_active_unsupported(&pp, "translate-project --lib --compile-commands")?;
         let warning_items = project_warning_items(
             &pp,
@@ -1190,7 +1193,8 @@ fn translate_project_lib_crate_with_compile_commands(
         variant_facts.has_setlocale |= frontend::declared_functions(&module)
             .iter()
             .any(|name| name == "setlocale");
-        let unit = c_ast::parse_file_with_project_records_and_args(path, project_dir, &args)?;
+        let unit = c_ast::parse_file_with_project_records_and_args(path, project_dir, &args)
+            .map_err(|error| error.to_string())?;
         for enm in &unit.enums {
             shared_enums
                 .entry(rust_ident(&enm.name))
@@ -1472,7 +1476,8 @@ fn translate_project_with_targets(
         has_setlocale |= frontend::declared_functions(&module)
             .iter()
             .any(|name| name == "setlocale");
-        let unit = c_ast::parse_file_with_project_records(path, dir)?;
+        let unit =
+            c_ast::parse_file_with_project_records(path, dir).map_err(|error| error.to_string())?;
         let mut seen_enums = BTreeSet::new();
         for enm in &unit.enums {
             let name = rust_ident(&enm.name);
@@ -1651,7 +1656,7 @@ fn translate_project_with_targets(
         }
         let source =
             std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
-        let pp = preprocess::record_file(&source, &[])?;
+        let pp = preprocess::record_file(&source, &[]).map_err(|error| error.to_string())?;
         let warning_items = project_warning_items(
             &pp,
             "translate-project",
@@ -1777,7 +1782,8 @@ fn translate_project_with_compile_commands(
         let args = compile_command_args(primary)?;
         let source =
             std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
-        let pp = preprocess::record_translation_unit(path, &source, &args)?;
+        let pp = preprocess::record_translation_unit(path, &source, &args)
+            .map_err(|error| error.to_string())?;
         reject_active_unsupported(&pp, "translate-project --compile-commands")?;
         let module = cir::emit_module(path, &args).map_err(|error| error.to_string())?;
         for sym in frontend::defined_functions(&module) {
@@ -1798,7 +1804,8 @@ fn translate_project_with_compile_commands(
         has_setlocale |= frontend::declared_functions(&module)
             .iter()
             .any(|name| name == "setlocale");
-        let unit = c_ast::parse_file_with_project_records_and_args(path, project_dir, &args)?;
+        let unit = c_ast::parse_file_with_project_records_and_args(path, project_dir, &args)
+            .map_err(|error| error.to_string())?;
         let mut seen_enums = BTreeSet::new();
         for enm in &unit.enums {
             let name = rust_ident(&enm.name);
@@ -1983,7 +1990,8 @@ fn translate_project_with_compile_commands(
         let primary_args = compile_command_args(primary)?;
         let source =
             std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
-        let pp = preprocess::record_translation_unit(path, &source, &primary_args)?;
+        let pp = preprocess::record_translation_unit(path, &source, &primary_args)
+            .map_err(|error| error.to_string())?;
         let warning_items = project_warning_items(
             &pp,
             "translate-project --compile-commands",
@@ -2037,7 +2045,7 @@ fn translate_project_with_compile_commands(
 fn record_cfg(path: &Path, clang_args: &[String]) -> Result<String, String> {
     let source =
         std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
-    let pp = preprocess::record_file(&source, clang_args)?;
+    let pp = preprocess::record_file(&source, clang_args).map_err(|error| error.to_string())?;
     let directives: Vec<serde_json::Value> = pp
         .directives
         .iter()

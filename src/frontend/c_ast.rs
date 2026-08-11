@@ -3,9 +3,45 @@ use serde_json::Value;
 use std::cell::RefCell;
 use std::collections::{BTreeSet, HashMap};
 use std::path::{Path, PathBuf};
-use std::process::Command;
+use std::process::{Command, ExitStatus};
+use thiserror::Error;
 
 use crate::function_identity::{CallBinding, FunctionIdentity, Provenance, classify_function};
+
+#[derive(Debug, Error)]
+pub enum AstError {
+    #[error("configure target for Clang AST dump of {path}: {source}")]
+    Target {
+        path: PathBuf,
+        #[source]
+        source: crate::cir::TargetError,
+    },
+    #[error("spawn {clang} for Clang AST dump of {path}: {source}")]
+    Spawn {
+        clang: String,
+        path: PathBuf,
+        #[source]
+        source: std::io::Error,
+    },
+    #[error("Clang AST dump failed for {path} with {status}:\n{stderr}")]
+    ClangFailed {
+        path: PathBuf,
+        status: ExitStatus,
+        stderr: String,
+    },
+    #[error("canonicalize project root {path}: {source}")]
+    CanonicalizeProjectRoot {
+        path: PathBuf,
+        #[source]
+        source: std::io::Error,
+    },
+    #[error("parse Clang AST JSON for {path}: {source}")]
+    ParseJson {
+        path: PathBuf,
+        #[source]
+        source: serde_json::Error,
+    },
+}
 
 thread_local! {
     static TYPEDEFS: RefCell<HashMap<String, String>> = RefCell::new(HashMap::new());
@@ -421,9 +457,16 @@ fn parse_plugin_events(stderr: &str) -> PluginEvents {
     out
 }
 
-fn run_clang_ast_dump(src: &Path, extra_args: &[String]) -> Result<(String, PluginEvents), String> {
-    let mut cmd = Command::new(clang());
-    let target_args = crate::cir::emit::target_args().map_err(|error| error.to_string())?;
+fn run_clang_ast_dump(
+    src: &Path,
+    extra_args: &[String],
+) -> Result<(String, PluginEvents), AstError> {
+    let clang = clang();
+    let mut cmd = Command::new(&clang);
+    let target_args = crate::cir::emit::target_args().map_err(|source| AstError::Target {
+        path: src.to_path_buf(),
+        source,
+    })?;
     cmd.args([
         "-std=gnu23",
         "-Xclang",
@@ -453,12 +496,17 @@ fn run_clang_ast_dump(src: &Path, extra_args: &[String]) -> Result<(String, Plug
         .args(extra_args)
         .arg(src)
         .output()
-        .map_err(|e| format!("spawn {}: {e}", clang()))?;
+        .map_err(|source| AstError::Spawn {
+            clang,
+            path: src.to_path_buf(),
+            source,
+        })?;
     if !out.status.success() {
-        return Err(format!(
-            "clang -ast-dump=json failed:\n{}",
-            String::from_utf8_lossy(&out.stderr)
-        ));
+        return Err(AstError::ClangFailed {
+            path: src.to_path_buf(),
+            status: out.status,
+            stderr: String::from_utf8_lossy(&out.stderr).into_owned(),
+        });
     }
     let plugin_events = parse_plugin_events(&String::from_utf8_lossy(&out.stderr));
     Ok((
@@ -467,16 +515,16 @@ fn run_clang_ast_dump(src: &Path, extra_args: &[String]) -> Result<(String, Plug
     ))
 }
 
-pub fn parse_file(src: &Path) -> Result<Unit, String> {
+pub fn parse_file(src: &Path) -> Result<Unit, AstError> {
     parse_file_with_args(src, &[])
 }
 
-pub fn parse_file_with_args(src: &Path, extra_args: &[String]) -> Result<Unit, String> {
+pub fn parse_file_with_args(src: &Path, extra_args: &[String]) -> Result<Unit, AstError> {
     let (json, plugin_events) = run_clang_ast_dump(src, extra_args)?;
-    parse_json_with_record_roots(&json, &src.to_string_lossy(), &[], plugin_events)
+    parse_json_with_record_roots(&json, src, &src.to_string_lossy(), &[], plugin_events)
 }
 
-pub fn parse_file_with_project_records(src: &Path, project_root: &Path) -> Result<Unit, String> {
+pub fn parse_file_with_project_records(src: &Path, project_root: &Path) -> Result<Unit, AstError> {
     parse_file_with_project_records_and_args(src, project_root, &[])
 }
 
@@ -484,13 +532,18 @@ pub fn parse_file_with_project_records_and_args(
     src: &Path,
     project_root: &Path,
     extra_args: &[String],
-) -> Result<Unit, String> {
-    let project_root = project_root
-        .canonicalize()
-        .map_err(|e| format!("canonicalize {}: {e}", project_root.display()))?;
+) -> Result<Unit, AstError> {
+    let project_root =
+        project_root
+            .canonicalize()
+            .map_err(|source| AstError::CanonicalizeProjectRoot {
+                path: project_root.to_path_buf(),
+                source,
+            })?;
     let (json, plugin_events) = run_clang_ast_dump(src, extra_args)?;
     parse_json_with_record_roots(
         &json,
+        src,
         &src.to_string_lossy(),
         &[project_root],
         plugin_events,
@@ -499,15 +552,18 @@ pub fn parse_file_with_project_records_and_args(
 
 fn parse_json_with_record_roots(
     json: &str,
+    source_path: &Path,
     source_file: &str,
     record_roots: &[PathBuf],
     mut plugin_events: PluginEvents,
-) -> Result<Unit, String> {
+) -> Result<Unit, AstError> {
     let mut deserializer = serde_json::Deserializer::from_str(json);
     deserializer.disable_recursion_limit();
     let deserializer = serde_stacker::Deserializer::new(&mut deserializer);
-    let root =
-        Value::deserialize(deserializer).map_err(|e| format!("parse clang AST JSON: {e}"))?;
+    let root = Value::deserialize(deserializer).map_err(|source| AstError::ParseJson {
+        path: source_path.to_path_buf(),
+        source,
+    })?;
     let mut typedefs = HashMap::new();
     collect_typedefs(&root, &mut typedefs);
     TYPEDEFS.with(|table| *table.borrow_mut() = typedefs);
