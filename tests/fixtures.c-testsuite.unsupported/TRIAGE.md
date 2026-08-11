@@ -1,5 +1,3 @@
-case_00018, case_00019, case_00052, case_00053: cannot find type `S`/`T` in scope — a typedef's name is dropped/not emitted in the generated Rust, so a later `TypeName varname = ...` reference is dangling.
-
 case_00051: undeclared label `'__dispatch0` — generated Rust references a dispatch loop label the translator never defines; switch/loop lowering bug.
 
 case_00133, case_00134, case_00135: literal out of range for `i32` — an unsigned constant like `4294967295` (UINT_MAX) is emitted without a type suffix and inferred as `i32` instead of the C source's unsigned type, so the literal overflows.
@@ -15,8 +13,6 @@ case_00170: mismatched types passing an enum through a helper expecting a pointe
 case_00186: `sprintf(buf, "->%02d<-\n", n)` — zero-padded width in an sprintf format string; matches the printf width/precision gap already tracked as a known limitation. Rust binary is killed by a signal (no exit code) rather than mismatching output.
 
 case_00189: `static mut fprintfptr: Option<extern "C" fn(*mut FILE, *mut i8) -> i32> = Some(fprintf)` — function-pointer-typed global initialized from `fprintf`'s real (variadic) signature; the recovered type doesn't match.
-
-case_00198: `h::e as i32` — an enum type or anonymous enum member is emitted as a path expression that resolves to a module instead of the enum, so the enum's own name doesn't resolve.
 
 case_00199: `goto done;` skipping over a nested block's locals — Rust panics at runtime (exit 101) instead of matching C's exit 0; goto-across-scope handling bug.
 
