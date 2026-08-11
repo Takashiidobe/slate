@@ -625,6 +625,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 return;
             }
         }
+        if let Some(value) = parse_cir_int(raw)
+            && let Some(rust_ty) = result_ty.map(|ty| self.parent.rust_type(ty))
+            && let Some(expr) = bitint_from_i128_expr(&rust_ty, value)
+        {
+            self.materialize_expr(result, expr, result_ty);
+            return;
+        }
         if raw.starts_with("#cir.ptr<null>") {
             let value = if result_ty.is_some_and(is_cir_function_pointer_type) {
                 self.function_pointer_null_values.insert(result.clone());

@@ -124,6 +124,9 @@ pub(super) fn zero_for_cir_type(ty: &str) -> Expr {
 }
 
 pub(super) fn default_value_for_type(ty: &Type) -> Expr {
+    if let Some(expr) = bitint_zero_expr(ty) {
+        return expr;
+    }
     match ty {
         Type::Prim(Prim::Bool) => Expr::Value(RustValue::Bool(false)),
         Type::Prim(Prim::F32 | Prim::F64) => Expr::Value(0.0.into()),

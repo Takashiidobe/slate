@@ -556,6 +556,7 @@ edition = "2024"
 [dependencies]
 libc = "0.2"
 aligned = {{ path = "aligned" }}
+bitint = {{ path = "bitint" }}
 bitfields = "3.0.0"
 {support_dependency}
 {build_section}
@@ -613,6 +614,7 @@ fn init_crate(crate_dir: &Path, wants_lib: bool) -> Result<(), String> {
 
     write_crate_manifest(crate_dir, &package, &[], false, false, !wants_lib)?;
     write_aligned_support(crate_dir)?;
+    write_bitint_support(crate_dir)?;
     if wants_lib {
         let main_rs = crate_dir.join("src/main.rs");
         if main_rs.exists() {
@@ -643,6 +645,25 @@ fn write_aligned_support(crate_dir: &Path) -> Result<(), String> {
         (
             src_dir.join("lib.rs"),
             include_str!("../vendor/aligned/src/lib.rs"),
+        ),
+    ] {
+        std::fs::write(&path, contents).map_err(|e| format!("write {}: {e}", path.display()))?;
+    }
+    Ok(())
+}
+
+fn write_bitint_support(crate_dir: &Path) -> Result<(), String> {
+    let bitint_dir = crate_dir.join("bitint");
+    let src_dir = bitint_dir.join("src");
+    std::fs::create_dir_all(&src_dir).map_err(|e| format!("create {}: {e}", src_dir.display()))?;
+    for (path, contents) in [
+        (
+            bitint_dir.join("Cargo.toml"),
+            include_str!("../vendor/bitint/Cargo.toml"),
+        ),
+        (
+            src_dir.join("lib.rs"),
+            include_str!("../vendor/bitint/src/lib.rs"),
         ),
     ] {
         std::fs::write(&path, contents).map_err(|e| format!("write {}: {e}", path.display()))?;
