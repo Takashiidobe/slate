@@ -2,12 +2,12 @@
 
 use crate::backend::rust_ast::{
     Abi, AsmDialect, AsmOperand, AsmReg, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType,
-    Attr as RustAttr, BinOp, CLIB_RECORD_TYPES, CLibInitializer, CLibType, Cfg, Comment, CrateAttr,
-    Derive, EnumConst, EnumDef, Expr, ExprMatchArm, ExternDecl, ExternFnDecl, Feature, FnDef,
-    FnParam, GenericParam, Ident, ImplBlock, ImplItem, IndentStmt, InlineAsm, Item, Label, Lint,
-    MatchArm, Method, Path, Pattern, Prim, Program, RecordDef, RecordField, Repr, RustValue,
-    SelfKind, StdTrait, Stmt, StructDef, StructFields, SupportModule, TraitBound, TraitRef, Type,
-    UnaryOp, UsedKind, Visibility,
+    Attr as RustAttr, AttrArg, BinOp, CLIB_RECORD_TYPES, CLibInitializer, CLibType, Cfg, Comment,
+    CrateAttr, Derive, EnumConst, EnumDef, Expr, ExprMatchArm, ExternDecl, ExternFnDecl, Feature,
+    FnDef, FnParam, GenericParam, Ident, ImplBlock, ImplItem, IndentStmt, InlineAsm, Item, Label,
+    Lint, MatchArm, Method, Path, Pattern, Prim, Program, Raw, RecordDef, RecordField, Repr,
+    RustValue, SelfKind, StdTrait, Stmt, StructDef, StructField, StructFields, SupportModule,
+    TraitBound, TraitRef, Type, UnaryOp, UsedKind, Visibility,
 };
 use crate::cir::ir::{Attr, Block, CirOpKind, Module, Op, Region};
 use crate::ctx::Ctx;
@@ -19,6 +19,7 @@ mod analysis;
 mod arithmetic;
 mod asm;
 mod atomic;
+mod bitfields;
 mod builtins;
 mod calls;
 mod cir_ops;
@@ -36,6 +37,7 @@ mod values;
 use analysis::*;
 use asm::*;
 use atomic::*;
+use bitfields::*;
 use cir_ops::*;
 use constants::*;
 use op_utils::*;
@@ -558,6 +560,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         function_param_types: BTreeMap::new(),
         enum_wrapper_fns: std::cell::RefCell::new(BTreeMap::new()),
         needed_enum_from_impls: std::cell::RefCell::new(BTreeSet::new()),
+        bitfield_storages: collect_bitfield_storages(cir),
     };
     lowerer.lower_module(cir, c)
 }
@@ -874,6 +877,7 @@ struct Lowerer<'a> {
     function_param_types: BTreeMap<String, Vec<Type>>,
     enum_wrapper_fns: std::cell::RefCell<BTreeMap<String, FnDef>>,
     needed_enum_from_impls: std::cell::RefCell<BTreeSet<(String, Type)>>,
+    bitfield_storages: BitfieldStorages,
 }
 
 struct FunctionLowerer<'a, 'b> {
@@ -950,7 +954,7 @@ struct MemberPtr {
     field: String,
     field_ty: Option<Type>,
     unsafe_access: bool,
-    bitfield_storage: bool,
+    bitfield_name: Option<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -1083,6 +1087,8 @@ impl<'a> Lowerer<'a> {
             Lint::NonUpperCaseGlobals,
             Lint::ArithmeticOverflow,
         ])])];
+
+        items.extend(bitfield_items(&self.bitfield_storages));
 
         for enm in &c.enums {
             let name = sanitize_ident(&enm.name).into_string();
@@ -1928,7 +1934,24 @@ impl __SlateVaArgs {
 
     fn lower_record(&mut self, record: &crate::frontend::c_ast::Record) -> Vec<Item> {
         let storage_record;
-        let record = if let Some(fields) = self.bitfield_storage_fields(record) {
+        let record = if record.kind == RecordKind::Union && record.fields.is_empty() {
+            storage_record = crate::frontend::c_ast::Record {
+                fields: vec![crate::frontend::c_ast::Decl {
+                    name: "__slate_empty".into(),
+                    comments: Vec::new(),
+                    ty: crate::frontend::c_ast::CType::Array(
+                        Box::new(crate::frontend::c_ast::CType::Int {
+                            signed: false,
+                            bits: 8,
+                        }),
+                        Some(0),
+                    ),
+                    bit_width: None,
+                }],
+                ..record.clone()
+            };
+            &storage_record
+        } else if let Some(fields) = self.bitfield_storage_fields(record) {
             storage_record = crate::frontend::c_ast::Record {
                 fields,
                 ..record.clone()
@@ -1958,6 +1981,7 @@ impl __SlateVaArgs {
             .fields
             .iter()
             .any(|field| field.name.starts_with("__bitfield_"));
+        let record_name = sanitize_ident(&record.name).into_string();
         Some(
             split_top_level(&expanded[open + 1..close], ',')
                 .into_iter()
@@ -1975,7 +1999,13 @@ impl __SlateVaArgs {
                         format!("__bitfield_{index}")
                     },
                     comments: Vec::new(),
-                    ty: cir_type_to_ctype(ty, &self.aliases),
+                    ty: self
+                        .bitfield_storages
+                        .get(&(record_name.clone(), index))
+                        .map(|storage| {
+                            crate::frontend::c_ast::CType::Record(storage.wrapper.clone())
+                        })
+                        .unwrap_or_else(|| cir_type_to_ctype(ty, &self.aliases)),
                     bit_width: None,
                 })
                 .collect(),
@@ -2530,6 +2560,17 @@ impl __SlateVaArgs {
     fn default_value_expr(&self, ty: &Type) -> Expr {
         match ty {
             Type::Custom(name) => {
+                if let Some(storage) = self
+                    .bitfield_storages
+                    .values()
+                    .find(|storage| storage.wrapper == *name)
+                {
+                    return Expr::Transmute {
+                        from: storage.backing.clone(),
+                        to: ty.clone(),
+                        expr: Box::new(self.default_value_expr(&storage.backing)),
+                    };
+                }
                 if let Some(enm) = self.enums.get(name)
                     && let Some(variant) = enm.variants.first()
                 {
@@ -2540,6 +2581,16 @@ impl __SlateVaArgs {
                 }
                 if let Some(record) = self.records.get(name) {
                     if let Some(fields) = self.bitfield_storage_fields(record) {
+                        if record.kind == RecordKind::Union {
+                            let field = fields.first().expect("bitfield record has storage");
+                            return Expr::StructLit {
+                                name: record_lit_name(record),
+                                fields: vec![(
+                                    field.name.clone(),
+                                    self.default_value_expr(&c_record_field_type(&field.ty)),
+                                )],
+                            };
+                        }
                         return Expr::StructLit {
                             name: record_lit_name(record),
                             fields: fields
@@ -2588,6 +2639,10 @@ impl __SlateVaArgs {
                                     },
                                 );
                             }
+                            return Expr::StructLit {
+                                name: record_lit_name(record),
+                                fields: vec![("__slate_empty".into(), Expr::ArrayLit(Vec::new()))],
+                            };
                         }
                     }
                 }
@@ -2679,6 +2734,26 @@ impl __SlateVaArgs {
 
     fn render_const_value_expr(&self, ty: &Type, raw: &str) -> Option<Expr> {
         let raw = raw.trim();
+        if let Type::Custom(name) = ty
+            && let Some(storage) = self
+                .bitfield_storages
+                .values()
+                .find(|storage| storage.wrapper == *name)
+        {
+            return Some(Expr::Transmute {
+                from: storage.backing.clone(),
+                to: ty.clone(),
+                expr: Box::new(self.render_const_value_expr(&storage.backing, raw)?),
+            });
+        }
+        if let Type::Custom(name) = ty
+            && self
+                .records
+                .get(name)
+                .is_some_and(|record| record.kind == RecordKind::Union && record.fields.is_empty())
+        {
+            return Some(self.default_value_expr(ty));
+        }
         if let Some((re, im)) = parse_cir_const_complex(raw) {
             Some(complex_const_expr(Some(ty), re, im))
         } else if raw.starts_with("#cir.const_record<") {
@@ -2731,7 +2806,11 @@ impl __SlateVaArgs {
                     ))
                 }
                 RecordKind::Union => {
-                    let field = record.fields.first()?;
+                    let storage_fields = self.bitfield_storage_fields(record);
+                    let field = storage_fields
+                        .as_ref()
+                        .and_then(|fields| fields.first())
+                        .or_else(|| record.fields.first())?;
                     let field_ty = c_record_field_type(&field.ty);
                     let value = elems
                         .first()
@@ -2908,6 +2987,9 @@ fn c_type_to_type(ty: &crate::frontend::c_ast::CType) -> Type {
             len: *len,
         },
         CType::Array(inner, None) => ptr(inner),
+        CType::Record(name) if name.starts_with("__slate_bitfields::") => {
+            Type::Custom(name.clone())
+        }
         CType::Record(name) => clib_record_type(name)
             .map(Type::CLib)
             .unwrap_or_else(|| Type::Custom(rust_record_name(name))),

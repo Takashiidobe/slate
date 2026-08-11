@@ -220,8 +220,16 @@ pub(super) fn complex_prelude() -> Vec<Item> {
             }],
             name: "Complex".into(),
             fields: StructFields::Named(vec![
-                ("re".into(), Type::TyVar("T".into())),
-                ("im".into(), Type::TyVar("T".into())),
+                crate::backend::rust_ast::StructField {
+                    attrs: Vec::new(),
+                    name: "re".into(),
+                    ty: Type::TyVar("T".into()),
+                },
+                crate::backend::rust_ast::StructField {
+                    attrs: Vec::new(),
+                    name: "im".into(),
+                    ty: Type::TyVar("T".into()),
+                },
             ]),
         }),
         complex_binop_impl(StdTrait::Add, BinOp::Add),

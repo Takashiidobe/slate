@@ -57,7 +57,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     .and_then(cir_ptr_pointee)
                     .map(|ty| self.parent.rust_type(ty)),
                 unsafe_access,
-                bitfield_storage: false,
+                bitfield_name: None,
             },
         );
     }

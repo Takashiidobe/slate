@@ -5,7 +5,9 @@ use crate::backend::facts::{
     AstPath, BindingFact, BindingId, BorrowAliasFact, BorrowAliasReason, BorrowAliasState,
     BorrowAliasUseFact, BorrowAliasUseKind, FunctionId, PathSegment,
 };
-use crate::backend::rust_ast::{AsmOperand, Block, Expr, FnDef, Ident, IndentStmt, Stmt, UnaryOp};
+use crate::backend::rust_ast::{
+    AsmOperand, Block, Expr, FnDef, Ident, IndentStmt, Raw, Stmt, UnaryOp,
+};
 pub(in crate::backend) fn collect_for_function<'db>(
     function: FunctionId<'db>,
     f: &FnDef,
@@ -196,6 +198,18 @@ impl<'db, 'a> Collector<'db, 'a> {
                     )
                 };
                 self.record_expr_vars(expr, reason, kind, path);
+                self.expr(expr, path);
+            }
+            Expr::Unary {
+                op: UnaryOp::Raw(Raw::Mut),
+                expr,
+            } => {
+                self.record_expr_vars(
+                    expr,
+                    BorrowAliasReason::MutableBorrow,
+                    BorrowAliasUseKind::MutableBorrow,
+                    path,
+                );
                 self.expr(expr, path);
             }
             Expr::AddrOf { expr, .. } => {

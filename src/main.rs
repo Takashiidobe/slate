@@ -556,6 +556,7 @@ edition = "2024"
 [dependencies]
 libc = "0.2"
 aligned = {{ path = "aligned" }}
+bitfields = "3.0.0"
 {support_dependency}
 {build_section}
 [profile.dev]

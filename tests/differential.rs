@@ -2587,10 +2587,10 @@ fn assignment_places_cover_slots_globals_members_elements_and_derefs() {
         (
             "bitfield_ops",
             &[
-                "__bitfield_0: u32,",
-                "s.__bitfield_0 = s.__bitfield_0 & !7",
-                "s.__bitfield_0 = s.__bitfield_0 & !248",
-                "w.__bitfield_0 = w.__bitfield_0 & !1099511627775",
+                "__bitfield_0: __slate_bitfields::__SlateBitfield_Bits_0,",
+                "s.__bitfield_0.set_a(_v2);",
+                "s.__bitfield_0.set_b(_v4);",
+                "w.__bitfield_0.set_x(_v49);",
             ][..],
         ),
     ] {

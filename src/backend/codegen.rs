@@ -135,6 +135,23 @@ impl<W: Write> Codegen<W> {
                 self.ident(name.as_str())?;
                 self.out.write_str(";\n")?;
             }
+            Item::InlineMod { name, items } => {
+                self.out.write_str("mod ")?;
+                self.ident(name.as_str())?;
+                self.out.write_str(" {\n")?;
+                let mut nested = Codegen::new(String::new());
+                for item in items {
+                    nested.item(item)?;
+                }
+                for line in nested.into_inner().lines() {
+                    if !line.is_empty() {
+                        self.out.write_str(INDENT)?;
+                        self.out.write_str(line)?;
+                    }
+                    self.out.write_char('\n')?;
+                }
+                self.out.write_str("}\n")?;
+            }
             Item::Use { path } => {
                 self.out.write_str("use ")?;
                 self.path(path)?;
@@ -380,14 +397,20 @@ impl<W: Write> Codegen<W> {
             }
             StructFields::Named(fields) => {
                 self.out.write_str(" {\n")?;
-                for (name, ty) in fields {
+                for field in fields {
+                    for attr in &field.attrs {
+                        self.out.write_str(INDENT)?;
+                        self.out.write_str("#[")?;
+                        self.attr(attr)?;
+                        self.out.write_str("]\n")?;
+                    }
                     self.out.write_str(INDENT)?;
                     if let Some(vis) = s.field_vis.keyword() {
                         write!(self.out, "{vis} ")?;
                     }
-                    self.ident(name)?;
+                    self.ident(&field.name)?;
                     self.out.write_str(": ")?;
-                    self.ty(ty)?;
+                    self.ty(&field.ty)?;
                     self.out.write_str(",\n")?;
                 }
                 self.out.write_str("}\n")
@@ -424,6 +447,17 @@ impl<W: Write> Codegen<W> {
 
     fn attr(&mut self, attr: &Attr) -> fmt::Result {
         match attr {
+            Attr::Call { path, args } => {
+                self.path(path)?;
+                self.out.write_char('(')?;
+                for (index, arg) in args.iter().enumerate() {
+                    if index > 0 {
+                        self.out.write_str(", ")?;
+                    }
+                    self.attr_arg(arg)?;
+                }
+                self.out.write_char(')')
+            }
             Attr::Allow(items) => {
                 self.out.write_str("allow(")?;
                 for (i, item) in items.iter().enumerate() {
@@ -491,6 +525,20 @@ impl<W: Write> Codegen<W> {
             },
             Attr::Deprecated(note) => {
                 write!(self.out, "deprecated(note = {})", string_literal(note))
+            }
+        }
+    }
+
+    fn attr_arg(&mut self, arg: &crate::backend::rust_ast::AttrArg) -> fmt::Result {
+        use crate::backend::rust_ast::AttrArg;
+        match arg {
+            AttrArg::Type(ty) => self.ty(ty),
+            AttrArg::UInt(value) => write!(self.out, "{value}"),
+            AttrArg::Bool(value) => write!(self.out, "{value}"),
+            AttrArg::Named(name, value) => {
+                self.ident(name)?;
+                self.out.write_str(" = ")?;
+                self.attr_arg(value)
             }
         }
     }
