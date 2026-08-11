@@ -1370,7 +1370,7 @@ fn collect_macro_consts_at(
     if let (Some(begin), Some(end)) = (expansion_offset(node), expansion_end_offset(node))
         && begin == end
         && let Some(event) = macro_events.get(&begin)
-        && let Some(known) = crate::macros::lookup(&event.name)
+        && let Some(known) = crate::frontend::macros::lookup(&event.name)
         && event.headers.contains(known.header)
         && node
             .get("value")

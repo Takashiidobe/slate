@@ -690,8 +690,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         result_ty: Option<&str>,
     ) -> Option<Expr> {
         let macro_const = self.macro_consts.front()?;
-        let known = crate::macros::lookup(&macro_const.name)?;
-        let crate::macros::MacroValue::Integer { source, rust_path } = known.value else {
+        let known = crate::frontend::macros::lookup(&macro_const.name)?;
+        let crate::frontend::macros::MacroValue::Integer { source, rust_path } = known.value else {
             return None;
         };
         if source != value {
@@ -742,8 +742,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     pub(super) fn next_long_double_macro_const_expr(&mut self, op: &Op) -> Option<Expr> {
         let macro_const = self.macro_consts.front()?;
-        let known = crate::macros::lookup(&macro_const.name)?;
-        let crate::macros::MacroValue::LongDouble { rust_bits, .. } = known.value else {
+        let known = crate::frontend::macros::lookup(&macro_const.name)?;
+        let crate::frontend::macros::MacroValue::LongDouble { rust_bits, .. } = known.value else {
             return None;
         };
         if op
