@@ -78,6 +78,10 @@ impl DebugOptions {
     }
 }
 
+pub fn propagate_unwind_abi_across_project(programs: &mut [Program]) {
+    query::rules::setjmp_recovery::propagate_unwind_abi_across_project(programs);
+}
+
 pub fn valid_pass_names() -> String {
     Pass::ALL
         .iter()

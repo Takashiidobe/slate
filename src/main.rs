@@ -421,6 +421,20 @@ fn target_variants(extra_targets: &[String]) -> Result<Vec<TargetVariant>, Strin
     Ok(variants)
 }
 
+fn write_project_modules(
+    paths: Vec<PathBuf>,
+    mut programs: Vec<rust_ast::Program>,
+) -> Result<Vec<PathBuf>, String> {
+    fixups::propagate_unwind_abi_across_project(&mut programs);
+    let mut written = Vec::new();
+    for (output, program) in paths.iter().zip(&programs) {
+        std::fs::write(output, program.emit())
+            .map_err(|e| format!("write {}: {e}", output.display()))?;
+        written.push(output.clone());
+    }
+    Ok(written)
+}
+
 fn merge_target_programs(variants: &[(rust_ast::Cfg, rust_ast::Program)]) -> rust_ast::Program {
     if variants.len() <= 1 {
         return variants.first().map(|(_, p)| p.clone()).unwrap_or_default();
@@ -975,6 +989,8 @@ fn translate_project_lib_crate_with_manifest(
 
     let mut shims: BTreeMap<String, rust_ast::ExternFnDecl> = BTreeMap::new();
     let mut written = Vec::new();
+    let mut module_paths: Vec<PathBuf> = Vec::new();
+    let mut module_progs: Vec<rust_ast::Program> = Vec::new();
     for (stem, path, module, unit, warning_items) in loaded_modules {
         let mut ctx = ctx::Ctx::default();
         let mut program = lower::lower_with_project(&module, &unit, &mut ctx, &project);
@@ -991,19 +1007,16 @@ fn translate_project_lib_crate_with_manifest(
         }
         directive_translate::insert_directive_items(&mut program, warning_items);
         let output = crate_src.join(stem).with_extension("rs");
-        std::fs::write(&output, fixups::apply_with(program, &fixup_skip).emit())
-            .map_err(|e| format!("write {}: {e}", output.display()))?;
-        written.push(output);
+        module_paths.push(output);
+        module_progs.push(fixups::apply_with(program, &fixup_skip));
     }
 
     let has_shared_types = !shared_records.is_empty() || !shared_enums.is_empty();
     if has_shared_types {
         let records: Vec<_> = shared_records.into_values().collect();
         let enums: Vec<_> = shared_enums.into_values().collect();
-        let output = crate_src.join("types.rs");
-        std::fs::write(&output, lower::lower_shared_types(&records, &enums).emit())
-            .map_err(|e| format!("write {}: {e}", output.display()))?;
-        written.push(output);
+        module_paths.push(crate_src.join("types.rs"));
+        module_progs.push(lower::lower_shared_types(&records, &enums));
     }
 
     let mut lib_rs = String::new();
@@ -1073,12 +1086,12 @@ fn translate_project_lib_crate_with_manifest(
             }
             directive_translate::insert_directive_items(&mut program, warning_items);
             let output = crate_tests.join(&stem).with_extension("rs");
-            std::fs::write(&output, fixups::apply_with(program, &fixup_skip).emit())
-                .map_err(|e| format!("write {}: {e}", output.display()))?;
-            written.push(output);
+            module_paths.push(output);
+            module_progs.push(fixups::apply_with(program, &fixup_skip));
             test_modules.push(stem);
         }
     }
+    written.extend(write_project_modules(module_paths, module_progs)?);
     if uses_slate_support {
         write_slate_support(crate_dir)?;
     }
@@ -1294,6 +1307,8 @@ fn translate_project_lib_crate_with_compile_commands(
     }
     let mut shims = BTreeMap::new();
     let mut written = Vec::new();
+    let mut module_paths: Vec<PathBuf> = Vec::new();
+    let mut module_progs: Vec<rust_ast::Program> = Vec::new();
     for (stem, variants) in &loaded_by_stem {
         let mut programs = Vec::new();
         for cfg in &cfgs {
@@ -1341,20 +1356,17 @@ fn translate_project_lib_crate_with_compile_commands(
                 .or_insert_with(|| shim.clone());
         }
         let output = crate_src.join(stem).with_extension("rs");
-        std::fs::write(&output, program.emit())
-            .map_err(|error| format!("write {}: {error}", output.display()))?;
-        written.push(output);
+        module_paths.push(output);
+        module_progs.push(program);
     }
-
     let has_shared_types = !shared_records.is_empty() || !shared_enums.is_empty();
     if has_shared_types {
         let records: Vec<_> = shared_records.into_values().collect();
         let enums: Vec<_> = shared_enums.into_values().collect();
-        let output = crate_src.join("types.rs");
-        std::fs::write(&output, lower::lower_shared_types(&records, &enums).emit())
-            .map_err(|error| format!("write {}: {error}", output.display()))?;
-        written.push(output);
+        module_paths.push(crate_src.join("types.rs"));
+        module_progs.push(lower::lower_shared_types(&records, &enums));
     }
+    written.extend(write_project_modules(module_paths, module_progs)?);
 
     let mut lib_rs = String::new();
     for feature in &crate_features {
@@ -1605,6 +1617,8 @@ fn translate_project_with_targets(
     let targets = target_variants(extra_targets)?;
     let mut written = Vec::new();
     let mut shims: BTreeMap<String, rust_ast::ExternFnDecl> = BTreeMap::new();
+    let mut module_paths: Vec<PathBuf> = Vec::new();
+    let mut module_progs: Vec<rust_ast::Program> = Vec::new();
     for (stem, path) in &modules {
         let is_root = *stem == root;
         let project = lower::ProjectInfo {
@@ -1698,19 +1712,16 @@ fn translate_project_with_targets(
             stem.clone()
         };
         let output = crate_src.join(file).with_extension("rs");
-        std::fs::write(&output, program.emit())
-            .map_err(|e| format!("write {}: {e}", output.display()))?;
-        written.push(output);
+        module_paths.push(output);
+        module_progs.push(program);
     }
-
     if has_shared_types {
         let records: Vec<_> = shared_records.into_values().collect();
         let enums: Vec<_> = shared_enums.into_values().collect();
-        let output = crate_src.join("types.rs");
-        std::fs::write(&output, lower::lower_shared_types(&records, &enums).emit())
-            .map_err(|e| format!("write {}: {e}", output.display()))?;
-        written.push(output);
+        module_paths.push(crate_src.join("types.rs"));
+        module_progs.push(lower::lower_shared_types(&records, &enums));
     }
+    written.extend(write_project_modules(module_paths, module_progs)?);
 
     let shim_output = crate_src.join("slate_shims.c");
     let has_shims = !shims.is_empty();
@@ -1938,6 +1949,8 @@ fn translate_project_with_compile_commands(
     // pass 2: lower each unit with project-wide knowledge and write its module.
     let mut written = Vec::new();
     let mut shims: BTreeMap<String, rust_ast::ExternFnDecl> = BTreeMap::new();
+    let mut module_paths: Vec<PathBuf> = Vec::new();
+    let mut module_progs: Vec<rust_ast::Program> = Vec::new();
     for (stem, path) in &modules {
         let is_root = *stem == root;
         let project = lower::ProjectInfo {
@@ -2041,19 +2054,16 @@ fn translate_project_with_compile_commands(
             stem.clone()
         };
         let output = crate_src.join(file).with_extension("rs");
-        std::fs::write(&output, program.emit())
-            .map_err(|e| format!("write {}: {e}", output.display()))?;
-        written.push(output);
+        module_paths.push(output);
+        module_progs.push(program);
     }
-
     if has_shared_types {
         let records: Vec<_> = shared_records.into_values().collect();
         let enums: Vec<_> = shared_enums.into_values().collect();
-        let output = crate_src.join("types.rs");
-        std::fs::write(&output, lower::lower_shared_types(&records, &enums).emit())
-            .map_err(|e| format!("write {}: {e}", output.display()))?;
-        written.push(output);
+        module_paths.push(crate_src.join("types.rs"));
+        module_progs.push(lower::lower_shared_types(&records, &enums));
     }
+    written.extend(write_project_modules(module_paths, module_progs)?);
 
     let shim_output = crate_src.join("slate_shims.c");
     let has_shims = !shims.is_empty();
