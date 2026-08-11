@@ -634,6 +634,8 @@ pub enum RustValue {
     Usize(usize),
     I128(i128),
     U128(u128),
+    TypedInt(i128, Prim),
+    TypedUInt(u128, Prim),
     Float(OrderedFloat<f64>),
     Bool(bool),
     None,

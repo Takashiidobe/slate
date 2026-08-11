@@ -556,7 +556,7 @@ fn values_for_rust_value(value: &RustValue) -> BTreeSet<ConstValue> {
                 values.insert(ConstValue::Zero);
             }
         }
-        RustValue::I128(n) => {
+        RustValue::I128(n) | RustValue::TypedInt(n, _) => {
             values.insert(ConstValue::Integer(*n));
             if let Ok(n) = usize::try_from(*n) {
                 values.insert(ConstValue::Usize(n));
@@ -565,7 +565,7 @@ fn values_for_rust_value(value: &RustValue) -> BTreeSet<ConstValue> {
                 values.insert(ConstValue::Zero);
             }
         }
-        RustValue::U128(n) => {
+        RustValue::U128(n) | RustValue::TypedUInt(n, _) => {
             if let Ok(n) = i128::try_from(*n) {
                 values.insert(ConstValue::Integer(n));
                 if let Ok(n) = usize::try_from(n) {

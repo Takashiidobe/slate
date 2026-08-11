@@ -1322,6 +1322,8 @@ impl<W: Write> Codegen<W> {
             RustValue::Usize(n) => write!(self.out, "{n}usize"),
             RustValue::I128(n) => write!(self.out, "{n}"),
             RustValue::U128(n) => write!(self.out, "{n}"),
+            RustValue::TypedInt(n, ty) => write!(self.out, "{n}{}", ty.spelling()),
+            RustValue::TypedUInt(n, ty) => write!(self.out, "{n}{}", ty.spelling()),
             RustValue::Float(n) => {
                 if n.fract() == 0.0 {
                     write!(self.out, "{n:.1}")

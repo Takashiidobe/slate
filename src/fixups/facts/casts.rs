@@ -554,6 +554,7 @@ fn literal_type(value: &RustValue) -> Option<Type> {
         RustValue::Usize(_) => Some(Type::Prim(Prim::Usize)),
         RustValue::I128(_) => Some(Type::Prim(Prim::I128)),
         RustValue::U128(_) => Some(Type::Prim(Prim::U128)),
+        RustValue::TypedInt(_, ty) | RustValue::TypedUInt(_, ty) => Some(Type::Prim(*ty)),
         RustValue::Bool(_) => Some(Type::Prim(Prim::Bool)),
         RustValue::Float(_) => Some(Type::Prim(Prim::F64)),
         RustValue::NullPtr | RustValue::None => None,
