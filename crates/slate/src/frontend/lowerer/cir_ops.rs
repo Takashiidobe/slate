@@ -3,12 +3,12 @@ use super::*;
 pub(super) fn switch_case(op: &Op) -> Option<SwitchCase<'_>> {
     let kind = attr_int(op, "kind");
     let is_default = kind == Some(0);
-    let values = match op.attrs.get("value") {
+    let values: Vec<i128> = match op.attrs.get("value") {
         Some(Attr::Array(values)) => values
             .iter()
             .filter_map(|value| match value {
-                Attr::Int(n) => Some(*n),
-                Attr::Raw(raw) => parse_cir_int(raw).map(|n| n as i64),
+                Attr::Int(n) => Some(i128::from(*n)),
+                Attr::Raw(raw) => parse_cir_int(raw),
                 _ => None,
             })
             .collect(),
@@ -19,14 +19,11 @@ pub(super) fn switch_case(op: &Op) -> Option<SwitchCase<'_>> {
             return None;
         };
         vec![Pattern::InclusiveRange {
-            start: i128::from(*start),
-            end: i128::from(*end),
+            start: *start,
+            end: *end,
         }]
     } else {
-        values
-            .into_iter()
-            .map(|value| int_pattern(i128::from(value)))
-            .collect()
+        values.into_iter().map(int_pattern).collect()
     };
     let region = op.regions.first()?;
     Some(SwitchCase {
