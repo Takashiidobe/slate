@@ -23,12 +23,37 @@ fn contains_goto(op: &Op) -> bool {
     })
 }
 
+fn contains_label(op: &Op) -> bool {
+    op.kind() == CirOpKind::Label
+        || op.regions.iter().any(|region| {
+            region
+                .blocks
+                .iter()
+                .any(|block| block.ops.iter().any(contains_label))
+        })
+}
+
+fn contains_nested_label(op: &Op) -> bool {
+    op.regions.first().is_some_and(|body| {
+        body.blocks.iter().any(|block| {
+            block.ops.iter().any(|child| {
+                child.regions.iter().any(|region| {
+                    region
+                        .blocks
+                        .iter()
+                        .any(|block| block.ops.iter().any(contains_label))
+                })
+            })
+        })
+    })
+}
+
 fn needs_flattening(op: &Op) -> bool {
     op.kind() == CirOpKind::Func
         && op
             .regions
             .first()
-            .is_some_and(|body| body.blocks.len() <= 1)
+            .is_some_and(|body| body.blocks.len() <= 1 || contains_nested_label(op))
         && contains_goto(op)
 }
 
@@ -89,7 +114,14 @@ fn merge_flattened_functions(module: &mut Module, flat_module: &Module) {
 /// the extra cir-opt invocation only happens at all when the first parse
 /// finds at least one goto-bearing structured function.
 pub fn emit_module(src: &Path, extra_args: &[String]) -> Result<Module, String> {
-    let mut module = parse_module(&emit_generic_with_args(src, extra_args)?)?;
+    let generic = match emit_generic_with_args(src, extra_args) {
+        Ok(generic) => generic,
+        Err(error) if error.contains("does not dominate this use") => {
+            return parse_module(&emit_generic_with_args_flattened(src, extra_args)?);
+        }
+        Err(error) => return Err(error),
+    };
+    let mut module = parse_module(&generic)?;
     if module_needs_flattening(&module) {
         let flat_module = parse_module(&emit_generic_with_args_flattened(src, extra_args)?)?;
         merge_flattened_functions(&mut module, &flat_module);

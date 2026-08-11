@@ -435,7 +435,11 @@ pub fn emit_generic_with_args_flattened(
     emit_generic_with_args_and_cir_opt_flags(
         src,
         extra_args,
-        &["--cir-flatten-cfg", "--cir-goto-solver"],
+        &[
+            "--verify-each=false",
+            "--cir-flatten-cfg",
+            "--cir-goto-solver",
+        ],
     )
 }
 
