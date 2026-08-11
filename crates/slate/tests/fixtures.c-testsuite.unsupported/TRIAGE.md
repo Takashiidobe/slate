@@ -1,5 +1,4 @@
 
-case_00136: `#ifdef`/`#undef`/`#error` nesting — clang's preprocessor never reaches the `#error bad branch` line, but the generated Rust contains a literal `compile_error!("bad branch")`, so slate's branch selection for this directive nest disagrees with clang's.
 
 case_00143: Duff's device (case labels interleaved inside a `do { ... } while` body) — switch/loop lowering produces wrong runtime behavior (C exits 0, Rust exits 1) rather than a build failure.
 

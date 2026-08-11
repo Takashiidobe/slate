@@ -504,14 +504,16 @@ fn create_sanitized_temp_dir() -> Result<PathBuf, String> {
 
 pub fn record(source: &str, macros: &BTreeMap<String, String>) -> Preprocessing {
     let mut pp = scan(source);
+    resolve_directive_activity(&mut pp.directives, macros);
+    let activity: BTreeMap<_, _> = pp
+        .directives
+        .iter()
+        .map(|directive| (directive.line_start, directive.active))
+        .collect();
     for chain in &mut pp.chains {
-        resolve_active(chain, macros);
-    }
-    for directive in &mut pp.directives {
-        directive.active = match &directive.condition {
-            Some(condition) => eval(condition, macros),
-            None => Some(true),
-        };
+        for branch in &mut chain.branches {
+            branch.active = activity.get(&branch.directive_line).copied().flatten();
+        }
     }
     for chain in &pp.chains {
         for branch in &chain.branches {
@@ -521,6 +523,102 @@ pub fn record(source: &str, macros: &BTreeMap<String, String>) -> Preprocessing 
         }
     }
     pp
+}
+
+struct ConditionalState {
+    parent: Option<bool>,
+    matched: Option<bool>,
+    active: Option<bool>,
+}
+
+fn resolve_directive_activity(
+    directives: &mut [DirectiveRecord],
+    initial_macros: &BTreeMap<String, String>,
+) {
+    let mut macros = initial_macros.clone();
+    let mut stack: Vec<ConditionalState> = Vec::new();
+    for directive in directives {
+        let parsed = conditional_directive(directive.name.as_str(), &directive.raw_payload);
+        match parsed {
+            Some((Directive::Open(kind), arg)) => {
+                let parent = stack.last().map_or(Some(true), |state| state.active);
+                let selected = eval(&open_predicate(kind, arg), &macros);
+                let active = truth_and(parent, selected);
+                stack.push(ConditionalState {
+                    parent,
+                    matched: selected,
+                    active,
+                });
+                directive.active = active;
+            }
+            Some((Directive::Cont(kind), arg)) => {
+                let Some(state) = stack.last_mut() else {
+                    directive.active = Some(true);
+                    continue;
+                };
+                let selected = if kind == DirectiveKind::Else {
+                    truth_not(state.matched)
+                } else {
+                    truth_and(
+                        truth_not(state.matched),
+                        eval(&open_predicate(kind, arg), &macros),
+                    )
+                };
+                state.matched = truth_or(state.matched, selected);
+                state.active = truth_and(state.parent, selected);
+                directive.active = state.active;
+            }
+            Some((Directive::Endif, _)) => {
+                stack.pop();
+                directive.active = stack.last().map_or(Some(true), |state| state.active);
+            }
+            None => {
+                directive.active = stack.last().map_or(Some(true), |state| state.active);
+                if directive.active == Some(true)
+                    && let Some(name) = directive_macro_name(&directive.raw_payload)
+                {
+                    match directive.name {
+                        DirectiveName::Define => {
+                            macros.insert(name.to_string(), String::new());
+                        }
+                        DirectiveName::Undef => {
+                            macros.remove(name);
+                        }
+                        _ => {}
+                    }
+                }
+            }
+        }
+    }
+}
+
+fn directive_macro_name(payload: &str) -> Option<&str> {
+    let payload = payload.trim_start();
+    let end = payload
+        .bytes()
+        .position(|byte| byte != b'_' && !byte.is_ascii_alphanumeric())
+        .unwrap_or(payload.len());
+    (end > 0).then_some(&payload[..end])
+}
+
+fn truth_and(lhs: Option<bool>, rhs: Option<bool>) -> Option<bool> {
+    match (lhs, rhs) {
+        (Some(false), _) | (_, Some(false)) => Some(false),
+        (Some(true), Some(true)) => Some(true),
+        _ => None,
+    }
+}
+
+fn truth_or(lhs: Option<bool>, rhs: Option<bool>) -> Option<bool> {
+    match (lhs, rhs) {
+        (Some(true), _) | (_, Some(true)) => Some(true),
+        (Some(false), Some(false)) => Some(false),
+        _ => None,
+    }
+}
+
+fn truth_not(value: Option<bool>) -> Option<bool> {
+    value.map(|value| !value)
 }
 
 fn classify_branch(branch: &Branch) -> Option<Diagnostic> {
@@ -1032,26 +1130,6 @@ fn open_predicate(kind: DirectiveKind, arg: Option<&str>) -> PredExpr {
             PredExpr::Not(Box::new(PredExpr::Defined(arg.to_string())))
         }
         _ => parse_predicate(arg),
-    }
-}
-
-fn resolve_active(chain: &mut CondChain, macros: &BTreeMap<String, String>) {
-    let mut decided = false;
-    let mut uncertain = false;
-    for branch in &mut chain.branches {
-        let active = if decided {
-            Some(false)
-        } else if uncertain {
-            None
-        } else {
-            eval(&branch.predicate, macros)
-        };
-        match active {
-            Some(true) => decided = true,
-            Some(false) => {}
-            None => uncertain = true,
-        }
-        branch.active = active;
     }
 }
 
