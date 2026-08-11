@@ -2,6 +2,8 @@
     dead_code,
     reason = "test helper toolbox; helpers may sit unused between runs"
 )]
+pub mod libc_shim;
+
 use std::collections::BTreeMap;
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -301,6 +303,7 @@ pub struct RunConfig {
     pub stdin: Vec<u8>,
     pub env: BTreeMap<String, String>,
     pub compare_stderr: bool,
+    pub timeout_seconds: Option<u64>,
 }
 
 /// A cargo bin target name derived from a case name (alnum/underscore only).
@@ -315,9 +318,6 @@ fn bin_name(name: &str) -> String {
 /// `cargo build` instead of one cold crate (and one libc rebuild) per case.
 /// Then compile each C source and compare stdout + exit code. Results are
 /// returned in input order.
-///
-/// If the batched build fails (e.g. a program does not compile), it falls back
-/// to the per-case path so the failing case gets an exact error.
 pub fn compare_batch(cases: &[Case], work_dir: &Path) -> Vec<(String, Result<(), String>)> {
     if cases.is_empty() {
         return Vec::new();
@@ -340,10 +340,14 @@ pub fn compare_batch(cases: &[Case], work_dir: &Path) -> Vec<(String, Result<(),
     parallel_map(cases, |case| {
         let result = (|| {
             let bn = bin_name(&case.name);
-            let rs_bin = match &batch_bins {
-                Ok(()) => target_dir.join("debug").join(&bn),
-                // fall back to an isolated build to pinpoint this case
-                Err(_) => compile_rs_cargo(&case.rs_src, work_dir, &format!("{bn}_rs"))?,
+            let batch_bin = target_dir.join("debug").join(&bn);
+            let rs_bin = if batch_bin.is_file() {
+                batch_bin
+            } else {
+                return Err(match &batch_bins {
+                    Ok(()) => format!("Rust batch build did not produce {}", batch_bin.display()),
+                    Err(error) => format!("Rust batch build failed:\n{error}"),
+                });
             };
             let c_bin = work_dir.join(format!("{}_c", bn));
             compile_c(&case.c_src, &c_bin)?;
@@ -374,19 +378,14 @@ pub fn compile_rs_batch(cases: &[RustCase], work_dir: &Path) -> Vec<(String, Res
     let target_dir = test_target_dir_for_project(&project);
     parallel_map(cases, |case| {
         let bn = bin_name(&case.name);
-        let result = match &batch {
-            Ok(()) => {
-                let bin = target_dir.join("debug").join(&bn);
-                if bin.is_file() {
-                    Ok(())
-                } else {
-                    Err(format!(
-                        "Rust batch build did not produce {}",
-                        bin.display()
-                    ))
-                }
-            }
-            Err(_) => compile_rs_cargo(&case.rs_src, work_dir, &format!("{bn}_rs")).map(|_| ()),
+        let bin = target_dir.join("debug").join(&bn);
+        let result = if bin.is_file() {
+            Ok(())
+        } else {
+            Err(match &batch {
+                Ok(()) => format!("Rust batch build did not produce {}", bin.display()),
+                Err(error) => format!("Rust batch build failed:\n{error}"),
+            })
         };
         (case.name.clone(), result)
     })
@@ -429,7 +428,7 @@ fn build_batch(cases: &[RustCase], project: &Path, bin_dir: &Path) -> Result<(),
     std::fs::create_dir_all(&target_dir)
         .map_err(|e| format!("create {}: {e}", target_dir.display()))?;
     let o = Command::new(cargo())
-        .args(["build", "--quiet", "--manifest-path"])
+        .args(["build", "--quiet", "--keep-going", "--manifest-path"])
         .arg(project.join("Cargo.toml"))
         .arg("--jobs")
         .arg(test_jobs().to_string())
@@ -561,6 +560,7 @@ fn write_long_double_shim(project: &Path) -> Result<(), String> {
     let mut source = String::from(
         r#"#include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 void __slate_strtold(char *nptr, char **endptr, double *out) {
     *out = (double)strtold(nptr, endptr);
@@ -685,7 +685,14 @@ pub fn write_if_changed(path: impl AsRef<Path>, contents: &[u8]) -> std::io::Res
 }
 
 pub fn run_with_config(bin: &Path, config: &RunConfig, cwd: &Path) -> Result<Run, String> {
-    let mut cmd = Command::new(bin);
+    let mut cmd = if let Some(seconds) = config.timeout_seconds {
+        let mut cmd = Command::new("timeout");
+        cmd.args(["--kill-after=1", &format!("{seconds}s")])
+            .arg(bin);
+        cmd
+    } else {
+        Command::new(bin)
+    };
     cmd.current_dir(cwd)
         .args(&config.args)
         .env("LC_ALL", "C")
@@ -713,6 +720,15 @@ pub fn run_with_config(bin: &Path, config: &RunConfig, cwd: &Path) -> Result<Run
     let o = child
         .wait_with_output()
         .map_err(|e| format!("wait {}: {e}", bin.display()))?;
+    if let Some(seconds) = config.timeout_seconds
+        && matches!(o.status.code(), Some(124 | 137))
+    {
+        return Err(format!(
+            "run {} timed out after {} seconds",
+            bin.display(),
+            seconds
+        ));
+    }
     Ok(Run {
         stdout: o.stdout,
         stderr: o.stderr,

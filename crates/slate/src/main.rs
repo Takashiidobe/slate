@@ -2150,6 +2150,7 @@ fn emit_fixtures() -> Result<String, String> {
         manifest.join("tests/fixtures.multi.generated"),
         manifest.join("tests/fixtures.chibicc.generated"),
         manifest.join("tests/fixtures.c-testsuite.generated"),
+        manifest.join("tests/fixtures.gcc-torture.generated"),
         manifest.join("tests/fixtures.library.generated"),
         manifest.join("tests/stdlib.generated"),
     ];
@@ -2185,6 +2186,13 @@ fn emit_fixtures() -> Result<String, String> {
     report.push_str(&emit_c_fixture_tree(
         &manifest.join("tests/fixtures.c-testsuite"),
         &manifest.join("tests/fixtures.c-testsuite.generated"),
+        false,
+        |_| true,
+        translate,
+    )?);
+    report.push_str(&emit_c_fixture_tree(
+        &manifest.join("tests/fixtures.gcc-torture"),
+        &manifest.join("tests/fixtures.gcc-torture.generated"),
         false,
         |_| true,
         translate,
