@@ -51,8 +51,7 @@ pub fn lowered_program_with_args(
         .cloned()
         .chain(input.extra_args().iter().cloned())
         .collect();
-    let cir_text = cir::emit::emit_generic_with_args(path, &all_args)?;
-    let module = cir::parse_module(&cir_text)?;
+    let module = cir::emit_module(path, &all_args)?;
     let unit = c_ast::parse_file_with_args(path, &all_args)?;
 
     let mut ctx = ctx::Ctx::default();
