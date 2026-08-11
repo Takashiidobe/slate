@@ -6,9 +6,106 @@ use crate::backend;
 use crate::backend::rust_ast::{Attr, Cfg, Expr, Item, Program, TraitRef, Type};
 use crate::{cir, ctx};
 use std::collections::{BTreeMap, BTreeSet};
-use std::path::Path;
+use std::path::{Path, PathBuf};
+use thiserror::Error;
 
 const MAX_CFG_VARIANTS: usize = 16;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ConditionalBoundary {
+    Directive,
+    Endif,
+}
+
+impl std::fmt::Display for ConditionalBoundary {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Directive => f.write_str("conditional directive"),
+            Self::Endif => f.write_str("#endif"),
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct LoweringDiagnostics {
+    pub items: Vec<ctx::Diagnostic>,
+}
+
+impl std::fmt::Display for LoweringDiagnostics {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        for diagnostic in &self.items {
+            write!(f, "\n{:?}: {}", diagnostic.severity, diagnostic.message)?;
+        }
+        Ok(())
+    }
+}
+
+#[derive(Debug, Error)]
+pub enum DirectiveError {
+    #[error("read {path}: {source}")]
+    Read {
+        path: PathBuf,
+        #[source]
+        source: std::io::Error,
+    },
+    #[error("translate-directives: {message}")]
+    UnsupportedDirective { line: usize, message: String },
+    #[error(
+        "translate-directives: {directive} is guarded by predicate `{predicate}` which does not map to a known Rust cfg"
+    )]
+    UnmappableDirectiveGuard {
+        line: usize,
+        directive: String,
+        predicate: String,
+    },
+    #[error(
+        "translate-directives: {boundary} at line {line} is inside a function or record body; only whole-item (top-level) #if regions can be merged as Rust cfg items"
+    )]
+    ConditionalInBody {
+        line: usize,
+        boundary: ConditionalBoundary,
+    },
+    #[error(
+        "translate-directives: configuration variant cap exceeded: {variants} branch variants across {regions} conditional region(s), cap is {cap}; region at line {line} would make cfg recovery too expensive"
+    )]
+    VariantCapExceeded {
+        variants: usize,
+        regions: usize,
+        cap: usize,
+        line: usize,
+    },
+    #[error(
+        "translate-directives: predicate `{predicate}` at line {line} does not map to a known Rust cfg; cannot emit a whole-item cfg attribute"
+    )]
+    UnmappablePredicate { line: usize, predicate: String },
+    #[error(
+        "translate-directives: could not construct a configuration selecting the branch at line {line} (predicate `{predicate}`); negated or interdependent predicates are not yet supported"
+    )]
+    UnselectableBranch { line: usize, predicate: String },
+    #[error("preprocess {path}: {source}")]
+    Preprocess {
+        path: PathBuf,
+        #[source]
+        source: preprocess::PreprocessError,
+    },
+    #[error("load CIR for {path}: {source}")]
+    Cir {
+        path: PathBuf,
+        #[source]
+        source: cir::ModuleError,
+    },
+    #[error("load Clang AST for {path}: {source}")]
+    Ast {
+        path: PathBuf,
+        #[source]
+        source: c_ast::AstError,
+    },
+    #[error("lowering failed for {path}:{diagnostics}")]
+    Lowering {
+        path: PathBuf,
+        diagnostics: LoweringDiagnostics,
+    },
+}
 
 #[derive(Debug, Clone)]
 struct CfgConfig {
@@ -34,9 +131,11 @@ struct CfgPlan {
     configs: Vec<CfgConfig>,
 }
 
-pub fn translate_directives(path: &Path) -> Result<String, String> {
-    let source =
-        std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
+pub fn translate_directives(path: &Path) -> Result<String, DirectiveError> {
+    let source = std::fs::read_to_string(path).map_err(|source| DirectiveError::Read {
+        path: path.to_path_buf(),
+        source,
+    })?;
     let directive_pp = preprocess::record(&source, &BTreeMap::new());
     let directive_items = directive_items(&directive_pp)?;
     let plan = match plan_configs(&source)? {
@@ -63,7 +162,7 @@ pub fn translate_directives(path: &Path) -> Result<String, String> {
     Ok(program.emit())
 }
 
-fn directive_items(pp: &Preprocessing) -> Result<Vec<Item>, String> {
+fn directive_items(pp: &Preprocessing) -> Result<Vec<Item>, DirectiveError> {
     let mut items = Vec::new();
     let mut warning_index = 0;
     for directive in pp.directives.iter().filter(|directive| {
@@ -81,25 +180,29 @@ fn directive_items(pp: &Preprocessing) -> Result<Vec<Item>, String> {
         if directive.disposition() == DirectiveDisposition::UnsupportedSemantic
             && directive.condition.is_none()
         {
-            return Err(format!(
-                "translate-directives: {}",
-                directive.unsupported_message()
-            ));
+            return Err(DirectiveError::UnsupportedDirective {
+                line: directive.line_start,
+                message: directive.unsupported_message(),
+            });
         }
         let cfg = directive
             .condition
             .as_ref()
             .map(|condition| {
                 preprocess::pred_to_cfg(condition).ok_or_else(|| {
-                    format!(
-                        "translate-directives: {} is guarded by predicate `{}` which does not map to a known Rust cfg",
-                        match directive.name {
-                            DirectiveName::Error => format!("#error at line {}", directive.line_start),
-                            DirectiveName::Warning => format!("#warning at line {}", directive.line_start),
+                    DirectiveError::UnmappableDirectiveGuard {
+                        line: directive.line_start,
+                        directive: match directive.name {
+                            DirectiveName::Error => {
+                                format!("#error at line {}", directive.line_start)
+                            }
+                            DirectiveName::Warning => {
+                                format!("#warning at line {}", directive.line_start)
+                            }
                             _ => directive.unsupported_message(),
                         },
-                        preprocess::predicate_text(condition)
-                    )
+                        predicate: preprocess::predicate_text(condition),
+                    }
                 })
             })
             .transpose()?;
@@ -183,7 +286,7 @@ pub fn insert_directive_items(program: &mut Program, items: Vec<Item>) {
     program.items.splice(index..index, items);
 }
 
-fn plan_configs(source: &str) -> Result<Option<CfgPlan>, String> {
+fn plan_configs(source: &str) -> Result<Option<CfgPlan>, DirectiveError> {
     let pp = preprocess::record(source, &BTreeMap::new());
     if pp.chains.is_empty() {
         return Ok(None);
@@ -194,46 +297,45 @@ fn plan_configs(source: &str) -> Result<Option<CfgPlan>, String> {
     for chain in &pp.chains {
         for branch in &chain.branches {
             if depth_at(branch.directive_line) > 0 {
-                return Err(format!(
-                    "translate-directives: conditional directive at line {} is inside a function or record \
-                     body; only whole-item (top-level) #if regions can be merged as Rust cfg items",
-                    branch.directive_line
-                ));
+                return Err(DirectiveError::ConditionalInBody {
+                    line: branch.directive_line,
+                    boundary: ConditionalBoundary::Directive,
+                });
             }
         }
         if depth_at(chain.endif_line) > 0 {
-            return Err(format!(
-                "translate-directives: #endif at line {} is inside a function or record body; only \
-                 whole-item (top-level) #if regions can be merged as Rust cfg items",
-                chain.endif_line
-            ));
+            return Err(DirectiveError::ConditionalInBody {
+                line: chain.endif_line,
+                boundary: ConditionalBoundary::Endif,
+            });
         }
     }
 
     let variant_count: usize = pp.chains.iter().map(|chain| chain.branches.len()).sum();
     if variant_count > MAX_CFG_VARIANTS {
-        return Err(format!(
-            "translate-directives: configuration variant cap exceeded: {variant_count} branch variants \
-             across {} conditional region(s), cap is {MAX_CFG_VARIANTS}; region at line {} would \
-             make cfg recovery too expensive",
-            pp.chains.len(),
-            pp.chains
+        return Err(DirectiveError::VariantCapExceeded {
+            variants: variant_count,
+            regions: pp.chains.len(),
+            cap: MAX_CFG_VARIANTS,
+            line: pp
+                .chains
                 .get(MAX_CFG_VARIANTS)
                 .or_else(|| pp.chains.last())
                 .map(|chain| chain.open_line)
-                .unwrap_or(1)
-        ));
+                .unwrap_or(1),
+        });
     }
 
     for chain in &pp.chains {
         for branch in &chain.branches {
             if branch.rust_cfg.is_none() {
-                return Err(format!(
-                    "translate-directives: predicate `{}` at line {} does not map to a known Rust cfg; \
-                     cannot emit a whole-item cfg attribute",
-                    branch.raw_predicate.as_deref().unwrap_or("(else)"),
-                    branch.directive_line
-                ));
+                return Err(DirectiveError::UnmappablePredicate {
+                    line: branch.directive_line,
+                    predicate: branch
+                        .raw_predicate
+                        .clone()
+                        .unwrap_or_else(|| "(else)".into()),
+                });
             }
         }
     }
@@ -252,13 +354,13 @@ fn plan_configs(source: &str) -> Result<Option<CfgPlan>, String> {
             }
             let clang_args = pin_args(&atoms, &defines);
             if !selects_only(source, &selected, &defines) {
-                return Err(format!(
-                    "translate-directives: could not construct a configuration selecting the branch at \
-                     line {} (predicate `{}`); negated or interdependent predicates are not yet \
-                     supported",
-                    branch.directive_line,
-                    branch.raw_predicate.as_deref().unwrap_or("(else)")
-                ));
+                return Err(DirectiveError::UnselectableBranch {
+                    line: branch.directive_line,
+                    predicate: branch
+                        .raw_predicate
+                        .clone()
+                        .unwrap_or_else(|| "(else)".into()),
+                });
             }
             configs.push(CfgConfig {
                 rust_cfg: selected_cfg(&pp, &selected),
@@ -464,9 +566,11 @@ fn line_start_depths(source: &str) -> Vec<i32> {
     depths
 }
 
-fn translate_one(path: &Path, clang_args: &[String]) -> Result<Translation, String> {
-    let source =
-        std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
+fn translate_one(path: &Path, clang_args: &[String]) -> Result<Translation, DirectiveError> {
+    let source = std::fs::read_to_string(path).map_err(|source| DirectiveError::Read {
+        path: path.to_path_buf(),
+        source,
+    })?;
     let pp = preprocess::record(&source, &BTreeMap::new());
     let sanitized: Vec<_> = pp
         .directives
@@ -480,22 +584,35 @@ fn translate_one(path: &Path, clang_args: &[String]) -> Result<Translation, Stri
                     || directive.condition.is_some() && !directive.is_poison_pragma())
         })
         .collect();
-    let input =
-        preprocess::clang_input(path, &source, &sanitized).map_err(|error| error.to_string())?;
+    let input = preprocess::clang_input(path, &source, &sanitized).map_err(|source| {
+        DirectiveError::Preprocess {
+            path: path.to_path_buf(),
+            source,
+        }
+    })?;
     let mut frontend_args = clang_args.to_vec();
     frontend_args.extend_from_slice(input.extra_args());
-    let module = cir::emit_module(path, &frontend_args).map_err(|error| error.to_string())?;
-    let unit =
-        c_ast::parse_file_with_args(path, &frontend_args).map_err(|error| error.to_string())?;
+    let module = cir::emit_module(path, &frontend_args).map_err(|source| DirectiveError::Cir {
+        path: path.to_path_buf(),
+        source,
+    })?;
+    let unit = c_ast::parse_file_with_args(path, &frontend_args).map_err(|source| {
+        DirectiveError::Ast {
+            path: path.to_path_buf(),
+            source,
+        }
+    })?;
     let item_lines = item_lines(&unit);
 
     let mut ctx = ctx::Ctx::default();
     let program = frontend::lower(&module, &unit, &mut ctx);
-    for d in &ctx.diagnostics.items {
-        eprintln!("{:?}: {}", d.severity, d.message);
-    }
     if ctx.diagnostics.has_errors() {
-        return Err(format!("lowering failed for {}", path.display()));
+        return Err(DirectiveError::Lowering {
+            path: path.to_path_buf(),
+            diagnostics: LoweringDiagnostics {
+                items: ctx.diagnostics.items,
+            },
+        });
     }
     Ok(Translation {
         program: backend::apply(program),

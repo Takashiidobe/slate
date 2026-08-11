@@ -55,7 +55,8 @@ fn main() -> ExitCode {
             None => usage(),
         },
         Some("translate-directives") => match args.get(2) {
-            Some(path) => run(directive_translate::translate_directives(Path::new(path))),
+            Some(path) => run(directive_translate::translate_directives(Path::new(path))
+                .map_err(|error| error.to_string())),
             None => usage(),
         },
         Some("record-cfg") => match args.get(2) {
@@ -2143,7 +2144,7 @@ fn emit_fixtures() -> Result<String, String> {
         &manifest.join("tests/fixtures.cfg.generated"),
         false,
         |_| true,
-        directive_translate::translate_directives,
+        |path| directive_translate::translate_directives(path).map_err(|error| error.to_string()),
     )?);
     report.push_str(&emit_project_fixture_tree(
         &manifest.join("tests/fixtures.multi"),
