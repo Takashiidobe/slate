@@ -151,8 +151,14 @@ where
 }
 
 pub fn compile_c(src: &Path, out: &Path) -> Result<(), String> {
+    compile_c_with_args(src, out, &[])
+}
+
+pub fn compile_c_with_args(src: &Path, out: &Path, extra_args: &[String]) -> Result<(), String> {
     let o = Command::new(cc())
-        .args(["-O0", "-std=c23", "-o"])
+        .args(["-O0", "-std=c23"])
+        .args(extra_args)
+        .arg("-o")
         .arg(out)
         .arg(src)
         .arg("-lm")
@@ -313,6 +319,7 @@ pub struct RunConfig {
     pub env: BTreeMap<String, String>,
     pub compare_stderr: bool,
     pub timeout_seconds: Option<u64>,
+    pub c_args: Vec<String>,
 }
 
 /// A cargo bin target name derived from a case name (alnum/underscore only).
@@ -367,7 +374,7 @@ pub fn compare_batch_with_jobs(
                 });
             };
             let c_bin = work_dir.join(format!("{}_c", bn));
-            compile_c(&case.c_src, &c_bin)?;
+            compile_c_with_args(&case.c_src, &c_bin, &case.config.c_args)?;
             let run_dir = work_dir.join("runs").join(&bn);
             if run_dir.exists() {
                 std::fs::remove_dir_all(&run_dir)
@@ -759,8 +766,16 @@ pub fn run_with_config(bin: &Path, config: &RunConfig, cwd: &Path) -> Result<Run
 }
 
 pub fn translate(c_src: &Path, rs_out: &Path) -> Result<(), String> {
+    translate_with_args(c_src, rs_out, &[])
+}
+
+pub fn translate_with_args(
+    c_src: &Path,
+    rs_out: &Path,
+    extra_args: &[String],
+) -> Result<(), String> {
     ensure_c23_clang_args();
-    let rust = slate::api::translate(c_src)?;
+    let rust = slate::api::translate_with_args(c_src, extra_args)?;
     write_if_changed(rs_out, rust.as_bytes())
         .map(|_| ())
         .map_err(|e| format!("write {}: {e}", rs_out.display()))

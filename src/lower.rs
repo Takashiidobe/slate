@@ -6733,6 +6733,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     ty: self.parent.rust_type(result_ty),
                 })
             }
+            _ if is_cir_function_pointer_type(result_ty)
+                && is_cir_function_pointer_type(operand_ty)
+                && result_ty != operand_ty =>
+            {
+                Val::Expr(Expr::Transmute {
+                    from: self.parent.rust_type(operand_ty),
+                    to: self.parent.rust_type(result_ty),
+                    expr: Box::new(self.function_pointer_operand_expr(src)),
+                })
+            }
             _ if result_ty.starts_with("!cir.ptr<")
                 && operand_ty.starts_with("!cir.ptr<")
                 && !(is_cir_function_pointer_type(result_ty)

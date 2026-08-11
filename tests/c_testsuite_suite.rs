@@ -34,11 +34,15 @@ fn run_cases(group: &str, dir: &Path) -> Vec<(String, Result<(), String>)> {
 
     let translated = support::parallel_map(&cases, |(name, path)| {
         let generated = work.join(format!("{name}.generated.rs"));
-        support::translate(path, &generated).map(|()| support::Case {
+        let clang_args = vec!["-std=gnu17".to_string()];
+        support::translate_with_args(path, &generated, &clang_args).map(|()| support::Case {
             name: name.clone(),
             c_src: path.clone(),
             rs_src: generated,
-            config: support::RunConfig::default(),
+            config: support::RunConfig {
+                c_args: clang_args,
+                ..support::RunConfig::default()
+            },
         })
     });
 

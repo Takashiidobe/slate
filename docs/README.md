@@ -100,6 +100,21 @@ also require `SLATE_ANDROID_API=<level>`; the 64-bit Bionic baseline starts at
 API 21. `SLATE_TARGET=aarch64-apple-darwin` selects the narrow AArch64 macOS
 profile at the macOS 11.0 deployment baseline.
 
+Slate defaults to GNU C23. Legacy inputs that rely on pre-C23 semantics, such
+as unspecified parameter lists written as `int (*)()`, can select an older
+mode explicitly without changing the default:
+
+```bash
+cargo run -- translate -std=gnu17 legacy.c
+```
+
+Frontend flags precede the input path and apply consistently to preprocessing,
+CIR emission, and Clang AST extraction.
+
+The vendored c-testsuite corpus is compiled and translated uniformly as GNU
+C17 because it predates C23 and includes declarations whose meaning changed in
+C23.
+
 `translate-project <dir> <out_dir>` lowers only the active `SLATE_TARGET`, or
 Slate's own build target when that variable is unset. Repeatable
 `--target <triple>` options add cfg-gated project variants; each triple selects
