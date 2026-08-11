@@ -4,7 +4,6 @@
 
 
 
-case_00189: `static mut fprintfptr: Option<extern "C" fn(*mut FILE, *mut i8) -> i32> = Some(fprintf)` — function-pointer-typed global initialized from `fprintf`'s real (variadic) signature; the recovered type doesn't match.
 
 case_00199: `goto done;` skipping over a nested block's locals — Rust panics at runtime (exit 101) instead of matching C's exit 0; goto-across-scope handling bug.
 
