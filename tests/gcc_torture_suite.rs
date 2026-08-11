@@ -2,6 +2,24 @@ mod support;
 
 use std::path::{Path, PathBuf};
 
+fn gcc_torture_jobs() -> usize {
+    std::env::var("SLATE_GCC_TORTURE_JOBS")
+        .ok()
+        .and_then(|value| value.parse().ok())
+        .filter(|jobs| *jobs > 0)
+        .or_else(|| {
+            std::env::var("SLATE_TEST_JOBS")
+                .ok()
+                .and_then(|value| value.parse().ok())
+                .filter(|jobs| *jobs > 0)
+        })
+        .unwrap_or_else(|| {
+            std::thread::available_parallelism()
+                .map(usize::from)
+                .unwrap_or(1)
+        })
+}
+
 fn supported_root() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures.gcc-torture")
 }
@@ -31,12 +49,13 @@ fn collect_cases(dir: &Path) -> Vec<(String, PathBuf)> {
 
 fn run_cases(group: &str, dir: &Path) -> Vec<(String, Result<(), String>)> {
     let cases = collect_cases(dir);
+    let jobs = gcc_torture_jobs();
     let work = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("target/gcc-torture-suite")
         .join(group);
     std::fs::create_dir_all(&work).expect("create work dir");
 
-    let translated = support::parallel_map(&cases, |(name, path)| {
+    let translated = support::parallel_map_with_jobs(&cases, jobs, |(name, path)| {
         let generated = work.join(format!("{name}.generated.rs"));
         support::translate(path, &generated).map(|()| support::Case {
             name: name.clone(),
@@ -58,7 +77,7 @@ fn run_cases(group: &str, dir: &Path) -> Vec<(String, Result<(), String>)> {
         }
     }
 
-    results.extend(support::compare_batch(&compiled, &work));
+    results.extend(support::compare_batch_with_jobs(&compiled, &work, jobs));
     results.sort_by(|a, b| a.0.cmp(&b.0));
     results
 }
@@ -78,6 +97,7 @@ fn gcc_torture_supported_tests_match_c() {
 }
 
 #[test]
+#[ignore = "run manually to find cases ready for promotion"]
 fn gcc_torture_unsupported_tests_still_fail() {
     let results = run_cases("unsupported", &unsupported_root());
     let unexpected_passes: Vec<String> = results
