@@ -106,10 +106,19 @@ where
     R: Send,
     F: Fn(&T) -> R + Sync,
 {
+    parallel_map_with_jobs(items, test_jobs(), f)
+}
+
+pub fn parallel_map_with_jobs<T, R, F>(items: &[T], jobs: usize, f: F) -> Vec<R>
+where
+    T: Sync,
+    R: Send,
+    F: Fn(&T) -> R + Sync,
+{
     if items.is_empty() {
         return Vec::new();
     }
-    let jobs = test_jobs().min(items.len());
+    let jobs = jobs.max(1).min(items.len());
     let next = AtomicUsize::new(0);
     let (tx, rx) = mpsc::channel();
     thread::scope(|scope| {
@@ -319,6 +328,14 @@ fn bin_name(name: &str) -> String {
 /// Then compile each C source and compare stdout + exit code. Results are
 /// returned in input order.
 pub fn compare_batch(cases: &[Case], work_dir: &Path) -> Vec<(String, Result<(), String>)> {
+    compare_batch_with_jobs(cases, work_dir, test_jobs())
+}
+
+pub fn compare_batch_with_jobs(
+    cases: &[Case],
+    work_dir: &Path,
+    jobs: usize,
+) -> Vec<(String, Result<(), String>)> {
     if cases.is_empty() {
         return Vec::new();
     }
@@ -334,10 +351,10 @@ pub fn compare_batch(cases: &[Case], work_dir: &Path) -> Vec<(String, Result<(),
         })
         .collect();
 
-    let batch_bins = build_batch(&rust_cases, &project, &bin_dir);
+    let batch_bins = build_batch(&rust_cases, &project, &bin_dir, jobs);
     let target_dir = test_target_dir_for_project(&project);
 
-    parallel_map(cases, |case| {
+    parallel_map_with_jobs(cases, jobs, |case| {
         let result = (|| {
             let bn = bin_name(&case.name);
             let batch_bin = target_dir.join("debug").join(&bn);
@@ -374,7 +391,7 @@ pub fn compile_rs_batch(cases: &[RustCase], work_dir: &Path) -> Vec<(String, Res
     }
     let project = work_dir.join("batch_cargo");
     let bin_dir = project.join("src/bin");
-    let batch = build_batch(cases, &project, &bin_dir);
+    let batch = build_batch(cases, &project, &bin_dir, test_jobs());
     let target_dir = test_target_dir_for_project(&project);
     parallel_map(cases, |case| {
         let bn = bin_name(&case.name);
@@ -392,7 +409,12 @@ pub fn compile_rs_batch(cases: &[RustCase], work_dir: &Path) -> Vec<(String, Res
 }
 
 /// Write one crate with a `src/bin/<name>.rs` per case and build them together.
-fn build_batch(cases: &[RustCase], project: &Path, bin_dir: &Path) -> Result<(), String> {
+fn build_batch(
+    cases: &[RustCase],
+    project: &Path,
+    bin_dir: &Path,
+    jobs: usize,
+) -> Result<(), String> {
     std::fs::create_dir_all(bin_dir).map_err(|e| format!("create {}: {e}", bin_dir.display()))?;
     write_if_changed(
         project.join("Cargo.toml"),
@@ -431,7 +453,7 @@ fn build_batch(cases: &[RustCase], project: &Path, bin_dir: &Path) -> Result<(),
         .args(["build", "--quiet", "--keep-going", "--manifest-path"])
         .arg(project.join("Cargo.toml"))
         .arg("--jobs")
-        .arg(test_jobs().to_string())
+        .arg(jobs.max(1).to_string())
         .arg("--target-dir")
         .arg(&target_dir)
         .output()

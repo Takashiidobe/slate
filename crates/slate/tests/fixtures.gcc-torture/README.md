@@ -24,8 +24,18 @@ compile time, and rejected 7 that aborted. Differential classification placed
 output is preserved as `../fixtures.gcc-torture.unsupported/TRIAGE.log.gz` and
 follow-up classification is tracked by `slate-os0h.3.1`.
 
-Both bucket guards run under `cargo nextest r --release`. To inspect one
-unsupported case through the shared cached `src/bin` batch crate, run:
+The supported bucket runs under `cargo nextest r --release` and uses every
+available CPU through one shared work queue and cached `src/bin` batch crate.
+Set `SLATE_GCC_TORTURE_JOBS` or `SLATE_TEST_JOBS` to limit it. The unsupported
+guards are ignored during the normal gate. To check the full unsupported
+bucket for cases ready to promote, run:
+
+```bash
+cargo nextest r --release --test gcc_torture_suite -E 'test(gcc_torture_unsupported_tests_still_fail)' --run-ignored ignored-only
+```
+
+To inspect one unsupported case through the shared cached `src/bin` batch
+crate, run:
 
 ```bash
 SLATE_GCC_TORTURE_FIXTURE=<case-stem> cargo nextest r --release --test gcc_torture_suite -E 'test(gcc_torture_unsupported_triage_report)' --run-ignored ignored-only --nocapture
