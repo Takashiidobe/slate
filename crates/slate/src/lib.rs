@@ -1,15 +1,11 @@
 pub mod api;
-pub mod c_ast;
-pub mod c_shim;
 pub mod cir;
 pub mod codegen;
 pub mod compile_commands;
 pub mod ctx;
-pub mod directive_translate;
 pub mod effects;
 pub mod fixups;
+pub mod frontend;
 pub mod function_identity;
-pub mod lower;
 pub mod macros;
-pub mod preprocess;
 pub mod rust_ast;

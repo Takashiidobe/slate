@@ -1,8 +1,6 @@
 use slate::effects::interp::interpret_program_main;
-use slate::{
-    api, c_ast, c_shim, cir, codegen, compile_commands, ctx, directive_translate, effects, fixups,
-    lower, preprocess, rust_ast,
-};
+use slate::frontend::{self, c_ast, c_shim, directive_translate, preprocess};
+use slate::{api, cir, codegen, compile_commands, ctx, effects, fixups, rust_ast};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitCode};
@@ -345,7 +343,7 @@ fn collect_record_type_names(ty: &c_ast::CType, out: &mut BTreeSet<String>) {
                 collect_record_type_names(param, out);
             }
         }
-        c_ast::CType::Record(name) if !lower::is_clib_record_type(name) => {
+        c_ast::CType::Record(name) if !frontend::is_clib_record_type(name) => {
             out.insert(rust_ident(name));
         }
         _ => {}
@@ -895,18 +893,18 @@ fn translate_project_lib_crate_with_manifest(
         )?;
         uses_slate_support |= !warning_items.is_empty();
         let module = cir::emit_module(path, &[])?;
-        for sym in lower::defined_functions(&module) {
+        for sym in frontend::defined_functions(&module) {
             defined.insert(sym, stem.clone());
         }
-        for sym in lower::defined_globals(&module) {
+        for sym in frontend::defined_globals(&module) {
             defined_globals.insert(sym, stem.clone());
         }
-        unsafe_functions.extend(lower::unsafe_defined_functions(&module));
-        address_taken_functions.extend(lower::address_taken_functions(&module));
-        crate_features.extend(lower::required_features(&module));
-        cross_referenced_functions.extend(lower::declared_functions(&module));
-        cross_referenced_globals.extend(lower::declared_globals(&module));
-        has_setlocale |= lower::declared_functions(&module)
+        unsafe_functions.extend(frontend::unsafe_defined_functions(&module));
+        address_taken_functions.extend(frontend::address_taken_functions(&module));
+        crate_features.extend(frontend::required_features(&module));
+        cross_referenced_functions.extend(frontend::declared_functions(&module));
+        cross_referenced_globals.extend(frontend::declared_globals(&module));
+        has_setlocale |= frontend::declared_functions(&module)
             .iter()
             .any(|name| name == "setlocale");
         let unit = c_ast::parse_file_with_project_records(path, project_dir)?;
@@ -928,7 +926,7 @@ fn translate_project_lib_crate_with_manifest(
                 }
             }
         }
-        for record in lower::shim_records_for_module(&module, &unit) {
+        for record in frontend::shim_records_for_module(&module, &unit) {
             collect_record_field_type_names(&record, &mut referenced_record_types);
             shared_records
                 .entry(rust_ident(&record.name))
@@ -949,22 +947,23 @@ fn translate_project_lib_crate_with_manifest(
     shared_records.retain(|name, _| !record_shape_conflicts.contains(name));
     let shared_record_names: BTreeSet<String> = shared_records.keys().cloned().collect();
     let shared_enum_names: BTreeSet<String> = shared_enums.keys().cloned().collect();
-    let shared_long_double =
-        lower::shared_types_use_long_double(&shared_records.values().cloned().collect::<Vec<_>>());
+    let shared_long_double = frontend::shared_types_use_long_double(
+        &shared_records.values().cloned().collect::<Vec<_>>(),
+    );
 
     let tests_dir = project_dir.join("tests");
     let translate_tests = source_manifest.is_none() && tests_dir.is_dir();
     if translate_tests {
         for (_, path) in collect_c_modules(&tests_dir)? {
             let module = cir::emit_module(&path, &[])?;
-            has_setlocale |= lower::declared_functions(&module)
+            has_setlocale |= frontend::declared_functions(&module)
                 .iter()
                 .any(|name| name == "setlocale");
-            address_taken_functions.extend(lower::address_taken_functions(&module));
+            address_taken_functions.extend(frontend::address_taken_functions(&module));
         }
     }
 
-    let project = lower::ProjectInfo {
+    let project = frontend::ProjectInfo {
         cross_module: defined,
         cross_module_globals: defined_globals,
         shared_records: shared_record_names,
@@ -993,7 +992,7 @@ fn translate_project_lib_crate_with_manifest(
     let mut module_progs: Vec<rust_ast::Program> = Vec::new();
     for (stem, path, module, unit, warning_items) in loaded_modules {
         let mut ctx = ctx::Ctx::default();
-        let mut program = lower::lower_with_project(&module, &unit, &mut ctx, &project);
+        let mut program = frontend::lower_with_project(&module, &unit, &mut ctx, &project);
         for d in &ctx.diagnostics.items {
             eprintln!("{:?}: {}", d.severity, d.message);
         }
@@ -1016,7 +1015,7 @@ fn translate_project_lib_crate_with_manifest(
         let records: Vec<_> = shared_records.into_values().collect();
         let enums: Vec<_> = shared_enums.into_values().collect();
         module_paths.push(crate_src.join("types.rs"));
-        module_progs.push(lower::lower_shared_types(&records, &enums));
+        module_progs.push(frontend::lower_shared_types(&records, &enums));
     }
 
     let mut lib_rs = String::new();
@@ -1056,7 +1055,7 @@ fn translate_project_lib_crate_with_manifest(
             uses_slate_support |= !warning_items.is_empty();
             let module = cir::emit_module(&path, &[])?;
             let unit = c_ast::parse_file_with_project_records(&path, project_dir)?;
-            let test_project = lower::ProjectInfo {
+            let test_project = frontend::ProjectInfo {
                 cross_module: project.cross_module.clone(),
                 cross_module_globals: project.cross_module_globals.clone(),
                 unsafe_functions: project.unsafe_functions.clone(),
@@ -1069,10 +1068,10 @@ fn translate_project_lib_crate_with_manifest(
                 cross_module_crate: Some(package.clone()),
                 crate_features: project.crate_features.clone(),
                 emit_pub: true,
-                ..lower::ProjectInfo::default()
+                ..frontend::ProjectInfo::default()
             };
             let mut ctx = ctx::Ctx::default();
-            let mut program = lower::lower_with_project(&module, &unit, &mut ctx, &test_project);
+            let mut program = frontend::lower_with_project(&module, &unit, &mut ctx, &test_project);
             for d in &ctx.diagnostics.items {
                 eprintln!("{:?}: {}", d.severity, d.message);
             }
@@ -1212,28 +1211,28 @@ fn translate_project_lib_crate_with_compile_commands(
         uses_slate_support |= !warning_items.is_empty();
         let module = cir::emit_module(path, &args)?;
         let variant_facts = facts.entry(cfg.clone()).or_default();
-        for symbol in lower::defined_functions(&module) {
+        for symbol in frontend::defined_functions(&module) {
             variant_facts.defined.insert(symbol, stem.clone());
         }
-        for symbol in lower::defined_globals(&module) {
+        for symbol in frontend::defined_globals(&module) {
             variant_facts.defined_globals.insert(symbol, stem.clone());
         }
         variant_facts
             .unsafe_functions
-            .extend(lower::unsafe_defined_functions(&module));
+            .extend(frontend::unsafe_defined_functions(&module));
         variant_facts
             .address_taken_functions
-            .extend(lower::address_taken_functions(&module));
+            .extend(frontend::address_taken_functions(&module));
         variant_facts
             .crate_features
-            .extend(lower::required_features(&module));
+            .extend(frontend::required_features(&module));
         variant_facts
             .cross_referenced_functions
-            .extend(lower::declared_functions(&module));
+            .extend(frontend::declared_functions(&module));
         variant_facts
             .cross_referenced_globals
-            .extend(lower::declared_globals(&module));
-        variant_facts.has_setlocale |= lower::declared_functions(&module)
+            .extend(frontend::declared_globals(&module));
+        variant_facts.has_setlocale |= frontend::declared_functions(&module)
             .iter()
             .any(|name| name == "setlocale");
         let unit = c_ast::parse_file_with_project_records_and_args(path, project_dir, &args)?;
@@ -1255,7 +1254,7 @@ fn translate_project_lib_crate_with_compile_commands(
                 }
             }
         }
-        for record in lower::shim_records_for_module(&module, &unit) {
+        for record in frontend::shim_records_for_module(&module, &unit) {
             collect_record_field_type_names(&record, &mut referenced_record_types);
             shared_records
                 .entry(rust_ident(&record.name))
@@ -1284,8 +1283,9 @@ fn translate_project_lib_crate_with_compile_commands(
 
     let shared_record_names: BTreeSet<_> = shared_records.keys().cloned().collect();
     let shared_enum_names: BTreeSet<_> = shared_enums.keys().cloned().collect();
-    let shared_long_double =
-        lower::shared_types_use_long_double(&shared_records.values().cloned().collect::<Vec<_>>());
+    let shared_long_double = frontend::shared_types_use_long_double(
+        &shared_records.values().cloned().collect::<Vec<_>>(),
+    );
     let has_setlocale = facts.values().any(|facts| facts.has_setlocale);
     let fixup_skip = if has_setlocale {
         fixups::SkipSet::skip(fixups::Pass::CTypeLibc)
@@ -1317,7 +1317,7 @@ fn translate_project_lib_crate_with_compile_commands(
                 continue;
             };
             let variant_facts = facts.get(cfg).expect("variant facts");
-            let project = lower::ProjectInfo {
+            let project = frontend::ProjectInfo {
                 cross_module: variant_facts.defined.clone(),
                 cross_module_globals: variant_facts.defined_globals.clone(),
                 shared_records: shared_record_names.clone(),
@@ -1335,8 +1335,12 @@ fn translate_project_lib_crate_with_compile_commands(
                 cross_referenced_globals: variant_facts.cross_referenced_globals.clone(),
             };
             let mut context = ctx::Ctx::default();
-            let mut program =
-                lower::lower_with_project(&variant.module, &variant.unit, &mut context, &project);
+            let mut program = frontend::lower_with_project(
+                &variant.module,
+                &variant.unit,
+                &mut context,
+                &project,
+            );
             for diagnostic in &context.diagnostics.items {
                 eprintln!("{:?}: {}", diagnostic.severity, diagnostic.message);
             }
@@ -1364,7 +1368,7 @@ fn translate_project_lib_crate_with_compile_commands(
         let records: Vec<_> = shared_records.into_values().collect();
         let enums: Vec<_> = shared_enums.into_values().collect();
         module_paths.push(crate_src.join("types.rs"));
-        module_progs.push(lower::lower_shared_types(&records, &enums));
+        module_progs.push(frontend::lower_shared_types(&records, &enums));
     }
     written.extend(write_project_modules(module_paths, module_progs)?);
 
@@ -1495,22 +1499,22 @@ fn translate_project_with_targets(
     for (stem, path) in &modules {
         reject_active_unsupported_file(path, "translate-project")?;
         let module = cir::emit_module(path, &[])?;
-        for sym in lower::defined_functions(&module) {
+        for sym in frontend::defined_functions(&module) {
             if sym == "main" {
                 root = Some(stem.clone());
             } else {
                 defined.insert(sym, stem.clone());
             }
         }
-        for sym in lower::defined_globals(&module) {
+        for sym in frontend::defined_globals(&module) {
             defined_globals.insert(sym, stem.clone());
         }
-        unsafe_functions.extend(lower::unsafe_defined_functions(&module));
-        address_taken_functions.extend(lower::address_taken_functions(&module));
-        crate_features.extend(lower::required_features(&module));
-        cross_referenced_functions.extend(lower::declared_functions(&module));
-        cross_referenced_globals.extend(lower::declared_globals(&module));
-        has_setlocale |= lower::declared_functions(&module)
+        unsafe_functions.extend(frontend::unsafe_defined_functions(&module));
+        address_taken_functions.extend(frontend::address_taken_functions(&module));
+        crate_features.extend(frontend::required_features(&module));
+        cross_referenced_functions.extend(frontend::declared_functions(&module));
+        cross_referenced_globals.extend(frontend::declared_globals(&module));
+        has_setlocale |= frontend::declared_functions(&module)
             .iter()
             .any(|name| name == "setlocale");
         let unit = c_ast::parse_file_with_project_records(path, dir)?;
@@ -1541,7 +1545,7 @@ fn translate_project_with_targets(
                 }
             }
         }
-        for record in lower::shim_records_for_module(&module, &unit) {
+        for record in frontend::shim_records_for_module(&module, &unit) {
             record_occurrences.insert(rust_ident(&record.name), (record, usize::MAX));
         }
     }
@@ -1580,8 +1584,9 @@ fn translate_project_with_targets(
     }
     let shared_record_names: BTreeSet<String> = shared_records.keys().cloned().collect();
     let shared_enum_names: BTreeSet<String> = shared_enums.keys().cloned().collect();
-    let shared_long_double =
-        lower::shared_types_use_long_double(&shared_records.values().cloned().collect::<Vec<_>>());
+    let shared_long_double = frontend::shared_types_use_long_double(
+        &shared_records.values().cloned().collect::<Vec<_>>(),
+    );
     let fixup_skip = if has_setlocale {
         fixups::SkipSet::skip(fixups::Pass::CTypeLibc)
     } else {
@@ -1621,7 +1626,7 @@ fn translate_project_with_targets(
     let mut module_progs: Vec<rust_ast::Program> = Vec::new();
     for (stem, path) in &modules {
         let is_root = *stem == root;
-        let project = lower::ProjectInfo {
+        let project = frontend::ProjectInfo {
             cross_module: defined.clone(),
             cross_module_globals: defined_globals.clone(),
             unsafe_functions: unsafe_functions.clone(),
@@ -1671,7 +1676,7 @@ fn translate_project_with_targets(
                 }
             };
             let mut ctx = ctx::Ctx::default();
-            let program = lower::lower_with_project(&module, &unit, &mut ctx, &project);
+            let program = frontend::lower_with_project(&module, &unit, &mut ctx, &project);
             for d in &ctx.diagnostics.items {
                 eprintln!("{:?}: {}", d.severity, d.message);
             }
@@ -1708,7 +1713,7 @@ fn translate_project_with_targets(
         let records: Vec<_> = shared_records.into_values().collect();
         let enums: Vec<_> = shared_enums.into_values().collect();
         module_paths.push(crate_src.join("types.rs"));
-        module_progs.push(lower::lower_shared_types(&records, &enums));
+        module_progs.push(frontend::lower_shared_types(&records, &enums));
     }
     written.extend(write_project_modules(module_paths, module_progs)?);
 
@@ -1817,22 +1822,22 @@ fn translate_project_with_compile_commands(
         let pp = preprocess::record_translation_unit(path, &source, &args)?;
         reject_active_unsupported(&pp, "translate-project --compile-commands")?;
         let module = cir::emit_module(path, &args)?;
-        for sym in lower::defined_functions(&module) {
+        for sym in frontend::defined_functions(&module) {
             if sym == "main" {
                 root = Some(stem.clone());
             } else {
                 defined.insert(sym, stem.clone());
             }
         }
-        for sym in lower::defined_globals(&module) {
+        for sym in frontend::defined_globals(&module) {
             defined_globals.insert(sym, stem.clone());
         }
-        unsafe_functions.extend(lower::unsafe_defined_functions(&module));
-        address_taken_functions.extend(lower::address_taken_functions(&module));
-        crate_features.extend(lower::required_features(&module));
-        cross_referenced_functions.extend(lower::declared_functions(&module));
-        cross_referenced_globals.extend(lower::declared_globals(&module));
-        has_setlocale |= lower::declared_functions(&module)
+        unsafe_functions.extend(frontend::unsafe_defined_functions(&module));
+        address_taken_functions.extend(frontend::address_taken_functions(&module));
+        crate_features.extend(frontend::required_features(&module));
+        cross_referenced_functions.extend(frontend::declared_functions(&module));
+        cross_referenced_globals.extend(frontend::declared_globals(&module));
+        has_setlocale |= frontend::declared_functions(&module)
             .iter()
             .any(|name| name == "setlocale");
         let unit = c_ast::parse_file_with_project_records_and_args(path, project_dir, &args)?;
@@ -1863,7 +1868,7 @@ fn translate_project_with_compile_commands(
                 }
             }
         }
-        for record in lower::shim_records_for_module(&module, &unit) {
+        for record in frontend::shim_records_for_module(&module, &unit) {
             record_occurrences.insert(rust_ident(&record.name), (record, usize::MAX));
         }
     }
@@ -1902,8 +1907,9 @@ fn translate_project_with_compile_commands(
     }
     let shared_record_names: BTreeSet<String> = shared_records.keys().cloned().collect();
     let shared_enum_names: BTreeSet<String> = shared_enums.keys().cloned().collect();
-    let shared_long_double =
-        lower::shared_types_use_long_double(&shared_records.values().cloned().collect::<Vec<_>>());
+    let shared_long_double = frontend::shared_types_use_long_double(
+        &shared_records.values().cloned().collect::<Vec<_>>(),
+    );
     let fixup_skip = if has_setlocale {
         fixups::SkipSet::skip(fixups::Pass::CTypeLibc)
     } else {
@@ -1942,7 +1948,7 @@ fn translate_project_with_compile_commands(
     let mut module_progs: Vec<rust_ast::Program> = Vec::new();
     for (stem, path) in &modules {
         let is_root = *stem == root;
-        let project = lower::ProjectInfo {
+        let project = frontend::ProjectInfo {
             cross_module: defined.clone(),
             cross_module_globals: defined_globals.clone(),
             unsafe_functions: unsafe_functions.clone(),
@@ -2000,7 +2006,7 @@ fn translate_project_with_compile_commands(
                 }
             };
             let mut ctx = ctx::Ctx::default();
-            let program = lower::lower_with_project(&module, &unit, &mut ctx, &project);
+            let program = frontend::lower_with_project(&module, &unit, &mut ctx, &project);
             for d in &ctx.diagnostics.items {
                 eprintln!("{:?}: {}", d.severity, d.message);
             }
@@ -2039,7 +2045,7 @@ fn translate_project_with_compile_commands(
         let records: Vec<_> = shared_records.into_values().collect();
         let enums: Vec<_> = shared_enums.into_values().collect();
         module_paths.push(crate_src.join("types.rs"));
-        module_progs.push(lower::lower_shared_types(&records, &enums));
+        module_progs.push(frontend::lower_shared_types(&records, &enums));
     }
     written.extend(write_project_modules(module_paths, module_progs)?);
 

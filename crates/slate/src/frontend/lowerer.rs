@@ -1,8 +1,8 @@
 //! lower: combine the CIR Op-tree with the C AST oracle into Rust output.
 
-use crate::c_ast::{EnumConstRef, LayoutQuery, Loc, MacroConst, RecordKind, Unit};
 use crate::cir::ir::{Attr, Block, CirOpKind, Module, Op, Region};
 use crate::ctx::Ctx;
+use crate::frontend::c_ast::{EnumConstRef, LayoutQuery, Loc, MacroConst, RecordKind, Unit};
 use crate::function_identity::{CallBinding, FunctionIdentity};
 use crate::rust_ast::{
     Abi, AsmDialect, AsmOperand, AsmReg, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType,
@@ -80,7 +80,7 @@ fn rust_record_name(name: &str) -> String {
         .unwrap_or_else(|| sanitize_ident(name).into_string())
 }
 
-pub fn shim_records_for_module(cir: &Module, c: &Unit) -> Vec<crate::c_ast::Record> {
+pub fn shim_records_for_module(cir: &Module, c: &Unit) -> Vec<crate::frontend::c_ast::Record> {
     let referenced: BTreeSet<&str> = cir
         .aliases
         .values()
@@ -260,8 +260,8 @@ pub fn declared_globals(module: &Module) -> Vec<String> {
 
 fn allocate_global_rust_names(
     module: &Module,
-    records: &BTreeMap<String, crate::c_ast::Record>,
-    enums: &BTreeMap<String, crate::c_ast::Enum>,
+    records: &BTreeMap<String, crate::frontend::c_ast::Record>,
+    enums: &BTreeMap<String, crate::frontend::c_ast::Enum>,
 ) -> BTreeMap<String, String> {
     let ops = module_ops(module);
     if ops.is_empty() {
@@ -403,7 +403,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
             anon_records.push(record.clone());
         }
     }
-    let mut records: BTreeMap<String, crate::c_ast::Record> = c
+    let mut records: BTreeMap<String, crate::frontend::c_ast::Record> = c
         .records
         .iter()
         .map(|record| (sanitize_ident(&record.name).into_string(), record.clone()))
@@ -415,7 +415,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         .cloned()
         .collect();
     records.extend(local_collisions);
-    let enums: BTreeMap<String, crate::c_ast::Enum> = c
+    let enums: BTreeMap<String, crate::frontend::c_ast::Enum> = c
         .enums
         .iter()
         .map(|enm| (sanitize_ident(&enm.name).into_string(), enm.clone()))
@@ -563,8 +563,8 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
 }
 
 pub fn lower_shared_types(
-    records: &[crate::c_ast::Record],
-    enums: &[crate::c_ast::Enum],
+    records: &[crate::frontend::c_ast::Record],
+    enums: &[crate::frontend::c_ast::Enum],
 ) -> Program {
     let mut items = vec![Item::CrateAttrs(vec![CrateAttr::Allow(vec![
         Lint::DeadCode,
@@ -591,14 +591,14 @@ pub fn lower_shared_types(
     }
 }
 
-pub fn shared_types_use_long_double(records: &[crate::c_ast::Record]) -> bool {
+pub fn shared_types_use_long_double(records: &[crate::frontend::c_ast::Record]) -> bool {
     records
         .iter()
         .flat_map(|record| &record.fields)
         .any(|field| ctype_uses_long_double(&field.ty))
 }
 
-fn lower_enum_def(enm: &crate::c_ast::Enum, vis: Visibility) -> Option<EnumDef> {
+fn lower_enum_def(enm: &crate::frontend::c_ast::Enum, vis: Visibility) -> Option<EnumDef> {
     if enm.variants.is_empty() {
         return None;
     }
@@ -667,7 +667,7 @@ fn type_alignment(ty: &Type) -> u32 {
 }
 
 fn lower_record_def(
-    record: &crate::c_ast::Record,
+    record: &crate::frontend::c_ast::Record,
     vis: Visibility,
     field_vis: Visibility,
     allow_empty: bool,
@@ -790,7 +790,7 @@ fn lower_packed_aligned_wrapper(
     vec![inner, outer, deref, deref_mut]
 }
 
-fn record_lit_name(record: &crate::c_ast::Record) -> String {
+fn record_lit_name(record: &crate::frontend::c_ast::Record) -> String {
     let name = sanitize_ident(&record.name).into_string();
     if record.packed.is_some() && record.align.is_some() {
         packed_aligned_inner_name(&name)
@@ -799,7 +799,7 @@ fn record_lit_name(record: &crate::c_ast::Record) -> String {
     }
 }
 
-fn wrap_record_lit(record: &crate::c_ast::Record, lit: Expr) -> Expr {
+fn wrap_record_lit(record: &crate::frontend::c_ast::Record, lit: Expr) -> Expr {
     if record.packed.is_some() && record.align.is_some() {
         Expr::TupleStructLit {
             name: sanitize_ident(&record.name).into_string(),
@@ -828,10 +828,10 @@ struct Lowerer<'a> {
     weak_refs: BTreeMap<String, String>,
     external_weak_targets: BTreeSet<String>,
     weak_aliases: BTreeMap<String, String>,
-    records: BTreeMap<String, crate::c_ast::Record>,
+    records: BTreeMap<String, crate::frontend::c_ast::Record>,
     local_record_extras: BTreeSet<String>,
-    enums: BTreeMap<String, crate::c_ast::Enum>,
-    anon_records: Vec<crate::c_ast::Record>,
+    enums: BTreeMap<String, crate::frontend::c_ast::Enum>,
+    anon_records: Vec<crate::frontend::c_ast::Record>,
     declaration_comments: BTreeMap<(String, String), Vec<Comment>>,
     global_rust_names: BTreeMap<String, String>,
     globals: BTreeMap<String, GlobalVar>,
@@ -868,8 +868,8 @@ struct Lowerer<'a> {
     layout_queries: BTreeMap<String, Vec<LayoutQuery>>,
     macro_consts: BTreeMap<String, Vec<MacroConst>>,
     enum_consts: BTreeMap<String, Vec<EnumConstRef>>,
-    local_enum_decls: BTreeMap<String, Vec<crate::c_ast::LocalEnumDecl>>,
-    asm_gotos: BTreeMap<String, Vec<crate::c_ast::AsmGoto>>,
+    local_enum_decls: BTreeMap<String, Vec<crate::frontend::c_ast::LocalEnumDecl>>,
+    asm_gotos: BTreeMap<String, Vec<crate::frontend::c_ast::AsmGoto>>,
     function_return_types: BTreeMap<String, Type>,
     function_param_types: BTreeMap<String, Vec<Type>>,
     enum_wrapper_fns: std::cell::RefCell<BTreeMap<String, FnDef>>,
@@ -910,7 +910,7 @@ struct FunctionLowerer<'a, 'b> {
     enum_consts: VecDeque<EnumConstRef>,
     macro_arith_values: BTreeMap<String, i128>,
     asm_outputs: BTreeMap<String, Vec<Expr>>,
-    asm_gotos: VecDeque<crate::c_ast::AsmGoto>,
+    asm_gotos: VecDeque<crate::frontend::c_ast::AsmGoto>,
     asm_output_places: BTreeMap<String, Expr>,
     local_enum_types: BTreeMap<String, String>,
     loaded_field_types: BTreeMap<String, Type>,
@@ -1913,7 +1913,7 @@ impl __SlateVaArgs {
         }))
     }
 
-    fn lower_enum(&mut self, enm: &crate::c_ast::Enum) -> Option<Item> {
+    fn lower_enum(&mut self, enm: &crate::frontend::c_ast::Enum) -> Option<Item> {
         lower_enum_def(enm, Visibility::Private).map(Item::Enum)
     }
 
@@ -1926,10 +1926,10 @@ impl __SlateVaArgs {
         }
     }
 
-    fn lower_record(&mut self, record: &crate::c_ast::Record) -> Vec<Item> {
+    fn lower_record(&mut self, record: &crate::frontend::c_ast::Record) -> Vec<Item> {
         let storage_record;
         let record = if let Some(fields) = self.bitfield_storage_fields(record) {
-            storage_record = crate::c_ast::Record {
+            storage_record = crate::frontend::c_ast::Record {
                 fields,
                 ..record.clone()
             };
@@ -1942,8 +1942,8 @@ impl __SlateVaArgs {
 
     fn bitfield_storage_fields(
         &self,
-        record: &crate::c_ast::Record,
-    ) -> Option<Vec<crate::c_ast::Decl>> {
+        record: &crate::frontend::c_ast::Record,
+    ) -> Option<Vec<crate::frontend::c_ast::Decl>> {
         if record.fields.is_empty() || record.fields.iter().all(|field| field.bit_width.is_none()) {
             return None;
         }
@@ -1964,7 +1964,7 @@ impl __SlateVaArgs {
                 .map(str::trim)
                 .filter(|ty| !ty.is_empty())
                 .enumerate()
-                .map(|(index, ty)| crate::c_ast::Decl {
+                .map(|(index, ty)| crate::frontend::c_ast::Decl {
                     name: if preserve_field_names {
                         record
                             .fields
@@ -2407,7 +2407,7 @@ impl __SlateVaArgs {
         ty
     }
 
-    fn record_field_type(&self, ty: &crate::c_ast::CType) -> Type {
+    fn record_field_type(&self, ty: &crate::frontend::c_ast::CType) -> Type {
         if ctype_uses_long_double(ty) {
             self.uses_long_double.set(true);
         }
@@ -2654,10 +2654,10 @@ impl __SlateVaArgs {
 
     fn layout_query_expr(&self, query: &LayoutQuery) -> Option<Expr> {
         match query {
-            LayoutQuery::Size(ty @ crate::c_ast::CType::Record(_)) => {
+            LayoutQuery::Size(ty @ crate::frontend::c_ast::CType::Record(_)) => {
                 Some(layout_call("size_of", &c_type_to_type(ty)))
             }
-            LayoutQuery::Align(ty @ crate::c_ast::CType::Record(_)) => {
+            LayoutQuery::Align(ty @ crate::frontend::c_ast::CType::Record(_)) => {
                 Some(layout_call("align_of", &c_type_to_type(ty)))
             }
             LayoutQuery::Size(_) | LayoutQuery::Align(_) => None,
@@ -2863,8 +2863,8 @@ fn clib_record_type(name: &str) -> Option<CLibType> {
         .find(|ty| ty.c_name() == name)
 }
 
-fn c_type_to_type(ty: &crate::c_ast::CType) -> Type {
-    use crate::c_ast::CType;
+fn c_type_to_type(ty: &crate::frontend::c_ast::CType) -> Type {
+    use crate::frontend::c_ast::CType;
     let ptr = |inner: &CType| Type::Ptr {
         mutable: true,
         inner: Box::new(c_type_to_type(inner)),
@@ -2913,9 +2913,9 @@ fn c_type_to_type(ty: &crate::c_ast::CType) -> Type {
     }
 }
 
-fn c_record_field_type(ty: &crate::c_ast::CType) -> Type {
+fn c_record_field_type(ty: &crate::frontend::c_ast::CType) -> Type {
     match ty {
-        crate::c_ast::CType::Array(inner, None) => Type::Array {
+        crate::frontend::c_ast::CType::Array(inner, None) => Type::Array {
             elem: Box::new(c_type_to_type(inner)),
             len: 0,
         },
@@ -2940,10 +2940,10 @@ fn layout_call(name: &str, ty: &Type) -> Expr {
 }
 
 fn c_layout(
-    ty: &crate::c_ast::CType,
-    records: &BTreeMap<String, crate::c_ast::Record>,
+    ty: &crate::frontend::c_ast::CType,
+    records: &BTreeMap<String, crate::frontend::c_ast::Record>,
 ) -> Option<CLayout> {
-    use crate::c_ast::CType;
+    use crate::frontend::c_ast::CType;
     match ty {
         CType::Void => Some(CLayout { size: 0, align: 1 }),
         CType::Bool => Some(CLayout { size: 1, align: 1 }),
@@ -2982,7 +2982,10 @@ fn scalar_layout(bits: u32) -> Option<CLayout> {
     })
 }
 
-fn record_layout(name: &str, records: &BTreeMap<String, crate::c_ast::Record>) -> Option<CLayout> {
+fn record_layout(
+    name: &str,
+    records: &BTreeMap<String, crate::frontend::c_ast::Record>,
+) -> Option<CLayout> {
     let record = records.get(&sanitize_ident(name).into_string())?;
     let natural_align = record_natural_align(record, records)?;
     let align = record
@@ -3022,8 +3025,8 @@ fn record_layout(name: &str, records: &BTreeMap<String, crate::c_ast::Record>) -
 }
 
 fn record_natural_align(
-    record: &crate::c_ast::Record,
-    records: &BTreeMap<String, crate::c_ast::Record>,
+    record: &crate::frontend::c_ast::Record,
+    records: &BTreeMap<String, crate::frontend::c_ast::Record>,
 ) -> Option<u64> {
     record
         .fields
@@ -3042,7 +3045,7 @@ fn record_natural_align(
 fn record_field_offset(
     record_name: &str,
     field_name: &str,
-    records: &BTreeMap<String, crate::c_ast::Record>,
+    records: &BTreeMap<String, crate::frontend::c_ast::Record>,
 ) -> Option<u64> {
     let record = records.get(&sanitize_ident(record_name).into_string())?;
     if record.kind != RecordKind::Struct {
@@ -3071,8 +3074,8 @@ fn align_to(value: u64, align: u64) -> u64 {
     }
 }
 
-fn ctype_uses_long_double(ty: &crate::c_ast::CType) -> bool {
-    use crate::c_ast::CType;
+fn ctype_uses_long_double(ty: &crate::frontend::c_ast::CType) -> bool {
+    use crate::frontend::c_ast::CType;
     match ty {
         CType::Float { bits: 80 } => true,
         CType::Ptr(inner) | CType::Array(inner, _) => ctype_uses_long_double(inner),

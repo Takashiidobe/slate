@@ -81,7 +81,7 @@ default to a local build and are overridable via environment variables:
 | `SLATE_MACRO_DUMP_PLUGIN`           | `<SLATE_CLANG build>/lib/SlateMacroDump.so` | macro invocations plus include/function provenance, keyed by physical source offset                                                                                                                                                                                                                          |
 | `SLATE_LIBC_SHIM`                   | `libc-shim/include`                         | directory SLATE_CLANG parses with `-nostdlibinc -isystem <dir>` instead of the host's system libc headers (clang's own builtin freestanding headers — stddef.h, stdint.h, stdatomic.h, etc. — stay available); set to a different directory to override, or to an empty value to fall back to system headers |
 
-`c_ast.rs` always loads `SLATE_CLANG` with `-fplugin=$SLATE_MACRO_DUMP_PLUGIN`, so
+`src/frontend/c_ast.rs` always loads `SLATE_CLANG` with `-fplugin=$SLATE_MACRO_DUMP_PLUGIN`, so
 that plugin must be built against the same clang tree `SLATE_CLANG` points at
 before anything that parses C will run:
 
@@ -125,8 +125,8 @@ verified:  run(C).{stdout,exit} == run(Rust).{stdout,exit}
 ```
 
 CIR is the primary lowering input; the Clang AST is the source-fact oracle, and
-the two are joined by **source location**. `src/lower/lowerer.rs` and its submodules hold the `cir.*`
-handlers; `src/c_ast.rs` extracts source facts from Clang JSON; `src/cir/`
+the two are joined by **source location**. `src/frontend/lowerer.rs` and its submodules hold the `cir.*`
+handlers; `src/frontend/c_ast.rs` extracts source facts from Clang JSON; `src/cir/`
 parses the generic-form CIR op-tree.
 
 **Read before making changes**

@@ -388,8 +388,8 @@ pub(super) fn parse_cir_int_type(ty: &str) -> Option<(bool, u32)> {
 pub(super) fn cir_type_to_ctype(
     ty: &str,
     aliases: &BTreeMap<String, String>,
-) -> crate::c_ast::CType {
-    use crate::c_ast::CType;
+) -> crate::frontend::c_ast::CType {
+    use crate::frontend::c_ast::CType;
     let ty = ty.trim();
     if let Some(inner) = cir_ptr_pointee(ty) {
         return CType::Ptr(Box::new(cir_type_to_ctype(inner, aliases)));
@@ -430,12 +430,12 @@ pub(super) fn cir_type_to_ctype(
 
 pub(super) fn reconcile_anonymous_member_types(
     module: &Module,
-    records: &mut BTreeMap<String, crate::c_ast::Record>,
-    anonymous_header_records: &[crate::c_ast::Record],
-) -> Vec<crate::c_ast::Record> {
-    use crate::c_ast::CType;
+    records: &mut BTreeMap<String, crate::frontend::c_ast::Record>,
+    anonymous_header_records: &[crate::frontend::c_ast::Record],
+) -> Vec<crate::frontend::c_ast::Record> {
+    use crate::frontend::c_ast::CType;
 
-    let anonymous_header_records: BTreeMap<String, &crate::c_ast::Record> =
+    let anonymous_header_records: BTreeMap<String, &crate::frontend::c_ast::Record> =
         anonymous_header_records
             .iter()
             .map(|record| (sanitize_ident(&record.name).into_string(), record))
@@ -590,9 +590,9 @@ pub(super) fn collect_anon_bitfield_slots(
 
 pub(super) fn resolve_local_record_collisions(
     cir: &Module,
-    ast_records: &[crate::c_ast::Record],
-) -> BTreeMap<String, crate::c_ast::Record> {
-    let mut by_name: BTreeMap<String, Vec<&crate::c_ast::Record>> = BTreeMap::new();
+    ast_records: &[crate::frontend::c_ast::Record],
+) -> BTreeMap<String, crate::frontend::c_ast::Record> {
+    let mut by_name: BTreeMap<String, Vec<&crate::frontend::c_ast::Record>> = BTreeMap::new();
     for record in ast_records {
         by_name
             .entry(sanitize_ident(&record.name).into_string())
@@ -704,7 +704,7 @@ pub(super) fn collect_local_record_field_names(
     }
 }
 
-pub fn anon_local_records(module: &Module) -> Vec<crate::c_ast::Record> {
+pub fn anon_local_records(module: &Module) -> Vec<crate::frontend::c_ast::Record> {
     let mut needed = BTreeSet::new();
     let mut field_names = BTreeMap::new();
     let mut bitfield_slots = BTreeSet::new();
@@ -753,7 +753,7 @@ pub fn anon_local_records(module: &Module) -> Vec<crate::c_ast::Record> {
             .map(|s| s.trim())
             .filter(|s| !s.is_empty())
             .enumerate()
-            .map(|(i, field_ty)| crate::c_ast::Decl {
+            .map(|(i, field_ty)| crate::frontend::c_ast::Decl {
                 name: if bitfield_slots.contains(&(key.clone(), i as i64)) {
                     format!("__bitfield_{i}")
                 } else {
@@ -769,7 +769,7 @@ pub fn anon_local_records(module: &Module) -> Vec<crate::c_ast::Record> {
                     .then_some(0),
             })
             .collect();
-        records.push(crate::c_ast::Record {
+        records.push(crate::frontend::c_ast::Record {
             name: name.to_string(),
             comments: Vec::new(),
             kind: if is_union {

@@ -35,7 +35,7 @@ semantics.
 
 ### load-ast
 
-`src/c_ast.rs` is a Clang AST oracle, not a handwritten C parser. It filters
+`src/frontend/c_ast.rs` is a Clang AST oracle, not a handwritten C parser. It filters
 Clang's JSON dump down to source-file function definitions, extracts a compact
 model (`Enum`, `Function`, `Decl`, `Stmt`, `Expr`, `CType`, `Loc`), and
 preserves each function's raw JSON node for later features that need facts not
