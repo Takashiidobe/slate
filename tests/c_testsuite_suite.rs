@@ -2,13 +2,16 @@ mod support;
 
 use std::path::{Path, PathBuf};
 
-fn fixtures_root() -> PathBuf {
+fn supported_root() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures.c-testsuite")
 }
 
-fn collect_cases(bucket: &str) -> Vec<(String, PathBuf)> {
-    let dir = fixtures_root().join(bucket);
-    let mut cases: Vec<(String, PathBuf)> = std::fs::read_dir(&dir)
+fn unsupported_root() -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures.c-testsuite.unsupported")
+}
+
+fn collect_cases(dir: &Path) -> Vec<(String, PathBuf)> {
+    let mut cases: Vec<(String, PathBuf)> = std::fs::read_dir(dir)
         .unwrap_or_else(|e| panic!("read {}: {e}", dir.display()))
         .filter_map(|e| e.ok())
         .map(|e| e.path())
@@ -22,11 +25,11 @@ fn collect_cases(bucket: &str) -> Vec<(String, PathBuf)> {
     cases
 }
 
-fn run_bucket(bucket: &str) -> Vec<(String, Result<(), String>)> {
-    let cases = collect_cases(bucket);
+fn run_cases(group: &str, dir: &Path) -> Vec<(String, Result<(), String>)> {
+    let cases = collect_cases(dir);
     let work = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("target/c-testsuite-suite")
-        .join(bucket);
+        .join(group);
     std::fs::create_dir_all(&work).expect("create work dir");
 
     let translated = support::parallel_map(&cases, |(name, path)| {
@@ -55,7 +58,7 @@ fn run_bucket(bucket: &str) -> Vec<(String, Result<(), String>)> {
 
 #[test]
 fn c_testsuite_supported_tests_match_c() {
-    let results = run_bucket("supported");
+    let results = run_cases("supported", &supported_root());
     let failures: Vec<String> = results
         .into_iter()
         .filter_map(|(name, result)| result.err().map(|e| format!("{name}: {e}")))
@@ -69,22 +72,28 @@ fn c_testsuite_supported_tests_match_c() {
 
 #[test]
 fn c_testsuite_unsupported_tests_still_fail() {
-    let results = run_bucket("unsupported");
+    let results = run_cases("unsupported", &unsupported_root());
     let unexpected_passes: Vec<String> = results
         .into_iter()
         .filter_map(|(name, result)| result.ok().map(|()| name))
         .collect();
     assert!(
         unexpected_passes.is_empty(),
-        "c-testsuite tests unexpectedly passed, move to supported/:\n{}",
-        unexpected_passes.join("\n")
+        "c-testsuite test(s) now pass end-to-end -- promote them:\n{}",
+        unexpected_passes
+            .iter()
+            .map(|name| format!(
+                "  git mv tests/fixtures.c-testsuite.unsupported/{name}.c tests/fixtures.c-testsuite/{name}.c"
+            ))
+            .collect::<Vec<_>>()
+            .join("\n")
     );
 }
 
 #[test]
 #[ignore]
 fn c_testsuite_unsupported_triage_report() {
-    let results = run_bucket("unsupported");
+    let results = run_cases("unsupported", &unsupported_root());
     for (name, result) in results {
         if let Err(e) = result {
             println!("=== {name} ===\n{e}\n");
