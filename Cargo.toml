@@ -25,6 +25,11 @@ name = "effects_regression"
 path = "tests/effects_regression.rs"
 test = false
 
+[[test]]
+name = "c_testsuite_suite"
+path = "tests/c_testsuite_suite.rs"
+test = false
+
 [profile.test]
 opt-level = 3
 debug = false
