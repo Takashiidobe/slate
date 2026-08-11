@@ -731,7 +731,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
                     args: vec![Expr::Cast {
                         expr: Box::new(self.operand_expr(src)),
-                        ty: crate::rust_ast::Type::Prim(Prim::F64),
+                        ty: crate::backend::rust_ast::Type::Prim(Prim::F64),
                     }],
                 })
             }

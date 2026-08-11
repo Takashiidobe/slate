@@ -10,7 +10,7 @@ Readability is recovered later by Rust fixups, not during baseline lowering.
 | **parse-cir**      | CIR text -> generic Op-tree + locs      | recursive-descent parser over MLIR generic form                        |
 | **load-ast**       | C -> compact source context + raw JSON  | `clang -Xclang -ast-dump=json -fsyntax-only`                           |
 | **lower**          | CIR + AST context -> Rust source        | match `op.name`; materialize temps; use `libc` / `unsafe`              |
-| **fixups**         | baseline Rust AST -> cleaner Rust AST   | fixed cleanup pipeline, `src/fixups::apply`                            |
+| **fixups**         | baseline Rust AST -> cleaner Rust AST   | fixed cleanup pipeline, `backend::apply`                                |
 | **generated-diff** | C + generated Rust -> output comparison | build generated Rust with Cargo + `libc`, compare stdout + exit code   |
 
 Current code path:
@@ -45,41 +45,41 @@ yet modeled.
 
 The lowerer is the only stage that knows CIR op semantics. It emits **structured
 `rust_ast` nodes**, not Rust source strings: every handler builds
-`Item`/`Stmt`/`Expr` values that `src/codegen.rs` renders once at the end.
+`Item`/`Stmt`/`Expr` values that `src/backend/codegen.rs` renders once at the end.
 `format!`-ing into Rust text is not allowed. Keep the output as strongly typed as
 possible — favor a new enum variant over a `String` bridge, so the compiler
 enforces exhaustiveness and fixups can pattern-match the shape. If the AST cannot
-express something, add the node to `src/rust_ast.rs`. Fixups follow the same rule
+express something, add the node to `src/backend/rust_ast.rs`. Fixups follow the same rule
 ([fixups.md](fixups.md)).
 
 ### fixups
 
-Fixups run after baseline lowering through the fixed `src/fixups::apply` entry
-point (`src/fixups/mod.rs`). They must preserve the fallback property: the
+Fixups run after baseline lowering through the fixed `backend::apply` entry
+point (`src/backend/mod.rs`). They must preserve the fallback property: the
 lowered Rust remains correct without a given cleanup. Keep cleanup code outside
 the CIR visitor unless the baseline lowering itself is wrong.
 
-The fixups directory is split by concern:
+The backend directory is split by concern:
 
-- **`src/fixups/facts/`** — read-only analysis, computed and memoized by
-  salsa (`src/fixups/salsa.rs`'s `SalsaFacts`): one `#[salsa::tracked]` method
+- **`src/backend/facts/`** — read-only analysis, computed and memoized by
+  salsa (`src/backend/salsa.rs`'s `SalsaFacts`): one `#[salsa::tracked]` method
   per per-function analysis (definition/use, effects/purity, control flow,
   casts, loop shapes, pointer/string/heap provenance, and more — one module
-  per concern, `src/fixups/facts/mod.rs` re-exports them), plus
+  per concern, `src/backend/facts/mod.rs` re-exports them), plus
   whole-program reductions tracked directly on `ProgramInput`. Fact
   collectors walk the tree with the shared, immutable walkers in
-  `src/fixups/facts/walk.rs`. See [facts.md](facts.md) for what each
+  `src/backend/facts/walk.rs`. See [facts.md](facts.md) for what each
   collector proves and which pass below consumes it.
-- **`src/fixups/query/rules/`** — the actual AST-to-AST rewrite passes,
+- **`src/backend/query/rules/`** — the actual AST-to-AST rewrite passes,
   written against the query engine described in [fixups.md](fixups.md). Each
   rule queries `QueryContext` (a thin adapter over `SalsaFacts`) for the facts
   and evidence a case needs, then returns a typed `EditSet`; the shared
-  `ItemPlanBuilder`/`Plan` machinery in `src/fixups/query/` applies it.
+  `ItemPlanBuilder`/`Plan` machinery in `src/backend/query/` applies it.
   Rewrites that mutate in place share the mutable, path-aware walkers in
-  `src/fixups/support/walk.rs`.
-- **`src/fixups/idents.rs`** — ident-occurrence counting, used to prove a
+  `src/backend/support/walk.rs`.
+- **`src/backend/idents.rs`** — ident-occurrence counting, used to prove a
   binding is single-use or dead before folding or dropping it.
-- **`src/fixups/trace.rs`** — structured debug logging for `fixup-debug`.
+- **`src/backend/trace.rs`** — structured debug logging for `fixup-debug`.
   The normal `translate`/`apply` path passes a `NoopLogger`; only
   `fixup-debug` uses the collecting logger and renders pass summaries,
   rewrite events, snippets, and facts.
@@ -90,12 +90,12 @@ that input, and salsa backdating prevents unchanged derived values from
 invalidating their dependents. Several passes re-run through
 `to_fixpoint_program_with_facts` since one fold can expose another. Order
 matters — see [fixups.md](fixups.md) for the rule-authoring contract and
-`src/fixups/mod.rs`'s `apply_with_logger` for how passes are sequenced.
+`src/backend/mod.rs`'s `apply_with_logger` for how passes are sequenced.
 
 ### The pass sequence
 
-This is the order `src/fixups::apply` (`src/fixups/mod.rs`) actually runs in.
-Every pass listed below lives at `src/fixups/rewrite/<name>.rs`, so the module
+This is the order `backend::apply` (`src/backend/mod.rs`) actually runs in.
+Every pass listed below lives at `src/backend/query/rules/<name>.rs`, so the module
 name is enough to find it. "To fixpoint" means the pass re-runs until a round
 makes no change; facts-backed runners explicitly recompute facts each round.
 "Once" means it runs exactly one time per `apply` call.
@@ -185,7 +185,7 @@ cargo run -- fixup-debug tests/fixtures/mem_memchr.c --only-pass late_inline_tem
 cargo run -- fixup-debug tests/fixtures/mem_memchr.c --debug-only-pass late_inline_temps
 ```
 
-Pass names are the strings from `src/fixups/trace.rs`'s `Pass` enum, for
+Pass names are the strings from `src/backend/trace.rs`'s `Pass` enum, for
 example `zero_init`, `late_inline_temps`, `dead_locals`, and
 `memchr_prelude::fixup_calls`. An unknown pass name fails with the valid names.
 

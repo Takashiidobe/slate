@@ -1,6 +1,6 @@
 # Writing a Query-Driven Fixup
 
-Use `src/fixups/query/` when a rewrite can replace a selected expression,
+Use `src/backend/query/` when a rewrite can replace a selected expression,
 delete a definition, replace a function body, splice a run of adjacent
 statements, or replace the whole program. The query engine owns AST
 traversal, fact lookup, stable node locations, conflict detection, mutation,
@@ -14,7 +14,7 @@ calls from that common domain and captures a `CallRecord`. The first accepted
 case wins; if every case rejects, the original expression remains unchanged.
 
 ```rust
-pub(in crate::fixups) fn calls() -> QueryRule<FnCall> {
+pub(in crate::backend) fn calls() -> QueryRule<FnCall> {
     QueryRule::new(
         Pass::MemchrPreludeFixupCalls,
         "rewrite_memchr_call",
@@ -72,7 +72,7 @@ evidence and earlier case rejections for `fixup-debug`.
 ## Recipes
 
 A case returns an `EditSet`, never rendered Rust. Keep detailed AST construction
-in `src/fixups/query/recipe.rs` so the rule stays short, lower the recipe against
+in `src/backend/query/recipe.rs` so the rule stays short, lower the recipe against
 the matched site, and anchor the result explicitly:
 
 ```rust
@@ -91,7 +91,7 @@ expression requires a purity or equivalent stability proof.
 
 When a rule needs a new precondition or capture:
 
-1. Add the semantic fact under `src/fixups/facts/` if it does not exist.
+1. Add the semantic fact under `src/backend/facts/` if it does not exist.
 2. Add a `QueryContext` method returning `QueryResult<T>`.
 3. Add its `Predicate` and stable `EvidenceDetail`.
 4. Invoke the query through `case.fact(|query| query.method(handle))` so proof
@@ -145,7 +145,7 @@ memchr lifecycle deletes an unused helper and otherwise installs its idiomatic
 fallback body:
 
 ```rust
-pub(in crate::fixups) fn helper() -> QueryRule<Definition> {
+pub(in crate::backend) fn helper() -> QueryRule<Definition> {
     QueryRule::new(
         Pass::MemchrPrelude,
         "manage_memchr_helper",
@@ -190,7 +190,7 @@ any captured handle and returns an `EditSet`; selection does not constrain what
 the case may inspect or edit.
 
 ```rust
-pub(in crate::fixups) fn rewrite() -> QueryRule<StatementSequence> {
+pub(in crate::backend) fn rewrite() -> QueryRule<StatementSequence> {
     QueryRule::new(
         Pass::RangeLoop,
         "rewrite_counted_loop_to_range",
@@ -323,13 +323,13 @@ replacement, and return the shared anchored edit.
 
 ## Files and tests
 
-- Put concise rules in `src/fixups/query/rules/`.
+- Put concise rules in `src/backend/query/rules/`.
 - Put fact adapters and proofs in `context.rs`, `proof.rs`, and `views.rs`.
 - Put typed AST construction in `recipe.rs`.
-- Register the plan and fresh-fact boundary in `src/fixups/mod.rs`.
+- Register the plan and fresh-fact boundary in `src/backend/mod.rs`.
 
 Test query rewrites through C fixtures, not unit tests under
-`src/fixups/query/`. Cover accepted cases and important rejected fallbacks by
+`src/backend/query/`. Cover accepted cases and important rejected fallbacks by
 asserting the translated source in `tests/differential.rs`; diagnostic metadata
 is not part of rewrite correctness. Then run:
 

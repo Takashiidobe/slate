@@ -10,18 +10,18 @@ against a C fixture.
 
 The pipeline has two layers:
 
-- `src/fixups/facts/` — read-only analysis. Reads an already-lowered
+- `src/backend/facts/` — read-only analysis. Reads an already-lowered
   `Program` and answers questions ("is this pure", "is this the last use",
   "does every caller prove X") without touching the AST. See
   [facts.md](facts.md).
-- `src/fixups/query/rules/` — the rewrites themselves, each one a `QueryRule`
+- `src/backend/query/rules/` — the rewrites themselves, each one a `QueryRule`
   that selects candidates, checks preconditions (mostly by reading facts),
   and returns an `EditSet`. See [fixups.md](fixups.md) for the query engine's
   matcher/`EditSet` mechanics in depth — this doc is the map that gets you to
   the right chapter of that one, plus the parts fixups.md doesn't cover:
   picking a rewrite shape and wiring a new pass into the pipeline end to end.
 
-`src/fixups/mod.rs` runs a fixed sequence of passes (`Pass` enum in
+`src/backend/mod.rs` runs a fixed sequence of passes (`Pass` enum in
 `trace.rs`) over the `Program`, documented in order in [passes.md](passes.md).
 Nothing here is discovered at runtime — the sequence, and each pass's
 position in it, is hand-written.
@@ -64,11 +64,11 @@ rule:
   multi-step traversal that doesn't reduce to a handful of composed
   precondition calls — `ptr_len.rs` is the reference example: it iterates an
   `active` candidate set to a fixed point (`candidate_is_sound`,
-  `all_callers_prove`) entirely in `src/fixups/facts/ptr_len.rs`, and the
+  `all_callers_prove`) entirely in `src/backend/facts/ptr_len.rs`, and the
   rule in `query/rules/ptr_len.rs` is just
   `WholeProgram::when(|query| query.has_ptr_len_slices())` handing the result
   to a typed rewrite helper in `program_recipe.rs`. Put the analysis under
-  `src/fixups/facts/` (see facts.md's "Adding a fact") precisely when you'd
+  `src/backend/facts/` (see facts.md's "Adding a fact") precisely when you'd
   otherwise be tempted to write that traversal as a pass-local walker inside
   the rule — don't; a fact collector is the only place whole-program
   reasoning is allowed to live.
@@ -89,28 +89,28 @@ This is the concrete checklist — every file a new pass touches, in order:
    so you know what you're changing.
 2. **Facts, if you need new ones.** If the rewrite needs information not
    already exposed by `QueryContext`, add a collector under
-   `src/fixups/facts/` (facts.md's "Adding a fact"), then a `QueryContext`
+   `src/backend/facts/` (facts.md's "Adding a fact"), then a `QueryContext`
    method: a full `case.fact(...)`-compatible method returning
    `QueryResult<T>` with a `Predicate`/`EvidenceDetail` pair if it should
    participate in proof-evidence tracing (fixups.md's "Adding a helper"), or
    a plain passthrough method on `ItemCaseContext` (like `expr`,
    `is_bare_pointer_dereference`) when it's a structural helper with nothing
    to prove.
-3. **The rule.** Write `src/fixups/query/rules/<name>.rs`:
+3. **The rule.** Write `src/backend/query/rules/<name>.rs`:
    `QueryRule::new(Pass::X, "case-family-name", Matcher { .. })` with one or
    more `.case(name, fn)`, each returning `Result<EditSet, Rejection>`. The
    first case that doesn't reject wins; if every case rejects, the matched
    item is left unchanged. Put non-trivial AST construction in `recipe.rs`
    (or a private helper in the rule file for something small and local),
    not inline in the case body.
-4. **Register the module** in `src/fixups/query/rules/mod.rs`
-   (`pub(in crate::fixups) mod <name>;`).
-5. **Add the pass** to `src/fixups/trace.rs`'s `Pass` enum — four places:
+4. **Register the module** in `src/backend/query/rules/mod.rs`
+   (`pub(in crate::backend) mod <name>;`).
+5. **Add the pass** to `src/backend/trace.rs`'s `Pass` enum — four places:
    the variant itself, `Pass::ALL`, `name()`, and `parse()`. `parse()`/`name()`
    feed `fixup-debug`'s `--only-pass`/`--debug-only-pass` flags and error
    messages, so a mismatch there is caught immediately by
    `valid_pass_names()`.
-6. **Schedule it** in `src/fixups/mod.rs` with the `step!` macro, choosing a
+6. **Schedule it** in `src/backend/mod.rs` with the `step!` macro, choosing a
    position and a run shape:
    - **Single application** — `plan.apply(&mut program, &incremental, logger); incremental.set_program(&program);`
      once. Use this when one pass over the program is always enough (most
@@ -127,7 +127,7 @@ This is the concrete checklist — every file a new pass touches, in order:
      snapshot per round rather than the shared incremental one (for example,
      `EarlyInlineTemps`, `ZeroInit`, `CallArgs`, `NullablePointer`, and
      `LateInlineTemps` all use it — grep `to_fixpoint_program_with_facts` in
-     `src/fixups/mod.rs` for the full set).
+     `src/backend/mod.rs` for the full set).
 
    Placement matters: put the step where the facts it depends on are already
    established and before anything that should observe its output. When in
@@ -158,7 +158,7 @@ This is the concrete checklist — every file a new pass touches, in order:
    Cover both the accepted case and the important rejected fallbacks by
    asserting on translated source in `tests/differential.rs` — fixups are
    tested end to end through fixtures, never with `#[cfg(test)]` unit tests
-   inside `src/fixups/`.
+   inside `src/backend/`.
 
 10. **Use `fixup-debug` while developing**, not just at the end:
 
@@ -176,7 +176,7 @@ This is the concrete checklist — every file a new pass touches, in order:
 - **Never re-derive a fact by hand-walking the tree in a rule.** If you find
   yourself writing a recursive `Expr`/`Stmt` matcher inside `query/rules/`
   to answer a question a fact could answer, that question belongs in
-  `src/fixups/facts/` instead, even if only one rule will ever ask it.
+  `src/backend/facts/` instead, even if only one rule will ever ask it.
 - **"All callers" or "all users" needs a proven-complete domain.** Use
   `function_call_domain`/`definition_users` (which reject incomplete,
   address-exposed, or externally-reachable domains) rather than treating an

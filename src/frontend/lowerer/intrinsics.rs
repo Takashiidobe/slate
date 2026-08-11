@@ -385,7 +385,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         ) else {
             return false;
         };
-        let expr = Expr::Block(Box::new(crate::rust_ast::Block {
+        let expr = Expr::Block(Box::new(crate::backend::rust_ast::Block {
             stmts: vec![
                 IndentStmt {
                     depth: 1,

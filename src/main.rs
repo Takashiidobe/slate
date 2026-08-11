@@ -1,5 +1,6 @@
+use slate::backend::{self, codegen, rust_ast};
 use slate::frontend::{self, c_ast, c_shim, directive_translate, preprocess};
-use slate::{api, cir, codegen, compile_commands, ctx, fixups, rust_ast};
+use slate::{api, cir, compile_commands, ctx};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitCode};
@@ -113,12 +114,12 @@ fn reject_active_unsupported_file(path: &Path, context: &str) -> Result<(), Stri
 fn fixup_debug(args: &[String]) -> Result<String, String> {
     let (path, options) = parse_fixup_debug_args(args)?;
     let (_, program) = lowered_program(path)?;
-    Ok(fixups::debug_with(program, options))
+    Ok(backend::debug_with(program, options))
 }
 
-fn parse_fixup_debug_args(args: &[String]) -> Result<(&Path, fixups::DebugOptions), String> {
+fn parse_fixup_debug_args(args: &[String]) -> Result<(&Path, backend::DebugOptions), String> {
     let mut path = None;
-    let mut options = fixups::DebugOptions::default();
+    let mut options = backend::DebugOptions::default();
     let mut i = 0;
     while i < args.len() {
         match args[i].as_str() {
@@ -169,11 +170,11 @@ fn parse_fixup_debug_args(args: &[String]) -> Result<(&Path, fixups::DebugOption
         .ok_or_else(|| "fixup-debug requires an input file".into())
 }
 
-fn parse_debug_pass(flag: &str, name: &str) -> Result<fixups::Pass, String> {
-    fixups::Pass::parse(name).ok_or_else(|| {
+fn parse_debug_pass(flag: &str, name: &str) -> Result<backend::Pass, String> {
+    backend::Pass::parse(name).ok_or_else(|| {
         format!(
             "unknown pass for {flag}: {name}\nvalid passes: {}",
-            fixups::valid_pass_names()
+            backend::valid_pass_names()
         )
     })
 }
@@ -375,7 +376,7 @@ fn write_project_modules(
     paths: Vec<PathBuf>,
     mut programs: Vec<rust_ast::Program>,
 ) -> Result<Vec<PathBuf>, String> {
-    fixups::propagate_unwind_abi_across_project(&mut programs);
+    backend::propagate_unwind_abi_across_project(&mut programs);
     let mut written = Vec::new();
     for (output, program) in paths.iter().zip(&programs) {
         std::fs::write(output, program.emit())
@@ -933,9 +934,9 @@ fn translate_project_lib_crate_with_manifest(
         address_taken_functions,
     };
     let fixup_skip = if has_setlocale {
-        fixups::SkipSet::skip(fixups::Pass::CTypeLibc)
+        backend::SkipSet::skip(backend::Pass::CTypeLibc)
     } else {
-        fixups::SkipSet::none()
+        backend::SkipSet::none()
     };
 
     let mut shims: BTreeMap<String, rust_ast::ExternFnDecl> = BTreeMap::new();
@@ -959,7 +960,7 @@ fn translate_project_lib_crate_with_manifest(
         directive_translate::insert_directive_items(&mut program, warning_items);
         let output = crate_src.join(stem).with_extension("rs");
         module_paths.push(output);
-        module_progs.push(fixups::apply_with(program, &fixup_skip));
+        module_progs.push(backend::apply_with(program, &fixup_skip));
     }
 
     let has_shared_types = !shared_records.is_empty() || !shared_enums.is_empty();
@@ -1038,7 +1039,7 @@ fn translate_project_lib_crate_with_manifest(
             directive_translate::insert_directive_items(&mut program, warning_items);
             let output = crate_tests.join(&stem).with_extension("rs");
             module_paths.push(output);
-            module_progs.push(fixups::apply_with(program, &fixup_skip));
+            module_progs.push(backend::apply_with(program, &fixup_skip));
             test_modules.push(stem);
         }
     }
@@ -1240,9 +1241,9 @@ fn translate_project_lib_crate_with_compile_commands(
     );
     let has_setlocale = facts.values().any(|facts| facts.has_setlocale);
     let fixup_skip = if has_setlocale {
-        fixups::SkipSet::skip(fixups::Pass::CTypeLibc)
+        backend::SkipSet::skip(backend::Pass::CTypeLibc)
     } else {
-        fixups::SkipSet::none()
+        backend::SkipSet::none()
     };
     let cfgs: Vec<_> = variant_targets.keys().cloned().collect();
     let crate_features: BTreeSet<_> = facts
@@ -1303,7 +1304,7 @@ fn translate_project_lib_crate_with_compile_commands(
                 &mut program,
                 variant.warning_items.clone(),
             );
-            programs.push((cfg.clone(), fixups::apply_with(program, &fixup_skip)));
+            programs.push((cfg.clone(), backend::apply_with(program, &fixup_skip)));
         }
         let program = merge_target_programs(&programs);
         for shim in &program.shims {
@@ -1540,9 +1541,9 @@ fn translate_project_with_targets(
         &shared_records.values().cloned().collect::<Vec<_>>(),
     );
     let fixup_skip = if has_setlocale {
-        fixups::SkipSet::skip(fixups::Pass::CTypeLibc)
+        backend::SkipSet::skip(backend::Pass::CTypeLibc)
     } else {
-        fixups::SkipSet::none()
+        backend::SkipSet::none()
     };
     let root = root.ok_or("translate-project: no unit defines main")?;
     for module in defined.values_mut() {
@@ -1635,7 +1636,10 @@ fn translate_project_with_targets(
             if ctx.diagnostics.has_errors() {
                 return Err(format!("lowering failed for {}", path.display()));
             }
-            variant_programs.push((target.cfg.clone(), fixups::apply_with(program, &fixup_skip)));
+            variant_programs.push((
+                target.cfg.clone(),
+                backend::apply_with(program, &fixup_skip),
+            ));
         }
         let mut program = merge_target_programs(&variant_programs);
         for shim in &program.shims {
@@ -1863,9 +1867,9 @@ fn translate_project_with_compile_commands(
         &shared_records.values().cloned().collect::<Vec<_>>(),
     );
     let fixup_skip = if has_setlocale {
-        fixups::SkipSet::skip(fixups::Pass::CTypeLibc)
+        backend::SkipSet::skip(backend::Pass::CTypeLibc)
     } else {
-        fixups::SkipSet::none()
+        backend::SkipSet::none()
     };
     let root = root.ok_or("translate-project --compile-commands: no unit defines main")?;
     for module in defined.values_mut() {
@@ -1965,7 +1969,7 @@ fn translate_project_with_compile_commands(
             if ctx.diagnostics.has_errors() {
                 return Err(format!("lowering failed for {}", path.display()));
             }
-            variant_programs.push((cfg.clone(), fixups::apply_with(program, &fixup_skip)));
+            variant_programs.push((cfg.clone(), backend::apply_with(program, &fixup_skip)));
         }
         let mut program = merge_target_programs(&variant_programs);
         for shim in &program.shims {

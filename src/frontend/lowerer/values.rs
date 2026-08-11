@@ -295,7 +295,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn unsafe_expr(value: Expr) -> Expr {
-        Expr::Unsafe(Box::new(crate::rust_ast::Block {
+        Expr::Unsafe(Box::new(crate::backend::rust_ast::Block {
             stmts: Vec::new(),
             tail: Some(Box::new(value)),
         }))
@@ -348,7 +348,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     pub(super) fn unsafe_stmt(stmt: Stmt) -> Stmt {
         Stmt::Unsafe {
-            body: crate::rust_ast::Block {
+            body: crate::backend::rust_ast::Block {
                 stmts: vec![IndentStmt { depth: 0, stmt }],
                 tail: None,
             },
