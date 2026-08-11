@@ -82,7 +82,7 @@ pub(super) fn hook_call_stmt(name: &str, unsafe_functions: &BTreeSet<String>) ->
         args: Vec::new(),
     };
     let call = if unsafe_functions.contains(name) {
-        Expr::Unsafe(Box::new(crate::rust_ast::Block {
+        Expr::Unsafe(Box::new(crate::backend::rust_ast::Block {
             stmts: Vec::new(),
             tail: Some(Box::new(call)),
         }))

@@ -1,10 +1,6 @@
 //! lower: combine the CIR Op-tree with the C AST oracle into Rust output.
 
-use crate::cir::ir::{Attr, Block, CirOpKind, Module, Op, Region};
-use crate::ctx::Ctx;
-use crate::frontend::c_ast::{EnumConstRef, LayoutQuery, Loc, MacroConst, RecordKind, Unit};
-use crate::function_identity::{CallBinding, FunctionIdentity};
-use crate::rust_ast::{
+use crate::backend::rust_ast::{
     Abi, AsmDialect, AsmOperand, AsmReg, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType,
     Attr as RustAttr, BinOp, CLIB_RECORD_TYPES, CLibInitializer, CLibType, Cfg, Comment, CrateAttr,
     Derive, EnumConst, EnumDef, Expr, ExprMatchArm, ExternDecl, ExternFnDecl, Feature, FnDef,
@@ -13,6 +9,10 @@ use crate::rust_ast::{
     SelfKind, StdTrait, Stmt, StructDef, StructFields, SupportModule, TraitBound, TraitRef, Type,
     UnaryOp, UsedKind, Visibility,
 };
+use crate::cir::ir::{Attr, Block, CirOpKind, Module, Op, Region};
+use crate::ctx::Ctx;
+use crate::frontend::c_ast::{EnumConstRef, LayoutQuery, Loc, MacroConst, RecordKind, Unit};
+use crate::function_identity::{CallBinding, FunctionIdentity};
 use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
 
 mod analysis;
@@ -810,11 +810,11 @@ fn wrap_record_lit(record: &crate::frontend::c_ast::Record, lit: Expr) -> Expr {
     }
 }
 
-fn comments(lines: &[String]) -> Vec<crate::rust_ast::Comment> {
+fn comments(lines: &[String]) -> Vec<crate::backend::rust_ast::Comment> {
     if lines.is_empty() {
         Vec::new()
     } else {
-        vec![crate::rust_ast::Comment {
+        vec![crate::backend::rust_ast::Comment {
             lines: lines.to_vec(),
         }]
     }
@@ -2611,16 +2611,18 @@ impl __SlateVaArgs {
             },
             Type::CLib(ty) => match ty.initializer() {
                 CLibInitializer::ScalarZero => Expr::Value(RustValue::I64(0)),
-                CLibInitializer::Zeroed => Expr::Unsafe(Box::new(crate::rust_ast::Block {
-                    stmts: Vec::new(),
-                    tail: Some(Box::new(Expr::Call {
-                        binding: crate::function_identity::CallBinding::Generated,
-                        func: Box::new(Expr::Var(
-                            format!("std::mem::zeroed::<{}>", ty.path()).into(),
-                        )),
-                        args: Vec::new(),
-                    })),
-                })),
+                CLibInitializer::Zeroed => {
+                    Expr::Unsafe(Box::new(crate::backend::rust_ast::Block {
+                        stmts: Vec::new(),
+                        tail: Some(Box::new(Expr::Call {
+                            binding: crate::function_identity::CallBinding::Generated,
+                            func: Box::new(Expr::Var(
+                                format!("std::mem::zeroed::<{}>", ty.path()).into(),
+                            )),
+                            args: Vec::new(),
+                        })),
+                    }))
+                }
                 CLibInitializer::Fields(fields) => Expr::StructLit {
                     name: ty.path().into(),
                     fields: fields

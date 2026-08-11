@@ -4,7 +4,7 @@ Tracked by the `slate-kby1` epic, **complete**. This doc is a historical
 record of the migration's motivation and plan, kept for context on why the
 architecture looks the way it does; for the current design see
 [facts.md](facts.md) (facts layer) and [fixups.md](fixups.md) (rule-authoring
-contract). Scope, per the epic: only `src/fixups/facts/` (`FixupFacts` and its
+contract). Scope, per the epic: only `src/backend/facts/` (`FixupFacts` and its
 collectors) and `query::QueryContext`'s internals moved to salsa.
 `EditSets`/`Plan<E: EditTarget>`/matchers/recipes — the whole rewriting layer
 described in [fixups.md](fixups.md) — stayed as they were. Rule-authoring
@@ -19,14 +19,14 @@ whole `Program` as one salsa input and leaning entirely on backdating.
 
 ## Why (motivation, before the migration)
 
-`facts::analyze(&Program)` (`src/fixups/facts/mod.rs`, since deleted) walked
+`facts::analyze(&Program)` (`src/backend/facts/mod.rs`, since deleted) walked
 the whole program through 26 collectors, in order, producing `FixupFacts` — a
 flat bag of ~45 `Vec<...Fact>` fields, each scanned/filtered linearly by
 `FunctionId`/`BindingId` per query. It was called at roughly 20 sites in
-`fixups::apply_with_logger`, plus internally by every `to_fixpoint_*` loop.
+`backend::apply_with_logger`, plus internally by every `to_fixpoint_*` loop.
 
 `slate-04q.75.56.9` had already pushed back against full reanalysis with
-`IncrementalFacts`/`Dirty` (`fixups/mod.rs`, since deleted): `Clean` /
+`IncrementalFacts`/`Dirty` (`backend/mod.rs`, since deleted): `Clean` /
 `Touched(TouchedItems)` / `Everything`, where `TouchedItems` (`query/plan.rs`,
 since deleted) came from what a `plan.apply()` call actually edited.
 `resolve()` either no-op'd, spliced touched functions via
@@ -37,7 +37,7 @@ The splice path's ceiling was narrow: `splice_function` only re-derived 7 of
 26 collector families for a touched function (bindings/loops, `borrow_alias`,
 `def_use`, `effects`, `values`, `strings` buffers/views/uses, `counted_loop`),
 then unconditionally reran `casts` and `lazy_singleton` whole-program on top
-(`splice_incremental_facts`, `fixups/mod.rs`). Every other family — the
+(`splice_incremental_facts`, `backend/mod.rs`). Every other family — the
 interprocedural ones (`heap_ownership`, `string_params`, `ptr_len`,
 `calls`/`callsites`, `printf`, `file_ownership`, `anonymous_structs`, ...) and
 several local ones not yet ported (`places`, `control_flow`, `atomic_locals`,
@@ -91,7 +91,7 @@ AstPath }` or bare `FunctionId`/`BindingId`, scanned linearly by callers.
   deleted) added a hand-written `RefCell<HashMap<key, value>>` per memoized
   semantic query (`byte_source`, `pure`, `first_nul`, ...) — but nothing
   survived past one `QueryContext` instance, i.e. one snapshot.
-- `IncrementalFacts`/`Dirty` (`fixups/mod.rs`, since deleted) was the
+- `IncrementalFacts`/`Dirty` (`backend/mod.rs`, since deleted) was the
   best-effort incremental layer described above.
 
 ## What doesn't change
@@ -227,7 +227,7 @@ past one snapshot anyway).
 
 ## Salsa API note (blocks Phase 0)
 
-`src/fixups/salsa.rs` today is 100% commented-out scratch code, and it mixes
+`src/backend/salsa.rs` today is 100% commented-out scratch code, and it mixes
 API generations: `#[salsa::database(ProgramInput, PrecomputedFactsInput)]` is
 old-style salsa — that macro shape doesn't exist in `salsa = "0.28"` (already
 in `Cargo.toml`, unused). Confirmed against the vendored source
@@ -289,7 +289,7 @@ families use the outer-loop-over-memoized-query pattern.
 source: delete `facts::analyze`, `FixupFacts`'s flat `Vec` fields,
 `splice_function`/`remove_items`/`purge_function_facts`,
 `IncrementalFacts`/`Dirty`, and the `query_cache!` macro. Update
-`QueryContext`'s constructor and all ~20 call sites in `fixups/mod.rs`.
+`QueryContext`'s constructor and all ~20 call sites in `backend/mod.rs`.
 Update `docs/fixups.md`, `docs/facts.md`, `docs/passes.md` to describe the
 salsa-backed flow — mirroring `04q.75`'s own closing acceptance criterion
 ("closes only after ... docs ... describe the new workflow").
@@ -320,7 +320,7 @@ This was the pre-migration sketch, kept for historical comparison; the real
 child issues filed and closed under `slate-kby1` don't match this numbering
 one-to-one:
 
-1. Fix `src/fixups/salsa.rs` against the real 0.28 API (blocks `kby1.1`).
+1. Fix `src/backend/salsa.rs` against the real 0.28 API (blocks `kby1.1`).
 2. `slate-kby1.1` as already scoped (def_use + effects prototype + benchmark).
 3. Bridge layer (`SalsaFacts`, registry, `AllFunctions`, `TouchedItems`-driven
    `set_body` wiring, improved `unbounded` diff case).
@@ -338,7 +338,7 @@ Phase 0-3 per-family migrations happened close to this plan. Phase 4
 (retirement) went one step further than scoped here:
 
 - **`Program` itself became the single `#[salsa::input(singleton)]`**
-  (`ProgramInput` in `src/fixups/salsa.rs`), not a per-function
+  (`ProgramInput` in `src/backend/salsa.rs`), not a per-function
   `HashMap<FunctionId, FunctionInput>` registry with hand-maintained
   `AllFunctions`. `FunctionInput` is a `#[salsa::interned]` `(ProgramInput,
 FunctionId)` key instead of its own `#[salsa::input]`; its body, base-walk
@@ -346,7 +346,7 @@ FunctionId)` key instead of its own `#[salsa::input]`; its body, base-walk
   `ProgramInput`, not separately-set fields.
 - **`TouchedItems`-driven diffing (the "Bridging" section above) was never
   wired up as the invalidation mechanism, and was deleted outright** rather
-  than kept as a fast path. `fixups/mod.rs` calls
+  than kept as a fast path. `backend/mod.rs` calls
   `SalsaFacts::set_program(&program)` unconditionally after every edit — no
   `in_place`/`removed`/`unbounded` case analysis. Every function's tracked fns
   get a cheap rerun-and-compare against the previous memo on every edit;

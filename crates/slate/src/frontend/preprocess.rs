@@ -1,4 +1,4 @@
-use crate::rust_ast::Cfg;
+use crate::backend::rust_ast::Cfg;
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};

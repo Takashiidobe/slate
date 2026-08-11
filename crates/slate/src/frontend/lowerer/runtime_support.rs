@@ -285,7 +285,7 @@ pub(super) fn memchr_prelude() -> Item {
             lhs: Box::new(var("i")),
             rhs: Box::new(var("n")),
         },
-        body: crate::rust_ast::Block {
+        body: crate::backend::rust_ast::Block {
             stmts: vec![
                 IndentStmt {
                     depth: 0,

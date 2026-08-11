@@ -1,9 +1,7 @@
 pub mod api;
+pub mod backend;
 pub mod cir;
-pub mod codegen;
 pub mod compile_commands;
 pub mod ctx;
-pub mod fixups;
 pub mod frontend;
 pub mod function_identity;
-pub mod rust_ast;

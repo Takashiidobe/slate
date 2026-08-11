@@ -416,8 +416,8 @@ fn valid_function_type(canonical_type: &str) -> bool {
     false
 }
 
-pub fn known_call(expr: &crate::rust_ast::Expr) -> Option<Known> {
-    let crate::rust_ast::Expr::Call { binding, .. } = expr else {
+pub fn known_call(expr: &crate::backend::rust_ast::Expr) -> Option<Known> {
+    let crate::backend::rust_ast::Expr::Call { binding, .. } = expr else {
         return None;
     };
     binding.known()

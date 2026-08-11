@@ -1,5 +1,6 @@
+use crate::backend::{self, rust_ast};
 use crate::frontend::{self, c_ast, directive_translate, preprocess};
-use crate::{cir, ctx, fixups, rust_ast};
+use crate::{cir, ctx};
 use std::path::Path;
 
 pub fn translate(path: &Path) -> Result<String, String> {
@@ -11,7 +12,7 @@ pub fn translate_with_args(path: &Path, extra_args: &[String]) -> Result<String,
     if std::env::var("SLATE_RAW_LOWER").is_ok() {
         return Ok(program.emit());
     }
-    Ok(fixups::apply_with(program, &skip_set_from_env()?).emit())
+    Ok(backend::apply_with(program, &skip_set_from_env()?).emit())
 }
 
 pub fn lowered_program(path: &Path) -> Result<(cir::ir::Module, rust_ast::Program), String> {
@@ -132,11 +133,11 @@ pub fn reject_active_unsupported_file(path: &Path, context: &str) -> Result<(), 
     reject_active_unsupported(&pp, context)
 }
 
-pub fn skip_set_from_env() -> Result<fixups::SkipSet, String> {
+pub fn skip_set_from_env() -> Result<backend::SkipSet, String> {
     match std::env::var("SLATE_SKIP_PASS") {
-        Ok(name) if !name.trim().is_empty() => fixups::Pass::parse(name.trim())
-            .map(fixups::SkipSet::skip)
+        Ok(name) if !name.trim().is_empty() => backend::Pass::parse(name.trim())
+            .map(backend::SkipSet::skip)
             .ok_or_else(|| format!("unknown SLATE_SKIP_PASS: {name}")),
-        _ => Ok(fixups::SkipSet::none()),
+        _ => Ok(backend::SkipSet::none()),
     }
 }

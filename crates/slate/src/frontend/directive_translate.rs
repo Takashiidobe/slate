@@ -2,8 +2,9 @@ use super::preprocess::{
     self, Branch, DirectiveDisposition, DirectiveKind, DirectiveName, PredExpr, Preprocessing,
 };
 use super::{self as frontend, c_ast};
-use crate::rust_ast::{Attr, Cfg, Expr, Item, Program, TraitRef, Type};
-use crate::{cir, ctx, fixups};
+use crate::backend;
+use crate::backend::rust_ast::{Attr, Cfg, Expr, Item, Program, TraitRef, Type};
+use crate::{cir, ctx};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
 
@@ -495,7 +496,7 @@ fn translate_one(path: &Path, clang_args: &[String]) -> Result<Translation, Stri
         return Err(format!("lowering failed for {}", path.display()));
     }
     Ok(Translation {
-        program: fixups::apply(program),
+        program: backend::apply(program),
         item_lines,
     })
 }

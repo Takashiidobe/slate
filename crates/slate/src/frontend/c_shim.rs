@@ -1,4 +1,4 @@
-use crate::rust_ast::ExternFnDecl;
+use crate::backend::rust_ast::ExternFnDecl;
 
 fn c_type_for_tag(tag: &str) -> String {
     if let Some(inner) = tag.strip_prefix('p') {
