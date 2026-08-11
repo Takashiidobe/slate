@@ -7740,17 +7740,36 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         })
     }
 
-    fn lower_while_loop_body(&mut self, op: &Op) -> Vec<IndentStmt> {
+    fn lower_while_loop_body(
+        &mut self,
+        op: &Op,
+        break_label: Option<Label>,
+        continue_label: Option<Label>,
+    ) -> Vec<IndentStmt> {
         self.capture_body(|this| {
             let cond = this.lower_condition_region_expr(&op.regions[0]);
             this.push_stmt(Self::guard_break(cond, None));
-            this.loop_stack.push(LoopFrame {
-                break_label: None,
-                continue_label: None,
-                is_loop: true,
-            });
-            this.lower_region_ops(&op.regions[1]);
-            this.loop_stack.pop();
+            if let Some(label) = &continue_label {
+                this.loop_stack.push(LoopFrame {
+                    break_label: break_label.clone(),
+                    continue_label: continue_label.clone(),
+                    is_loop: true,
+                });
+                let body = this.capture_body(|this| this.lower_region_ops(&op.regions[1]));
+                this.loop_stack.pop();
+                this.push_stmt(Stmt::LabeledBlock {
+                    label: label.clone(),
+                    body,
+                });
+            } else {
+                this.loop_stack.push(LoopFrame {
+                    break_label,
+                    continue_label: None,
+                    is_loop: true,
+                });
+                this.lower_region_ops(&op.regions[1]);
+                this.loop_stack.pop();
+            }
         })
     }
 
@@ -7881,8 +7900,21 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.emit_todo("cir.while");
             return;
         }
-        let body = self.lower_while_loop_body(op);
-        self.push_stmt(Stmt::Loop { label: None, body });
+        let (break_label, continue_label) = if region_has_direct_continue(&op.regions[1]) {
+            let n = self.label_counter;
+            self.label_counter += 1;
+            (
+                Some(Label::new(format!("__loop{n}"))),
+                Some(Label::new(format!("__continue{n}"))),
+            )
+        } else {
+            (None, None)
+        };
+        let body = self.lower_while_loop_body(op, break_label.clone(), continue_label);
+        self.push_stmt(Stmt::Loop {
+            label: break_label,
+            body,
+        });
     }
 
     fn lower_do(&mut self, op: &Op) {
