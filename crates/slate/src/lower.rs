@@ -375,7 +375,12 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
             .entry(sanitize_ident(&record.name).into_string())
             .or_insert(record);
     }
-    reconcile_anonymous_member_types(cir, &mut records);
+    for record in reconcile_anonymous_member_types(cir, &mut records, &c.anonymous_header_records) {
+        let name = sanitize_ident(&record.name).into_string();
+        if anon_record_names.insert(name) {
+            anon_records.push(record);
+        }
+    }
     let mut declaration_comments: BTreeMap<(String, String), Vec<Comment>> = BTreeMap::new();
     for declaration in &c.declaration_comments {
         let Some(name) = &declaration.name else {
@@ -2654,6 +2659,10 @@ pub fn is_clib_record_type(name: &str) -> bool {
 }
 
 fn clib_record_type(name: &str) -> Option<CLibType> {
+    let name = match name {
+        "__mbstate_t" => "mbstate_t",
+        _ => name,
+    };
     CLIB_RECORD_TYPES
         .iter()
         .copied()
@@ -10572,28 +10581,67 @@ fn cir_type_to_ctype(ty: &str, aliases: &BTreeMap<String, String>) -> crate::c_a
 fn reconcile_anonymous_member_types(
     module: &Module,
     records: &mut BTreeMap<String, crate::c_ast::Record>,
-) {
-    for record in records.values_mut() {
-        let Some(expanded) = module.aliases.values().find(|expanded| {
-            cir_record_name(expanded).is_some_and(|name| {
-                sanitize_ident(name).as_str() == sanitize_ident(&record.name).as_str()
-            })
-        }) else {
-            continue;
-        };
-        let (Some(open), Some(close)) = (expanded.find('{'), expanded.rfind('}')) else {
-            continue;
-        };
-        let field_types = split_top_level(&expanded[open + 1..close], ',');
-        if field_types.len() != record.fields.len() {
-            continue;
-        }
-        for (index, field) in record.fields.iter_mut().enumerate() {
-            if field.name == format!("__slate_anon_{index}") {
-                field.ty = cir_type_to_ctype(field_types[index], &module.aliases);
+    anonymous_header_records: &[crate::c_ast::Record],
+) -> Vec<crate::c_ast::Record> {
+    use crate::c_ast::CType;
+
+    let anonymous_header_records: BTreeMap<String, &crate::c_ast::Record> =
+        anonymous_header_records
+            .iter()
+            .map(|record| (sanitize_ident(&record.name).into_string(), record))
+            .collect();
+    let mut reconciled = Vec::new();
+    loop {
+        let present_names: BTreeSet<String> = records.keys().cloned().collect();
+        let mut additions = BTreeMap::new();
+        for record in records.values_mut() {
+            let Some(expanded) = module.aliases.values().find(|expanded| {
+                cir_record_name(expanded).is_some_and(|name| {
+                    sanitize_ident(name).as_str() == sanitize_ident(&record.name).as_str()
+                })
+            }) else {
+                continue;
+            };
+            let (Some(open), Some(close)) = (expanded.find('{'), expanded.rfind('}')) else {
+                continue;
+            };
+            let field_types = split_top_level(&expanded[open + 1..close], ',');
+            if field_types.len() != record.fields.len() {
+                continue;
+            }
+            for (index, field) in record.fields.iter_mut().enumerate() {
+                let cir_ty = cir_type_to_ctype(field_types[index], &module.aliases);
+                if field.name == format!("__slate_anon_{index}") {
+                    field.ty = cir_ty;
+                    continue;
+                }
+                let (CType::Record(ast_name), CType::Record(cir_name)) = (&field.ty, &cir_ty)
+                else {
+                    continue;
+                };
+                let ast_name = sanitize_ident(ast_name).into_string();
+                let cir_key = sanitize_ident(cir_name).into_string();
+                if ast_name == cir_key || present_names.contains(&ast_name) {
+                    continue;
+                }
+                let Some(header_record) = anonymous_header_records.get(&ast_name) else {
+                    continue;
+                };
+                let mut header_record = (*header_record).clone();
+                header_record.name = cir_name.clone();
+                additions.entry(cir_key).or_insert(header_record);
+                field.ty = cir_ty;
             }
         }
+        if additions.is_empty() {
+            break;
+        }
+        for (name, record) in additions {
+            records.insert(name, record.clone());
+            reconciled.push(record);
+        }
     }
+    reconciled
 }
 
 fn collect_anon_record_info(

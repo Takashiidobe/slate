@@ -7,20 +7,15 @@
 
 #include <stdint.h>
 
+#define __NEED_mbstate_t
+#include <bits/types.h>
+
 typedef uint_least16_t char16_t;
 typedef uint_least32_t char32_t;
 
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
 typedef unsigned char char8_t;
 #endif
-
-typedef struct {
-  int __count;
-  union {
-    unsigned int __wch;
-    char         __wchb[4];
-  } __value;
-} mbstate_t;
 
 size_t mbrtoc16(char16_t *restrict, const char *, size_t n,
                 const mbstate_t *ps);
