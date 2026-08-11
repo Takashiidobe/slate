@@ -190,8 +190,8 @@ pub(super) fn collect_region_ops_recursive<'a>(op: &'a Op, out: &mut Vec<&'a Op>
 }
 
 pub(super) fn enum_locals_requiring_integer_storage(
-    declarations: &[crate::c_ast::LocalEnumDecl],
-    enums: &BTreeMap<String, crate::c_ast::Enum>,
+    declarations: &[crate::frontend::c_ast::LocalEnumDecl],
+    enums: &BTreeMap<String, crate::frontend::c_ast::Enum>,
     ops: &[&Op],
 ) -> BTreeSet<String> {
     let declared: BTreeMap<_, _> = declarations

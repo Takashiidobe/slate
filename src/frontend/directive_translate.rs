@@ -1,8 +1,9 @@
-use crate::preprocess::{
+use super::preprocess::{
     self, Branch, DirectiveDisposition, DirectiveKind, DirectiveName, PredExpr, Preprocessing,
 };
+use super::{self as frontend, c_ast};
 use crate::rust_ast::{Attr, Cfg, Expr, Item, Program, TraitRef, Type};
-use crate::{c_ast, cir, ctx, fixups, lower};
+use crate::{cir, ctx, fixups};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
 
@@ -486,7 +487,7 @@ fn translate_one(path: &Path, clang_args: &[String]) -> Result<Translation, Stri
     let item_lines = item_lines(&unit);
 
     let mut ctx = ctx::Ctx::default();
-    let program = lower::lower(&module, &unit, &mut ctx);
+    let program = frontend::lower(&module, &unit, &mut ctx);
     for d in &ctx.diagnostics.items {
         eprintln!("{:?}: {}", d.severity, d.message);
     }

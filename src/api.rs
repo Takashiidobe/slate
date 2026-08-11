@@ -1,4 +1,5 @@
-use crate::{c_ast, cir, ctx, directive_translate, fixups, lower, preprocess, rust_ast};
+use crate::frontend::{self, c_ast, directive_translate, preprocess};
+use crate::{cir, ctx, fixups, rust_ast};
 use std::path::Path;
 
 pub fn translate(path: &Path) -> Result<String, String> {
@@ -55,7 +56,7 @@ pub fn lowered_program_with_args(
     let unit = c_ast::parse_file_with_args(path, &all_args)?;
 
     let mut ctx = ctx::Ctx::default();
-    let mut program = lower::lower(&module, &unit, &mut ctx);
+    let mut program = frontend::lower(&module, &unit, &mut ctx);
     for d in &ctx.diagnostics.items {
         eprintln!("{:?}: {}", d.severity, d.message);
     }
