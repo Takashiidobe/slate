@@ -171,6 +171,8 @@ pub enum Attr {
     Repr(Vec<Repr>),
     Derive(Vec<Derive>),
     NoMangle,
+    ExportName(String),
+    LinkName(String),
     ThreadLocal,
     WeakLinkage,
     ExternWeakLinkage,

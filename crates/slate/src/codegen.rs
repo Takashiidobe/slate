@@ -468,6 +468,10 @@ impl<W: Write> Codegen<W> {
                 self.out.write_char(')')
             }
             Attr::NoMangle => self.out.write_str("unsafe(no_mangle)"),
+            Attr::ExportName(name) => {
+                write!(self.out, "unsafe(export_name = {})", string_literal(name))
+            }
+            Attr::LinkName(name) => write!(self.out, "link_name = {}", string_literal(name)),
             Attr::ThreadLocal => self.out.write_str("thread_local"),
             Attr::WeakLinkage => self.out.write_str("linkage = \"weak\""),
             Attr::ExternWeakLinkage => self.out.write_str("linkage = \"extern_weak\""),

@@ -387,7 +387,7 @@ fn wrap_raw_printf_in_body(body: &mut Vec<IndentStmt>) -> bool {
         walk::nested_body_vecs_mut_with_path(&mut body[index].stmt, &mut path, &mut |body, _| {
             changed |= wrap_raw_printf_in_body(body);
         });
-        if is_raw_printf_call_stmt(&body[index].stmt) {
+        if is_buffered_c_stdout_call_stmt(&body[index].stmt) {
             let depth = body[index].depth;
             body.insert(
                 index + 1,
@@ -422,11 +422,15 @@ fn peel_empty_unsafe(expr: &Expr) -> &Expr {
     expr
 }
 
-fn is_raw_printf_call_stmt(stmt: &Stmt) -> bool {
+fn is_buffered_c_stdout_call_stmt(stmt: &Stmt) -> bool {
     let Stmt::Expr(expr) = stmt else {
         return false;
     };
-    known_call(peel_empty_unsafe(expr)) == Some(Known::Printf)
+    let expr = peel_empty_unsafe(expr);
+    if known_call(expr) == Some(Known::Printf) {
+        return true;
+    }
+    matches!(expr, Expr::Call { func, .. } if matches!(func.as_ref(), Expr::Var(name) if name.as_str() == "putchar" || name.as_str() == "puts" || name.as_str().starts_with("__slate_printf__")))
 }
 
 fn flush_before_stmt() -> Stmt {
