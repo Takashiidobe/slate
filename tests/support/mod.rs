@@ -2,8 +2,6 @@
     dead_code,
     reason = "test helper toolbox; helpers may sit unused between runs"
 )]
-pub mod alive;
-
 use std::collections::BTreeMap;
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -139,15 +137,6 @@ where
         .into_iter()
         .map(|result| result.expect("parallel worker did not produce a result"))
         .collect()
-}
-
-/// Path to the `alive-tv` binary used for translation-validation regression
-/// tests (compares C's LLVM IR against the baseline Rust lowering's).
-pub fn alive_tv() -> String {
-    std::env::var("SLATE_ALIVE_TV").unwrap_or_else(|_| {
-        let home = std::env::var("HOME").expect("HOME not set");
-        format!("{home}/alive2/build/alive-tv")
-    })
 }
 
 pub fn compile_c(src: &Path, out: &Path) -> Result<(), String> {

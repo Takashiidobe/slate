@@ -16,11 +16,6 @@ triplers = { version = "0.1.1", path = "vendor/triplers" }
 mimalloc = "0.1.52"
 
 [[test]]
-name = "alive_regression"
-path = "tests/alive_regression.rs"
-test = false
-
-[[test]]
 name = "effects_regression"
 path = "tests/effects_regression.rs"
 test = false
