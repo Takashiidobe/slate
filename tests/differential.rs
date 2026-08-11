@@ -944,7 +944,7 @@ fn expanded_atomic_fixtures_cover_orderings_flag_fallbacks_and_widths() {
     assert!(widths.contains("std::sync::atomic::AtomicU8::new(250)"));
     assert!(widths.contains("std::sync::atomic::AtomicI8::new(-5)"));
     assert!(widths.contains("std::sync::atomic::AtomicU32::new(1000)"));
-    assert!(widths.contains("std::sync::atomic::AtomicI64::new(-10000000000)"));
+    assert!(widths.contains("std::sync::atomic::AtomicI64::new(-10000000000i64)"));
 }
 
 fn translate_fixture(tmp: &Path, fixture: &str) -> String {
@@ -980,8 +980,8 @@ fn serial_temp_chain_translates_within_a_bounded_time() {
     translate_fixture(&tmp, "serial_temp_chain_completes_in_bounded_time");
     let elapsed = start.elapsed();
     assert!(
-        elapsed < std::time::Duration::from_secs(20),
-        "translation took {elapsed:?}, expected a couple of seconds; \
+        elapsed < std::time::Duration::from_secs(5),
+        "translation took {elapsed:?}, expected under five seconds; \
          the fixups query engine's overlap checks and per-function fact \
          lookups likely regressed to O(n^2) or worse (see slate-xzn6.6)"
     );
@@ -1109,14 +1109,15 @@ fn counted_varargs_loop_uses_range_for() {
 
     support::translate(&c_src, &generated).expect("translate varargs fixture");
     let rust = std::fs::read_to_string(&generated).expect("read generated varargs rust");
-    assert!(rust.contains("mut ap: ..."));
+    assert!(rust.contains("let mut ap: __SlateVaArgs;"));
     assert!(rust.contains("for _ in 0..n {"));
     assert!(rust.contains("let mut total: i32 = 0;"));
     assert!(rust.contains("total += unsafe { ap.next_arg::<i32>() };"));
     assert!(rust.contains("let first: i32 = unsafe { ap.next_arg::<i32>() };"));
     assert!(rust.contains("let second: i32 = unsafe { ap.next_arg::<i32>() };"));
-    assert!(rust.contains("println!(\"{}\", unsafe { sum(4, 10, 20, 30, 40) });"));
-    assert!(rust.contains("println!(\"{}\", unsafe { pick_second(5, 7, 9) });"));
+    assert!(rust.contains("sum(4, __SlateVaArgs::new(vec![__SlateVaArg::new(_v2)"));
+    assert!(rust.contains("pick_second(5, __SlateVaArgs::new(vec![__SlateVaArg::new(_v9)"));
+    assert!(rust.contains("ap = __slate_va_args.clone();"));
     assert!(!rust.contains("total = 0;"));
     assert!(!rust.contains("let mut first: i32 = 0;"));
     assert!(!rust.contains("let mut second: i32 = 0;"));
@@ -1125,8 +1126,6 @@ fn counted_varargs_loop_uses_range_for() {
     assert!(!rust.contains("let _v5: i32 = unsafe { ap.next_arg::<i32>() };"));
     assert!(!rust.contains("let _v0: i32 = unsafe { ap.next_arg::<i32>() };"));
     assert!(!rust.contains("let _v1: i32 = 4;"));
-    assert!(!rust.contains("let _v6: i32 = unsafe { sum("));
-    assert!(!rust.contains("__slate_va_args.clone()"));
     assert!(!rust.contains("let mut ap: core::ffi::VaList<'_>;"));
     assert!(!rust.contains("if !(i < n)"));
 }
