@@ -702,6 +702,18 @@ fn sibling_can_call_function_defined_in_root_translation_unit() {
 }
 
 #[test]
+fn setjmp_unwind_abi_propagates_to_cross_module_callers() {
+    let rs_dir = build_and_diff("setjmp_cross_module_callback");
+
+    let check_rs = std::fs::read_to_string(rs_dir.join("check.rs")).expect("read check.rs");
+    assert!(check_rs.contains("pub extern \"C-unwind\" fn check"));
+    assert!(check_rs.contains("pub extern \"C-unwind\" fn other_check"));
+
+    let runner_rs = std::fs::read_to_string(rs_dir.join("runner.rs")).expect("read runner.rs");
+    assert!(runner_rs.contains("pub extern \"C-unwind\" fn fail_now"));
+}
+
+#[test]
 fn project_translation_shares_record_types() {
     build_and_diff("shared_record");
 }

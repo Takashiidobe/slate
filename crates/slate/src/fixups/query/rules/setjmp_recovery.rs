@@ -1,16 +1,17 @@
 use std::collections::{BTreeMap, BTreeSet};
 
+use crate::fixups::salsa::SalsaFacts;
 use crate::fixups::support::walk;
 use crate::fixups::trace::Pass;
 use crate::function_identity::CallBinding;
 use crate::rust_ast::{
-    Abi, BinOp, Block, Expr, ExprMatchArm, Ident, IndentStmt, Item, MatchArm, Path, Pattern, Prim,
-    Program, RustValue, Stmt, StructDef, StructFields, Type, Visibility,
+    Abi, BinOp, Block, Expr, ExprMatchArm, FnDef, Ident, IndentStmt, Item, Label, MatchArm, Path,
+    Pattern, Prim, Program, RustValue, Stmt, StructDef, StructFields, Type, Visibility,
 };
 
 use super::super::{
-    CallRecord, EditSet, FunctionRef, Predicate, Proof, QueryContext, QueryResult, QueryRule,
-    Rejection, RejectionReason, WholeProgram,
+    CallTarget, EditSet, Predicate, Proof, QueryContext, QueryResult, QueryRule, Rejection,
+    RejectionReason, WholeProgram,
 };
 
 pub(in crate::fixups) fn program() -> QueryRule<WholeProgram> {
@@ -73,26 +74,7 @@ fn rewrite_setjmp_recovery(query: &QueryContext<'_>) -> QueryResult<SetjmpRecove
         replacement.items.push(payload_struct_item(buffer));
     }
 
-    let (flip_targets, fallback) = functions_needing_unwind_abi(query, &origin_functions);
-    if fallback {
-        for item in replacement.items.iter_mut() {
-            if let Item::Fn(f) = item
-                && f.abi == Some(Abi::C)
-            {
-                f.abi = Some(Abi::CUnwind);
-            }
-        }
-        rewrite_c_abi_fn_ptr_types_in_program(&mut replacement);
-    } else {
-        for item in replacement.items.iter_mut() {
-            if let Item::Fn(f) = item
-                && flip_targets.contains(&f.name)
-                && f.abi == Some(Abi::C)
-            {
-                f.abi = Some(Abi::CUnwind);
-            }
-        }
-    }
+    flip_unwind_abi_single_program(&mut replacement, query, &origin_functions);
 
     Ok(Proof::new(
         SetjmpRecoveryRewrite { replacement },
@@ -100,78 +82,264 @@ fn rewrite_setjmp_recovery(query: &QueryContext<'_>) -> QueryResult<SetjmpRecove
     ))
 }
 
-fn functions_needing_unwind_abi(
+fn flip_unwind_abi_single_program(
+    replacement: &mut Program,
     query: &QueryContext<'_>,
     origin_functions: &BTreeSet<String>,
-) -> (BTreeSet<String>, bool) {
-    let all_functions = query.all_functions();
-    let callers_by_item_index: BTreeMap<usize, &str> = all_functions
+) {
+    if origin_functions.is_empty() {
+        return;
+    }
+    let mut seeds = origin_functions.clone();
+    let mut previous: BTreeSet<String> = BTreeSet::new();
+    for _ in 0..8 {
+        if seeds == previous {
+            break;
+        }
+        previous = seeds.clone();
+        flip_unwind_abi_fn_defs(replacement, query, &seeds);
+        let single = std::slice::from_ref(&*replacement);
+        let address_exposed = address_exposed_function_names(single);
+        let flipped_names = cunwind_names(single);
+        let flipped_shapes = cunwind_shapes(single);
+        let siblings = address_exposed_c_abi_functions_matching_shapes(
+            single,
+            &flipped_shapes,
+            &address_exposed,
+            &flipped_names,
+        );
+        seeds = flipped_names.into_iter().chain(siblings).collect();
+    }
+    let flipped_shapes = cunwind_shapes(std::slice::from_ref(&*replacement));
+    rewrite_c_abi_fn_ptr_types_matching_shapes(replacement, &flipped_shapes);
+}
+
+pub(in crate::fixups) fn propagate_unwind_abi_across_project(programs: &mut [Program]) {
+    let mut previous: BTreeSet<String> = BTreeSet::new();
+    for _ in 0..8 {
+        let flipped_names = cunwind_names(programs);
+        let flipped_shapes = cunwind_shapes(programs);
+        let address_exposed = address_exposed_function_names(programs);
+        let siblings = address_exposed_c_abi_functions_matching_shapes(
+            programs,
+            &flipped_shapes,
+            &address_exposed,
+            &flipped_names,
+        );
+        let seeds: BTreeSet<String> = flipped_names.into_iter().chain(siblings).collect();
+        if seeds == previous {
+            break;
+        }
+        previous = seeds.clone();
+        for program in programs.iter_mut() {
+            propagate_unwind_abi_with_seeds(program, &seeds);
+        }
+    }
+
+    let flipped_shapes = cunwind_shapes(programs);
+    for program in programs.iter_mut() {
+        rewrite_c_abi_fn_ptr_types_matching_shapes(program, &flipped_shapes);
+    }
+}
+
+fn cunwind_names(programs: &[Program]) -> BTreeSet<String> {
+    programs
         .iter()
-        .map(|function| (function.item_index, function.name.as_str()))
-        .collect();
-    let by_name: BTreeMap<&str, &FunctionRef<'_>> = all_functions
+        .flat_map(|program| program.items.iter())
+        .filter_map(|item| match item {
+            Item::Fn(f) if f.abi == Some(Abi::CUnwind) => Some(f.name.clone()),
+            _ => None,
+        })
+        .collect()
+}
+
+fn cunwind_shapes(programs: &[Program]) -> BTreeSet<(Vec<Type>, Type)> {
+    programs
         .iter()
-        .map(|function| (function.name.as_str(), function))
+        .flat_map(|program| program.items.iter())
+        .filter_map(|item| match item {
+            Item::Fn(f) if f.abi == Some(Abi::CUnwind) => Some(fn_shape(f)),
+            _ => None,
+        })
+        .collect()
+}
+
+fn address_exposed_c_abi_functions_matching_shapes(
+    programs: &[Program],
+    shapes: &BTreeSet<(Vec<Type>, Type)>,
+    address_exposed: &BTreeSet<String>,
+    already: &BTreeSet<String>,
+) -> BTreeSet<String> {
+    if shapes.is_empty() {
+        return BTreeSet::new();
+    }
+    programs
+        .iter()
+        .flat_map(|program| program.items.iter())
+        .filter_map(|item| match item {
+            Item::Fn(f)
+                if f.abi == Some(Abi::C)
+                    && !already.contains(&f.name)
+                    && address_exposed.contains(&f.name)
+                    && shapes.contains(&fn_shape(f)) =>
+            {
+                Some(f.name.clone())
+            }
+            _ => None,
+        })
+        .collect()
+}
+
+fn propagate_unwind_abi_with_seeds(program: &mut Program, seeds: &BTreeSet<String>) {
+    if seeds.is_empty() {
+        return;
+    }
+    let mut replacement = program.clone();
+    {
+        let mut facts = SalsaFacts::new_empty();
+        facts.set_program(program);
+        let query = QueryContext::new(program, &facts);
+        flip_unwind_abi_fn_defs(&mut replacement, &query, seeds);
+    }
+    *program = replacement;
+}
+
+fn flip_unwind_abi_fn_defs(
+    replacement: &mut Program,
+    query: &QueryContext<'_>,
+    seeds: &BTreeSet<String>,
+) {
+    if seeds.is_empty() {
+        return;
+    }
+    let flip_targets = reachable_c_abi_functions(query, seeds);
+    for item in replacement.items.iter_mut() {
+        if let Item::Fn(f) = item
+            && flip_targets.contains(&f.name)
+            && f.abi == Some(Abi::C)
+        {
+            f.abi = Some(Abi::CUnwind);
+        }
+    }
+}
+
+fn fn_shape(f: &FnDef) -> (Vec<Type>, Type) {
+    (
+        f.params.iter().map(|param| param.ty.clone()).collect(),
+        f.ret.clone().unwrap_or(Type::Unit),
+    )
+}
+
+fn address_exposed_function_names(programs: &[Program]) -> BTreeSet<String> {
+    let mut all_names: BTreeSet<String> = BTreeSet::new();
+    for program in programs {
+        let mut facts = SalsaFacts::new_empty();
+        facts.set_program(program);
+        let query = QueryContext::new(program, &facts);
+        all_names.extend(
+            query
+                .all_functions()
+                .iter()
+                .map(|function| function.name.clone()),
+        );
+    }
+
+    let mut exposed = BTreeSet::new();
+    for program in programs {
+        let mut facts = SalsaFacts::new_empty();
+        facts.set_program(program);
+        let query = QueryContext::new(program, &facts);
+        for name in &all_names {
+            if exposed.contains(name) {
+                continue;
+            }
+            let direct_call_count = query
+                .all_calls()
+                .filter(|call| matches!(&call.target, CallTarget::Direct(target) if target == name))
+                .count();
+            if query.symbol_use_count(name) != direct_call_count {
+                exposed.insert(name.clone());
+            }
+        }
+    }
+    exposed
+}
+
+fn reachable_c_abi_functions(
+    query: &QueryContext<'_>,
+    seeds: &BTreeSet<String>,
+) -> BTreeSet<String> {
+    let callers_by_item_index: BTreeMap<usize, String> = query
+        .all_functions()
+        .iter()
+        .map(|function| (function.item_index, function.name.clone()))
         .collect();
 
-    let mut to_flip: BTreeSet<String> = origin_functions.clone();
+    let mut callers_of: BTreeMap<&str, BTreeSet<&str>> = BTreeMap::new();
+    for call in query.all_calls() {
+        let CallTarget::Direct(target) = &call.target else {
+            continue;
+        };
+        let Some(caller) = callers_by_item_index.get(&call.site.item_index) else {
+            continue;
+        };
+        callers_of
+            .entry(target.as_str())
+            .or_default()
+            .insert(caller.as_str());
+    }
+
+    let mut to_flip: BTreeSet<String> = seeds.clone();
     let mut visited: BTreeSet<String> = BTreeSet::new();
-    let mut frontier: Vec<String> = origin_functions.iter().cloned().collect();
-    let mut fallback = false;
-
+    let mut frontier: Vec<String> = seeds.iter().cloned().collect();
     while let Some(name) = frontier.pop() {
         if !visited.insert(name.clone()) {
             continue;
         }
-        let Some(function) = by_name.get(name.as_str()) else {
+        let Some(callers) = callers_of.get(name.as_str()) else {
             continue;
         };
-        match query.function_reachability(function) {
-            Ok(proof) if proof.value.address_exposed => fallback = true,
-            Ok(_) => {}
-            Err(_) => fallback = true,
-        }
-        let calls: Vec<CallRecord> = match query.direct_calls(function) {
-            Ok(proof) => proof.value,
-            Err(_) => {
-                fallback = true;
-                Vec::new()
-            }
-        };
-        for call in &calls {
-            let Some(caller_name) = callers_by_item_index.get(&call.site.item_index) else {
-                continue;
-            };
-            if to_flip.insert(caller_name.to_string()) {
-                frontier.push(caller_name.to_string());
+        for caller in callers {
+            if to_flip.insert(caller.to_string()) {
+                frontier.push(caller.to_string());
             }
         }
     }
-
-    (to_flip, fallback)
+    to_flip
 }
 
-fn rewrite_c_abi_fn_ptr_types_in_program(program: &mut Program) {
+fn rewrite_c_abi_fn_ptr_types_matching_shapes(
+    program: &mut Program,
+    shapes: &BTreeSet<(Vec<Type>, Type)>,
+) {
+    if shapes.is_empty() {
+        return;
+    }
     for item in program.items.iter_mut() {
         match item {
             Item::Fn(f) => {
                 for param in f.params.iter_mut() {
-                    rewrite_c_abi_type(&mut param.ty);
+                    rewrite_c_abi_type_matching(&mut param.ty, shapes);
                 }
                 if let Some(ret) = f.ret.as_mut() {
-                    rewrite_c_abi_type(ret);
+                    rewrite_c_abi_type_matching(ret, shapes);
                 }
-                rewrite_c_abi_let_types(&mut f.body);
+                rewrite_c_abi_let_types_matching(&mut f.body, shapes);
                 walk::body_exprs_mut_with(&mut f.body, &mut |expr| {
-                    rewrite_c_abi_types_in_expr_node(expr);
+                    rewrite_c_abi_types_in_expr_node_matching(expr, shapes);
                     true
                 });
             }
-            Item::Struct(s) => rewrite_c_abi_types_in_struct_fields(&mut s.fields),
+            Item::Struct(s) => rewrite_c_abi_types_in_struct_fields_matching(&mut s.fields, shapes),
+            Item::Record(r) => {
+                for field in r.fields.iter_mut() {
+                    rewrite_c_abi_type_matching(&mut field.ty, shapes);
+                }
+            }
             Item::Static { ty, init, .. } | Item::Const { ty, init, .. } => {
-                rewrite_c_abi_type(ty);
+                rewrite_c_abi_type_matching(ty, shapes);
                 walk::exprs_mut_with(init, &mut |expr| {
-                    rewrite_c_abi_types_in_expr_node(expr);
+                    rewrite_c_abi_types_in_expr_node_matching(expr, shapes);
                     true
                 });
             }
@@ -180,71 +348,86 @@ fn rewrite_c_abi_fn_ptr_types_in_program(program: &mut Program) {
     }
 }
 
-fn rewrite_c_abi_types_in_struct_fields(fields: &mut StructFields) {
+fn rewrite_c_abi_types_in_struct_fields_matching(
+    fields: &mut StructFields,
+    shapes: &BTreeSet<(Vec<Type>, Type)>,
+) {
     match fields {
         StructFields::Named(named) => {
             for (_, ty) in named.iter_mut() {
-                rewrite_c_abi_type(ty);
+                rewrite_c_abi_type_matching(ty, shapes);
             }
         }
         StructFields::Tuple(tys) => {
             for ty in tys.iter_mut() {
-                rewrite_c_abi_type(ty);
+                rewrite_c_abi_type_matching(ty, shapes);
             }
         }
     }
 }
 
-fn rewrite_c_abi_let_types(body: &mut [IndentStmt]) {
+fn rewrite_c_abi_let_types_matching(body: &mut [IndentStmt], shapes: &BTreeSet<(Vec<Type>, Type)>) {
     for indent in body.iter_mut() {
         match &mut indent.stmt {
             Stmt::Let { ty: Some(ty), .. } | Stmt::LetIf { ty: Some(ty), .. } => {
-                rewrite_c_abi_type(ty);
+                rewrite_c_abi_type_matching(ty, shapes);
             }
             _ => {}
         }
         let mut path = Vec::new();
         walk::nested_body_vecs_mut_with_path(&mut indent.stmt, &mut path, &mut |nested, _| {
-            rewrite_c_abi_let_types(nested);
+            rewrite_c_abi_let_types_matching(nested, shapes);
+        });
+        walk::stmt_exprs_mut_with(&mut indent.stmt, &mut |expr| {
+            if let Expr::Block(block) = expr {
+                rewrite_c_abi_let_types_matching(&mut block.stmts, shapes);
+            }
+            true
         });
     }
 }
 
-fn rewrite_c_abi_types_in_expr_node(expr: &mut Expr) {
+fn rewrite_c_abi_types_in_expr_node_matching(
+    expr: &mut Expr,
+    shapes: &BTreeSet<(Vec<Type>, Type)>,
+) {
     match expr {
-        Expr::Cast { ty, .. } => rewrite_c_abi_type(ty),
+        Expr::Cast { ty, .. } => rewrite_c_abi_type_matching(ty, shapes),
         Expr::Transmute { from, to, .. } => {
-            rewrite_c_abi_type(from);
-            rewrite_c_abi_type(to);
+            rewrite_c_abi_type_matching(from, shapes);
+            rewrite_c_abi_type_matching(to, shapes);
         }
         Expr::MethodCallGeneric { type_args, .. } => {
             for ty in type_args.iter_mut() {
-                rewrite_c_abi_type(ty);
+                rewrite_c_abi_type_matching(ty, shapes);
             }
         }
         _ => {}
     }
 }
 
-fn rewrite_c_abi_type(ty: &mut Type) {
+fn rewrite_c_abi_type_matching(ty: &mut Type, shapes: &BTreeSet<(Vec<Type>, Type)>) {
+    if let Type::FnPtr { abi, params, ret } = ty
+        && *abi == Abi::C
+        && shapes.contains(&(params.clone(), (**ret).clone()))
+    {
+        *abi = Abi::CUnwind;
+    }
     match ty {
-        Type::FnPtr { abi, params, ret } => {
-            if *abi == Abi::C {
-                *abi = Abi::CUnwind;
-            }
+        Type::FnPtr { params, ret, .. } => {
             for param in params.iter_mut() {
-                rewrite_c_abi_type(param);
+                rewrite_c_abi_type_matching(param, shapes);
             }
-            rewrite_c_abi_type(ret);
+            rewrite_c_abi_type_matching(ret, shapes);
         }
         Type::Ref { inner, .. }
         | Type::Slice(inner)
         | Type::Ptr { inner, .. }
-        | Type::Complex(inner) => rewrite_c_abi_type(inner),
-        Type::Array { elem, .. } => rewrite_c_abi_type(elem),
+        | Type::Complex(inner) => rewrite_c_abi_type_matching(inner, shapes),
+        Type::Array { elem, .. } => rewrite_c_abi_type_matching(elem, shapes),
         Type::Generic { args, .. } => {
             for arg in args.iter_mut() {
-                rewrite_c_abi_type(arg);
+                rewrite_c_abi_type_matching(arg, shapes);
             }
         }
         _ => {}
@@ -338,20 +521,123 @@ fn resolve_address_root(expr: &Expr) -> Option<&str> {
     }
 }
 
-fn body_has_disallowed_control_flow(body: &[IndentStmt]) -> bool {
-    body.iter()
-        .any(|indent| stmt_has_disallowed_control_flow(&indent.stmt))
+/// Rewrites `break`/`continue` statements in `body` that target a label not
+/// opened by a loop within `body` itself into `return <code>;`, so the
+/// closure can carry the jump out as a signal for the caller to perform
+/// after `catch_unwind` returns (a `break`/`continue` inside a closure
+/// can't reach a label defined outside it). Returns the escaping statements
+/// in first-encountered order (index + 1 is the signal code used for each),
+/// or `None` if `body` contains other disallowed control flow (`return`, or
+/// a `break`/`continue` this rewrite can't classify).
+fn extract_escaping_control_flow(body: &mut [IndentStmt]) -> Option<Vec<Stmt>> {
+    let mut escapes = Vec::new();
+    let mut open_labels = Vec::new();
+    rewrite_escaping_control_flow(body, &mut open_labels, &mut escapes).then_some(escapes)
 }
 
-fn stmt_has_disallowed_control_flow(stmt: &Stmt) -> bool {
-    if matches!(stmt, Stmt::Return(_) | Stmt::Break(_) | Stmt::Continue(_)) {
-        return true;
+fn rewrite_escaping_control_flow(
+    body: &mut [IndentStmt],
+    open_labels: &mut Vec<Option<Label>>,
+    escapes: &mut Vec<Stmt>,
+) -> bool {
+    body.iter_mut()
+        .all(|indent| rewrite_escaping_control_flow_in_stmt(&mut indent.stmt, open_labels, escapes))
+}
+
+fn rewrite_escaping_control_flow_in_stmt(
+    stmt: &mut Stmt,
+    open_labels: &mut Vec<Option<Label>>,
+    escapes: &mut Vec<Stmt>,
+) -> bool {
+    match stmt {
+        Stmt::Return(_) => false,
+        Stmt::Break(target) => {
+            if target
+                .as_ref()
+                .is_some_and(|label| open_labels.iter().flatten().any(|open| open == label))
+                || (target.is_none() && !open_labels.is_empty())
+            {
+                return true;
+            }
+            let signal = Stmt::Break(target.clone());
+            *stmt = Stmt::Return(Some(Expr::Value(RustValue::I64(escape_code(
+                escapes, signal,
+            )))));
+            true
+        }
+        Stmt::Continue(target) => {
+            if target
+                .as_ref()
+                .is_some_and(|label| open_labels.iter().flatten().any(|open| open == label))
+                || (target.is_none() && !open_labels.is_empty())
+            {
+                return true;
+            }
+            let signal = Stmt::Continue(target.clone());
+            *stmt = Stmt::Return(Some(Expr::Value(RustValue::I64(escape_code(
+                escapes, signal,
+            )))));
+            true
+        }
+        Stmt::If {
+            then_body,
+            else_body,
+            ..
+        }
+        | Stmt::LetIf {
+            then_body,
+            else_body,
+            ..
+        } => {
+            rewrite_escaping_control_flow(then_body, open_labels, escapes)
+                && rewrite_escaping_control_flow(else_body, open_labels, escapes)
+        }
+        Stmt::Loop { label, body } => {
+            open_labels.push(label.clone());
+            let ok = rewrite_escaping_control_flow(body, open_labels, escapes);
+            open_labels.pop();
+            ok
+        }
+        Stmt::For { body, .. } => {
+            open_labels.push(None);
+            let ok = rewrite_escaping_control_flow(body, open_labels, escapes);
+            open_labels.pop();
+            ok
+        }
+        Stmt::While { body, .. } => {
+            open_labels.push(None);
+            let ok = rewrite_escaping_control_flow(&mut body.stmts, open_labels, escapes);
+            open_labels.pop();
+            ok
+        }
+        Stmt::Scope { body } => rewrite_escaping_control_flow(body, open_labels, escapes),
+        Stmt::LabeledBlock { label, body } => {
+            open_labels.push(Some(label.clone()));
+            let ok = rewrite_escaping_control_flow(body, open_labels, escapes);
+            open_labels.pop();
+            ok
+        }
+        Stmt::Unsafe { body } | Stmt::Block(body) => {
+            rewrite_escaping_control_flow(&mut body.stmts, open_labels, escapes)
+        }
+        Stmt::Match { arms, .. } => arms
+            .iter_mut()
+            .all(|arm| rewrite_escaping_control_flow(&mut arm.body, open_labels, escapes)),
+        Stmt::Let { .. }
+        | Stmt::Assign { .. }
+        | Stmt::CompoundAssign { .. }
+        | Stmt::InlineAsm(_)
+        | Stmt::Expr(_) => true,
     }
-    let mut found = false;
-    walk::nested_bodies_with_path(stmt, &mut Vec::new(), &mut |nested, _| {
-        found |= body_has_disallowed_control_flow(nested);
-    });
-    found
+}
+
+fn escape_code(escapes: &mut Vec<Stmt>, signal: Stmt) -> i64 {
+    if let Some(index) = escapes.iter().position(|existing| existing == &signal) {
+        (index + 1) as i64
+    } else {
+        escapes.push(signal);
+        escapes.len() as i64
+    }
 }
 
 fn payload_type_name(buffer: &str) -> String {
@@ -415,9 +701,9 @@ fn rewrite_setjmp_guards_in_body(
             strip_trailing_return = true;
         }
         let checked_len = closure_body.len() - usize::from(strip_trailing_return);
-        if body_has_disallowed_control_flow(&closure_body[..checked_len]) {
+        let Some(escapes) = extract_escaping_control_flow(&mut closure_body[..checked_len]) else {
             break;
-        }
+        };
         if strip_trailing_return {
             closure_body.pop();
         }
@@ -429,6 +715,7 @@ fn rewrite_setjmp_guards_in_body(
         let result_name = format!("__sj_{binding_name}");
         let payload_var = format!("__sj_payload_{binding_name}");
 
+        let closure_tail = (!escapes.is_empty()).then(|| Box::new(Expr::Value(RustValue::I64(0))));
         let catch_unwind_stmt = stmt_indent(Stmt::Let {
             name: result_name.clone(),
             mutable: false,
@@ -441,7 +728,7 @@ fn rewrite_setjmp_guards_in_body(
                         params: Vec::new(),
                         body: Box::new(Expr::Block(Box::new(Block {
                             stmts: closure_body,
-                            tail: None,
+                            tail: closure_tail,
                         }))),
                     }],
                     binding: CallBinding::Generated,
@@ -490,16 +777,44 @@ fn rewrite_setjmp_guards_in_body(
         })];
         err_arm_body.extend(recovery_body);
 
+        let ok_arm = if escapes.is_empty() {
+            MatchArm {
+                pattern: Pattern::TupleStruct {
+                    name: "Ok".into(),
+                    fields: vec![Pattern::Wildcard],
+                },
+                body: Vec::new(),
+            }
+        } else {
+            let signal_var = format!("__sj_signal_{result_name}");
+            let dispatch_arms = escapes
+                .iter()
+                .enumerate()
+                .map(|(index, escape)| MatchArm {
+                    pattern: Pattern::I64((index + 1) as i64),
+                    body: vec![stmt_indent(escape.clone())],
+                })
+                .chain(std::iter::once(MatchArm {
+                    pattern: Pattern::Wildcard,
+                    body: Vec::new(),
+                }))
+                .collect();
+            MatchArm {
+                pattern: Pattern::TupleStruct {
+                    name: "Ok".into(),
+                    fields: vec![Pattern::Binding(signal_var.clone().into())],
+                },
+                body: vec![stmt_indent(Stmt::Match {
+                    expr: Expr::Var(signal_var.into()),
+                    arms: dispatch_arms,
+                })],
+            }
+        };
+
         let match_stmt = stmt_indent(Stmt::Match {
             expr: Expr::Var(result_name.into()),
             arms: vec![
-                MatchArm {
-                    pattern: Pattern::TupleStruct {
-                        name: "Ok".into(),
-                        fields: vec![Pattern::Wildcard],
-                    },
-                    body: Vec::new(),
-                },
+                ok_arm,
                 MatchArm {
                     pattern: Pattern::TupleStruct {
                         name: "Err".into(),
