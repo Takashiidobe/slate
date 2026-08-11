@@ -1894,7 +1894,8 @@ fn collect_source_files<'a>(node: Option<&'a Value>, out: &mut Vec<&'a str>) {
 
 fn has_source_loc_without_file(node: &Value) -> bool {
     let loc = node.get("loc");
-    loc.and_then(|loc| loc.get("line")).is_some()
+    (loc.and_then(|loc| loc.get("line")).is_some()
+        || loc.and_then(|loc| loc.get("offset")).is_some())
         && loc.and_then(|loc| loc.get("file")).is_none()
         && loc.and_then(|loc| loc.get("includedFrom")).is_none()
 }
