@@ -212,11 +212,20 @@ pub fn header_include_program(headers: &[String]) -> String {
 }
 
 pub fn compile_test_program(config: &TestConfig, source: &str) -> Result<(), String> {
+    compile_test_program_with_args(config, source, &[])
+}
+
+pub fn compile_test_program_with_args(
+    config: &TestConfig,
+    source: &str,
+    extra_args: &[&str],
+) -> Result<(), String> {
     let cache_root = super::test_cache_root();
     fs::create_dir_all(&cache_root).map_err(|e| format!("create cache dir: {e}"))?;
 
     let mut hasher = DefaultHasher::new();
     source.hash(&mut hasher);
+    extra_args.hash(&mut hasher);
     let key = hasher.finish();
     let source_file = cache_root.join(format!("test_{}_{key:016x}.c", config.name()));
     let object_file = cache_root.join(format!("test_{}_{key:016x}.o", config.name()));
@@ -230,7 +239,8 @@ pub fn compile_test_program(config: &TestConfig, source: &str) -> Result<(), Str
         .arg(&object_file)
         .arg("-nostdlibinc")
         .arg("-isystem")
-        .arg(libc_shim_dir().to_string_lossy().as_ref());
+        .arg(libc_shim_dir().to_string_lossy().as_ref())
+        .args(extra_args);
 
     if let Some(target) = config.target() {
         cmd.arg(format!("--target={target}"));
