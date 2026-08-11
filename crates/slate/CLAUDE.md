@@ -125,7 +125,7 @@ verified:  run(C).{stdout,exit} == run(Rust).{stdout,exit}
 ```
 
 CIR is the primary lowering input; the Clang AST is the source-fact oracle, and
-the two are joined by **source location**. `src/lower.rs` holds the `cir.*`
+the two are joined by **source location**. `src/lower/lowerer.rs` and its submodules hold the `cir.*`
 handlers; `src/c_ast.rs` extracts source facts from Clang JSON; `src/cir/`
 parses the generic-form CIR op-tree.
 
