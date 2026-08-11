@@ -277,8 +277,9 @@ fn reachable_c_abi_functions(
 
     let mut callers_of: BTreeMap<&str, BTreeSet<&str>> = BTreeMap::new();
     for call in query.all_calls() {
-        let CallTarget::Direct(target) = &call.target else {
-            continue;
+        let target = match &call.target {
+            CallTarget::Direct(target) | CallTarget::Generated(target) => target,
+            CallTarget::Known(_) | CallTarget::Indirect => continue,
         };
         let Some(caller) = callers_by_item_index.get(&call.site.item_index) else {
             continue;
