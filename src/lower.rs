@@ -841,6 +841,7 @@ struct FunctionLowerer<'a, 'b> {
     asm_output_places: BTreeMap<String, Expr>,
     local_enum_types: BTreeMap<String, String>,
     loaded_field_types: BTreeMap<String, Type>,
+    goto_closures: BTreeMap<String, (String, Vec<String>)>,
 }
 
 struct DispatchCtx {
@@ -1997,6 +1998,7 @@ impl<'a> Lowerer<'a> {
             asm_output_places: BTreeMap::new(),
             local_enum_types,
             loaded_field_types: BTreeMap::new(),
+            goto_closures: BTreeMap::new(),
         };
 
         for stmt in prelude {
@@ -2015,6 +2017,74 @@ impl<'a> Lowerer<'a> {
             let returns_value = !matches!(ret, None | Some(Type::Unit));
             f.lower_dispatch(body, returns_value);
         } else {
+            let goto_labels: BTreeSet<&str> = function_ops
+                .iter()
+                .filter(|op| op.kind() == CirOpKind::Goto)
+                .filter_map(|op| attr_str(op, "label"))
+                .collect();
+            let extractable: Vec<(&str, &[Op])> = goto_labels
+                .into_iter()
+                .filter_map(|label| {
+                    let tail = find_goto_label_tail(body, label)?;
+                    tail.last()
+                        .is_some_and(|op| op.kind() == CirOpKind::Return)
+                        .then_some((label, tail))
+                })
+                .collect();
+            if !extractable.is_empty() {
+                for op in &entry.ops {
+                    if op.kind() == CirOpKind::Alloca {
+                        f.lower_alloca(op);
+                        if let Some(result) = op.results.first() {
+                            f.hoisted.insert(result.clone());
+                        }
+                    }
+                }
+            }
+            for (label, tail) in extractable {
+                let free_names: Vec<String> = free_cir_operands(tail)
+                    .into_iter()
+                    .filter(|ssa| f.hoisted.contains(ssa))
+                    .filter_map(|ssa| f.slots.get(&ssa).cloned())
+                    .collect();
+                let tail_region = Region {
+                    blocks: vec![Block {
+                        label: None,
+                        args: Vec::new(),
+                        ops: tail.to_vec(),
+                    }],
+                };
+                let mut stmts: Vec<IndentStmt> = free_names
+                    .iter()
+                    .map(|name| {
+                        FunctionLowerer::indent_stmt(Stmt::Let {
+                            name: name.clone(),
+                            mutable: true,
+                            ty: None,
+                            init: Some(Expr::Var(name.clone().into())),
+                        })
+                    })
+                    .collect();
+                stmts.extend(f.capture_body(|this| this.lower_region_ops(&tail_region)));
+                let closure_name = format!("__goto_{label}");
+                f.push_stmt(Stmt::Let {
+                    name: closure_name.clone(),
+                    mutable: false,
+                    ty: None,
+                    init: Some(Expr::Closure {
+                        params: free_names
+                            .iter()
+                            .map(|name| Ident::from(name.as_str()))
+                            .collect(),
+                        body: Box::new(Expr::Block(Box::new(crate::rust_ast::Block {
+                            stmts,
+                            tail: None,
+                        }))),
+                    }),
+                });
+                f.goto_closures
+                    .insert(label.to_string(), (closure_name, free_names));
+            }
             f.lower_block(entry);
         }
         if diverges && matches!(f.body.last().map(|s| &s.stmt), Some(Stmt::Return(None))) {
@@ -3235,8 +3305,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             }
             return;
         }
-        // hoisted allocas were already declared above the dispatch loop.
-        if self.hoisted.contains(result) && self.dispatch.is_some() {
+        // hoisted allocas were already declared above the dispatch loop
+        // (or above a goto-target closure, in structured lowering).
+        if self.hoisted.contains(result) {
             return;
         }
         let name = self.unique_local_name(
@@ -8038,27 +8109,43 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn lower_goto(&mut self, op: &Op) {
-        let Some(dispatch) = &self.dispatch else {
+        let Some(label) = attr_str(op, "label") else {
+            self.emit_todo("cir.goto: missing label");
             return;
         };
-        let target = attr_str(op, "label")
-            .and_then(|l| dispatch.label_to_state.get(l))
-            .map(|state| {
+        if let Some(dispatch) = &self.dispatch {
+            let target = dispatch.label_to_state.get(label).map(|state| {
                 (
                     *state,
                     dispatch.state_var.clone(),
                     dispatch.loop_label.clone(),
                 )
             });
-        match target {
-            Some((state, state_var, loop_label)) => {
-                self.push_assign(
-                    Expr::Var(state_var.into()),
-                    Expr::Value(RustValue::I64(state as i64)),
-                );
-                self.push_stmt(Stmt::Continue(Some(loop_label)));
+            match target {
+                Some((state, state_var, loop_label)) => {
+                    self.push_assign(
+                        Expr::Var(state_var.into()),
+                        Expr::Value(RustValue::I64(state as i64)),
+                    );
+                    self.push_stmt(Stmt::Continue(Some(loop_label)));
+                }
+                None => self.emit_todo("cir.goto: unknown label"),
             }
-            None => self.emit_todo("cir.goto: unknown label"),
+            return;
+        }
+        match self.goto_closures.get(label).cloned() {
+            Some((closure_name, free_names)) => {
+                let call = Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
+                    func: Box::new(Expr::Var(closure_name.into())),
+                    args: free_names
+                        .into_iter()
+                        .map(|name| Expr::Var(name.into()))
+                        .collect(),
+                };
+                self.push_stmt(Stmt::Return(Some(call)));
+            }
+            None => self.emit_todo("cir.goto: unsupported cross-region jump"),
         }
     }
 
@@ -8564,6 +8651,45 @@ fn region_ops(op: &Op) -> Vec<&Op> {
         .flat_map(|region| region.blocks.iter())
         .flat_map(|block| block.ops.iter())
         .collect()
+}
+
+fn free_cir_operands(ops: &[Op]) -> BTreeSet<String> {
+    let mut defined = BTreeSet::new();
+    let mut used = BTreeSet::new();
+    fn walk(ops: &[Op], defined: &mut BTreeSet<String>, used: &mut BTreeSet<String>) {
+        for op in ops {
+            used.extend(op.operands.iter().cloned());
+            defined.extend(op.results.iter().cloned());
+            for region in &op.regions {
+                for block in &region.blocks {
+                    defined.extend(block.args.iter().map(|(name, _)| name.clone()));
+                    walk(&block.ops, defined, used);
+                }
+            }
+        }
+    }
+    walk(ops, &mut defined, &mut used);
+    used.difference(&defined).cloned().collect()
+}
+
+fn find_goto_label_tail<'a>(region: &'a Region, label: &str) -> Option<&'a [Op]> {
+    for block in &region.blocks {
+        if let Some(index) = block
+            .ops
+            .iter()
+            .position(|op| op.kind() == CirOpKind::Label && attr_str(op, "label") == Some(label))
+        {
+            return Some(&block.ops[index + 1..]);
+        }
+        for op in &block.ops {
+            for nested in &op.regions {
+                if let Some(tail) = find_goto_label_tail(nested, label) {
+                    return Some(tail);
+                }
+            }
+        }
+    }
+    None
 }
 
 fn collect_used_symbols(ops: &[&Op]) -> BTreeMap<String, Vec<UsedKind>> {
@@ -9276,6 +9402,7 @@ fn region_ends_control_flow(region: &Region) -> bool {
                 CirOpKind::Break
                     | CirOpKind::Continue
                     | CirOpKind::Return
+                    | CirOpKind::Goto
                     | CirOpKind::Trap
                     | CirOpKind::Unreachable
             )
