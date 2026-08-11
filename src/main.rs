@@ -93,23 +93,23 @@ fn emit_cir(path: &Path) -> Result<String, String> {
 }
 
 fn translate(path: &Path) -> Result<String, String> {
-    api::translate(path)
+    api::translate(path).map_err(|error| error.to_string())
 }
 
 fn translate_with_clang_args(path: &Path, clang_args: &[String]) -> Result<String, String> {
-    api::translate_with_args(path, clang_args)
+    api::translate_with_args(path, clang_args).map_err(|error| error.to_string())
 }
 
 fn lowered_program(path: &Path) -> Result<(cir::ir::Module, rust_ast::Program), String> {
-    api::lowered_program(path)
+    api::lowered_program(path).map_err(|error| error.to_string())
 }
 
 fn reject_active_unsupported(pp: &preprocess::Preprocessing, context: &str) -> Result<(), String> {
-    api::reject_active_unsupported(pp, context)
+    api::reject_active_unsupported(pp, context).map_err(|error| error.to_string())
 }
 
 fn reject_active_unsupported_file(path: &Path, context: &str) -> Result<(), String> {
-    api::reject_active_unsupported_file(path, context)
+    api::reject_active_unsupported_file(path, context).map_err(|error| error.to_string())
 }
 
 fn fixup_debug(args: &[String]) -> Result<String, String> {

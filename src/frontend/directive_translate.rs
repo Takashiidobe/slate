@@ -26,20 +26,6 @@ impl std::fmt::Display for ConditionalBoundary {
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct LoweringDiagnostics {
-    pub items: Vec<ctx::Diagnostic>,
-}
-
-impl std::fmt::Display for LoweringDiagnostics {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        for diagnostic in &self.items {
-            write!(f, "\n{:?}: {}", diagnostic.severity, diagnostic.message)?;
-        }
-        Ok(())
-    }
-}
-
 #[derive(Debug, Error)]
 pub enum DirectiveError {
     #[error("read {path}: {source}")]
@@ -103,7 +89,7 @@ pub enum DirectiveError {
     #[error("lowering failed for {path}:{diagnostics}")]
     Lowering {
         path: PathBuf,
-        diagnostics: LoweringDiagnostics,
+        diagnostics: ctx::Diagnostics,
     },
 }
 
@@ -609,9 +595,7 @@ fn translate_one(path: &Path, clang_args: &[String]) -> Result<Translation, Dire
     if ctx.diagnostics.has_errors() {
         return Err(DirectiveError::Lowering {
             path: path.to_path_buf(),
-            diagnostics: LoweringDiagnostics {
-                items: ctx.diagnostics.items,
-            },
+            diagnostics: ctx.diagnostics,
         });
     }
     Ok(Translation {
