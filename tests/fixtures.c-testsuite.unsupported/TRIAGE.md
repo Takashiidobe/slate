@@ -1,7 +1,6 @@
 
 
 
-case_00159: `None.unwrap()()` — a NULL function-pointer call site recovered as `Option<fn>` loses the concrete function type, so type inference on the call fails.
 
 case_00170: mismatched types passing an enum through a helper expecting a pointer-sized int — enum representation/cast bug.
 
