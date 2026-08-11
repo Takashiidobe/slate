@@ -1,5 +1,56 @@
 use serde_json::Value;
 use std::path::{Path, PathBuf};
+use thiserror::Error;
+
+#[derive(Debug, Error)]
+pub enum CompileCommandsError {
+    #[error("read compile commands {path}: {source}")]
+    Read {
+        path: PathBuf,
+        #[source]
+        source: std::io::Error,
+    },
+    #[error("parse compile commands {path}: {source}")]
+    Parse {
+        path: PathBuf,
+        #[source]
+        source: serde_json::Error,
+    },
+    #[error("compile commands {path} must contain a JSON array")]
+    ExpectedArray { path: PathBuf },
+    #[error("compile commands {path} entry {index} must be an object")]
+    ExpectedObject { path: PathBuf, index: usize },
+    #[error("compile commands {path} entry {index} requires string field {field}")]
+    StringField {
+        path: PathBuf,
+        index: usize,
+        field: &'static str,
+    },
+    #[error("compile commands {path} entry {index} cannot contain both arguments and command")]
+    ConflictingCommandForms { path: PathBuf, index: usize },
+    #[error("compile commands {path} entry {index} field arguments must be an array")]
+    ArgumentsNotArray { path: PathBuf, index: usize },
+    #[error(
+        "compile commands {path} entry {index} has a non-string argument at position {argument}"
+    )]
+    NonStringArgument {
+        path: PathBuf,
+        index: usize,
+        argument: usize,
+    },
+    #[error("compile commands {path} entry {index} has invalid shell quoting")]
+    InvalidShellQuoting { path: PathBuf, index: usize },
+    #[error("compile commands {path} entry {index} has an empty command")]
+    EmptyCommand { path: PathBuf, index: usize },
+    #[error("compile commands {path} entry {index} option {option} requires a value")]
+    MissingOptionValue {
+        path: PathBuf,
+        index: usize,
+        option: String,
+    },
+    #[error("compile command inputs contain no C translation units")]
+    NoCTranslationUnits { paths: Vec<PathBuf> },
+}
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct CompileCommand {
@@ -8,7 +59,7 @@ pub struct CompileCommand {
     pub target: String,
 }
 
-pub fn read(paths: &[PathBuf]) -> Result<Vec<CompileCommand>, String> {
+pub fn read(paths: &[PathBuf]) -> Result<Vec<CompileCommand>, CompileCommandsError> {
     let mut commands = Vec::new();
     for path in paths {
         commands.extend(read_one(path)?);
@@ -16,32 +67,37 @@ pub fn read(paths: &[PathBuf]) -> Result<Vec<CompileCommand>, String> {
     commands.sort();
     commands.dedup();
     if commands.is_empty() {
-        return Err("compile command inputs contain no C translation units".into());
+        return Err(CompileCommandsError::NoCTranslationUnits {
+            paths: paths.to_vec(),
+        });
     }
     Ok(commands)
 }
 
-fn read_one(path: &Path) -> Result<Vec<CompileCommand>, String> {
-    let bytes = std::fs::read(path)
-        .map_err(|error| format!("read compile commands {}: {error}", path.display()))?;
-    let entries: Value = serde_json::from_slice(&bytes)
-        .map_err(|error| format!("parse compile commands {}: {error}", path.display()))?;
-    let entries = entries.as_array().ok_or_else(|| {
-        format!(
-            "compile commands {} must contain a JSON array",
-            path.display()
-        )
+fn read_one(path: &Path) -> Result<Vec<CompileCommand>, CompileCommandsError> {
+    let bytes = std::fs::read(path).map_err(|source| CompileCommandsError::Read {
+        path: path.to_path_buf(),
+        source,
     })?;
+    let entries: Value =
+        serde_json::from_slice(&bytes).map_err(|source| CompileCommandsError::Parse {
+            path: path.to_path_buf(),
+            source,
+        })?;
+    let entries = entries
+        .as_array()
+        .ok_or_else(|| CompileCommandsError::ExpectedArray {
+            path: path.to_path_buf(),
+        })?;
     let database_dir = path.parent().unwrap_or_else(|| Path::new("."));
     let mut commands = Vec::new();
     for (index, entry) in entries.iter().enumerate() {
-        let entry = entry.as_object().ok_or_else(|| {
-            format!(
-                "compile commands {} entry {} must be an object",
-                path.display(),
-                index
-            )
-        })?;
+        let entry = entry
+            .as_object()
+            .ok_or_else(|| CompileCommandsError::ExpectedObject {
+                path: path.to_path_buf(),
+                index,
+            })?;
         let directory = string_field(entry, "directory", path, index)?;
         let directory = absolute_path(database_dir, Path::new(directory));
         let file = string_field(entry, "file", path, index)?;
@@ -49,34 +105,37 @@ fn read_one(path: &Path) -> Result<Vec<CompileCommand>, String> {
         if file.extension().and_then(|extension| extension.to_str()) != Some("c") {
             continue;
         }
+        if entry.contains_key("arguments") && entry.contains_key("command") {
+            return Err(CompileCommandsError::ConflictingCommandForms {
+                path: path.to_path_buf(),
+                index,
+            });
+        }
         let words = match entry.get("arguments") {
             Some(Value::Array(arguments)) => arguments
                 .iter()
-                .map(|argument| {
+                .enumerate()
+                .map(|(argument_index, argument)| {
                     argument.as_str().map(str::to_string).ok_or_else(|| {
-                        format!(
-                            "compile commands {} entry {} has a non-string argument",
-                            path.display(),
-                            index
-                        )
+                        CompileCommandsError::NonStringArgument {
+                            path: path.to_path_buf(),
+                            index,
+                            argument: argument_index,
+                        }
                     })
                 })
                 .collect::<Result<Vec<_>, _>>()?,
             Some(_) => {
-                return Err(format!(
-                    "compile commands {} entry {} field arguments must be an array",
-                    path.display(),
-                    index
-                ));
+                return Err(CompileCommandsError::ArgumentsNotArray {
+                    path: path.to_path_buf(),
+                    index,
+                });
             }
             None => {
                 let command = string_field(entry, "command", path, index)?;
-                shlex::split(command).ok_or_else(|| {
-                    format!(
-                        "compile commands {} entry {} has invalid shell quoting",
-                        path.display(),
-                        index
-                    )
+                shlex::split(command).ok_or_else(|| CompileCommandsError::InvalidShellQuoting {
+                    path: path.to_path_buf(),
+                    index,
                 })?
             }
         };
@@ -88,17 +147,18 @@ fn read_one(path: &Path) -> Result<Vec<CompileCommand>, String> {
 
 fn string_field<'a>(
     entry: &'a serde_json::Map<String, Value>,
-    field: &str,
+    field: &'static str,
     path: &Path,
     index: usize,
-) -> Result<&'a str, String> {
-    entry.get(field).and_then(Value::as_str).ok_or_else(|| {
-        format!(
-            "compile commands {} entry {} requires string field {field}",
-            path.display(),
-            index
-        )
-    })
+) -> Result<&'a str, CompileCommandsError> {
+    entry
+        .get(field)
+        .and_then(Value::as_str)
+        .ok_or_else(|| CompileCommandsError::StringField {
+            path: path.to_path_buf(),
+            index,
+            field,
+        })
 }
 
 fn absolute_path(base: &Path, path: &Path) -> PathBuf {
@@ -116,14 +176,13 @@ fn normalize(
     file: &Path,
     database: &Path,
     index: usize,
-) -> Result<(Vec<String>, String), String> {
-    let compiler = words.first().ok_or_else(|| {
-        format!(
-            "compile commands {} entry {} has an empty command",
-            database.display(),
-            index
-        )
-    })?;
+) -> Result<(Vec<String>, String), CompileCommandsError> {
+    let compiler = words
+        .first()
+        .ok_or_else(|| CompileCommandsError::EmptyCommand {
+            path: database.to_path_buf(),
+            index,
+        })?;
     let mut args = Vec::new();
     let mut target = compiler_target(compiler);
     let mut word_index = 1;
@@ -138,11 +197,11 @@ fn normalize(
         }
         if matches!(word.as_str(), "-o" | "-MF" | "-MT" | "-MQ" | "-MJ") {
             if word_index + 1 >= words.len() {
-                return Err(format!(
-                    "compile commands {} entry {} option {word} requires a value",
-                    database.display(),
-                    index
-                ));
+                return Err(CompileCommandsError::MissingOptionValue {
+                    path: database.to_path_buf(),
+                    index,
+                    option: word.clone(),
+                });
             }
             word_index += 2;
             continue;
@@ -165,11 +224,11 @@ fn normalize(
                 | "--sysroot"
         ) {
             let value = words.get(word_index + 1).ok_or_else(|| {
-                format!(
-                    "compile commands {} entry {} option {word} requires a value",
-                    database.display(),
-                    index
-                )
+                CompileCommandsError::MissingOptionValue {
+                    path: database.to_path_buf(),
+                    index,
+                    option: word.clone(),
+                }
             })?;
             args.push(word.clone());
             args.push(
@@ -198,11 +257,11 @@ fn normalize(
         }
         if matches!(word.as_str(), "-target" | "--target") {
             let value = words.get(word_index + 1).ok_or_else(|| {
-                format!(
-                    "compile commands {} entry {} option {word} requires a value",
-                    database.display(),
-                    index
-                )
+                CompileCommandsError::MissingOptionValue {
+                    path: database.to_path_buf(),
+                    index,
+                    option: word.clone(),
+                }
             })?;
             target = Some(value.clone());
             word_index += 2;

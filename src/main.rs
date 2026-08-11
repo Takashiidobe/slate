@@ -1102,7 +1102,7 @@ fn translate_project_lib_crate_with_compile_commands(
     crate_dir: &Path,
     database_paths: &[PathBuf],
 ) -> Result<String, String> {
-    let commands = compile_commands::read(database_paths)?;
+    let commands = compile_commands::read(database_paths).map_err(|error| error.to_string())?;
     let mut command_map = BTreeMap::new();
     let mut paths_by_stem = BTreeMap::new();
     let mut variant_targets = BTreeMap::new();
@@ -1713,7 +1713,7 @@ fn translate_project_with_compile_commands(
     crate_dir: &Path,
     database_paths: &[PathBuf],
 ) -> Result<String, String> {
-    let commands = compile_commands::read(database_paths)?;
+    let commands = compile_commands::read(database_paths).map_err(|error| error.to_string())?;
     let mut command_map: BTreeMap<(PathBuf, rust_ast::Cfg), compile_commands::CompileCommand> =
         BTreeMap::new();
     let mut paths_by_stem: BTreeMap<String, PathBuf> = BTreeMap::new();
