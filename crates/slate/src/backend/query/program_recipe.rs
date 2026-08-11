@@ -847,6 +847,13 @@ fn rewrite_item(
             }
             changed
         }
+        Item::InlineMod { items, .. } => {
+            let mut changed = false;
+            for item in items {
+                changed |= rewrite_item(item, plans, record_fields, global_types, salsa);
+            }
+            changed
+        }
         Item::Comment(_)
         | Item::Macro { .. }
         | Item::CrateAttrs(_)
@@ -1049,8 +1056,8 @@ fn rewrite_struct_def(
         StructFields::Tuple(fields) => rewrite_types(fields, plans),
         StructFields::Named(fields) => {
             let mut changed = false;
-            for (_, ty) in fields {
-                changed |= rewrite_type(ty, plans);
+            for field in fields {
+                changed |= rewrite_type(&mut field.ty, plans);
             }
             changed
         }

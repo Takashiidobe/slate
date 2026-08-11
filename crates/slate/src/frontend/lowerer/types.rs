@@ -443,6 +443,16 @@ pub(super) fn reconcile_anonymous_member_types(
     let mut reconciled = Vec::new();
     loop {
         let present_names: BTreeSet<String> = records.keys().cloned().collect();
+        let bitfield_storage_names: BTreeSet<String> = records
+            .iter()
+            .filter(|(_, record)| {
+                record
+                    .fields
+                    .iter()
+                    .any(|field| field.name.starts_with("__bitfield_"))
+            })
+            .map(|(name, _)| name.clone())
+            .collect();
         let mut additions = BTreeMap::new();
         for record in records.values_mut() {
             let Some(expanded) = module.aliases.values().find(|expanded| {
@@ -471,7 +481,14 @@ pub(super) fn reconcile_anonymous_member_types(
                 };
                 let ast_name = sanitize_ident(ast_name).into_string();
                 let cir_key = sanitize_ident(cir_name).into_string();
-                if ast_name == cir_key || present_names.contains(&ast_name) {
+                if ast_name == cir_key {
+                    continue;
+                }
+                if bitfield_storage_names.contains(&cir_key) {
+                    field.ty = cir_ty;
+                    continue;
+                }
+                if present_names.contains(&ast_name) {
                     continue;
                 }
                 let Some(header_record) = anonymous_header_records.get(&ast_name) else {

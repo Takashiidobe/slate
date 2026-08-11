@@ -702,6 +702,7 @@ pub fn item_key(item: &Item) -> String {
         Item::Static { name, .. } => format!("static:{name}"),
         Item::Const { name, .. } => format!("const:{name}"),
         Item::Mod { name } => format!("mod:{name}"),
+        Item::InlineMod { name, .. } => format!("inline-mod:{name}"),
         Item::Use { path } => format!(
             "use:{}",
             path.segments

@@ -256,6 +256,10 @@ impl<'db, 'a> Collector<'db, 'a> {
                     },
                     UnaryOp::Neg => inner,
                     UnaryOp::Not => Some(Type::Prim(Prim::Bool)),
+                    UnaryOp::Raw(raw) => inner.map(|inner| Type::Ptr {
+                        mutable: *raw == crate::backend::rust_ast::Raw::Mut,
+                        inner: Box::new(inner),
+                    }),
                 }
             }
             Expr::Binary { lhs, rhs, .. } => {

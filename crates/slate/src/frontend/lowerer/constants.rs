@@ -150,14 +150,6 @@ pub(super) fn bitfield_info_number(info: &str, key: &str) -> Option<u32> {
     rest[..end].parse().ok()
 }
 
-pub(super) fn bitfield_mask(size: u32) -> u128 {
-    if size == 0 {
-        0
-    } else {
-        u128::MAX >> (128 - size.min(128))
-    }
-}
-
 pub(super) fn render_array_literal_expr(elems: &[Expr], len: usize, default: Expr) -> Expr {
     let mut out: Vec<Expr> = elems.iter().take(len).cloned().collect();
     out.resize(len, default);

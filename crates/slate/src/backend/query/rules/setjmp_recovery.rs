@@ -214,9 +214,9 @@ fn functions_with_cunwind_indirect_calls(
             match item {
                 Item::Struct(s) => {
                     if let StructFields::Named(fields) = &s.fields {
-                        for (name, ty) in fields {
-                            if let Some(shape) = fn_ptr_shape_in_type(ty) {
-                                field_shapes.insert(name.clone(), shape);
+                        for field in fields {
+                            if let Some(shape) = fn_ptr_shape_in_type(&field.ty) {
+                                field_shapes.insert(field.name.clone(), shape);
                             }
                         }
                     }
@@ -499,8 +499,8 @@ fn rewrite_c_abi_types_in_struct_fields_matching(
 ) {
     match fields {
         StructFields::Named(named) => {
-            for (_, ty) in named.iter_mut() {
-                rewrite_c_abi_type_matching(ty, shapes);
+            for field in named.iter_mut() {
+                rewrite_c_abi_type_matching(&mut field.ty, shapes);
             }
         }
         StructFields::Tuple(tys) => {
@@ -796,7 +796,11 @@ fn payload_struct_item(buffer: &str) -> Item {
         field_vis: Visibility::Private,
         generics: Vec::new(),
         name: payload_type_name(buffer),
-        fields: StructFields::Named(vec![("value".to_string(), Type::Prim(Prim::I32))]),
+        fields: StructFields::Named(vec![crate::backend::rust_ast::StructField {
+            attrs: Vec::new(),
+            name: "value".to_string(),
+            ty: Type::Prim(Prim::I32),
+        }]),
     })
 }
 

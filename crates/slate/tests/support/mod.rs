@@ -52,6 +52,7 @@ edition = "2024"
 [dependencies]
 libc = "0.2"
 aligned = {{ path = "{}" }}
+bitfields = "3.0.0"
 
 [build-dependencies]
 cc = "1"

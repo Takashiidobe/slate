@@ -5173,7 +5173,7 @@ impl<'snapshot> QueryContext<'snapshot> {
             Item::Struct(definition) => match &definition.fields {
                 StructFields::Named(fields) => fields
                     .get(field.index)
-                    .map(|(name, ty)| (Some(name.as_str()), ty)),
+                    .map(|field| (Some(field.name.as_str()), &field.ty)),
                 StructFields::Tuple(fields) => fields.get(field.index).map(|ty| (None, ty)),
             },
             _ => None,
@@ -5853,6 +5853,11 @@ fn unused_item_collect_item_refs(item: &Item, refs: &mut BTreeSet<String>) {
         Item::Record(def) => unused_item_collect_record_refs(def, refs),
         Item::Impl(block) => unused_item_impl_refs(block, refs),
         Item::Cfg { item, .. } => unused_item_collect_item_refs(item, refs),
+        Item::InlineMod { items, .. } => {
+            for item in items {
+                unused_item_collect_item_refs(item, refs);
+            }
+        }
         Item::Use { path } => {
             for segment in &path.segments {
                 refs.insert(segment.as_str().to_owned());
@@ -5927,8 +5932,8 @@ fn unused_item_collect_struct_refs(def: &StructDef, refs: &mut BTreeSet<String>)
             }
         }
         StructFields::Named(fields) => {
-            for (_, ty) in fields {
-                unused_item_collect_type_refs(ty, refs);
+            for field in fields {
+                unused_item_collect_type_refs(&field.ty, refs);
             }
         }
     }
@@ -6294,6 +6299,11 @@ fn index_item_uses(item: &Item, item_index: usize, uses: &mut BTreeMap<String, V
             }
         }
         Item::Cfg { item, .. } => index_item_uses(item, item_index, uses),
+        Item::InlineMod { items, .. } => {
+            for item in items {
+                index_item_uses(item, item_index, uses);
+            }
+        }
         Item::Use { path } => {
             for segment in &path.segments {
                 uses.entry(segment.as_str().to_owned())

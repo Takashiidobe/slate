@@ -619,7 +619,7 @@ fn fold_unary(op: UnaryOp, values: &BTreeSet<ConstValue>) -> Option<BTreeSet<Con
                     .map(|n| values_for_integer(!n))
             }
         }
-        UnaryOp::Deref => None,
+        UnaryOp::Deref | UnaryOp::Raw(_) => None,
     }
 }
 

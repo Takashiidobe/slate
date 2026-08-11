@@ -15,6 +15,10 @@ pub enum Item {
     Mod {
         name: Ident,
     },
+    InlineMod {
+        name: Ident,
+        items: Vec<Item>,
+    },
     Use {
         path: Path,
     },
@@ -91,7 +95,14 @@ pub struct StructDef {
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum StructFields {
     Tuple(Vec<Type>),
-    Named(Vec<(String, Type)>),
+    Named(Vec<StructField>),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct StructField {
+    pub attrs: Vec<Attr>,
+    pub name: String,
+    pub ty: Type,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -167,6 +178,7 @@ impl Feature {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Attr {
+    Call { path: Path, args: Vec<AttrArg> },
     Allow(Vec<Lint>),
     Repr(Vec<Repr>),
     Derive(Vec<Derive>),
@@ -179,6 +191,14 @@ pub enum Attr {
     LinkSection(String),
     Used(UsedKind),
     Deprecated(String),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum AttrArg {
+    Type(Type),
+    UInt(u64),
+    Bool(bool),
+    Named(String, Box<AttrArg>),
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -1162,6 +1182,13 @@ pub enum UnaryOp {
     Neg,
     Not,
     Deref,
+    Raw(Raw),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum Raw {
+    Const,
+    Mut,
 }
 
 impl UnaryOp {
@@ -1170,6 +1197,8 @@ impl UnaryOp {
             UnaryOp::Neg => "-",
             UnaryOp::Not => "!",
             UnaryOp::Deref => "*",
+            UnaryOp::Raw(Raw::Const) => "&raw const ",
+            UnaryOp::Raw(Raw::Mut) => "&raw mut ",
         }
     }
 }
