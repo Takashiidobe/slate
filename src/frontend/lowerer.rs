@@ -2655,11 +2655,7 @@ impl __SlateVaArgs {
                 }
                 standard_record_default_expr(name).unwrap_or_else(|| default_value_for_type(ty))
             }
-            Type::LongDouble => Expr::Call {
-                binding: crate::function_identity::CallBinding::Generated,
-                func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
-                args: vec![Expr::Value(0.0f64.into())],
-            },
+            Type::LongDouble => long_double_zero_expr(),
             Type::Complex(inner) => {
                 let d = default_value_for_type(inner);
                 Expr::StructLit {
