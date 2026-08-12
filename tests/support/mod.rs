@@ -180,6 +180,23 @@ pub fn compile_c_with_args(src: &Path, out: &Path, extra_args: &[String]) -> Res
     Ok(())
 }
 
+/// Compile a single C translation unit into an object file for later linking.
+pub fn compile_c_object(src: &Path, out: &Path) -> Result<(), String> {
+    let o = Command::new(cc())
+        .args(["-O0", "-std=c23", "-c", "-o"])
+        .arg(out)
+        .arg(src)
+        .output()
+        .map_err(|e| format!("spawn {}: {e}", cc()))?;
+    if !o.status.success() {
+        return Err(format!(
+            "C object compile failed:\n{}",
+            String::from_utf8_lossy(&o.stderr)
+        ));
+    }
+    Ok(())
+}
+
 /// Compile several C translation units together into one binary (cross-TU link).
 pub fn compile_c_multi(srcs: &[PathBuf], out: &Path) -> Result<(), String> {
     let o = Command::new(cc())
@@ -286,6 +303,92 @@ pub fn compile_rs_cargo(src: &Path, work_dir: &Path, package: &str) -> Result<Pa
     std::fs::copy(src, project.join("src/main.rs"))
         .map_err(|e| format!("copy {} to cargo project: {e}", src.display()))?;
     write_long_double_shim(&project)?;
+
+    let target_dir = test_target_dir_for_project(&project);
+    std::fs::create_dir_all(&target_dir)
+        .map_err(|e| format!("create {}: {e}", target_dir.display()))?;
+    let o = Command::new(cargo())
+        .args(["build", "--quiet", "--manifest-path"])
+        .arg(project.join("Cargo.toml"))
+        .arg("--target-dir")
+        .arg(&target_dir)
+        .output()
+        .map_err(|e| format!("spawn {}: {e}", cargo()))?;
+    if !o.status.success() {
+        return Err(format!(
+            "Rust cargo build failed:\n{}",
+            String::from_utf8_lossy(&o.stderr)
+        ));
+    }
+    Ok(target_dir.join("debug").join(package))
+}
+
+pub fn compile_rs_cargo_with_link(
+    src: &Path,
+    work_dir: &Path,
+    package: &str,
+    link_dir: &Path,
+) -> Result<PathBuf, String> {
+    let project = work_dir.join(format!("{package}_cargo"));
+    if project.exists() {
+        std::fs::remove_dir_all(&project)
+            .map_err(|e| format!("remove {}: {e}", project.display()))?;
+    }
+    std::fs::create_dir_all(project.join("src"))
+        .map_err(|e| format!("create {}: {e}", project.display()))?;
+    std::fs::write(
+        project.join("Cargo.toml"),
+        generated_crate_manifest(package),
+    )
+    .map_err(|e| format!("write Cargo.toml: {e}"))?;
+    std::fs::copy(src, project.join("src/main.rs"))
+        .map_err(|e| format!("copy {} to cargo project: {e}", src.display()))?;
+
+    // copy any link files into the crate under `linkfiles/`
+    if link_dir.exists() {
+        let dest_dir = project.join("linkfiles");
+        std::fs::create_dir_all(&dest_dir)
+            .map_err(|e| format!("create {}: {e}", dest_dir.display()))?;
+        for entry in
+            std::fs::read_dir(link_dir).map_err(|e| format!("read {}: {e}", link_dir.display()))?
+        {
+            let path = entry
+                .map_err(|e| format!("read {} entry: {e}", link_dir.display()))?
+                .path();
+            if path.is_file() {
+                let fname = path.file_name().unwrap();
+                std::fs::copy(&path, dest_dir.join(fname))
+                    .map_err(|e| format!("copy link file {}: {e}", path.display()))?;
+            }
+        }
+    }
+
+    // Generate the long double shim source first. write_long_double_shim also
+    // writes build.rs, but we overwrite it below with the link-aware version.
+    write_long_double_shim(&project)?;
+
+    // Build a custom build.rs that links any object files in linkfiles/ and
+    // also compiles the long double shim like the normal helper.
+    let build_rs = r#"fn main() {
+    // Link any prebuilt objects placed in linkfiles/
+    if let Ok(entries) = std::fs::read_dir("linkfiles") {
+        for e in entries.flatten() {
+            let p = e.path();
+            if p.is_file() {
+                // Instruct cargo to rerun and pass the object to the linker.
+                println!("cargo:rerun-if-changed={}", p.display());
+                println!("cargo:rustc-link-arg={}", p.display());
+            }
+        }
+    }
+    // Also compile the long double shim if present
+    cc::Build::new()
+        .file("src/slate_long_double.c")
+        .compile("slate_long_double");
+}
+"#;
+    std::fs::write(project.join("build.rs"), build_rs.as_bytes())
+        .map_err(|e| format!("write build.rs: {e}"))?;
 
     let target_dir = test_target_dir_for_project(&project);
     std::fs::create_dir_all(&target_dir)
