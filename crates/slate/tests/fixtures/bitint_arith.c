@@ -82,6 +82,47 @@ static void check_bitint512(void) {
     abort();
 }
 
+// Decimal literals whose magnitude exceeds u128::MAX (2^128) but still fits
+// the target _BitInt(N) width, exercising the arbitrary-width decimal-string
+// parse path instead of the i128/u128 fast paths.
+static void check_bitint_wide_literal(void) {
+  _BitInt(256) x256 =
+      123456789012345678901234567890123456789012345678901234567890wb;
+  _BitInt(256) y256 =
+      -123456789012345678901234567890123456789012345678901234567890wb;
+  if (x256 + y256 != 0)
+    abort();
+  if (-x256 != y256)
+    abort();
+  if (!(y256 < x256))
+    abort();
+
+  unsigned _BitInt(256) ux256 =
+      123456789012345678901234567890123456789012345678901234567890uwb;
+  unsigned _BitInt(256) uy256 = 300uwb;
+  unsigned _BitInt(256) usum256 = ux256 + uy256;
+  if (usum256 - uy256 != ux256)
+    abort();
+
+  _BitInt(512) x512 =
+      123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890wb;
+  _BitInt(512) y512 =
+      -123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890wb;
+  if (x512 + y512 != 0)
+    abort();
+  if (-x512 != y512)
+    abort();
+  if (!(y512 < x512))
+    abort();
+
+  unsigned _BitInt(512) ux512 =
+      123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890uwb;
+  unsigned _BitInt(512) uy512 = 512uwb;
+  unsigned _BitInt(512) usum512 = ux512 + uy512;
+  if (usum512 - uy512 != ux512)
+    abort();
+}
+
 int main(void) {
   _BitInt(128) x128   = -12345;
   _BitInt(128) y128   = 100;
@@ -131,6 +172,7 @@ int main(void) {
   check_bitint3();
   check_bitint129();
   check_bitint512();
+  check_bitint_wide_literal();
 
   return 0;
 }

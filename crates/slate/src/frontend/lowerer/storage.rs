@@ -625,9 +625,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 return;
             }
         }
-        if let Some(value) = parse_cir_int(raw)
+        if let Some(digits) = cir_int_digits(raw)
             && let Some(rust_ty) = result_ty.map(|ty| self.parent.rust_type(ty))
-            && let Some(expr) = bitint_from_i128_expr(&rust_ty, value)
+            && let Some(expr) = bitint_from_decimal_str_expr(&rust_ty, digits)
         {
             self.materialize_expr(result, expr, result_ty);
             return;
