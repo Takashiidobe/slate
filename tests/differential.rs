@@ -471,6 +471,34 @@ fn macos_fundamental_fixture_translates_with_darwin_abi_types() {
 }
 
 #[test]
+fn macos_long_double_layout_fixture_translates_with_f64_abi_layout() {
+    let fixture = fixtures_dir().join("macos/long_double_layout.c");
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .args(["translate", fixture.to_str().unwrap()])
+        .env("SLATE_TARGET", "aarch64-apple-darwin")
+        .output()
+        .expect("translate macOS long double layout fixture");
+    assert!(
+        output.status.success(),
+        "macOS long double layout translation failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let rust = String::from_utf8(output.stdout).expect("generated Rust is UTF-8");
+    assert!(!rust.contains("LongDouble"));
+    assert!(rust.contains("value: f64"));
+    assert!(rust.contains("ld: f64"));
+    assert!(rust.contains("let _v1: u64 = 8;"));
+    assert!(rust.contains("let _v2: u64 = 8;"));
+    assert!(rust.contains("std::mem::offset_of!(ld_box, value) as u64"));
+    cargo_check_generated_for_target(
+        "slate_macos_long_double_layout",
+        &rust,
+        "aarch64-apple-darwin",
+    )
+    .unwrap();
+}
+
+#[test]
 fn android_targets_require_an_api_level() {
     let fixture = fixtures_dir().join("bionic/target_features.c");
     let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
