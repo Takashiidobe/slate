@@ -1,6 +1,7 @@
 /target
 /tests/*.generated/
 transpiled/
+diagnostics
 
 /tools/macro-dump-plugin/build/
 
