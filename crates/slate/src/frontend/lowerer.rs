@@ -1933,6 +1933,13 @@ impl __SlateVaArgs {
     }
 
     fn lower_record(&mut self, record: &crate::frontend::c_ast::Record) -> Vec<Item> {
+        if record
+            .fields
+            .iter()
+            .any(|field| ctype_uses_long_double(&field.ty))
+        {
+            self.uses_long_double.set(true);
+        }
         let storage_record;
         let record = if record.kind == RecordKind::Union && record.fields.is_empty() {
             storage_record = crate::frontend::c_ast::Record {
@@ -3032,9 +3039,13 @@ fn c_layout(
         CType::Void => Some(CLayout { size: 0, align: 1 }),
         CType::Bool => Some(CLayout { size: 1, align: 1 }),
         CType::Int { bits, .. } => scalar_layout(*bits),
-        CType::Float { bits: 80 } => Some(CLayout {
-            size: 16,
-            align: 16,
+        CType::Float { bits: 80 } => Some(if crate::cir::emit::uses_f64_long_double_abi() {
+            CLayout { size: 8, align: 8 }
+        } else {
+            CLayout {
+                size: 16,
+                align: 16,
+            }
         }),
         CType::Float { bits } => scalar_layout(*bits),
         CType::Ptr(_) | CType::FuncPtr { .. } => Some(CLayout { size: 8, align: 8 }),
@@ -3161,7 +3172,7 @@ fn align_to(value: u64, align: u64) -> u64 {
 fn ctype_uses_long_double(ty: &crate::frontend::c_ast::CType) -> bool {
     use crate::frontend::c_ast::CType;
     match ty {
-        CType::Float { bits: 80 } => true,
+        CType::Float { bits: 80 } => !crate::cir::emit::uses_f64_long_double_abi(),
         CType::Ptr(inner) | CType::Array(inner, _) => ctype_uses_long_double(inner),
         CType::FuncPtr { ret, params } => {
             ctype_uses_long_double(ret) || params.iter().any(ctype_uses_long_double)
