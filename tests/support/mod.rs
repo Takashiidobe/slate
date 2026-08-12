@@ -384,6 +384,7 @@ pub fn compile_rs_cargo_with_link(
     // Also compile the long double shim if present
     cc::Build::new()
         .file("src/slate_long_double.c")
+        .flag("-Wno-implicit-function-declaration")
         .compile("slate_long_double");
 }
 "#;
@@ -689,6 +690,7 @@ fn write_long_double_shim(project: &Path) -> Result<(), String> {
     println!("cargo:rerun-if-changed=src/slate_long_double.c");
     cc::Build::new()
         .file("src/slate_long_double.c")
+        .flag("-Wno-implicit-function-declaration")
         .compile("slate_long_double");
 }
 "#

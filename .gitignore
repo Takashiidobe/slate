@@ -2,6 +2,7 @@
 /tests/*.generated/
 transpiled/
 diagnostics
+.env
 
 /tools/macro-dump-plugin/build/
 
