@@ -1,29 +1,27 @@
 use super::*;
 
-pub(super) fn switch_case(op: &Op) -> Option<SwitchCase<'_>> {
+pub(super) fn switch_case<'a>(op: &'a Op, bitint_ty: Option<&Type>) -> Option<SwitchCase<'a>> {
     let kind = attr_int(op, "kind");
     let is_default = kind == Some(0);
-    let values: Vec<i128> = match op.attrs.get("value") {
-        Some(Attr::Array(values)) => values
-            .iter()
-            .filter_map(|value| match value {
-                Attr::Int(n) => Some(i128::from(*n)),
-                Attr::Raw(raw) => parse_cir_int(raw),
-                _ => None,
-            })
-            .collect(),
-        _ => Vec::new(),
+    let raw_values: &[Attr] = match op.attrs.get("value") {
+        Some(Attr::Array(values)) => values,
+        _ => &[],
     };
     let patterns = if kind == Some(3) {
-        let [start, end] = values.as_slice() else {
+        let [start, end] = raw_values else {
             return None;
         };
-        vec![Pattern::InclusiveRange {
-            start: *start,
-            end: *end,
-        }]
+        vec![case_range_pattern(start, end, bitint_ty)?]
+    } else if let Some(ty) = bitint_ty {
+        raw_values
+            .iter()
+            .map(|value| bitint_case_value_pattern(value, ty))
+            .collect::<Option<Vec<_>>>()?
     } else {
-        values.into_iter().map(int_pattern).collect()
+        raw_values
+            .iter()
+            .map(case_value_pattern)
+            .collect::<Option<Vec<_>>>()?
     };
     let region = op.regions.first()?;
     Some(SwitchCase {
@@ -33,12 +31,85 @@ pub(super) fn switch_case(op: &Op) -> Option<SwitchCase<'_>> {
     })
 }
 
-pub(super) fn duff_switch(region: &Region) -> Option<DuffSwitch<'_>> {
+fn case_value_i128(value: &Attr) -> Option<i128> {
+    match value {
+        Attr::Int(n) => Some(i128::from(*n)),
+        Attr::Raw(raw) => parse_cir_int(raw),
+        _ => None,
+    }
+}
+
+fn case_value_pattern(value: &Attr) -> Option<Pattern> {
+    match value {
+        Attr::Int(n) => Some(int_pattern(i128::from(*n))),
+        Attr::Raw(raw) => parse_cir_int(raw)
+            .map(int_pattern)
+            .or_else(|| parse_cir_uint128(raw).map(Pattern::U128)),
+        _ => None,
+    }
+}
+
+fn case_range_pattern(start: &Attr, end: &Attr, bitint_ty: Option<&Type>) -> Option<Pattern> {
+    match bitint_ty {
+        Some(ty) => bitint_case_range_pattern(start, end, ty),
+        None => Some(Pattern::InclusiveRange {
+            start: case_value_i128(start)?,
+            end: case_value_i128(end)?,
+        }),
+    }
+}
+
+fn case_value_digits(value: &Attr) -> Option<String> {
+    match value {
+        Attr::Int(n) => Some(n.to_string()),
+        Attr::Raw(raw) => cir_int_digits(raw).map(str::to_string),
+        _ => None,
+    }
+}
+
+fn bitint_case_value_pattern(value: &Attr, ty: &Type) -> Option<Pattern> {
+    let digits = case_value_digits(value)?;
+    let cond = bitint_from_decimal_str_expr(ty, &digits)?;
+    Some(Pattern::Guarded {
+        bind: "v".into(),
+        cond: Box::new(Expr::Binary {
+            op: BinOp::Eq,
+            lhs: Box::new(Expr::Var("v".into())),
+            rhs: Box::new(cond),
+        }),
+    })
+}
+
+fn bitint_case_range_pattern(start: &Attr, end: &Attr, ty: &Type) -> Option<Pattern> {
+    let start_expr = bitint_from_decimal_str_expr(ty, &case_value_digits(start)?)?;
+    let end_expr = bitint_from_decimal_str_expr(ty, &case_value_digits(end)?)?;
+    Some(Pattern::Guarded {
+        bind: "v".into(),
+        cond: Box::new(Expr::Binary {
+            op: BinOp::And,
+            lhs: Box::new(Expr::Binary {
+                op: BinOp::Ge,
+                lhs: Box::new(Expr::Var("v".into())),
+                rhs: Box::new(start_expr),
+            }),
+            rhs: Box::new(Expr::Binary {
+                op: BinOp::Le,
+                lhs: Box::new(Expr::Var("v".into())),
+                rhs: Box::new(end_expr),
+            }),
+        }),
+    })
+}
+
+pub(super) fn duff_switch<'a>(
+    region: &'a Region,
+    bitint_ty: Option<&Type>,
+) -> Option<DuffSwitch<'a>> {
     let ops = transparent_region_ops(region)?;
     let [outer] = ops.as_slice() else {
         return None;
     };
-    let outer_case = switch_case(outer)?;
+    let outer_case = switch_case(outer, bitint_ty)?;
     let do_op = transparent_single_op(outer_case.region, CirOpKind::Do)?;
     let [body, condition, ..] = do_op.regions.as_slice() else {
         return None;
@@ -50,7 +121,7 @@ pub(super) fn duff_switch(region: &Region) -> Option<DuffSwitch<'_>> {
     let prefix = body_ops[..first_case].to_vec();
     let nested: Option<Vec<_>> = body_ops[first_case..]
         .iter()
-        .map(|op| switch_case(op))
+        .map(|op| switch_case(op, bitint_ty))
         .collect();
     let mut cases = vec![outer_case];
     cases.extend(nested?);

@@ -104,6 +104,7 @@ fn expr_writes_name(expr: &Expr, name: &str) -> bool {
 fn pattern_declares_name(pattern: &Pattern, name: &str) -> bool {
     match pattern {
         Pattern::Binding(binding) => binding.as_str() == name,
+        Pattern::Guarded { bind, .. } => bind.as_str() == name,
         Pattern::TupleStruct { fields, .. } => fields
             .iter()
             .any(|field| pattern_declares_name(field, name)),

@@ -1564,6 +1564,7 @@ impl<'db, 'a> Collector<'db, 'a> {
     fn shadow_pattern(&mut self, pattern: &Pattern) {
         match pattern {
             Pattern::Binding(name) => self.bind(name.to_string(), None),
+            Pattern::Guarded { bind, .. } => self.bind(bind.to_string(), None),
             Pattern::TupleStruct { fields, .. } => {
                 for field in fields {
                     self.shadow_pattern(field);

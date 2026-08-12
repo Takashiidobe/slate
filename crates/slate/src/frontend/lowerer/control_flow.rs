@@ -267,16 +267,24 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.emit_todo("cir.switch");
             return;
         };
-        if self.lower_duff_switch(selector, region) {
+        let selector_rust_ty = op_operand_types(op.ty.as_deref().unwrap_or(""))
+            .first()
+            .map(|ty| self.parent.rust_type(ty));
+        let bitint_ty = selector_rust_ty.filter(|ty| bitint_generic_parts(ty).is_some());
+        if self.lower_duff_switch(selector, region, bitint_ty.as_ref()) {
             return;
         }
-        let cases: Vec<_> = region
+        let Some(cases): Option<Vec<_>> = region
             .blocks
             .iter()
             .flat_map(|block| &block.ops)
             .filter(|op| op.kind() == CirOpKind::Case)
-            .filter_map(switch_case)
-            .collect();
+            .map(|op| switch_case(op, bitint_ty.as_ref()))
+            .collect()
+        else {
+            self.emit_todo("cir.switch: unrepresentable case value");
+            return;
+        };
         if cases.is_empty() {
             return;
         }
@@ -361,8 +369,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.push_stmt(Stmt::Scope { body });
     }
 
-    pub(super) fn lower_duff_switch(&mut self, selector: &str, region: &Region) -> bool {
-        let Some(duff) = duff_switch(region) else {
+    pub(super) fn lower_duff_switch(
+        &mut self,
+        selector: &str,
+        region: &Region,
+        bitint_ty: Option<&Type>,
+    ) -> bool {
+        let Some(duff) = duff_switch(region, bitint_ty) else {
             return false;
         };
         let n = self.label_counter;
