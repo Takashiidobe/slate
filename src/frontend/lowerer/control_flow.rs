@@ -838,7 +838,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.emit_todo("cir.switch.flat: unknown default successor");
             return;
         };
-        let case_values = attr_i64_array(op, "caseValues").unwrap_or_default();
+        let selector_rust_ty = op_operand_types(op.ty.as_deref().unwrap_or(""))
+            .first()
+            .map(|ty| self.parent.rust_type(ty));
+        let bitint_ty = selector_rust_ty.filter(|ty| bitint_generic_parts(ty).is_some());
+        let Some(case_patterns) = switch_flat_case_patterns(op, bitint_ty.as_ref()) else {
+            self.emit_todo("cir.switch.flat: unrepresentable case value");
+            return;
+        };
         let state_var = dispatch.state_var.clone();
         let loop_label = dispatch.loop_label.clone();
         let mut case_states = Vec::new();
@@ -857,7 +864,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let mut operand_groups = successor_operand_groups(op).into_iter();
         let default_ops = operand_groups.next().unwrap_or_default();
         let mut arms = Vec::new();
-        for ((value, state), (names, ops)) in case_values
+        for ((pattern, state), (names, ops)) in case_patterns
             .iter()
             .zip(case_states.iter())
             .zip(case_args.iter().zip(operand_groups))
@@ -877,7 +884,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 Expr::Value(RustValue::I64(*state as i64)),
             )));
             arms.push(MatchArm {
-                pattern: int_pattern(*value as i128),
+                pattern: pattern.clone(),
                 body,
             });
         }

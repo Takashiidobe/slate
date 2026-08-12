@@ -12,16 +12,8 @@ pub(super) fn switch_case<'a>(op: &'a Op, bitint_ty: Option<&Type>) -> Option<Sw
             return None;
         };
         vec![case_range_pattern(start, end, bitint_ty)?]
-    } else if let Some(ty) = bitint_ty {
-        raw_values
-            .iter()
-            .map(|value| bitint_case_value_pattern(value, ty))
-            .collect::<Option<Vec<_>>>()?
     } else {
-        raw_values
-            .iter()
-            .map(case_value_pattern)
-            .collect::<Option<Vec<_>>>()?
+        case_values_to_patterns(raw_values, bitint_ty)?
     };
     let region = op.regions.first()?;
     Some(SwitchCase {
@@ -29,6 +21,25 @@ pub(super) fn switch_case<'a>(op: &'a Op, bitint_ty: Option<&Type>) -> Option<Sw
         is_default,
         region,
     })
+}
+
+pub(super) fn switch_flat_case_patterns(op: &Op, bitint_ty: Option<&Type>) -> Option<Vec<Pattern>> {
+    let raw_values: &[Attr] = match op.attrs.get("caseValues") {
+        Some(Attr::Array(values)) => values,
+        _ => &[],
+    };
+    case_values_to_patterns(raw_values, bitint_ty)
+}
+
+fn case_values_to_patterns(raw_values: &[Attr], bitint_ty: Option<&Type>) -> Option<Vec<Pattern>> {
+    if let Some(ty) = bitint_ty {
+        raw_values
+            .iter()
+            .map(|value| bitint_case_value_pattern(value, ty))
+            .collect()
+    } else {
+        raw_values.iter().map(case_value_pattern).collect()
+    }
 }
 
 fn case_value_i128(value: &Attr) -> Option<i128> {
