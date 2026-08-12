@@ -755,32 +755,27 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 }
             }
             _ if is_wrapped_long_double(result_ty) && !is_long_double(operand_ty) => {
+                let rust_ty = self.parent.rust_type(operand_ty);
+                let Some(shim) = f80_cast_from_name(&rust_ty) else {
+                    self.emit_todo("long double cast");
+                    return;
+                };
                 Val::Expr(Expr::Call {
                     binding: crate::function_identity::CallBinding::Generated,
-                    func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
-                    args: vec![Expr::Cast {
-                        expr: Box::new(self.operand_expr(src)),
-                        ty: crate::backend::rust_ast::Type::Prim(Prim::F64),
-                    }],
-                })
-            }
-            _ if is_wrapped_long_double(operand_ty) && result_ty == "!cir.bool" => {
-                Val::Expr(Expr::Binary {
-                    op: BinOp::Ne,
-                    lhs: Box::new(Expr::TupleField {
-                        base: Box::new(self.operand_expr(src)),
-                        index: 0,
-                    }),
-                    rhs: Box::new(Expr::Value(0.0.into())),
+                    func: Box::new(Expr::Var(shim.into())),
+                    args: vec![self.operand_expr(src)],
                 })
             }
             _ if is_wrapped_long_double(operand_ty) && !is_long_double(result_ty) => {
-                Val::Expr(Expr::Cast {
-                    expr: Box::new(Expr::TupleField {
-                        base: Box::new(self.operand_expr(src)),
-                        index: 0,
-                    }),
-                    ty: self.parent.rust_type(result_ty),
+                let rust_ty = self.parent.rust_type(result_ty);
+                let Some(shim) = f80_cast_to_name(&rust_ty) else {
+                    self.emit_todo("long double cast");
+                    return;
+                };
+                Val::Expr(Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
+                    func: Box::new(Expr::Var(shim.into())),
+                    args: vec![self.operand_expr(src)],
                 })
             }
             _ if is_cir_function_pointer_type(result_ty)

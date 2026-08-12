@@ -646,8 +646,8 @@ fn library_crate_links_generated_c_abi_shim_for_long_double_libc_call() {
 
     let strfrom_rs =
         std::fs::read_to_string(crate_dir.join("src/strfrom.rs")).expect("read strfrom.rs");
-    assert!(strfrom_rs.contains("fn __slate_strfroml__pi8_u64_pi8_ld("));
-    assert!(strfrom_rs.contains("unsafe { __slate_strfroml__pi8_u64_pi8_ld("));
+    assert!(strfrom_rs.contains("fn __slate_strfroml__pi8_u64_pi8_f80("));
+    assert!(strfrom_rs.contains("unsafe { __slate_strfroml__pi8_u64_pi8_f80("));
 
     let run_tests = std::process::Command::new("cargo")
         .args(["test", "--quiet", "--tests", "--manifest-path"])

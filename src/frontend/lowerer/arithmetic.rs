@@ -304,24 +304,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let rust_ty = result_ty
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or(Type::Prim(Prim::I32));
-        if type_mentions_long_double(&rust_ty) {
-            self.materialize_expr(
-                result,
-                Expr::Call {
-                    binding: crate::function_identity::CallBinding::Generated,
-                    func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
-                    args: vec![Expr::Unary {
-                        op: UnaryOp::Neg,
-                        expr: Box::new(Expr::Field {
-                            base: Box::new(value),
-                            field: "0".into(),
-                        }),
-                    }],
-                },
-                result_ty,
-            );
-            return;
-        }
         let is_wrapping_int = matches!(
             &rust_ty,
             Type::Prim(

@@ -652,14 +652,19 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         {
             parse_cir_f128_expr(raw).unwrap_or_else(|| Expr::HexFloat("0.0f128".into()))
         } else if result_ty.is_some_and(is_long_double) {
-            self.next_long_double_macro_const_expr(op)
+            self.next_long_double_macro_const_expr(op, result_ty)
                 .unwrap_or_else(|| {
                     let value = parse_cir_fp_expr(raw)
-                        .or_else(|| parse_cir_int(raw).map(int_value_expr))
+                        .or_else(|| {
+                            parse_cir_int(raw).map(|n| Expr::Cast {
+                                expr: Box::new(int_value_expr(n)),
+                                ty: crate::backend::rust_ast::Type::Prim(Prim::F64),
+                            })
+                        })
                         .unwrap_or(Expr::Value(0.0.into()));
                     Expr::Call {
                         binding: crate::function_identity::CallBinding::Generated,
-                        func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
+                        func: Box::new(Expr::Var("__slate_f80_from_f64".into())),
                         args: vec![value],
                     }
                 })
@@ -747,10 +752,19 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         Some(expr)
     }
 
-    pub(super) fn next_long_double_macro_const_expr(&mut self, op: &Op) -> Option<Expr> {
+    pub(super) fn next_long_double_macro_const_expr(
+        &mut self,
+        op: &Op,
+        result_ty: Option<&str>,
+    ) -> Option<Expr> {
         let macro_const = self.macro_consts.front()?;
         let known = crate::frontend::macros::lookup(&macro_const.name)?;
-        let crate::frontend::macros::MacroValue::LongDouble { rust_bits, .. } = known.value else {
+        let crate::frontend::macros::MacroValue::LongDouble {
+            rust_bits,
+            f80_bytes,
+            ..
+        } = known.value
+        else {
             return None;
         };
         if op
@@ -762,14 +776,30 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return None;
         }
         self.macro_consts.pop_front();
-        Some(Expr::Call {
-            binding: crate::function_identity::CallBinding::Generated,
-            func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
-            args: vec![Expr::Call {
+        if crate::cir::emit::uses_f64_long_double_abi() {
+            return Some(Expr::Call {
                 binding: crate::function_identity::CallBinding::Generated,
                 func: Box::new(Expr::Var("f64::from_bits".into())),
                 args: vec![Expr::Value(RustValue::I64(rust_bits as i64))],
-            }],
+            });
+        }
+        if result_ty.is_some_and(is_quad_long_double) {
+            return Some(Expr::HexFloat(format!(
+                "f128::from_bits(0x{:032x})",
+                u128::from(rust_bits)
+            )));
+        }
+        let bytes = byte_array_elems(
+            &f80_bytes,
+            &crate::backend::rust_ast::Type::Array {
+                elem: Box::new(crate::backend::rust_ast::Type::Prim(Prim::U8)),
+                len: 10,
+            },
+        );
+        Some(Expr::Call {
+            binding: crate::function_identity::CallBinding::Generated,
+            func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
+            args: vec![Expr::ArrayLit(bytes)],
         })
     }
 }

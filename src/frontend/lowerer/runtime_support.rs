@@ -14,7 +14,7 @@ pub(super) fn long_double_zero_expr() -> Expr {
 
 // x86-64 SysV long double is the 10-byte x87 payload in a 16-byte slot.
 pub(super) fn long_double_prelude(vis: Visibility) -> Vec<Item> {
-    vec![Item::Struct(StructDef {
+    let mut items = vec![Item::Struct(StructDef {
         attrs: vec![
             RustAttr::Repr(vec![Repr::C, Repr::Align(16)]),
             RustAttr::Derive(vec![Derive::Clone, Derive::Copy]),
@@ -27,7 +27,321 @@ pub(super) fn long_double_prelude(vis: Visibility) -> Vec<Item> {
             elem: Box::new(Type::Prim(Prim::U8)),
             len: 10,
         }]),
-    })]
+    })];
+    items.push(f80_binop_impl(StdTrait::Add, "__slate_f80_add"));
+    items.push(f80_binop_impl(StdTrait::Sub, "__slate_f80_sub"));
+    items.push(f80_binop_impl(StdTrait::Mul, "__slate_f80_mul"));
+    items.push(f80_binop_impl(StdTrait::Div, "__slate_f80_div"));
+    items.push(f80_neg_impl());
+    items.push(f80_partial_eq_impl());
+    items.push(f80_partial_ord_impl());
+    items
+}
+
+fn f80_binop_impl(trait_: StdTrait, shim: &str) -> Item {
+    let method = Method {
+        name: trait_.method().into(),
+        self_kind: SelfKind::Value,
+        params: vec![FnParam {
+            name: "o".into(),
+            mutable: false,
+            ty: Type::LongDouble,
+        }],
+        ret: Some(Type::LongDouble),
+        body: f80_call(shim, vec![Expr::Var("self".into()), Expr::Var("o".into())]),
+    };
+    Item::Impl(ImplBlock {
+        generics: vec![],
+        trait_: Some(TraitRef::Std(trait_)),
+        self_ty: Type::LongDouble,
+        items: vec![
+            ImplItem::AssocType {
+                name: "Output".into(),
+                ty: Type::LongDouble,
+            },
+            ImplItem::Method(method),
+        ],
+    })
+}
+
+fn f80_neg_impl() -> Item {
+    let method = Method {
+        name: StdTrait::Neg.method().into(),
+        self_kind: SelfKind::Value,
+        params: vec![],
+        ret: Some(Type::LongDouble),
+        body: f80_call("__slate_f80_neg", vec![Expr::Var("self".into())]),
+    };
+    Item::Impl(ImplBlock {
+        generics: vec![],
+        trait_: Some(TraitRef::Std(StdTrait::Neg)),
+        self_ty: Type::LongDouble,
+        items: vec![
+            ImplItem::AssocType {
+                name: "Output".into(),
+                ty: Type::LongDouble,
+            },
+            ImplItem::Method(method),
+        ],
+    })
+}
+
+fn f80_partial_eq_impl() -> Item {
+    let method = Method {
+        name: StdTrait::PartialEq.method().into(),
+        self_kind: SelfKind::Ref,
+        params: vec![FnParam {
+            name: "other".into(),
+            mutable: false,
+            ty: Type::Ref {
+                mutable: false,
+                inner: Box::new(Type::LongDouble),
+            },
+        }],
+        ret: Some(Type::Prim(Prim::Bool)),
+        body: f80_call(
+            "__slate_f80_eq",
+            vec![
+                Expr::Unary {
+                    op: UnaryOp::Deref,
+                    expr: Box::new(Expr::Var("self".into())),
+                },
+                Expr::Unary {
+                    op: UnaryOp::Deref,
+                    expr: Box::new(Expr::Var("other".into())),
+                },
+            ],
+        ),
+    };
+    Item::Impl(ImplBlock {
+        generics: vec![],
+        trait_: Some(TraitRef::Std(StdTrait::PartialEq)),
+        self_ty: Type::LongDouble,
+        items: vec![ImplItem::Method(method)],
+    })
+}
+
+fn f80_partial_ord_impl() -> Item {
+    let ordering = || Type::Generic {
+        name: "Option".into(),
+        args: vec![Type::Custom("std::cmp::Ordering".into())],
+    };
+    let some = |ordering: &str| Expr::Call {
+        binding: CallBinding::Generated,
+        func: Box::new(Expr::Path(Path::new([Ident::from("Some")]))),
+        args: vec![Expr::Path(Path::new(
+            ["std", "cmp", "Ordering", ordering].map(Ident::from),
+        ))],
+    };
+    let cmp = |shim: &str| {
+        f80_call(
+            shim,
+            vec![
+                Expr::Unary {
+                    op: UnaryOp::Deref,
+                    expr: Box::new(Expr::Var("self".into())),
+                },
+                Expr::Unary {
+                    op: UnaryOp::Deref,
+                    expr: Box::new(Expr::Var("other".into())),
+                },
+            ],
+        )
+    };
+    let body = Expr::If {
+        cond: Box::new(cmp("__slate_f80_lt")),
+        then_expr: Box::new(some("Less")),
+        else_expr: Box::new(Expr::If {
+            cond: Box::new(cmp("__slate_f80_gt")),
+            then_expr: Box::new(some("Greater")),
+            else_expr: Box::new(Expr::If {
+                cond: Box::new(cmp("__slate_f80_eq")),
+                then_expr: Box::new(some("Equal")),
+                else_expr: Box::new(Expr::Value(RustValue::None)),
+            }),
+        }),
+    };
+    let method = Method {
+        name: StdTrait::PartialOrd.method().into(),
+        self_kind: SelfKind::Ref,
+        params: vec![FnParam {
+            name: "other".into(),
+            mutable: false,
+            ty: Type::Ref {
+                mutable: false,
+                inner: Box::new(Type::LongDouble),
+            },
+        }],
+        ret: Some(ordering()),
+        body,
+    };
+    Item::Impl(ImplBlock {
+        generics: vec![],
+        trait_: Some(TraitRef::Std(StdTrait::PartialOrd)),
+        self_ty: Type::LongDouble,
+        items: vec![ImplItem::Method(method)],
+    })
+}
+
+fn f80_call(name: &str, args: Vec<Expr>) -> Expr {
+    Expr::Call {
+        binding: CallBinding::Generated,
+        func: Box::new(Expr::Var(name.into())),
+        args,
+    }
+}
+
+fn f80_param(name: &str, ty: Type) -> FnParam {
+    FnParam {
+        name: name.into(),
+        mutable: false,
+        ty,
+    }
+}
+
+fn f80_extern_decl(name: &str, params: Vec<FnParam>, ret: Option<Type>) -> ExternFnDecl {
+    ExternFnDecl {
+        identity: FunctionIdentity::Unknown,
+        name: name.into(),
+        params,
+        variadic: false,
+        ret,
+        safe: true,
+    }
+}
+
+pub(super) fn f80_cast_from_name(ty: &Type) -> Option<&'static str> {
+    let tag = match ty {
+        Type::Prim(Prim::I8) => "i8",
+        Type::Prim(Prim::U8) => "u8",
+        Type::Prim(Prim::I16) => "i16",
+        Type::Prim(Prim::U16) => "u16",
+        Type::Prim(Prim::I32) => "i32",
+        Type::Prim(Prim::U32) => "u32",
+        Type::Prim(Prim::I64) => "i64",
+        Type::Prim(Prim::U64) => "u64",
+        Type::Prim(Prim::F32) => "f32",
+        Type::Prim(Prim::F64) => "f64",
+        Type::Prim(Prim::Bool) => "bool",
+        _ => return None,
+    };
+    Some(match tag {
+        "i8" => "__slate_f80_from_i8",
+        "u8" => "__slate_f80_from_u8",
+        "i16" => "__slate_f80_from_i16",
+        "u16" => "__slate_f80_from_u16",
+        "i32" => "__slate_f80_from_i32",
+        "u32" => "__slate_f80_from_u32",
+        "i64" => "__slate_f80_from_i64",
+        "u64" => "__slate_f80_from_u64",
+        "f32" => "__slate_f80_from_f32",
+        "f64" => "__slate_f80_from_f64",
+        "bool" => "__slate_f80_from_bool",
+        _ => unreachable!(),
+    })
+}
+
+pub(super) fn f80_cast_to_name(ty: &Type) -> Option<&'static str> {
+    let tag = match ty {
+        Type::Prim(Prim::I8) => "i8",
+        Type::Prim(Prim::U8) => "u8",
+        Type::Prim(Prim::I16) => "i16",
+        Type::Prim(Prim::U16) => "u16",
+        Type::Prim(Prim::I32) => "i32",
+        Type::Prim(Prim::U32) => "u32",
+        Type::Prim(Prim::I64) => "i64",
+        Type::Prim(Prim::U64) => "u64",
+        Type::Prim(Prim::F32) => "f32",
+        Type::Prim(Prim::F64) => "f64",
+        Type::Prim(Prim::Bool) => "bool",
+        _ => return None,
+    };
+    Some(match tag {
+        "i8" => "__slate_f80_to_i8",
+        "u8" => "__slate_f80_to_u8",
+        "i16" => "__slate_f80_to_i16",
+        "u16" => "__slate_f80_to_u16",
+        "i32" => "__slate_f80_to_i32",
+        "u32" => "__slate_f80_to_u32",
+        "i64" => "__slate_f80_to_i64",
+        "u64" => "__slate_f80_to_u64",
+        "f32" => "__slate_f80_to_f32",
+        "f64" => "__slate_f80_to_f64",
+        "bool" => "__slate_f80_to_bool",
+        _ => unreachable!(),
+    })
+}
+
+pub(super) fn f80_shim_decls() -> Vec<ExternFnDecl> {
+    let f80 = || Type::LongDouble;
+    let mut decls = vec![
+        f80_extern_decl(
+            "__slate_f80_add",
+            vec![f80_param("a", f80()), f80_param("b", f80())],
+            Some(f80()),
+        ),
+        f80_extern_decl(
+            "__slate_f80_sub",
+            vec![f80_param("a", f80()), f80_param("b", f80())],
+            Some(f80()),
+        ),
+        f80_extern_decl(
+            "__slate_f80_mul",
+            vec![f80_param("a", f80()), f80_param("b", f80())],
+            Some(f80()),
+        ),
+        f80_extern_decl(
+            "__slate_f80_div",
+            vec![f80_param("a", f80()), f80_param("b", f80())],
+            Some(f80()),
+        ),
+        f80_extern_decl("__slate_f80_neg", vec![f80_param("a", f80())], Some(f80())),
+    ];
+    for (shim, ty) in [
+        ("__slate_f80_lt", Type::Prim(Prim::Bool)),
+        ("__slate_f80_le", Type::Prim(Prim::Bool)),
+        ("__slate_f80_gt", Type::Prim(Prim::Bool)),
+        ("__slate_f80_ge", Type::Prim(Prim::Bool)),
+        ("__slate_f80_eq", Type::Prim(Prim::Bool)),
+        ("__slate_f80_ne", Type::Prim(Prim::Bool)),
+    ] {
+        decls.push(f80_extern_decl(
+            shim,
+            vec![f80_param("a", f80()), f80_param("b", f80())],
+            Some(ty),
+        ));
+    }
+    for (shim, ty) in [
+        ("__slate_f80_from_i8", Type::Prim(Prim::I8)),
+        ("__slate_f80_from_u8", Type::Prim(Prim::U8)),
+        ("__slate_f80_from_i16", Type::Prim(Prim::I16)),
+        ("__slate_f80_from_u16", Type::Prim(Prim::U16)),
+        ("__slate_f80_from_i32", Type::Prim(Prim::I32)),
+        ("__slate_f80_from_u32", Type::Prim(Prim::U32)),
+        ("__slate_f80_from_i64", Type::Prim(Prim::I64)),
+        ("__slate_f80_from_u64", Type::Prim(Prim::U64)),
+        ("__slate_f80_from_f32", Type::Prim(Prim::F32)),
+        ("__slate_f80_from_f64", Type::Prim(Prim::F64)),
+        ("__slate_f80_from_bool", Type::Prim(Prim::Bool)),
+    ] {
+        decls.push(f80_extern_decl(shim, vec![f80_param("a", ty)], Some(f80())));
+    }
+    for (shim, ty) in [
+        ("__slate_f80_to_i8", Type::Prim(Prim::I8)),
+        ("__slate_f80_to_u8", Type::Prim(Prim::U8)),
+        ("__slate_f80_to_i16", Type::Prim(Prim::I16)),
+        ("__slate_f80_to_u16", Type::Prim(Prim::U16)),
+        ("__slate_f80_to_i32", Type::Prim(Prim::I32)),
+        ("__slate_f80_to_u32", Type::Prim(Prim::U32)),
+        ("__slate_f80_to_i64", Type::Prim(Prim::I64)),
+        ("__slate_f80_to_u64", Type::Prim(Prim::U64)),
+        ("__slate_f80_to_f32", Type::Prim(Prim::F32)),
+        ("__slate_f80_to_f64", Type::Prim(Prim::F64)),
+        ("__slate_f80_to_bool", Type::Prim(Prim::Bool)),
+    ] {
+        decls.push(f80_extern_decl(shim, vec![f80_param("a", f80())], Some(ty)));
+    }
+    decls
 }
 
 pub(super) fn is_long_double(ty: &str) -> bool {
@@ -63,6 +377,7 @@ pub(super) fn long_double_shim_type_tag(ty: &Type) -> String {
         Type::Prim(Prim::F32) => "f32".into(),
         Type::Prim(Prim::F64) => "f64".into(),
         Type::Prim(Prim::Bool) => "bool".into(),
+        Type::LongDouble => "f80".into(),
         Type::Ptr { inner, .. } => format!("p{}", long_double_shim_type_tag(inner)),
         _ => "x".into(),
     }
