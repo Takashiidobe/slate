@@ -2,218 +2,32 @@ use super::*;
 
 pub(super) const LONG_DOUBLE_TY: &str = "LongDouble";
 
-pub(super) fn long_double_ty() -> Type {
-    Type::LongDouble
-}
-
-pub(super) fn long_double_field(base: &str) -> Expr {
-    Expr::Field {
-        base: Box::new(Expr::Var(base.into())),
-        field: "0".into(),
-    }
-}
-
-fn long_double_field_expr(base: Expr) -> Expr {
-    Expr::Field {
-        base: Box::new(base),
-        field: "0".into(),
-    }
-}
-
-fn long_double_to_bits(value: Expr) -> Expr {
-    Expr::MethodCall {
-        recv: Box::new(value),
-        method: "to_bits".into(),
-        args: vec![],
-    }
-}
-
-fn long_double_from_bits(bits: Expr) -> Expr {
-    Expr::Call {
-        binding: crate::function_identity::CallBinding::Generated,
-        func: Box::new(Expr::Path(Path::new(["f64", "from_bits"].map(Ident::from)))),
-        args: vec![bits],
-    }
-}
-
-fn long_double_raw_binary(op: BinOp, lhs: Expr, rhs: Expr) -> Expr {
-    match op {
-        BinOp::Add | BinOp::Sub | BinOp::Mul | BinOp::Div | BinOp::Rem => Expr::Binary {
-            op,
-            lhs: Box::new(lhs),
-            rhs: Box::new(rhs),
-        },
-        BinOp::BitAnd | BinOp::BitOr | BinOp::BitXor => long_double_from_bits(Expr::Binary {
-            op,
-            lhs: Box::new(long_double_to_bits(lhs)),
-            rhs: Box::new(long_double_to_bits(rhs)),
-        }),
-        BinOp::Shl | BinOp::Shr => long_double_from_bits(Expr::Binary {
-            op,
-            lhs: Box::new(long_double_to_bits(lhs)),
-            rhs: Box::new(Expr::Cast {
-                expr: Box::new(rhs),
-                ty: Type::Prim(Prim::U32),
-            }),
-        }),
-        _ => unreachable!("non-binary long double operator"),
-    }
-}
-
-pub(super) fn long_double_op_impl(trait_: StdTrait, params: Vec<FnParam>, arg: Expr) -> Item {
-    let method = Method {
-        name: trait_.method().into(),
-        self_kind: SelfKind::Value,
-        params,
-        ret: Some(long_double_ty()),
-        body: Expr::Call {
-            binding: crate::function_identity::CallBinding::Generated,
-            func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
-            args: vec![arg],
-        },
-    };
-    Item::Impl(ImplBlock {
-        generics: vec![],
-        trait_: Some(TraitRef::Std(trait_)),
-        self_ty: long_double_ty(),
-        items: vec![
-            ImplItem::AssocType {
-                name: "Output".into(),
-                ty: long_double_ty(),
-            },
-            ImplItem::Method(method),
-        ],
-    })
-}
-
-pub(super) fn long_double_binary(trait_: StdTrait, op: BinOp) -> Item {
-    let arg = long_double_raw_binary(op, long_double_field("self"), long_double_field("o"));
-    let o = FnParam {
-        name: "o".into(),
-        mutable: false,
-        ty: long_double_ty(),
-    };
-    long_double_op_impl(trait_, vec![o], arg)
-}
-
-pub(super) fn long_double_assign(trait_: StdTrait, op: BinOp) -> Item {
-    let target = Expr::Unary {
-        op: UnaryOp::Deref,
-        expr: Box::new(Expr::Var("self".into())),
-    };
-    let value = Expr::Call {
-        binding: crate::function_identity::CallBinding::Generated,
-        func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
-        args: vec![long_double_raw_binary(
-            op,
-            long_double_field_expr(target.clone()),
-            long_double_field("o"),
-        )],
-    };
-    let body = Expr::Block(Box::new(crate::backend::rust_ast::Block {
-        stmts: vec![IndentStmt {
-            depth: 0,
-            stmt: Stmt::Assign { target, value },
+pub(super) fn long_double_zero_expr() -> Expr {
+    Expr::TupleStructLit {
+        name: LONG_DOUBLE_TY.into(),
+        fields: vec![Expr::ArrayRepeat {
+            elem: Box::new(Expr::Value(RustValue::I64(0))),
+            len: 10,
         }],
-        tail: None,
-    }));
-    let method = Method {
-        name: trait_.method().into(),
-        self_kind: SelfKind::RefMut,
-        params: vec![FnParam {
-            name: "o".into(),
-            mutable: false,
-            ty: long_double_ty(),
-        }],
-        ret: None,
-        body,
-    };
-    Item::Impl(ImplBlock {
-        generics: vec![],
-        trait_: Some(TraitRef::Std(trait_)),
-        self_ty: long_double_ty(),
-        items: vec![ImplItem::Method(method)],
-    })
+    }
 }
 
-pub(super) fn long_double_inherent_method(name: &str) -> Item {
-    let body = Expr::Call {
-        binding: crate::function_identity::CallBinding::Generated,
-        func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
-        args: vec![Expr::MethodCall {
-            recv: Box::new(long_double_field("self")),
-            method: name.into(),
-            args: vec![],
-        }],
-    };
-    let method = Method {
-        name: name.into(),
-        self_kind: SelfKind::Value,
-        params: vec![],
-        ret: Some(long_double_ty()),
-        body,
-    };
-    Item::Impl(ImplBlock {
-        generics: vec![],
-        trait_: None,
-        self_ty: long_double_ty(),
-        items: vec![ImplItem::Method(method)],
-    })
-}
-
-// x86-64 SysV wants size 16 / align 16 for long double; align(16) on an f64
-// newtype gives that layout while arithmetic stays f64-precision (tier 1).
+// x86-64 SysV long double is the 10-byte x87 payload in a 16-byte slot.
 pub(super) fn long_double_prelude(vis: Visibility) -> Vec<Item> {
-    let neg_arg = Expr::Unary {
-        op: UnaryOp::Neg,
-        expr: Box::new(long_double_field("self")),
-    };
-    let not_arg = long_double_from_bits(Expr::Unary {
-        op: UnaryOp::Not,
-        expr: Box::new(long_double_to_bits(long_double_field("self"))),
-    });
-    vec![
-        Item::Struct(StructDef {
-            attrs: vec![
-                RustAttr::Repr(vec![Repr::C, Repr::Align(16)]),
-                RustAttr::Derive(vec![
-                    Derive::Clone,
-                    Derive::Copy,
-                    Derive::PartialEq,
-                    Derive::PartialOrd,
-                ]),
-            ],
-            vis,
-            field_vis: vis,
-            generics: vec![],
-            name: LONG_DOUBLE_TY.into(),
-            fields: StructFields::Tuple(vec![Type::Prim(Prim::F64)]),
-        }),
-        long_double_binary(StdTrait::Add, BinOp::Add),
-        long_double_binary(StdTrait::Sub, BinOp::Sub),
-        long_double_binary(StdTrait::Mul, BinOp::Mul),
-        long_double_binary(StdTrait::Div, BinOp::Div),
-        long_double_binary(StdTrait::Rem, BinOp::Rem),
-        long_double_binary(StdTrait::BitAnd, BinOp::BitAnd),
-        long_double_binary(StdTrait::BitOr, BinOp::BitOr),
-        long_double_binary(StdTrait::BitXor, BinOp::BitXor),
-        long_double_binary(StdTrait::Shl, BinOp::Shl),
-        long_double_binary(StdTrait::Shr, BinOp::Shr),
-        long_double_assign(StdTrait::AddAssign, BinOp::Add),
-        long_double_assign(StdTrait::SubAssign, BinOp::Sub),
-        long_double_assign(StdTrait::MulAssign, BinOp::Mul),
-        long_double_assign(StdTrait::DivAssign, BinOp::Div),
-        long_double_assign(StdTrait::RemAssign, BinOp::Rem),
-        long_double_assign(StdTrait::BitAndAssign, BinOp::BitAnd),
-        long_double_assign(StdTrait::BitOrAssign, BinOp::BitOr),
-        long_double_assign(StdTrait::BitXorAssign, BinOp::BitXor),
-        long_double_assign(StdTrait::ShlAssign, BinOp::Shl),
-        long_double_assign(StdTrait::ShrAssign, BinOp::Shr),
-        long_double_op_impl(StdTrait::Neg, vec![], neg_arg),
-        long_double_op_impl(StdTrait::Not, vec![], not_arg),
-        long_double_inherent_method("fract"),
-        long_double_inherent_method("trunc"),
-    ]
+    vec![Item::Struct(StructDef {
+        attrs: vec![
+            RustAttr::Repr(vec![Repr::C, Repr::Align(16)]),
+            RustAttr::Derive(vec![Derive::Clone, Derive::Copy]),
+        ],
+        vis,
+        field_vis: vis,
+        generics: vec![],
+        name: LONG_DOUBLE_TY.into(),
+        fields: StructFields::Tuple(vec![Type::Array {
+            elem: Box::new(Type::Prim(Prim::U8)),
+            len: 10,
+        }]),
+    })]
 }
 
 pub(super) fn is_long_double(ty: &str) -> bool {
