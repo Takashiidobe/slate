@@ -431,6 +431,7 @@ pub enum Pattern {
     U128(u128),
     InclusiveRange { start: i128, end: i128 },
     TupleStruct { name: Ident, fields: Vec<Pattern> },
+    Guarded { bind: Ident, cond: Box<Expr> },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]

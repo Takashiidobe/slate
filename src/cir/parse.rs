@@ -799,7 +799,10 @@ fn parse_attr_value(s: &str) -> Attr {
         return Attr::Dict;
     }
     if s.starts_with('[') && s.ends_with(']') {
-        let inner = &s[1..s.len() - 1];
+        let inner = s[1..s.len() - 1].trim();
+        if inner.is_empty() {
+            return Attr::Array(Vec::new());
+        }
         return Attr::Array(
             split_top_level(inner, ',')
                 .into_iter()
@@ -810,6 +813,10 @@ fn parse_attr_value(s: &str) -> Attr {
     if let Some(inner) = s.strip_prefix("array<").and_then(|s| s.strip_suffix('>'))
         && let Some((_elem_ty, values)) = inner.split_once(':')
     {
+        let values = values.trim();
+        if values.is_empty() {
+            return Attr::Array(Vec::new());
+        }
         return Attr::Array(
             split_top_level(values, ',')
                 .into_iter()

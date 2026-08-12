@@ -118,6 +118,9 @@ fn pattern_ident_count(pattern: &Pattern, name: &str) -> usize {
         | Pattern::U128(_)
         | Pattern::InclusiveRange { .. } => 0,
         Pattern::Binding(binding) => usize::from(binding.as_str() == name),
+        Pattern::Guarded { bind, cond } => {
+            usize::from(bind.as_str() == name) + expr_ident_count(cond, name)
+        }
         Pattern::TupleStruct { name: ctor, fields } => {
             usize::from(ctor.as_str() == name)
                 + fields

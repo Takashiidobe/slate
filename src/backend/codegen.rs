@@ -1401,6 +1401,11 @@ impl<W: Write> Codegen<W> {
             crate::backend::rust_ast::Pattern::InclusiveRange { start, end } => {
                 write!(self.out, "{start}..={end}")
             }
+            crate::backend::rust_ast::Pattern::Guarded { bind, cond } => {
+                self.ident(bind.as_str())?;
+                self.out.write_str(" if ")?;
+                self.expr(cond)
+            }
             crate::backend::rust_ast::Pattern::TupleStruct { name, fields } => {
                 self.ident_path(name.as_str())?;
                 self.out.write_char('(')?;

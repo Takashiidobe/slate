@@ -15,6 +15,57 @@ static unsigned _BitInt(128)
   return a * b;
 }
 
+static int switch_wide_case_u128(unsigned _BitInt(128) x) {
+  switch (x) {
+    case 200000000000000000000000000000000000000uwb:
+      return 1;
+    default:
+      return 0;
+  }
+}
+
+static int switch_wide_selector(_BitInt(256) x) {
+  switch (x) {
+    case 1:
+    case 2:
+      return 10;
+    case -987654321098765432109876543210987654321098765432109876543210wb:
+      return 20;
+    case 300 ... 400:
+      return 30;
+    default:
+      return 0;
+  }
+}
+
+static int switch_wide_selector_unsigned(unsigned _BitInt(256) x) {
+  switch (x) {
+    case 123456789012345678901234567890123456789012345678901234567890uwb:
+      return 1;
+    case 0:
+      return 2;
+    default:
+      return 3;
+  }
+}
+
+static int switch_wide_fallthrough(_BitInt(256) x) {
+  int acc = 0;
+  switch (x) {
+    case 1:
+      acc += 100;
+    case 2:
+      acc += 1;
+      break;
+    case 3:
+      acc = 999;
+      break;
+    default:
+      acc = -1;
+  }
+  return acc;
+}
+
 static _BitInt(256) add256(_BitInt(256) a, _BitInt(256) b) { return a + b; }
 
 static unsigned _BitInt(256)
@@ -173,6 +224,46 @@ int main(void) {
   check_bitint129();
   check_bitint512();
   check_bitint_wide_literal();
+
+  if (switch_wide_case_u128(200000000000000000000000000000000000000uwb) != 1)
+    abort();
+  if (switch_wide_case_u128(1) != 0)
+    abort();
+
+  if (switch_wide_selector(1) != 10)
+    abort();
+  if (switch_wide_selector(2) != 10)
+    abort();
+  if (switch_wide_selector(
+          -987654321098765432109876543210987654321098765432109876543210wb) !=
+      20)
+    abort();
+  if (switch_wide_selector(350) != 30)
+    abort();
+  if (switch_wide_selector(300) != 30)
+    abort();
+  if (switch_wide_selector(400) != 30)
+    abort();
+  if (switch_wide_selector(999) != 0)
+    abort();
+
+  if (switch_wide_selector_unsigned(
+          123456789012345678901234567890123456789012345678901234567890uwb) !=
+      1)
+    abort();
+  if (switch_wide_selector_unsigned(0) != 2)
+    abort();
+  if (switch_wide_selector_unsigned(42) != 3)
+    abort();
+
+  if (switch_wide_fallthrough(1) != 101)
+    abort();
+  if (switch_wide_fallthrough(2) != 1)
+    abort();
+  if (switch_wide_fallthrough(3) != 999)
+    abort();
+  if (switch_wide_fallthrough(4) != -1)
+    abort();
 
   return 0;
 }

@@ -6036,6 +6036,7 @@ fn unused_item_collect_pattern_refs(pattern: &Pattern, refs: &mut BTreeSet<Strin
                 unused_item_collect_pattern_refs(field, refs);
             }
         }
+        Pattern::Guarded { cond, .. } => unused_item_collect_expr_refs(cond, refs),
         Pattern::Wildcard
         | Pattern::Binding(_)
         | Pattern::I64(_)
