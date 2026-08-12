@@ -498,6 +498,12 @@ fn merge_target_programs(variants: &[(rust_ast::Cfg, rust_ast::Program)]) -> rus
     rust_ast::Program { items, shims }
 }
 
+fn add_shared_long_double_externs(program: &mut rust_ast::Program, shared_long_double: bool) {
+    if shared_long_double {
+        program.items.push(frontend::long_double_f80_extern_block());
+    }
+}
+
 fn cargo() -> String {
     std::env::var("SLATE_CARGO").unwrap_or_else(|_| "cargo".into())
 }
@@ -995,8 +1001,14 @@ fn translate_project_lib_crate_with_manifest(
     if has_shared_types {
         let records: Vec<_> = shared_records.into_values().collect();
         let enums: Vec<_> = shared_enums.into_values().collect();
+        let shared_program = frontend::lower_shared_types(&records, &enums);
+        for shim in &shared_program.shims {
+            shims
+                .entry(shim.name.clone())
+                .or_insert_with(|| shim.clone());
+        }
         module_paths.push(crate_src.join("types.rs"));
-        module_progs.push(frontend::lower_shared_types(&records, &enums));
+        module_progs.push(shared_program);
     }
 
     let mut lib_rs = String::new();
@@ -1338,12 +1350,13 @@ fn translate_project_lib_crate_with_compile_commands(
             );
             programs.push((cfg.clone(), backend::apply_with(program, &fixup_skip)));
         }
-        let program = merge_target_programs(&programs);
+        let mut program = merge_target_programs(&programs);
         for shim in &program.shims {
             shims
                 .entry(shim.name.clone())
                 .or_insert_with(|| shim.clone());
         }
+        add_shared_long_double_externs(&mut program, shared_long_double);
         let output = crate_src.join(stem).with_extension("rs");
         module_paths.push(output);
         module_progs.push(program);
@@ -1352,8 +1365,14 @@ fn translate_project_lib_crate_with_compile_commands(
     if has_shared_types {
         let records: Vec<_> = shared_records.into_values().collect();
         let enums: Vec<_> = shared_enums.into_values().collect();
+        let shared_program = frontend::lower_shared_types(&records, &enums);
+        for shim in &shared_program.shims {
+            shims
+                .entry(shim.name.clone())
+                .or_insert_with(|| shim.clone());
+        }
         module_paths.push(crate_src.join("types.rs"));
-        module_progs.push(frontend::lower_shared_types(&records, &enums));
+        module_progs.push(shared_program);
     }
     written.extend(write_project_modules(module_paths, module_progs)?);
 
@@ -1679,6 +1698,7 @@ fn translate_project_with_targets(
                 .entry(shim.name.clone())
                 .or_insert_with(|| shim.clone());
         }
+        add_shared_long_double_externs(&mut program, shared_long_double);
         let source =
             std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
         let pp = cli_result(preprocess::record_file(&source, &[]))?;
@@ -1700,8 +1720,14 @@ fn translate_project_with_targets(
     if has_shared_types {
         let records: Vec<_> = shared_records.into_values().collect();
         let enums: Vec<_> = shared_enums.into_values().collect();
+        let shared_program = frontend::lower_shared_types(&records, &enums);
+        for shim in &shared_program.shims {
+            shims
+                .entry(shim.name.clone())
+                .or_insert_with(|| shim.clone());
+        }
         module_paths.push(crate_src.join("types.rs"));
-        module_progs.push(frontend::lower_shared_types(&records, &enums));
+        module_progs.push(shared_program);
     }
     written.extend(write_project_modules(module_paths, module_progs)?);
 
@@ -2013,6 +2039,7 @@ fn translate_project_with_compile_commands(
                 .entry(shim.name.clone())
                 .or_insert_with(|| shim.clone());
         }
+        add_shared_long_double_externs(&mut program, shared_long_double);
         let (_, primary) = &variants[0];
         let primary_args = compile_command_args(primary)?;
         let source =
@@ -2040,8 +2067,14 @@ fn translate_project_with_compile_commands(
     if has_shared_types {
         let records: Vec<_> = shared_records.into_values().collect();
         let enums: Vec<_> = shared_enums.into_values().collect();
+        let shared_program = frontend::lower_shared_types(&records, &enums);
+        for shim in &shared_program.shims {
+            shims
+                .entry(shim.name.clone())
+                .or_insert_with(|| shim.clone());
+        }
         module_paths.push(crate_src.join("types.rs"));
-        module_progs.push(frontend::lower_shared_types(&records, &enums));
+        module_progs.push(shared_program);
     }
     written.extend(write_project_modules(module_paths, module_progs)?);
 

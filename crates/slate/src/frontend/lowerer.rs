@@ -575,8 +575,14 @@ pub fn lower_shared_types(
         Lint::NonSnakeCase,
         Lint::NonUpperCaseGlobals,
     ])])];
+    let mut shims = Vec::new();
     if shared_types_use_long_double(records) {
         items.extend(long_double_prelude(Visibility::Pub));
+        items.push(Item::ExternBlock {
+            abi: "C".into(),
+            decls: f80_shim_decls().into_iter().map(ExternDecl::Fn).collect(),
+        });
+        shims = f80_shim_decls();
     }
     items.extend(
         enums
@@ -588,9 +594,13 @@ pub fn lower_shared_types(
             .iter()
             .flat_map(|record| lower_record_def(record, Visibility::Pub, Visibility::Pub, true)),
     );
-    Program {
-        items,
-        ..Program::default()
+    Program { items, shims }
+}
+
+pub fn long_double_f80_extern_block() -> Item {
+    Item::ExternBlock {
+        abi: "C".into(),
+        decls: f80_shim_decls().into_iter().map(ExternDecl::Fn).collect(),
     }
 }
 
@@ -1496,6 +1506,13 @@ impl __SlateVaArgs {
             }
         }
 
+        if self.uses_long_double.get() {
+            for decl in f80_shim_decls() {
+                self.long_double_shims
+                    .entry(decl.name.clone())
+                    .or_insert(decl);
+            }
+        }
         if !self.long_double_shims.is_empty() {
             items.push(Item::ExternBlock {
                 abi: "C".into(),
@@ -1508,7 +1525,12 @@ impl __SlateVaArgs {
             });
         }
         if self.uses_long_double.get() && !self.project.shared_long_double {
-            items.splice(1..1, long_double_prelude(Visibility::Private));
+            let vis = if self.project.emit_pub {
+                Visibility::Pub
+            } else {
+                Visibility::Private
+            };
+            items.splice(1..1, long_double_prelude(vis));
         }
         if self.uses_complex.get() {
             items.splice(1..1, complex_prelude());
@@ -2405,6 +2427,9 @@ impl __SlateVaArgs {
             ret: ret_ast,
             safe: self.c_abi_functions.contains(name),
         };
+        if decl.variadic || decl.params.iter().any(|param| param.ty == Type::VaList) {
+            self.uses_c_variadic.set(true);
+        }
         (decl, param_types, ret_ty)
     }
 

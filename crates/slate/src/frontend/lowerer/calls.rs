@@ -129,7 +129,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     result.to_string(),
                     Val::Expr(Expr::Call {
                         binding: crate::function_identity::CallBinding::Generated,
-                        func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
+                        func: Box::new(Expr::Var("__slate_f80_from_f64".into())),
                         args: vec![Expr::Var(name.into())],
                     }),
                 );
@@ -289,7 +289,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 if is_quad_long_double(ty) {
                     Type::Prim(Prim::F128)
                 } else if is_long_double(ty) {
-                    Type::Prim(Prim::F64)
+                    Type::LongDouble
                 } else {
                     self.parent.rust_type(ty)
                 }
@@ -302,7 +302,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 if is_quad_long_double(ty) {
                     "lq".to_string()
                 } else if is_long_double(ty) {
-                    "ld".to_string()
+                    "f80".to_string()
                 } else {
                     long_double_shim_type_tag(param_ty)
                 }
@@ -333,13 +333,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .zip(arg_types.iter())
             .enumerate()
             .map(|(i, (arg, ty))| {
-                if is_quad_long_double(ty) {
+                if is_quad_long_double(ty) || is_long_double(ty) {
                     arg.clone()
-                } else if is_long_double(ty) {
-                    Expr::Field {
-                        base: Box::new(arg.clone()),
-                        field: "0".into(),
-                    }
                 } else {
                     Expr::Cast {
                         expr: Box::new(arg.clone()),

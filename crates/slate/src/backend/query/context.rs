@@ -6247,8 +6247,10 @@ fn unused_item_collect_type_refs(ty: &Type, refs: &mut BTreeSet<String>) {
             }
             unused_item_collect_type_refs(ret, refs);
         }
+        Type::LongDouble => {
+            refs.insert("LongDouble".into());
+        }
         Type::Prim(_)
-        | Type::LongDouble
         | Type::CLib(_)
         | Type::VaList
         | Type::Str

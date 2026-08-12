@@ -698,22 +698,8 @@ fn write_long_double_shim(project: &Path) -> Result<(), String> {
     )
     .map_err(|e| format!("write build.rs: {e}"))?;
 
-    let mut source = String::from(
-        r#"#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-
-void __slate_strtold(char *nptr, char **endptr, double *out) {
-    *out = (double)strtold(nptr, endptr);
-}
-"#,
-    );
-    for name in collect_long_double_shim_names(&project.join("src"))? {
-        if let Some(trampoline) = render_long_double_shim_trampoline(&name) {
-            source.push('\n');
-            source.push_str(&trampoline);
-        }
-    }
+    let names = collect_long_double_shim_names(&project.join("src"))?;
+    let source = slate::frontend::c_shim::render_shim_c_source_for_names(&names);
     write_if_changed(project.join("src/slate_long_double.c"), source.as_bytes())
         .map(|_| ())
         .map_err(|e| format!("write slate_long_double.c: {e}"))
@@ -750,67 +736,9 @@ fn extract_long_double_shim_names(text: &str, names: &mut std::collections::BTre
             .find(|c: char| !(c.is_ascii_alphanumeric() || c == '_'))
             .unwrap_or(token_start.len());
         let token = &token_start[..end];
-        if token[PREFIX.len()..].contains("__") {
-            names.insert(token.to_string());
-        }
+        names.insert(token.to_string());
         rest = &token_start[end.max(1)..];
     }
-}
-
-fn shim_tag_c_type(tag: &str) -> String {
-    if let Some(inner) = tag.strip_prefix('p') {
-        return match inner {
-            "i8" | "u8" => "char *".to_string(),
-            "x" => "void *".to_string(),
-            other => format!("{} *", shim_tag_c_type(other)),
-        };
-    }
-    match tag {
-        "i8" => "signed char",
-        "u8" => "unsigned char",
-        "i16" => "short",
-        "u16" => "unsigned short",
-        "i32" => "int",
-        "u32" => "unsigned int",
-        "i64" => "long long",
-        "u64" => "unsigned long long",
-        "isize" => "long",
-        "usize" => "unsigned long",
-        "f32" => "float",
-        "f64" => "double",
-        "bool" => "_Bool",
-        "ld" => "double",
-        _ => "void *",
-    }
-    .to_string()
-}
-
-fn render_long_double_shim_trampoline(name: &str) -> Option<String> {
-    let rest = name.strip_prefix("__slate_")?;
-    let sep = rest.find("__")?;
-    let callee = &rest[..sep];
-    let tags: Vec<&str> = rest[sep + 2..].split('_').collect();
-    let params = tags
-        .iter()
-        .enumerate()
-        .map(|(i, tag)| format!("{} _{i}", shim_tag_c_type(tag)))
-        .collect::<Vec<_>>()
-        .join(", ");
-    let args = tags
-        .iter()
-        .enumerate()
-        .map(|(i, tag)| {
-            if *tag == "ld" {
-                format!("(long double)_{i}")
-            } else {
-                format!("_{i}")
-            }
-        })
-        .collect::<Vec<_>>()
-        .join(", ");
-    Some(format!(
-        "int {name}({params}) {{\n    return {callee}({args});\n}}\n"
-    ))
 }
 
 pub fn write_if_changed(path: impl AsRef<Path>, contents: &[u8]) -> std::io::Result<bool> {

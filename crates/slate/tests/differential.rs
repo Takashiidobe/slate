@@ -346,6 +346,7 @@ fn compile_with_android_ndk(
 #[test]
 fn generated_differential() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-generated");
+    let _ = std::fs::remove_dir_all(&tmp);
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
 
     let fixtures = fixtures();

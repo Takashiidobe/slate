@@ -12,6 +12,7 @@ pub enum MacroValue {
     LongDouble {
         source: &'static str,
         rust_bits: u64,
+        f80_bytes: [u8; 10],
     },
 }
 
@@ -174,6 +175,7 @@ pub const MACROS: &[MacroDefinition] = &[
         value: MacroValue::LongDouble {
             source: "3.64519953188247460253E-4951",
             rust_bits: 1,
+            f80_bytes: [0, 0, 0, 0, 0, 0, 0, 0x80, 0x01, 0x00],
         },
     },
 ];

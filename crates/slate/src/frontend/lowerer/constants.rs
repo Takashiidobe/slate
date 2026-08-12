@@ -131,6 +131,7 @@ pub(super) fn default_value_for_type(ty: &Type) -> Expr {
         Type::Prim(Prim::Bool) => Expr::Value(RustValue::Bool(false)),
         Type::Prim(Prim::F32 | Prim::F64) => Expr::Value(0.0.into()),
         Type::Prim(Prim::F128) => Expr::HexFloat("0.0f128".into()),
+        Type::LongDouble => long_double_zero_expr(),
         Type::Ptr { .. } => Expr::Value(RustValue::NullPtr),
         Type::FnPtr { .. } => Expr::Value(RustValue::None),
         _ => Expr::Value(RustValue::I64(0)),
@@ -262,7 +263,7 @@ pub(super) fn typed_fp_literal_expr(ty: Option<&Type>, fp: String) -> Expr {
     if matches!(ty, Some(Type::LongDouble)) {
         Expr::Call {
             binding: crate::function_identity::CallBinding::Generated,
-            func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
+            func: Box::new(Expr::Var("__slate_f80_from_f64".into())),
             args: vec![value],
         }
     } else {
