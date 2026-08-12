@@ -52,6 +52,19 @@ impl<const BITS: usize, const LIMBS: usize> BUint<BITS, LIMBS> {
         Self::masked(limbs)
     }
 
+    pub const fn from_decimal_str(s: &str) -> Self {
+        let bytes = s.as_bytes();
+        let ten = Self::from_low_limb(10);
+        let mut acc = Self::ZERO;
+        let mut i = 0;
+        while i < bytes.len() {
+            let digit = Self::from_low_limb((bytes[i] - b'0') as u64);
+            acc = acc.wrapping_mul(ten).wrapping_add(digit);
+            i += 1;
+        }
+        acc
+    }
+
     pub const fn wrapping_add(self, rhs: Self) -> Self {
         let mut out = [0u64; LIMBS];
         let mut carry: u128 = 0;
@@ -172,6 +185,21 @@ impl<const BITS: usize, const LIMBS: usize> BInt<BITS, LIMBS> {
         Self {
             bits: BUint::from_i128(v),
         }
+    }
+
+    pub const fn from_decimal_str(s: &str) -> Self {
+        let bytes = s.as_bytes();
+        let neg = !bytes.is_empty() && bytes[0] == b'-';
+        let ten = BUint::<BITS, LIMBS>::from_low_limb(10);
+        let mut acc = BUint::<BITS, LIMBS>::ZERO;
+        let mut i = if neg { 1 } else { 0 };
+        while i < bytes.len() {
+            let digit = BUint::<BITS, LIMBS>::from_low_limb((bytes[i] - b'0') as u64);
+            acc = acc.wrapping_mul(ten).wrapping_add(digit);
+            i += 1;
+        }
+        let magnitude = Self { bits: acc };
+        if neg { magnitude.wrapping_neg() } else { magnitude }
     }
 
     const fn is_negative(&self) -> bool {

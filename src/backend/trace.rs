@@ -554,7 +554,7 @@ impl CollectingLogger {
         if let Some(active) = self.current.take() {
             self.completed.push(PassInvocation {
                 pass: active.pass,
-                before: active.before.clone(),
+                before: active.before,
                 after: active.before,
                 changed: false,
                 events: active.events,

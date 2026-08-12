@@ -151,15 +151,16 @@ pub(super) fn bitint_generic_parts(ty: &Type) -> Option<(&str, &str, &str)> {
 
 // `bitint::{BInt,BUint}` are ordinary structs, not native Rust integer
 // types, so a bare numeric literal can't coerce into them the way it
-// coerces into e.g. `u32`; every construction goes through `from_i128`.
-pub(super) fn bitint_from_i128_expr(ty: &Type, value: i128) -> Option<Expr> {
+// coerces into e.g. `u32`; every construction goes through `from_decimal_str`,
+// which (unlike `from_i128`) has no magnitude ceiling.
+pub(super) fn bitint_from_decimal_str_expr(ty: &Type, digits: &str) -> Option<Expr> {
     let (name, bits, limbs) = bitint_generic_parts(ty)?;
     Some(Expr::Call {
         binding: crate::function_identity::CallBinding::Generated,
         func: Box::new(Expr::Var(
-            format!("{name}::<{bits}, {limbs}>::from_i128").into(),
+            format!("{name}::<{bits}, {limbs}>::from_decimal_str").into(),
         )),
-        args: vec![Expr::Value(RustValue::I128(value))],
+        args: vec![Expr::Str(digits.to_string())],
     })
 }
 
