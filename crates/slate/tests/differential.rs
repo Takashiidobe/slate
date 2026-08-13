@@ -1628,6 +1628,52 @@ fn long_double_variadic_calls_retain_their_shim_declarations() {
 }
 
 #[test]
+fn long_double_pointer_types_follow_target_abi() {
+    let link_fixture = fixtures_dir().join("../fixtures.link/long_double/main.c");
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .args(["translate", link_fixture.to_str().unwrap()])
+        .env("SLATE_TARGET", "x86_64-unknown-linux-gnu")
+        .output()
+        .expect("translate x87 long double pointer fixture");
+    assert!(
+        output.status.success(),
+        "x87 long double pointer translation failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let rust = String::from_utf8(output.stdout).expect("generated Rust is UTF-8");
+    assert!(rust.contains("fn ext_store(_0: *mut LongDouble, _1: LongDouble);"));
+    assert!(rust.contains("fn ext_load(_0: *const LongDouble) -> LongDouble;"));
+    assert!(rust.contains("fn __slate_ext_store__rv_pf80_f80(_0: *mut LongDouble"));
+    assert!(rust.contains("fn __slate_ext_load__rf80_pf80(_0: *const LongDouble"));
+
+    for (flavor, target, rust_type, android_api) in [
+        ("macos", "aarch64-apple-darwin", "f64", None),
+        ("msvc", "x86_64-pc-windows-msvc", "f64", None),
+        ("bionic", "x86_64-linux-android", "f128", Some("21")),
+    ] {
+        let fixture = fixtures_dir().join(flavor).join("long_double_pointer.c");
+        let mut command = std::process::Command::new(env!("CARGO_BIN_EXE_slate"));
+        command
+            .args(["translate", fixture.to_str().unwrap()])
+            .env("SLATE_TARGET", target);
+        if let Some(api) = android_api {
+            command.env("SLATE_ANDROID_API", api);
+        }
+        let output = command.output().expect("translate pointer fixture");
+        assert!(
+            output.status.success(),
+            "{flavor} long double pointer translation failed:\n{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let rust = String::from_utf8(output.stdout).expect("generated Rust is UTF-8");
+        assert!(rust.contains(&format!("fn store_long_double(_0: *mut {rust_type});")));
+        assert!(rust.contains(&format!(
+            "fn load_long_double(_0: *const {rust_type}) -> *const {rust_type};"
+        )));
+    }
+}
+
+#[test]
 fn address_of_array_elements_use_safe_indexes() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-array-element-pointer");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
