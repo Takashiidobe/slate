@@ -52,6 +52,28 @@ impl<const BITS: usize, const LIMBS: usize> BUint<BITS, LIMBS> {
         Self::masked(limbs)
     }
 
+    pub const fn from_u128(v: u128) -> Self {
+        let mut limbs = [0; LIMBS];
+        if LIMBS > 0 {
+            limbs[0] = v as u64;
+        }
+        if LIMBS > 1 {
+            limbs[1] = (v >> 64) as u64;
+        }
+        Self::masked(limbs)
+    }
+
+    pub const fn to_u128(self) -> u128 {
+        let mut value = 0;
+        if LIMBS > 0 {
+            value = self.limbs[0] as u128;
+        }
+        if LIMBS > 1 {
+            value |= (self.limbs[1] as u128) << 64;
+        }
+        value
+    }
+
     pub const fn from_decimal_str(s: &str) -> Self {
         let bytes = s.as_bytes();
         let ten = Self::from_low_limb(10);
@@ -185,6 +207,24 @@ impl<const BITS: usize, const LIMBS: usize> BInt<BITS, LIMBS> {
         Self {
             bits: BUint::from_i128(v),
         }
+    }
+
+    pub const fn from_u128(v: u128) -> Self {
+        Self {
+            bits: BUint::from_u128(v),
+        }
+    }
+
+    pub const fn to_i128(self) -> i128 {
+        let mut value = self.bits.to_u128();
+        if BITS < 128 && self.is_negative() {
+            value |= u128::MAX << (BITS % 128);
+        }
+        value as i128
+    }
+
+    pub const fn to_u128(self) -> u128 {
+        self.bits.to_u128()
     }
 
     pub const fn from_decimal_str(s: &str) -> Self {
