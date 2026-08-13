@@ -129,13 +129,15 @@ fn required_record_defs(
     }
     let cir_kinds: BTreeMap<String, RecordKind> = cir
         .aliases
-        .values()
-        .filter_map(|ty| {
-            let name = lowered_record_name(cir_record_name(ty)?)?;
+        .iter()
+        .filter_map(|(alias, ty)| {
+            let name = lowered_record_name(alias.strip_prefix("!rec_")?)?;
             let kind = if ty.trim_start().starts_with("!cir.union") {
                 RecordKind::Union
-            } else {
+            } else if ty.trim_start().starts_with("!cir.struct") {
                 RecordKind::Struct
+            } else {
+                return None;
             };
             Some((name, kind))
         })
