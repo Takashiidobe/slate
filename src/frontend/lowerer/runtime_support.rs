@@ -1,6 +1,7 @@
 use super::*;
 
 pub(super) const LONG_DOUBLE_TY: &str = "LongDouble";
+pub(super) const COMPLEX_TY: &str = "num_complex::Complex";
 
 pub(super) fn long_double_zero_expr() -> Expr {
     Expr::TupleStructLit {
@@ -475,55 +476,6 @@ pub(super) fn cir_complex_inner(ty: &str) -> Option<&str> {
     ty.strip_prefix("!cir.complex<")?.strip_suffix('>')
 }
 
-pub(super) fn complex_binop_impl(trait_: StdTrait, op: BinOp) -> Item {
-    let field = |base: &str, field: &str| Expr::Field {
-        base: Box::new(Expr::Var(base.into())),
-        field: field.into(),
-    };
-    let component = |name: &str| {
-        (
-            name.to_string(),
-            Expr::Binary {
-                op,
-                lhs: Box::new(field("self", name)),
-                rhs: Box::new(field("o", name)),
-            },
-        )
-    };
-    let method = Method {
-        name: trait_.method().into(),
-        self_kind: SelfKind::Value,
-        params: vec![FnParam {
-            name: "o".into(),
-            mutable: false,
-            ty: complex_ty(Type::TyVar("T".into())),
-        }],
-        ret: Some(complex_ty(Type::TyVar("T".into()))),
-        body: Expr::StructLit {
-            name: "Complex".into(),
-            fields: vec![component("re"), component("im")],
-        },
-    };
-    Item::Impl(ImplBlock {
-        generics: vec![GenericParam {
-            name: "T".into(),
-            bounds: vec![TraitBound {
-                trait_,
-                assoc: vec![("Output".into(), Type::TyVar("T".into()))],
-            }],
-        }],
-        trait_: Some(TraitRef::Std(trait_)),
-        self_ty: complex_ty(Type::TyVar("T".into())),
-        items: vec![
-            ImplItem::AssocType {
-                name: "Output".into(),
-                ty: complex_ty(Type::TyVar("T".into())),
-            },
-            ImplItem::Method(method),
-        ],
-    })
-}
-
 pub(super) fn complex_runtime_decl(name: &str, prim: Prim) -> ExternDecl {
     let param = |n: &str| FnParam {
         name: n.into(),
@@ -541,47 +493,18 @@ pub(super) fn complex_runtime_decl(name: &str, prim: Prim) -> ExternDecl {
     })
 }
 
-// C `_Complex` has no native Rust type; a #[repr(C)] pair matches its two-scalar
-// layout, and the extern runtime routines back `*`/`/`.
+// C `_Complex` is `num_complex::Complex`; the extern runtime routines keep
+// float/double `*`/`/` bit-identical to clang's libgcc lowering.
 pub(super) fn complex_prelude() -> Vec<Item> {
-    vec![
-        Item::Struct(StructDef {
-            attrs: vec![
-                RustAttr::Repr(vec![Repr::C]),
-                RustAttr::Derive(vec![Derive::Clone, Derive::Copy, Derive::PartialEq]),
-            ],
-            vis: Visibility::Private,
-            field_vis: Visibility::Private,
-            generics: vec![GenericParam {
-                name: "T".into(),
-                bounds: vec![],
-            }],
-            name: "Complex".into(),
-            fields: StructFields::Named(vec![
-                crate::backend::rust_ast::StructField {
-                    attrs: Vec::new(),
-                    name: "re".into(),
-                    ty: Type::TyVar("T".into()),
-                },
-                crate::backend::rust_ast::StructField {
-                    attrs: Vec::new(),
-                    name: "im".into(),
-                    ty: Type::TyVar("T".into()),
-                },
-            ]),
-        }),
-        complex_binop_impl(StdTrait::Add, BinOp::Add),
-        complex_binop_impl(StdTrait::Sub, BinOp::Sub),
-        Item::ExternBlock {
-            abi: "C".into(),
-            decls: vec![
-                complex_runtime_decl("__muldc3", Prim::F64),
-                complex_runtime_decl("__divdc3", Prim::F64),
-                complex_runtime_decl("__mulsc3", Prim::F32),
-                complex_runtime_decl("__divsc3", Prim::F32),
-            ],
-        },
-    ]
+    vec![Item::ExternBlock {
+        abi: "C".into(),
+        decls: vec![
+            complex_runtime_decl("__muldc3", Prim::F64),
+            complex_runtime_decl("__divdc3", Prim::F64),
+            complex_runtime_decl("__mulsc3", Prim::F32),
+            complex_runtime_decl("__divsc3", Prim::F32),
+        ],
+    }]
 }
 
 // C `memchr` has no direct std equivalent; this byte scan matches its

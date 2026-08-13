@@ -1438,7 +1438,7 @@ impl<W: Write> Codegen<W> {
             Type::TyVar(name) => self.ident(name.as_str()),
             Type::CLib(c) => self.out.write_str(c.path()),
             Type::Complex(inner) => {
-                self.out.write_str("Complex<")?;
+                self.out.write_str("num_complex::Complex<")?;
                 self.ty(inner)?;
                 self.out.write_char('>')
             }

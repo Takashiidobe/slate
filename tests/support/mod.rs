@@ -46,6 +46,10 @@ fn bitint_path() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("vendor/bitint")
 }
 
+fn num_complex_path() -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("vendor/num-complex")
+}
+
 fn generated_crate_manifest(name: &str) -> String {
     format!(
         r#"[package]
@@ -57,6 +61,7 @@ edition = "2024"
 libc = "0.2"
 aligned = {{ path = "{}" }}
 bitint = {{ path = "{}" }}
+num-complex = {{ path = "{}", default-features = false }}
 bitfields = "3.0.0"
 
 [build-dependencies]
@@ -69,7 +74,8 @@ panic = "unwind"
 codegen-units = 256
 "#,
         aligned_path().display(),
-        bitint_path().display()
+        bitint_path().display(),
+        num_complex_path().display()
     )
 }
 

@@ -4,10 +4,10 @@ use crate::backend::rust_ast::{
     Abi, AsmDialect, AsmOperand, AsmReg, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType,
     Attr as RustAttr, AttrArg, BinOp, CLIB_RECORD_TYPES, CLibInitializer, CLibType, Cfg, Comment,
     CrateAttr, Derive, EnumConst, EnumDef, Expr, ExprMatchArm, ExternDecl, ExternFnDecl, Feature,
-    FnDef, FnParam, GenericParam, Ident, ImplBlock, ImplItem, IndentStmt, InlineAsm, Item, Label,
-    Lint, MatchArm, Method, Path, Pattern, Prim, Program, Raw, RecordDef, RecordField, Repr,
-    RustValue, SelfKind, StdTrait, Stmt, StructDef, StructField, StructFields, SupportModule,
-    TraitBound, TraitRef, Type, UnaryOp, UsedKind, Visibility,
+    FnDef, FnParam, Ident, ImplBlock, ImplItem, IndentStmt, InlineAsm, Item, Label, Lint, MatchArm,
+    Method, Path, Pattern, Prim, Program, Raw, RecordDef, RecordField, Repr, RustValue, SelfKind,
+    StdTrait, Stmt, StructDef, StructField, StructFields, SupportModule, TraitRef, Type, UnaryOp,
+    UsedKind, Visibility,
 };
 use crate::cir::ir::{Attr, Block, CirOpKind, Module, Op, Region};
 use crate::ctx::Ctx;
@@ -3008,7 +3008,7 @@ impl __SlateVaArgs {
             Type::Complex(inner) => {
                 let d = default_value_for_type(inner);
                 Expr::StructLit {
-                    name: "Complex".into(),
+                    name: COMPLEX_TY.into(),
                     fields: vec![("re".into(), d.clone()), ("im".into(), d)],
                 }
             }
@@ -3778,8 +3778,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::Fsub => self.lower_binary(op, BinOp::Sub),
             CirOpKind::Fmul => self.lower_binary(op, BinOp::Mul),
             CirOpKind::Fdiv => self.lower_binary(op, BinOp::Div),
-            CirOpKind::ComplexAdd => self.lower_binary(op, BinOp::Add),
-            CirOpKind::ComplexSub => self.lower_binary(op, BinOp::Sub),
+            CirOpKind::ComplexAdd => self.lower_complex_add(op),
+            CirOpKind::ComplexSub => self.lower_complex_sub(op),
             CirOpKind::ComplexMul => self.lower_complex_mul(op),
             CirOpKind::ComplexDiv => self.lower_complex_div(op),
             CirOpKind::ComplexConj => self.lower_complex_conj(op),
