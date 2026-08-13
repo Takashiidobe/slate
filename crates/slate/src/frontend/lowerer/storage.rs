@@ -238,7 +238,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let value_ty = operand_types.first().copied();
         let ptr = &op.operands[1];
         let mut value = if value_ty.is_some_and(is_cir_function_pointer_type) {
-            self.store_function_pointer_value(&op.operands[0], ptr)
+            self.store_function_pointer_value(&op.operands[0], ptr, value_ty.unwrap())
         } else if value_ty.is_some_and(|ty| ty.starts_with("!cir.ptr<")) {
             self.pointer_operand_expr(&op.operands[0])
         } else {
@@ -426,8 +426,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if let Some(fn_ptr_ty @ Type::FnPtr { .. }) = field_ty {
             self.loaded_field_types
                 .insert(result.clone(), fn_ptr_ty.clone());
+            self.materialize_expr_as(result, value, fn_ptr_ty.clone());
+        } else {
+            self.materialize_expr(result, value, op_result_type(op));
         }
-        self.materialize_expr(result, value, op_result_type(op));
     }
 
     pub(super) fn block_addr_dispatch_expr(&self, ptr: &str) -> Option<Expr> {

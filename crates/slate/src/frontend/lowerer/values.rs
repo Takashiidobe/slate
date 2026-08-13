@@ -160,7 +160,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         Expr::Var(sanitize_ident(operand))
     }
 
-    pub(super) fn store_function_pointer_value(&mut self, operand: &str, ptr: &str) -> Expr {
+    pub(super) fn store_function_pointer_value(
+        &mut self,
+        operand: &str,
+        ptr: &str,
+        source_cir_ty: &str,
+    ) -> Expr {
         let target_ty = self
             .member_ptrs
             .get(ptr)
@@ -175,7 +180,21 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         {
             return wrapped;
         }
-        let value = self.function_pointer_operand_expr(operand);
+        let mut value = self.function_pointer_operand_expr(operand);
+        if let Some(target_ty) = target_ty.as_ref()
+            && let source_ty = self
+                .loaded_field_types
+                .get(operand)
+                .cloned()
+                .unwrap_or_else(|| self.parent.rust_type(source_cir_ty))
+            && source_ty != *target_ty
+        {
+            value = Expr::Transmute {
+                from: source_ty,
+                to: target_ty.clone(),
+                expr: Box::new(value),
+            };
+        }
         if !operand_is_named_function
             && let Some(Type::FnPtr { ret, .. }) = target_ty
             && matches!(ret.as_ref(), Type::Custom(enum_name) if self.parent.enums.contains_key(enum_name))
