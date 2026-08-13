@@ -334,9 +334,9 @@ asserting the translated source in `tests/differential.rs`; diagnostic metadata
 is not part of rewrite correctness. Then run:
 
 ```bash
-SLATE_DIFF_FIXTURE=<name> cargo nextest r --release \
+SLATE_DIFF_FIXTURE=<name> cargo nextest r --release --profile rewrites \
   --test differential -E 'test(generated_differential)' --nocapture
 cargo fmt
 cargo clippy --all-targets
-cargo nextest r --release
+cargo nextest r --release --profile rewrites
 ```

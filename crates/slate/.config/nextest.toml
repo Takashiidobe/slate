@@ -6,7 +6,7 @@ default-filter = '''
   + binary_id(=slate::header_compilation)
 '''
 
-[profile.lang]
+[profile.rewrites]
 default-filter = '''
   not (
     binary_id(=slate::libc_shim_suite)
@@ -14,6 +14,16 @@ default-filter = '''
     + binary_id(=slate::libc_test_functional_suite)
     + binary_id(=slate::header_compilation)
   )
+'''
+
+[profile.lowering]
+default-filter = '''
+  test(generated_differential)
+  + test(c_testsuite_supported_tests_match_c)
+  + test(chibicc_supported_tests_match_c)
+  + test(gcc_torture_supported_tests_match_c)
+  + test(libc_test_functional_supported_tests_match_c)
+  + test(stdlib_coverage)
 '''
 
 [[profile.default.overrides]]

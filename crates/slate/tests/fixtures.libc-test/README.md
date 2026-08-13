@@ -48,7 +48,8 @@ Of 79 upstream api files (78 after dropping `main.c`), all 78 are admitted;
 50 currently pass through libc-shim, 28 don't. Of 77 upstream functional
 files, 68 are admitted; 37 currently pass end to end through Slate, 31 don't.
 
-Both suites' supported buckets run under `cargo nextest r --release`. Both
+Both suites' supported buckets run under
+`cargo nextest r --release --profile libc`. Both
 unsupported regression guards (`*_unsupported_tests_still_fail`) are
 `#[ignore]`d by default to keep that gate fast; run them explicitly to look
 for cases ready to promote:
@@ -70,13 +71,12 @@ CPU through one shared work queue and cached `src/bin` batch crate, same as
 `gcc_torture_suite.rs`. Set `SLATE_LIBC_TEST_JOBS` (or `SLATE_TEST_JOBS`) to
 limit it.
 
-Editing `libc-shim/` or these corpora doesn't usually touch CIR lowering, and
-vice versa, so both suites (plus `libc_shim_suite.rs` and
-`header_compilation.rs`) are grouped into a `libc` nextest profile, separate
-from the C-language lowering corpora's `lang` profile (see
-`.config/nextest.toml`):
+Editing `libc-shim/` or these corpora requires the `libc` profile. Frontend
+lowering work uses the raw-lowered runtime differential profile, while backend
+fixup work uses every non-libc test (see `.config/nextest.toml`):
 
 ```bash
 cargo nextest r --release --profile libc  # libc-shim + libc-test only
-cargo nextest r --release --profile lang  # c-testsuite/chibicc/gcc-torture/cross-TU/... only
+cargo nextest r --release --profile lowering # runtime differential without fixups
+cargo nextest r --release --profile rewrites # every non-libc test with fixups
 ```

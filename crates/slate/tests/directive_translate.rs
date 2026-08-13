@@ -786,3 +786,22 @@ fn passes_through_sources_without_conditional_regions() {
     assert!(rust.contains("fn add("));
     assert!(!rust.contains("#[cfg("));
 }
+
+#[test]
+fn raw_lower_skips_fixups_for_directive_translation() {
+    let src = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/add.c");
+    let out = Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("translate-directives")
+        .arg(&src)
+        .env("SLATE_RAW_LOWER", "1")
+        .output()
+        .expect("run raw slate translate-directives");
+    assert!(
+        out.status.success(),
+        "raw translate-directives failed:\n{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    let rust = String::from_utf8(out.stdout).expect("generated Rust is utf8");
+    assert!(rust.contains("let mut __retval"));
+    assert!(!rust.contains("println!"));
+}

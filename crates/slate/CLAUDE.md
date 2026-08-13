@@ -94,22 +94,29 @@ against that tree's headers and must be rebuilt in lockstep.
 
 ## Build & Test
 
-> **Always use `cargo nextest r --release` to test** (not `cargo test`).
+> **Always use a release nextest profile to test** (not `cargo test`).
 
 ```bash
-cargo nextest r --release                   # unit + fixture differential
-cargo fmt                                   # required before finishing
+cargo nextest r --release --profile lowering # frontend/lowering runtime differential, no fixups
+cargo nextest r --release --profile rewrites # backend/fixups and every non-libc test
+cargo nextest r --release --profile libc     # libc shim, headers, API, and functional tests
+cargo fmt                                    # required before finishing
 
-cargo run -- translate tests/fixtures/add.c # C -> Rust on stdout
+cargo run -- translate tests/fixtures/add.c  # C -> Rust on stdout
 ```
+
+Only the profile relevant to the changed subsystem is required to pass. Run
+`lowering` for frontend/CIR/AST/lowering changes, `rewrites` for backend or
+fixup changes, and `libc` for `libc-shim/` or libc-test changes. Run multiple
+profiles only when a change crosses those boundaries. The `lowering` profile
+sets raw-lowering behavior through `NEXTEST_PROFILE=lowering`, so it compiles
+and differentially runs baseline Rust without backend fixups.
 
 During feature development, isolate the new differential fixture:
 
 ```bash
-SLATE_DIFF_FIXTURE=<name> cargo nextest r --release --test differential -E 'test(generated_differential)' --nocapture
+SLATE_DIFF_FIXTURE=<name> cargo nextest r --release --profile lowering --test differential -E 'test(generated_differential)' --nocapture
 ```
-
-Run the unfiltered full release suite only as the completion gate.
 
 Generated fixture trees are ignored inspection artifacts. Do not run
 `emit-fixtures` or `emit-lowered-fixtures` as part of implementation or session
@@ -148,7 +155,7 @@ parses the generic-form CIR op-tree.
 
 - **Never comment.**
 - **Every feature and fixup starts with a C fixture** in `tests/fixtures/` (C-only), driven
-  by `cargo nextest r --test differential -E 'test(generated_differential)'`.
+  by the relevant `lowering` or `rewrites` profile and `--test differential -E 'test(generated_differential)'`.
 - **Testing**: Feature testing is done with e2e fixture differential tests, **never unit tests**.
 - **Transliterate first, idiomatize later.** Baseline Rust may be ugly:
   `#[repr(C)]`, raw pointers, explicit temps, `libc`, and `unsafe` are all
@@ -156,4 +163,4 @@ parses the generic-form CIR op-tree.
 - **Keep the reference grammar current.** When you extend the supported subset,
   update `c.bnf`. The diagnostic structured generator does not need to grow with
   new features.
-- Run `cargo fmt`, `cargo clippy` and `cargo nextest r --release` before finishing.
+- Run `cargo fmt`, `cargo clippy`, and the relevant release nextest profile before finishing.

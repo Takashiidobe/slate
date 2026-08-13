@@ -39,6 +39,11 @@ pub fn apply(program: Program) -> Program {
 }
 
 pub fn apply_with(program: Program, skip: &SkipSet) -> Program {
+    if std::env::var_os("SLATE_RAW_LOWER").is_some()
+        || std::env::var("NEXTEST_PROFILE").is_ok_and(|profile| profile == "lowering")
+    {
+        return program;
+    }
     let mut logger = NoopLogger;
     apply_with_logger(program, skip, &mut logger, DebugOptions::default())
 }
