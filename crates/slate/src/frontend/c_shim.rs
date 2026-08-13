@@ -29,6 +29,7 @@ fn c_type_for_tag(tag: &str) -> String {
         "v" => "void",
         "ld" => "double",
         "f80" => "__slate_f80",
+        "cf80" => "__slate_cf80",
         "lq" => "long double",
         _ => "void *",
     }
@@ -53,6 +54,18 @@ fn c_type_for_rust_type(ty: &Type, bridge: bool) -> String {
         Type::CLib(clib) => clib.c_name().into(),
         Type::LongDouble if bridge => "__slate_f80".into(),
         Type::LongDouble => "long double".into(),
+        Type::Complex(inner) if matches!(inner.as_ref(), Type::LongDouble) && bridge => {
+            "__slate_cf80".into()
+        }
+        Type::Complex(inner) if matches!(inner.as_ref(), Type::LongDouble) => {
+            "long double _Complex".into()
+        }
+        Type::Complex(inner) if matches!(inner.as_ref(), Type::Prim(Prim::F32)) => {
+            "float _Complex".into()
+        }
+        Type::Complex(inner) if matches!(inner.as_ref(), Type::Prim(Prim::F64)) => {
+            "double _Complex".into()
+        }
         Type::Ptr { mutable, inner } => {
             let pointee = match inner.as_ref() {
                 Type::CLib(clib) if *clib == crate::backend::rust_ast::CLibType::VOID => "void",
@@ -119,6 +132,9 @@ fn render_typed_shim(shim: &ExternFnDecl) -> Option<String> {
         .map(|(i, param)| match &param.ty {
             Type::LongDouble if callback.is_some() => format!("__slate_f80_store(_{i})"),
             Type::LongDouble => format!("__slate_f80_load(_{i})"),
+            Type::Complex(inner) if matches!(inner.as_ref(), Type::LongDouble) => {
+                format!("__slate_cf80_load(_{i})")
+            }
             _ => format!("_{i}"),
         })
         .collect::<Vec<_>>()
@@ -126,6 +142,11 @@ fn render_typed_shim(shim: &ExternFnDecl) -> Option<String> {
     let call = format!("{callee}({args})");
     let body = if ret_ty.is_none() || ret_ty.is_some_and(Type::is_unit) {
         format!("{call};")
+    } else if matches!(
+        ret_ty,
+        Some(Type::Complex(inner)) if matches!(inner.as_ref(), Type::LongDouble)
+    ) {
+        format!("return __slate_cf80_store({call});")
     } else if callback.is_some() && matches!(ret_ty, Some(Type::LongDouble)) {
         format!("return __slate_f80_load({call});")
     } else if matches!(ret_ty, Some(Type::LongDouble)) {
@@ -211,6 +232,8 @@ fn render_trampoline(name: &str) -> Option<String> {
         .map(|(i, tag)| {
             if callback_callee.is_some() && *tag == "f80" {
                 format!("__slate_f80_store(_{i})")
+            } else if *tag == "cf80" {
+                format!("__slate_cf80_load(_{i})")
             } else if *tag == "f80" {
                 format!("__slate_f80_load(_{i})")
             } else if *tag == "pf80" {
@@ -226,6 +249,8 @@ fn render_trampoline(name: &str) -> Option<String> {
     let call = format!("{}({args})", callback_callee.unwrap_or(callee));
     let body = if ret_tag == "v" {
         format!("{call};")
+    } else if ret_tag == "cf80" {
+        format!("return __slate_cf80_store({call});")
     } else if callback_callee.is_some() && ret_tag == "f80" {
         format!("return __slate_f80_load({call});")
     } else if ret_tag == "f80" {
@@ -266,6 +291,7 @@ const STRTOLD_SHIM: &str = "__slate_f80 __slate_strtold(char *nptr, char **endpt
 
 const F80_SHIMS: &str = r#"#include <stdint.h>
 #include <string.h>
+#include <complex.h>
 
 typedef struct {
     unsigned char bytes[10];
@@ -280,6 +306,24 @@ static long double __slate_f80_load(__slate_f80 value) {
 static __slate_f80 __slate_f80_store(long double value) {
     __slate_f80 out;
     memcpy(out.bytes, &value, sizeof(out.bytes));
+    return out;
+}
+
+typedef struct {
+    __slate_f80 re;
+    __slate_f80 im;
+} __attribute__((aligned(16))) __slate_cf80;
+
+static long double _Complex __slate_cf80_load(__slate_cf80 value) {
+    return __slate_f80_load(value.re) +
+           __slate_f80_load(value.im) * _Complex_I;
+}
+
+static __slate_cf80 __slate_cf80_store(long double _Complex value) {
+    __slate_cf80 out = {
+        __slate_f80_store(creall(value)),
+        __slate_f80_store(cimagl(value)),
+    };
     return out;
 }
 
