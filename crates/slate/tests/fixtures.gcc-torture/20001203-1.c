@@ -3,22 +3,18 @@
    adapted to a testcase by Joseph Myers <jsm28@cam.ac.uk>.
 */
 
-extern void exit (int);
+extern void exit(int);
 
-static void
-foo (void)
-{
+static void foo(void) {
   struct {
     long a;
     char b[1];
-  } x = { 2, { 0 } };
+  } x = {2, {0}};
 }
 
-int
-main (void)
-{
+int main(void) {
   int tmp;
-  foo ();
+  foo();
   tmp = 1;
-  exit (0);
+  exit(0);
 }

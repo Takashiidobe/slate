@@ -8,13 +8,13 @@
 
 #include <float.h>
 
-extern void abort (void);
-extern void exit (int);
+extern void abort(void);
+extern void exit(int);
 
-extern int ilogbl (long double);
-int match (long double _Complex,long double _Complex);
+extern int ilogbl(long double);
+int        match(long double _Complex, long double _Complex);
 
-#define SMALL LDBL_MIN
+#define SMALL  LDBL_MIN
 #define MAXBIT LDBL_MANT_DIG
 #define ERRLIM 6
 
@@ -22,47 +22,35 @@ int match (long double _Complex,long double _Complex);
   Compare c (computed value) with z (expected value).
   Return 0 if within allowed range.  Return 1 if not.
 */
-int match (long double _Complex c,long double _Complex z)
-{
+int match(long double _Complex c, long double _Complex z) {
   long double rz, iz, rc, ic;
   long double rerr, ierr, rmax;
-  int biterr;
+  int         biterr;
   rz = __real__ z;
   iz = __imag__ z;
   rc = __real__ c;
   ic = __imag__ c;
 
-  if (__builtin_fabsl (rz) > SMALL)
-    {
-      rerr = __builtin_fabsl (rz - rc) / __builtin_fabsl(rz);
-    }
-  else if (__builtin_fabsl (rz) == 0.0)
-    {
-      rerr = __builtin_fabsl (rc);
-    }
-  else
-    {
-      rerr = __builtin_fabsl (rz - rc) / SMALL;
-    }
+  if (__builtin_fabsl(rz) > SMALL) {
+    rerr = __builtin_fabsl(rz - rc) / __builtin_fabsl(rz);
+  } else if (__builtin_fabsl(rz) == 0.0) {
+    rerr = __builtin_fabsl(rc);
+  } else {
+    rerr = __builtin_fabsl(rz - rc) / SMALL;
+  }
 
-  if (__builtin_fabsl (iz) > SMALL)
-    {
-      ierr = __builtin_fabsl (iz - ic) / __builtin_fabsl(iz);
-    }
-  else if (__builtin_fabsl (iz) == 0.0)
-    {
-      ierr = __builtin_fabsl (ic);
-    }
-  else
-    {
-      ierr = __builtin_fabsl (iz - ic) / SMALL;
-    }
-  rmax = __builtin_fmaxl (rerr, ierr);
+  if (__builtin_fabsl(iz) > SMALL) {
+    ierr = __builtin_fabsl(iz - ic) / __builtin_fabsl(iz);
+  } else if (__builtin_fabsl(iz) == 0.0) {
+    ierr = __builtin_fabsl(ic);
+  } else {
+    ierr = __builtin_fabsl(iz - ic) / SMALL;
+  }
+  rmax   = __builtin_fmaxl(rerr, ierr);
   biterr = 0;
-  if ( rmax != 0.0)      
-    {
-      biterr = ilogbl (rmax) + MAXBIT + 1;
-    }
+  if (rmax != 0.0) {
+    biterr = ilogbl(rmax) + MAXBIT + 1;
+  }
 
   if (biterr >= ERRLIM)
     return 0;
@@ -70,14 +58,12 @@ int match (long double _Complex c,long double _Complex z)
     return 1;
 }
 
-
-int main (int argc, char** argv)
-{
-  long double _Complex a,b,c,z;
+int main(int argc, char **argv) {
+  long double _Complex a, b, c, z;
   long double xr[4], xi[4], yr[4], yi[4], zr[4], zi[4];
   long double cr, ci;
-  int i;
-  int ok = 1;
+  int         i;
+  int         ok = 1;
 
 #if (LDBL_MAX_EXP < 2048)
   /*
@@ -149,23 +135,22 @@ int main (int argc, char** argv)
   zi[3] = -0x1.ecee7b8c7bdd36237eb538324289p-902L;
 #endif
 
-  for (i = 0; i < 4; i++)
-    {
-      __real__ a = xr[i];
-      __imag__ a = xi[i];
-      __real__ b = yr[i];
-      __imag__ b = yi[i];
-      __real__ z = zr[i];
-      __imag__ z = zi[i];
-      c = a / b;
-      cr = __real__ c;
-      ci = __imag__ c;
+  for (i = 0; i < 4; i++) {
+    __real__ a = xr[i];
+    __imag__ a = xi[i];
+    __real__ b = yr[i];
+    __imag__ b = yi[i];
+    __real__ z = zr[i];
+    __imag__ z = zi[i];
+    c          = a / b;
+    cr         = __real__ c;
+    ci         = __imag__ c;
 
-      if (!match (c,z)){
-	ok = 0;
-      }
+    if (!match(c, z)) {
+      ok = 0;
     }
+  }
   if (!ok)
-    abort ();
-  exit (0);
+    abort();
+  exit(0);
 }

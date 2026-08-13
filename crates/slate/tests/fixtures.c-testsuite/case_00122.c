@@ -1,6 +1,2 @@
 #define F(a, b) a
-int
-main()
-{
-	return F(, 1) 0;
-}
+int main() { return F(, 1) 0; }

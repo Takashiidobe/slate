@@ -1,37 +1,28 @@
 #include <stdio.h>
 
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-int
-g (void)
-{
-  return '\n';
-}
+int g(void) { return '\n'; }
 
-void
-f (void)
-{
-  char s[] = "abcedfg012345";
-  char *sp = s + 12;
+void f(void) {
+  char  s[] = "abcedfg012345";
+  char *sp  = s + 12;
 
-  switch (g ())
-    {
-      case '\n':
-        break;
-    }
+  switch (g()) {
+  case '\n':
+    break;
+  }
 
   while (*--sp == '0')
     ;
-  sprintf (sp + 1, "X");
+  sprintf(sp + 1, "X");
 
   if (s[12] != 'X')
-    abort ();
+    abort();
 }
 
-int
-main (void)
-{
-  f ();
-  exit (0);
+int main(void) {
+  f();
+  exit(0);
 }

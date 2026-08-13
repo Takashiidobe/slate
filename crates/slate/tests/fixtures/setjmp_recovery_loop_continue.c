@@ -2,8 +2,8 @@
 #include <stdio.h>
 
 static jmp_buf env;
-static int failures = 0;
-static int teardown_failures = 0;
+static int     failures          = 0;
+static int     teardown_failures = 0;
 
 static void run_test(int i) {
   if (i == 2) {

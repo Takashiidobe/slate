@@ -1,36 +1,32 @@
 
 typedef struct st {
-    int a;
+  int a;
 } ST;
 
-int __attribute__((noinline,noclone))
-foo(ST *s, int c)
-{
+int __attribute__((noinline, noclone)) foo(ST *s, int c) {
   int first = 1;
   int count = c;
-  ST *item = s;
-  int a = s->a;
+  ST *item  = s;
+  int a     = s->a;
   int x;
 
-  while (count--)
-    {
-      x = item->a;
-      if (first)
-        first = 0;
-      else if (x >= a)
-        return 1;
-      a = x;
-      item++;
-    }
+  while (count--) {
+    x = item->a;
+    if (first)
+      first = 0;
+    else if (x >= a)
+      return 1;
+    a = x;
+    item++;
+  }
   return 0;
 }
 
-extern void abort (void);
+extern void abort(void);
 
-int main ()
-{
+int main() {
   ST _1[2] = {{2}, {1}};
   if (foo(_1, 2) != 0)
-    abort ();
+    abort();
   return 0;
 }

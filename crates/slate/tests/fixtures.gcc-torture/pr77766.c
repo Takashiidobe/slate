@@ -1,8 +1,8 @@
-char a;
+char  a;
 short b, d = 5, h;
-char c[1];
-int e, f = 4, g, j;
-int main() {
+char  c[1];
+int   e, f = 4, g, j;
+int   main() {
   int i;
   for (; f; f = a) {
     g = 0;
@@ -25,4 +25,3 @@ int main() {
   }
   return 0;
 }
-

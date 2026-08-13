@@ -1,14 +1,12 @@
 long long a;
-unsigned b;
-int c[70];
-int d[70][70];
-int e;
+unsigned  b;
+int       c[70];
+int       d[70][70];
+int       e;
 
-__attribute__ ((noinline)) void f(long long *g, int p2) {
-  *g = p2;
-}
+__attribute__((noinline)) void f(long long *g, int p2) { *g = p2; }
 
-__attribute__ ((noinline)) void fn2() {
+__attribute__((noinline)) void fn2() {
   for (int j = 0; j < 70; j++) {
     for (int i = 0; i < 70; i++) {
       if (b)
@@ -31,4 +29,3 @@ int main() {
     __builtin_abort();
   return 0;
 }
-

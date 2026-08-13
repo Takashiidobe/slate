@@ -1,10 +1,9 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-int main ()
-{
+int main() {
   unsigned long long a;
-  if (! (a = 0xfedcba9876543210ULL))
-    abort ();
-  exit (0);
+  if (!(a = 0xfedcba9876543210ULL))
+    abort();
+  exit(0);
 }

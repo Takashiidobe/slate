@@ -1,8 +1,7 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-unsigned int foo(unsigned int x)
-{
+unsigned int foo(unsigned int x) {
   if (x < 5)
     x = 4;
   else
@@ -10,9 +9,8 @@ unsigned int foo(unsigned int x)
   return x;
 }
 
-int main(void)
-{
-  if (foo (8) != 8)
-    abort ();
-  exit (0);
+int main(void) {
+  if (foo(8) != 8)
+    abort();
+  exit(0);
 }

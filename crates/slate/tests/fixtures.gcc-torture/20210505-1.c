@@ -7,25 +7,20 @@
 #include <stdbool.h>
 
 static jmp_buf buf;
-static _Bool stop = false;
+static _Bool   stop = false;
 
-void call_func (void(*func)(void))
-{
-  func ();
-}
+void call_func(void (*func)(void)) { func(); }
 
-void func (void)
-{
+void func(void) {
   stop = true;
-  longjmp (buf, 1);
+  longjmp(buf, 1);
 }
 
-int main (void)
-{
-  setjmp (buf);
+int main(void) {
+  setjmp(buf);
 
   while (!stop)
-    call_func (func);
+    call_func(func);
 
   return 0;
 }

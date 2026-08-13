@@ -1,16 +1,12 @@
 // reduced testcase, compile with -O2. Also, with --disable-checking
 // gcc produces wrong code.
 
-void abort (void);
-int i;
+void abort(void);
+int  i;
 
-void g (void)
-{
-  i = 1;
-}
+void g(void) { i = 1; }
 
-void f (int a, int b)
-{
+void f(int a, int b) {
   int c = 0;
   if (a == 0)
     c = 1;
@@ -21,13 +17,12 @@ void f (int a, int b)
   if (b == 0)
     c = 1;
   if (c)
-    g ();
+    g();
 }
 
-int main (void)
-{
-  f (1, 0);
+int main(void) {
+  f(1, 0);
   if (i != 1)
-    abort ();
+    abort();
   return 0;
 }

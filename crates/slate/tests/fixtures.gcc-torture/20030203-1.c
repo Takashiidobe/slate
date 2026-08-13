@@ -1,9 +1,8 @@
 void f(int);
-int do_layer3(int single)
-{
+int  do_layer3(int single) {
   int stereo1;
 
-  if(single >= 0) /* stream is stereo, but force to mono */
+  if (single >= 0) /* stream is stereo, but force to mono */
     stereo1 = 1;
   else
     stereo1 = 2;
@@ -12,11 +11,10 @@ int do_layer3(int single)
   return stereo1;
 }
 
-extern void abort ();
-int main()
-{
+extern void abort();
+int         main() {
   if (do_layer3(-1) != 2)
-    abort ();
+    abort();
   return 0;
 }
 

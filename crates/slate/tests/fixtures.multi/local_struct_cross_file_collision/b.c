@@ -1,7 +1,7 @@
 int run_b(void) {
   struct Item {
     const char *label;
-    int score;
+    int         score;
   };
 
   struct Item items[] = {{"x", 3}, {"yy", 4}};

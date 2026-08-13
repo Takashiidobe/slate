@@ -1,11 +1,10 @@
 /* { dg-require-effective-target int32plus } */
 #include <limits.h>
 
-extern void exit (int);
-extern void abort ();
+extern void exit(int);
+extern void abort();
 
-void test01(unsigned int a, unsigned int b)
-{
+void test01(unsigned int a, unsigned int b) {
   if (a < 5)
     abort();
   if (b < 5)
@@ -14,21 +13,16 @@ void test01(unsigned int a, unsigned int b)
     abort();
 }
 
-void test02(unsigned int a, unsigned int b)
-{
+void test02(unsigned int a, unsigned int b) {
   if (a >= 12)
     if (b > 15)
       if (a - b < UINT_MAX - 15U)
-	abort ();
+        abort();
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
   unsigned x = 0x80000000;
   test01(x + 5, x);
   test02(14, 16);
-  exit (0);
+  exit(0);
 }
-
-
-

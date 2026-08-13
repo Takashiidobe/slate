@@ -14,41 +14,42 @@
    is a different manifestation of the same bug).
 */
 
-extern void abort ();
+extern void abort();
 
-int
-main(int argc, char *argv[])
-{
-  struct x { signed int i : 7; unsigned int u : 7; } bit;
+int main(int argc, char *argv[]) {
+  struct x {
+    signed int   i : 7;
+    unsigned int u : 7;
+  } bit;
 
   unsigned int u;
-  int i;
+  int          i;
   unsigned int unsigned_result = -13U % 61;
-  int signed_result = -13 % 61;
+  int          signed_result   = -13 % 61;
 
-  bit.u = 61, u = 61; 
+  bit.u = 61, u = 61;
   bit.i = -13, i = -13;
 
   if (i % u != unsigned_result)
-    abort ();
-  if (i % (unsigned int) u != unsigned_result)
-    abort ();
+    abort();
+  if (i % (unsigned int)u != unsigned_result)
+    abort();
 
   /* Somewhat counter-intuitively, bit.u is promoted to an int, making
      the operands and result an int.  */
   if (i % bit.u != signed_result)
-    abort ();
+    abort();
 
   if (bit.i % bit.u != signed_result)
-    abort ();
+    abort();
 
   /* But with a cast to unsigned int, the unsigned int is promoted to
      itself as a no-op, and the operands and result are unsigned.  */
-  if (i % (unsigned int) bit.u != unsigned_result)
-    abort ();
+  if (i % (unsigned int)bit.u != unsigned_result)
+    abort();
 
-  if (bit.i % (unsigned int) bit.u != unsigned_result)
-    abort ();
+  if (bit.i % (unsigned int)bit.u != unsigned_result)
+    abort();
 
   return 0;
 }

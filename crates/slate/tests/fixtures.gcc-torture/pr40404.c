@@ -1,4 +1,4 @@
-extern void abort (void);
+extern void abort(void);
 
 #if (__SIZEOF_INT__ <= 2)
 struct S {
@@ -9,11 +9,9 @@ struct S {
   unsigned int ui17 : 17;
 } s;
 #endif
-int main()
-{
+int main() {
   s.ui17 = 0x1ffff;
   if (s.ui17 >= 0xfffffffeu)
-    abort ();
+    abort();
   return 0;
 }
-

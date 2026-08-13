@@ -2,21 +2,17 @@
 
 int val;
 
-int *ptr = &val;
-float *ptr2 = (float *) &val;
+int   *ptr  = &val;
+float *ptr2 = (float *)&val;
 
-static void
-__attribute__((always_inline, optimize ("-fno-strict-aliasing")))
-typepun ()
-{
-  *ptr2=0;
+static void __attribute__((always_inline, optimize("-fno-strict-aliasing")))
+typepun() {
+  *ptr2 = 0;
 }
 
-int
-main(void)
-{
-  *ptr=1;
-  typepun ();
+int main(void) {
+  *ptr = 1;
+  typepun();
   if (*ptr)
-    __builtin_abort ();
+    __builtin_abort();
 }

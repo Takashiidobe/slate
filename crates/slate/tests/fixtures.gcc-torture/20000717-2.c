@@ -1,14 +1,11 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-static void
-compare (long long foo)
-{
+static void compare(long long foo) {
   if (foo < 4294967297LL)
     abort();
 }
-int main(void)
-{
-  compare (8589934591LL);
-  exit (0);
+int main(void) {
+  compare(8589934591LL);
+  exit(0);
 }

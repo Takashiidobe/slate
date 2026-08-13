@@ -6,8 +6,7 @@ extern void abort(void);
 
 double g_expect = 32.25;
 
-void f(unsigned x, struct c y)
-{
+void f(unsigned x, struct c y) {
   if (x != 0)
     abort();
 
@@ -15,11 +14,10 @@ void f(unsigned x, struct c y)
     abort();
 }
 
-struct c e = { 64.25 };
+struct c e = {64.25};
 
-int main(void)
-{
-  struct c d = { 32.25 };
+int main(void) {
+  struct c d = {32.25};
   f(0, d);
 
   g_expect = 64.25;

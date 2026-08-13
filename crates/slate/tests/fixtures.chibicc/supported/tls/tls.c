@@ -33,7 +33,7 @@ void *thread_main(void *unused) {
 }
 
 int main() {
-  pthread_t        thr;
+  pthread_t         thr;
   struct tls_values values;
 
   ASSERT(0, v1);

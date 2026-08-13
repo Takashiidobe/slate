@@ -2,15 +2,14 @@
    nodes.  These need to be treated like a COMPONENT_REF so their address can
    be taken.  */
 
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-int main()
-{
+int main() {
   __complex double dc;
-  double *dp = &(__real dc);
-  *dp = 3.14;
-  if ((__real dc) != 3.14) abort();
-  exit (0);
+  double          *dp = &(__real dc);
+  *dp                 = 3.14;
+  if ((__real dc) != 3.14)
+    abort();
+  exit(0);
 }
-

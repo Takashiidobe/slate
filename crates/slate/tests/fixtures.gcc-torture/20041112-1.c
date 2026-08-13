@@ -7,19 +7,16 @@ typedef __SIZE_TYPE__ size_t;
 
 int global;
 
-static void *foo(int p)
-{
-  if (p == 0)
-   {
-      global++;
-      return &global;
-   }
+static void *foo(int p) {
+  if (p == 0) {
+    global++;
+    return &global;
+  }
 
   return (void *)(size_t)-1;
 }
 
-int bar(void)
-{
+int bar(void) {
   void *p;
 
   p = foo(global);
@@ -30,11 +27,10 @@ int bar(void)
   return 0;
 }
 
-int main(void)
-{
+int main(void) {
   global = 1;
-  if (bar () != 0)
+  if (bar() != 0)
     abort();
-  
+
   return 0;
 }

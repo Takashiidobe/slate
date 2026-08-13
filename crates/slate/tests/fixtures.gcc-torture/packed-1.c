@@ -1,24 +1,19 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
 short x1 = 17;
 
-struct
-{
-  short i __attribute__ ((packed));
+struct {
+  short i __attribute__((packed));
 } t;
 
-void
-f ()
-{
+void f() {
   t.i = x1;
   if (t.i != 17)
-    abort ();
+    abort();
 }
 
-int
-main (void)
-{
-  f ();
-  exit (0);
+int main(void) {
+  f();
+  exit(0);
 }

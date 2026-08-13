@@ -12,7 +12,7 @@ static void dump80(const char *name, long double value) {
 }
 
 int main(void) {
-  char *end;
+  char       *end;
   long double value = strtold("0x1.0000000000000002p0", &end);
   dump80("strtold", value);
   printf("%d\n", *end == '\0');

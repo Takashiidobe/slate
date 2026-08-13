@@ -1,11 +1,9 @@
 /* PR target/85582 */
 
-int a, b, d = 2, e;
+int       a, b, d = 2, e;
 long long c = 1;
 
-int
-main ()
-{
+int main() {
   int g = 6;
 L1:
   e = d;

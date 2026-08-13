@@ -3,9 +3,8 @@
 
 extern void abort(void);
 
-int main()
-{
-  int t[1025] = { 1024 }, d;
+int main() {
+  int t[1025] = {1024}, d;
 
   d = 0;
   d = t[d]++;

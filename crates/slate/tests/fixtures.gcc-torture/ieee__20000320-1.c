@@ -10,11 +10,13 @@
    # C6X floating point hardware turns denormals to zero in FP conversions.
    { dg-xfail-if "" { tic6x-*-* && ti_c67x } } */
 
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-#if __INT_MAX__ != 2147483647 || (__LONG_LONG_MAX__ != 9223372036854775807ll && __LONG_MAX__ != 9223372036854775807ll)
-int main(void) { exit (0); }
+#if __INT_MAX__ != 2147483647 ||                                               \
+    (__LONG_LONG_MAX__ != 9223372036854775807ll &&                             \
+     __LONG_MAX__ != 9223372036854775807ll)
+int main(void) { exit(0); }
 #else
 #if __LONG_MAX__ != 9223372036854775807ll
 typedef unsigned long long ull;
@@ -24,33 +26,30 @@ typedef unsigned long ull;
 typedef unsigned ul;
 
 union fl {
-  float	f;
-  ul l;
+  float f;
+  ul    l;
 } uf;
 union dl {
   double d;
-  ull ll;
+  ull    ll;
 } ud;
 
 int failed = 0;
 
-void c(ull d, ul f)
-{
+void c(ull d, ul f) {
   ud.ll = d;
-  uf.f = (float) ud.d;
-  if (uf.l != f)
-    {
-      failed++;
-    }
+  uf.f  = (float)ud.d;
+  if (uf.l != f) {
+    failed++;
+  }
 }
 
-int main()
-{
-  if (sizeof (float) != sizeof (ul)
-      || sizeof (double) != sizeof (ull))
-    exit (0);
-  
-#if (defined __arm__ || defined __thumb__) && ! (defined __ARMEB__ || defined __VFP_FP__)
+int main() {
+  if (sizeof(float) != sizeof(ul) || sizeof(double) != sizeof(ull))
+    exit(0);
+
+#if (defined __arm__ || defined __thumb__) &&                                  \
+    !(defined __ARMEB__ || defined __VFP_FP__)
   /* The ARM always stores FP numbers in big-wordian format,
      even when running in little-byteian mode.  */
   c(0x0000000036900000ULL, 0x00000000U);
@@ -62,7 +61,7 @@ int main()
   c(0xffffffff36AfffffULL, 0x00000002U);
   c(0x0000000036b00000ULL, 0x00000002U);
   c(0x0000000136b00000ULL, 0x00000002U);
-  
+
   c(0xdfffffff380fffffULL, 0x007fffffU);
   c(0xe0000000380fffffULL, 0x00800000U);
   c(0xe0000001380fffffULL, 0x00800000U);
@@ -85,7 +84,7 @@ int main()
   c(0x36AfffffffffffffULL, 0x00000002U);
   c(0x36b0000000000000ULL, 0x00000002U);
   c(0x36b0000000000001ULL, 0x00000002U);
-  
+
   c(0x380fffffdfffffffULL, 0x007fffffU);
   c(0x380fffffe0000000ULL, 0x00800000U);
   c(0x380fffffe0000001ULL, 0x00800000U);
@@ -101,8 +100,8 @@ int main()
 #endif
 
   if (failed)
-    abort ();
+    abort();
   else
-    exit (0);
+    exit(0);
 }
 #endif

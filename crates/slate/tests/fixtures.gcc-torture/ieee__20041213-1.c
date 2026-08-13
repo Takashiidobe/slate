@@ -1,22 +1,20 @@
 /* { dg-do run } */
-#if defined (__AVR__) && (__SIZEOF_DOUBLE__ == __SIZEOF_FLOAT__)
-extern double sqrt (double) __asm ("sqrtf");
+#if defined(__AVR__) && (__SIZEOF_DOUBLE__ == __SIZEOF_FLOAT__)
+extern double sqrt(double) __asm("sqrtf");
 #else
-extern double sqrt (double);
+extern double sqrt(double);
 #endif
-extern void abort (void);
-int once;
+extern void abort(void);
+int         once;
 
-double foo (void)
-{
+double foo(void) {
   if (once++)
-    abort ();
+    abort();
   return 0.0 / 0.0;
 }
 
 double x;
-int main (void)
-{
-  x = sqrt (foo ());
+int    main(void) {
+  x = sqrt(foo());
   return 0;
 }

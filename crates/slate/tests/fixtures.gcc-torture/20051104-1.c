@@ -1,17 +1,14 @@
 /* PR rtl-optimization/23567 */
 
-struct
-{
-  int len;
+struct {
+  int   len;
   char *name;
 } s;
 
-int
-main (void)
-{
-  s.len = 0;
+int main(void) {
+  s.len  = 0;
   s.name = "";
-  if (s.name [s.len] != 0)
-    s.name [s.len] = 0;
+  if (s.name[s.len] != 0)
+    s.name[s.len] = 0;
   return 0;
 }

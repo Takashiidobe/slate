@@ -1,14 +1,14 @@
 /* PR middle-end/52209 */
 
-extern void abort (void);
-struct S0 { int f2 : 1; } c;
+extern void abort(void);
+struct S0 {
+  int f2 : 1;
+} c;
 int b;
 
-int
-main ()
-{
+int main() {
   b = -1 ^ c.f2;
   if (b != -1)
-    abort ();
+    abort();
   return 0;
 }

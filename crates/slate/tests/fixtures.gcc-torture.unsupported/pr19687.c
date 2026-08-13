@@ -1,18 +1,16 @@
-extern void abort (void);
+extern void abort(void);
 
-union U
-{
+union U {
   int i, j[4];
 };
 
-int main ()
-{
+int main() {
   union U t = {};
-  int i;
+  int     i;
 
   for (i = 0; i < 4; ++i)
     if (t.j[i] != 0)
-      abort ();
+      abort();
 
   return 0;
 }

@@ -1,55 +1,47 @@
-struct A
-{
+struct A {
   unsigned long p, q, r, s;
-} x = { 13, 14, 15, 16 };
+} x = {13, 14, 15, 16};
 
-extern void abort (void);
-extern void exit (int);
+extern void abort(void);
+extern void exit(int);
 
-static inline struct A *
-bar (void)
-{
+static inline struct A *bar(void) {
   struct A *r;
 
-  switch (8)
-    {
-    case 2:
-      abort ();
-      break;
-    case 8:
-      r = &x;
-      break;
-    default:
-      abort ();
-      break;
-    }
+  switch (8) {
+  case 2:
+    abort();
+    break;
+  case 8:
+    r = &x;
+    break;
+  default:
+    abort();
+    break;
+  }
   return r;
 }
 
-void
-foo (unsigned long *x, int y)
-{
+void foo(unsigned long *x, int y) {
   if (y != 12)
-    abort ();
+    abort();
   if (x[0] != 1 || x[1] != 11)
-    abort ();
+    abort();
   if (x[2] != 2 || x[3] != 12)
-    abort ();
+    abort();
   if (x[4] != 3 || x[5] != 13)
-    abort ();
+    abort();
   if (x[6] != 4 || x[7] != 14)
-    abort ();
+    abort();
   if (x[8] != 5 || x[9] != 15)
-    abort ();
+    abort();
   if (x[10] != 6 || x[11] != 16)
-    abort ();
+    abort();
 }
 
-int
-main (void)
-{
+int main(void) {
   unsigned long a[40];
-  int b = 0;
+  int           b = 0;
 
   a[b++] = 1;
   a[b++] = 11;
@@ -63,6 +55,6 @@ main (void)
   a[b++] = bar()->r;
   a[b++] = 6;
   a[b++] = bar()->s;
-  foo (a, b);
-  exit (0);
+  foo(a, b);
+  exit(0);
 }

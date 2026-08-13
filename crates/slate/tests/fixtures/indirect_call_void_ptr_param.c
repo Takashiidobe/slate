@@ -4,7 +4,8 @@ struct Data {
   int value;
 };
 
-static void process(int flag, void (*handler)(const void *, int), struct Data *d) {
+static void process(int flag, void (*handler)(const void *, int),
+                    struct Data *d) {
   if (flag) {
     static const char c = '\0';
     handler(&c, 0);

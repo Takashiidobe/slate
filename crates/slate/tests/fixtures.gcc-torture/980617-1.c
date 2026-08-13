@@ -1,17 +1,15 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-void foo (unsigned int * p)
-{
+void foo(unsigned int *p) {
   if ((signed char)(*p & 0xFF) == 17 || (signed char)(*p & 0xFF) == 18)
     return;
   else
-    abort ();
+    abort();
 }
 
-int main ()
-{
+int main() {
   int i = 0x30011;
   foo(&i);
-  exit (0);
+  exit(0);
 }

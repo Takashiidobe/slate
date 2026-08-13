@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 static jmp_buf env;
-static int failures = 0;
+static int     failures = 0;
 
 static void record_failure(const char *phase) {
   failures++;

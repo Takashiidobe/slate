@@ -1,13 +1,9 @@
-extern void abort (void);
+extern void abort(void);
 
-unsigned int foo (int n)
-{
-  return ~((unsigned int)~n);
-}
+unsigned int foo(int n) { return ~((unsigned int)~n); }
 
-int main()
-{
+int main() {
   if (foo(0) != 0)
-    abort ();
+    abort();
   return 0;
 }

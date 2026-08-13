@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 int main(void) {
-  int value = 41;
+  int             value = 41;
   struct Callback cb;
   cb.handler = deref_and_add;
   int direct = deref_and_add(&value);

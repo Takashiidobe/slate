@@ -1,10 +1,14 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
 #define MASK(N) ((1UL << (N)) - 1)
 #define BITS(N) ((1UL << ((N) - 1)) + 2)
 
-#define FUNC(N) void f##N(long j) { if ((j & MASK(N)) >= BITS(N)) abort();}
+#define FUNC(N)                                                                \
+  void f##N(long j) {                                                          \
+    if ((j & MASK(N)) >= BITS(N))                                              \
+      abort();                                                                 \
+  }
 
 FUNC(3)
 FUNC(4)
@@ -36,8 +40,7 @@ FUNC(29)
 FUNC(30)
 FUNC(31)
 
-int main ()
-{
+int main() {
   f3(0);
   f4(0);
   f5(0);

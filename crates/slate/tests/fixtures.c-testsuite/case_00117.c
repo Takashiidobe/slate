@@ -1,5 +1,4 @@
-int main()
-{
-	int x[] = { 1, 0 };
-	return x[1];
+int main() {
+  int x[] = {1, 0};
+  return x[1];
 }

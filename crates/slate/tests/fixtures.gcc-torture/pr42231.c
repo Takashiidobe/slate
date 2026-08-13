@@ -1,9 +1,8 @@
-extern void abort (void);
+extern void abort(void);
 
 static int max;
 
-static void __attribute__((noinline)) storemax (int i)
-{
+static void __attribute__((noinline)) storemax(int i) {
   if (i > max)
     max = i;
 }
@@ -23,13 +22,13 @@ static int CallFunction(int (*fun)(int depth)) {
 }
 
 static int callback(int depth) {
-  storemax (depth);
+  storemax(depth);
   return depth != 0;
 }
 
 int main() {
   CallFunction(callback);
   if (max != 10)
-    abort ();
+    abort();
   return 0;
 }

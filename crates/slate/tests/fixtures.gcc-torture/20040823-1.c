@@ -5,25 +5,23 @@
 
 int *pwarn;
 
-void bla (void) __attribute__ ((noreturn));
+void bla(void) __attribute__((noreturn));
 
-void bla (void)
-{
+void bla(void) {
   if (!*pwarn)
-    abort ();
-    
-  exit (0);
+    abort();
+
+  exit(0);
 }
 
-int main (void)
-{
+int main(void) {
   int warn;
 
-  memset (&warn, 0, sizeof (warn));
+  memset(&warn, 0, sizeof(warn));
 
   pwarn = &warn;
 
   warn = 1;
 
-  bla ();
+  bla();
 }

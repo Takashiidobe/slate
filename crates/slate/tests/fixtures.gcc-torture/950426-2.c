@@ -1,17 +1,15 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-int
-main(void)
-{
-  long int i = -2147483647L - 1L; /* 0x80000000 */
-  char ca = 1;
+int main(void) {
+  long int i  = -2147483647L - 1L; /* 0x80000000 */
+  char     ca = 1;
 
   if (i >> ca != -1073741824L)
-    abort ();
+    abort();
 
   if (i >> i / -2000000000L != -1073741824L)
-    abort ();
+    abort();
 
-  exit (0);
+  exit(0);
 }

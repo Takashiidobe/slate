@@ -4,19 +4,17 @@
    Reported as PR c/2454 by
    Andreas Krakowczyk <Andreas.Krakowczyk@fujitsu-siemens.com>.  */
 
-extern void exit (int);
-extern void abort (void);
+extern void exit(int);
+extern void abort(void);
 
 static int i;
 
-int
-main (void)
-{
+int main(void) {
   i = -1;
-  switch ((signed char) i) {
+  switch ((signed char)i) {
   case 255:
-    abort ();
+    abort();
   default:
-    exit (0);
+    exit(0);
   }
 }

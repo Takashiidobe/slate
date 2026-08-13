@@ -1,12 +1,13 @@
 /* { dg-require-effective-target mmap } */
-/* { dg-skip-if "the executable is at the same position the test tries to remap" { m68k-*-linux* } } */
+/* { dg-skip-if "the executable is at the same position the test tries to remap"
+ * { m68k-*-linux* } } */
 
 #include <limits.h>
 
-#include <sys/types.h>
+#include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
-#include <fcntl.h>
+#include <sys/types.h>
 #ifndef MAP_ANON
 #ifdef MAP_ANONYMOUS
 #define MAP_ANON MAP_ANONYMOUS
@@ -22,45 +23,39 @@
 #endif
 
 #define MAP_START (void *)0x7fff8000
-#define MAP_LEN 0x10000
+#define MAP_LEN   0x10000
 
-#define OFFSET (MAP_LEN/2 - 2 * sizeof (char));
+#define OFFSET (MAP_LEN / 2 - 2 * sizeof(char));
 
-void
-f (int s, char *p)
-{
+void f(int s, char *p) {
   int i;
-  for (i = s; &p[i] < &p[40] && i >= 0; i++)
-    {
-      p[i] = -2;
-    }
+  for (i = s; &p[i] < &p[40] && i >= 0; i++) {
+    p[i] = -2;
+  }
 }
 
-int
-main (void)
-{
+int main(void) {
 #ifdef MAP_ANON
   char *p;
-  int dev_zero;
+  int   dev_zero;
 
-  dev_zero = open ("/dev/zero", O_RDONLY);
+  dev_zero = open("/dev/zero", O_RDONLY);
   /* -1 is OK when we have MAP_ANON; else mmap will flag an error.  */
-  if (INT_MAX != 0x7fffffffL || sizeof (char *) != sizeof (int))
+  if (INT_MAX != 0x7fffffffL || sizeof(char *) != sizeof(int))
     return 0;
-  p = mmap (MAP_START, MAP_LEN, PROT_READ|PROT_WRITE,
-	    MAP_ANON|MAP_FIXED|MAP_PRIVATE, dev_zero, 0);
-  if (p != (char *)-1)
-    {
-      p += OFFSET;
-      p[39] = 0;
-      f (0, p);
-      if (p[39] != (char)-2)
-	__builtin_abort ();
-      p[39] = 0;
-      f (-1, p);
-      if (p[39] != 0)
-	__builtin_abort ();
-    }
+  p = mmap(MAP_START, MAP_LEN, PROT_READ | PROT_WRITE,
+           MAP_ANON | MAP_FIXED | MAP_PRIVATE, dev_zero, 0);
+  if (p != (char *)-1) {
+    p     += OFFSET;
+    p[39]  = 0;
+    f(0, p);
+    if (p[39] != (char)-2)
+      __builtin_abort();
+    p[39] = 0;
+    f(-1, p);
+    if (p[39] != 0)
+      __builtin_abort();
+  }
 #endif
   return 0;
 }

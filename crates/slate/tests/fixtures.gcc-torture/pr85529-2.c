@@ -1,8 +1,6 @@
 /* PR tree-optimization/85529 */
 
-__attribute__((noipa)) int
-foo (int x)
-{
+__attribute__((noipa)) int foo(int x) {
   x &= 63;
   x -= 50;
   x |= 1;
@@ -14,12 +12,10 @@ foo (int x)
   return 0;
 }
 
-int
-main ()
-{
+int main() {
   int i;
   for (i = 0; i < 63; i++)
-    if (foo (i) != 1)
-      __builtin_abort ();
+    if (foo(i) != 1)
+      __builtin_abort();
   return 0;
 }

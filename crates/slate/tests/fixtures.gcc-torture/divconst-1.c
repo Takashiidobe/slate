@@ -1,26 +1,21 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-typedef struct
-{
+typedef struct {
   unsigned a, b, c, d;
 } t1;
 
-void
-f (t1 *ps)
-{
-    ps->a = 10000;
-    ps->b = ps->a / 3;
-    ps->c = 10000;
-    ps->d = ps->c / 3;
+void f(t1 *ps) {
+  ps->a = 10000;
+  ps->b = ps->a / 3;
+  ps->c = 10000;
+  ps->d = ps->c / 3;
 }
 
-int
-main (void)
-{
+int main(void) {
   t1 s;
-  f (&s);
+  f(&s);
   if (s.a != 10000 || s.b != 3333 || s.c != 10000 || s.d != 3333)
-    abort ();
-  exit (0);
+    abort();
+  exit(0);
 }

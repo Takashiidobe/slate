@@ -12,7 +12,4 @@ int x = 1;
 #endif
 #endif
 
-int main()
-{
-	return x;
-}
+int main() { return x; }

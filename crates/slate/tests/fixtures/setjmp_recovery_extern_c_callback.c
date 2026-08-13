@@ -2,11 +2,9 @@
 #include <stdio.h>
 
 static jmp_buf env;
-static int failures = 0;
+static int     failures = 0;
 
-static void fail_now(void) {
-  longjmp(env, 1);
-}
+static void fail_now(void) { longjmp(env, 1); }
 
 static void check(int ok) {
   if (!ok) {

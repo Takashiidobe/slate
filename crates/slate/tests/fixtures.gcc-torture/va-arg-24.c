@@ -8,16 +8,13 @@
 
 static int errors = 0;
 
-static void
-verify (const char *tcase, int n[11])
-{
+static void verify(const char *tcase, int n[11]) {
   int i;
   for (i = 0; i <= 10; i++)
-    if (n[i] != i)
-      {
-	printf (" %s: n[%d] = %d expected %d\n", tcase, i, n[i], i);
-	errors++;
-      }
+    if (n[i] != i) {
+      printf(" %s: n[%d] = %d expected %d\n", tcase, i, n[i], i);
+      errors++;
+    }
 }
 
 #define STR(x) #x
@@ -47,38 +44,33 @@ verify (const char *tcase, int n[11])
 #define P8 P(8)
 #define P9 P(9)
 
-#define TCASE(x, params, vecinit)		\
-static void					\
-varargs##x (params ...)				\
-{						\
-  va_list ap;					\
-  int n[11];					\
-  int i;					\
-						\
-  va_start (ap, q##x);				\
-  vecinit					\
-  for (i = x + 1; i <= 10; i++)			\
-    n[i] = va_arg (ap, int);			\
-  va_end (ap);					\
-						\
-  verify (STR(varargs##x), n);			\
-}
+#define TCASE(x, params, vecinit)                                              \
+  static void varargs##x(params...) {                                          \
+    va_list ap;                                                                \
+    int     n[11];                                                             \
+    int     i;                                                                 \
+                                                                               \
+    va_start(ap, q##x);                                                        \
+    vecinit for (i = x + 1; i <= 10; i++) n[i] = va_arg(ap, int);              \
+    va_end(ap);                                                                \
+                                                                               \
+    verify(STR(varargs##x), n);                                                \
+  }
 
-#define TEST(x) varargs##x (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+#define TEST(x) varargs##x(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
 
-TCASE(0, p0			      , P0			     )
-TCASE(1, p0 p1			      , P0 P1			     )
-TCASE(2, p0 p1 p2		      , P0 P1 P2		     )
-TCASE(3, p0 p1 p2 p3		      , P0 P1 P2 P3		     )
-TCASE(4, p0 p1 p2 p3 p4		      , P0 P1 P2 P3 P4		     )
-TCASE(5, p0 p1 p2 p3 p4 p5	      , P0 P1 P2 P3 P4 P5	     )
-TCASE(6, p0 p1 p2 p3 p4 p5 p6	      , P0 P1 P2 P3 P4 P5 P6	     )
-TCASE(7, p0 p1 p2 p3 p4 p5 p6 p7      , P0 P1 P2 P3 P4 P5 P6 P7	     )
-TCASE(8, p0 p1 p2 p3 p4 p5 p6 p7 p8   , P0 P1 P2 P3 P4 P5 P6 P7 P8   )
+TCASE(0, p0, P0)
+TCASE(1, p0 p1, P0 P1)
+TCASE(2, p0 p1 p2, P0 P1 P2)
+TCASE(3, p0 p1 p2 p3, P0 P1 P2 P3)
+TCASE(4, p0 p1 p2 p3 p4, P0 P1 P2 P3 P4)
+TCASE(5, p0 p1 p2 p3 p4 p5, P0 P1 P2 P3 P4 P5)
+TCASE(6, p0 p1 p2 p3 p4 p5 p6, P0 P1 P2 P3 P4 P5 P6)
+TCASE(7, p0 p1 p2 p3 p4 p5 p6 p7, P0 P1 P2 P3 P4 P5 P6 P7)
+TCASE(8, p0 p1 p2 p3 p4 p5 p6 p7 p8, P0 P1 P2 P3 P4 P5 P6 P7 P8)
 TCASE(9, p0 p1 p2 p3 p4 p5 p6 p7 p8 p9, P0 P1 P2 P3 P4 P5 P6 P7 P8 P9)
 
-int main(void)
-{
+int main(void) {
   TEST(0);
   TEST(1);
   TEST(2);
@@ -91,6 +83,6 @@ int main(void)
   TEST(9);
 
   if (errors)
-    abort ();
-  exit (0);
+    abort();
+  exit(0);
 }

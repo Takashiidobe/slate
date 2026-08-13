@@ -5,19 +5,15 @@
 
 #include <limits.h>
 
-extern void abort (void);
+extern void abort(void);
 
-void __attribute__((noinline))
-foo (long x)
-{
+void __attribute__((noinline)) foo(long x) {
   if (x >= 1024)
-    abort ();
+    abort();
 }
 
-int
-main ()
-{
-  foo (LONG_MIN);
-  foo (LONG_MIN + 10000);
+int main() {
+  foo(LONG_MIN);
+  foo(LONG_MIN + 10000);
   return 0;
 }

@@ -1,26 +1,18 @@
 /* This bug exists in gcc-2.95, egcs-1.1.2, gcc-2.7.2 and probably
    every other version as well.  */
 
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-typedef struct int3 { int a, b, c; } int3;
+typedef struct int3 {
+  int a, b, c;
+} int3;
 
-int3
-one (void)
-{
-  return (int3) { 1, 1, 1 };
-}
+int3 one(void) { return (int3){1, 1, 1}; }
 
-int3
-zero (void)
-{
-  return (int3) { 0, 0, 0 };
-}
+int3 zero(void) { return (int3){0, 0, 0}; }
 
-int
-main (void)
-{
+int main(void) {
   int3 a;
 
   /* gcc allocates a temporary for the inner expression statement
@@ -38,8 +30,13 @@ main (void)
      clobbered with the value of `one'.  The bad value is copied from
      the temporary into *&a.  */
 
-  *({ ({ one (); &a; }); }) = zero ();
+  *({
+    ({
+      one();
+      &a;
+    });
+  }) = zero();
   if (a.a && a.b && a.c)
-    abort ();
-  exit (0);
+    abort();
+  exit(0);
 }

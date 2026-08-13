@@ -10,8 +10,8 @@ struct Accounting {
 struct Accounting acc = {0, 0};
 
 static void add(int isDirect, BigCount amount) {
-  BigCount *const target = isDirect ? &acc.direct : &acc.indirect;
-  *target += amount;
+  BigCount *const target  = isDirect ? &acc.direct : &acc.indirect;
+  *target                += amount;
 }
 
 int main(void) {

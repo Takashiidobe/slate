@@ -1,15 +1,12 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-struct tiny
-{
+struct tiny {
   char c;
   char d;
 };
 
-void
-f (int n, struct tiny x, struct tiny y, struct tiny z, long l)
-{
+void f(int n, struct tiny x, struct tiny y, struct tiny z, long l) {
   if (x.c != 10)
     abort();
   if (x.d != 20)
@@ -26,12 +23,10 @@ f (int n, struct tiny x, struct tiny y, struct tiny z, long l)
     abort();
 
   if (l != 123)
-    abort ();
+    abort();
 }
 
-int
-main (void)
-{
+int main(void) {
   struct tiny x[3];
   x[0].c = 10;
   x[1].c = 11;
@@ -39,7 +34,6 @@ main (void)
   x[0].d = 20;
   x[1].d = 21;
   x[2].d = 22;
-  f (3, x[0], x[1], x[2], (long) 123);
+  f(3, x[0], x[1], x[2], (long)123);
   exit(0);
 }
-

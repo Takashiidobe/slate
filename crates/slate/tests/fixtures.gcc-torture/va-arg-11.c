@@ -2,31 +2,27 @@
    side effect is used.  */
 #include <stdarg.h>
 
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-static int
-foo (int a, ...)
-{
+static int foo(int a, ...) {
   va_list va;
-  int i, res;
+  int     i, res;
 
-  va_start (va, a);
+  va_start(va, a);
 
   for (i = 0; i < 4; ++i)
-    (void) va_arg (va, int);
+    (void)va_arg(va, int);
 
-  res = va_arg (va, int);
+  res = va_arg(va, int);
 
-  va_end (va);
+  va_end(va);
 
   return res;
 }
 
-int
-main (void)
-{
-  if (foo (5, 4, 3, 2, 1, 0))
-    abort ();
-  exit (0);
+int main(void) {
+  if (foo(5, 4, 3, 2, 1, 0))
+    abort();
+  exit(0);
 }

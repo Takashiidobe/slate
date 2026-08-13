@@ -2,24 +2,19 @@
 
 char *p;
 
-static int __attribute__ ((pure))
-is_end_of_statement (void)
-{
+static int __attribute__((pure)) is_end_of_statement(void) {
   return *p == '\n' || *p == ';' || *p == '!';
 }
 
-void foo (void)
-{
+void foo(void) {
   /* The is_end_of_statement call was moved out of the loop at one stage,
      resulting in an endless loop.  */
-  while (!is_end_of_statement ())
+  while (!is_end_of_statement())
     p++;
 }
 
-int
-main (void)
-{
+int main(void) {
   p = "abc\n";
-  foo ();
+  foo();
   return 0;
 }

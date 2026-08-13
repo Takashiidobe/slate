@@ -2,17 +2,13 @@
    Reported by Jim Meyering; distilled from bash.  */
 
 void abort(void);
-int isprint (int);
+int  isprint(int);
 
-int rl_show_char (int c) { return 0; }
+int rl_show_char(int c) { return 0; }
 
-int rl_character_len (int c, int pos)
-{
-  return isprint (c) ? 1 : 2;
-}
+int rl_character_len(int c, int pos) { return isprint(c) ? 1 : 2; }
 
-int main(void)
-{
+int main(void) {
   int (*x)(int, int) = rl_character_len;
   if (x('a', 1) != 1)
     abort();

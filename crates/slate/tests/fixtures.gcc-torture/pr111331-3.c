@@ -2,7 +2,7 @@ int a;
 int b;
 
 int main() {
-  int d = b+30;
+  int d = b + 30;
   {
     int t;
     t = d < 29 ? 29 : ((d > 28) ? 28 : d);

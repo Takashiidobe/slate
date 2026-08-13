@@ -6,17 +6,23 @@
 #define alignment 32
 #endif
 
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-typedef struct x { int a; int b; } __attribute__((aligned(alignment))) X;
-typedef struct y { X x; X y[31]; int c; } Y;
+typedef struct x {
+  int a;
+  int b;
+} __attribute__((aligned(alignment))) X;
+typedef struct y {
+  X   x;
+  X   y[31];
+  int c;
+} Y;
 
 Y y[2];
 
-int main(void)
-{
+int main(void) {
   if (((char *)&y[1] - (char *)&y[0]) & 31)
-    abort ();
-  exit (0);
-}                
+    abort();
+  exit(0);
+}

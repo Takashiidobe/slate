@@ -1,16 +1,14 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-int
-main (void)
-{
-  static int a[] = {3, 4};
+int main(void) {
+  static int    a[] = {3, 4};
   register int *b;
-  int c;
+  int           c;
 
   b = a;
   c = *b++ % 8;
   if (c != 3)
-    abort ();
-  exit (0);
+    abort();
+  exit(0);
 }

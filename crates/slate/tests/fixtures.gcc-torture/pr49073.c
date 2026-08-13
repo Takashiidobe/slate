@@ -1,26 +1,21 @@
 /* PR tree-optimization/49073 */
 
-extern void abort (void);
-int a[] = { 1, 2, 3, 4, 5, 6, 7 }, c;
+extern void abort(void);
+int         a[] = {1, 2, 3, 4, 5, 6, 7}, c;
 
-int
-main ()
-{
-  int d = 1, i = 1;
+int main() {
+  int   d = 1, i = 1;
   _Bool f = 0;
-  do
-    {
-      d = a[i];
-      if (f && d == 4)
-	{
-	  ++c;
-	  break;
-	}
-      i++;
-      f = (d == 3);
+  do {
+    d = a[i];
+    if (f && d == 4) {
+      ++c;
+      break;
     }
-  while (d < 7);
+    i++;
+    f = (d == 3);
+  } while (d < 7);
   if (c != 1)
-    abort ();
+    abort();
   return 0;
 }

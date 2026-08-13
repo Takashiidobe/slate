@@ -1,16 +1,14 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-void foo (int *a) {}
+void foo(int *a) {}
 
-int main ()
-{
+int main() {
   int a;
   if (&a == 0)
-    abort ();
-  else
-    {
-      foo (&a);
-      exit (0);
-    }
+    abort();
+  else {
+    foo(&a);
+    exit(0);
+  }
 }

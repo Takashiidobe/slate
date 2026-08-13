@@ -1,17 +1,13 @@
-extern void abort (void);
+extern void abort(void);
 
 unsigned int a, b = 1, c;
 
-void __attribute__ ((noinline))
-foo (int x)
-{
+void __attribute__((noinline)) foo(int x) {
   if (x != 5)
-    abort ();
+    abort();
 }
 
-int
-main ()
-{
+int main() {
   unsigned int d, e;
   for (d = 1; d < 5; d++)
     if (c)
@@ -20,6 +16,6 @@ main ()
   e = a << 1;
   if (e)
     e = (e << 1) ^ 1;
-  foo (e);
+  foo(e);
   return 0;
 }

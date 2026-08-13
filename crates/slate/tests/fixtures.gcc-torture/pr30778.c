@@ -1,5 +1,5 @@
-extern void *memset (void *, int, __SIZE_TYPE__);
-extern void abort (void);
+extern void *memset(void *, int, __SIZE_TYPE__);
+extern void  abort(void);
 
 struct reg_stat {
   void *last_death;
@@ -9,26 +9,23 @@ struct reg_stat {
   char  last_set_sign_bit_copies;
   int   last_set_mode : 8;
   char  last_set_invalid;
-  char sign_bit_copies;
-  long nonzero_bits;
+  char  sign_bit_copies;
+  long  nonzero_bits;
 };
 
 static struct reg_stat *reg_stat;
 
-void __attribute__((noinline))
-init_reg_last (void)
-{
-  memset (reg_stat, 0, __builtin_offsetof (struct reg_stat, sign_bit_copies));
+void __attribute__((noinline)) init_reg_last(void) {
+  memset(reg_stat, 0, __builtin_offsetof(struct reg_stat, sign_bit_copies));
 }
 
-int main (void)
-{
+int main(void) {
   struct reg_stat r;
 
-  reg_stat = &r;
+  reg_stat       = &r;
   r.nonzero_bits = -1;
-  init_reg_last ();
+  init_reg_last();
   if (r.nonzero_bits != -1)
-    abort ();
+    abort();
   return 0;
 }

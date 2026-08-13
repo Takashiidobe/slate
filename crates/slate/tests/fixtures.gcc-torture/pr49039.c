@@ -1,10 +1,8 @@
 /* PR tree-optimization/49039 */
-extern void abort (void);
-int cnt;
+extern void abort(void);
+int         cnt;
 
-__attribute__((noinline, noclone)) void
-foo (unsigned int x, unsigned int y)
-{
+__attribute__((noinline, noclone)) void foo(unsigned int x, unsigned int y) {
   unsigned int minv, maxv;
   if (x == 1 || y == -2U)
     return;
@@ -16,11 +14,9 @@ foo (unsigned int x, unsigned int y)
     ++cnt;
 }
 
-int
-main ()
-{
-  foo (-2U, 1);
+int main() {
+  foo(-2U, 1);
   if (cnt != 2)
-    abort ();
+    abort();
   return 0;
 }

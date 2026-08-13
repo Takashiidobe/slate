@@ -1,19 +1,14 @@
 /* Test __builtin_bswap64 . */
 
 unsigned long long g(unsigned long long a) __attribute__((noinline));
-unsigned long long g(unsigned long long a)
-{
-  return __builtin_bswap64(a);
-}
+unsigned long long g(unsigned long long a) { return __builtin_bswap64(a); }
 
-
-unsigned long long f(unsigned long long c)
-{
+unsigned long long f(unsigned long long c) {
   union {
     unsigned long long a;
-    unsigned char b[8];
+    unsigned char      b[8];
   } a, b;
-  a.a = c;
+  a.a    = c;
   b.b[0] = a.b[7];
   b.b[1] = a.b[6];
   b.b[2] = a.b[5];
@@ -25,11 +20,10 @@ unsigned long long f(unsigned long long c)
   return b.a;
 }
 
-int main(void)
-{
+int main(void) {
   unsigned long long i;
   /* The rest of the testcase assumes 8 byte long long. */
-  if (sizeof(i) != sizeof(char)*8)
+  if (sizeof(i) != sizeof(char) * 8)
     return 0;
   if (f(0x12) != g(0x12))
     __builtin_abort();

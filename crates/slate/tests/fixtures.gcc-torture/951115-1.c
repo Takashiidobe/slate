@@ -1,30 +1,22 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
 int var = 0;
 
-void
-g ()
-{
-  var = 1;
-}
+void g() { var = 1; }
 
-void
-f ()
-{
+void f() {
   int f2 = 0;
 
   if (f2 == 0)
     ;
 
-  g ();
+  g();
 }
 
-int
-main (void)
-{
-  f ();
+int main(void) {
+  f();
   if (var != 1)
-    abort ();
-  exit (0);
+    abort();
+  exit(0);
 }

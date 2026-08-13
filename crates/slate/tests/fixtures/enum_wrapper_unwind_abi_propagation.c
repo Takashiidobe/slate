@@ -3,14 +3,14 @@
 
 enum Status { STATUS_OK, STATUS_FAIL };
 typedef enum Status Processor(int x);
-typedef void Callback(int x);
+typedef void        Callback(int x);
 
 struct Dispatcher {
   Processor *run;
 };
 
-static jmp_buf env;
-static int failures = 0;
+static jmp_buf   env;
+static int       failures = 0;
 static Callback *g_callback;
 
 static enum Status risky(int x) {

@@ -1,13 +1,12 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-int main ()
-{
+int main() {
   long long i = 1;
 
   i = i * 2 + 1;
-  
+
   if (i != 3)
-    abort ();
-  exit (0);
+    abort();
+  exit(0);
 }

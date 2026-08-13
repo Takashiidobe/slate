@@ -11,25 +11,22 @@ typedef unsigned long long uint64_t;
 /* Some version of bswap optimization would ICE when analyzing a mask constant
    too big for an uint64_t variable (PR210931).  */
 
-__attribute__ ((noinline, noclone)) uint64_t
-uint128_central_bitsi_ior (unsigned __int128 in1, uint64_t in2)
-{
+__attribute__((noinline, noclone)) uint64_t
+uint128_central_bitsi_ior(unsigned __int128 in1, uint64_t in2) {
   __int128 mask = (__int128)0xffff << 56;
   return ((in1 & mask) >> 56) | in2;
 }
 
-int
-main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
   __int128 in = 1;
 #ifdef __SIZEOF_INT128__
   in <<= 64;
 #endif
-  if (sizeof (uint64_t) * __CHAR_BIT__ != 64)
+  if (sizeof(uint64_t) * __CHAR_BIT__ != 64)
     return 0;
-  if (sizeof (unsigned __int128) * __CHAR_BIT__ != 128)
+  if (sizeof(unsigned __int128) * __CHAR_BIT__ != 128)
     return 0;
-  if (uint128_central_bitsi_ior (in, 2) != 0x102)
-    __builtin_abort ();
+  if (uint128_central_bitsi_ior(in, 2) != 0x102)
+    __builtin_abort();
   return 0;
 }

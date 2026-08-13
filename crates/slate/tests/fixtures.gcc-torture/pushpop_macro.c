@@ -1,4 +1,4 @@
-extern void abort ();
+extern void abort();
 
 #define _ 2
 #pragma push_macro("_")
@@ -6,10 +6,8 @@ extern void abort ();
 #define _ 1
 #pragma pop_macro("_")
 
-int main ()
-{
+int main() {
   if (_ != 2)
-    abort ();
+    abort();
   return 0;
 }
-

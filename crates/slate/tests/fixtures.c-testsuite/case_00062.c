@@ -1,9 +1,9 @@
 #ifdef FOO
-	XXX
+XXX
 #ifdef BAR
-	XXX
+    XXX
 #endif
-	XXX
+        XXX
 #endif
 
 #define FOO 1
@@ -11,15 +11,8 @@
 #ifdef FOO
 
 #ifdef FOO
-int x = 0;
+    int x = 0;
 #endif
 
-int
-main()
-{
-	return x;
-}
+int main() { return x; }
 #endif
-
-
-

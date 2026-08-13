@@ -4,40 +4,34 @@
    so the testcase fails for targets where MMX insns are enabled.  */
 /* { dg-options "-mno-mmx" { target { x86_64-*-* i?86-*-* } } } */
 
-extern void abort (void);
+extern void abort(void);
 
-typedef unsigned short v4hi __attribute__ ((vector_size (8)));
-typedef float v4sf __attribute__ ((vector_size (16)));
+typedef unsigned short v4hi __attribute__((vector_size(8)));
+typedef float          v4sf __attribute__((vector_size(16)));
 
-union
-{
-  v4hi v;
+union {
+  v4hi  v;
   short s[4];
 } u;
 
-union
-{
-  v4sf v;
+union {
+  v4sf  v;
   float f[4];
 } v;
 
-void
-foo (void)
-{
+void foo(void) {
   unsigned int i;
   for (i = 0; i < 2; i++)
-    u.v += (v4hi) { 12, 32768 };
+    u.v += (v4hi){12, 32768};
   for (i = 0; i < 2; i++)
-    v.v += (v4sf) { 18.0, 20.0, 22 };
+    v.v += (v4sf){18.0, 20.0, 22};
 }
 
-int
-main (void)
-{
-  foo ();
+int main(void) {
+  foo();
   if (u.s[0] != 24 || u.s[1] != 0 || u.s[2] || u.s[3])
-    abort ();
+    abort();
   if (v.f[0] != 36.0 || v.f[1] != 40.0 || v.f[2] != 44.0 || v.f[3] != 0.0)
-    abort ();
+    abort();
   return 0;
 }

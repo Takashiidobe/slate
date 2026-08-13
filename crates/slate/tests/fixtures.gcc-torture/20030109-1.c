@@ -2,21 +2,19 @@
 /* Verify that an empty initializer inside a partial
    parent initializer doesn't confuse GCC.  */
 
-void abort (void);
+void abort(void);
 
-struct X
-{
+struct X {
   int a;
   int b;
   int z[];
 };
 
-struct X x = { .b = 40, .z = {} };
+struct X x = {.b = 40, .z = {}};
 
-int main ()
-{
+int main() {
   if (x.b != 40)
-    abort ();
+    abort();
 
   return 0;
 }

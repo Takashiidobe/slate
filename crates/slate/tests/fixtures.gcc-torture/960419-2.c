@@ -1,11 +1,9 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
 #define SIZE 8
 
-int
-main(void)
-{
+int main(void) {
   int a[SIZE] = {1};
   int i;
 
@@ -13,5 +11,5 @@ main(void)
     if (a[i] != 0)
       abort();
 
-  exit (0);
+  exit(0);
 }

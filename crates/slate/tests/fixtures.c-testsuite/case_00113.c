@@ -1,8 +1,6 @@
-int
-main()
-{
-	int a = 0;
-	float f = a + 1;
+int main() {
+  int   a = 0;
+  float f = a + 1;
 
-	return f == a;
+  return f == a;
 }

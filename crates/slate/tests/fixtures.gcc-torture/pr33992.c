@@ -1,37 +1,30 @@
-extern void abort ();
+extern void abort();
 
-void __attribute__((noinline))
-bar (unsigned long long i)
-{
+void __attribute__((noinline)) bar(unsigned long long i) {
   if (i)
-    abort ();
+    abort();
 }
 
-static void __attribute__((always_inline))
-foo (unsigned long long *r)
-{
+static void __attribute__((always_inline)) foo(unsigned long long *r) {
   int i;
 
-  for (i = 0; ; i++)
+  for (i = 0;; i++)
     if (*r & ((unsigned long long)1 << (63 - i)))
       break;
 
-  bar (i);
+  bar(i);
 }
 
-void __attribute__((noinline))
-do_test (unsigned long long *r)
-{
+void __attribute__((noinline)) do_test(unsigned long long *r) {
   int i;
 
   for (i = 0; i < 2; ++i)
-    foo (r);
+    foo(r);
 }
 
-int main()
-{
+int main() {
   unsigned long long r = 0x8000000000000001ull;
 
-  do_test (&r);
+  do_test(&r);
   return 0;
 }

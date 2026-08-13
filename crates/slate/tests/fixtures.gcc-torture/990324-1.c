@@ -1,17 +1,11 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-void f(long i)
-{
-  if ((signed char)i < 0 || (signed char)i == 0) 
-    abort ();
+void f(long i) {
+  if ((signed char)i < 0 || (signed char)i == 0)
+    abort();
   else
-    exit (0);
+    exit(0);
 }
 
-int
-main(void)
-{
-  f(0xffffff01);
-}
-
+int main(void) { f(0xffffff01); }

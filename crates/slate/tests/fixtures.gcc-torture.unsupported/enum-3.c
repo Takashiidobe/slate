@@ -6,19 +6,17 @@
 
 #include <stdio.h>
 
-extern void abort (void);
-extern void exit (int);
+extern void abort(void);
+extern void exit(int);
 
 enum e { a = INT_MIN };
 
-int *p;
+int    *p;
 enum e *q;
-int
-main (void)
-{
+int     main(void) {
   enum e x = a;
-  q = &x;
+  q        = &x;
   if (*(1 ? q : p) > 0)
-    abort ();
-  exit (0);
+    abort();
+  exit(0);
 }

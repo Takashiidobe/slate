@@ -8,16 +8,16 @@
 
 /* { dg-require-effective-target int32plus } */
 
-extern void abort (void);
+extern void abort(void);
 
-struct s { int a:12, b:20; };
+struct s {
+  int a : 12, b : 20;
+};
 
-struct s x = { -123, -456 };
+struct s x = {-123, -456};
 
-int
-main (void)
-{
+int main(void) {
   if (x.a != -123U || x.b != -456U)
-    abort ();
+    abort();
   return 0;
 }

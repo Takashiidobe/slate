@@ -10,8 +10,8 @@ static int apply(int useAdd, int a, int b) {
 }
 
 int main(void) {
-  int useAdd = 1;
-  BinaryOp op = useAdd ? add : sub;
+  int      useAdd = 1;
+  BinaryOp op     = useAdd ? add : sub;
   printf("%d %d %d %d\n", op(10, 3), apply(0, 10, 3), apply(1, 4, 4),
          (useAdd ? sub : add)(9, 2));
   return 0;

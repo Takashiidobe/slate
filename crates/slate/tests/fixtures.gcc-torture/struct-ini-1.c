@@ -1,19 +1,15 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-struct S
-{
+struct S {
   char f1;
-  int f2[2];
+  int  f2[2];
 };
 
 struct S object = {'X', 8, 9};
 
-int
-main (void)
-{
+int main(void) {
   if (object.f1 != 'X' || object.f2[0] != 8 || object.f2[1] != 9)
-    abort ();
-  exit (0);
+    abort();
+  exit(0);
 }
-

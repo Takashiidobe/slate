@@ -4,8 +4,8 @@ typedef int (*Callback)(int);
 
 struct Handlers {
   const char *label;
-  Callback onEvent;
-  int *counter;
+  Callback    onEvent;
+  int        *counter;
 };
 
 static int report(struct Handlers h) {

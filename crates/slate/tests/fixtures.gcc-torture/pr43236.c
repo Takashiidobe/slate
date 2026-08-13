@@ -1,13 +1,12 @@
 /* { dg-options "-ftree-loop-distribution" } */
-extern void abort(void);
+extern void  abort(void);
 extern void *memset(void *s, int c, __SIZE_TYPE__ n);
-extern int memcmp(const void *s1, const void *s2, __SIZE_TYPE__ n);
+extern int   memcmp(const void *s1, const void *s2, __SIZE_TYPE__ n);
 /*extern int printf(const char *format, ...);*/
 
-int main()
-{
+int main() {
   char A[30], B[30], C[30];
-  int i;
+  int  i;
 
   /* prepare arrays */
   memset(A, 1, 30);
@@ -23,10 +22,11 @@ int main()
   memset(C + 10, 0, 10);
 
   /* show result */
-/*  for (i = 0; i < 30; i++)
-    printf("%d %d %d\n", A[i], B[i], C[i]); */
+  /*  for (i = 0; i < 30; i++)
+      printf("%d %d %d\n", A[i], B[i], C[i]); */
 
   /* compare results */
-  if (memcmp(A, C, 30) || memcmp(B, C, 30)) abort();
+  if (memcmp(A, C, 30) || memcmp(B, C, 30))
+    abort();
   return 0;
 }

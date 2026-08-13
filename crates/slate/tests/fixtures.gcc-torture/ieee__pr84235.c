@@ -1,12 +1,10 @@
 /* { dg-do run } */
 /* PR tree-optimization/84235 */
 
-int
-main ()
-{
+int main() {
   double d = 1.0 / 0.0;
-  _Bool b = d == d && (d - d) != (d - d);
+  _Bool  b = d == d && (d - d) != (d - d);
   if (!b)
-    __builtin_abort ();
+    __builtin_abort();
   return 0;
 }

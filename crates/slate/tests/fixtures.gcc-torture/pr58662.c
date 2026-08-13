@@ -1,22 +1,16 @@
-extern void abort (void);
+extern void abort(void);
 
-int a, c, d;
+int          a, c, d;
 volatile int b;
 
-static int
-foo (int p1, short p2)
-{
-  return p1 / p2;
-}
+static int foo(int p1, short p2) { return p1 / p2; }
 
-int
-main ()
-{
+int main() {
   char e;
-  d = foo (a == 0, (0, 35536)); 
+  d = foo(a == 0, (0, 35536));
   e = d % 14;
   b = e && c;
   if (b != 0)
-    abort ();
+    abort();
   return 0;
 }

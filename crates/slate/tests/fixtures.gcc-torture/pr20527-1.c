@@ -16,16 +16,16 @@
   1. Redistributions of source code must retain the above copyright
      notice, this list of conditions and the following disclaimer.
 
-  2. The origin of this software must not be misrepresented; you must 
-     not claim that you wrote the original software.  If you use this 
-     software in a product, an acknowledgment in the product 
+  2. The origin of this software must not be misrepresented; you must
+     not claim that you wrote the original software.  If you use this
+     software in a product, an acknowledgment in the product
      documentation would be appreciated but is not required.
 
   3. Altered source versions must be plainly marked as such, and must
      not be misrepresented as being the original software.
 
-  4. The name of the author may not be used to endorse or promote 
-     products derived from this software without specific prior written 
+  4. The name of the author may not be used to endorse or promote
+     products derived from this software without specific prior written
      permission.
 
   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS
@@ -57,25 +57,24 @@
   For more information on these sources, see the manual.
 --*/
 
-void f (long *limit, long *base, long minLen, long maxLen) __attribute__ ((__noinline__));
-void f (long *limit, long *base, long minLen, long maxLen)
-{
+void f(long *limit, long *base, long minLen, long maxLen)
+    __attribute__((__noinline__));
+void f(long *limit, long *base, long minLen, long maxLen) {
   long i;
   long vec;
   vec = 0;
   for (i = minLen; i <= maxLen; i++) {
-    vec += (base[i+1] - base[i]);
-    limit[i] = vec-1;
+    vec      += (base[i + 1] - base[i]);
+    limit[i]  = vec - 1;
   }
 }
-extern void abort (void);
-extern void exit (int);
-long b[] = {1, 5, 11, 23};
-int main (void)
-{
+extern void abort(void);
+extern void exit(int);
+long        b[] = {1, 5, 11, 23};
+int         main(void) {
   long l[3];
-  f (l, b, 0, 2);
+  f(l, b, 0, 2);
   if (l[0] != 3 || l[1] != 9 || l[2] != 21)
-    abort ();
-  exit (0);
+    abort();
+  exit(0);
 }

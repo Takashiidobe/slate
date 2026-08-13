@@ -1,80 +1,75 @@
 /* { dg-do run } */
-extern void abort (void);
+extern void abort(void);
 
-void test(double f, double i)
-{
+void test(double f, double i) {
   if (f == __builtin_inf())
-    abort ();
+    abort();
   if (f == -__builtin_inf())
-    abort ();
+    abort();
   if (i == -__builtin_inf())
-    abort ();
+    abort();
   if (i != __builtin_inf())
-    abort ();
+    abort();
 
   if (f >= __builtin_inf())
-    abort ();
+    abort();
   if (f > __builtin_inf())
-    abort ();
+    abort();
   if (i > __builtin_inf())
-    abort ();
+    abort();
   if (f <= -__builtin_inf())
-    abort ();
+    abort();
   if (f < -__builtin_inf())
-    abort ();
+    abort();
 }
 
-void testf(float f, float i)
-{
+void testf(float f, float i) {
   if (f == __builtin_inff())
-    abort ();
+    abort();
   if (f == -__builtin_inff())
-    abort ();
+    abort();
   if (i == -__builtin_inff())
-    abort ();
+    abort();
   if (i != __builtin_inff())
-    abort ();
+    abort();
 
   if (f >= __builtin_inff())
-    abort ();
+    abort();
   if (f > __builtin_inff())
-    abort ();
+    abort();
   if (i > __builtin_inff())
-    abort ();
+    abort();
   if (f <= -__builtin_inff())
-    abort ();
+    abort();
   if (f < -__builtin_inff())
-    abort ();
+    abort();
 }
 
-void testl(long double f, long double i)
-{
+void testl(long double f, long double i) {
   if (f == __builtin_infl())
-    abort ();
+    abort();
   if (f == -__builtin_infl())
-    abort ();
+    abort();
   if (i == -__builtin_infl())
-    abort ();
+    abort();
   if (i != __builtin_infl())
-    abort ();
+    abort();
 
   if (f >= __builtin_infl())
-    abort ();
+    abort();
   if (f > __builtin_infl())
-    abort ();
+    abort();
   if (i > __builtin_infl())
-    abort ();
+    abort();
   if (f <= -__builtin_infl())
-    abort ();
+    abort();
   if (f < -__builtin_infl())
-    abort ();
+    abort();
 }
 
-int main()
-{
-  test (34.0, __builtin_inf());
-  testf (34.0f, __builtin_inff());
-  testl (34.0l, __builtin_infl());
+int main() {
+  test(34.0, __builtin_inf());
+  testf(34.0f, __builtin_inff());
+  testl(34.0l, __builtin_infl());
   return 0;
 }
-

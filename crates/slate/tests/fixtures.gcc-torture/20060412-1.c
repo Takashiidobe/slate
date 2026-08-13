@@ -1,33 +1,29 @@
-extern void abort (void);
+extern void abort(void);
 
-struct S
-{
+struct S {
   long o;
 };
 
-struct T
-{
-  long o;
+struct T {
+  long     o;
   struct S m[82];
 };
 
 struct T t;
 
-int
-main ()
-{
+int main() {
   struct S *p, *q;
 
-  p = (struct S *) &t;
-  p = &((struct T *) p)->m[0];
+  p = (struct S *)&t;
+  p = &((struct T *)p)->m[0];
   q = p + 82;
   while (--q > p)
     q->o = -1;
   q->o = 0;
 
   if (q > p)
-    abort ();
+    abort();
   if (q - p > 0)
-    abort ();
+    abort();
   return 0;
 }

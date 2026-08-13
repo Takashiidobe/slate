@@ -2,26 +2,25 @@ struct s {
   unsigned char a[256];
 };
 union u {
-  struct { struct s b; int c; } d;
-  struct { int c; struct s b; } e;
+  struct {
+    struct s b;
+    int      c;
+  } d;
+  struct {
+    int      c;
+    struct s b;
+  } e;
 };
 
-static union u v;
+static union u   v;
 static struct s *p = &v.d.b;
 static struct s *q = &v.e.b;
 
-static struct s __attribute__((noinline)) rp(void)
-{
-  return *p;
-}
+static struct s __attribute__((noinline)) rp(void) { return *p; }
 
-static void qp(void)
-{
-  *q = rp();
-}
+static void qp(void) { *q = rp(); }
 
-int main()
-{
+int main() {
   int i;
   for (i = 0; i < 256; i++)
     p->a[i] = i;

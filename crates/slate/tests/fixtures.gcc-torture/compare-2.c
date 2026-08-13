@@ -5,20 +5,15 @@
 
    Written by Roger Sayle, 3rd June 2002.  */
 
-extern void abort (void);
+extern void abort(void);
 
-int
-foo (int x, int y)
-{
+int foo(int x, int y) {
   /* If miscompiled the following may become "x == y".  */
-  return (x<=y) && ((unsigned int)x >= (unsigned int)y);
+  return (x <= y) && ((unsigned int)x >= (unsigned int)y);
 }
 
-int
-main ()
-{
-  if (! foo (-1,0))
-    abort ();
+int main() {
+  if (!foo(-1, 0))
+    abort();
   return 0;
 }
-
