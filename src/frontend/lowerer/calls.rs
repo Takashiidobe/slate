@@ -1,9 +1,5 @@
 use super::*;
 
-fn cir_type_mentions_wrapped_long_double(ty: &str) -> bool {
-    is_wrapped_long_double(ty) || cir_ptr_inner(ty).is_some_and(is_wrapped_long_double)
-}
-
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
     pub(super) fn lower_call(&mut self, op: &Op) {
         let operand_types = op_operand_types(op.ty.as_deref().unwrap_or(""));
@@ -257,10 +253,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return false;
         }
         let ret_cir_ty = op_result_type(op);
-        let has_long_double_arg = arg_types
-            .iter()
-            .any(|ty| cir_type_mentions_wrapped_long_double(ty));
-        let has_long_double_ret = ret_cir_ty.is_some_and(is_wrapped_long_double);
+        let has_long_double_arg = arg_types.iter().any(|ty| {
+            self.parent
+                .rust_type_has_long_double(&self.parent.rust_type(ty))
+        });
+        let has_long_double_ret = ret_cir_ty
+            .map(|ty| self.parent.rust_type(ty))
+            .is_some_and(|ty| self.parent.rust_type_has_long_double(&ty));
         if !has_long_double_arg && !has_long_double_ret {
             return false;
         }

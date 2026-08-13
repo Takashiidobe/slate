@@ -663,10 +663,7 @@ fn merge_variants(baseline: &Translation, variants: &[Variant], pp: &Preprocessi
             items.push(item.clone());
         }
     }
-    Program {
-        items,
-        ..Program::default()
-    }
+    Program { items }
 }
 
 fn line_in_any_chain(pp: &Preprocessing, line: usize) -> bool {

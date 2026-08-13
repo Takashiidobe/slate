@@ -578,14 +578,12 @@ pub fn lower_shared_types(
         Lint::NonSnakeCase,
         Lint::NonUpperCaseGlobals,
     ])])];
-    let mut shims = Vec::new();
     if shared_types_use_long_double(records) {
         items.extend(long_double_prelude(Visibility::Pub));
         items.push(Item::ExternBlock {
             abi: "C".into(),
             decls: f80_shim_decls().into_iter().map(ExternDecl::Fn).collect(),
         });
-        shims = f80_shim_decls();
     }
     items.extend(
         enums
@@ -597,7 +595,7 @@ pub fn lower_shared_types(
             .iter()
             .flat_map(|record| lower_record_def(record, Visibility::Pub, Visibility::Pub, true)),
     );
-    Program { items, shims }
+    Program { items }
 }
 
 pub fn long_double_f80_extern_block() -> Item {
@@ -1151,10 +1149,7 @@ impl<'a> Lowerer<'a> {
 
         let Some(module_op) = builtin_module(module) else {
             self.ctx.diagnostics.error("lower: no builtin.module op");
-            return Program {
-                items,
-                ..Program::default()
-            };
+            return Program { items };
         };
 
         let ops = region_ops(module_op);
@@ -1579,10 +1574,7 @@ impl __SlateVaArgs {
             insert_crate_feature(&mut items, *feature);
         }
 
-        Program {
-            items,
-            shims: self.long_double_shims.values().cloned().collect(),
-        }
+        Program { items }
     }
 
     fn collect_global(&mut self, op: &Op) {
@@ -2463,6 +2455,33 @@ impl __SlateVaArgs {
             self.uses_f128.set(true);
         }
         ty
+    }
+
+    fn rust_type_has_long_double(&self, ty: &Type) -> bool {
+        match ty {
+            Type::LongDouble => true,
+            Type::Custom(name) => self.records.get(name).is_some_and(|record| {
+                record
+                    .fields
+                    .iter()
+                    .any(|field| ctype_uses_long_double(&field.ty))
+            }),
+            Type::Complex(inner)
+            | Type::Ref { inner, .. }
+            | Type::Slice(inner)
+            | Type::Ptr { inner, .. }
+            | Type::Array { elem: inner, .. } => self.rust_type_has_long_double(inner),
+            Type::FnPtr { params, ret, .. } => {
+                params
+                    .iter()
+                    .any(|param| self.rust_type_has_long_double(param))
+                    || self.rust_type_has_long_double(ret)
+            }
+            Type::Generic { args, .. } => {
+                args.iter().any(|arg| self.rust_type_has_long_double(arg))
+            }
+            _ => false,
+        }
     }
 
     fn cir_type_is_union(&self, ty: &str) -> bool {

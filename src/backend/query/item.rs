@@ -2028,7 +2028,6 @@ fn extern_definition_matches(decl: &ExternDecl, definition: &DefinitionSite) -> 
 fn item_snippet(item: &Item) -> String {
     Program {
         items: vec![item.clone()],
-        ..Program::default()
     }
     .emit()
     .trim_end()
@@ -2330,7 +2329,6 @@ mod tests {
     fn missing_target_rejects_the_complete_edit_set() {
         let mut program = Program {
             items: vec![function(vec![statement(1), statement(2)])],
-            ..Program::default()
         };
         let before = program.emit();
         let mut edit =
@@ -2356,7 +2354,6 @@ mod tests {
     fn mixed_edits_use_snapshot_paths_and_report_one_atomic_application() {
         let mut program = Program {
             items: vec![function(vec![statement(1), statement(2), statement(3)])],
-            ..Program::default()
         };
         let mut edit = EditSet::new();
         edit.push_replace_statement(0, AstPath(vec![PathSegment::Stmt(0)]), None);
@@ -2389,7 +2386,6 @@ mod tests {
                 named_function("caller", vec![statement(1)]),
                 named_function("callee", vec![statement(2)]),
             ],
-            ..Program::default()
         };
         let salsa = test_salsa(&program);
         let target = function_ref(&salsa, 1, "callee");
@@ -2427,7 +2423,6 @@ mod tests {
                 named_function("caller", vec![statement(1)]),
                 named_function("callee", vec![statement(2)]),
             ],
-            ..Program::default()
         };
         let before = program.emit();
         let salsa = test_salsa(&program);
@@ -2466,11 +2461,9 @@ mod tests {
     fn whole_program_edit_uses_shared_atomic_application() {
         let mut program = Program {
             items: vec![function(vec![statement(1)])],
-            ..Program::default()
         };
         let replacement = Program {
             items: vec![function(vec![statement(2)])],
-            ..Program::default()
         };
         let edit = EditSet::replace_program(
             super::super::ProgramRef { expected_len: 1 },
@@ -2492,7 +2485,6 @@ mod tests {
             super::super::ProgramRef { expected_len: 1 },
             Program {
                 items: vec![function(vec![statement(2)])],
-                ..Program::default()
             },
             Vec::new(),
         );
