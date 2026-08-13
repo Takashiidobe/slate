@@ -339,7 +339,7 @@ pub(super) fn complex_const_expr(
         _ => None,
     };
     Expr::StructLit {
-        name: "Complex".into(),
+        name: COMPLEX_TY.into(),
         fields: vec![
             ("re".into(), complex_component_expr(inner, re)),
             ("im".into(), complex_component_expr(inner, im)),

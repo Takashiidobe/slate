@@ -11,10 +11,58 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(
             result,
             Expr::StructLit {
-                name: "Complex".into(),
+                name: COMPLEX_TY.into(),
                 fields: vec![
                     ("re".into(), self.operand_expr(&op.operands[0])),
                     ("im".into(), self.operand_expr(&op.operands[1])),
+                ],
+            },
+            op_result_type(op),
+        );
+    }
+
+    pub(super) fn lower_complex_add(&mut self, op: &Op) {
+        self.lower_complex_addsub(op, BinOp::Add);
+    }
+
+    pub(super) fn lower_complex_sub(&mut self, op: &Op) {
+        self.lower_complex_addsub(op, BinOp::Sub);
+    }
+
+    fn lower_complex_addsub(&mut self, op: &Op, component_op: BinOp) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        if op.operands.len() < 2 {
+            return;
+        }
+        let lhs = self.operand_expr(&op.operands[0]);
+        let rhs = self.operand_expr(&op.operands[1]);
+        let field = |base: Expr, name: &str| Expr::Field {
+            base: Box::new(base),
+            field: name.into(),
+        };
+        self.materialize_expr(
+            result,
+            Expr::StructLit {
+                name: COMPLEX_TY.into(),
+                fields: vec![
+                    (
+                        "re".into(),
+                        Expr::Binary {
+                            op: component_op,
+                            lhs: Box::new(field(lhs.clone(), "re")),
+                            rhs: Box::new(field(rhs.clone(), "re")),
+                        },
+                    ),
+                    (
+                        "im".into(),
+                        Expr::Binary {
+                            op: component_op,
+                            lhs: Box::new(field(lhs, "im")),
+                            rhs: Box::new(field(rhs, "im")),
+                        },
+                    ),
                 ],
             },
             op_result_type(op),
@@ -102,7 +150,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(
             result,
             Expr::StructLit {
-                name: "Complex".into(),
+                name: COMPLEX_TY.into(),
                 fields: vec![
                     (
                         "re".into(),
@@ -188,7 +236,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(
             result,
             Expr::StructLit {
-                name: "Complex".into(),
+                name: COMPLEX_TY.into(),
                 fields: vec![
                     (
                         "re".into(),
@@ -231,7 +279,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(
             result,
             Expr::StructLit {
-                name: "Complex".into(),
+                name: COMPLEX_TY.into(),
                 fields: vec![
                     (
                         "re".into(),

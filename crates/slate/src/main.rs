@@ -555,6 +555,7 @@ edition = "2024"
 libc = "0.2"
 aligned = {{ path = "aligned" }}
 bitint = {{ path = "bitint" }}
+num-complex = {{ path = "num-complex", default-features = false }}
 bitfields = "3.0.0"
 {support_dependency}
 {build_section}
@@ -613,6 +614,7 @@ fn init_crate(crate_dir: &Path, wants_lib: bool) -> Result<(), String> {
     write_crate_manifest(crate_dir, &package, &[], false, false, !wants_lib)?;
     write_aligned_support(crate_dir)?;
     write_bitint_support(crate_dir)?;
+    write_num_complex_support(crate_dir)?;
     if wants_lib {
         let main_rs = crate_dir.join("src/main.rs");
         if main_rs.exists() {
@@ -665,6 +667,45 @@ fn write_bitint_support(crate_dir: &Path) -> Result<(), String> {
         ),
     ] {
         std::fs::write(&path, contents).map_err(|e| format!("write {}: {e}", path.display()))?;
+    }
+    Ok(())
+}
+
+fn write_num_complex_support(crate_dir: &Path) -> Result<(), String> {
+    let num_complex_dir = crate_dir.join("num-complex");
+    let src_dir = num_complex_dir.join("src");
+    std::fs::create_dir_all(&src_dir).map_err(|e| format!("create {}: {e}", src_dir.display()))?;
+    for (path, contents) in [
+        (
+            num_complex_dir.join("Cargo.toml"),
+            include_str!("../vendor/num-complex/Cargo.toml"),
+        ),
+        (
+            num_complex_dir.join("LICENSE-MIT"),
+            include_str!("../vendor/num-complex/LICENSE-MIT"),
+        ),
+        (
+            num_complex_dir.join("LICENSE-APACHE"),
+            include_str!("../vendor/num-complex/LICENSE-APACHE"),
+        ),
+    ] {
+        std::fs::write(&path, contents).map_err(|e| format!("write {}: {e}", path.display()))?;
+    }
+    for (source, contents) in [
+        ("lib.rs", include_str!("../vendor/num-complex/src/lib.rs")),
+        ("cast.rs", include_str!("../vendor/num-complex/src/cast.rs")),
+        (
+            "complex_float.rs",
+            include_str!("../vendor/num-complex/src/complex_float.rs"),
+        ),
+        (
+            "crand.rs",
+            include_str!("../vendor/num-complex/src/crand.rs"),
+        ),
+        ("pow.rs", include_str!("../vendor/num-complex/src/pow.rs")),
+    ] {
+        std::fs::write(src_dir.join(source), contents)
+            .map_err(|e| format!("write {}: {e}", src_dir.join(source).display()))?;
     }
     Ok(())
 }
