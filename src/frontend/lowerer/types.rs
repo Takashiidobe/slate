@@ -164,6 +164,38 @@ pub(super) fn bitint_from_decimal_str_expr(ty: &Type, digits: &str) -> Option<Ex
     })
 }
 
+pub(super) fn bitint_from_int_expr(ty: &Type, value: Expr, signed: bool) -> Option<Expr> {
+    let (name, bits, limbs) = bitint_generic_parts(ty)?;
+    let (method, wide_ty) = if signed {
+        ("from_i128", Type::Prim(Prim::I128))
+    } else {
+        ("from_u128", Type::Prim(Prim::U128))
+    };
+    Some(Expr::Call {
+        binding: crate::function_identity::CallBinding::Generated,
+        func: Box::new(Expr::Var(
+            format!("{name}::<{bits}, {limbs}>::{method}").into(),
+        )),
+        args: vec![Expr::Cast {
+            expr: Box::new(value),
+            ty: wide_ty,
+        }],
+    })
+}
+
+pub(super) fn bitint_to_int_expr(ty: &Type, value: Expr) -> Option<(Expr, bool)> {
+    let (name, _, _) = bitint_generic_parts(ty)?;
+    let signed = name == "bitint::BInt";
+    Some((
+        Expr::MethodCall {
+            recv: Box::new(value),
+            method: if signed { "to_i128" } else { "to_u128" }.into(),
+            args: Vec::new(),
+        },
+        signed,
+    ))
+}
+
 pub(super) fn bitint_zero_expr(ty: &Type) -> Option<Expr> {
     let (name, bits, limbs) = bitint_generic_parts(ty)?;
     Some(Expr::Var(format!("{name}::<{bits}, {limbs}>::ZERO").into()))

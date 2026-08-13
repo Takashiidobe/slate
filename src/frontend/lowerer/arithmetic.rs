@@ -1,5 +1,89 @@
 use super::*;
 
+fn overflow_for_result_width(
+    arithmetic_overflow: Expr,
+    value: Expr,
+    wide_signed: bool,
+    result_signed: bool,
+    result_bits: u32,
+) -> Expr {
+    let range_overflow = match (wide_signed, result_signed) {
+        (true, true) => {
+            let (min, max) = if result_bits == 128 {
+                (i128::MIN, i128::MAX)
+            } else {
+                let magnitude = 1i128 << (result_bits - 1);
+                (-magnitude, magnitude - 1)
+            };
+            Expr::Binary {
+                op: BinOp::Or,
+                lhs: Box::new(Expr::Binary {
+                    op: BinOp::Lt,
+                    lhs: Box::new(value.clone()),
+                    rhs: Box::new(Expr::Value(RustValue::I128(min))),
+                }),
+                rhs: Box::new(Expr::Binary {
+                    op: BinOp::Gt,
+                    lhs: Box::new(value),
+                    rhs: Box::new(Expr::Value(RustValue::I128(max))),
+                }),
+            }
+        }
+        (true, false) => {
+            let max = if result_bits == 128 {
+                u128::MAX
+            } else {
+                (1u128 << result_bits) - 1
+            };
+            Expr::Binary {
+                op: BinOp::Or,
+                lhs: Box::new(Expr::Binary {
+                    op: BinOp::Lt,
+                    lhs: Box::new(value.clone()),
+                    rhs: Box::new(Expr::Value(RustValue::I128(0))),
+                }),
+                rhs: Box::new(Expr::Binary {
+                    op: BinOp::Gt,
+                    lhs: Box::new(Expr::Cast {
+                        expr: Box::new(value),
+                        ty: Type::Prim(Prim::U128),
+                    }),
+                    rhs: Box::new(Expr::Value(RustValue::U128(max))),
+                }),
+            }
+        }
+        (false, true) => {
+            let max = if result_bits == 128 {
+                i128::MAX as u128
+            } else {
+                (1u128 << (result_bits - 1)) - 1
+            };
+            Expr::Binary {
+                op: BinOp::Gt,
+                lhs: Box::new(value),
+                rhs: Box::new(Expr::Value(RustValue::U128(max))),
+            }
+        }
+        (false, false) => {
+            let max = if result_bits == 128 {
+                u128::MAX
+            } else {
+                (1u128 << result_bits) - 1
+            };
+            Expr::Binary {
+                op: BinOp::Gt,
+                lhs: Box::new(value),
+                rhs: Box::new(Expr::Value(RustValue::U128(max))),
+            }
+        }
+    };
+    Expr::Binary {
+        op: BinOp::Or,
+        lhs: Box::new(arithmetic_overflow),
+        rhs: Box::new(range_overflow),
+    }
+}
+
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
     // cir.select(cond, t, f) is a pure value pick; all three operands are already
     // materialized, so it collapses to a Rust `if` expression.
@@ -199,9 +283,62 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if op.results.len() < 2 || op.operands.len() < 2 {
             return;
         }
+        let result_types = op_result_types(op);
+        let operand_types = op_operand_types(op.ty.as_deref().unwrap_or(""));
+        let operand_rust_ty = operand_types
+            .first()
+            .map(|ty| self.parent.rust_type(ty))
+            .unwrap_or(Type::Prim(Prim::I32));
+        if bitint_generic_parts(&operand_rust_ty).is_some()
+            && let Some((result_signed, result_bits)) =
+                result_types.first().and_then(|ty| parse_cir_int_type(ty))
+            && result_bits <= 128
+            && operand_types
+                .first()
+                .and_then(|ty| parse_cir_int_type(ty))
+                .is_some_and(|(_, bits)| bits <= 128)
+        {
+            let result_rust_ty = self.parent.rust_type(result_types[0]);
+            let (lhs, wide_signed) =
+                bitint_to_int_expr(&operand_rust_ty, self.operand_expr(&op.operands[0])).unwrap();
+            let (rhs, _) =
+                bitint_to_int_expr(&operand_rust_ty, self.operand_expr(&op.operands[1])).unwrap();
+            let pair = self.next_temp();
+            self.push_stmt(Stmt::Let {
+                name: pair.clone(),
+                mutable: false,
+                ty: None,
+                init: Some(Expr::MethodCall {
+                    recv: Box::new(lhs),
+                    method: rust_method.to_string(),
+                    args: vec![rhs],
+                }),
+            });
+            let wide_result = Expr::Field {
+                base: Box::new(Expr::Var(pair.clone().into())),
+                field: "0".into(),
+            };
+            let narrowed = bitint_from_int_expr(&result_rust_ty, wide_result.clone(), wide_signed)
+                .unwrap_or_else(|| Expr::Cast {
+                    expr: Box::new(wide_result.clone()),
+                    ty: result_rust_ty,
+                });
+            self.materialize_expr(&op.results[0], narrowed, result_types.first().copied());
+            let overflow = overflow_for_result_width(
+                Expr::Field {
+                    base: Box::new(Expr::Var(pair.into())),
+                    field: "1".into(),
+                },
+                wide_result,
+                wide_signed,
+                result_signed,
+                result_bits,
+            );
+            self.materialize_expr(&op.results[1], overflow, result_types.get(1).copied());
+            return;
+        }
         let lhs = self.operand_expr(&op.operands[0]);
         let rhs = self.operand_expr(&op.operands[1]);
-        let result_types = op_result_types(op);
         let pair = self.next_temp();
         self.push_stmt(Stmt::Let {
             name: pair.clone(),

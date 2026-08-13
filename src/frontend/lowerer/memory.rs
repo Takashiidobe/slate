@@ -644,6 +644,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .into_iter()
             .next()
             .unwrap_or("");
+        let result_rust_ty = self.parent.rust_type(result_ty);
+        let operand_rust_ty = self.parent.rust_type(operand_ty);
         let value = match self.values.get(src).cloned() {
             Some(value @ Val::Global(_))
                 if is_cir_function_pointer_type(result_ty)
@@ -862,6 +864,26 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 lhs: Box::new(self.operand_expr(src)),
                 rhs: Box::new(zero_for_cir_type(operand_ty)),
             }),
+            _ if bitint_generic_parts(&result_rust_ty).is_some()
+                && bitint_generic_parts(&operand_rust_ty).is_none()
+                && parse_cir_int_type(operand_ty).is_some() =>
+            {
+                let (signed, _) = parse_cir_int_type(operand_ty).unwrap();
+                Val::Expr(
+                    bitint_from_int_expr(&result_rust_ty, self.operand_expr(src), signed).unwrap(),
+                )
+            }
+            _ if bitint_generic_parts(&operand_rust_ty).is_some()
+                && bitint_generic_parts(&result_rust_ty).is_none()
+                && parse_cir_int_type(result_ty).is_some() =>
+            {
+                let (wide, _) =
+                    bitint_to_int_expr(&operand_rust_ty, self.operand_expr(src)).unwrap();
+                Val::Expr(Expr::Cast {
+                    expr: Box::new(wide),
+                    ty: result_rust_ty.clone(),
+                })
+            }
             _ if result_ty == operand_ty => Val::Expr(self.operand_expr(src)),
             _ => Val::Expr(Expr::Cast {
                 expr: Box::new(self.operand_expr(src)),
