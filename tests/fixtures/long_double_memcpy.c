@@ -9,7 +9,7 @@ union ld_union {
 int main(void) {
   union ld_union src;
   union ld_union dst;
-  int i;
+  int            i;
 
   memset(&src, 0, sizeof(src));
   for (i = 0; i < 10; ++i)

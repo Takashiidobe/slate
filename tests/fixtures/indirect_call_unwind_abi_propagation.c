@@ -8,8 +8,8 @@ struct Ctx {
   Dispatch *run;
 };
 
-static jmp_buf env;
-static int failures = 0;
+static jmp_buf   env;
+static int       failures = 0;
 static Callback *g_callback;
 
 static void quiet_callback(int x) { printf("quiet %d\n", x); }

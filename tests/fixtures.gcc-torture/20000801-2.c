@@ -1,14 +1,13 @@
 extern void abort(void);
 extern void exit(int);
-int bar(void);
-int baz(void);
+int         bar(void);
+int         baz(void);
 
 struct foo {
   struct foo *next;
 };
 
-struct foo *test(struct foo *node)
-{
+struct foo *test(struct foo *node) {
   while (node) {
     if (bar() && !baz())
       break;
@@ -17,24 +16,17 @@ struct foo *test(struct foo *node)
   return node;
 }
 
-int bar (void)
-{
-  return 0;
-}
+int bar(void) { return 0; }
 
-int baz (void)
-{
-  return 0;
-}
+int baz(void) { return 0; }
 
-int main(void)
-{
+int main(void) {
   struct foo a, b, *c;
 
   a.next = &b;
   b.next = (struct foo *)0;
-  c = test(&a);
+  c      = test(&a);
   if (c)
     abort();
-  exit (0);
+  exit(0);
 }

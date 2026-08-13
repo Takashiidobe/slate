@@ -1,40 +1,38 @@
 #include <stdarg.h>
 
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-struct s { int x, y; };
+struct s {
+  int x, y;
+};
 
-void
-f (int attr, ...)
-{
+void f(int attr, ...) {
   struct s va_values;
-  va_list va;
-  int i;
+  va_list  va;
+  int      i;
 
-  va_start (va, attr);
+  va_start(va, attr);
 
   if (attr != 2)
-    abort ();
+    abort();
 
-  va_values = va_arg (va, struct s);
+  va_values = va_arg(va, struct s);
   if (va_values.x != 0xaaaa || va_values.y != 0x5555)
-    abort ();
+    abort();
 
-  attr = va_arg (va, int);
+  attr = va_arg(va, int);
   if (attr != 3)
-    abort ();
+    abort();
 
-  va_values = va_arg (va, struct s);
+  va_values = va_arg(va, struct s);
   if (va_values.x != 0xffff || va_values.y != 0x1111)
-    abort ();
+    abort();
 
-  va_end (va);
+  va_end(va);
 }
 
-int
-main (void)
-{
+int main(void) {
   struct s a, b;
 
   a.x = 0xaaaa;
@@ -42,6 +40,6 @@ main (void)
   b.x = 0xffff;
   b.y = 0x1111;
 
-  f (2, a, 3, b);
-  exit (0);
+  f(2, a, 3, b);
+  exit(0);
 }

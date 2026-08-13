@@ -1,33 +1,23 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
 int sum;
 
-void
-g (int i)
-{
-  sum += i;
-}
+void g(int i) { sum += i; }
 
-void
-f(int j)
-{
+void f(int j) {
   int i;
 
-  for (i = 0; i < 9; i++)
-    {
-      j++;
-      g (j);
-      j = 9;
-    }
+  for (i = 0; i < 9; i++) {
+    j++;
+    g(j);
+    j = 9;
+  }
 }
 
-int
-main ()
-{
-  f (0);
+int main() {
+  f(0);
   if (sum != 81)
-    abort ();
-  exit (0);
+    abort();
+  exit(0);
 }
-

@@ -1,13 +1,11 @@
 /* PR 17252.  When a char * pointer P takes its own address, storing
    into *P changes P itself.  */
 
-void abort (void);
+void abort(void);
 
 char *a;
 
-int
-main (void)
-{
+int main(void) {
   /* Make 'a' point to itself.  */
   a = (char *)&a;
 
@@ -18,7 +16,7 @@ main (void)
      think that this predicate is superfluous and change it to
      'if (1)'.  */
   if (a == (char *)&a)
-    abort ();
+    abort();
 
   return 0;
 }

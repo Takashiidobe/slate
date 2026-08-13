@@ -1,18 +1,13 @@
-void exit (int);
+void exit(int);
 
 int x, y;
 
-int
-main()
-{
+int main() {
   x = 2;
   y = x;
-  do
-    {
-      x = y;
-      y = 2 * y;
-    }
-  while ( ! ((y - x) >= 20));
-  exit (0);
+  do {
+    x = y;
+    y = 2 * y;
+  } while (!((y - x) >= 20));
+  exit(0);
 }
-

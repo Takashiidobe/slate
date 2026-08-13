@@ -1,17 +1,13 @@
 /* Trivially making sure IPA-SRA does not introduce segfaults where they should
    not be.  */
 
-struct bovid
-{
+struct bovid {
   float red;
-  int green;
+  int   green;
   void *blue;
 };
 
-static int
-__attribute__((noinline))
-ox (int fail, struct bovid *cow)
-{
+static int __attribute__((noinline)) ox(int fail, struct bovid *cow) {
   int r;
   if (fail)
     r = cow->red;
@@ -20,10 +16,9 @@ ox (int fail, struct bovid *cow)
   return r;
 }
 
-int main (int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
   int r;
 
-  r = ox ((argc > 2000), (void *) 0);
+  r = ox((argc > 2000), (void *)0);
   return r;
 }

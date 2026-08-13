@@ -3,16 +3,13 @@
 
 #include <limits.h>
 
-void abort (void);
+void abort(void);
 
-int
-main ()
-{
+int main() {
   unsigned long count = 8;
 
   if (count > INT_MAX)
-    abort ();
+    abort();
 
   return (0);
 }
-

@@ -1,9 +1,8 @@
 /* { dg-require-effective-target int32plus } */
-extern void exit (int);
-extern void abort ();
+extern void exit(int);
+extern void abort();
 
-void test(unsigned int a, unsigned int b)
-{
+void test(unsigned int a, unsigned int b) {
   if (a < 5)
     abort();
   if (b < 5)
@@ -12,12 +11,8 @@ void test(unsigned int a, unsigned int b)
     abort();
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
   unsigned int x = 0x80000000;
   test(x, x);
-  exit (0);
+  exit(0);
 }
-
-
-

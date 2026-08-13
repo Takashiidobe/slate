@@ -3,22 +3,20 @@
    one for the partial argument and one for the varargs save area.
    Make sure that these uses don't conflict.  */
 
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-struct s { int i[18]; };
+struct s {
+  int i[18];
+};
 
-int f (struct s pa, int pb, ...)
-{
-  return pb;
-}
+int f(struct s pa, int pb, ...) { return pb; }
 
 struct s gs;
 
-int main ()
-{
-  if (f (gs, 0x1234) != 0x1234)
-    abort ();
+int main() {
+  if (f(gs, 0x1234) != 0x1234)
+    abort();
 
-  exit (0);
+  exit(0);
 }

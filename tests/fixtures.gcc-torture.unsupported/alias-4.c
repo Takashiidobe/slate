@@ -1,11 +1,9 @@
 /* { dg-require-alias "" } */
-int a = 1;
-extern int b __attribute__ ((alias ("a")));
-int c = 1;
-extern int d __attribute__ ((alias ("c")));
-int
-main (int argc)
-{
+int        a = 1;
+extern int b __attribute__((alias("a")));
+int        c = 1;
+extern int d __attribute__((alias("c")));
+int        main(int argc) {
   int *p;
   int *q;
   if (argc)
@@ -15,6 +13,6 @@ main (int argc)
   *p = 1;
   *q = 2;
   if (*p == 1)
-    __builtin_abort ();
+    __builtin_abort();
   return 0;
 }

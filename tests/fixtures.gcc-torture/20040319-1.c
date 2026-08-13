@@ -1,9 +1,7 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-int
-blah (int zzz)
-{
+int blah(int zzz) {
   int foo;
   if (zzz >= 0)
     return 1;
@@ -11,11 +9,9 @@ blah (int zzz)
   return foo;
 }
 
-int
-main(void)
-{
-  if (blah (-1) != 1)
-    abort ();
+int main(void) {
+  if (blah(-1) != 1)
+    abort();
   else
-    exit (0);
+    exit(0);
 }

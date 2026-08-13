@@ -138,11 +138,11 @@
 #error fail
 #endif
 
-#if (2+2*3+2) != 10
+#if (2 + 2 * 3 + 2) != 10
 #error fail
 #endif
 
-#if ((2+2)*(3+2)) != 20
+#if ((2 + 2) * (3 + 2)) != 20
 #error fail
 #endif
 
@@ -158,9 +158,4 @@
 #error fail
 #endif
 
-int
-main()
-{
-	return 0;
-}
-
+int main() { return 0; }

@@ -8,23 +8,17 @@ typedef unsigned long long T;
 #define N (__SIZEOF_LONG_LONG__ * __CHAR_BIT__ / 2)
 #endif
 
-__attribute__ ((noipa)) void
-foo (T *x)
-{
-  *x += ((T) 1) << (N + 1);
-}
+__attribute__((noipa)) void foo(T *x) { *x += ((T)1) << (N + 1); }
 
-int
-main ()
-{
-  T a = ((T) 1) << (N + 1);
+int main() {
+  T a = ((T)1) << (N + 1);
   T b = a;
   T n;
-  foo (&b);
+  foo(&b);
   n = b;
   while (n >= a)
     n -= a;
-  if ((int) (n >> N) != 0)
-    __builtin_abort ();
+  if ((int)(n >> N) != 0)
+    __builtin_abort();
   return 0;
 }

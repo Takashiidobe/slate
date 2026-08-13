@@ -1,10 +1,9 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
 int g1, g2;
 
-void foo (int x)
-{
+void foo(int x) {
   int y;
 
   if (x)
@@ -15,10 +14,9 @@ void foo (int x)
   g2 = 7930 / x;
 }
 
-int main ()
-{
-  foo (793);
+int main() {
+  foo(793);
   if (g1 != 10 || g2 != 10)
-    abort ();
-  exit (0);
+    abort();
+  exit(0);
 }

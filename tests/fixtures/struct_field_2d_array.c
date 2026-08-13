@@ -17,7 +17,7 @@ static void fill(struct table *t) {
 }
 
 static void fill_via_ptr(struct table *t, int i) {
-  char(*row)[3] = t->rows;
+  char (*row)[3]  = t->rows;
   (row + i)[0][0] = 'X';
 }
 
@@ -32,8 +32,8 @@ static void fill_cube(struct cube *c) {
 }
 
 static int sum_cube_via_ptr(struct cube *c) {
-  int(*plane)[4] = c->v[1];
-  int total = 0;
+  int (*plane)[4] = c->v[1];
+  int total       = 0;
   for (int j = 0; j < 3; j++) {
     for (int k = 0; k < 4; k++) {
       total += (plane + j)[0][k];

@@ -7,17 +7,15 @@
 struct {
   signed b : 1;
 } f;
-int i = 55;
-__attribute__((noinline))
-void check(int a)
-{
-        if (!a)
-        __builtin_abort();
+int                            i = 55;
+__attribute__((noinline)) void check(int a) {
+  if (!a)
+    __builtin_abort();
 }
 int main() {
-    int t = i != 5;
-    t = t*5;
-    f.b = t;
-    int tt = f.b;
-    check(f.b);
+  int t  = i != 5;
+  t      = t * 5;
+  f.b    = t;
+  int tt = f.b;
+  check(f.b);
 }

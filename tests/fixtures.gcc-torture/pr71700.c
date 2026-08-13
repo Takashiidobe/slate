@@ -1,19 +1,16 @@
-struct S
-{
-  signed f0 : 16;
+struct S {
+  signed   f0 : 16;
   unsigned f1 : 1;
 };
 
-int b;
+int             b;
 static struct S c[] = {{-1, 0}, {-1, 0}};
-struct S d;
+struct S        d;
 
-int
-main ()
-{
+int main() {
   struct S e = c[0];
-  d = e;
+  d          = e;
   if (d.f1 != 0)
-    __builtin_abort ();
+    __builtin_abort();
   return 0;
 }

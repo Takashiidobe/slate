@@ -1,11 +1,9 @@
 #include <limits.h>
 
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-int
-sub ()
-{
+int sub() {
   int dummy = 0, a = 16;
 
   if (a / INT_MAX / 16 == 0)
@@ -14,11 +12,9 @@ sub ()
     return a / INT_MAX / 16;
 }
 
-int
-main ()
-{
-  if (sub () != 0)
-    abort ();
+int main() {
+  if (sub() != 0)
+    abort();
 
-  exit (0);
+  exit(0);
 }

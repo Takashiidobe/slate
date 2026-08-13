@@ -5,12 +5,12 @@
    functions without parameters that each need at least one "long"
    preserved.  Exposed problems related to the MMIX port.  */
 
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-long level = 0;
-extern long foo (void);
-extern long bar (void);
+long        level = 0;
+extern long foo(void);
+extern long bar(void);
 
 #ifdef STACK_SIZE
 #define DEPTH ((STACK_SIZE) / 512 + 1)
@@ -18,25 +18,19 @@ extern long bar (void);
 #define DEPTH 500
 #endif
 
-int
-main (void)
-{
-  if (foo () == -42)
-    exit (0);
+int main(void) {
+  if (foo() == -42)
+    exit(0);
 
-  abort ();
+  abort();
 }
 
-long
-foo (void)
-{
+long foo(void) {
   long tmp = ++level;
-  return bar () + tmp;
+  return bar() + tmp;
 }
 
-long
-bar (void)
-{
+long bar(void) {
   long tmp = level;
-  return tmp > DEPTH - 1 ? -42 - tmp : foo () - tmp;
+  return tmp > DEPTH - 1 ? -42 - tmp : foo() - tmp;
 }

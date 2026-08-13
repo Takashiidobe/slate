@@ -1,20 +1,22 @@
 /* PR c++/14755 */
-extern void abort (void);
-extern void exit (int);
+extern void abort(void);
+extern void exit(int);
 
-int
-main (void)
-{
+int main(void) {
 #if __INT_MAX__ >= 2147483647
-  struct { int count: 31; } s = { 0 };
+  struct {
+    int count : 31;
+  } s = {0};
   while (s.count--)
-    abort ();
+    abort();
 #elif __INT_MAX__ >= 32767
-  struct { int count: 15; } s = { 0 };
+  struct {
+    int count : 15;
+  } s = {0};
   while (s.count--)
-    abort ();
+    abort();
 #else
   /* Don't bother because __INT_MAX__ is too small.  */
 #endif
-  exit (0);
+  exit(0);
 }

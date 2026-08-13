@@ -1,18 +1,14 @@
-extern void abort (void);
-extern void exit (int);
+extern void abort(void);
+extern void exit(int);
 
-int
-foo (int x)
-{
+int foo(int x) {
   if (x == -2 || -x - 100 >= 0)
-    abort ();
+    abort();
   return 0;
 }
-           
-int
-main ()
-{
-  foo (-3);
-  foo (-99);
-  exit (0);
+
+int main() {
+  foo(-3);
+  foo(-99);
+  exit(0);
 }

@@ -2,29 +2,27 @@
    Although the original test case didn't use any GNUisms, it proved
    difficult to reduce without the named register extension.  */
 
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
 #if __SH64__ == 32
-#define LOC asm ("r10")
+#define LOC asm("r10")
 #else
 #define LOC
 #endif
 
-unsigned int foo (char *c, unsigned int x, unsigned int y)
-{
+unsigned int foo(char *c, unsigned int x, unsigned int y) {
   register unsigned int z LOC;
 
-  __builtin_sprintf (c, "%d", x / y);
+  __builtin_sprintf(c, "%d", x / y);
   z = x + 1;
   return z / (y + 1);
 }
 
-int main ()
-{
+int main() {
   char c[16];
 
-  if (foo (c, ~1U, 4) != (~0U / 5))
-    abort ();
-  exit (0);
+  if (foo(c, ~1U, 4) != (~0U / 5))
+    abort();
+  exit(0);
 }

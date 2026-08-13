@@ -1,20 +1,16 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-int main ()
-{
+int main() {
   long winds = 0;
 
-  while (winds != 0)
-    {
-      if (*(char *) winds)
-	break;
-    }
+  while (winds != 0) {
+    if (*(char *)winds)
+      break;
+  }
 
-  if (winds == 0 || winds != 0 || *(char *) winds)
-    exit (0);
+  if (winds == 0 || winds != 0 || *(char *)winds)
+    exit(0);
 
-  abort ();
+  abort();
 }
-
-

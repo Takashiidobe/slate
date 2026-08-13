@@ -1,36 +1,35 @@
 /* { dg-do run } */
-extern void abort (void);
+extern void abort(void);
 
-int main()
-{
-  float fi = __builtin_inff();
-  double di = __builtin_inf();
+int main() {
+  float       fi = __builtin_inff();
+  double      di = __builtin_inf();
   long double li = __builtin_infl();
 
-  float fh = __builtin_huge_valf();
-  double dh = __builtin_huge_val();
+  float       fh = __builtin_huge_valf();
+  double      dh = __builtin_huge_val();
   long double lh = __builtin_huge_vall();
 
   if (fi + fi != fi)
-    abort ();
+    abort();
   if (di + di != di)
-    abort ();
+    abort();
   if (li + li != li)
-    abort ();
+    abort();
 
   if (fi != fh)
-    abort ();
+    abort();
   if (di != dh)
-    abort ();
+    abort();
   if (li != lh)
-    abort ();
+    abort();
 
   if (fi <= 0)
-    abort ();
+    abort();
   if (di <= 0)
-    abort ();
+    abort();
   if (li <= 0)
-    abort ();
+    abort();
 
   return 0;
 }

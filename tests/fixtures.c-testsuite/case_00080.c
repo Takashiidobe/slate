@@ -1,12 +1,6 @@
-void
-voidfn()
-{
-    return;
-}
+void voidfn() { return; }
 
-int
-main()
-{
-    voidfn();
-    return 0;
+int main() {
+  voidfn();
+  return 0;
 }

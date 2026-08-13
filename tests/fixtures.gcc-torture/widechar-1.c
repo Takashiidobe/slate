@@ -9,10 +9,8 @@ void exit(int);
 #define zero C
 #endif
 
-int
-main(void)
-{
+int main(void) {
   if (zero != 0)
-    abort ();
-  exit (0);
+    abort();
+  exit(0);
 }

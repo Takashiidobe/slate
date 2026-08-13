@@ -1,20 +1,18 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-int x[10] = { 0,1,2,3,4,5,6,7,8,9};
+int x[10] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 
-int
-main()
-{
+int main() {
   int niterations = 0, i;
 
   for (;;) {
     int i, mi, max;
     max = 0;
-    for (i = 0; i < 10 ; i++) {
+    for (i = 0; i < 10; i++) {
       if (x[i] > max) {
-	max = x[i];
-	mi = i;
+        max = x[i];
+        mi  = i;
       }
     }
     if (max == 0)
@@ -22,8 +20,8 @@ main()
     x[mi] = 0;
     niterations++;
     if (niterations > 10)
-      abort ();
+      abort();
   }
 
-  exit (0);
+  exit(0);
 }

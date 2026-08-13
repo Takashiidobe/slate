@@ -1,8 +1,4 @@
 typedef int myint;
-myint x = (myint)1;
+myint       x = (myint)1;
 
-int
-main(void)
-{
-	return x-1;
-}
+int main(void) { return x - 1; }

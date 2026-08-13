@@ -1,22 +1,18 @@
-void abort (void);
+void abort(void);
 
 static int a[199];
 
-static void
-foo ()
-{
+static void foo() {
   int i;
   for (i = 198; i >= 0; i--)
     a[i] = i;
 }
 
-int
-main ()
-{
+int main() {
   int i;
-  foo ();
+  foo();
   for (i = 0; i < 199; i++)
     if (a[i] != i)
-      abort ();
+      abort();
   return 0;
 }

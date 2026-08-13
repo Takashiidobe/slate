@@ -1,9 +1,7 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-int
-ns_name_skip (unsigned char **x, unsigned char *y)
-{
+int ns_name_skip(unsigned char **x, unsigned char *y) {
   *x = 0;
   return 0;
 }
@@ -11,17 +9,15 @@ ns_name_skip (unsigned char **x, unsigned char *y)
 unsigned char a[2];
 
 int dn_skipname(unsigned char *ptr, unsigned char *eom) {
-    unsigned char *saveptr = ptr;
+  unsigned char *saveptr = ptr;
 
-    if (ns_name_skip(&ptr, eom) == -1)
-	        return (-1);
-    return (ptr - saveptr);
+  if (ns_name_skip(&ptr, eom) == -1)
+    return (-1);
+  return (ptr - saveptr);
 }
 
-int
-main(void)
-{
-  if (dn_skipname (&a[0], &a[1]) == 0)
-    abort ();
-  exit (0);
+int main(void) {
+  if (dn_skipname(&a[0], &a[1]) == 0)
+    abort();
+  exit(0);
 }

@@ -1,18 +1,16 @@
 extern void abort(void);
-void foo(int *p)
-{
+void        foo(int *p) {
   int x;
   int y;
-  x = *p;
+  x  = *p;
   *p = 0;
-  y = *p;
+  y  = *p;
   if (x != y)
     return;
-  abort ();
+  abort();
 }
 
-int main()
-{
+int main() {
   int a = 1;
   foo(&a);
   return 0;

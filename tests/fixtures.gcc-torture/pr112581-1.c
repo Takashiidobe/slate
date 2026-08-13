@@ -6,7 +6,7 @@
 int a = -1, b = 2501896061, c, d, e, f = 3, g;
 int main() {
   unsigned h;
-  int i;
+  int      i;
   d = 0;
   for (; d < 1; d++) {
     int j = ~-((6UL ^ a) / b);

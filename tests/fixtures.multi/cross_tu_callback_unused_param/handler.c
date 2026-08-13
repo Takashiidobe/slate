@@ -5,4 +5,6 @@ int add_ignore_b(int a, int b) {
   return a + 1;
 }
 
-int call_handler(struct Callback *cb, int a, int b) { return cb->handler(a, b); }
+int call_handler(struct Callback *cb, int a, int b) {
+  return cb->handler(a, b);
+}

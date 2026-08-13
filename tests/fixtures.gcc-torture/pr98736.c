@@ -1,8 +1,8 @@
 /* PR tree-optimization/98736 */
 
-int a[6];
+int  a[6];
 char b, c;
-int main() {
+int  main() {
   int d[4] = {0, 0, 0, 0};
   for (c = 0; c <= 5; c++) {
     for (b = 2; b != 0; b++)

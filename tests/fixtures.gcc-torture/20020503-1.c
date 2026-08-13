@@ -1,14 +1,12 @@
 /* PR 6534 */
-/* GCSE unified the two i<0 tests, but if-conversion to ui=abs(i) 
+/* GCSE unified the two i<0 tests, but if-conversion to ui=abs(i)
    insertted the code at the wrong place corrupting the i<0 test.  */
 
-void abort (void);
-static char *
-inttostr (long i, char buf[128])
-{
+void         abort(void);
+static char *inttostr(long i, char buf[128]) {
   unsigned long ui = i;
-  char *p = buf + 127;
-  *p = '\0';
+  char         *p  = buf + 127;
+  *p               = '\0';
   if (i < 0)
     ui = -ui;
   do
@@ -19,13 +17,11 @@ inttostr (long i, char buf[128])
   return p;
 }
 
-int
-main ()
-{
+int main() {
   char buf[128], *p;
 
-  p = inttostr (-1, buf);
+  p = inttostr(-1, buf);
   if (*p != '-')
-    abort ();
+    abort();
   return 0;
 }

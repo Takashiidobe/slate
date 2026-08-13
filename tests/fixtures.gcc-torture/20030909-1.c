@@ -1,35 +1,28 @@
-void abort ();
-void exit (int);
+void abort();
+void exit(int);
 
-void test(int x, int y)
-{
+void test(int x, int y) {
   if (x == y)
-    abort ();
+    abort();
 }
 
-void foo(int x, int y)
-{
+void foo(int x, int y) {
   if (x == y)
     goto a;
-  else
-    {
-a:;
-      if (x == y)
-	goto b;
-      else
-	{
-b:;
-	  if (x != y)
-	    test (x, y);
-	}
+  else {
+  a:;
+    if (x == y)
+      goto b;
+    else {
+    b:;
+      if (x != y)
+        test(x, y);
     }
+  }
 }
 
-int main(void)
-{
-  foo (0, 0);
+int main(void) {
+  foo(0, 0);
 
-  exit (0);
+  exit(0);
 }
-
-

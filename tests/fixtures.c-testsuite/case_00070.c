@@ -8,8 +8,6 @@ int x = 0;
 X
 #endif
 
-int
-main()
-{
-	return x;
+    int main() {
+  return x;
 }

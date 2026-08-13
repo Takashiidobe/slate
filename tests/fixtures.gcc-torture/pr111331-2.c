@@ -3,13 +3,13 @@ int a;
 int b;
 
 int main() {
-  int d = b+30;
+  int d = b + 30;
   {
-        int t;
-        if (d < 29)
-          t =  29;
-        else
-          t = (d > 28) ? 28 : d;
+    int t;
+    if (d < 29)
+      t = 29;
+    else
+      t = (d > 28) ? 28 : d;
     a = t;
   }
   volatile int t = a;

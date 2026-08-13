@@ -10,23 +10,19 @@ int mul7(int x) { return x * 7; }
 
 struct Inner {
   fnptr scanners[3];
-  int tag;
+  int   tag;
 };
 
 struct Outer {
-  struct Inner inner;
+  struct Inner  inner;
   unsigned char bytes[8];
-  fnptr trailing1;
-  fnptr trailing2;
-  int trailing3;
+  fnptr         trailing1;
+  fnptr         trailing2;
+  int           trailing3;
 };
 
 struct Outer g = {
-    {{add1, add2, add3}, 42},
-    {1, 2, 3, 4, 5, 6, 7, 8},
-    mul5,
-    mul7,
-    99,
+    {{add1, add2, add3}, 42}, {1, 2, 3, 4, 5, 6, 7, 8}, mul5, mul7, 99,
 };
 
 int main(void) {

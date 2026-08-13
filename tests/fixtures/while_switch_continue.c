@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 int main(void) {
-  int i = 0;
+  int i     = 0;
   int steps = 0;
   while (i < 6) {
     int x = i % 3;

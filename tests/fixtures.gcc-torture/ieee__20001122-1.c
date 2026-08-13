@@ -1,18 +1,16 @@
 /* { dg-do run } */
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
 volatile double a, *p;
 
-int main ()
-{
-  double c, d;
+int main() {
+  double          c, d;
   volatile double b;
 
   d = 1.0;
   p = &b;
-  do
-  {
+  do {
     c = d;
     d = c * 0.5;
     b = 1 + d;
@@ -22,5 +20,5 @@ int main ()
   if (a == 1.0)
     abort();
 
-  exit (0);
+  exit(0);
 }

@@ -1,19 +1,17 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-int
-main()
-{
-    int i = 1;
-    int j = 0;
+int main() {
+  int i = 1;
+  int j = 0;
 
-    while (i != 1024 || j <= 0) {
-        i *= 2;
-        ++ j;
-    }
+  while (i != 1024 || j <= 0) {
+    i *= 2;
+    ++j;
+  }
 
-    if (j != 10)
-      abort ();
+  if (j != 10)
+    abort();
 
-    exit (0);
+  exit(0);
 }

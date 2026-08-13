@@ -1,14 +1,12 @@
-typedef unsigned __attribute__((__vector_size__ (1*sizeof(unsigned)))) V;
+typedef unsigned __attribute__((__vector_size__(1 * sizeof(unsigned)))) V;
 
-V v;
+V             v;
 unsigned char c;
 
-int
-main (void)
-{
-  V x = (v > 0) > (v != c);
+int main(void) {
+  V                   x = (v > 0) > (v != c);
   volatile signed int t = x[0];
   if (t)
-    __builtin_abort ();
+    __builtin_abort();
   return 0;
 }

@@ -5,41 +5,27 @@ void abort(void);
 
 /* Baselines.  */
 struct {
-  char a1c;
+  char  a1c;
   char *a1p;
-} a1 = {
-  '4',
-  "62"
-};
+} a1 = {'4', "62"};
 
 struct {
   char a2c;
   char a2p[2];
-} a2 = {
-  'v',
-  "cq"
-};
+} a2 = {'v', "cq"};
 
 /* The tests.  */
 struct {
   char a3c;
   char a3p[];
-} a3 = {
-  'o',
-  "wx"
-};
+} a3 = {'o', "wx"};
 
 struct {
   char a4c;
   char a4p[];
-} a4 = {
-  '9',
-  { 'e', 'b' }
-};
+} a4 = {'9', {'e', 'b'}};
 
-int
-main(void)
-{
+int main(void) {
   if (a1.a1c != '4')
     abort();
   if (a1.a1p[0] != '6')

@@ -1,12 +1,10 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-int
-f (unsigned bitcount, int mant)
-{
+int f(unsigned bitcount, int mant) {
   int mask = -1 << bitcount;
   {
-    if (! (mant & -mask))
+    if (!(mant & -mask))
       goto ab;
     if (mant & ~mask)
       goto auf;
@@ -17,10 +15,8 @@ auf:
   return 1;
 }
 
-int
-main (void)
-{
-  if (f (0, -1))
-    abort ();
-  exit (0);
+int main(void) {
+  if (f(0, -1))
+    abort();
+  exit(0);
 }

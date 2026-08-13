@@ -1,28 +1,20 @@
-extern void abort (void);
+extern void abort(void);
 
-struct A
-{
+struct A {
   int i;
 };
-struct B
-{
+struct B {
   struct A a;
-  int j;
+  int      j;
 };
 
-static void
-foo (struct B *p)
-{
-  ((struct A *)p)->i = 1;
-}
+static void foo(struct B *p) { ((struct A *)p)->i = 1; }
 
-int main()
-{
+int main() {
   struct A a;
   a.i = 0;
-  foo ((struct B *)&a);
+  foo((struct B *)&a);
   if (a.i != 1)
-    abort ();
+    abort();
   return 0;
 }
-

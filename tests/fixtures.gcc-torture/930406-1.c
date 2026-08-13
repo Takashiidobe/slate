@@ -1,13 +1,11 @@
 /* { dg-add-options stack_size } */
 
-void exit (int);
+void exit(int);
 
-void
-f(void)
-{
+void f(void) {
   int x = 1;
 #if defined(STACK_SIZE)
-  char big[STACK_SIZE/2];
+  char big[STACK_SIZE / 2];
 #else
   char big[0x1000];
 #endif
@@ -22,8 +20,4 @@ f(void)
   exit(0);
 }
 
-int
-main(void)
-{
-  f();
-}
+int main(void) { f(); }

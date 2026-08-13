@@ -1,8 +1,6 @@
-extern void exit (int);
+extern void exit(int);
 
-static inline int
-foo (void)
-{
+static inline int foo(void) {
 #ifdef __OPTIMIZE__
   extern int undefined_reference;
   return undefined_reference;
@@ -11,16 +9,11 @@ foo (void)
 #endif
 }
 
-static inline int
-bar (void)
-{
+static inline int bar(void) {
   if (foo == foo)
     return 1;
   else
-    return foo ();
+    return foo();
 }
 
-int main (void)
-{
-  exit (0);
-}
+int main(void) { exit(0); }

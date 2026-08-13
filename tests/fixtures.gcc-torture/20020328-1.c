@@ -1,19 +1,16 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
 int b = 0;
 
-void func (void) { }
+void func(void) {}
 
-void
-testit(int x)
-{
+void testit(int x) {
   if (x != 20)
-    abort ();
+    abort();
 }
 
-int
-main()
+int main()
 
 {
   int a = 0;
@@ -23,6 +20,6 @@ main()
 
   /* simplify_and_const_int would incorrectly omit the mask in
      the line below.  */
-  testit ((a + 23) & 0xfffffffc);
-  exit (0);
+  testit((a + 23) & 0xfffffffc);
+  exit(0);
 }

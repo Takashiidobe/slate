@@ -6,20 +6,15 @@
 
    Written by Paolo Bonzini, 26th May 2004.  */
 
-extern void abort (void);
+extern void abort(void);
 
-int
-foo (double x, double y)
-{
+int foo(double x, double y) {
   /* If miscompiled the following may become false.  */
   return (x > y) && ((int)x == (int)y);
 }
 
-int
-main ()
-{
-  if (! foo (1.3,1.0))
-    abort ();
+int main() {
+  if (!foo(1.3, 1.0))
+    abort();
   return 0;
 }
-

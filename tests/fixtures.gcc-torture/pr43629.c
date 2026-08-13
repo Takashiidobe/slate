@@ -1,13 +1,12 @@
-int flag;
-extern void abort (void);
-int main()
-{
+int         flag;
+extern void abort(void);
+int         main() {
   int x;
   if (flag)
     x = -1;
-  else 
+  else
     x &= 0xff;
   if (x & ~0xff)
-    abort ();
+    abort();
   return 0;
 }

@@ -2,9 +2,9 @@
 struct a {
   int b : 4;
 } d;
-static int c, e;
+static int            c, e;
 static const struct a f;
-static void g(const struct a h) {
+static void           g(const struct a h) {
   for (; c < 1; c++)
     d = h;
   e = h.b;

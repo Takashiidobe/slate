@@ -1,11 +1,9 @@
-int
-main()
-{
-	int i;
+int main() {
+  int i;
 
-	for(i = 0; i < 10; i++)
-		if (!i)
-			continue;
-	
-	return 0;
+  for (i = 0; i < 10; i++)
+    if (!i)
+      continue;
+
+  return 0;
 }

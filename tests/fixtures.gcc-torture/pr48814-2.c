@@ -1,18 +1,13 @@
-extern void abort (void);
+extern void abort(void);
 
-int arr[] = {1,2,3,4};
+int arr[] = {1, 2, 3, 4};
 int count = 0;
 
-int
-incr (void)
-{
-  return ++count;
-}
+int incr(void) { return ++count; }
 
-int main()
-{
-  arr[count++] = incr ();
+int main() {
+  arr[count++] = incr();
   if (count != 2 || arr[count] != 3)
-    abort ();
+    abort();
   return 0;
 }

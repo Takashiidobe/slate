@@ -3,21 +3,16 @@
 
 extern void abort(void);
 
-void DisplayNumber (unsigned long v)
-{
+void DisplayNumber(unsigned long v) {
   if (v != 0x9aL)
     abort();
 }
 
-unsigned long ReadNumber (void)
-{
-  return 0x009a0000L;
-}
+unsigned long ReadNumber(void) { return 0x009a0000L; }
 
-int main (void)
-{
+int main(void) {
   unsigned long tmp;
   tmp = (ReadNumber() & 0x00ff0000L) >> 16;
-  DisplayNumber (tmp);
+  DisplayNumber(tmp);
   return 0;
 }

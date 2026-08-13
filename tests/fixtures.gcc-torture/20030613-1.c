@@ -14,9 +14,7 @@ COMPLEX {
   long y;
 };
 
-
-static COMPLEX CCID (COMPLEX x)
-{
+static COMPLEX CCID(COMPLEX x) {
   COMPLEX a;
 
   a.x = x.x;
@@ -25,32 +23,26 @@ static COMPLEX CCID (COMPLEX x)
   return a;
 }
 
-
-static COMPLEX CPOW (COMPLEX x, int y)
-{
+static COMPLEX CPOW(COMPLEX x, int y) {
   COMPLEX a;
   a = x;
 
   while (--y > 0)
-    a=CCID(a);
+    a = CCID(a);
 
   return a;
 }
 
+static int c5p(COMPLEX x) {
+  COMPLEX a, b;
+  a = CPOW(x, 2);
+  b = CCID(CPOW(a, 2));
 
-static int c5p (COMPLEX x)
-{
-  COMPLEX a,b;
-  a = CPOW (x, 2);
-  b = CCID( CPOW(a,2) );
-    
-  return (b.x == b.y); 
+  return (b.x == b.y);
 }
 
-
-int main (void)
-{
-  COMPLEX  x;  
+int main(void) {
+  COMPLEX x;
 
   x.x = -7;
   x.y = -7;

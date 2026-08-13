@@ -21,7 +21,7 @@ static Status handle_fail(int x) {
 int main(void) {
   struct Parser p;
   for (int i = 0; i < 2; i++) {
-    p.processor = (i == 0) ? handle_ok : handle_fail;
+    p.processor   = (i == 0) ? handle_ok : handle_fail;
     Status result = p.processor(5);
     if (result == E_OK) {
       printf("ok\n");

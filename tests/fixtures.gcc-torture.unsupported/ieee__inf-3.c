@@ -1,80 +1,75 @@
 /* { dg-do run } */
-extern void abort (void);
+extern void abort(void);
 
-void test(double f, double i)
-{
+void test(double f, double i) {
   if (f == __builtin_huge_val())
-    abort ();
+    abort();
   if (f == -__builtin_huge_val())
-    abort ();
+    abort();
   if (i == -__builtin_huge_val())
-    abort ();
+    abort();
   if (i != __builtin_huge_val())
-    abort ();
+    abort();
 
   if (f >= __builtin_huge_val())
-    abort ();
+    abort();
   if (f > __builtin_huge_val())
-    abort ();
+    abort();
   if (i > __builtin_huge_val())
-    abort ();
+    abort();
   if (f <= -__builtin_huge_val())
-    abort ();
+    abort();
   if (f < -__builtin_huge_val())
-    abort ();
+    abort();
 }
 
-void testf(float f, float i)
-{
+void testf(float f, float i) {
   if (f == __builtin_huge_valf())
-    abort ();
+    abort();
   if (f == -__builtin_huge_valf())
-    abort ();
+    abort();
   if (i == -__builtin_huge_valf())
-    abort ();
+    abort();
   if (i != __builtin_huge_valf())
-    abort ();
+    abort();
 
   if (f >= __builtin_huge_valf())
-    abort ();
+    abort();
   if (f > __builtin_huge_valf())
-    abort ();
+    abort();
   if (i > __builtin_huge_valf())
-    abort ();
+    abort();
   if (f <= -__builtin_huge_valf())
-    abort ();
+    abort();
   if (f < -__builtin_huge_valf())
-    abort ();
+    abort();
 }
 
-void testl(long double f, long double i)
-{
+void testl(long double f, long double i) {
   if (f == __builtin_huge_vall())
-    abort ();
+    abort();
   if (f == -__builtin_huge_vall())
-    abort ();
+    abort();
   if (i == -__builtin_huge_vall())
-    abort ();
+    abort();
   if (i != __builtin_huge_vall())
-    abort ();
+    abort();
 
   if (f >= __builtin_huge_vall())
-    abort ();
+    abort();
   if (f > __builtin_huge_vall())
-    abort ();
+    abort();
   if (i > __builtin_huge_vall())
-    abort ();
+    abort();
   if (f <= -__builtin_huge_vall())
-    abort ();
+    abort();
   if (f < -__builtin_huge_vall())
-    abort ();
+    abort();
 }
 
-int main()
-{
-  test (34.0, __builtin_huge_val());
-  testf (34.0f, __builtin_huge_valf());
-  testl (34.0l, __builtin_huge_vall());
+int main() {
+  test(34.0, __builtin_huge_val());
+  testf(34.0f, __builtin_huge_valf());
+  testl(34.0l, __builtin_huge_vall());
   return 0;
 }
-

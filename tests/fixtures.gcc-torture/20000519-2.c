@@ -1,10 +1,9 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
 long x = -1L;
 
-int main()
-{
+int main() {
   long b = (x != -1L);
 
   if (b)
@@ -12,4 +11,3 @@ int main()
 
   exit(0);
 }
-

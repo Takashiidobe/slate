@@ -1,20 +1,12 @@
-struct S
-{
-	int	(*fptr)();
+struct S {
+  int (*fptr)();
 };
 
-int
-foo()
-{
-	return 0;
-}
+int foo() { return 0; }
 
-int
-main()
-{
-	struct S v;
-	
-	v.fptr = foo;
-	return v.fptr();
-}
+int main() {
+  struct S v;
 
+  v.fptr = foo;
+  return v.fptr();
+}

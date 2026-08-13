@@ -6,8 +6,6 @@ X
 int x = 0;
 #endif
 
-int
-main()
-{
-	return x;
+    int main() {
+  return x;
 }

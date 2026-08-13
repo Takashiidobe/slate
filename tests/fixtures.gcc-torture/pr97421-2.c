@@ -2,11 +2,10 @@
 /* { dg-additional-options "-fmodulo-sched -fno-dce -fno-strict-aliasing" } */
 
 static int a, b, c;
-int *d = &c;
-int **e = &d;
-int ***f = &e;
-int main()
-{
+int       *d = &c;
+int      **e = &d;
+int     ***f = &e;
+int        main() {
   int h;
   for (a = 2; a; a--)
     for (h = 0; h <= 2; h++)

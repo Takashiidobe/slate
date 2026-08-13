@@ -1,20 +1,15 @@
 /* { dg-require-effective-target int32plus } */
-extern void abort (void);
+extern void abort(void);
 
-struct
-{
+struct {
   int b : 29;
 } f;
 
-void foo (short j)
-{
-  f.b = j;
-}
+void foo(short j) { f.b = j; }
 
-int main()
-{
-  foo (-55);
+int main() {
+  foo(-55);
   if (f.b != -55)
-    abort ();
+    abort();
   return 0;
 }

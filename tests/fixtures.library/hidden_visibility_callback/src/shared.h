@@ -8,6 +8,6 @@ struct Parser {
 };
 
 void set_handler(struct Parser *p, callback_fn h);
-int add_ignore_b(int a, int b);
+int  add_ignore_b(int a, int b);
 
 #endif

@@ -1,13 +1,12 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-unsigned char x = 50;
+unsigned char  x = 50;
 volatile short y = -5;
 
-int main ()
-{
+int main() {
   x /= y;
-  if (x != (unsigned char) -10)
-    abort ();
-  exit (0);
+  if (x != (unsigned char)-10)
+    abort();
+  exit(0);
 }

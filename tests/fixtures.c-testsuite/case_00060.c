@@ -1,11 +1,9 @@
 // line comment
 
-int
-main()
-{
-	/*
-		multiline
-		comment
-	*/
-	return 0;
+int main() {
+  /*
+          multiline
+          comment
+  */
+  return 0;
 }

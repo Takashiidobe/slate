@@ -1,11 +1,10 @@
-void exit (int);
+void exit(int);
 
-int
-main (void)
-{
+int main(void) {
   unsigned char z = 0;
 
-  do ;
+  do
+    ;
   while (--z > 0);
-  exit (0);
+  exit(0);
 }

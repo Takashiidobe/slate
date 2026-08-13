@@ -18,12 +18,12 @@ static void dump80(const char *name, long double value) {
 }
 
 int main(void) {
-  unsigned char one_bits[10] = {0, 0, 0, 0, 0, 0, 0, 0x80, 0xff, 0x3f};
-  unsigned char two_bits[10] = {0, 0, 0, 0, 0, 0, 0, 0x80, 0x00, 0x40};
+  unsigned char one_bits[10]  = {0, 0, 0, 0, 0, 0, 0, 0x80, 0xff, 0x3f};
+  unsigned char two_bits[10]  = {0, 0, 0, 0, 0, 0, 0, 0x80, 0x00, 0x40};
   unsigned char near_bits[10] = {1, 0, 0, 0, 0, 0, 0, 0x80, 0xff, 0x3f};
-  long double one = load80(one_bits);
-  long double two = load80(two_bits);
-  long double near = load80(near_bits);
+  long double   one           = load80(one_bits);
+  long double   two           = load80(two_bits);
+  long double   near          = load80(near_bits);
 
   dump80("add", one + two);
   dump80("sub", near - one);
@@ -31,7 +31,7 @@ int main(void) {
   dump80("div", two / one);
   dump80("neg", -near);
 
-  printf("%d %d %d %d\n", one < two, near > one, one == one, near != one);
+  printf("%d %d %d %d\n", one<two, near> one, one == one, near != one);
   printf("%d\n", (int)(one + two));
   dump80("from_i64", (long double)1234567890123LL);
   printf("%d\n", (int)(long double)123456789);

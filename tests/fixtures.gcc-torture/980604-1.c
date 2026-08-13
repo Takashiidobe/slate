@@ -1,5 +1,5 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
 int a = 1;
 int b = -1;
@@ -7,9 +7,7 @@ int b = -1;
 int c = 1;
 int d = 0;
 
-int
-main (void)
-{
+int main(void) {
   double e;
   double f;
   double g;
@@ -18,7 +16,6 @@ main (void)
   g = d;
   e = (a < b) ? f : g;
   if (e)
-    abort ();
+    abort();
   exit(0);
 }
-

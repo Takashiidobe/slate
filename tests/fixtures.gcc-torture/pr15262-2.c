@@ -3,40 +3,34 @@
    foo() we cannot tell for certain whether 'q' and 'b' alias each
    other.  */
 
-void abort (void);
+void abort(void);
 
-struct A
-{
+struct A {
   int t;
   int i;
 };
 
-struct B
-{
-  int *p;
+struct B {
+  int  *p;
   float b;
 };
 
 float X;
 
-int
-foo (struct B b, struct A *q, float *h)
-{
-  X += *h;
-  *(b.p) = 3;
-  q->t = 2;
+int foo(struct B b, struct A *q, float *h) {
+  X      += *h;
+  *(b.p)  = 3;
+  q->t    = 2;
   return *(b.p);
 }
 
-int
-main(void)
-{
+int main(void) {
   struct A a;
   struct B b;
 
   b.p = &a.t;
-  if (foo (b, &a, &X) == 3)
-    abort ();
+  if (foo(b, &a, &X) == 3)
+    abort();
 
   return 0;
 }

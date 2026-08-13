@@ -28,8 +28,7 @@ static int classify(_BitInt(200) c) {
 
 int main() {
   printf("%d\n", classify(1));
-  printf("%d\n",
-         classify(123456789012345678901234567890123456789012345wb));
+  printf("%d\n", classify(123456789012345678901234567890123456789012345wb));
   printf("%d\n", classify(4));
   printf("%d\n", classify(5));
   printf("%d\n", classify(6));

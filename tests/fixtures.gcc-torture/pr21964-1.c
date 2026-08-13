@@ -1,19 +1,13 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-void
-foo (int n, int m)
-{
+void foo(int n, int m) {
   if (m == 0)
-    exit (0);
+    exit(0);
   else if (n != 0)
-    abort ();
+    abort();
   else
-    foo (n++, m - 1);
+    foo(n++, m - 1);
 }
- 
-int
-main (void)
-{
-  foo (0, 4);
-}
+
+int main(void) { foo(0, 4); }

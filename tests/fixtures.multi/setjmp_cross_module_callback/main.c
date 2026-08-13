@@ -1,9 +1,9 @@
 #include <stdio.h>
 
 extern int failures;
-void run_case(void (*fn)(int), int ok);
-void check(int ok);
-void other_check(int ok);
+void       run_case(void (*fn)(int), int ok);
+void       check(int ok);
+void       other_check(int ok);
 
 int main(void) {
   void (*other)(int) = other_check;

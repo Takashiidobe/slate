@@ -1,4 +1,4 @@
-extern void store_long_double(long double *);
+extern void               store_long_double(long double *);
 extern const long double *load_long_double(const long double *);
 
 long double probe(void) {

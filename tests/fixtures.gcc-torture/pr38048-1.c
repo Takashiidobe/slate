@@ -1,10 +1,9 @@
 extern void abort(void);
 
-int foo ()
-{
+int foo() {
   int mat[2][1];
   int (*a)[1] = mat;
-  int det = 0;
+  int det     = 0;
   int i;
   mat[0][0] = 1;
   mat[1][0] = 2;
@@ -13,10 +12,8 @@ int foo ()
   return det;
 }
 
-int main()
-{
-  if (foo () != 3)
-    abort ();
+int main() {
+  if (foo() != 3)
+    abort();
   return 0;
 }
-

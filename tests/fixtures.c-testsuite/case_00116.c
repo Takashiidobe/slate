@@ -1,11 +1,3 @@
-int
-f(int f)
-{
-	return f;
-}
+int f(int f) { return f; }
 
-int
-main()
-{
-	return f(0);
-}
+int main() { return f(0); }

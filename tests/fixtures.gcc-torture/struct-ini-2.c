@@ -1,21 +1,19 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
 struct {
-  int a:4;
-  int :4;
-  int b:4;
-  int c:4;
-} x = { 2,3,4 };
+  int a : 4;
+  int   : 4;
+  int b : 4;
+  int c : 4;
+} x = {2, 3, 4};
 
-int
-main (void)
-{
+int main(void) {
   if (x.a != 2)
-    abort ();
+    abort();
   if (x.b != 3)
-    abort ();
+    abort();
   if (x.c != 4)
-    abort ();
-  exit (0);
+    abort();
+  exit(0);
 }

@@ -1,6 +1,3 @@
 extern int x;
 
-int main()
-{
-	return 0;
-}
+int main() { return 0; }

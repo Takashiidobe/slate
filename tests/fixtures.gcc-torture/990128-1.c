@@ -1,53 +1,51 @@
-extern void abort (void);
-extern void exit (int);
-extern int printf (const char *,...);
+extern void abort(void);
+extern void exit(int);
+extern int  printf(const char *, ...);
 
-struct s { struct s *n; } *p;
+struct s {
+  struct s *n;
+}       *p;
 struct s ss;
-#define MAX     10
+#define MAX 10
 struct s sss[MAX];
-int count = 0;
+int      count = 0;
 
-void sub( struct s *p, struct s **pp );
-int look( struct s *p, struct s **pp );
+void sub(struct s *p, struct s **pp);
+int  look(struct s *p, struct s **pp);
 
-int
-main(void)
-{
-    struct s *pp;
-    struct s *next;
-    int i;
+int main(void) {
+  struct s *pp;
+  struct s *next;
+  int       i;
 
-    p = &ss;
-    next = p;
-    for ( i = 0; i < MAX; i++ ) {
-        next->n = &sss[i];
-        next = next->n;
-    }
-    next->n = 0;
+  p    = &ss;
+  next = p;
+  for (i = 0; i < MAX; i++) {
+    next->n = &sss[i];
+    next    = next->n;
+  }
+  next->n = 0;
 
-    sub( p, &pp );
-    if (count != MAX+2)
-      abort ();
+  sub(p, &pp);
+  if (count != MAX + 2)
+    abort();
 
-    exit( 0 );
+  exit(0);
 }
 
-void sub( struct s *p, struct s **pp )
-{
-   for ( ; look( p, pp ); ) {
-        if ( p )
-            p = p->n;
-        else
-            break;
-   }
+void sub(struct s *p, struct s **pp) {
+  for (; look(p, pp);) {
+    if (p)
+      p = p->n;
+    else
+      break;
+  }
 }
 
-int look( struct s *p, struct s **pp )
-{
-    for ( ; p; p = p->n )
-        ;
-    *pp = p;
-    count++;
-    return( 1 );
+int look(struct s *p, struct s **pp) {
+  for (; p; p = p->n)
+    ;
+  *pp = p;
+  count++;
+  return (1);
 }

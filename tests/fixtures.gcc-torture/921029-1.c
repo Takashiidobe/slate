@@ -1,23 +1,19 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
 typedef unsigned long long ULL;
-ULL back;
-ULL hpart, lpart;
-ULL
-build(long h, long l)
-{
-  hpart = h;
+ULL                        back;
+ULL                        hpart, lpart;
+ULL                        build(long h, long l) {
+  hpart   = h;
   hpart <<= 32;
-  lpart = l;
-  lpart &= 0xFFFFFFFFLL;
-  back = hpart | lpart;
+  lpart   = l;
+  lpart  &= 0xFFFFFFFFLL;
+  back    = hpart | lpart;
   return back;
 }
 
-int
-main(void)
-{
+int main(void) {
   if (build(0, 1) != 0x0000000000000001LL)
     abort();
   if (build(0, 0) != 0x0000000000000000LL)

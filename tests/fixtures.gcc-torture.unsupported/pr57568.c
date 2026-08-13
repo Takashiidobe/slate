@@ -1,12 +1,10 @@
 /* PR target/57568 */
 
-extern void abort (void);
-int a[6][9] = { }, b = 1, *c = &a[3][5];
+extern void abort(void);
+int         a[6][9] = {}, b = 1, *c = &a[3][5];
 
-int
-main ()
-{
+int main() {
   if (b && (*c = *c + *c))
-    abort ();
+    abort();
   return 0;
 }

@@ -3,7 +3,7 @@
 static int sum_docs(void) {
   struct TestCase {
     const char *doc;
-    int expectedStatus;
+    int         expectedStatus;
   };
 
   const struct TestCase cases[] = {
@@ -43,7 +43,7 @@ static int sum_flags(void) {
 
 static int sum_movements(void) {
   struct TestCase {
-    int expectedMovementInChars;
+    int         expectedMovementInChars;
     const char *input;
   };
 

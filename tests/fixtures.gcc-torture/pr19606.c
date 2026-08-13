@@ -3,35 +3,25 @@
    that does not preserve the semantics of the original computation.
    Make sure that won't happen.  */
 
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
 signed char a = -4;
 
-int
-foo (void)
-{
-  return ((unsigned int) (signed int) a) / 2LL;
-}
+int foo(void) { return ((unsigned int)(signed int)a) / 2LL; }
 
-int
-bar (void)
-{
-  return ((unsigned int) (signed int) a) % 5LL;
-}
+int bar(void) { return ((unsigned int)(signed int)a) % 5LL; }
 
-int
-main (void)
-{
+int main(void) {
   int r;
 
-  r = foo ();
-  if (r != ((unsigned int) (signed int) (signed char) -4) / 2LL)
-    abort ();
+  r = foo();
+  if (r != ((unsigned int)(signed int)(signed char)-4) / 2LL)
+    abort();
 
-  r = bar ();
-  if (r != ((unsigned int) (signed int) (signed char) -4) % 5LL)
-    abort ();
+  r = bar();
+  if (r != ((unsigned int)(signed int)(signed char)-4) % 5LL)
+    abort();
 
-  exit (0);
+  exit(0);
 }

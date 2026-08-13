@@ -1,14 +1,12 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-int
-main(void)
-{
+int main(void) {
   char c;
   char d;
-  int nbits;
+  int  nbits;
   c = -1;
-  for (nbits = 1 ; nbits < 100; nbits++) {
+  for (nbits = 1; nbits < 100; nbits++) {
     d = (1 << nbits) - 1;
     if (d == c)
       break;

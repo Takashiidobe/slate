@@ -1,9 +1,11 @@
-typedef struct __attribute__((__may_alias__)) { short x; } test;
+typedef struct __attribute__((__may_alias__)) {
+  short x;
+} test;
 
 int f() {
-  int a=10;
-  test *p=(test *)&a;
-  p->x = 1;
+  int   a = 10;
+  test *p = (test *)&a;
+  p->x    = 1;
   return a;
 }
 
@@ -12,5 +14,3 @@ int main() {
     __builtin_abort();
   return 0;
 }
-
-

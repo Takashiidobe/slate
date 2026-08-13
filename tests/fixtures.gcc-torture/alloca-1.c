@@ -3,20 +3,20 @@
    can only happen on !STRICT_ALIGNMENT targets.  */
 
 typedef __SIZE_TYPE__ size_t;
-void abort (void);
+void                  abort(void);
 
-struct dummy { int x __attribute__((aligned)); };
+struct dummy {
+  int x __attribute__((aligned));
+};
 #define BIGGEST_ALIGNMENT __alignof__(struct dummy)
 
-_Bool foo(void)
-{
+_Bool foo(void) {
   char *p = __builtin_alloca(32);
   return ((size_t)p & (BIGGEST_ALIGNMENT - 1)) == 0;
 }
 
-int main()
-{
+int main() {
   if (!foo())
-    abort ();
+    abort();
   return 0;
 }

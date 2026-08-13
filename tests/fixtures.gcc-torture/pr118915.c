@@ -2,9 +2,7 @@
 
 int a;
 
-int
-foo (int c, int d, int e, int f)
-{
+int foo(int c, int d, int e, int f) {
   if (!d || !e)
     return -22;
   if (c > 16)
@@ -14,9 +12,7 @@ foo (int c, int d, int e, int f)
   return 2;
 }
 
-int
-main ()
-{
-  if (foo (a + 21, a + 6, a + 34, a + 26) != -22)
-    __builtin_abort ();
+int main() {
+  if (foo(a + 21, a + 6, a + 34, a + 26) != -22)
+    __builtin_abort();
 }

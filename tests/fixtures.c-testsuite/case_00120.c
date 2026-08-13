@@ -1,10 +1,5 @@
 struct {
-	enum { X } x;
+  enum { X } x;
 } s;
 
-
-int
-main()
-{
-	return X;
-}
+int main() { return X; }

@@ -8,4 +8,3 @@
 #ifndef assert
 #error no assert
 #endif
-

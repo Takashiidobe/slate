@@ -2,7 +2,7 @@
 
 struct cursor {
   unsigned char *p;
-  unsigned char buf[8];
+  unsigned char  buf[8];
 };
 
 static void fill(struct cursor *c, unsigned char n) {

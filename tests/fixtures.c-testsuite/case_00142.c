@@ -8,8 +8,4 @@ int c;
 int d;
 #endif
 
-int
-main(void)
-{
-	return c;
-}
+int main(void) { return c; }

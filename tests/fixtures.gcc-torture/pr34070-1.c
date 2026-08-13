@@ -1,13 +1,9 @@
-extern void abort (void);
+extern void abort(void);
 
-int f(unsigned int x)
-{
-    return ((int)x) % 4;
-}
+int f(unsigned int x) { return ((int)x) % 4; }
 
-int main()
-{
+int main() {
   if (f(-1) != -1)
-    abort ();
+    abort();
   return 0;
 }

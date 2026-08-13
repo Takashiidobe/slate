@@ -1,18 +1,14 @@
-extern void abort (void);
+extern void abort(void);
 
-__attribute__((noinline)) void
-foo (void *p)
-{
-  long l = (long) p;
+__attribute__((noinline)) void foo(void *p) {
+  long l = (long)p;
   if (l < 0 || l > 6)
-    abort ();
+    abort();
 }
 
-int
-main ()
-{
+int main() {
   short i;
   for (i = 6; i >= 0; i--)
-    foo ((void *) (long) i);
+    foo((void *)(long)i);
   return 0;
 }

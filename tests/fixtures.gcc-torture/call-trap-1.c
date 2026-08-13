@@ -4,24 +4,17 @@
 /* Origin: Joseph Myers <joseph@codesourcery.com> */
 /* { dg-require-effective-target untyped_assembly } */
 
-extern void exit (int);
-extern void abort (void);
+extern void exit(int);
+extern void abort(void);
 
-int
-foo (void)
-{
-  exit (0);
+int foo(void) {
+  exit(0);
   return 0;
 }
 
-void
-bar (void)
-{
-}
+void bar(void) {}
 
-int
-main (void)
-{
-  ((long (*)(int))bar) (foo ());
-  abort ();
+int main(void) {
+  ((long (*)(int))bar)(foo());
+  abort();
 }

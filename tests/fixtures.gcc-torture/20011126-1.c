@@ -1,11 +1,10 @@
 /* Produced a overflow in ifcvt.c, causing S to contain 0xffffffff7fffffff.  */
 
-void abort (void);
+void abort(void);
 
 int a = 1;
 
-int main ()
-{
+int main() {
   long long s;
 
   s = a;
@@ -15,7 +14,7 @@ int main ()
     s = 2147483647LL;
 
   if (s < 0)
-    abort ();
+    abort();
 
   return 0;
 }

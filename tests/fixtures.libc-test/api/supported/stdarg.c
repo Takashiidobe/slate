@@ -1,8 +1,7 @@
 #include <stdarg.h>
-#define T(t) (t*)0;
-static void f()
-{
-T(va_list)
+#define T(t) (t *)0;
+static void f() {
+  T(va_list)
 #ifndef va_start
 #error no va_start
 #endif

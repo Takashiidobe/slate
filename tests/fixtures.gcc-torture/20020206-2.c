@@ -3,22 +3,21 @@
    compound literal initialization was emitted only in the tail call insn
    chain, not in the normal call insn chain.  */
 
-typedef struct { unsigned short a; } A;
+typedef struct {
+  unsigned short a;
+} A;
 
-extern void abort (void);
-extern void exit (int);
+extern void abort(void);
+extern void exit(int);
 
-void foo (unsigned int x)
-{
+void foo(unsigned int x) {
   if (x != 0x800 && x != 0x810)
-    abort ();
+    abort();
 }
 
-int
-main (int argc, char **argv)
-{
+int main(int argc, char **argv) {
   int i;
   for (i = 0; i < 2; ++i)
-    foo (((A) { ((!(i >> 4) ? 8 : 64 + (i >> 4)) << 8) + (i << 4) } ).a);
-  exit (0);
+    foo(((A){((!(i >> 4) ? 8 : 64 + (i >> 4)) << 8) + (i << 4)}).a);
+  exit(0);
 }

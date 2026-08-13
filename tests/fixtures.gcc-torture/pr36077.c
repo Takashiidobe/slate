@@ -1,13 +1,9 @@
-extern void abort (void);
+extern void abort(void);
 
-unsigned int test (unsigned int x)
-{
-  return x / 0x80000001U / 0x00000002U;
-}
+unsigned int test(unsigned int x) { return x / 0x80000001U / 0x00000002U; }
 
-int main()
-{
+int main() {
   if (test(2) != 0)
-    abort ();
+    abort();
   return 0;
 }

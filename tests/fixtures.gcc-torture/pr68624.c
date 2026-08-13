@@ -1,8 +1,6 @@
 int b, c, d, e = 1, f, g, h, j;
 
-static int
-fn1 ()
-{
+static int fn1() {
   int a = c;
   if (h)
     return 9;
@@ -18,13 +16,11 @@ fn1 ()
   return d;
 }
 
-int
-main ()
-{
-  fn1 ();
+int main() {
+  fn1();
 
   if (c != -4)
-    __builtin_abort ();
+    __builtin_abort();
 
   return 0;
 }

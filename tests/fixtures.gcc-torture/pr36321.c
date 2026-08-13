@@ -1,29 +1,26 @@
 /* See 'gcc.target/nvptx/__builtin_alloca_0-1-O0.c'.
-   { dg-xfail-if TODO { nvptx-*-* && { ! nvptx_softstack } } { "-O0" } { "" } } */
+   { dg-xfail-if TODO { nvptx-*-* && { ! nvptx_softstack } } { "-O0" } { "" } }
+ */
 
-extern void abort (void);
+extern void abort(void);
 
-extern __SIZE_TYPE__ strlen (const char *);
-void foo(char *str)
-{
-  int len2 = strlen (str);
-  char *a = (char *) __builtin_alloca (0);
-  char *b = (char *) __builtin_alloca (len2*3);
+extern __SIZE_TYPE__ strlen(const char *);
+void                 foo(char *str) {
+  int   len2 = strlen(str);
+  char *a    = (char *)__builtin_alloca(0);
+  char *b    = (char *)__builtin_alloca(len2 * 3);
 
-  if ((int) (a-b) < (len2*3))
-    {
+  if ((int)(a - b) < (len2 * 3)) {
 #ifdef _WIN32
-      abort ();
+    abort();
 #endif
-      return;
-    }
+    return;
+  }
 }
 
-static char * volatile argp = "pr36321.x";
+static char *volatile argp = "pr36321.x";
 
-int main(int argc, char **argv)
-{
-  foo (argp);
+int main(int argc, char **argv) {
+  foo(argp);
   return 0;
 }
-

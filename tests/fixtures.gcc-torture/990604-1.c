@@ -1,8 +1,7 @@
-void abort (void);
+void abort(void);
 
-int b;
-void f ()
-{
+int  b;
+void f() {
   int i = 0;
   if (b == 0)
     do {
@@ -11,11 +10,9 @@ void f ()
     } while (i < 10);
 }
 
-int main ()
-{
-  f ();
+int main() {
+  f();
   if (b != 9)
-    abort ();
+    abort();
   return 0;
 }
-

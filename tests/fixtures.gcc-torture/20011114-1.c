@@ -1,14 +1,10 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-char foo(char bar[])
-{
-  return bar[1];
-}
+char        foo(char bar[]) { return bar[1]; }
 extern char foo(char *);
-int main(void)
-{
+int         main(void) {
   if (foo("xy") != 'y')
-    abort ();
-  exit (0);
+    abort();
+  exit(0);
 }

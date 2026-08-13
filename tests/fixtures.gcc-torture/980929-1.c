@@ -1,24 +1,21 @@
-void abort (void);
-void exit (int);
+void abort(void);
+void exit(int);
 
-void f(int i)
-{
+void f(int i) {
   if (i != 1000)
-    abort ();
+    abort();
 }
 
-
-int main()
-{
-  int n=1000;
+int main() {
+  int n = 1000;
   int i;
 
   f(n);
-  for(i=0; i<1; ++i) {
+  for (i = 0; i < 1; ++i) {
     f(n);
-    n=666;
+    n = 666;
     &n;
   }
 
-  exit (0);
+  exit(0);
 }

@@ -17,4 +17,7 @@ void j() {
   *c = i(d);
 }
 
-int main() { j(); return 0; }
+int main() {
+  j();
+  return 0;
+}

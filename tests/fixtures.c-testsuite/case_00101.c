@@ -1,6 +1,4 @@
-int
-main()
-{
+int main() {
   int c;
   c = 0;
   do
