@@ -91,6 +91,28 @@ fn project_translation_defaults_to_the_active_target() {
 }
 
 #[test]
+fn raw_lower_skips_fixups_for_project_translation() {
+    let dir = fixture_dir("cross_tu");
+    let out_dir = cross_tu_work_dir("raw-lower-project").join("rs");
+    let _ = std::fs::remove_dir_all(&out_dir);
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .arg("translate-project")
+        .arg(&dir)
+        .arg(&out_dir)
+        .env("SLATE_RAW_LOWER", "1")
+        .env("SLATE_CLANG_ARGS", "-std=c23")
+        .output()
+        .expect("run raw slate translate-project");
+    assert!(
+        output.status.success(),
+        "raw translate-project failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let math = std::fs::read_to_string(out_dir.join("src/math.rs")).expect("read math.rs");
+    assert!(math.contains("let mut __retval"));
+}
+
+#[test]
 fn project_translation_adds_explicit_target_variants() {
     let dir = fixture_dir("project_strtold");
     let out_dir = cross_tu_work_dir("extra-target-project").join("rs");

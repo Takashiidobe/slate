@@ -145,14 +145,14 @@ This is the concrete checklist — every file a new pass touches, in order:
    binding-scoped `unsafe { .. }` once its contents no longer need it).
 8. **Document it** as the next numbered entry in passes.md's pass sequence,
    renumbering everything after it.
-9. **Test.** Iterate against just your fixture, then run the full gate:
+9. **Test.** Iterate against just your fixture, then run the rewrite gate:
 
    ```bash
-   SLATE_DIFF_FIXTURE=<name> cargo nextest r --release \
+   SLATE_DIFF_FIXTURE=<name> cargo nextest r --release --profile rewrites \
      --test differential -E 'test(generated_differential)' --nocapture
    cargo fmt
    cargo clippy --all-targets
-   cargo nextest r --release
+   cargo nextest r --release --profile rewrites
    ```
 
    Cover both the accepted case and the important rejected fallbacks by

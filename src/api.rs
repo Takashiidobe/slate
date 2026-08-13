@@ -86,9 +86,6 @@ pub fn translate(path: &Path) -> Result<String, Error> {
 
 pub fn translate_with_args(path: &Path, extra_args: &[String]) -> Result<String, Error> {
     let (_, program) = lowered_program_with_args(path, extra_args)?;
-    if std::env::var("SLATE_RAW_LOWER").is_ok() {
-        return Ok(program.emit());
-    }
     Ok(backend::apply_with(program, &skip_set_from_env()?).emit())
 }
 
