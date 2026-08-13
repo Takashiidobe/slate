@@ -1,5 +1,9 @@
 use super::*;
 
+fn cir_type_mentions_wrapped_long_double(ty: &str) -> bool {
+    is_wrapped_long_double(ty) || cir_ptr_inner(ty).is_some_and(is_wrapped_long_double)
+}
+
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
     pub(super) fn lower_call(&mut self, op: &Op) {
         let operand_types = op_operand_types(op.ty.as_deref().unwrap_or(""));
@@ -73,7 +77,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .zip(arg_types.iter().copied())
             .map(|(operand, ty)| self.call_arg_expr(operand, ty))
             .collect::<Vec<_>>();
-        // long-double libc shims use custom helper ABIs, so they stay on raw paths.
         if callee_name == "strtold"
             && self
                 .parent
@@ -83,7 +86,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 == Some(LONG_DOUBLE_TY)
         {
             if let Some(result) = op.results.first() {
-                let name = self.next_temp();
                 let a0 = args
                     .first()
                     .cloned()
@@ -92,12 +94,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     .get(1)
                     .cloned()
                     .unwrap_or(Expr::Value(RustValue::NullPtr));
-                self.push_stmt(Stmt::Let {
-                    name: name.clone(),
-                    mutable: true,
-                    ty: Some(Type::Prim(Prim::F64)),
-                    init: Some(Expr::Value(0.0.into())),
-                });
                 let i8_ptr = Type::Ptr {
                     mutable: true,
                     inner: Box::new(Type::Prim(Prim::I8)),
@@ -106,6 +102,28 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     mutable: true,
                     inner: Box::new(i8_ptr.clone()),
                 };
+                self.parent
+                    .long_double_shims
+                    .entry("__slate_strtold".into())
+                    .or_insert_with(|| ExternFnDecl {
+                        identity: crate::function_identity::FunctionIdentity::Unknown,
+                        name: "__slate_strtold".into(),
+                        params: vec![
+                            FnParam {
+                                name: "_0".into(),
+                                mutable: false,
+                                ty: i8_ptr.clone(),
+                            },
+                            FnParam {
+                                name: "_1".into(),
+                                mutable: false,
+                                ty: i8_ptr_ptr.clone(),
+                            },
+                        ],
+                        variadic: false,
+                        ret: Some(Type::LongDouble),
+                        safe: false,
+                    });
                 let call = Expr::Call {
                     binding: crate::function_identity::CallBinding::Generated,
                     func: Box::new(Expr::Var("__slate_strtold".into())),
@@ -118,25 +136,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                             expr: Box::new(a1),
                             ty: i8_ptr_ptr,
                         },
-                        Expr::AddrOf {
-                            mutable: true,
-                            expr: Box::new(Expr::Var(name.clone().into())),
-                        },
                     ],
                 };
-                self.push_stmt(Self::unsafe_stmt(Stmt::Expr(call)));
-                self.values.insert(
-                    result.to_string(),
-                    Val::Expr(Expr::Call {
-                        binding: crate::function_identity::CallBinding::Generated,
-                        func: Box::new(Expr::Var("__slate_f80_from_f64".into())),
-                        args: vec![Expr::Var(name.into())],
-                    }),
-                );
+                self.materialize_expr(result, Self::unsafe_expr(call), op_result_type(op));
             }
             return;
         }
-        if self.try_fixed_long_double_call_shim(op, &callee_name, &args, arg_types)
+        if self.try_long_double_call_shim(op, &callee_name, &args, arg_types)
             || self.try_format_call_shims(op, &callee_name, &args, arg_types)
         {
             return;
@@ -234,53 +240,28 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         args: &[Expr],
         arg_types: &[&str],
     ) -> bool {
-        let Some(fmt_index) = self.format_string_arg_index(callee_name, arg_types) else {
-            return false;
-        };
-        self.try_long_double_i32_shim(op, callee_name, args, arg_types, fmt_index + 1)
+        self.try_long_double_call_shim(op, callee_name, args, arg_types)
     }
 
-    pub(super) fn try_fixed_long_double_call_shim(
+    pub(super) fn try_long_double_call_shim(
         &mut self,
         op: &Op,
         callee_name: &str,
         args: &[Expr],
         arg_types: &[&str],
-    ) -> bool {
-        let Some(fixed) = self.parent.externs.get(callee_name) else {
-            return false;
-        };
-        if args.len() != fixed.len() || op_result_type(op) != Some("!s32i") {
-            return false;
-        }
-        self.try_long_double_i32_shim(op, callee_name, args, arg_types, 0)
-    }
-
-    pub(super) fn format_string_arg_index(
-        &self,
-        callee_name: &str,
-        arg_types: &[&str],
-    ) -> Option<usize> {
-        let fixed = self.parent.externs.get(callee_name)?;
-        if arg_types.len() <= fixed.len() {
-            return None;
-        }
-        let fmt_index = fixed.len().checked_sub(1)?;
-        is_format_string_arg(arg_types.get(fmt_index)?).then_some(fmt_index)
-    }
-
-    pub(super) fn try_long_double_i32_shim(
-        &mut self,
-        op: &Op,
-        callee_name: &str,
-        args: &[Expr],
-        arg_types: &[&str],
-        prefix: usize,
     ) -> bool {
         if crate::cir::emit::uses_f64_long_double_abi() {
             return false;
         }
-        if !arg_types[prefix..].iter().any(|ty| is_long_double(ty)) {
+        if !self.parent.externs.contains_key(callee_name) {
+            return false;
+        }
+        let ret_cir_ty = op_result_type(op);
+        let has_long_double_arg = arg_types
+            .iter()
+            .any(|ty| cir_type_mentions_wrapped_long_double(ty));
+        let has_long_double_ret = ret_cir_ty.is_some_and(is_wrapped_long_double);
+        if !has_long_double_arg && !has_long_double_ret {
             return false;
         }
         let param_types: Vec<Type> = arg_types
@@ -290,12 +271,23 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     Type::Prim(Prim::F128)
                 } else if is_long_double(ty) {
                     Type::LongDouble
+                } else if let Some(inner) = cir_ptr_inner(ty)
+                    && is_wrapped_long_double(inner)
+                {
+                    Type::Ptr {
+                        mutable: true,
+                        inner: Box::new(Type::LongDouble),
+                    }
                 } else {
                     self.parent.rust_type(ty)
                 }
             })
             .collect();
-        let tags: Vec<String> = arg_types
+        let ret_shim_ty = ret_cir_ty
+            .map(|ty| self.parent.rust_type(ty))
+            .unwrap_or(Type::Unit);
+        let ret_tag = long_double_shim_type_tag(&ret_shim_ty);
+        let arg_tags: Vec<String> = arg_types
             .iter()
             .zip(param_types.iter())
             .map(|(ty, param_ty)| {
@@ -303,17 +295,26 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     "lq".to_string()
                 } else if is_long_double(ty) {
                     "f80".to_string()
+                } else if cir_ptr_inner(ty).is_some_and(is_wrapped_long_double) {
+                    "pf80".to_string()
                 } else {
                     long_double_shim_type_tag(param_ty)
                 }
             })
             .collect();
-        let shim_name = format!("__slate_{callee_name}__{}", tags.join("_"));
+        let mut segments = vec![format!("r{ret_tag}")];
+        segments.extend(arg_tags);
+        let shim_name = format!("__slate_{callee_name}__{}", segments.join("_"));
         self.parent
             .long_double_shims
             .entry(shim_name.clone())
             .or_insert_with(|| ExternFnDecl {
-                identity: crate::function_identity::FunctionIdentity::Unknown,
+                identity: self
+                    .parent
+                    .known_functions
+                    .get(callee_name)
+                    .copied()
+                    .unwrap_or(crate::function_identity::FunctionIdentity::Unknown),
                 name: shim_name.clone(),
                 params: param_types
                     .iter()
@@ -325,7 +326,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     })
                     .collect(),
                 variadic: false,
-                ret: Some(Type::Prim(Prim::I32)),
+                ret: (!ret_shim_ty.is_unit()).then_some(ret_shim_ty.clone()),
                 safe: false,
             });
         let call_args = args
@@ -333,7 +334,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .zip(arg_types.iter())
             .enumerate()
             .map(|(i, (arg, ty))| {
-                if is_quad_long_double(ty) || is_long_double(ty) {
+                if is_quad_long_double(ty)
+                    || is_long_double(ty)
+                    || cir_ptr_inner(ty).is_some_and(is_wrapped_long_double)
+                    || is_cir_function_pointer_type(ty)
+                {
                     arg.clone()
                 } else {
                     Expr::Cast {

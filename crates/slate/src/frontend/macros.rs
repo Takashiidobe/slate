@@ -11,6 +11,8 @@ pub enum MacroValue {
     },
     LongDouble {
         source: &'static str,
+        f64_source: &'static str,
+        f128_source: &'static str,
         rust_bits: u64,
         f80_bytes: [u8; 10],
     },
@@ -174,6 +176,8 @@ pub const MACROS: &[MacroDefinition] = &[
         header: "float.h",
         value: MacroValue::LongDouble {
             source: "3.64519953188247460253E-4951",
+            f64_source: "4.9406564584124654E-324",
+            f128_source: "6.47517511943802511092443895822764655E-4966",
             rust_bits: 1,
             f80_bytes: [0, 0, 0, 0, 0, 0, 0, 0x80, 0x01, 0x00],
         },
@@ -184,7 +188,12 @@ impl MacroDefinition {
     pub fn source_value_matches(&self, value: &str) -> bool {
         match self.value {
             MacroValue::Integer { source, .. } => value.parse::<i128>() == Ok(source),
-            MacroValue::LongDouble { source, .. } => value == source,
+            MacroValue::LongDouble {
+                source,
+                f64_source,
+                f128_source,
+                ..
+            } => value == source || value == f64_source || value == f128_source,
         }
     }
 }

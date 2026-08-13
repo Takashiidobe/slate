@@ -500,6 +500,30 @@ fn macos_long_double_layout_fixture_translates_with_f64_abi_layout() {
 }
 
 #[test]
+fn macos_long_double_macro_constant_lowers_to_f64_bits() {
+    let fixture = fixtures_dir().join("macos/long_double_macro_constant.c");
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .args(["translate", fixture.to_str().unwrap()])
+        .env("SLATE_TARGET", "aarch64-apple-darwin")
+        .output()
+        .expect("translate macOS long double macro constant fixture");
+    assert!(
+        output.status.success(),
+        "macOS long double macro constant translation failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let rust = String::from_utf8(output.stdout).expect("generated Rust is UTF-8");
+    assert!(!rust.contains("LongDouble"));
+    assert!(rust.contains("f64::from_bits"));
+    cargo_check_generated_for_target(
+        "slate_macos_long_double_macro_constant",
+        &rust,
+        "aarch64-apple-darwin",
+    )
+    .unwrap();
+}
+
+#[test]
 fn android_targets_require_an_api_level() {
     let fixture = fixtures_dir().join("bionic/target_features.c");
     let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
@@ -510,6 +534,26 @@ fn android_targets_require_an_api_level() {
         .expect("translate Android fixture without API level");
     assert!(!output.status.success());
     assert!(String::from_utf8_lossy(&output.stderr).contains("SLATE_ANDROID_API"));
+}
+
+#[test]
+fn bionic_long_double_macro_constant_lowers_to_f128_bits() {
+    let fixture = fixtures_dir().join("bionic/long_double_macro_constant.c");
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .args(["translate", fixture.to_str().unwrap()])
+        .env("SLATE_TARGET", "x86_64-linux-android")
+        .env("SLATE_ANDROID_API", "21")
+        .output()
+        .expect("translate Bionic long double macro constant fixture");
+    assert!(
+        output.status.success(),
+        "Bionic long double macro constant translation failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let rust = String::from_utf8(output.stdout).expect("generated Rust is UTF-8");
+    assert!(!rust.contains("struct LongDouble"));
+    assert!(rust.contains("#![feature(f128)]"));
+    assert!(rust.contains("f128::from_bits"));
 }
 
 #[test]
@@ -613,6 +657,30 @@ fn msvc_llp64_fixture_translates_with_target_abi_types() {
     assert!(!rust.contains("ioctl"));
     assert!(!rust.contains("socket"));
     assert!(!rust.contains("fork"));
+}
+
+#[test]
+fn msvc_long_double_macro_constant_lowers_to_f64_bits() {
+    let fixture = fixtures_dir().join("msvc/long_double_macro_constant.c");
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .args(["translate", fixture.to_str().unwrap()])
+        .env("SLATE_TARGET", "x86_64-pc-windows-msvc")
+        .output()
+        .expect("translate MSVC long double macro constant fixture");
+    assert!(
+        output.status.success(),
+        "MSVC long double macro constant translation failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let rust = String::from_utf8(output.stdout).expect("generated Rust is UTF-8");
+    assert!(!rust.contains("LongDouble"));
+    assert!(rust.contains("f64::from_bits"));
+    cargo_check_generated_for_target(
+        "slate_msvc_long_double_macro_constant",
+        &rust,
+        "x86_64-pc-windows-msvc",
+    )
+    .unwrap();
 }
 
 #[test]

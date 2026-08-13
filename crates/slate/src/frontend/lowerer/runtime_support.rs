@@ -356,10 +356,6 @@ pub(super) fn is_wrapped_long_double(ty: &str) -> bool {
     is_long_double(ty) && !is_quad_long_double(ty) && !crate::cir::emit::uses_f64_long_double_abi()
 }
 
-pub(super) fn is_format_string_arg(ty: &str) -> bool {
-    matches!(ty, "!cir.ptr<!s8i>" | "!cir.ptr<!u8i>")
-}
-
 pub(super) fn long_double_shim_type_tag(ty: &Type) -> String {
     match ty {
         Type::Prim(Prim::I8) => "i8".into(),
@@ -376,8 +372,10 @@ pub(super) fn long_double_shim_type_tag(ty: &Type) -> String {
         Type::Prim(Prim::Usize) => "usize".into(),
         Type::Prim(Prim::F32) => "f32".into(),
         Type::Prim(Prim::F64) => "f64".into(),
+        Type::Prim(Prim::F128) => "lq".into(),
         Type::Prim(Prim::Bool) => "bool".into(),
         Type::LongDouble => "f80".into(),
+        Type::Unit => "v".into(),
         Type::Ptr { inner, .. } => format!("p{}", long_double_shim_type_tag(inner)),
         _ => "x".into(),
     }

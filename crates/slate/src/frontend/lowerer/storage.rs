@@ -608,6 +608,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.materialize_expr(result, Expr::Value(RustValue::Bool(b)), result_ty);
             return;
         }
+        let floating_literal = self.ast_floating_literal(op);
         if let Some((signed, _)) = result_ty.and_then(parse_cir_int_type)
             && let Type::Prim(prim) = self.parent.rust_type(result_ty.unwrap())
         {
@@ -648,26 +649,31 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.materialize_expr(result, value, result_ty);
             return;
         }
-        let value = if result_ty == Some("!cir.f128") || result_ty.is_some_and(is_quad_long_double)
+        let macro_expr = if result_ty == Some("!cir.f128") || result_ty.is_some_and(is_long_double)
         {
+            self.next_long_double_macro_const_expr(op, result_ty)
+        } else {
+            None
+        };
+        let value = if let Some(expr) = macro_expr {
+            expr
+        } else if result_ty == Some("!cir.f128") || result_ty.is_some_and(is_quad_long_double) {
             parse_cir_f128_expr(raw).unwrap_or_else(|| Expr::HexFloat("0.0f128".into()))
         } else if result_ty.is_some_and(is_long_double) {
-            self.next_long_double_macro_const_expr(op, result_ty)
-                .unwrap_or_else(|| {
-                    let value = parse_cir_fp_expr(raw)
-                        .or_else(|| {
-                            parse_cir_int(raw).map(|n| Expr::Cast {
-                                expr: Box::new(int_value_expr(n)),
-                                ty: crate::backend::rust_ast::Type::Prim(Prim::F64),
-                            })
-                        })
-                        .unwrap_or(Expr::Value(0.0.into()));
-                    Expr::Call {
-                        binding: crate::function_identity::CallBinding::Generated,
-                        func: Box::new(Expr::Var("__slate_f80_from_f64".into())),
-                        args: vec![value],
-                    }
-                })
+            if let Some(fp) = floating_literal.or_else(|| parse_cir_fp(raw)) {
+                if crate::cir::emit::uses_f64_long_double_abi() {
+                    fp_literal_expr(fp)
+                } else {
+                    typed_fp_literal_expr(Some(&crate::backend::rust_ast::Type::LongDouble), fp)
+                }
+            } else if let Some(n) = parse_cir_int(raw) {
+                Expr::Cast {
+                    expr: Box::new(int_value_expr(n)),
+                    ty: crate::backend::rust_ast::Type::Prim(Prim::F64),
+                }
+            } else {
+                Expr::Value(0.0.into())
+            }
         } else {
             parse_cir_scalar_expr(raw).unwrap_or(Expr::Value(RustValue::I64(0)))
         };
@@ -783,7 +789,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 args: vec![Expr::Value(RustValue::I64(rust_bits as i64))],
             });
         }
-        if result_ty.is_some_and(is_quad_long_double) {
+        if result_ty == Some("!cir.f128") || result_ty.is_some_and(is_quad_long_double) {
             return Some(Expr::HexFloat(format!(
                 "f128::from_bits(0x{:032x})",
                 u128::from(rust_bits)

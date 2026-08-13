@@ -541,6 +541,9 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
             .iter()
             .map(|function| (function.name.clone(), function.macro_consts.clone()))
             .collect(),
+        floating_literals: c.floating_literals.clone(),
+        global_floating_literals: c.global_floating_literals.clone(),
+        long_double_callback_trampolines: BTreeMap::new(),
         enum_consts: c
             .functions
             .iter()
@@ -880,6 +883,9 @@ struct Lowerer<'a> {
     generated_alloca_frames: Vec<StructDef>,
     layout_queries: BTreeMap<String, Vec<LayoutQuery>>,
     macro_consts: BTreeMap<String, Vec<MacroConst>>,
+    floating_literals: HashMap<Loc, String>,
+    global_floating_literals: HashMap<String, String>,
+    long_double_callback_trampolines: BTreeMap<String, String>,
     enum_consts: BTreeMap<String, Vec<EnumConstRef>>,
     local_enum_decls: BTreeMap<String, Vec<crate::frontend::c_ast::LocalEnumDecl>>,
     asm_gotos: BTreeMap<String, Vec<crate::frontend::c_ast::AsmGoto>>,
@@ -1035,6 +1041,11 @@ impl<'a> Lowerer<'a> {
             .get(name)
             .cloned()
             .unwrap_or_else(|| sanitize_ident(name).into_string())
+    }
+
+    fn ast_floating_literal(&self, op: &Op) -> Option<String> {
+        let loc = op.loc.as_deref().and_then(|raw| self.resolve_loc(raw))?;
+        self.floating_literals.get(&loc).cloned()
     }
 
     fn declaration_comment_items(&self, kind: &str, name: &str) -> Vec<Item> {
@@ -1357,46 +1368,7 @@ impl<'a> Lowerer<'a> {
             }
             self.externs.insert(name.to_string(), params);
             self.extern_returns.insert(name.to_string(), ret.clone());
-            if name == "strtold" && ret.as_deref() == Some(LONG_DOUBLE_TY) {
-                self.long_double_shims
-                    .entry("__slate_strtold".into())
-                    .or_insert_with(|| ExternFnDecl {
-                        identity: crate::function_identity::FunctionIdentity::Unknown,
-                        name: "__slate_strtold".into(),
-                        params: vec![
-                            FnParam {
-                                name: "_0".into(),
-                                mutable: false,
-                                ty: Type::Ptr {
-                                    mutable: true,
-                                    inner: Box::new(Type::Prim(Prim::I8)),
-                                },
-                            },
-                            FnParam {
-                                name: "_1".into(),
-                                mutable: false,
-                                ty: Type::Ptr {
-                                    mutable: true,
-                                    inner: Box::new(Type::Ptr {
-                                        mutable: true,
-                                        inner: Box::new(Type::Prim(Prim::I8)),
-                                    }),
-                                },
-                            },
-                            FnParam {
-                                name: "_2".into(),
-                                mutable: false,
-                                ty: Type::Ptr {
-                                    mutable: true,
-                                    inner: Box::new(Type::Prim(Prim::F64)),
-                                },
-                            },
-                        ],
-                        variadic: false,
-                        ret: None,
-                        safe: false,
-                    });
-            } else {
+            if name != "strtold" || ret.as_deref() != Some(LONG_DOUBLE_TY) {
                 extern_decls.push(ExternDecl::Fn(decl));
             }
         }
@@ -1743,7 +1715,14 @@ impl __SlateVaArgs {
             }
         } else if is_cir_aggregate_init(raw) {
             if is_c_global && let Some(ty) = ty {
-                if let Some(init) = self.render_const_value_expr(&ty, raw) {
+                let literal_raw = self
+                    .global_floating_literals
+                    .get(name)
+                    .cloned()
+                    .or_else(|| self.ast_floating_literal(op))
+                    .map(|fp| format!("#cir.fp<{fp}>"))
+                    .unwrap_or_else(|| raw.to_string());
+                if let Some(init) = self.render_const_value_expr(&ty, &literal_raw) {
                     self.globals.insert(
                         rust_name.clone(),
                         GlobalVar {
@@ -1839,7 +1818,15 @@ impl __SlateVaArgs {
                 );
             }
         } else if let Some(ty) = ty
-            && let Some(init) = self.render_const_value_expr(&ty, raw)
+            && let Some(init) = self
+                .global_floating_literals
+                .get(name)
+                .cloned()
+                .or_else(|| self.ast_floating_literal(op))
+                .map(|fp| format!("#cir.fp<{fp}>"))
+                .or_else(|| Some(raw.to_string()))
+                .as_deref()
+                .and_then(|raw| self.render_const_value_expr(&ty, raw))
         {
             let external =
                 externally_exported(op) || self.project.cross_referenced_globals.contains(name);
@@ -2145,12 +2132,43 @@ impl __SlateVaArgs {
         }
         let ret = if diverges { Some(Type::Never) } else { ret };
 
+        if self.c_abi_functions.contains(name)
+            && (params
+                .iter()
+                .any(|param| type_mentions_long_double(&param.ty))
+                || ret.as_ref().is_some_and(type_mentions_long_double))
+        {
+            let ret_shim_ty = ret.clone().unwrap_or(Type::Unit);
+            let trampoline = format!("__slate_ld_{}", sanitize_ident(name));
+            self.long_double_shims
+                .entry(trampoline.clone())
+                .or_insert_with(|| ExternFnDecl {
+                    identity: FunctionIdentity::Unknown,
+                    name: trampoline.clone(),
+                    params: params
+                        .iter()
+                        .enumerate()
+                        .map(|(i, param)| FnParam {
+                            name: format!("_{i}"),
+                            mutable: false,
+                            ty: param.ty.clone(),
+                        })
+                        .collect(),
+                    variadic: false,
+                    ret: (!ret_shim_ty.is_unit()).then_some(ret_shim_ty),
+                    safe: true,
+                });
+            self.long_double_callback_trampolines
+                .insert(name.to_string(), trampoline);
+        }
+
         let attrs = symbol_attrs(
             !is_main
                 && (self.project.emit_pub
                     && (externally_exported(op)
                         || self.project.cross_referenced_functions.contains(name))
-                    || weak_alias_target),
+                    || weak_alias_target
+                    || self.long_double_callback_trampolines.contains_key(name)),
             linkage_is_weak(op),
             attr_str(op, "section"),
             &[],
@@ -3204,6 +3222,14 @@ fn ctype_uses_long_double(ty: &crate::frontend::c_ast::CType) -> bool {
 }
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
+    fn ast_floating_literal(&self, op: &Op) -> Option<String> {
+        let loc = op
+            .loc
+            .as_deref()
+            .and_then(|raw| self.parent.resolve_loc(raw))?;
+        self.parent.floating_literals.get(&loc).cloned()
+    }
+
     fn lower_block(&mut self, block: &Block) {
         let mut index = 0;
         while index < block.ops.len() {

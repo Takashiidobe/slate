@@ -58,6 +58,8 @@ pub struct Unit {
     pub functions: Vec<Function>,
     pub declaration_comments: Vec<DeclarationComment>,
     pub weak_refs: Vec<WeakRefAttribute>,
+    pub floating_literals: HashMap<Loc, String>,
+    pub global_floating_literals: HashMap<String, String>,
     call_bindings: HashMap<Loc, CallBinding>,
 }
 
@@ -629,6 +631,13 @@ fn parse_json_with_record_roots(
         &mut functions,
     );
     collect_weak_ref_attributes(&root, source_file, &mut weak_refs);
+    let floating_literals = source_text.as_deref().map_or_else(HashMap::new, |source| {
+        let mut out = HashMap::new();
+        collect_floating_literals(&root, source_file, source, &mut out);
+        out
+    });
+    let mut global_floating_literals = HashMap::new();
+    collect_global_floating_literals(&root, false, &mut global_floating_literals);
     Ok(Unit {
         enums,
         records,
@@ -637,8 +646,64 @@ fn parse_json_with_record_roots(
         functions,
         declaration_comments,
         weak_refs,
+        floating_literals,
+        global_floating_literals,
         call_bindings,
     })
+}
+
+fn collect_floating_literals(
+    node: &Value,
+    _source_file: &str,
+    source: &str,
+    out: &mut HashMap<Loc, String>,
+) {
+    if kind(node) == Some("FloatingLiteral") {
+        if let Some(offset) = node
+            .get("range")
+            .and_then(|range| range.get("begin"))
+            .and_then(|begin| begin.get("offset"))
+            .and_then(Value::as_u64)
+            && let Some(loc) = loc_from_offset(source, offset as usize)
+            && let Some(value) = node.get("value").and_then(Value::as_str)
+        {
+            out.entry(loc).or_insert_with(|| value.to_string());
+        }
+        return;
+    }
+    for child in children(node) {
+        collect_floating_literals(child, _source_file, source, out);
+    }
+}
+
+fn collect_global_floating_literals(
+    node: &Value,
+    in_function: bool,
+    out: &mut HashMap<String, String>,
+) {
+    let in_function = in_function || kind(node) == Some("FunctionDecl");
+    if kind(node) == Some("VarDecl") {
+        let is_static = node
+            .get("storageClass")
+            .and_then(Value::as_str)
+            .is_some_and(|storage| storage == "static");
+        if (is_static || !in_function)
+            && let (Some(name), Some(value)) = (
+                node.get("name").and_then(Value::as_str),
+                children(node)
+                    .iter()
+                    .find(|child| kind(child) == Some("FloatingLiteral"))
+                    .and_then(|child| child.get("value"))
+                    .and_then(Value::as_str),
+            )
+        {
+            out.entry(name.to_string())
+                .or_insert_with(|| value.to_string());
+        }
+    }
+    for child in children(node) {
+        collect_global_floating_literals(child, in_function, out);
+    }
 }
 
 fn collect_declaration_comments(
