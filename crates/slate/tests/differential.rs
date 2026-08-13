@@ -346,7 +346,6 @@ fn compile_with_android_ndk(
 #[test]
 fn generated_differential() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-generated");
-    let _ = std::fs::remove_dir_all(&tmp);
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
 
     let fixtures = fixtures();
@@ -417,6 +416,101 @@ fn generated_differential() {
             failures.join("\n\n")
         );
     }
+}
+
+#[test]
+fn failed_batch_rebuild_does_not_accept_stale_binary() {
+    let work = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-stale-bin-regression");
+    let _ = std::fs::remove_dir_all(&work);
+    std::fs::create_dir_all(&work).expect("create regression work dir");
+    let generated = work.join("stale_bin.generated.rs");
+    std::fs::write(&generated, "fn main() {}\n").expect("write valid generated Rust");
+    let cases = [support::RustCase {
+        name: "stale_bin".into(),
+        rs_src: generated.clone(),
+    }];
+    let first = support::compile_rs_batch(&cases, &work);
+    assert!(first[0].1.is_ok(), "initial build failed: {:?}", first[0].1);
+    let fresh = support::compile_rs_batch(&cases, &work);
+    assert!(fresh[0].1.is_ok(), "fresh build failed: {:?}", fresh[0].1);
+
+    std::fs::write(&generated, "fn main( {}\n").expect("write invalid generated Rust");
+    let second = support::compile_rs_batch(&cases, &work);
+    assert!(
+        second[0].1.is_err(),
+        "failed rebuild accepted the stale executable"
+    );
+}
+
+#[test]
+fn failed_multi_bin_rebuild_does_not_accept_stale_binary() {
+    let work =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-stale-multi-bin-regression");
+    let _ = std::fs::remove_dir_all(&work);
+    std::fs::create_dir_all(&work).expect("create regression work dir");
+    let main_rs = work.join("main.generated.rs");
+    let common_rs = work.join("common.generated.rs");
+    std::fs::write(&main_rs, "mod common; fn main() { common::run(); }\n")
+        .expect("write valid generated main");
+    std::fs::write(&common_rs, "pub fn run() {}\n").expect("write valid generated module");
+    let cases = [support::MultiBinCase {
+        name: "stale_multi_bin".into(),
+        main_rs,
+        common_rs: common_rs.clone(),
+    }];
+    let project = work.join("batch_cargo");
+    let first = support::build_multi_bin_batch(&cases, &project).expect("initial multi-bin build");
+    first
+        .executable("stale_multi_bin")
+        .expect("initial multi-bin artifact");
+
+    std::fs::write(&common_rs, "pub fn run( {}\n").expect("write invalid generated module");
+    let second =
+        support::build_multi_bin_batch(&cases, &project).expect("failed multi-bin Cargo build");
+    assert!(
+        second.executable("stale_multi_bin").is_err(),
+        "failed multi-bin rebuild accepted the stale executable"
+    );
+}
+
+#[test]
+fn c_oracle_binary_is_reused_until_its_inputs_change() {
+    let work = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-c-cache-regression");
+    let _ = std::fs::remove_dir_all(&work);
+    std::fs::create_dir_all(&work).expect("create regression work dir");
+    let source = work.join("oracle.c");
+    let binary = work.join("oracle");
+    std::fs::write(&source, "int main(void) { return VALUE; }\n").expect("write C oracle source");
+    let zero = vec!["-DVALUE=0".to_string()];
+    support::compile_c_with_args(&source, &binary, &zero).expect("initial C build");
+    let initial = std::fs::metadata(&binary)
+        .expect("stat initial C binary")
+        .modified()
+        .expect("initial C binary mtime");
+
+    std::thread::sleep(std::time::Duration::from_millis(20));
+    support::compile_c_with_args(&source, &binary, &zero).expect("cached C build");
+    let cached = std::fs::metadata(&binary)
+        .expect("stat cached C binary")
+        .modified()
+        .expect("cached C binary mtime");
+    assert_eq!(initial, cached, "unchanged C oracle was recompiled");
+
+    std::thread::sleep(std::time::Duration::from_millis(20));
+    let one = vec!["-DVALUE=1".to_string()];
+    support::compile_c_with_args(&source, &binary, &one).expect("C rebuild after argument change");
+    let rebuilt = std::fs::metadata(&binary)
+        .expect("stat rebuilt C binary")
+        .modified()
+        .expect("rebuilt C binary mtime");
+    assert!(rebuilt > cached, "changed C arguments did not rebuild");
+
+    std::thread::sleep(std::time::Duration::from_millis(20));
+    std::fs::write(&source, "int main(void) {\n").expect("write invalid C oracle source");
+    assert!(
+        support::compile_c_with_args(&source, &binary, &one).is_err(),
+        "failed C rebuild accepted the stale executable"
+    );
 }
 
 #[test]
