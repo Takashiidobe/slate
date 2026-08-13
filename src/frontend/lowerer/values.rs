@@ -196,11 +196,19 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return Expr::Value(RustValue::None);
         }
         match self.values.get(operand) {
-            Some(Val::Global(name)) if !self.parent.strings.contains_key(name) => Expr::Call {
-                binding: crate::function_identity::CallBinding::Generated,
-                func: Box::new(Expr::Var("Some".into())),
-                args: vec![Expr::Var(sanitize_ident(name))],
-            },
+            Some(Val::Global(name)) if !self.parent.strings.contains_key(name) => {
+                let target = self
+                    .parent
+                    .long_double_callback_trampolines
+                    .get(name)
+                    .map(String::as_str)
+                    .unwrap_or(name);
+                Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
+                    func: Box::new(Expr::Var("Some".into())),
+                    args: vec![Expr::Var(sanitize_ident(target))],
+                }
+            }
             Some(Val::Expr(expr)) if self.is_function_pointer_none_expr(expr) => {
                 Expr::Value(RustValue::None)
             }

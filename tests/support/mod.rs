@@ -329,6 +329,16 @@ pub fn compile_rs_cargo_with_link(
     package: &str,
     link_dir: &Path,
 ) -> Result<PathBuf, String> {
+    compile_rs_cargo_with_link_and_shims(src, work_dir, package, link_dir, None)
+}
+
+pub fn compile_rs_cargo_with_link_and_shims(
+    src: &Path,
+    work_dir: &Path,
+    package: &str,
+    link_dir: &Path,
+    shim_source: Option<&str>,
+) -> Result<PathBuf, String> {
     let project = work_dir.join(format!("{package}_cargo"));
     if project.exists() {
         std::fs::remove_dir_all(&project)
@@ -344,7 +354,6 @@ pub fn compile_rs_cargo_with_link(
     std::fs::copy(src, project.join("src/main.rs"))
         .map_err(|e| format!("copy {} to cargo project: {e}", src.display()))?;
 
-    // copy any link files into the crate under `linkfiles/`
     if link_dir.exists() {
         let dest_dir = project.join("linkfiles");
         std::fs::create_dir_all(&dest_dir)
@@ -363,33 +372,50 @@ pub fn compile_rs_cargo_with_link(
         }
     }
 
-    // Generate the long double shim source first. write_long_double_shim also
-    // writes build.rs, but we overwrite it below with the link-aware version.
-    write_long_double_shim(&project)?;
-
-    // Build a custom build.rs that links any object files in linkfiles/ and
-    // also compiles the long double shim like the normal helper.
-    let build_rs = r#"fn main() {
-    // Link any prebuilt objects placed in linkfiles/
+    if let Some(shim_source) = shim_source {
+        std::fs::write(
+            project.join("build.rs"),
+            r#"fn main() {
     if let Ok(entries) = std::fs::read_dir("linkfiles") {
         for e in entries.flatten() {
             let p = e.path();
             if p.is_file() {
-                // Instruct cargo to rerun and pass the object to the linker.
                 println!("cargo:rerun-if-changed={}", p.display());
                 println!("cargo:rustc-link-arg={}", p.display());
             }
         }
     }
-    // Also compile the long double shim if present
+    cc::Build::new()
+        .file("src/slate_long_double.c")
+        .flag("-Wno-implicit-function-declaration")
+        .compile("slate_long_double");
+}
+"#,
+        )
+        .map_err(|e| format!("write build.rs: {e}"))?;
+        std::fs::write(project.join("src/slate_long_double.c"), shim_source)
+            .map_err(|e| format!("write slate_long_double.c: {e}"))?;
+    } else {
+        write_long_double_shim(&project)?;
+        let build_rs = r#"fn main() {
+    if let Ok(entries) = std::fs::read_dir("linkfiles") {
+        for e in entries.flatten() {
+            let p = e.path();
+            if p.is_file() {
+                println!("cargo:rerun-if-changed={}", p.display());
+                println!("cargo:rustc-link-arg={}", p.display());
+            }
+        }
+    }
     cc::Build::new()
         .file("src/slate_long_double.c")
         .flag("-Wno-implicit-function-declaration")
         .compile("slate_long_double");
 }
 "#;
-    std::fs::write(project.join("build.rs"), build_rs.as_bytes())
-        .map_err(|e| format!("write build.rs: {e}"))?;
+        std::fs::write(project.join("build.rs"), build_rs)
+            .map_err(|e| format!("write build.rs: {e}"))?;
+    }
 
     let target_dir = test_target_dir_for_project(&project);
     std::fs::create_dir_all(&target_dir)

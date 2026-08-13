@@ -1,4 +1,7 @@
 use super::*;
+use rustc_apfloat::Float;
+use std::collections::HashMap;
+use std::sync::{Mutex, OnceLock};
 
 pub(super) fn type_array_len(ty: &Type) -> Option<u64> {
     match ty {
@@ -259,16 +262,53 @@ pub(super) fn fp_literal_expr(fp: String) -> Expr {
 }
 
 pub(super) fn typed_fp_literal_expr(ty: Option<&Type>, fp: String) -> Expr {
-    let value = fp_literal_expr(fp);
-    if matches!(ty, Some(Type::LongDouble)) {
-        Expr::Call {
-            binding: crate::function_identity::CallBinding::Generated,
-            func: Box::new(Expr::Var("__slate_f80_from_f64".into())),
-            args: vec![value],
-        }
+    if matches!(ty, Some(Type::LongDouble)) && !crate::cir::emit::uses_f64_long_double_abi() {
+        f80_literal_expr(&fp).unwrap_or_else(|| {
+            let value = fp_literal_expr(fp);
+            Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
+                func: Box::new(Expr::Var("__slate_f80_from_f64".into())),
+                args: vec![value],
+            }
+        })
     } else {
-        value
+        fp_literal_expr(fp)
     }
+}
+
+fn f80_cache() -> &'static Mutex<HashMap<String, [u8; 10]>> {
+    static CACHE: OnceLock<Mutex<HashMap<String, [u8; 10]>>> = OnceLock::new();
+    CACHE.get_or_init(|| Mutex::new(HashMap::new()))
+}
+
+fn host_f80_bytes(fp: &str) -> Option<[u8; 10]> {
+    if let Some(cached) = f80_cache().lock().ok()?.get(fp).copied() {
+        return Some(cached);
+    }
+    let bits = fp
+        .parse::<rustc_apfloat::ieee::X87DoubleExtended>()
+        .ok()?
+        .to_bits();
+    let mut bytes = [0u8; 10];
+    bytes.copy_from_slice(&bits.to_be_bytes()[6..]);
+    bytes.reverse();
+    f80_cache().lock().ok()?.insert(fp.to_string(), bytes);
+    Some(bytes)
+}
+
+pub(super) fn f80_literal_expr(fp: &str) -> Option<Expr> {
+    let bytes = host_f80_bytes(fp)?;
+    let elems = byte_array_elems(
+        &bytes,
+        &Type::Array {
+            elem: Box::new(Type::Prim(Prim::U8)),
+            len: 10,
+        },
+    );
+    Some(Expr::TupleStructLit {
+        name: LONG_DOUBLE_TY.into(),
+        fields: vec![Expr::ArrayLit(elems)],
+    })
 }
 
 pub(super) enum CirComplexComponent {

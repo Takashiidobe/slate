@@ -646,8 +646,8 @@ fn library_crate_links_generated_c_abi_shim_for_long_double_libc_call() {
 
     let strfrom_rs =
         std::fs::read_to_string(crate_dir.join("src/strfrom.rs")).expect("read strfrom.rs");
-    assert!(strfrom_rs.contains("fn __slate_strfroml__pi8_u64_pi8_f80("));
-    assert!(strfrom_rs.contains("unsafe { __slate_strfroml__pi8_u64_pi8_f80("));
+    assert!(strfrom_rs.contains("fn __slate_strfroml__ri32_pi8_u64_pi8_f80("));
+    assert!(strfrom_rs.contains("unsafe { __slate_strfroml__ri32_pi8_u64_pi8_f80("));
 
     let run_tests = std::process::Command::new("cargo")
         .args(["test", "--quiet", "--tests", "--manifest-path"])
@@ -751,10 +751,56 @@ fn project_translation_shares_long_double_types() {
 }
 
 #[test]
+fn long_double_callback_uses_c_abi_trampoline() {
+    let dir = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures.link")
+        .join("long_double_callback");
+    let work = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("target/cross-tu")
+        .join("long_double_callback");
+    let _ = std::fs::remove_dir_all(&work);
+    std::fs::create_dir_all(&work).expect("create work dir");
+
+    let main_c = dir.join("main.c");
+    let native_c = dir.join("native.c");
+    let object = work.join("native.o");
+    support::compile_c_object(&native_c, &object).expect("compile callback object");
+
+    let c_bin = work.join("c_bin");
+    support::compile_c_with_args(&main_c, &c_bin, &[object.display().to_string()])
+        .expect("compile C reference");
+
+    let rs_src = work.join("main.rs");
+    let (_, program) = slate::api::lowered_program(&main_c).expect("lower callback main");
+    std::fs::write(&rs_src, program.emit()).expect("write callback main");
+    let shim_source = slate::frontend::c_shim::render_shim_c_source(&program.shims);
+
+    let link_dir = work.join("linksrc");
+    std::fs::create_dir_all(&link_dir).expect("create link dir");
+    std::fs::copy(&object, link_dir.join("native.o")).expect("copy callback object");
+    let rs_bin = support::compile_rs_cargo_with_link_and_shims(
+        &rs_src,
+        &work,
+        "long_double_callback",
+        &link_dir,
+        Some(&shim_source),
+    )
+    .expect("compile Rust with callback trampoline");
+
+    let run_dir = work.join("run");
+    std::fs::create_dir_all(&run_dir).expect("create run dir");
+    let c_run = support::run_with_config(&c_bin, &support::RunConfig::default(), &run_dir)
+        .expect("run C reference");
+    let r_run = support::run_with_config(&rs_bin, &support::RunConfig::default(), &run_dir)
+        .expect("run translated callback");
+    support::compare_runs(&c_run, &r_run, false).expect("callback outputs differ");
+}
+
+#[test]
 fn project_translation_emits_required_long_double_shims() {
     let rs_dir = build_and_diff("project_strtold");
     let shim = std::fs::read_to_string(rs_dir.join("slate_shims.c")).expect("read slate_shims.c");
-    assert!(shim.contains("void __slate_strtold"));
+    assert!(shim.contains("__slate_f80 __slate_strtold"));
 }
 
 #[test]
