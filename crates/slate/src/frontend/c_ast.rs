@@ -58,7 +58,7 @@ pub struct Unit {
     pub functions: Vec<Function>,
     pub declaration_comments: Vec<DeclarationComment>,
     pub weak_refs: Vec<WeakRefAttribute>,
-    pub floating_literals: HashMap<Loc, String>,
+    pub floating_literals: HashMap<FloatingLiteralLoc, FloatingLiteralFact>,
     pub global_floating_literals: HashMap<String, String>,
     function_types: HashMap<String, String>,
     call_bindings: HashMap<Loc, CallBinding>,
@@ -224,6 +224,26 @@ pub struct Loc {
     pub col: u32,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct SourcePoint {
+    pub file: String,
+    pub line: u32,
+    pub col: u32,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct FloatingLiteralLoc {
+    pub spelling: SourcePoint,
+    pub expansion: SourcePoint,
+}
+
+#[derive(Debug, Clone)]
+pub struct FloatingLiteralFact {
+    pub value: String,
+    pub bits: String,
+    pub bit_width: u32,
+}
+
 impl Unit {
     pub fn call_bindings(&self) -> HashMap<Loc, CallBinding> {
         let mut bindings = self.call_bindings.clone();
@@ -322,6 +342,7 @@ struct PluginEvents {
     macros: HashMap<usize, MacroExpansion>,
     calls: HashMap<usize, CallFact>,
     pack_attributes: Vec<PackAttribute>,
+    floating_literals: HashMap<FloatingLiteralLoc, FloatingLiteralFact>,
 }
 
 #[derive(Debug)]
@@ -373,12 +394,37 @@ fn parse_plugin_events(stderr: &str) -> PluginEvents {
             ("function", json)
         } else if let Some(json) = line.strip_prefix("RECORD_PACKING ") {
             ("record", json)
+        } else if let Some(json) = line.strip_prefix("FLOATING_LITERAL ") {
+            ("floating_literal", json)
         } else {
             continue;
         };
         let Ok(event) = serde_json::from_str::<Value>(json) else {
             continue;
         };
+        if kind == "floating_literal" {
+            let (Some(spelling), Some(expansion), Some(value), Some(bits), Some(bit_width)) = (
+                event.get("spelling").and_then(plugin_source_point),
+                event.get("expansion").and_then(plugin_source_point),
+                event.get("value").and_then(Value::as_str),
+                event.get("bits").and_then(Value::as_str),
+                event.get("bit_width").and_then(Value::as_u64),
+            ) else {
+                continue;
+            };
+            out.floating_literals.insert(
+                FloatingLiteralLoc {
+                    spelling,
+                    expansion,
+                },
+                FloatingLiteralFact {
+                    value: value.to_string(),
+                    bits: bits.to_string(),
+                    bit_width: bit_width as u32,
+                },
+            );
+            continue;
+        }
         let Some(offset) = event.get("offset").and_then(Value::as_u64) else {
             continue;
         };
@@ -462,6 +508,14 @@ fn parse_plugin_events(stderr: &str) -> PluginEvents {
         );
     }
     out
+}
+
+fn plugin_source_point(value: &Value) -> Option<SourcePoint> {
+    Some(SourcePoint {
+        file: value.get("file")?.as_str()?.to_string(),
+        line: value.get("line")?.as_u64()? as u32,
+        col: value.get("column")?.as_u64()? as u32,
+    })
 }
 
 fn run_clang_ast_dump(
@@ -636,11 +690,10 @@ fn parse_json_with_record_roots(
         &mut functions,
     );
     collect_weak_ref_attributes(&root, source_file, &mut weak_refs);
-    let floating_literals = source_text.as_deref().map_or_else(HashMap::new, |source| {
-        let mut out = HashMap::new();
-        collect_floating_literals(&root, source_file, source, &mut out);
-        out
-    });
+    let mut floating_literals = plugin_events.floating_literals;
+    if let Some(source) = source_text.as_deref() {
+        collect_floating_literals(&root, source_file, source, &mut floating_literals);
+    }
     let mut global_floating_literals = HashMap::new();
     collect_global_floating_literals(&root, false, &mut global_floating_literals);
     let mut function_types = HashMap::new();
@@ -694,9 +747,9 @@ fn contains_pointer_sized_typedef(ty: &str) -> bool {
 
 fn collect_floating_literals(
     node: &Value,
-    _source_file: &str,
+    source_file: &str,
     source: &str,
-    out: &mut HashMap<Loc, String>,
+    out: &mut HashMap<FloatingLiteralLoc, FloatingLiteralFact>,
 ) {
     if kind(node) == Some("FloatingLiteral") {
         if let Some(offset) = node
@@ -707,12 +760,25 @@ fn collect_floating_literals(
             && let Some(loc) = loc_from_offset(source, offset as usize)
             && let Some(value) = node.get("value").and_then(Value::as_str)
         {
-            out.entry(loc).or_insert_with(|| value.to_string());
+            let point = SourcePoint {
+                file: source_file.to_string(),
+                line: loc.line,
+                col: loc.col,
+            };
+            out.entry(FloatingLiteralLoc {
+                spelling: point.clone(),
+                expansion: point,
+            })
+            .or_insert_with(|| FloatingLiteralFact {
+                value: value.to_string(),
+                bits: String::new(),
+                bit_width: 0,
+            });
         }
         return;
     }
     for child in children(node) {
-        collect_floating_literals(child, _source_file, source, out);
+        collect_floating_literals(child, source_file, source, out);
     }
 }
 

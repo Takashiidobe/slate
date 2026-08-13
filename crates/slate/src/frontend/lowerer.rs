@@ -11,7 +11,10 @@ use crate::backend::rust_ast::{
 };
 use crate::cir::ir::{Attr, Block, CirOpKind, Module, Op, Region};
 use crate::ctx::Ctx;
-use crate::frontend::c_ast::{EnumConstRef, LayoutQuery, Loc, MacroConst, RecordKind, Unit};
+use crate::frontend::c_ast::{
+    EnumConstRef, FloatingLiteralFact, FloatingLiteralLoc, LayoutQuery, Loc, MacroConst,
+    RecordKind, SourcePoint, Unit,
+};
 use crate::frontend::function_abi::repair_function_signature;
 use crate::function_identity::{CallBinding, FunctionIdentity};
 use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
@@ -1000,7 +1003,7 @@ struct Lowerer<'a> {
     generated_alloca_frames: Vec<StructDef>,
     layout_queries: BTreeMap<String, Vec<LayoutQuery>>,
     macro_consts: BTreeMap<String, Vec<MacroConst>>,
-    floating_literals: HashMap<Loc, String>,
+    floating_literals: HashMap<FloatingLiteralLoc, FloatingLiteralFact>,
     global_floating_literals: HashMap<String, String>,
     long_double_callback_trampolines: BTreeMap<String, String>,
     enum_consts: BTreeMap<String, Vec<EnumConstRef>>,
@@ -1161,8 +1164,11 @@ impl<'a> Lowerer<'a> {
             .unwrap_or_else(|| sanitize_ident(name).into_string())
     }
 
-    fn ast_floating_literal(&self, op: &Op) -> Option<String> {
-        let loc = op.loc.as_deref().and_then(|raw| self.resolve_loc(raw))?;
+    fn ast_floating_literal(&self, op: &Op) -> Option<FloatingLiteralFact> {
+        let loc = op
+            .loc
+            .as_deref()
+            .and_then(|raw| self.resolve_floating_literal_loc(raw))?;
         self.floating_literals.get(&loc).cloned()
     }
 
@@ -1201,21 +1207,162 @@ impl<'a> Lowerer<'a> {
     }
 
     fn resolve_loc(&self, raw: &str) -> Option<Loc> {
-        let mut raw = raw.trim();
-        for _ in 0..4 {
-            let inner = raw.strip_prefix("loc(")?.strip_suffix(')')?.trim();
-            if inner.starts_with('#') {
-                raw = self.aliases.get(inner)?.as_str();
-                continue;
-            }
-            let (_, line_col) = inner.rsplit_once("\":")?;
-            let (line, col) = line_col.split_once(':')?;
-            return Some(Loc {
-                line: line.parse().ok()?,
-                col: col.parse().ok()?,
+        let point = self.resolve_expansion_source_point(raw, 0)?;
+        Some(Loc {
+            line: point.line,
+            col: point.col,
+        })
+    }
+
+    fn resolve_floating_literal_loc(&self, raw: &str) -> Option<FloatingLiteralLoc> {
+        let raw = raw.trim();
+        if raw.starts_with('#') {
+            return self.resolve_floating_literal_loc(self.aliases.get(raw)?);
+        }
+        let inner = raw
+            .strip_prefix("loc(")
+            .and_then(|raw| raw.strip_suffix(')'))
+            .unwrap_or(raw)
+            .trim();
+        if inner.starts_with('#') {
+            return self.resolve_floating_literal_loc(self.aliases.get(inner)?);
+        }
+        if let Some(callsite) = inner
+            .strip_prefix("callsite(")
+            .and_then(|raw| raw.strip_suffix(')'))
+            && let Some((spelling, expansion)) = callsite.split_once(" at ")
+        {
+            return Some(FloatingLiteralLoc {
+                spelling: self.resolve_source_point(spelling, 0)?,
+                expansion: self.resolve_source_point(expansion, 0)?,
             });
         }
-        None
+        let point = self.resolve_source_point(inner, 0)?;
+        Some(FloatingLiteralLoc {
+            spelling: point.clone(),
+            expansion: point,
+        })
+    }
+
+    fn resolve_expansion_source_point(&self, raw: &str, depth: usize) -> Option<SourcePoint> {
+        if depth == 8 {
+            return None;
+        }
+        let raw = raw.trim();
+        if raw.starts_with('#') {
+            return self.resolve_expansion_source_point(self.aliases.get(raw)?, depth + 1);
+        }
+        let inner = raw
+            .strip_prefix("loc(")
+            .and_then(|raw| raw.strip_suffix(')'))
+            .unwrap_or(raw)
+            .trim();
+        if inner.starts_with('#') {
+            return self.resolve_expansion_source_point(self.aliases.get(inner)?, depth + 1);
+        }
+        if let Some(callsite) = inner
+            .strip_prefix("callsite(")
+            .and_then(|raw| raw.strip_suffix(')'))
+            && let Some((_, expansion)) = callsite.split_once(" at ")
+        {
+            return self.resolve_expansion_source_point(expansion, depth + 1);
+        }
+        self.resolve_source_point(inner, depth + 1)
+    }
+
+    fn resolve_macro_group_loc(&self, raw: &str, depth: usize) -> Option<SourcePoint> {
+        if depth == 8 {
+            return None;
+        }
+        let raw = raw.trim();
+        if raw.starts_with('#') {
+            return self.resolve_macro_group_loc(self.aliases.get(raw)?, depth + 1);
+        }
+        let inner = raw
+            .strip_prefix("loc(")
+            .and_then(|raw| raw.strip_suffix(')'))
+            .unwrap_or(raw)
+            .trim();
+        if inner.starts_with('#') {
+            return self.resolve_macro_group_loc(self.aliases.get(inner)?, depth + 1);
+        }
+        if let Some(fused) = inner
+            .strip_prefix("fused[")
+            .and_then(|raw| raw.strip_suffix(']'))
+            && let Some(first) = fused.split(',').next()
+        {
+            return self.resolve_macro_group_loc(first, depth + 1);
+        }
+        let callsite = inner
+            .strip_prefix("callsite(")
+            .and_then(|raw| raw.strip_suffix(')'))?;
+        let (_, expansion) = callsite.split_once(" at ")?;
+        self.resolve_source_point(expansion, depth + 1)
+    }
+
+    fn resolve_source_point(&self, raw: &str, depth: usize) -> Option<SourcePoint> {
+        if depth == 8 {
+            return None;
+        }
+        let raw = raw.trim();
+        if raw.starts_with('#') {
+            return self.resolve_source_point(self.aliases.get(raw)?, depth + 1);
+        }
+        let inner = raw
+            .strip_prefix("loc(")
+            .and_then(|raw| raw.strip_suffix(')'))
+            .unwrap_or(raw)
+            .trim();
+        if inner.starts_with('#') {
+            return self.resolve_source_point(self.aliases.get(inner)?, depth + 1);
+        }
+        let (file, line_col) = inner.rsplit_once("\":")?;
+        let (line, col) = line_col.split_once(':')?;
+        Some(SourcePoint {
+            file: file.strip_prefix('"')?.to_string(),
+            line: line.parse().ok()?,
+            col: col.parse().ok()?,
+        })
+    }
+
+    fn long_double_extern_pointer_shim(&mut self, name: &str, ty: &Type) -> Option<String> {
+        if !self.externs.contains_key(name) {
+            return None;
+        }
+        let Type::FnPtr { params, ret, .. } = ty else {
+            return None;
+        };
+        if !params.iter().any(type_mentions_long_double) && !type_mentions_long_double(ret) {
+            return None;
+        }
+        let mut segments = vec![format!("r{}", long_double_shim_type_tag(ret))];
+        segments.extend(params.iter().map(long_double_shim_type_tag));
+        let shim_name = format!("__slate_{name}__{}", segments.join("_"));
+        let ret = ret.as_ref().clone();
+        self.long_double_shims
+            .entry(shim_name.clone())
+            .or_insert_with(|| ExternFnDecl {
+                identity: self
+                    .known_functions
+                    .get(name)
+                    .copied()
+                    .unwrap_or(FunctionIdentity::Unknown),
+                name: shim_name.clone(),
+                declared_type: self.function_types.get(name).cloned(),
+                params: params
+                    .iter()
+                    .enumerate()
+                    .map(|(i, ty)| FnParam {
+                        name: format!("_{i}"),
+                        mutable: false,
+                        ty: ty.clone(),
+                    })
+                    .collect(),
+                variadic: false,
+                ret: (!ret.is_unit()).then_some(ret),
+                safe: false,
+            });
+        Some(shim_name)
     }
 
     fn lower_module(&mut self, module: &Module, c: &Unit) -> Program {
@@ -1816,7 +1963,7 @@ impl __SlateVaArgs {
                     .global_floating_literals
                     .get(name)
                     .cloned()
-                    .or_else(|| self.ast_floating_literal(op))
+                    .or_else(|| self.ast_floating_literal(op).map(|fact| fact.value))
                     .map(|fp| format!("#cir.fp<{fp}>"))
                     .unwrap_or_else(|| raw.to_string());
                 if let Some(init) = self.render_const_value_expr(&ty, &literal_raw) {
@@ -1919,7 +2066,7 @@ impl __SlateVaArgs {
                 .global_floating_literals
                 .get(name)
                 .cloned()
-                .or_else(|| self.ast_floating_literal(op))
+                .or_else(|| self.ast_floating_literal(op).map(|fact| fact.value))
                 .map(|fp| format!("#cir.fp<{fp}>"))
                 .or_else(|| Some(raw.to_string()))
                 .as_deref()
@@ -3406,12 +3553,8 @@ fn ctype_uses_long_double(ty: &crate::frontend::c_ast::CType) -> bool {
 }
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
-    fn ast_floating_literal(&self, op: &Op) -> Option<String> {
-        let loc = op
-            .loc
-            .as_deref()
-            .and_then(|raw| self.parent.resolve_loc(raw))?;
-        self.parent.floating_literals.get(&loc).cloned()
+    fn ast_floating_literal(&self, op: &Op) -> Option<FloatingLiteralFact> {
+        self.parent.ast_floating_literal(op)
     }
 
     fn lower_block(&mut self, block: &Block) {
@@ -3419,10 +3562,24 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         while index < block.ops.len() {
             let op = &block.ops[index];
             if op.kind() == CirOpKind::Alloca {
+                let group_loc = op
+                    .loc
+                    .as_deref()
+                    .and_then(|raw| self.parent.resolve_macro_group_loc(raw, 0));
                 let end = block.ops[index..]
                     .iter()
                     .take_while(|candidate| {
-                        candidate.kind() == CirOpKind::Alloca && candidate.loc == op.loc
+                        let candidate_group_loc = candidate
+                            .loc
+                            .as_deref()
+                            .and_then(|raw| self.parent.resolve_macro_group_loc(raw, 0));
+                        candidate.kind() == CirOpKind::Alloca
+                            && (candidate.loc == op.loc
+                                || matches!(
+                                    (&group_loc, candidate_group_loc),
+                                    (Some(group_loc), Some(candidate_group_loc))
+                                        if &candidate_group_loc == group_loc
+                                ))
                     })
                     .count()
                     + index;

@@ -692,7 +692,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else if result_ty == Some("!cir.f128") || result_ty.is_some_and(is_quad_long_double) {
             parse_cir_f128_expr(raw).unwrap_or_else(|| Expr::HexFloat("0.0f128".into()))
         } else if result_ty.is_some_and(is_long_double) {
-            if let Some(fp) = floating_literal.or_else(|| parse_cir_fp(raw)) {
+            if !crate::cir::emit::uses_f64_long_double_abi()
+                && let Some(expr) = floating_literal.as_ref().and_then(|fact| {
+                    (fact.bit_width == 80)
+                        .then(|| f80_literal_bits_expr(&fact.bits))
+                        .flatten()
+                })
+            {
+                expr
+            } else if let Some(fp) = floating_literal
+                .map(|fact| fact.value)
+                .or_else(|| parse_cir_fp(raw))
+            {
                 if crate::cir::emit::uses_f64_long_double_abi() {
                     fp_literal_expr(fp)
                 } else {

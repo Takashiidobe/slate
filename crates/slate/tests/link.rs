@@ -7,7 +7,6 @@ fn link_fixtures_dir() -> PathBuf {
 }
 
 #[test]
-#[ignore = "waiting on long double support"]
 fn link_fixture_runs_match_c() {
     let root = link_fixtures_dir();
     if !root.exists() {
@@ -60,7 +59,10 @@ fn link_fixture_runs_match_c() {
         support::compile_c_with_args(&main_c, &c_bin, &extra_args).expect("compile C");
 
         let rs_out = work.join("generated_main.rs");
-        support::translate(&main_c, &rs_out).expect("translate C to Rust");
+        let (_, program) = slate::api::lowered_program(&main_c).expect("lower C to Rust");
+        let shim_source = slate::frontend::c_shim::render_shim_c_source_for_program(&program);
+        std::fs::write(&rs_out, slate::backend::apply(program).emit())
+            .expect("write generated Rust");
 
         let link_dir = work.join("linksrc");
         std::fs::create_dir_all(&link_dir).expect("create link dir");
@@ -69,8 +71,14 @@ fn link_fixture_runs_match_c() {
             std::fs::copy(obj, link_dir.join(fname)).expect("copy link object");
         }
 
-        let rs_bin = support::compile_rs_cargo_with_link(&rs_out, &work, &name, &link_dir)
-            .expect("compile rust with link");
+        let rs_bin = support::compile_rs_cargo_with_link_and_shims(
+            &rs_out,
+            &work,
+            &name,
+            &link_dir,
+            Some(&shim_source),
+        )
+        .expect("compile rust with link");
 
         let cfg = support::RunConfig::default();
         let run_dir = work.join("run");

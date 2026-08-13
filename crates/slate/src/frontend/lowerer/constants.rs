@@ -298,17 +298,29 @@ fn host_f80_bytes(fp: &str) -> Option<[u8; 10]> {
 
 pub(super) fn f80_literal_expr(fp: &str) -> Option<Expr> {
     let bytes = host_f80_bytes(fp)?;
+    Some(f80_bytes_expr(&bytes))
+}
+
+pub(super) fn f80_literal_bits_expr(bits: &str) -> Option<Expr> {
+    let bits = u128::from_str_radix(bits, 16).ok()?;
+    let mut bytes = [0u8; 10];
+    bytes.copy_from_slice(&bits.to_be_bytes()[6..]);
+    bytes.reverse();
+    Some(f80_bytes_expr(&bytes))
+}
+
+fn f80_bytes_expr(bytes: &[u8; 10]) -> Expr {
     let elems = byte_array_elems(
-        &bytes,
+        bytes,
         &Type::Array {
             elem: Box::new(Type::Prim(Prim::U8)),
             len: 10,
         },
     );
-    Some(Expr::TupleStructLit {
+    Expr::TupleStructLit {
         name: LONG_DOUBLE_TY.into(),
         fields: vec![Expr::ArrayLit(elems)],
-    })
+    }
 }
 
 pub(super) enum CirComplexComponent {

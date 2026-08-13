@@ -7,6 +7,7 @@
 #include "clang/Lex/PPCallbacks.h"
 #include "clang/Lex/Preprocessor.h"
 #include "llvm/ADT/DenseMap.h"
+#include "llvm/ADT/SmallString.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/Support/JSON.h"
 #include "llvm/Support/Path.h"
@@ -168,6 +169,15 @@ llvm::json::Array headerDetails(const std::set<HeaderEvidence> &Headers) {
   return Out;
 }
 
+llvm::json::Object sourcePoint(SourceManager &SM, SourceLocation Loc) {
+  PresumedLoc Presumed = SM.getPresumedLoc(Loc);
+  return llvm::json::Object{
+      {"file", Presumed.getFilename()},
+      {"offset", static_cast<int64_t>(SM.getFileOffset(Loc))},
+      {"line", static_cast<int64_t>(Presumed.getLine())},
+      {"column", static_cast<int64_t>(Presumed.getColumn())}};
+}
+
 class ProvenanceVisitor : public RecursiveASTVisitor<ProvenanceVisitor> {
   SourceManager &SM;
   const ProvenanceState &State;
@@ -216,6 +226,35 @@ class ProvenanceVisitor : public RecursiveASTVisitor<ProvenanceVisitor> {
 public:
   ProvenanceVisitor(SourceManager &SM, const ProvenanceState &State)
       : SM(SM), State(State) {}
+
+  bool VisitFloatingLiteral(FloatingLiteral *Literal) {
+    SourceLocation Expansion = SM.getExpansionLoc(Literal->getExprLoc());
+    SourceLocation Spelling = SM.getSpellingLoc(Literal->getExprLoc());
+    if (Expansion.isInvalid() || Spelling.isInvalid() ||
+        !SM.isWrittenInMainFile(Expansion))
+      return true;
+
+    llvm::SmallString<32> Value;
+    Literal->getValue().toString(Value);
+    llvm::APInt Bits = Literal->getValue().bitcastToAPInt();
+    llvm::SmallString<32> UnpaddedBits;
+    Bits.toStringUnsigned(UnpaddedBits, 16);
+    std::string BitString((Bits.getBitWidth() + 3) / 4 - UnpaddedBits.size(),
+                          '0');
+    BitString.append(UnpaddedBits.data(), UnpaddedBits.size());
+
+    llvm::json::Object Event{
+        {"spelling", sourcePoint(SM, Spelling)},
+        {"expansion", sourcePoint(SM, Expansion)},
+        {"type", Literal->getType().getAsString()},
+        {"value", Value.str().str()},
+        {"bit_width", static_cast<int64_t>(Bits.getBitWidth())},
+        {"bits", std::move(BitString)},
+    };
+    llvm::errs() << "FLOATING_LITERAL "
+                 << llvm::json::Value(std::move(Event)) << "\n";
+    return true;
+  }
 
   bool VisitCallExpr(CallExpr *Call) {
     SourceLocation Loc = SM.getExpansionLoc(Call->getExprLoc());
