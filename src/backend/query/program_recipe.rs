@@ -564,6 +564,7 @@ fn expr_has_printf_call(expr: &Expr) -> bool {
     match expr {
         Expr::Call { func, args, .. } => {
             known_call(expr) == Some(Known::Printf)
+                || matches!(func.as_ref(), Expr::Var(name) if name.as_str().starts_with("__slate_printf__"))
                 || expr_has_printf_call(func)
                 || args.iter().any(expr_has_printf_call)
         }

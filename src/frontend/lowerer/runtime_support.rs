@@ -455,6 +455,7 @@ pub(super) fn long_double_shim_type_tag(ty: &Type) -> String {
         Type::Prim(Prim::F128) => "lq".into(),
         Type::Prim(Prim::Bool) => "bool".into(),
         Type::LongDouble => "f80".into(),
+        Type::Complex(inner) if matches!(inner.as_ref(), Type::LongDouble) => "cf80".into(),
         Type::Unit => "v".into(),
         Type::Ptr { inner, .. } => format!("p{}", long_double_shim_type_tag(inner)),
         _ => "x".into(),
