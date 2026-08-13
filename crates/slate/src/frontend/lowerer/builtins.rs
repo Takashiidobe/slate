@@ -182,6 +182,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .ty
             .as_deref()
             .and_then(|ty| op_operand_types(ty).into_iter().next());
+        if operand_ty.is_some_and(is_wrapped_long_double) {
+            self.materialize_expr(
+                result,
+                Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
+                    func: Box::new(Expr::Var("__slate_f80_signbit".into())),
+                    args: vec![self.operand_expr(value)],
+                },
+                op_result_type(op),
+            );
+            return;
+        }
         let value = self.float_predicate_operand_expr(value, operand_ty);
         self.materialize_expr(
             result,

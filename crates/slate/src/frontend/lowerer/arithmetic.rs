@@ -377,15 +377,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else if type_mentions_long_double(&rust_ty) {
             Expr::Call {
                 binding: crate::function_identity::CallBinding::Generated,
-                func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
-                args: vec![Expr::MethodCall {
-                    recv: Box::new(Expr::Field {
-                        base: Box::new(value),
-                        field: "0".into(),
-                    }),
-                    method: "abs".into(),
-                    args: vec![],
-                }],
+                func: Box::new(Expr::Var("__slate_f80_abs".into())),
+                args: vec![value],
             }
         } else {
             Expr::MethodCall {
@@ -410,17 +403,21 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or(Type::Prim(Prim::F64));
         let expr = if type_mentions_long_double(&rust_ty) {
+            let shim = match method {
+                "abs" => "__slate_f80_abs",
+                "ceil" => "__slate_f80_ceil",
+                "floor" => "__slate_f80_floor",
+                "round" => "__slate_f80_round",
+                "trunc" => "__slate_f80_trunc",
+                _ => {
+                    self.emit_todo("long double unary operation");
+                    return;
+                }
+            };
             Expr::Call {
                 binding: crate::function_identity::CallBinding::Generated,
-                func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
-                args: vec![Expr::MethodCall {
-                    recv: Box::new(Expr::Field {
-                        base: Box::new(value),
-                        field: "0".into(),
-                    }),
-                    method: method.into(),
-                    args: vec![],
-                }],
+                func: Box::new(Expr::Var(shim.into())),
+                args: vec![value],
             }
         } else {
             Expr::MethodCall {
