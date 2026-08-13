@@ -256,6 +256,17 @@ pub(super) fn c_abi_function_targets(op: &Op) -> BTreeSet<String> {
     targets
 }
 
+pub(super) fn function_forwards_va_list(op: &Op) -> bool {
+    let mut ops = Vec::new();
+    collect_region_ops_recursive(op, &mut ops);
+    ops.iter().any(|op| {
+        op.kind() == CirOpKind::Call
+            && op_operand_types(op.ty.as_deref().unwrap_or(""))
+                .into_iter()
+                .any(is_cir_va_list_type)
+    })
+}
+
 pub(super) fn declared_function_param_types(
     op: &Op,
     aliases: &BTreeMap<String, String>,
