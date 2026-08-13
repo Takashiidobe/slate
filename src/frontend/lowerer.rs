@@ -12,6 +12,7 @@ use crate::backend::rust_ast::{
 use crate::cir::ir::{Attr, Block, CirOpKind, Module, Op, Region};
 use crate::ctx::Ctx;
 use crate::frontend::c_ast::{EnumConstRef, LayoutQuery, Loc, MacroConst, RecordKind, Unit};
+use crate::frontend::function_abi::repair_function_signature;
 use crate::function_identity::{CallBinding, FunctionIdentity};
 use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
 
@@ -684,8 +685,12 @@ pub fn lower_shared_types(
     let mut items = vec![Item::CrateAttrs(vec![CrateAttr::Allow(vec![
         Lint::DeadCode,
         Lint::Unused,
+        Lint::NonCamelCaseTypes,
         Lint::NonSnakeCase,
         Lint::NonUpperCaseGlobals,
+        Lint::SuspiciousRuntimeSymbolDefinitions,
+        Lint::UnpredictableFunctionPointerComparisons,
+        Lint::UnusedComparisons,
     ])])];
     if shared_types_use_long_double(records) {
         items.extend(long_double_prelude(Visibility::Pub));
@@ -1211,9 +1216,13 @@ impl<'a> Lowerer<'a> {
         let mut items = vec![Item::CrateAttrs(vec![CrateAttr::Allow(vec![
             Lint::DeadCode,
             Lint::Unused,
+            Lint::NonCamelCaseTypes,
             Lint::NonSnakeCase,
             Lint::NonUpperCaseGlobals,
             Lint::ArithmeticOverflow,
+            Lint::SuspiciousRuntimeSymbolDefinitions,
+            Lint::UnpredictableFunctionPointerComparisons,
+            Lint::UnusedComparisons,
         ])])];
 
         items.extend(bitfield_items(&self.bitfield_storages));
@@ -1529,9 +1538,6 @@ impl __SlateVaArgs {
         }
         self.unsafe_functions
             .extend(unsafe_defined_functions(module));
-        for name in &self.c_abi_functions {
-            self.unsafe_functions.remove(name);
-        }
 
         for op in &ops {
             if op.kind() != CirOpKind::Func {
@@ -2523,7 +2529,6 @@ impl __SlateVaArgs {
         let params_str = params_str.trim_start_matches('(').trim_end_matches(')');
 
         let mut params = Vec::new();
-        let mut param_types = Vec::new();
         let mut variadic = false;
         for (i, raw) in split_top_level(params_str, ',')
             .into_iter()
@@ -2540,25 +2545,27 @@ impl __SlateVaArgs {
                     mutable: false,
                     ty: ty.clone(),
                 });
-                param_types.push(ty);
             }
         }
         let ret_ast = match ret {
             Some(ret) if ret != "()" => Some(self.rust_type(ret)),
             _ => None,
         };
-        let ret_ty = ret_ast.as_ref().map(Type::render);
-        let decl = ExternFnDecl {
+        let identity = *self
+            .known_functions
+            .get(name)
+            .unwrap_or(&FunctionIdentity::Unknown);
+        let mut decl = ExternFnDecl {
             name: name.into(),
-            identity: *self
-                .known_functions
-                .get(name)
-                .unwrap_or(&FunctionIdentity::Unknown),
+            identity,
             params,
             variadic,
             ret: ret_ast,
-            safe: self.c_abi_functions.contains(name),
+            safe: false,
         };
+        repair_extern_function_signature(&mut decl);
+        let param_types = decl.params.iter().map(|param| param.ty.clone()).collect();
+        let ret_ty = decl.ret.as_ref().map(Type::render);
         if decl.variadic || decl.params.iter().any(|param| param.ty == Type::VaList) {
             self.uses_c_variadic.set(true);
         }
@@ -3114,6 +3121,24 @@ impl __SlateVaArgs {
             ty: ty.clone(),
         })
     }
+}
+
+fn repair_extern_function_signature(decl: &mut ExternFnDecl) {
+    let mut params = decl.params.iter().map(|param| param.ty.clone()).collect();
+    let mut ret = decl.ret.clone();
+    if !repair_function_signature(decl.identity, &mut params, &mut ret) {
+        return;
+    }
+    decl.params = params
+        .into_iter()
+        .enumerate()
+        .map(|(index, ty)| FnParam {
+            name: format!("_{index}"),
+            mutable: false,
+            ty,
+        })
+        .collect();
+    decl.ret = ret;
 }
 
 pub fn is_clib_record_type(name: &str) -> bool {

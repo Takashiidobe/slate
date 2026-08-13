@@ -807,7 +807,7 @@ fn weakref_function_calls_preserve_local_and_external_targets() {
     assert!(!rust.contains("fn weakref_alias"));
     assert!(rust.contains("weakref_target(35)"));
     assert!(rust.contains("#[linkage = \"extern_weak\"]"));
-    assert!(rust.contains("static abs: Option<extern \"C\" fn(i32) -> i32>;"));
+    assert!(rust.contains("static abs: Option<unsafe extern \"C\" fn(i32) -> i32>;"));
     assert!(rust.contains("abs.unwrap()(-53 as i32)"));
 }
 
@@ -1547,6 +1547,18 @@ fn memset_recovers_fill_when_provable_and_falls_back_otherwise() {
     assert!(memset.contains("partial_buf[(0..4)].fill(9);"));
     assert!(memset.contains("unsafe { memset("));
     assert!(memset.contains("dynamic_buf.as_mut_ptr()"));
+    assert!(memset.contains(
+        "fn memset(_0: *mut core::ffi::c_void, _1: i32, _2: usize) -> *mut core::ffi::c_void;"
+    ));
+    assert!(!memset.contains("safe fn memset("));
+    for lint in [
+        "non_camel_case_types",
+        "suspicious_runtime_symbol_definitions",
+        "unpredictable_function_pointer_comparisons",
+        "unused_comparisons",
+    ] {
+        assert!(memset.contains(lint), "missing generated allow for {lint}");
+    }
 }
 
 #[test]
@@ -1564,6 +1576,10 @@ fn memcpy_recovers_slice_ops_when_provable_and_falls_back_otherwise() {
     assert!(memcpy.contains("unsafe { memcpy("));
     assert!(memcpy.contains("alias_buf.as_mut_ptr()"));
     assert!(memcpy.contains("dyn_dst.as_mut_ptr()"));
+    assert!(memcpy.contains(
+        "fn memcpy(_0: *mut core::ffi::c_void, _1: *const core::ffi::c_void, _2: usize) -> *mut core::ffi::c_void;"
+    ));
+    assert!(!memcpy.contains("safe fn memcpy("));
 }
 
 #[test]
@@ -1580,6 +1596,10 @@ fn memmove_recovers_copy_within_when_provable_and_falls_back_otherwise() {
     assert!(memmove.contains("backward_buf.copy_within(1..6, 0);"));
     assert!(memmove.contains("unsafe { memmove("));
     assert!(memmove.contains("dyn_buf.as_mut_ptr()"));
+    assert!(memmove.contains(
+        "fn memmove(_0: *mut core::ffi::c_void, _1: *const core::ffi::c_void, _2: usize) -> *mut core::ffi::c_void;"
+    ));
+    assert!(!memmove.contains("safe fn memmove("));
 }
 
 #[test]
@@ -1597,6 +1617,34 @@ fn memcmp_recovers_slice_equality_when_provable_and_falls_back_otherwise() {
     assert!(memcmp.contains("(partial_a[(0..4)] == partial_b[(0..4)]) as i32"));
     assert!(memcmp.contains("unsafe { memcmp("));
     assert!(memcmp.contains("dyn_a.as_mut_ptr()"));
+    assert!(memcmp.contains(
+        "fn memcmp(_0: *const core::ffi::c_void, _1: *const core::ffi::c_void, _2: usize) -> i32;"
+    ));
+    assert!(!memcmp.contains("safe fn memcmp("));
+}
+
+#[test]
+fn trusted_strlen_uses_the_rust_runtime_signature() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-runtime-strlen");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let c_src = fixtures_dir().join("stdio_gets_loop_unsupported.c");
+    let generated = tmp.join("stdio_gets_loop_unsupported.generated.rs");
+    support::translate(&c_src, &generated).expect("translate stdio_gets_loop_unsupported fixture");
+    let rust = std::fs::read_to_string(&generated).expect("read generated strlen Rust");
+
+    assert!(rust.contains("fn strlen(_0: *const i8) -> usize;"));
+    assert!(!rust.contains("safe fn strlen("));
+}
+
+#[test]
+fn long_double_variadic_calls_retain_their_shim_declarations() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-long-double-variadic");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let rust = translate_fixture(&tmp, "long_double_variadic");
+    assert!(rust.contains("fn __slate_printf__ri32_pi8_f80("));
+    assert!(rust.contains("fn __slate_sscanf__ri32_pi8_pi8_pf80("));
 }
 
 #[test]
@@ -2526,7 +2574,7 @@ fn function_pointer_presence_checks_use_option_methods() {
     assert!(!rust.contains("!= None"));
     assert!(!rust.contains("== None"));
     assert!(!rust.contains("std::ptr::null_mut()"));
-    assert!(rust.contains("return op.unwrap()(value);"));
+    assert!(rust.contains("return unsafe { op.unwrap()(value) };"));
     assert!(rust.contains("value\n}"));
     assert!(!rust.contains("let _v0: Option<fn(i32) -> i32> = op;"));
     assert!(!rust.contains("let _v1: Option<fn(i32) -> i32> = op;"));
@@ -2713,11 +2761,25 @@ fn c11_library_callbacks_preserve_c_abi() {
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
 
     let rust = translate_fixture(&tmp, "c11_callbacks");
-    assert_eq!(rust.matches("Option<extern \"C\" fn").count(), 4);
+    assert_eq!(rust.matches("Option<unsafe extern \"C\" fn").count(), 4);
     assert_eq!(rust.matches("extern \"C\" fn ").count(), 4);
     assert!(!rust.contains("Option<fn("));
     assert!(rust.contains("let mut control: i32 = 0;"));
     assert!(rust.contains("call_once(std::ptr::addr_of_mut!(control) as *mut i32"));
+}
+
+#[test]
+fn libc_function_pointers_preserve_unsafe_c_abi() {
+    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-libc-function-pointers");
+    std::fs::create_dir_all(&tmp).expect("create tmp dir");
+
+    let rust = translate_fixture(&tmp, "libc_address_taken_safe_callback");
+    assert!(rust.contains(
+        "realloc_fn: Option<unsafe extern \"C\" fn(*mut core::ffi::c_void, u64) -> *mut core::ffi::c_void>"
+    ));
+    assert!(rust.contains("free_fn: Option<unsafe extern \"C\" fn(*mut core::ffi::c_void)>"));
+    assert!(rust.contains("unsafe { unsafe { alloc.realloc_fn }.unwrap()("));
+    assert!(rust.contains("unsafe { unsafe { alloc.free_fn }.unwrap()(p) };"));
 }
 
 #[test]

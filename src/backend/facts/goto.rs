@@ -481,7 +481,9 @@ fn parse_flow(
                 });
             }
             _ => {
-                if stmt_contains_dispatch_continue(&stmts[i].stmt, loop_label) {
+                if stmt_contains_dispatch_continue(&stmts[i].stmt, loop_label)
+                    || stmt_contains_state_write(&stmts[i].stmt, state_var)
+                {
                     return None;
                 }
                 prefix.push(stmts[i].clone());
@@ -490,6 +492,25 @@ fn parse_flow(
         }
     }
     None
+}
+
+fn stmt_contains_state_write(stmt: &Stmt, state_var: &str) -> bool {
+    if matches!(stmt, Stmt::Assign { target, .. } if var_name(target).as_deref() == Some(state_var))
+    {
+        return true;
+    }
+    let mut found = false;
+    crate::backend::support::walk::nested_bodies_with_path(
+        stmt,
+        &mut Vec::new(),
+        &mut |body, _| {
+            found = found
+                || body
+                    .iter()
+                    .any(|stmt| stmt_contains_state_write(&stmt.stmt, state_var));
+        },
+    );
+    found
 }
 
 fn stmt_contains_dispatch_continue(stmt: &Stmt, loop_label: &str) -> bool {

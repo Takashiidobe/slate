@@ -242,6 +242,20 @@ impl<'db, 'a> Collector<'db, 'a> {
                     self.expr(arg, path);
                 }
             }
+            Expr::MethodCall { recv, method, args }
+                if method.starts_with("set_") && is_bitfield_storage_receiver(recv) =>
+            {
+                self.record_expr_vars(
+                    recv,
+                    BorrowAliasReason::MutableBorrow,
+                    BorrowAliasUseKind::MutableBorrow,
+                    path,
+                );
+                self.expr(recv, path);
+                for arg in args {
+                    self.expr(arg, path);
+                }
+            }
             Expr::MethodCall { recv, method, args } if is_read_only_receiver_method(method) => {
                 self.expr(recv, path);
                 for arg in args {
@@ -498,6 +512,10 @@ impl<'db, 'a> Collector<'db, 'a> {
             .find(|binding| binding.function == self.function && binding.name == name)
             .map(|binding| binding.id)
     }
+}
+
+fn is_bitfield_storage_receiver(expr: &Expr) -> bool {
+    matches!(expr, Expr::Field { field, .. } if field.as_str().starts_with("__bitfield_"))
 }
 
 fn is_read_only_receiver_method(method: &str) -> bool {

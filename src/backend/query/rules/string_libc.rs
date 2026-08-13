@@ -66,15 +66,25 @@ fn is_direct_statement_root(statement: &AstPath, site: &AstPath) -> bool {
     site.0.len() == statement.0.len() + 1 && site.0.last() == Some(&PathSegment::Expr(0))
 }
 
-/// `strlen`/`strspn`/`strcspn` lower as a C `size_t` result (`u64`), but their Rust
-/// replacements return `usize`; when the call is the direct initializer of a `let`,
-/// the declared type must move with it or the statement stops compiling.
 fn usize_call_edit(
     case: &mut ItemCaseContext<'_, '_>,
     call: &CallRecord,
     replacement: Expr,
 ) -> Result<EditSet, Rejection> {
-    let target = edit_target(call);
+    let mut target = edit_target(call);
+    if let Ok(parent) = case.fact(|query| {
+        query.parent_expression(&ExpressionRef {
+            site: target.clone(),
+        })
+    }) && matches!(
+        case.expr(&parent.site),
+        Some(Expr::Cast {
+            ty: Type::Prim(Prim::U64),
+            ..
+        })
+    ) {
+        target = parent.site.clone();
+    }
     let statement_ref = case.fact(|query| {
         query.enclosing_statement(&ExpressionRef {
             site: target.clone(),

@@ -662,11 +662,12 @@ fn library_crate_links_generated_c_abi_shim_for_long_double_libc_call() {
         std::fs::read_to_string(crate_dir.join("src/slate_shims.c")).expect("read slate_shims.c");
     assert!(shim_c.contains("strfroml"));
     assert!(shim_c.contains("(long double)"));
+    assert!(shim_c.contains("int strfroml(char *, size_t, const char *, long double);"));
 
     let strfrom_rs =
         std::fs::read_to_string(crate_dir.join("src/strfrom.rs")).expect("read strfrom.rs");
-    assert!(strfrom_rs.contains("fn __slate_strfroml__ri32_pi8_u64_pi8_f80("));
-    assert!(strfrom_rs.contains("unsafe { __slate_strfroml__ri32_pi8_u64_pi8_f80("));
+    assert!(strfrom_rs.contains("fn __slate_strfroml__ri32_pi8_usize_pi8_f80("));
+    assert!(strfrom_rs.contains("unsafe { __slate_strfroml__ri32_pi8_usize_pi8_f80("));
 
     let run_tests = std::process::Command::new("cargo")
         .args(["test", "--quiet", "--tests", "--manifest-path"])
@@ -910,14 +911,13 @@ fn public_pointer_deref_functions_are_unsafe() {
 }
 
 #[test]
-fn address_taken_pointer_deref_function_stays_safe_across_tus() {
+fn address_taken_pointer_deref_function_stays_unsafe_across_tus() {
     let rs_dir = build_and_diff("unsafe_deref_callback_cross_tu");
 
     let handler_rs = std::fs::read_to_string(rs_dir.join("handler.rs")).expect("read handler.rs");
     assert!(
-        handler_rs.contains("pub extern \"C\" fn deref_and_add"),
-        "a function assigned to a safe C function-pointer field in another TU must stay a \
-         safe fn, even though its body dereferences a raw pointer: {handler_rs}"
+        handler_rs.contains("pub unsafe extern \"C\" fn deref_and_add"),
+        "a C callback that dereferences a raw pointer must remain unsafe across TUs: {handler_rs}"
     );
 
     let main_rs = std::fs::read_to_string(rs_dir.join("main.rs")).expect("read main.rs");
