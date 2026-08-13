@@ -1,4 +1,5 @@
 use crate::backend::rust_ast::{ExternDecl, ExternFnDecl, Item, Prim, Program, RecordDef, Type};
+use crate::frontend::function_abi::repair_function_signature;
 use crate::function_identity::FunctionIdentity;
 use std::collections::BTreeSet;
 
@@ -21,7 +22,7 @@ fn c_type_for_tag(tag: &str) -> String {
         "i64" => "long long",
         "u64" => "unsigned long long",
         "isize" => "long",
-        "usize" => "unsigned long",
+        "usize" => "size_t",
         "f32" => "float",
         "f64" => "double",
         "bool" => "_Bool",
@@ -45,16 +46,26 @@ fn c_type_for_rust_type(ty: &Type, bridge: bool) -> String {
         Type::Prim(Prim::I64) => "long long".into(),
         Type::Prim(Prim::U64) => "unsigned long long".into(),
         Type::Prim(Prim::Isize) => "long".into(),
-        Type::Prim(Prim::Usize) => "unsigned long".into(),
+        Type::Prim(Prim::Usize) => "size_t".into(),
         Type::Prim(Prim::F32) => "float".into(),
         Type::Prim(Prim::F64) => "double".into(),
         Type::Prim(Prim::Bool) => "_Bool".into(),
         Type::LongDouble if bridge => "__slate_f80".into(),
         Type::LongDouble => "long double".into(),
-        Type::Ptr { inner, .. } if matches!(inner.as_ref(), Type::LongDouble) => {
-            "long double *".into()
+        Type::Ptr { mutable, inner } => {
+            let pointee = match inner.as_ref() {
+                Type::CLib(clib) if *clib == crate::backend::rust_ast::CLibType::VOID => "void",
+                Type::Prim(Prim::I8) => "char",
+                Type::Prim(Prim::U8) => "unsigned char",
+                Type::LongDouble => "long double",
+                other => return format!("{} *", c_type_for_rust_type(other, false)),
+            };
+            if *mutable {
+                format!("{pointee} *")
+            } else {
+                format!("const {pointee} *")
+            }
         }
-        Type::Ptr { .. } => "void *".into(),
         Type::FnPtr { params, ret, .. } => {
             let ret = c_type_for_rust_type(ret, false);
             let params = params
@@ -132,19 +143,29 @@ fn render_typed_shim(shim: &ExternFnDecl) -> Option<String> {
             .collect::<Vec<_>>()
             .join(", ");
         format!("{rust_ret} {original}({rust_params});\n")
-    } else if shim.identity == FunctionIdentity::Unknown {
-        let c_ret = ret_ty
-            .map(|ty| c_type_for_rust_type(ty, false))
-            .unwrap_or_else(|| "void".into());
-        let c_params = shim
+    } else {
+        let mut prototype_params = shim
             .params
             .iter()
-            .map(|param| c_type_for_rust_type(&param.ty, false))
-            .collect::<Vec<_>>()
-            .join(", ");
-        format!("{c_ret} {callee}({c_params});\n")
-    } else {
-        String::new()
+            .map(|param| param.ty.clone())
+            .collect::<Vec<_>>();
+        let mut prototype_ret = shim.ret.clone();
+        let repaired =
+            repair_function_signature(shim.identity, &mut prototype_params, &mut prototype_ret);
+        if shim.identity != FunctionIdentity::Unknown && !repaired {
+            String::new()
+        } else {
+            let c_ret = prototype_ret
+                .as_ref()
+                .map(|ty| c_type_for_rust_type(ty, false))
+                .unwrap_or_else(|| "void".into());
+            let c_params = prototype_params
+                .iter()
+                .map(|param| c_type_for_rust_type(param, false))
+                .collect::<Vec<_>>()
+                .join(", ");
+            format!("{c_ret} {callee}({c_params});\n")
+        }
     };
     Some(format!(
         "{prototype}{ret_c} {}({params}) {{\n    {body}\n}}\n",

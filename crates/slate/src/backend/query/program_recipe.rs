@@ -482,7 +482,7 @@ fn prune_printf_extern(program: &mut Program) -> bool {
     program.items.retain_mut(|item| match item {
         Item::ExternBlock { decls, .. } => {
             decls.retain(|decl| {
-                !matches!(decl, ExternDecl::Fn(f) if f.identity == FunctionIdentity::Known(Known::Printf))
+                !matches!(decl, ExternDecl::Fn(f) if f.identity == FunctionIdentity::Known(Known::Printf) && f.name == Known::Printf.symbol())
             });
             !decls.is_empty()
         }

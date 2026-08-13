@@ -150,6 +150,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 Type::FnPtr { params, .. } => Some(params.clone()),
                 _ => None,
             });
+        let indirect_call = indirect_callee_operand.is_some();
+        let cast_runtime_result = binding.known() == Some(crate::function_identity::Known::StrLen);
         if self.parent.boxed_variadic_defs.contains(&callee_name) {
             let fixed = self
                 .parent
@@ -207,10 +209,19 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else if self.parent.externs.contains_key(&callee_name)
             || self.parent.variadic_defs.contains(&callee_name)
             || self.parent.unsafe_functions.contains(&callee_name)
+            || indirect_call
         {
             Self::unsafe_expr(call)
         } else {
             call
+        };
+        let expr = if cast_runtime_result {
+            op_result_type(op).map_or(expr.clone(), |ty| Expr::Cast {
+                expr: Box::new(expr),
+                ty: self.parent.rust_type(ty),
+            })
+        } else {
+            expr
         };
 
         if let Some(result) = op.results.first() {
@@ -263,7 +274,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if !has_long_double_arg && !has_long_double_ret {
             return false;
         }
-        let param_types: Vec<Type> = arg_types
+        let mut param_types: Vec<Type> = arg_types
             .iter()
             .map(|ty| {
                 if is_quad_long_double(ty) {
@@ -282,9 +293,21 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 }
             })
             .collect();
-        let ret_shim_ty = ret_cir_ty
+        let mut ret = ret_cir_ty
             .map(|ty| self.parent.rust_type(ty))
-            .unwrap_or(Type::Unit);
+            .filter(|ty| !ty.is_unit());
+        let identity = self
+            .parent
+            .known_functions
+            .get(callee_name)
+            .copied()
+            .unwrap_or(crate::function_identity::FunctionIdentity::Unknown);
+        crate::frontend::function_abi::repair_function_signature(
+            identity,
+            &mut param_types,
+            &mut ret,
+        );
+        let ret_shim_ty = ret.unwrap_or(Type::Unit);
         let ret_tag = long_double_shim_type_tag(&ret_shim_ty);
         let arg_tags: Vec<String> = arg_types
             .iter()
@@ -308,12 +331,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .long_double_shims
             .entry(shim_name.clone())
             .or_insert_with(|| ExternFnDecl {
-                identity: self
-                    .parent
-                    .known_functions
-                    .get(callee_name)
-                    .copied()
-                    .unwrap_or(crate::function_identity::FunctionIdentity::Unknown),
+                identity,
                 name: shim_name.clone(),
                 params: param_types
                     .iter()

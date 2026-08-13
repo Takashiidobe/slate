@@ -135,6 +135,9 @@ pub enum Lint {
     NonSnakeCase,
     NonUpperCaseGlobals,
     ArithmeticOverflow,
+    SuspiciousRuntimeSymbolDefinitions,
+    UnpredictableFunctionPointerComparisons,
+    UnusedComparisons,
 }
 
 impl Lint {
@@ -146,6 +149,11 @@ impl Lint {
             Lint::NonSnakeCase => "non_snake_case",
             Lint::NonUpperCaseGlobals => "non_upper_case_globals",
             Lint::ArithmeticOverflow => "arithmetic_overflow",
+            Lint::SuspiciousRuntimeSymbolDefinitions => "suspicious_runtime_symbol_definitions",
+            Lint::UnpredictableFunctionPointerComparisons => {
+                "unpredictable_function_pointer_comparisons"
+            }
+            Lint::UnusedComparisons => "unused_comparisons",
         }
     }
 }

@@ -1860,13 +1860,13 @@ fn libc_pointer_args(expr: &Expr) -> Vec<&str> {
 }
 
 fn peel_empty_unsafe(expr: &Expr) -> &Expr {
-    if let Expr::Unsafe(block) = expr
-        && block.stmts.is_empty()
-        && let Some(tail) = &block.tail
-    {
-        return tail;
+    match expr {
+        Expr::Cast { expr, .. } => peel_empty_unsafe(expr),
+        Expr::Unsafe(block) if block.stmts.is_empty() => {
+            block.tail.as_deref().map(peel_empty_unsafe).unwrap_or(expr)
+        }
+        _ => expr,
     }
-    expr
 }
 
 fn pointer_source(expr: &Expr) -> Option<&str> {

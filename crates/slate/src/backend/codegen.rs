@@ -1478,7 +1478,7 @@ impl<W: Write> Codegen<W> {
                 write!(self.out, "; {len}]")
             }
             Type::FnPtr { abi, params, ret } => {
-                self.out.write_str("Option<")?;
+                self.out.write_str("Option<unsafe ")?;
                 self.abi(*abi)?;
                 self.out.write_str(" fn(")?;
                 for (i, p) in params.iter().enumerate() {
