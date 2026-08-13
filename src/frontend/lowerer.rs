@@ -2130,14 +2130,38 @@ impl __SlateVaArgs {
         let is_variadic = !is_main && function_type_is_variadic(function_type);
         let boxed_variadic = self.boxed_variadic_defs.contains(name);
 
+        let mut declared_param_names = BTreeSet::new();
+        let mut entry_arg_names = BTreeMap::new();
         let mut params = entry
             .args
             .iter()
             .enumerate()
             .map(|(i, (arg, ty))| {
                 let ty = param_types.get(i).map(String::as_str).unwrap_or(ty);
+                let base = sanitize_ident(arg).into_string();
+                let rust_name = if is_main {
+                    declared_param_names.insert(base.clone());
+                    base
+                } else {
+                    let mut suffix = 1;
+                    loop {
+                        let candidate = if suffix == 1 {
+                            base.clone()
+                        } else {
+                            format!("{base}{suffix}")
+                        };
+                        if !self.globals.contains_key(&candidate)
+                            && !self.extern_globals.contains_key(&candidate)
+                            && declared_param_names.insert(candidate.clone())
+                        {
+                            break candidate;
+                        }
+                        suffix += 1;
+                    }
+                };
+                entry_arg_names.insert(arg.clone(), rust_name.clone());
                 FnParam {
-                    name: arg.clone(),
+                    name: rust_name,
                     mutable: false,
                     ty: self.rust_type(ty),
                 }
@@ -2312,7 +2336,7 @@ impl __SlateVaArgs {
             label_counter: 0,
             dispatch: None,
             hoisted: BTreeSet::new(),
-            declared_local_names: BTreeSet::new(),
+            declared_local_names: declared_param_names,
             forward_allocas: forwardable_temp_allocas(op.regions.first()?),
             forward_values: BTreeMap::new(),
             immutable_temps: BTreeSet::new(),
@@ -2335,9 +2359,13 @@ impl __SlateVaArgs {
             f.push_stmt(stmt);
         }
         for (arg, arg_ty) in &entry.args {
-            f.immutable_temps.insert(arg.clone());
+            let rust_name = entry_arg_names
+                .get(arg)
+                .cloned()
+                .unwrap_or_else(|| arg.clone());
+            f.immutable_temps.insert(rust_name.clone());
             f.values
-                .insert(arg.clone(), Val::Expr(Expr::Var(arg.clone().into())));
+                .insert(arg.clone(), Val::Expr(Expr::Var(rust_name.into())));
             if let fn_ptr_ty @ Type::FnPtr { .. } = f.parent.rust_type(arg_ty) {
                 f.loaded_field_types.insert(arg.clone(), fn_ptr_ty);
             }
