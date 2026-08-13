@@ -89,20 +89,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or(Type::Prim(Prim::F64));
         let expr = if type_mentions_long_double(&rust_ty) {
+            let shim = match method {
+                "copysign" => "__slate_f80_copysign",
+                _ => {
+                    self.emit_todo("long double binary operation");
+                    return;
+                }
+            };
             Expr::Call {
                 binding: crate::function_identity::CallBinding::Generated,
-                func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
-                args: vec![Expr::MethodCall {
-                    recv: Box::new(Expr::Field {
-                        base: Box::new(lhs),
-                        field: "0".into(),
-                    }),
-                    method: method.into(),
-                    args: vec![Expr::Field {
-                        base: Box::new(rhs),
-                        field: "0".into(),
-                    }],
-                }],
+                func: Box::new(Expr::Var(shim.into())),
+                args: vec![lhs, rhs],
             }
         } else {
             Expr::MethodCall {
@@ -140,26 +137,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or(Type::Prim(Prim::F64));
         let expr = if type_mentions_long_double(&rust_ty) {
+            let shim = match method {
+                "mul_add" => "__slate_f80_fma",
+                _ => {
+                    self.emit_todo("long double ternary operation");
+                    return;
+                }
+            };
             Expr::Call {
                 binding: crate::function_identity::CallBinding::Generated,
-                func: Box::new(Expr::Var(LONG_DOUBLE_TY.into())),
-                args: vec![Expr::MethodCall {
-                    recv: Box::new(Expr::Field {
-                        base: Box::new(a),
-                        field: "0".into(),
-                    }),
-                    method: method.into(),
-                    args: vec![
-                        Expr::Field {
-                            base: Box::new(b),
-                            field: "0".into(),
-                        },
-                        Expr::Field {
-                            base: Box::new(c),
-                            field: "0".into(),
-                        },
-                    ],
-                }],
+                func: Box::new(Expr::Var(shim.into())),
+                args: vec![a, b, c],
             }
         } else {
             Expr::MethodCall {
@@ -220,6 +208,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .ty
             .as_deref()
             .and_then(|ty| op_operand_types(ty).into_iter().next());
+        if operand_ty.is_some_and(is_wrapped_long_double) {
+            self.materialize_expr(
+                result,
+                Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
+                    func: Box::new(Expr::Var("__slate_f80_is_fp_class".into())),
+                    args: vec![self.operand_expr(value), Expr::Value(RustValue::I64(flags))],
+                },
+                op_result_type(op),
+            );
+            return;
+        }
         let value = self.float_predicate_operand_expr(value, operand_ty);
         let mut parts = Vec::new();
         if flags & 0x3 != 0 {
@@ -370,6 +370,30 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         };
         let value = self.operand_expr(value);
         let result_types = op_result_types(op);
+        if result_types
+            .first()
+            .is_some_and(|ty| is_wrapped_long_double(ty))
+        {
+            self.materialize_expr(
+                &op.results[0],
+                Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
+                    func: Box::new(Expr::Var("__slate_f80_fract".into())),
+                    args: vec![value.clone()],
+                },
+                result_types.first().copied(),
+            );
+            self.materialize_expr(
+                &op.results[1],
+                Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
+                    func: Box::new(Expr::Var("__slate_f80_trunc".into())),
+                    args: vec![value],
+                },
+                result_types.get(1).copied(),
+            );
+            return;
+        }
         self.materialize_expr(
             &op.results[0],
             Expr::MethodCall {

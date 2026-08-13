@@ -302,6 +302,7 @@ pub(super) fn f80_shim_decls() -> Vec<ExternFnDecl> {
         "__slate_f80_abs",
         "__slate_f80_ceil",
         "__slate_f80_floor",
+        "__slate_f80_fract",
         "__slate_f80_round",
         "__slate_f80_trunc",
     ] {
@@ -315,6 +316,28 @@ pub(super) fn f80_shim_decls() -> Vec<ExternFnDecl> {
         "__slate_f80_signbit",
         vec![f80_param("a", f80())],
         Some(Type::Prim(Prim::Bool)),
+    ));
+    decls.push(f80_extern_decl(
+        "__slate_f80_is_fp_class",
+        vec![
+            f80_param("a", f80()),
+            f80_param("flags", Type::Prim(Prim::I32)),
+        ],
+        Some(Type::Prim(Prim::Bool)),
+    ));
+    decls.push(f80_extern_decl(
+        "__slate_f80_copysign",
+        vec![f80_param("a", f80()), f80_param("b", f80())],
+        Some(f80()),
+    ));
+    decls.push(f80_extern_decl(
+        "__slate_f80_fma",
+        vec![
+            f80_param("a", f80()),
+            f80_param("b", f80()),
+            f80_param("c", f80()),
+        ],
+        Some(f80()),
     ));
     for (shim, ty) in [
         ("__slate_f80_lt", Type::Prim(Prim::Bool)),

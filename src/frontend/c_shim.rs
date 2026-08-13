@@ -50,6 +50,7 @@ fn c_type_for_rust_type(ty: &Type, bridge: bool) -> String {
         Type::Prim(Prim::F32) => "float".into(),
         Type::Prim(Prim::F64) => "double".into(),
         Type::Prim(Prim::Bool) => "_Bool".into(),
+        Type::CLib(clib) => clib.c_name().into(),
         Type::LongDouble if bridge => "__slate_f80".into(),
         Type::LongDouble => "long double".into(),
         Type::Ptr { mutable, inner } => {
@@ -322,8 +323,37 @@ __slate_f80 __slate_f80_trunc(__slate_f80 a) {
     return __slate_f80_store(truncl(__slate_f80_load(a)));
 }
 
+__slate_f80 __slate_f80_fract(__slate_f80 a) {
+    long double integral;
+    return __slate_f80_store(modfl(__slate_f80_load(a), &integral));
+}
+
+__slate_f80 __slate_f80_copysign(__slate_f80 a, __slate_f80 b) {
+    return __slate_f80_store(copysignl(__slate_f80_load(a), __slate_f80_load(b)));
+}
+
+__slate_f80 __slate_f80_fma(__slate_f80 a, __slate_f80 b, __slate_f80 c) {
+    return __slate_f80_store(fmal(
+        __slate_f80_load(a), __slate_f80_load(b), __slate_f80_load(c)));
+}
+
 _Bool __slate_f80_signbit(__slate_f80 a) {
     return signbit(__slate_f80_load(a));
+}
+
+_Bool __slate_f80_is_fp_class(__slate_f80 a, int flags) {
+    long double value = __slate_f80_load(a);
+    int category = fpclassify(value);
+    int negative = signbit(value);
+    return ((flags & 0x3) && category == FP_NAN) ||
+           ((flags & 0x4) && category == FP_INFINITE && negative) ||
+           ((flags & 0x8) && category == FP_NORMAL && negative) ||
+           ((flags & 0x10) && category == FP_SUBNORMAL && negative) ||
+           ((flags & 0x20) && category == FP_ZERO && negative) ||
+           ((flags & 0x40) && category == FP_ZERO && !negative) ||
+           ((flags & 0x80) && category == FP_SUBNORMAL && !negative) ||
+           ((flags & 0x100) && category == FP_NORMAL && !negative) ||
+           ((flags & 0x200) && category == FP_INFINITE && !negative);
 }
 
 _Bool __slate_f80_lt(__slate_f80 a, __slate_f80 b) {
@@ -436,7 +466,7 @@ pub fn render_shim_c_source_for_program(program: &Program) -> String {
 }
 
 fn long_double_records(program: &Program) -> Vec<&RecordDef> {
-    program
+    let mut remaining: Vec<&RecordDef> = program
         .items
         .iter()
         .filter_map(|item| match item {
@@ -449,7 +479,25 @@ fn long_double_records(program: &Program) -> Vec<&RecordDef> {
                 .iter()
                 .any(|field| rust_type_has_long_double(&field.ty))
         })
-        .collect()
+        .collect();
+    let record_names: BTreeSet<String> =
+        remaining.iter().map(|record| record.name.clone()).collect();
+    let mut emitted = BTreeSet::new();
+    let mut ordered = Vec::new();
+    while !remaining.is_empty() {
+        let index = remaining
+            .iter()
+            .position(|record| {
+                record.fields.iter().all(|field| {
+                    !rust_type_has_unemitted_record(&field.ty, &record_names, &emitted)
+                })
+            })
+            .unwrap_or(0);
+        let record = remaining.remove(index);
+        emitted.insert(record.name.clone());
+        ordered.push(record);
+    }
+    ordered
 }
 
 fn render_record_def(record: &RecordDef) -> String {
@@ -459,14 +507,41 @@ fn render_record_def(record: &RecordDef) -> String {
         .iter()
         .map(|field| {
             format!(
-                "    {} {};",
-                c_type_for_rust_type(&field.ty, false),
-                field.name.as_str()
+                "    {};",
+                render_c_declaration(&field.ty, field.name.as_str(), false)
             )
         })
         .collect::<Vec<_>>()
         .join("\n");
     format!("{keyword} {} {{\n{fields}\n}};\n", record.name)
+}
+
+fn render_c_declaration(ty: &Type, name: &str, bridge: bool) -> String {
+    match ty {
+        Type::Array { elem, len } => render_c_declaration(elem, &format!("{name}[{len}]"), bridge),
+        Type::FnPtr { params, ret, .. } => {
+            let ret = c_type_for_rust_type(ret, false);
+            let params = params
+                .iter()
+                .map(|param| c_type_for_rust_type(param, false))
+                .collect::<Vec<_>>()
+                .join(", ");
+            format!("{ret} (*{name})({params})")
+        }
+        _ => format!("{} {name}", c_type_for_rust_type(ty, bridge)),
+    }
+}
+
+fn rust_type_has_unemitted_record(
+    ty: &Type,
+    record_names: &BTreeSet<String>,
+    emitted: &BTreeSet<String>,
+) -> bool {
+    match ty {
+        Type::Custom(name) => record_names.contains(name) && !emitted.contains(name),
+        Type::Array { elem, .. } => rust_type_has_unemitted_record(elem, record_names, emitted),
+        _ => false,
+    }
 }
 
 fn rust_type_has_long_double(ty: &Type) -> bool {

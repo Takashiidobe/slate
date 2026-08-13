@@ -194,14 +194,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return wrapped;
         }
         if let Some(target_ty) = target_ty.clone()
-            && let Some(Val::Global(fn_name)) = self.values.get(operand)
-            && !self.parent.strings.contains_key(fn_name)
+            && let Some(Val::Global(fn_name)) = self.values.get(operand).cloned()
+            && !self.parent.strings.contains_key(&fn_name)
         {
             let target = self
                 .parent
                 .long_double_callback_trampolines
-                .get(fn_name)
-                .map(String::as_str)
+                .get(&fn_name)
+                .cloned()
+                .or_else(|| {
+                    self.parent
+                        .long_double_extern_pointer_shim(&fn_name, &target_ty)
+                })
                 .unwrap_or(fn_name);
             let raw_ptr = Type::Ptr {
                 mutable: false,
@@ -211,7 +215,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 from: raw_ptr.clone(),
                 to: target_ty,
                 expr: Box::new(Expr::Cast {
-                    expr: Box::new(Expr::Var(sanitize_ident(target))),
+                    expr: Box::new(Expr::Var(sanitize_ident(&target))),
                     ty: raw_ptr,
                 }),
             };
