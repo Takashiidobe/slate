@@ -7,6 +7,7 @@
 #define __NEED_time_t
 #define __NEED_clock_t
 #define __NEED_struct_timespec
+#define __NEED_NULL
 #if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
     defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 #define __NEED_clockid_t

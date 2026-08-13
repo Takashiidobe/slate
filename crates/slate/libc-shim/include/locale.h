@@ -50,6 +50,28 @@ struct lconv {
   char  int_n_sign_posn;
 };
 
+#if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
+    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+#define __NEED_NULL
+#define __NEED_locale_t
+#include <bits/types.h>
+
+#define LC_GLOBAL_LOCALE ((locale_t) - 1)
+
+#define LC_CTYPE_MASK    (1 << LC_CTYPE)
+#define LC_NUMERIC_MASK  (1 << LC_NUMERIC)
+#define LC_TIME_MASK     (1 << LC_TIME)
+#define LC_COLLATE_MASK  (1 << LC_COLLATE)
+#define LC_MONETARY_MASK (1 << LC_MONETARY)
+#define LC_MESSAGES_MASK (1 << LC_MESSAGES)
+#define LC_ALL_MASK      0x7fffffff
+
+locale_t duplocale(locale_t);
+void     freelocale(locale_t);
+locale_t newlocale(int, const char *, locale_t);
+locale_t uselocale(locale_t);
+#endif
+
 char         *setlocale(int category, const char *locale);
 struct lconv *localeconv(void);
 

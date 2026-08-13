@@ -13,6 +13,7 @@
 #elif defined(__SLATE_ARCH_X86)
 #include <bits/x86/ipcstat.h>
 #else
+#define IPC_STAT 2
 #endif
 
 #endif /* _SLATE_BITS_IPCSTAT_H */
