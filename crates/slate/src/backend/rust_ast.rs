@@ -4,7 +4,6 @@ use ordered_float::OrderedFloat;
 #[derive(Debug, Clone, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Program {
     pub items: Vec<Item>,
-    pub shims: Vec<ExternFnDecl>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]

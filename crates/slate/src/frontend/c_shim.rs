@@ -1,4 +1,4 @@
-use crate::backend::rust_ast::{ExternFnDecl, Prim, Type};
+use crate::backend::rust_ast::{ExternDecl, ExternFnDecl, Item, Prim, Program, RecordDef, Type};
 use crate::function_identity::FunctionIdentity;
 use std::collections::BTreeSet;
 
@@ -64,6 +64,7 @@ fn c_type_for_rust_type(ty: &Type, bridge: bool) -> String {
                 .join(", ");
             format!("{ret} (*)({params})")
         }
+        Type::Custom(name) => format!("struct {name}"),
         Type::Unit => "void".into(),
         _ => "void *".into(),
     }
@@ -346,6 +347,94 @@ pub fn render_shim_c_source(shims: &[ExternFnDecl]) -> String {
         }
     }
     blocks.join("\n")
+}
+
+pub fn render_shim_c_source_for_program(program: &Program) -> String {
+    let shims: Vec<ExternFnDecl> = program
+        .items
+        .iter()
+        .filter_map(|item| match item {
+            Item::ExternBlock { decls, .. } => Some(decls),
+            _ => None,
+        })
+        .flatten()
+        .filter_map(|decl| match decl {
+            ExternDecl::Fn(shim) => Some(shim.clone()),
+            ExternDecl::Static { .. } => None,
+        })
+        .collect();
+    let mut blocks = vec!["#include <stdio.h>\n#include <stdlib.h>\n#include <math.h>".to_string()];
+    let has_f80 = shims.iter().any(|shim| {
+        shim.name.contains("f80")
+            || shim.name == "__slate_strtold"
+            || shim.name.starts_with("__slate_ld_")
+    });
+    if has_f80 {
+        blocks.push(F80_SHIMS.to_string());
+    }
+    for record in long_double_records(program) {
+        blocks.push(render_record_def(record));
+    }
+    for shim in &shims {
+        if shim.name == "__slate_strtold" {
+            blocks.push(STRTOLD_SHIM.to_string());
+        } else if shim.name.starts_with("__slate_f80_") {
+            continue;
+        } else if let Some(source) = render_typed_shim(shim) {
+            blocks.push(source);
+        }
+    }
+    blocks.join("\n")
+}
+
+fn long_double_records(program: &Program) -> Vec<&RecordDef> {
+    program
+        .items
+        .iter()
+        .filter_map(|item| match item {
+            Item::Record(record) => Some(record),
+            _ => None,
+        })
+        .filter(|record| {
+            record
+                .fields
+                .iter()
+                .any(|field| rust_type_has_long_double(&field.ty))
+        })
+        .collect()
+}
+
+fn render_record_def(record: &RecordDef) -> String {
+    let keyword = if record.is_union { "union" } else { "struct" };
+    let fields = record
+        .fields
+        .iter()
+        .map(|field| {
+            format!(
+                "    {} {};",
+                c_type_for_rust_type(&field.ty, false),
+                field.name.as_str()
+            )
+        })
+        .collect::<Vec<_>>()
+        .join("\n");
+    format!("{keyword} {} {{\n{fields}\n}};\n", record.name)
+}
+
+fn rust_type_has_long_double(ty: &Type) -> bool {
+    match ty {
+        Type::LongDouble => true,
+        Type::Complex(inner)
+        | Type::Ref { inner, .. }
+        | Type::Slice(inner)
+        | Type::Ptr { inner, .. }
+        | Type::Array { elem: inner, .. } => rust_type_has_long_double(inner),
+        Type::FnPtr { params, ret, .. } => {
+            params.iter().any(rust_type_has_long_double) || rust_type_has_long_double(ret)
+        }
+        Type::Generic { args, .. } => args.iter().any(rust_type_has_long_double),
+        _ => false,
+    }
 }
 
 pub fn render_shim_c_source_for_names(names: &BTreeSet<String>) -> String {
