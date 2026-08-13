@@ -82,6 +82,101 @@ fn rust_record_name(name: &str) -> String {
         .unwrap_or_else(|| sanitize_ident(name).into_string())
 }
 
+fn lowered_record_name(name: &str) -> Option<String> {
+    (name != "__va_list_tag" && clib_record_type(name).is_none()).then(|| rust_record_name(name))
+}
+
+fn collect_record_dependencies(
+    ty: &crate::frontend::c_ast::CType,
+    dependencies: &mut BTreeSet<String>,
+) {
+    use crate::frontend::c_ast::CType;
+    match ty {
+        CType::Ptr(inner) | CType::Array(inner, _) => {
+            collect_record_dependencies(inner, dependencies);
+        }
+        CType::FuncPtr { ret, params } => {
+            collect_record_dependencies(ret, dependencies);
+            for param in params {
+                collect_record_dependencies(param, dependencies);
+            }
+        }
+        CType::Record(name) => {
+            if let Some(name) = lowered_record_name(name) {
+                dependencies.insert(name);
+            }
+        }
+        _ => {}
+    }
+}
+
+fn required_record_defs(
+    cir: &Module,
+    c: &Unit,
+    records: &mut BTreeMap<String, crate::frontend::c_ast::Record>,
+    shared_records: &BTreeSet<String>,
+) -> BTreeSet<String> {
+    let mut candidates = BTreeMap::new();
+    for record in c
+        .records
+        .iter()
+        .chain(&c.anonymous_header_records)
+        .chain(&c.named_header_records)
+    {
+        candidates
+            .entry(rust_record_name(&record.name))
+            .or_insert_with(|| record.clone());
+    }
+    let cir_kinds: BTreeMap<String, RecordKind> = cir
+        .aliases
+        .values()
+        .filter_map(|ty| {
+            let name = lowered_record_name(cir_record_name(ty)?)?;
+            let kind = if ty.trim_start().starts_with("!cir.union") {
+                RecordKind::Union
+            } else {
+                RecordKind::Struct
+            };
+            Some((name, kind))
+        })
+        .collect();
+    let mut required: BTreeSet<String> = cir_kinds.keys().cloned().collect();
+    let mut frontier: Vec<String> = required.iter().cloned().collect();
+    while let Some(name) = frontier.pop() {
+        if shared_records.contains(&name) {
+            continue;
+        }
+        if !records.contains_key(&name) {
+            let record = candidates
+                .get(&name)
+                .cloned()
+                .map(|mut record| {
+                    record.name = name.clone();
+                    record
+                })
+                .unwrap_or_else(|| crate::frontend::c_ast::Record {
+                    name: name.clone(),
+                    comments: Vec::new(),
+                    kind: cir_kinds.get(&name).copied().unwrap_or(RecordKind::Struct),
+                    fields: Vec::new(),
+                    packed: None,
+                    align: None,
+                });
+            records.insert(name.clone(), record);
+        }
+        let mut dependencies = BTreeSet::new();
+        for field in &records[&name].fields {
+            collect_record_dependencies(&field.ty, &mut dependencies);
+        }
+        for dependency in dependencies {
+            if required.insert(dependency.clone()) {
+                frontier.push(dependency);
+            }
+        }
+    }
+    required
+}
+
 pub fn shim_records_for_module(cir: &Module, c: &Unit) -> Vec<crate::frontend::c_ast::Record> {
     let referenced: BTreeSet<&str> = cir
         .aliases
@@ -411,11 +506,6 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         .map(|record| (sanitize_ident(&record.name).into_string(), record.clone()))
         .collect();
     let local_collisions = resolve_local_record_collisions(cir, &c.records);
-    let local_record_extras: BTreeSet<String> = local_collisions
-        .keys()
-        .filter(|key| !records.contains_key(*key))
-        .cloned()
-        .collect();
     records.extend(local_collisions);
     let enums: BTreeMap<String, crate::frontend::c_ast::Enum> = c
         .enums
@@ -445,6 +535,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
             anon_records.push(record);
         }
     }
+    let record_defs = required_record_defs(cir, c, &mut records, &project.shared_records);
     let global_rust_names = allocate_global_rust_names(cir, &records, &enums);
     let mut declaration_comments: BTreeMap<(String, String), Vec<Comment>> = BTreeMap::new();
     for declaration in &c.declaration_comments {
@@ -490,9 +581,8 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         external_weak_targets: BTreeSet::new(),
         weak_aliases: BTreeMap::new(),
         records,
-        local_record_extras,
+        record_defs,
         enums,
-        anon_records,
         declaration_comments,
         global_rust_names,
         globals: BTreeMap::new(),
@@ -843,9 +933,8 @@ struct Lowerer<'a> {
     external_weak_targets: BTreeSet<String>,
     weak_aliases: BTreeMap<String, String>,
     records: BTreeMap<String, crate::frontend::c_ast::Record>,
-    local_record_extras: BTreeSet<String>,
+    record_defs: BTreeSet<String>,
     enums: BTreeMap<String, crate::frontend::c_ast::Enum>,
-    anon_records: Vec<crate::frontend::c_ast::Record>,
     declaration_comments: BTreeMap<(String, String), Vec<Comment>>,
     global_rust_names: BTreeMap<String, String>,
     globals: BTreeMap<String, GlobalVar>,
@@ -1118,26 +1207,7 @@ impl<'a> Lowerer<'a> {
                 items.push(item);
             }
         }
-        for record in &c.records {
-            let name = sanitize_ident(&record.name).into_string();
-            if self.project.shared_records.contains(&name) {
-                continue;
-            }
-            let record = self
-                .records
-                .get(&name)
-                .cloned()
-                .unwrap_or_else(|| record.clone());
-            items.extend(self.lower_record(&record));
-        }
-        for record in self.anon_records.clone() {
-            let name = sanitize_ident(&record.name).into_string();
-            let record = self.records.get(&name).cloned().unwrap_or(record);
-            if !record.fields.is_empty() {
-                items.extend(self.lower_record(&record));
-            }
-        }
-        for name in self.local_record_extras.clone() {
+        for name in self.record_defs.clone() {
             if self.project.shared_records.contains(&name) {
                 continue;
             }
