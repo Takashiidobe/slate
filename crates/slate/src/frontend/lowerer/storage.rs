@@ -145,14 +145,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 let ty = self
                     .pointee_type(op.ty.as_deref().unwrap_or(""))
                     .unwrap_or(Type::Prim(Prim::I32));
-                let init = Expr::VecRepeat {
-                    elem: Box::new(self.parent.default_value_expr(&ty)),
-                    len: Box::new(Expr::Cast {
-                        expr: Box::new(self.operand_expr(count)),
-                        ty: Type::Prim(Prim::Usize),
-                    }),
-                };
-                self.push_stmt(Self::assign_stmt(Expr::Var(name.into()), init));
+                self.push_stmt(Stmt::Expr(Expr::MethodCall {
+                    recv: Box::new(Expr::Var(name.into())),
+                    method: "resize".into(),
+                    args: vec![
+                        Expr::Cast {
+                            expr: Box::new(self.operand_expr(count)),
+                            ty: Type::Prim(Prim::Usize),
+                        },
+                        self.parent.default_value_expr(&ty),
+                    ],
+                }));
             }
             return;
         }
@@ -178,7 +181,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     name: "Vec".into(),
                     args: vec![ty.clone()],
                 }),
-                init: Some(if self.dispatch.is_some() {
+                init: Some(if self.hoisting_allocas {
                     Expr::VecLit(Vec::new())
                 } else {
                     Expr::VecRepeat {
