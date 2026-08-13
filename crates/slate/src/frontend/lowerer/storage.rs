@@ -131,6 +131,29 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         // hoisted allocas were already declared above the dispatch loop
         // (or above a goto-target closure, in structured lowering).
         if self.hoisted.contains(result) {
+            if let Some(count) = op.operands.first()
+                && let Some(name) = self.values.get(result).and_then(|value| match value {
+                    Val::Expr(Expr::MethodCall { recv, method, .. }) if method == "as_mut_ptr" => {
+                        match &**recv {
+                            Expr::Var(name) => Some(name.as_str().to_string()),
+                            _ => None,
+                        }
+                    }
+                    _ => None,
+                })
+            {
+                let ty = self
+                    .pointee_type(op.ty.as_deref().unwrap_or(""))
+                    .unwrap_or(Type::Prim(Prim::I32));
+                let init = Expr::VecRepeat {
+                    elem: Box::new(self.parent.default_value_expr(&ty)),
+                    len: Box::new(Expr::Cast {
+                        expr: Box::new(self.operand_expr(count)),
+                        ty: Type::Prim(Prim::Usize),
+                    }),
+                };
+                self.push_stmt(Self::assign_stmt(Expr::Var(name.into()), init));
+            }
             return;
         }
         let name = self.unique_local_name(
@@ -155,12 +178,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     name: "Vec".into(),
                     args: vec![ty.clone()],
                 }),
-                init: Some(Expr::VecRepeat {
-                    elem: Box::new(self.parent.default_value_expr(&ty)),
-                    len: Box::new(Expr::Cast {
-                        expr: Box::new(self.operand_expr(count)),
-                        ty: Type::Prim(Prim::Usize),
-                    }),
+                init: Some(if self.dispatch.is_some() {
+                    Expr::VecLit(Vec::new())
+                } else {
+                    Expr::VecRepeat {
+                        elem: Box::new(self.parent.default_value_expr(&ty)),
+                        len: Box::new(Expr::Cast {
+                            expr: Box::new(self.operand_expr(count)),
+                            ty: Type::Prim(Prim::Usize),
+                        }),
+                    }
                 }),
             });
             return;
