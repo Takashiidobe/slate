@@ -32,10 +32,47 @@ pub(super) fn long_double_prelude(vis: Visibility) -> Vec<Item> {
     items.push(f80_binop_impl(StdTrait::Sub, "__slate_f80_sub"));
     items.push(f80_binop_impl(StdTrait::Mul, "__slate_f80_mul"));
     items.push(f80_binop_impl(StdTrait::Div, "__slate_f80_div"));
+    items.push(f80_assign_impl(StdTrait::AddAssign, "__slate_f80_add"));
+    items.push(f80_assign_impl(StdTrait::SubAssign, "__slate_f80_sub"));
+    items.push(f80_assign_impl(StdTrait::MulAssign, "__slate_f80_mul"));
+    items.push(f80_assign_impl(StdTrait::DivAssign, "__slate_f80_div"));
     items.push(f80_neg_impl());
     items.push(f80_partial_eq_impl());
     items.push(f80_partial_ord_impl());
     items
+}
+
+fn f80_assign_impl(trait_: StdTrait, shim: &str) -> Item {
+    let self_value = Expr::Unary {
+        op: UnaryOp::Deref,
+        expr: Box::new(Expr::Var("self".into())),
+    };
+    let method = Method {
+        name: trait_.method().into(),
+        self_kind: SelfKind::RefMut,
+        params: vec![FnParam {
+            name: "o".into(),
+            mutable: false,
+            ty: Type::LongDouble,
+        }],
+        ret: None,
+        body: Expr::Block(Box::new(crate::backend::rust_ast::Block {
+            stmts: vec![IndentStmt {
+                depth: 0,
+                stmt: Stmt::Assign {
+                    target: self_value.clone(),
+                    value: f80_call(shim, vec![self_value, Expr::Var("o".into())]),
+                },
+            }],
+            tail: None,
+        })),
+    };
+    Item::Impl(ImplBlock {
+        generics: vec![],
+        trait_: Some(TraitRef::Std(trait_)),
+        self_ty: Type::LongDouble,
+        items: vec![ImplItem::Method(method)],
+    })
 }
 
 fn f80_binop_impl(trait_: StdTrait, shim: &str) -> Item {
