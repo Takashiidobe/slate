@@ -2,6 +2,8 @@
 
 The classification run admitted 1,443 standalone cases: 1,207 passed and 236 failed. The preserved raw output is `TRIAGE.log.gz`; `TRIAGE.log` is its local uncompressed copy. The failures split into 193 Rust build failures, 8 translation failures, and 35 compiled programs with a timeout or C/Rust exit mismatch.
 
+The current unsupported bucket contains 133 cases after subsequent fixes and promotions.
+
 Every `.c` file in this directory is mapped exactly once below. Each bead is a direct child of `slate-os0h.3.1` and contains the complete case list, root-cause evidence, reproduction command, and promotion criteria.
 
 Reproduce one case with:
@@ -15,53 +17,42 @@ SLATE_GCC_TORTURE_FIXTURE=<case> cargo nextest r --release --test gcc_torture_su
 | `slate-os0h.3.1.1` | accept non-UTF-8 C source bytes | `20000227-1` |
 | `slate-os0h.3.1.2` | lower GNU global variable aliases | `alias-2`, `alias-3`, `alias-4` |
 | `slate-os0h.3.1.3` | track CIR constant-lvalue aggregate initializer blocker | `ieee__fp-cmp-5`, `ieee__fp-cmp-8` |
-| `slate-os0h.3.1.4` | track CIR vector initializer dominance blocker | `pr123625` |
 | `slate-os0h.3.1.5` | track CIR label-address difference initializer blocker | `pr70460` |
-| `slate-os0h.3.1.6` | complete Rust name hygiene across C namespaces and keywords | `20010904-1`, `20010904-2`, `20011113-1`, `20020810-1`, `20030224-2`, `20081117-1`, `960301-1`, `960326-1`, `980506-2`, `991118-1`, `alias-access-path-1`, `lto-tbaa-1`, `pr30778`, `struct-ini-4` |
-| `slate-os0h.3.1.7` | promote GNU obstack layout coverage | `20001203-2` |
-| `slate-os0h.3.1.8` | preserve local and anonymous record definitions | `20030613-1`, `20100708-1`, `anon-1`, `bitfld-1`, `ffs-2`, `ieee__mul-subnormal-single-1`, `ieee__pr108540-1`, `pr87053`, `pr97073` |
+| `slate-os0h.3.1.6` | complete Rust name hygiene across C namespaces and keywords | `20030224-2`, `980506-2` |
+| `slate-os0h.3.1.8` | preserve local and anonymous record definitions | `20100708-1` |
 | `slate-os0h.3.1.9` | avoid Rust references when addressing mutable statics | `20000910-1`, `20010924-1`, `20030811-1`, `pr33382`, `pr79286` |
 | `slate-os0h.3.1.10` | recursively zero-initialize nested aggregates | `20010518-2`, `20090113-1`, `pr44164` |
 | `slate-os0h.3.1.11` | represent packed records containing over-aligned members | `20040709-2`, `20040709-3` |
-| `slate-os0h.3.1.12` | select valid union members for aggregate initializers | `pr15296`, `pr19687`, `pr58726` |
-| `slate-os0h.3.1.13` | make bitfield storage definitions and accesses agree | `20181120-1`, `20190901-1`, `bitfld-6`, `bitfld-7`, `pr23324`, `pr40493`, `pr52979-1`, `pr52979-2`, `pr58570`, `pr70602`, `pr79737-1` |
-| `slate-os0h.3.1.14` | emit LongDouble type closure for generated memory helpers | `20000223-1`, `memcpy-2`, `memset-1`, `memset-2`, `memset-3`, `strcmp-1`, `strcpy-1`, `strlen-1`, `strncmp-1` |
-| `slate-os0h.3.1.15` | type long-double and complex-long-double zero values and operators | `20020413-1`, `20040208-1`, `20050121-1`, `complex-6`, `complex-7`, `ieee__cdivchkld` |
+| `slate-os0h.3.1.12` | select valid union members for aggregate initializers | `pr15296`, `pr19687` |
+| `slate-os0h.3.1.15` | type long-double and complex-long-double zero values and operators | `20020413-1`, `20040208-1`, `complex-6`, `ieee__cdivchkld` |
 | `slate-os0h.3.1.16` | preserve complex types through records, unions, and arithmetic | `20020227-1`, `20041124-1`, `20041201-1`, `complex-2`, `pr42248` |
 | `slate-os0h.3.1.17` | preserve x87 inline-asm long-double results | `990413-2` |
-| `slate-os0h.3.1.18` | match long-double constant and conversion semantics | `960405-1`, `ieee__20010226-1`, `ieee__pr36332` |
+| `slate-os0h.3.1.18` | match long-double constant and conversion semantics | `960405-1`, `ieee__pr36332` |
 | `slate-os0h.3.1.19` | match C complex-division edge-case semantics | `ieee__cdivchkd`, `ieee__cdivchkf` |
 | `slate-os0h.3.1.20` | preserve IEEE compare, copysign, infinity, and NaN builtins | `ieee__compare-fp-1`, `ieee__compare-fp-4`, `ieee__copysign1`, `ieee__copysign2`, `ieee__inf-1`, `ieee__inf-2`, `ieee__inf-3` |
 | `slate-os0h.3.1.21` | preserve floating constant folding precision | `pr23941` |
-| `slate-os0h.3.1.22` | lower negation after unsigned conversions with wrapping semantics | `20000313-1`, `20020503-1`, `20020805-1`, `20041011-1`, `950612-1`, `960416-1`, `pr106523`, `pr112581-1`, `pr119291`, `pr34154`, `pr45262`, `pr64255`, `pr66556`, `pr68506`, `pr97386-1` |
-| `slate-os0h.3.1.23` | retain wide unsigned integer literal types | `920710-1`, `930529-1`, `991216-2`, `pr112758`, `pr20601-1`, `pr31169`, `pr48197`, `pr50865`, `pr70222-1`, `pr70429` |
-| `slate-os0h.3.1.24` | type checked-overflow result stores from destination pointers | `pr84169`, `pr89434`, `pr90311`, `pr91450-1`, `pr91450-2`, `pr91635`, `pr93494` |
+| `slate-os0h.3.1.24` | type checked-overflow result stores from destination pointers | `pr84169`, `pr89434`, `pr91635`, `pr93494` |
 | `slate-os0h.3.1.25` | cast Rust bit-count builtin results to the C result type | `builtin-bitops-1` |
-| `slate-os0h.3.1.26` | preserve integer promotions and signedness in shifts | `20020219-1`, `pr42833`, `pr85582-2`, `pr85582-3` |
+| `slate-os0h.3.1.26` | preserve integer promotions and signedness in shifts | `20020219-1`, `pr85582-2`, `pr85582-3` |
 | `slate-os0h.3.1.27` | avoid emitting unconditional Rust panics in unreachable C paths | `pr97888-1` |
 | `slate-os0h.3.1.28` | preserve catchable integer divide traps | `20101011-1` |
 | `slate-os0h.3.1.29` | resolve globals referenced by constant address expressions | `20021010-2`, `builtin-prefetch-4`, `const-addr-expr-1`, `pr43784`, `pr52129`, `pr53084`, `pr57568`, `strlen-4` |
-| `slate-os0h.3.1.30` | materialize addressable string and compound-literal storage | `pr108498-2`, `widechar-3` |
+| `slate-os0h.3.1.30` | materialize addressable string and compound-literal storage | `widechar-3` |
 | `slate-os0h.3.1.31` | preserve pointer and function-address integer conversions | `20050215-1`, `941014-1` |
 | `slate-os0h.3.1.32` | preserve addresses through conditional lvalue expressions | `pr15262`, `pr15262-1`, `return-addr` |
 | `slate-os0h.3.1.33` | decay pointer-to-array parameters at call sites | `20080519-1` |
-| `slate-os0h.3.1.34` | coerce casted, noreturn, and variadic function pointers | `call-trap-1`, `pr54937`, `pr68390` |
 | `slate-os0h.3.1.35` | preserve enum object representation through pointers | `enum-3` |
 | `slate-os0h.3.1.36` | preserve null-based member-address expressions | `pr44555` |
 | `slate-os0h.3.1.37` | use overlap-safe lowering for aggregate self-copy | `20071219-1` |
 | `slate-os0h.3.1.38` | lower one-element tail-array pointer arithmetic without Rust bounds checks | `20071120-1`, `pr41395-1`, `pr41395-2`, `pr41463`, `strlen-5` |
 | `slate-os0h.3.1.39` | preserve argument side effects in string builtin rewrites | `string-opt-5` |
-| `slate-os0h.3.1.40` | pass and retrieve aggregate variadic arguments | `920625-1`, `920908-1`, `931004-10`, `931004-12`, `931004-14`, `931004-2`, `931004-4`, `931004-6`, `931004-8`, `pr38151`, `pr44575`, `pr92904`, `stdarg-3`, `strct-stdarg-1`, `strct-varg-1`, `va-arg-22`, `va-arg-4` |
-| `slate-os0h.3.1.41` | retrieve long-double variadic arguments | `va-arg-5`, `va-arg-6` |
+| `slate-os0h.3.1.40` | pass and retrieve aggregate variadic arguments | `pr38151`, `stdarg-3` |
 | `slate-os0h.3.1.42` | lower va_arg extraction through passed va_list values | `20000519-1`, `20041214-1`, `20071213-1`, `stdarg-4`, `va-arg-9`, `va-arg-20` |
 | `slate-os0h.3.1.43` | represent stored, embedded, arrayed, and pointer va_list values | `pr64979`, `stdarg-2`, `va-arg-13`, `va-arg-21`, `va-arg-trap-1` |
 | `slate-os0h.3.1.44` | lower va_copy and escaping va_list lifetimes | `stdarg-1`, `va-arg-10`, `va-arg-14` |
-| `slate-os0h.3.1.45` | preserve same-slot variadic representation reads | `pr117432` |
 | `slate-os0h.3.1.46` | lower GNU vector construction, splats, and reinterpret casts | `20050316-1`, `20050316-2`, `20050316-3`, `20050607-1`, `pr105613`, `pr109040`, `pr110817-2`, `pr110817-3`, `pr123625-2`, `pr126405`, `pr126405-2`, `pr70903`, `pr71626-1`, `pr71626-2`, `pr92618`, `pr94524-1`, `pr94524-2`, `simd-4` |
 | `slate-os0h.3.1.47` | lower GNU vector arithmetic, comparison, and bitwise operations | `20050604-1`, `20060420-1`, `ieee__fp-cmp-cond-1`, `pr23135`, `pr60960`, `pr94412`, `scal-to-vec1`, `scal-to-vec2`, `scal-to-vec3`, `simd-1`, `simd-2`, `simd-5` |
 | `slate-os0h.3.1.48` | lower dynamic GNU vector lane insertions | `pr126405-3`, `pr85169` |
-| `slate-os0h.3.1.49` | complete goto state-machine lowering across nested scopes | `20000605-3`, `20191023-1`, `loop-8`, `pr17078-1`, `pr38051`, `pr68911`, `vla-dealloc-1` |
 | `slate-os0h.3.1.50` | lower computed-goto label tables and dispatch | `20071210-1`, `920501-5` |
 | `slate-os0h.3.1.51` | promote setjmp and longjmp execution cases | `built-in-setjmp`, `pr64242`, `pr84521` |
 | `slate-os0h.3.1.52` | promote frame-address introspection coverage | `frame-address` |
-

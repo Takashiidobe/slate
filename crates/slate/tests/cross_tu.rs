@@ -921,7 +921,8 @@ fn address_taken_pointer_deref_function_stays_unsafe_across_tus() {
     );
 
     let main_rs = std::fs::read_to_string(rs_dir.join("main.rs")).expect("read main.rs");
-    assert!(main_rs.contains("Some(deref_and_add)"));
+    assert!(main_rs.contains("deref_and_add as *const ()"));
+    assert!(main_rs.contains("Option<unsafe extern \"C\" fn(*mut i32) -> i32>"));
 }
 
 #[test]

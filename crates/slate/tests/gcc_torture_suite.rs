@@ -97,7 +97,6 @@ fn gcc_torture_supported_tests_match_c() {
 }
 
 #[test]
-#[ignore = "run manually to find cases ready for promotion"]
 fn gcc_torture_unsupported_tests_still_fail() {
     let results = run_cases("unsupported", &unsupported_root());
     let unexpected_passes: Vec<String> = results

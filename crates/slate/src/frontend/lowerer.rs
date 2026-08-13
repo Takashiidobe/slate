@@ -593,6 +593,11 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
             .filter_map(|binding| binding.known())
             .map(|known| (known.symbol().to_string(), FunctionIdentity::Known(known)))
             .collect(),
+        function_types: c
+            .function_types()
+            .iter()
+            .map(|(name, ty)| (name.clone(), ty.clone()))
+            .collect(),
         weak_refs: c
             .weak_refs
             .iter()
@@ -953,6 +958,7 @@ struct Lowerer<'a> {
     aliases: BTreeMap<String, String>,
     call_bindings: HashMap<Loc, CallBinding>,
     known_functions: BTreeMap<String, FunctionIdentity>,
+    function_types: BTreeMap<String, String>,
     weak_refs: BTreeMap<String, String>,
     external_weak_targets: BTreeSet<String>,
     weak_aliases: BTreeMap<String, String>,
@@ -2260,6 +2266,7 @@ impl __SlateVaArgs {
                 .or_insert_with(|| ExternFnDecl {
                     identity: FunctionIdentity::Unknown,
                     name: trampoline.clone(),
+                    declared_type: None,
                     params: params
                         .iter()
                         .enumerate()
@@ -2558,12 +2565,16 @@ impl __SlateVaArgs {
         let mut decl = ExternFnDecl {
             name: name.into(),
             identity,
+            declared_type: self.function_types.get(name).cloned(),
             params,
             variadic,
             ret: ret_ast,
             safe: false,
         };
-        repair_extern_function_signature(&mut decl);
+        repair_extern_function_signature(
+            &mut decl,
+            self.function_types.get(name).map(String::as_str),
+        );
         let param_types = decl.params.iter().map(|param| param.ty.clone()).collect();
         let ret_ty = decl.ret.as_ref().map(Type::render);
         if decl.variadic || decl.params.iter().any(|param| param.ty == Type::VaList) {
@@ -3092,10 +3103,17 @@ impl __SlateVaArgs {
             if let Some(wrapped) = self.enum_return_mismatch_wrap(target, ty) {
                 return Some(wrapped);
             }
-            return Some(Expr::Call {
-                binding: crate::function_identity::CallBinding::Generated,
-                func: Box::new(Expr::Var("Some".into())),
-                args: vec![Expr::Var(sanitize_ident(target))],
+            let raw_ptr = Type::Ptr {
+                mutable: false,
+                inner: Box::new(Type::Unit),
+            };
+            return Some(Expr::Transmute {
+                from: raw_ptr.clone(),
+                to: ty.clone(),
+                expr: Box::new(Expr::Cast {
+                    expr: Box::new(Expr::Var(sanitize_ident(target))),
+                    ty: raw_ptr,
+                }),
             });
         }
         let Type::Ptr { mutable, .. } = ty else {
@@ -3123,10 +3141,10 @@ impl __SlateVaArgs {
     }
 }
 
-fn repair_extern_function_signature(decl: &mut ExternFnDecl) {
-    let mut params = decl.params.iter().map(|param| param.ty.clone()).collect();
+fn repair_extern_function_signature(decl: &mut ExternFnDecl, spelling: Option<&str>) {
+    let mut params: Vec<Type> = decl.params.iter().map(|param| param.ty.clone()).collect();
     let mut ret = decl.ret.clone();
-    if !repair_function_signature(decl.identity, &mut params, &mut ret) {
+    if !repair_function_signature(spelling, &mut params, &mut ret) {
         return;
     }
     decl.params = params

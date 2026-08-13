@@ -150,8 +150,11 @@ fn render_typed_shim(shim: &ExternFnDecl) -> Option<String> {
             .map(|param| param.ty.clone())
             .collect::<Vec<_>>();
         let mut prototype_ret = shim.ret.clone();
-        let repaired =
-            repair_function_signature(shim.identity, &mut prototype_params, &mut prototype_ret);
+        let repaired = repair_function_signature(
+            shim.declared_type.as_deref(),
+            &mut prototype_params,
+            &mut prototype_ret,
+        );
         if shim.identity != FunctionIdentity::Unknown && !repaired {
             String::new()
         } else {

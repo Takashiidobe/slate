@@ -60,6 +60,7 @@ pub struct Unit {
     pub weak_refs: Vec<WeakRefAttribute>,
     pub floating_literals: HashMap<Loc, String>,
     pub global_floating_literals: HashMap<String, String>,
+    function_types: HashMap<String, String>,
     call_bindings: HashMap<Loc, CallBinding>,
 }
 
@@ -234,6 +235,10 @@ impl Unit {
             collect_call_bindings_in_stmts(body, &mut bindings);
         }
         bindings
+    }
+
+    pub fn function_types(&self) -> &HashMap<String, String> {
+        &self.function_types
     }
 }
 
@@ -638,6 +643,8 @@ fn parse_json_with_record_roots(
     });
     let mut global_floating_literals = HashMap::new();
     collect_global_floating_literals(&root, false, &mut global_floating_literals);
+    let mut function_types = HashMap::new();
+    collect_function_types(&root, &mut function_types);
     Ok(Unit {
         enums,
         records,
@@ -648,8 +655,41 @@ fn parse_json_with_record_roots(
         weak_refs,
         floating_literals,
         global_floating_literals,
+        function_types,
         call_bindings,
     })
+}
+
+fn collect_function_types(node: &Value, out: &mut HashMap<String, String>) {
+    if kind(node) == Some("FunctionDecl")
+        && let Some(name) = node.get("name").and_then(Value::as_str)
+        && let Some(ty) = spelled_qual_type(node)
+        && out.get(name).is_none_or(|current| {
+            !contains_pointer_sized_typedef(current) && contains_pointer_sized_typedef(ty)
+        })
+    {
+        out.insert(name.to_string(), ty.to_string());
+    }
+    for child in children(node) {
+        collect_function_types(child, out);
+    }
+}
+
+fn contains_pointer_sized_typedef(ty: &str) -> bool {
+    ty.split(|character: char| !character.is_ascii_alphanumeric() && character != '_')
+        .any(|word| {
+            matches!(
+                word,
+                "size_t"
+                    | "__size_t"
+                    | "rsize_t"
+                    | "uintptr_t"
+                    | "ptrdiff_t"
+                    | "ssize_t"
+                    | "__ssize_t"
+                    | "intptr_t"
+            )
+        })
 }
 
 fn collect_floating_literals(
@@ -2080,6 +2120,10 @@ fn qual_type(node: &Value) -> Option<&str> {
     ty.get("desugaredQualType")
         .and_then(Value::as_str)
         .or_else(|| ty.get("qualType").and_then(Value::as_str))
+}
+
+fn spelled_qual_type(node: &Value) -> Option<&str> {
+    node.get("type")?.get("qualType")?.as_str()
 }
 
 fn kind(node: &Value) -> Option<&str> {

@@ -551,10 +551,10 @@ fn macos_fundamental_fixture_translates_with_darwin_abi_types() {
     );
     let rust = String::from_utf8(output.stdout).expect("generated Rust is UTF-8");
     assert!(rust.contains("fn darwin_import("));
-    assert!(rust.contains("_0: u64"));
-    assert!(rust.contains("_1: i64"));
-    assert!(rust.contains("_2: i64"));
-    assert!(rust.contains("_3: u64"));
+    assert!(rust.contains("_0: usize"));
+    assert!(rust.contains("_1: isize"));
+    assert!(rust.contains("_2: isize"));
+    assert!(rust.contains("_3: usize"));
     assert!(rust.contains("_4: i32"));
     assert!(rust.contains("_5: i64"));
     assert!(rust.contains("_6: u64"));
@@ -710,10 +710,10 @@ fn android_fundamental_fixture_translates_with_architecture_abi_types() {
         );
         let rust = String::from_utf8(output.stdout).expect("generated Rust is UTF-8");
         assert!(rust.contains("fn bionic_import("));
-        assert!(rust.contains("_0: u64"));
-        assert!(rust.contains("_1: i64"));
-        assert!(rust.contains("_2: i64"));
-        assert!(rust.contains("_3: u64"));
+        assert!(rust.contains("_0: usize"));
+        assert!(rust.contains("_1: isize"));
+        assert!(rust.contains("_2: isize"));
+        assert!(rust.contains("_3: usize"));
         assert!(rust.contains(wchar_type));
         assert!(rust.contains("_5: u32"));
         assert!(rust.contains("#![feature(f128)]"));
@@ -738,10 +738,10 @@ fn msvc_llp64_fixture_translates_with_target_abi_types() {
     );
     let rust = String::from_utf8(output.stdout).expect("generated Rust is UTF-8");
     assert!(rust.contains("fn imported_msvc("));
-    assert!(rust.contains("_0: u64"));
-    assert!(rust.contains("_1: i64"));
-    assert!(rust.contains("_2: i64"));
-    assert!(rust.contains("_3: u64"));
+    assert!(rust.contains("_0: usize"));
+    assert!(rust.contains("_1: isize"));
+    assert!(rust.contains("_2: isize"));
+    assert!(rust.contains("_3: usize"));
     assert!(rust.contains("_4: u16"));
     assert!(rust.contains("_5: i32"));
     assert!(rust.contains("_6: i64"));
@@ -1202,26 +1202,6 @@ fn pointer_comparisons_preserve_address_operands() {
 }
 
 #[test]
-#[ignore = "Need to rewrite this into libc::pthread_attr_t"]
-fn pthread_opaque_types_use_libc_paths() {
-    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-pthread-types");
-    std::fs::create_dir_all(&tmp).expect("create tmp dir");
-    let c_src = fixtures_dir().join("mt-atomics.c");
-    let generated = tmp.join("mt-atomics.generated.rs");
-
-    support::translate(&c_src, &generated).expect("translate mt-atomics fixture");
-    let rust = std::fs::read_to_string(&generated).expect("read generated mt-atomics rust");
-    assert!(rust.contains("*mut libc::pthread_attr_t"));
-    assert!(!rust.contains("*mut pthread_attr_t"));
-    assert!(rust.contains(
-        "static counter: std::sync::atomic::AtomicI32 = std::sync::atomic::AtomicI32::new(0);"
-    ));
-    assert!(rust.contains("counter.fetch_add(1, std::sync::atomic::Ordering::SeqCst)"));
-    assert!(rust.contains("counter.load(std::sync::atomic::Ordering::SeqCst)"));
-    assert!(!rust.contains("AtomicI32::from_ptr(std::ptr::addr_of_mut!(counter))"));
-}
-
-#[test]
 fn timespec_get_uses_libc_timespec_abi() {
     let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-timespec-get");
     std::fs::create_dir_all(&tmp).expect("create tmp dir");
@@ -1243,13 +1223,13 @@ fn uchar_conversions_use_libc_mbstate_abi() {
 
     let rust = translate_fixture(&tmp, "uchar_conversions");
     assert!(rust.contains(
-        "fn mbrtoc16(_0: *mut u16, _1: *mut i8, _2: u64, _3: *mut libc::mbstate_t) -> u64;"
+        "fn mbrtoc16(_0: *mut u16, _1: *const i8, _2: usize, _3: *mut libc::mbstate_t) -> usize;"
     ));
-    assert!(rust.contains("fn c16rtomb(_0: *mut i8, _1: u16, _2: *mut libc::mbstate_t) -> u64;"));
+    assert!(rust.contains("fn c16rtomb(_0: *mut i8, _1: u16, _2: *mut libc::mbstate_t) -> usize;"));
     assert!(rust.contains(
-        "fn mbrtoc32(_0: *mut u32, _1: *mut i8, _2: u64, _3: *mut libc::mbstate_t) -> u64;"
+        "fn mbrtoc32(_0: *mut u32, _1: *const i8, _2: usize, _3: *mut libc::mbstate_t) -> usize;"
     ));
-    assert!(rust.contains("fn c32rtomb(_0: *mut i8, _1: u32, _2: *mut libc::mbstate_t) -> u64;"));
+    assert!(rust.contains("fn c32rtomb(_0: *mut i8, _1: u32, _2: *mut libc::mbstate_t) -> usize;"));
     assert!(rust.contains(
         "let mut state16: libc::mbstate_t = unsafe { std::mem::zeroed::<libc::mbstate_t>() };"
     ));
@@ -2540,7 +2520,10 @@ fn call_lowering_preserves_function_pointer_and_extern_shapes() {
     support::translate(&fp_c, &fp_generated).expect("translate function pointer fixture");
     let fp_rust =
         std::fs::read_to_string(&fp_generated).expect("read generated function pointer rust");
-    assert!(fp_rust.contains("Some(add_pair)"));
+    assert!(fp_rust.contains("add_pair as *const ()"));
+    assert!(
+        fp_rust.contains("Option<unsafe extern \"C\" fn(i32, i32) -> i32>>(add_pair as *const ())")
+    );
     assert!(fp_rust.contains(".unwrap()("));
     assert!(fp_rust.contains("lhs + rhs\n}"));
     assert!(fp_rust.contains("lhs * rhs\n}"));

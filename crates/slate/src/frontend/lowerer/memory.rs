@@ -647,11 +647,28 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let result_rust_ty = self.parent.rust_type(result_ty);
         let operand_rust_ty = self.parent.rust_type(operand_ty);
         let value = match self.values.get(src).cloned() {
-            Some(value @ Val::Global(_))
+            Some(Val::Global(name))
                 if is_cir_function_pointer_type(result_ty)
                     && is_cir_function_pointer_type(operand_ty) =>
             {
-                value
+                let from = self.parent.rust_type(operand_ty);
+                let to = self.parent.rust_type(result_ty);
+                if from == to {
+                    Val::Global(name)
+                } else {
+                    let raw_ptr = Type::Ptr {
+                        mutable: false,
+                        inner: Box::new(Type::Unit),
+                    };
+                    Val::Expr(Expr::Transmute {
+                        from: raw_ptr.clone(),
+                        to,
+                        expr: Box::new(Expr::Cast {
+                            expr: Box::new(Expr::Var(sanitize_ident(&name))),
+                            ty: raw_ptr,
+                        }),
+                    })
+                }
             }
             Some(Val::Global(name))
                 if result_ty.starts_with("!cir.ptr<")
