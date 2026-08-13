@@ -205,8 +205,9 @@ int main(void) {
   TEST(l, strtol(s = "0x1234", &c, 16), 0x1234, "%ld != %ld");
   TEST2(i, c - s, 6, "wrong final position %ld != %ld");
 
-  c = NULL;
-  TEST(l, strtol(s = "123", &c, 37), 0, "%ld != %ld");
+  s = "123";
+  c = s;
+  TEST(l, strtol(s, &c, 37), 0, "%ld != %ld");
   TEST2(i, c - s, 0, "wrong final position %d != %d");
   TEST2(i, errno, EINVAL, "%d != %d");
 
