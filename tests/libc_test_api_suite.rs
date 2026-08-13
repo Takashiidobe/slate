@@ -9,6 +9,7 @@ const API_EXTRA_ARGS: &[&str] = &[
     "-pedantic-errors",
     "-Werror",
     "-Wno-unused",
+    "-Wno-switch-bool",
     "-Wno-strict-prototypes",
     "-D_XOPEN_SOURCE=700",
 ];
