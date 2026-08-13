@@ -37,7 +37,11 @@ typedef int                __pid_t;
 typedef unsigned int       __uid_t;
 typedef unsigned int       __gid_t;
 typedef unsigned long long __dev_t;
+#if defined(__SLATE_LIBC_GLIBC) && defined(__SLATE_WORDSIZE_64)
+typedef unsigned long      __nlink_t;
+#else
 typedef unsigned int       __nlink_t;
+#endif
 typedef unsigned int       __useconds_t;
 typedef int                __clockid_t;
 typedef void              *__timer_t;
@@ -46,7 +50,7 @@ typedef int                __key_t;
 typedef int                __id_t;
 typedef int                __daddr_t;
 typedef char              *__caddr_t;
-typedef unsigned char      __sa_family_t;
+typedef unsigned short     __sa_family_t;
 typedef unsigned int       __socklen_t;
 typedef long               __regoff_t;
 typedef int                __error_t;
@@ -225,15 +229,17 @@ typedef union {
 } __mbstate_t;
 
 typedef __off_t __fpos_t;
-#else
+#elif defined(__SLATE_LIBC_MUSL)
 typedef struct {
-  int __count;
-  union {
-    int  __wch;
-    char __wchb[4];
-  } __value;
+  unsigned __opaque1;
+  unsigned __opaque2;
 } __mbstate_t;
 
+#else
+typedef long long __mbstate_t;
+#endif
+
+#if !defined(__SLATE_LIBC_DARWIN)
 typedef struct __fpos_t {
   __off_t     __pos;
   __mbstate_t __state;
@@ -496,6 +502,18 @@ typedef __fpos_t fpos_t;
 #endif
 #undef __NEED_fpos_t
 
+#if defined(__NEED_float_t) && !defined(__DEFINED_float_t)
+typedef float float_t;
+#define __DEFINED_float_t
+#endif
+#undef __NEED_float_t
+
+#if defined(__NEED_double_t) && !defined(__DEFINED_double_t)
+typedef double double_t;
+#define __DEFINED_double_t
+#endif
+#undef __NEED_double_t
+
 #if defined(__NEED_size_t) && !defined(__DEFINED_size_t)
 typedef __size_t size_t;
 #define __DEFINED_size_t
@@ -507,6 +525,15 @@ typedef __ssize_t ssize_t;
 #define __DEFINED_ssize_t
 #endif
 #undef __NEED_ssize_t
+
+#if defined(__NEED_struct_iovec) && !defined(__DEFINED_struct_iovec)
+struct iovec {
+  void  *iov_base;
+  size_t iov_len;
+};
+#define __DEFINED_struct_iovec
+#endif
+#undef __NEED_struct_iovec
 
 #if defined(__NEED_off_t) && !defined(__DEFINED_off_t)
 typedef __off_t off_t;

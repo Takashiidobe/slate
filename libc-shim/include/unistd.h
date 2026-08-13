@@ -277,6 +277,7 @@ pid_t         gettid(void);
 #define _PC_ALLOC_SIZE_MIN     18
 #define _PC_SYMLINK_MAX        19
 #define _PC_2_SYMLINKS         20
+#define _PC_TIMESTAMP_RESOLUTION 21
 
 #define _SC_ARG_MAX                      0
 #define _SC_CHILD_MAX                    1
@@ -422,6 +423,7 @@ pid_t         gettid(void);
 #define _SC_THREAD_ROBUST_PRIO_PROTECT 248
 #define _SC_MINSIGSTKSZ                249
 #define _SC_SIGSTKSZ                   250
+#define _SC_XOPEN_UUCP                 251
 
 #define _CS_PATH                           0
 #define _CS_POSIX_V6_WIDTH_RESTRICTED_ENVS 1

@@ -59,15 +59,15 @@ enum {
 
 #define PTHREAD_MUTEX_INITIALIZER                                              \
   {                                                                            \
-    {{0}}                                                                      \
+    {0}                                                                        \
   }
 #define PTHREAD_RWLOCK_INITIALIZER                                             \
   {                                                                            \
-    {{0}}                                                                      \
+    {0}                                                                        \
   }
 #define PTHREAD_COND_INITIALIZER                                               \
   {                                                                            \
-    {{0}}                                                                      \
+    {0}                                                                        \
   }
 #define PTHREAD_ONCE_INIT 0
 
@@ -95,6 +95,32 @@ int  pthread_setcancelstate(int, int *);
 int  pthread_setcanceltype(int, int *);
 void pthread_testcancel(void);
 int  pthread_cancel(pthread_t);
+
+#if defined(__GNUC__) || defined(__clang__)
+struct __slate_pthread_cleanup_frame {
+  void (*__cancel_routine)(void *);
+  void *__cancel_arg;
+  int   __do_it;
+};
+
+static inline void
+__slate_pthread_cleanup_routine(struct __slate_pthread_cleanup_frame *__frame) {
+  if (__frame->__do_it)
+    __frame->__cancel_routine(__frame->__cancel_arg);
+}
+
+#define pthread_cleanup_push(routine, arg)                                    \
+  do {                                                                        \
+    struct __slate_pthread_cleanup_frame __clframe                            \
+        __attribute__((__cleanup__(__slate_pthread_cleanup_routine))) = {     \
+            .__cancel_routine = (routine), .__cancel_arg = (arg),              \
+            .__do_it = 1                                                       \
+    };
+#define pthread_cleanup_pop(execute)                                          \
+  __clframe.__do_it = (execute);                                              \
+  }                                                                            \
+  while (0)
+#endif
 
 int pthread_getschedparam(pthread_t, int *__restrict,
                           struct sched_param *__restrict);
@@ -229,9 +255,6 @@ int pthread_getconcurrency(void);
 int pthread_setconcurrency(int);
 
 int pthread_getcpuclockid(pthread_t, clockid_t *);
-
-void pthread_cleanup_push(void (*)(void *), void *);
-void pthread_cleanup_pop(int);
 
 #ifdef _GNU_SOURCE
 struct cpu_set_t;

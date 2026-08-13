@@ -18,6 +18,7 @@
     defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 #define __NEED_ssize_t
 #define __NEED_off_t
+#define __NEED_wchar_t
 #endif
 
 #define __NEED_NULL
@@ -138,6 +139,16 @@ int sscanf(const char *__restrict, const char *__restrict, ...);
 int vscanf(const char *__restrict, va_list);
 int vfscanf(FILE *__restrict, const char *__restrict, va_list);
 int vsscanf(const char *__restrict, const char *__restrict, va_list);
+
+#if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
+    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+int vfwprintf(FILE *__restrict, const wchar_t *__restrict, va_list);
+int vswprintf(wchar_t *__restrict, size_t, const wchar_t *__restrict, va_list);
+int vwprintf(const wchar_t *__restrict, va_list);
+int vfwscanf(FILE *__restrict, const wchar_t *__restrict, va_list);
+int vswscanf(const wchar_t *__restrict, const wchar_t *__restrict, va_list);
+int vwscanf(const wchar_t *__restrict, va_list);
+#endif
 
 void perror(const char *);
 

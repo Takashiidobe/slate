@@ -45,13 +45,13 @@
 #define S_TYPEISSHM(buf) 0
 #define S_TYPEISTMO(buf) 0
 
-#define S_ISDIR(mode)  (((mode) & S_IFMT) == S_IFDIR)
-#define S_ISCHR(mode)  (((mode) & S_IFMT) == S_IFCHR)
-#define S_ISBLK(mode)  (((mode) & S_IFMT) == S_IFBLK)
-#define S_ISREG(mode)  (((mode) & S_IFMT) == S_IFREG)
-#define S_ISFIFO(mode) (((mode) & S_IFMT) == S_IFIFO)
-#define S_ISLNK(mode)  (((mode) & S_IFMT) == S_IFLNK)
-#define S_ISSOCK(mode) (((mode) & S_IFMT) == S_IFSOCK)
+#define S_ISDIR(mode)  ((((mode) & S_IFMT) == S_IFDIR) ? 1 : 0)
+#define S_ISCHR(mode)  ((((mode) & S_IFMT) == S_IFCHR) ? 1 : 0)
+#define S_ISBLK(mode)  ((((mode) & S_IFMT) == S_IFBLK) ? 1 : 0)
+#define S_ISREG(mode)  ((((mode) & S_IFMT) == S_IFREG) ? 1 : 0)
+#define S_ISFIFO(mode) ((((mode) & S_IFMT) == S_IFIFO) ? 1 : 0)
+#define S_ISLNK(mode)  ((((mode) & S_IFMT) == S_IFLNK) ? 1 : 0)
+#define S_ISSOCK(mode) ((((mode) & S_IFMT) == S_IFSOCK) ? 1 : 0)
 
 #ifndef S_IRUSR
 #define S_ISUID 04000
@@ -118,7 +118,7 @@ int lchmod(const char *, mode_t);
 #define STATX_BTIME         0x800U
 #define STATX_ALL           0xfffU
 #define STATX_MNT_ID        0x1000U
-define STATX_DIOALIGN       0x2000U
+#define STATX_DIOALIGN       0x2000U
 #define STATX_MNT_ID_UNIQUE 0x4000U
 #define STATX_SUBVOL        0x8000U
 #define STATX_WRITE_ATOMIC  0x10000U

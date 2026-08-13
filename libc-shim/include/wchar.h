@@ -27,11 +27,18 @@
 #define __NEED_NULL
 #define __NEED_FILE
 #define __NEED_wctype_t
+#define __NEED_mbstate_t
+#if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
+    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+#define __NEED_locale_t
+#endif
 #include <bits/types.h>
 
 struct tm;
 
 #define WEOF ((wint_t) - 1)
+#define WCHAR_MAX ((wchar_t) - 1)
+#define WCHAR_MIN ((wchar_t) 0)
 
 wint_t        btowc(int);
 int           fwprintf(FILE *, const wchar_t *, ...);
@@ -69,6 +76,9 @@ wint_t        ungetwc(wint_t, FILE *);
 int           vfwprintf(FILE *, const wchar_t *, va_list);
 int           vwprintf(const wchar_t *, va_list);
 int           vswprintf(wchar_t *, size_t, const wchar_t *, va_list);
+int           vfwscanf(FILE *, const wchar_t *, va_list);
+int           vswscanf(const wchar_t *, const wchar_t *, va_list);
+int           vwscanf(const wchar_t *, va_list);
 size_t        wcrtomb(char *, wchar_t, __mbstate_t *);
 wchar_t      *wcscat(wchar_t *, const wchar_t *);
 wchar_t      *wcschr(const wchar_t *, wchar_t);
@@ -87,9 +97,13 @@ size_t        wcsrtombs(char *, const wchar_t **, size_t, __mbstate_t *);
 size_t        wcsspn(const wchar_t *, const wchar_t *);
 wchar_t      *wcsstr(const wchar_t *, const wchar_t *);
 double        wcstod(const wchar_t *, wchar_t **);
+float         wcstof(const wchar_t *, wchar_t **);
+long double   wcstold(const wchar_t *, wchar_t **);
 wchar_t      *wcstok(wchar_t *, const wchar_t *, wchar_t **);
 long int      wcstol(const wchar_t *, wchar_t **, int);
 unsigned long wcstoul(const wchar_t *, wchar_t **, int);
+long long     wcstoll(const wchar_t *, wchar_t **, int);
+unsigned long long wcstoull(const wchar_t *, wchar_t **, int);
 wchar_t      *wcswcs(const wchar_t *, const wchar_t *);
 int           wcswidth(const wchar_t *, size_t);
 size_t        wcsxfrm(wchar_t *, const wchar_t *, size_t);
@@ -103,6 +117,23 @@ wchar_t      *wmemmove(wchar_t *, const wchar_t *, size_t);
 wchar_t      *wmemset(wchar_t *, wchar_t, size_t);
 int           wprintf(const wchar_t *, ...);
 int           wscanf(const wchar_t *, ...);
+
+#if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
+    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+size_t mbsnrtowcs(wchar_t *, const char **, size_t, size_t, mbstate_t *);
+FILE  *open_wmemstream(wchar_t **, size_t *);
+size_t wcsnrtombs(char *, const wchar_t **, size_t, size_t, mbstate_t *);
+wchar_t *wcpcpy(wchar_t *, const wchar_t *);
+wchar_t *wcpncpy(wchar_t *, const wchar_t *, size_t);
+int     wcscasecmp(const wchar_t *, const wchar_t *);
+int     wcscasecmp_l(const wchar_t *, const wchar_t *, locale_t);
+int     wcscoll_l(const wchar_t *, const wchar_t *, locale_t);
+wchar_t *wcsdup(const wchar_t *);
+int     wcsncasecmp(const wchar_t *, const wchar_t *, size_t);
+int     wcsncasecmp_l(const wchar_t *, const wchar_t *, size_t, locale_t);
+size_t  wcsnlen(const wchar_t *, size_t);
+size_t  wcsxfrm_l(wchar_t *, const wchar_t *, size_t, locale_t);
+#endif
 
 #endif
 

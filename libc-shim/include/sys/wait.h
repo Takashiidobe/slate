@@ -36,14 +36,15 @@ pid_t wait4(pid_t, int *, int, struct rusage *);
 #define __WALL      0x40000000
 #define __WCLONE    0x80000000
 
-int WEXITSTATUS(int s);
-int WTERMSIG(int s);
-int WSTOPSIG(int s);
-int WCOREDUMP(int s);
-int WIFEXITED(int s);
-int WIFSTOPPED(int s);
-int WIFSIGNALED(int s);
-int WIFCONTINUED(int s);
+#define WEXITSTATUS(s) (((s) & 0xff00) >> 8)
+#define WTERMSIG(s) ((s) & 0x7f)
+#define WSTOPSIG(s) WEXITSTATUS(s)
+#define WCOREDUMP(s) ((s) & 0x80)
+#define WIFEXITED(s) ((((s) & 0x7f) == 0) ? 1 : 0)
+#define WIFSTOPPED(s)                                                         \
+  (((short)((((s) & 0xffff) * 0x10001U) >> 8) > 0x7f00) ? 1 : 0)
+#define WIFSIGNALED(s) ((((s) & 0xffff) - 1U < 0xffu) ? 1 : 0)
+#define WIFCONTINUED(s) (((s) == 0xffff) ? 1 : 0)
 
 #if _REDIR_TIME64
 #if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)

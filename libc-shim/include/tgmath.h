@@ -128,6 +128,21 @@ a null pointer constant or not
                      : __LDBL((x) + (y))    ? powl(x, y)                       \
                                             : pow(x, y)))
 
+#if defined(__GNUC__)
+#define __tg_real_complex_fabs(x)                                              \
+  (__RETCAST_REAL(x)(__builtin_choose_expr(                                     \
+      __builtin_types_compatible_p(__typeof__(x), float complex), cabsf,         \
+      __builtin_choose_expr(                                                    \
+          __builtin_types_compatible_p(__typeof__(x), double complex), cabs,     \
+          __builtin_choose_expr(                                                \
+              __builtin_types_compatible_p(__typeof__(x), long double complex), \
+              cabsl,                                                             \
+              __builtin_choose_expr(                                            \
+                  __builtin_types_compatible_p(__typeof__(x), float), fabsf,     \
+                  __builtin_choose_expr(                                        \
+                      __builtin_types_compatible_p(__typeof__(x), long double), \
+                      fabsl, fabs)))))(x)))
+#else
 #define __tg_real_complex_fabs(x)                                              \
   (__RETCAST_REAL(x)(__FLTCX(x)    ? cabsf(x)                                  \
                      : __DBLCX(x)  ? cabs(x)                                   \
@@ -135,6 +150,7 @@ a null pointer constant or not
                      : __FLT(x)    ? fabsf(x)                                  \
                      : __LDBL(x)   ? fabsl(x)                                  \
                                    : fabs(x)))
+#endif
 
 /* suppress any macros in math.h or complex.h */
 

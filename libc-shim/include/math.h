@@ -59,11 +59,12 @@ enum {
 #define isnan(x)             __builtin_isnan(x)
 #define isnormal(x)          __builtin_isnormal(x)
 #define signbit(x)           __builtin_signbit(x)
-#define isless(x)            __builtin_isless(x);
-#define islessequal(x, y)    __builtin_islessequal(x, y);
-#define islessgreater(x, y)  __builtin_islessgreater(x, y);
-#define isgreater(x, y)      __builtin_isgreater(x, y);
-#define isgreaterequal(x, y) __builtin_isgreaterequal(x, y);
+#define isless(x, y)         __builtin_isless(x, y)
+#define islessequal(x, y)    __builtin_islessequal(x, y)
+#define islessgreater(x, y)  __builtin_islessgreater(x, y)
+#define isgreater(x, y)      __builtin_isgreater(x, y)
+#define isgreaterequal(x, y) __builtin_isgreaterequal(x, y)
+#define isunordered(x, y)    __builtin_isunordered(x, y)
 
 double      acos(double);
 float       acosf(float);

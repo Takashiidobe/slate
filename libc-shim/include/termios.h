@@ -3,6 +3,8 @@
 
 #include <features.h>
 
+#define NCCS 32
+
 #include <bits/termios.h>
 
 speed_t cfgetospeed(const struct termios *);
