@@ -82,10 +82,13 @@ fn run_bucket(bucket: &str) -> Vec<(String, Result<(), String>)> {
         .collect();
 
     let project = work.join("batch_cargo");
-    let build_stderr = if batch_cases.is_empty() {
-        String::new()
+    let batch_build = if batch_cases.is_empty() {
+        None
     } else {
-        support::build_multi_bin_batch(&batch_cases, &project).expect("spawn batched cargo build")
+        Some(
+            support::build_multi_bin_batch(&batch_cases, &project)
+                .expect("spawn batched cargo build"),
+        )
     };
 
     support::parallel_map(&attempts, |attempt| {
@@ -99,10 +102,11 @@ fn run_bucket(bucket: &str) -> Vec<(String, Result<(), String>)> {
                         .unwrap_or("unknown error")
                 ));
             }
-            let rs_bin = support::multi_bin_batch_path(&project, &attempt.name);
-            if !rs_bin.is_file() {
-                return Err(format!("Rust build failed:\n{build_stderr}"));
-            }
+            let rs_bin = batch_build
+                .as_ref()
+                .ok_or_else(|| "Rust batch build produced no artifacts".to_string())?
+                .executable(&attempt.name)
+                .map_err(|error| format!("Rust build failed:\n{error}"))?;
             let c_bin = work.join(format!("{}_c", attempt.name));
             support::compile_c_multi(&c_sources(&attempt.dir), &c_bin)?;
             let run_dir = work.join("runs").join(&attempt.name);

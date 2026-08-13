@@ -1382,9 +1382,6 @@ impl<'a> Lowerer<'a> {
             {
                 let name = attr_str(op, "sym_name").unwrap().to_string();
                 self.variadic_defs.insert(name.clone());
-                if !self.project.emit_pub && !self.c_abi_functions.contains(&name) {
-                    self.boxed_variadic_defs.insert(name);
-                }
             }
         }
         if !self.boxed_variadic_defs.is_empty() {

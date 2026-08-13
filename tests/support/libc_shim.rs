@@ -2,6 +2,7 @@ use std::fs;
 use std::hash::{DefaultHasher, Hash, Hasher};
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use std::sync::OnceLock;
 
 pub fn clang() -> String {
     std::env::var("SLATE_CLANG").unwrap_or_else(|_| {
@@ -226,17 +227,25 @@ pub fn compile_test_program_with_args(
     let mut hasher = DefaultHasher::new();
     source.hash(&mut hasher);
     extra_args.hash(&mut hasher);
+    libc_shim_fingerprint().hash(&mut hasher);
     let key = hasher.finish();
     let source_file = cache_root.join(format!("test_{}_{key:016x}.c", config.name()));
     let object_file = cache_root.join(format!("test_{}_{key:016x}.o", config.name()));
 
+    if object_file.is_file() {
+        return Ok(());
+    }
+
     fs::write(&source_file, source).map_err(|e| format!("write source: {e}"))?;
+
+    let temporary = object_file.with_extension(format!("o.tmp-{}", std::process::id()));
+    let _ = fs::remove_file(&temporary);
 
     let mut cmd = Command::new(clang());
     cmd.arg("-xc")
         .arg("-c")
         .arg("-o")
-        .arg(&object_file)
+        .arg(&temporary)
         .arg("-nostdlibinc")
         .arg("-isystem")
         .arg(libc_shim_dir().to_string_lossy().as_ref())
@@ -255,6 +264,7 @@ pub fn compile_test_program_with_args(
     let output = cmd.output().map_err(|e| format!("execute clang: {e}"))?;
 
     if !output.status.success() {
+        let _ = fs::remove_file(&temporary);
         let stderr = String::from_utf8_lossy(&output.stderr);
         let stdout = String::from_utf8_lossy(&output.stdout);
         return Err(format!(
@@ -263,5 +273,40 @@ pub fn compile_test_program_with_args(
         ));
     }
 
+    fs::rename(&temporary, &object_file).map_err(|e| {
+        format!(
+            "rename {} to {}: {e}",
+            temporary.display(),
+            object_file.display()
+        )
+    })?;
+
     Ok(())
+}
+
+fn libc_shim_fingerprint() -> u64 {
+    static FINGERPRINT: OnceLock<u64> = OnceLock::new();
+    *FINGERPRINT.get_or_init(|| {
+        fn hash_tree(dir: &Path, hasher: &mut DefaultHasher) {
+            let mut paths: Vec<PathBuf> = fs::read_dir(dir)
+                .into_iter()
+                .flatten()
+                .filter_map(Result::ok)
+                .map(|entry| entry.path())
+                .collect();
+            paths.sort();
+            for path in paths {
+                path.hash(hasher);
+                if path.is_dir() {
+                    hash_tree(&path, hasher);
+                } else if let Ok(contents) = fs::read(&path) {
+                    contents.hash(hasher);
+                }
+            }
+        }
+
+        let mut hasher = DefaultHasher::new();
+        hash_tree(&libc_shim_dir(), &mut hasher);
+        hasher.finish()
+    })
 }

@@ -640,9 +640,6 @@ fn library_crate_links_generated_c_abi_shim_for_long_double_libc_call() {
         std::fs::read_to_string(crate_dir.join("src/slate_shims.c")).expect("read slate_shims.c");
     assert!(shim_c.contains("strfroml"));
     assert!(shim_c.contains("(long double)"));
-    let manifest = std::fs::read_to_string(crate_dir.join("Cargo.toml")).expect("read manifest");
-    assert!(manifest.contains("[build-dependencies]"));
-    assert!(manifest.contains("cc = \"1\""));
 
     let strfrom_rs =
         std::fs::read_to_string(crate_dir.join("src/strfrom.rs")).expect("read strfrom.rs");

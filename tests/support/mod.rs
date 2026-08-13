@@ -162,56 +162,116 @@ pub fn compile_c(src: &Path, out: &Path) -> Result<(), String> {
 }
 
 pub fn compile_c_with_args(src: &Path, out: &Path, extra_args: &[String]) -> Result<(), String> {
-    let o = Command::new(cc())
-        .args(["-O0", "-std=c23"])
-        .args(extra_args)
-        .arg("-o")
-        .arg(out)
-        .arg(src)
-        .arg("-lm")
-        .output()
-        .map_err(|e| format!("spawn {}: {e}", cc()))?;
-    if !o.status.success() {
-        return Err(format!(
-            "C compile failed:\n{}",
-            String::from_utf8_lossy(&o.stderr)
-        ));
-    }
-    Ok(())
+    let cache_key = serde_json::to_string(&(1, src, cc(), extra_args))
+        .map_err(|e| format!("encode C cache key: {e}"))?;
+    let mut inputs = vec![src];
+    inputs.extend(
+        extra_args
+            .iter()
+            .map(Path::new)
+            .filter(|argument| argument.is_file()),
+    );
+    compile_c_cached(&inputs, out, &cache_key, "C compile failed", |temporary| {
+        Command::new(cc())
+            .args(["-O0", "-std=c23"])
+            .args(extra_args)
+            .arg("-o")
+            .arg(temporary)
+            .arg(src)
+            .arg("-lm")
+            .output()
+            .map_err(|e| format!("spawn {}: {e}", cc()))
+    })
+}
+
+fn c_cache_sidecar(binary: &Path, suffix: &str) -> PathBuf {
+    let mut name = binary.file_name().unwrap_or_default().to_os_string();
+    name.push(suffix);
+    binary.with_file_name(name)
 }
 
 /// Compile a single C translation unit into an object file for later linking.
 pub fn compile_c_object(src: &Path, out: &Path) -> Result<(), String> {
-    let o = Command::new(cc())
-        .args(["-O0", "-std=c23", "-c", "-o"])
-        .arg(out)
-        .arg(src)
-        .output()
-        .map_err(|e| format!("spawn {}: {e}", cc()))?;
-    if !o.status.success() {
-        return Err(format!(
-            "C object compile failed:\n{}",
-            String::from_utf8_lossy(&o.stderr)
-        ));
-    }
-    Ok(())
+    let cache_key = serde_json::to_string(&(2, src, cc()))
+        .map_err(|e| format!("encode C object cache key: {e}"))?;
+    compile_c_cached(
+        &[src],
+        out,
+        &cache_key,
+        "C object compile failed",
+        |temporary| {
+            Command::new(cc())
+                .args(["-O0", "-std=c23", "-c", "-o"])
+                .arg(temporary)
+                .arg(src)
+                .output()
+                .map_err(|e| format!("spawn {}: {e}", cc()))
+        },
+    )
 }
 
 /// Compile several C translation units together into one binary (cross-TU link).
 pub fn compile_c_multi(srcs: &[PathBuf], out: &Path) -> Result<(), String> {
-    let o = Command::new(cc())
-        .args(["-O0", "-std=c23", "-o"])
-        .arg(out)
-        .args(srcs)
-        .arg("-lm")
-        .output()
-        .map_err(|e| format!("spawn {}: {e}", cc()))?;
-    if !o.status.success() {
+    let cache_key = serde_json::to_string(&(3, srcs, cc()))
+        .map_err(|e| format!("encode multi-file C cache key: {e}"))?;
+    let inputs: Vec<&Path> = srcs.iter().map(PathBuf::as_path).collect();
+    compile_c_cached(&inputs, out, &cache_key, "C compile failed", |temporary| {
+        Command::new(cc())
+            .args(["-O0", "-std=c23", "-o"])
+            .arg(temporary)
+            .args(srcs)
+            .arg("-lm")
+            .output()
+            .map_err(|e| format!("spawn {}: {e}", cc()))
+    })
+}
+
+fn compile_c_cached(
+    inputs: &[&Path],
+    out: &Path,
+    cache_key: &str,
+    failure: &str,
+    compile: impl FnOnce(&Path) -> Result<std::process::Output, String>,
+) -> Result<(), String> {
+    let stamp = c_cache_sidecar(out, ".slate-c-cache");
+    let newest_input = inputs
+        .iter()
+        .map(|input| {
+            std::fs::metadata(input)
+                .and_then(|metadata| metadata.modified())
+                .map_err(|e| format!("stat {}: {e}", input.display()))
+        })
+        .collect::<Result<Vec<_>, _>>()?
+        .into_iter()
+        .max()
+        .unwrap_or(std::time::SystemTime::UNIX_EPOCH);
+    let cache_is_fresh = out.is_file()
+        && std::fs::read_to_string(&stamp).is_ok_and(|stored| stored == cache_key)
+        && std::fs::metadata(out)
+            .and_then(|metadata| metadata.modified())
+            .is_ok_and(|output_mtime| output_mtime >= newest_input);
+    if cache_is_fresh {
+        return Ok(());
+    }
+
+    let _ = std::fs::remove_file(&stamp);
+    let temporary = c_cache_sidecar(out, &format!(".slate-c-tmp-{}", std::process::id()));
+    let _ = std::fs::remove_file(&temporary);
+    let output = compile(&temporary)?;
+    if !output.status.success() {
+        let _ = std::fs::remove_file(&temporary);
         return Err(format!(
-            "C compile failed:\n{}",
-            String::from_utf8_lossy(&o.stderr)
+            "{failure}:\n{}",
+            String::from_utf8_lossy(&output.stderr)
         ));
     }
+    if out.exists() {
+        std::fs::remove_file(out).map_err(|e| format!("remove {}: {e}", out.display()))?;
+    }
+    std::fs::rename(&temporary, out)
+        .map_err(|e| format!("rename {} to {}: {e}", temporary.display(), out.display()))?;
+    write_if_changed(&stamp, cache_key.as_bytes())
+        .map_err(|e| format!("write {}: {e}", stamp.display()))?;
     Ok(())
 }
 
@@ -449,6 +509,32 @@ pub struct RustCase {
     pub rs_src: PathBuf,
 }
 
+pub struct BatchBuild {
+    artifacts: BTreeMap<String, PathBuf>,
+    errors: BTreeMap<String, String>,
+    stderr: String,
+}
+
+impl BatchBuild {
+    fn error_for(&self, name: &str) -> String {
+        if let Some(error) = self.errors.get(name) {
+            return error.clone();
+        }
+        if !self.stderr.trim().is_empty() {
+            return self.stderr.clone();
+        }
+        format!("Cargo did not report a successful bin artifact for {name}")
+    }
+
+    pub fn executable(&self, name: &str) -> Result<PathBuf, String> {
+        let name = bin_name(name);
+        self.artifacts
+            .get(&name)
+            .cloned()
+            .ok_or_else(|| self.error_for(&name))
+    }
+}
+
 #[derive(Default, Clone)]
 pub struct RunConfig {
     pub args: Vec<String>,
@@ -496,19 +582,15 @@ pub fn compare_batch_with_jobs(
         .collect();
 
     let batch_bins = build_batch(&rust_cases, &project, &bin_dir, jobs);
-    let target_dir = test_target_dir_for_project(&project);
 
     parallel_map_with_jobs(cases, jobs, |case| {
         let result = (|| {
             let bn = bin_name(&case.name);
-            let batch_bin = target_dir.join("debug").join(&bn);
-            let rs_bin = if batch_bin.is_file() {
-                batch_bin
-            } else {
-                return Err(match &batch_bins {
-                    Ok(()) => format!("Rust batch build did not produce {}", batch_bin.display()),
-                    Err(error) => format!("Rust batch build failed:\n{error}"),
-                });
+            let rs_bin = match &batch_bins {
+                Ok(build) => build
+                    .executable(&bn)
+                    .map_err(|error| format!("Rust batch build failed:\n{error}"))?,
+                Err(error) => return Err(format!("Rust batch build failed:\n{error}")),
             };
             let c_bin = work_dir.join(format!("{}_c", bn));
             compile_c_with_args(&case.c_src, &c_bin, &case.config.c_args)?;
@@ -536,17 +618,14 @@ pub fn compile_rs_batch(cases: &[RustCase], work_dir: &Path) -> Vec<(String, Res
     let project = work_dir.join("batch_cargo");
     let bin_dir = project.join("src/bin");
     let batch = build_batch(cases, &project, &bin_dir, test_jobs());
-    let target_dir = test_target_dir_for_project(&project);
     parallel_map(cases, |case| {
         let bn = bin_name(&case.name);
-        let bin = target_dir.join("debug").join(&bn);
-        let result = if bin.is_file() {
-            Ok(())
-        } else {
-            Err(match &batch {
-                Ok(()) => format!("Rust batch build did not produce {}", bin.display()),
-                Err(error) => format!("Rust batch build failed:\n{error}"),
-            })
+        let result = match &batch {
+            Ok(build) => build
+                .executable(&bn)
+                .map(|_| ())
+                .map_err(|error| format!("Rust batch build failed:\n{error}")),
+            Err(error) => Err(format!("Rust batch build failed:\n{error}")),
         };
         (case.name.clone(), result)
     })
@@ -558,7 +637,7 @@ fn build_batch(
     project: &Path,
     bin_dir: &Path,
     jobs: usize,
-) -> Result<(), String> {
+) -> Result<BatchBuild, String> {
     std::fs::create_dir_all(bin_dir).map_err(|e| format!("create {}: {e}", bin_dir.display()))?;
     write_if_changed(
         project.join("Cargo.toml"),
@@ -594,7 +673,13 @@ fn build_batch(
     std::fs::create_dir_all(&target_dir)
         .map_err(|e| format!("create {}: {e}", target_dir.display()))?;
     let o = Command::new(cargo())
-        .args(["build", "--quiet", "--keep-going", "--manifest-path"])
+        .args([
+            "build",
+            "--quiet",
+            "--keep-going",
+            "--message-format=json-render-diagnostics",
+            "--manifest-path",
+        ])
         .arg(project.join("Cargo.toml"))
         .arg("--jobs")
         .arg(jobs.max(1).to_string())
@@ -602,11 +687,49 @@ fn build_batch(
         .arg(&target_dir)
         .output()
         .map_err(|e| format!("spawn {}: {e}", cargo()))?;
-    if o.status.success() {
-        Ok(())
-    } else {
-        Err(String::from_utf8_lossy(&o.stderr).into_owned())
+
+    Ok(parse_batch_build(&o))
+}
+
+fn parse_batch_build(output: &std::process::Output) -> BatchBuild {
+    let mut build = BatchBuild {
+        artifacts: BTreeMap::new(),
+        errors: BTreeMap::new(),
+        stderr: String::from_utf8_lossy(&output.stderr).into_owned(),
+    };
+    for line in String::from_utf8_lossy(&output.stdout).lines() {
+        let Ok(message) = serde_json::from_str::<serde_json::Value>(line) else {
+            continue;
+        };
+        let target = message["target"]["name"].as_str();
+        match message["reason"].as_str() {
+            Some("compiler-artifact")
+                if message["target"]["kind"]
+                    .as_array()
+                    .is_some_and(|kinds| kinds.iter().any(|kind| kind.as_str() == Some("bin"))) =>
+            {
+                if let (Some(name), Some(executable)) = (target, message["executable"].as_str()) {
+                    build
+                        .artifacts
+                        .insert(name.to_string(), PathBuf::from(executable));
+                }
+            }
+            Some("compiler-message") if message["message"]["level"].as_str() == Some("error") => {
+                if let Some(rendered) = message["message"]["rendered"].as_str() {
+                    build.stderr.push_str(rendered);
+                    if let Some(name) = target {
+                        build
+                            .errors
+                            .entry(name.to_string())
+                            .and_modify(|errors| errors.push_str(rendered))
+                            .or_insert_with(|| rendered.to_string());
+                    }
+                }
+            }
+            _ => {}
+        }
     }
+    build
 }
 
 pub struct MultiBinCase {
@@ -621,7 +744,7 @@ pub fn multi_bin_batch_path(project: &Path, name: &str) -> PathBuf {
         .join(bin_name(name))
 }
 
-pub fn build_multi_bin_batch(cases: &[MultiBinCase], project: &Path) -> Result<String, String> {
+pub fn build_multi_bin_batch(cases: &[MultiBinCase], project: &Path) -> Result<BatchBuild, String> {
     let bin_dir = project.join("src/bin");
     std::fs::create_dir_all(&bin_dir).map_err(|e| format!("create {}: {e}", bin_dir.display()))?;
     write_if_changed(
@@ -662,15 +785,17 @@ pub fn build_multi_bin_batch(cases: &[MultiBinCase], project: &Path) -> Result<S
     }
     write_long_double_shim(project)?;
 
-    for case in cases {
-        let _ = std::fs::remove_file(multi_bin_batch_path(project, &case.name));
-    }
-
     let target_dir = test_target_dir_for_project(project);
     std::fs::create_dir_all(&target_dir)
         .map_err(|e| format!("create {}: {e}", target_dir.display()))?;
     let o = Command::new(cargo())
-        .args(["build", "--quiet", "--keep-going", "--manifest-path"])
+        .args([
+            "build",
+            "--quiet",
+            "--keep-going",
+            "--message-format=json-render-diagnostics",
+            "--manifest-path",
+        ])
         .arg(project.join("Cargo.toml"))
         .arg("--jobs")
         .arg(test_jobs().to_string())
@@ -678,7 +803,7 @@ pub fn build_multi_bin_batch(cases: &[MultiBinCase], project: &Path) -> Result<S
         .arg(&target_dir)
         .output()
         .map_err(|e| format!("spawn {}: {e}", cargo()))?;
-    Ok(String::from_utf8_lossy(&o.stderr).into_owned())
+    Ok(parse_batch_build(&o))
 }
 
 const RUST_UNCAUGHT_PANIC_EXIT: i32 = 101;

@@ -13,11 +13,7 @@ fn libc_test_jobs() -> usize {
                 .and_then(|value| value.parse().ok())
                 .filter(|jobs| *jobs > 0)
         })
-        .unwrap_or_else(|| {
-            std::thread::available_parallelism()
-                .map(usize::from)
-                .unwrap_or(1)
-        })
+        .unwrap_or_else(support::test_jobs)
 }
 
 fn supported_root() -> PathBuf {
