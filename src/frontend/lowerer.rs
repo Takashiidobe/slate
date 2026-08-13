@@ -131,7 +131,8 @@ fn required_record_defs(
         .aliases
         .iter()
         .filter_map(|(alias, ty)| {
-            let name = lowered_record_name(alias.strip_prefix("!rec_")?)?;
+            let name =
+                lowered_record_name(cir_record_name(ty).or_else(|| alias.strip_prefix("!rec_"))?)?;
             let kind = if ty.trim_start().starts_with("!cir.union") {
                 RecordKind::Union
             } else if ty.trim_start().starts_with("!cir.struct") {
