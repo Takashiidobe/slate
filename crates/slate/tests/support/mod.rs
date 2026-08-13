@@ -63,6 +63,7 @@ bitfields = "3.0.0"
 cc = "1"
 
 [profile.dev]
+debug = 0
 overflow-checks = false
 panic = "unwind"
 codegen-units = 256
