@@ -21,6 +21,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.parent.rust_global_name(&name)
         };
         self.values.insert(result.clone(), Val::Global(name));
+        if let Some(ty @ Type::FnPtr { .. }) =
+            op_result_type(op).map(|ty| self.parent.rust_type(ty))
+        {
+            self.loaded_field_types.insert(result.clone(), ty);
+        }
     }
 
     pub(super) fn place_expr(&self, ptr: &str) -> Option<Expr> {
@@ -640,6 +645,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .next()
             .unwrap_or("");
         let value = match self.values.get(src).cloned() {
+            Some(value @ Val::Global(_))
+                if is_cir_function_pointer_type(result_ty)
+                    && is_cir_function_pointer_type(operand_ty) =>
+            {
+                value
+            }
             Some(Val::Global(name))
                 if result_ty.starts_with("!cir.ptr<")
                     && self.parent.strings.contains_key(&name) =>
@@ -782,6 +793,26 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 && is_cir_function_pointer_type(operand_ty)
                 && result_ty != operand_ty =>
             {
+                let from = self
+                    .loaded_field_types
+                    .get(src)
+                    .cloned()
+                    .unwrap_or_else(|| self.parent.rust_type(operand_ty));
+                let to = self.parent.rust_type(result_ty);
+                if from == to {
+                    Val::Expr(self.function_pointer_operand_expr(src))
+                } else {
+                    Val::Expr(Expr::Transmute {
+                        from,
+                        to,
+                        expr: Box::new(self.function_pointer_operand_expr(src)),
+                    })
+                }
+            }
+            _ if result_ty.starts_with("!cir.ptr<")
+                && is_cir_function_pointer_type(operand_ty)
+                && !is_cir_function_pointer_type(result_ty) =>
+            {
                 Val::Expr(Expr::Transmute {
                     from: self.parent.rust_type(operand_ty),
                     to: self.parent.rust_type(result_ty),
@@ -837,6 +868,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 ty: self.parent.rust_type(result_ty),
             }),
         };
+        if is_cir_function_pointer_type(result_ty) {
+            let ty = if matches!(value, Val::Global(_)) {
+                self.loaded_field_types
+                    .get(src)
+                    .cloned()
+                    .unwrap_or_else(|| self.parent.rust_type(operand_ty))
+            } else {
+                self.parent.rust_type(result_ty)
+            };
+            self.loaded_field_types.insert(result.clone(), ty);
+        }
         self.values.insert(result.clone(), value);
     }
 
