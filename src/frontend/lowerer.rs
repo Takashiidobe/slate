@@ -141,6 +141,22 @@ fn required_record_defs(
         })
         .collect();
     let mut required: BTreeSet<String> = cir_kinds.keys().cloned().collect();
+    for query in c
+        .functions
+        .iter()
+        .flat_map(|function| &function.layout_queries)
+    {
+        match query {
+            LayoutQuery::Size(ty) | LayoutQuery::Align(ty) => {
+                collect_record_dependencies(ty, &mut required);
+            }
+            LayoutQuery::Offset { record, .. } => {
+                if let Some(name) = lowered_record_name(record) {
+                    required.insert(name);
+                }
+            }
+        }
+    }
     let mut frontier: Vec<String> = required.iter().cloned().collect();
     while let Some(name) = frontier.pop() {
         if shared_records.contains(&name) {
