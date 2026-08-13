@@ -297,6 +297,24 @@ pub(super) fn f80_shim_decls() -> Vec<ExternFnDecl> {
         ),
         f80_extern_decl("__slate_f80_neg", vec![f80_param("a", f80())], Some(f80())),
     ];
+    for shim in [
+        "__slate_f80_abs",
+        "__slate_f80_ceil",
+        "__slate_f80_floor",
+        "__slate_f80_round",
+        "__slate_f80_trunc",
+    ] {
+        decls.push(f80_extern_decl(
+            shim,
+            vec![f80_param("a", f80())],
+            Some(f80()),
+        ));
+    }
+    decls.push(f80_extern_decl(
+        "__slate_f80_signbit",
+        vec![f80_param("a", f80())],
+        Some(Type::Prim(Prim::Bool)),
+    ));
     for (shim, ty) in [
         ("__slate_f80_lt", Type::Prim(Prim::Bool)),
         ("__slate_f80_le", Type::Prim(Prim::Bool)),

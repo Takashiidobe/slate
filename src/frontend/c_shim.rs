@@ -278,6 +278,30 @@ __slate_f80 __slate_f80_neg(__slate_f80 a) {
     return __slate_f80_store(-__slate_f80_load(a));
 }
 
+__slate_f80 __slate_f80_abs(__slate_f80 a) {
+    return __slate_f80_store(fabsl(__slate_f80_load(a)));
+}
+
+__slate_f80 __slate_f80_ceil(__slate_f80 a) {
+    return __slate_f80_store(ceill(__slate_f80_load(a)));
+}
+
+__slate_f80 __slate_f80_floor(__slate_f80 a) {
+    return __slate_f80_store(floorl(__slate_f80_load(a)));
+}
+
+__slate_f80 __slate_f80_round(__slate_f80 a) {
+    return __slate_f80_store(roundl(__slate_f80_load(a)));
+}
+
+__slate_f80 __slate_f80_trunc(__slate_f80 a) {
+    return __slate_f80_store(truncl(__slate_f80_load(a)));
+}
+
+_Bool __slate_f80_signbit(__slate_f80 a) {
+    return signbit(__slate_f80_load(a));
+}
+
 _Bool __slate_f80_lt(__slate_f80 a, __slate_f80 b) {
     return __slate_f80_load(a) < __slate_f80_load(b);
 }
