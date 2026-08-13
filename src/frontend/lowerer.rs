@@ -1615,9 +1615,7 @@ impl<'a> Lowerer<'a> {
             }
             self.externs.insert(name.to_string(), params);
             self.extern_returns.insert(name.to_string(), ret.clone());
-            if name != "strtold" || ret.as_deref() != Some(LONG_DOUBLE_TY) {
-                extern_decls.push(ExternDecl::Fn(decl));
-            }
+            extern_decls.push(ExternDecl::Fn(decl));
         }
         if !extern_decls.is_empty() {
             items.push(Item::ExternBlock {
