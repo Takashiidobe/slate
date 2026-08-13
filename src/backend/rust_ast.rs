@@ -443,6 +443,7 @@ pub enum ExternDecl {
 pub struct ExternFnDecl {
     pub name: String,
     pub identity: FunctionIdentity,
+    pub declared_type: Option<String>,
     pub params: Vec<FnParam>,
     pub variadic: bool,
     pub ret: Option<Type>,

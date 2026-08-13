@@ -358,6 +358,7 @@ fn fflush_fn_decl() -> ExternDecl {
     ExternDecl::Fn(ExternFnDecl {
         identity: crate::function_identity::FunctionIdentity::Unknown,
         name: "fflush".into(),
+        declared_type: None,
         params: vec![FnParam {
             name: "_0".into(),
             mutable: false,

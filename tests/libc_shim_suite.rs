@@ -10,48 +10,49 @@ fn compile_all_headers(arch: Architecture, libc: LibcVariant) {
     let headers = discover_public_headers(&libc_shim_dir())
         .unwrap_or_else(|e| panic!("discover headers for {}: {e}", config.name()));
     assert!(!headers.is_empty(), "no public headers discovered");
-    let program = header_include_program(&headers);
-    if let Err(e) = compile_test_program(&config, &program) {
-        panic!(
-            "{} failed to compile {} public headers:\n{e}",
-            config.name(),
-            headers.len()
-        );
-    }
+    let failures = headers
+        .iter()
+        .filter_map(|header| {
+            let program = header_include_program(std::slice::from_ref(header));
+            compile_test_program(&config, &program)
+                .err()
+                .map(|error| format!("{header}:\n{error}"))
+        })
+        .collect::<Vec<_>>();
+    assert!(
+        failures.is_empty(),
+        "{} public headers failed to compile:\n{}",
+        config.name(),
+        failures.join("\n\n")
+    );
 }
 
 #[test]
-#[ignore = "tracked by slate-sfzn.11, slate-sfzn.12, slate-sfzn.13, slate-sfzn.14, slate-sfzn.15"]
 fn linux_x86_64_headers_compile() {
     compile_all_headers(Architecture::X86_64, LibcVariant::Glibc);
 }
 
 #[test]
-#[ignore = "tracked by slate-sfzn.11, slate-sfzn.12, slate-sfzn.13, slate-sfzn.15"]
 fn linux_x86_headers_compile() {
     compile_all_headers(Architecture::X86, LibcVariant::Glibc);
 }
 
 #[test]
-#[ignore = "tracked by slate-sfzn.11, slate-sfzn.12, slate-sfzn.15"]
 fn linux_aarch64_headers_compile() {
     compile_all_headers(Architecture::Aarch64, LibcVariant::Glibc);
 }
 
 #[test]
-#[ignore = "tracked by slate-sfzn.11, slate-sfzn.12, slate-sfzn.13, slate-sfzn.15"]
 fn linux_arm_headers_compile() {
     compile_all_headers(Architecture::Arm, LibcVariant::Glibc);
 }
 
 #[test]
-#[ignore = "tracked by slate-sfzn.11, slate-sfzn.12, slate-sfzn.15"]
 fn linux_riscv64_headers_compile() {
     compile_all_headers(Architecture::Riscv64, LibcVariant::Glibc);
 }
 
 #[test]
-#[ignore = "tracked by slate-sfzn.11, slate-sfzn.12, slate-sfzn.13, slate-sfzn.15"]
 fn linux_riscv32_headers_compile() {
     compile_all_headers(Architecture::Riscv32, LibcVariant::Glibc);
 }

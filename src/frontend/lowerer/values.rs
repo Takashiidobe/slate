@@ -171,7 +171,20 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .get(ptr)
             .and_then(|member| member.field_ty.as_ref())
             .or_else(|| self.slot_types.get(ptr))
-            .cloned();
+            .cloned()
+            .or_else(|| {
+                let name = self.global_name(ptr)?;
+                self.parent
+                    .globals
+                    .get(&name)
+                    .map(|global| global.ty.clone())
+                    .or_else(|| {
+                        self.parent
+                            .extern_globals
+                            .get(&name)
+                            .map(|global| global.ty.clone())
+                    })
+            });
         let operand_is_named_function = matches!(self.values.get(operand), Some(Val::Global(_)));
         if let Some(target_ty) = target_ty.clone()
             && let Some(Val::Global(fn_name)) = self.values.get(operand).cloned()
@@ -179,6 +192,29 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             && let Some(wrapped) = self.parent.enum_return_mismatch_wrap(&fn_name, &target_ty)
         {
             return wrapped;
+        }
+        if let Some(target_ty) = target_ty.clone()
+            && let Some(Val::Global(fn_name)) = self.values.get(operand)
+            && !self.parent.strings.contains_key(fn_name)
+        {
+            let target = self
+                .parent
+                .long_double_callback_trampolines
+                .get(fn_name)
+                .map(String::as_str)
+                .unwrap_or(fn_name);
+            let raw_ptr = Type::Ptr {
+                mutable: false,
+                inner: Box::new(Type::Unit),
+            };
+            return Expr::Transmute {
+                from: raw_ptr.clone(),
+                to: target_ty,
+                expr: Box::new(Expr::Cast {
+                    expr: Box::new(Expr::Var(sanitize_ident(target))),
+                    ty: raw_ptr,
+                }),
+            };
         }
         let mut value = self.function_pointer_operand_expr(operand);
         if let Some(target_ty) = target_ty.as_ref()

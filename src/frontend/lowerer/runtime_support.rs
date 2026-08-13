@@ -203,6 +203,7 @@ fn f80_extern_decl(name: &str, params: Vec<FnParam>, ret: Option<Type>) -> Exter
     ExternFnDecl {
         identity: FunctionIdentity::Unknown,
         name: name.into(),
+        declared_type: None,
         params,
         variadic: false,
         ret,
@@ -472,6 +473,7 @@ pub(super) fn complex_runtime_decl(name: &str, prim: Prim) -> ExternDecl {
     ExternDecl::Fn(ExternFnDecl {
         identity: crate::function_identity::FunctionIdentity::Unknown,
         name: name.into(),
+        declared_type: None,
         params: vec![param("a"), param("b"), param("c"), param("d")],
         variadic: false,
         ret: Some(complex_ty(Type::Prim(prim))),

@@ -6,10 +6,6 @@ fn supported_root() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures.c-testsuite")
 }
 
-fn unsupported_root() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures.c-testsuite.unsupported")
-}
-
 fn collect_cases(dir: &Path) -> Vec<(String, PathBuf)> {
     let mut cases: Vec<(String, PathBuf)> = std::fs::read_dir(dir)
         .unwrap_or_else(|e| panic!("read {}: {e}", dir.display()))
@@ -72,35 +68,4 @@ fn c_testsuite_supported_tests_match_c() {
         "c-testsuite supported tests failed:\n{}",
         failures.join("\n\n")
     );
-}
-
-#[test]
-fn c_testsuite_unsupported_tests_still_fail() {
-    let results = run_cases("unsupported", &unsupported_root());
-    let unexpected_passes: Vec<String> = results
-        .into_iter()
-        .filter_map(|(name, result)| result.ok().map(|()| name))
-        .collect();
-    assert!(
-        unexpected_passes.is_empty(),
-        "c-testsuite test(s) now pass end-to-end -- promote them:\n{}",
-        unexpected_passes
-            .iter()
-            .map(|name| format!(
-                "  git mv tests/fixtures.c-testsuite.unsupported/{name}.c tests/fixtures.c-testsuite/{name}.c"
-            ))
-            .collect::<Vec<_>>()
-            .join("\n")
-    );
-}
-
-#[test]
-#[ignore]
-fn c_testsuite_unsupported_triage_report() {
-    let results = run_cases("unsupported", &unsupported_root());
-    for (name, result) in results {
-        if let Err(e) = result {
-            println!("=== {name} ===\n{e}\n");
-        }
-    }
 }

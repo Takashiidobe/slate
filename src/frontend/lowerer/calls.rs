@@ -104,6 +104,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     .or_insert_with(|| ExternFnDecl {
                         identity: crate::function_identity::FunctionIdentity::Unknown,
                         name: "__slate_strtold".into(),
+                        declared_type: None,
                         params: vec![
                             FnParam {
                                 name: "_0".into(),
@@ -151,7 +152,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 _ => None,
             });
         let indirect_call = indirect_callee_operand.is_some();
-        let cast_runtime_result = binding.known() == Some(crate::function_identity::Known::StrLen);
+        let cast_runtime_result = op_result_type(op).is_some_and(|result_ty| {
+            let result_ty = self.parent.rust_type(result_ty);
+            self.parent
+                .extern_returns
+                .get(&callee_name)
+                .and_then(|ret| ret.as_deref())
+                .is_some_and(|ret| matches!(ret, "usize" | "isize") && ret != result_ty.render())
+        });
         if self.parent.boxed_variadic_defs.contains(&callee_name) {
             let fixed = self
                 .parent
@@ -303,7 +311,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .copied()
             .unwrap_or(crate::function_identity::FunctionIdentity::Unknown);
         crate::frontend::function_abi::repair_function_signature(
-            identity,
+            self.parent
+                .function_types
+                .get(callee_name)
+                .map(String::as_str),
             &mut param_types,
             &mut ret,
         );
@@ -333,6 +344,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .or_insert_with(|| ExternFnDecl {
                 identity,
                 name: shim_name.clone(),
+                declared_type: self.parent.function_types.get(callee_name).cloned(),
                 params: param_types
                     .iter()
                     .enumerate()
