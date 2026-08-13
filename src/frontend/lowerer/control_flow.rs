@@ -569,6 +569,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             block_args: BTreeMap::new(),
             pending_hoists: Vec::new(),
         });
+        self.hoisting_allocas = true;
         for block in &body.blocks {
             for op in &block.ops {
                 if op.kind() == CirOpKind::Alloca {
@@ -579,6 +580,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 }
             }
         }
+        self.hoisting_allocas = false;
         for ssa in &cross_block_live_values(body) {
             if self.hoisted.contains(ssa) {
                 continue;
