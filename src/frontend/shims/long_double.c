@@ -26,7 +26,7 @@ typedef struct {
 } __attribute__((aligned(16))) __slate_cf80;
 
 static long double _Complex __slate_cf80_load(__slate_cf80 value) {
-  return __slate_f80_load(value.re) + __slate_f80_load(value.im) * _Complex_I;
+  return CMPLXL(__slate_f80_load(value.re), __slate_f80_load(value.im));
 }
 
 static __slate_cf80 __slate_cf80_store(long double _Complex value) {
@@ -36,6 +36,163 @@ static __slate_cf80 __slate_cf80_store(long double _Complex value) {
   };
   return out;
 }
+
+__slate_cf80 __slate_cf80_make(__slate_f80 re, __slate_f80 im) {
+  __slate_cf80 out = {re, im};
+  return out;
+}
+
+__slate_cf80 __slate_cf80_pos(__slate_cf80 a) { return a; }
+
+__slate_cf80 __slate_cf80_neg(__slate_cf80 a) {
+  return __slate_cf80_store(-__slate_cf80_load(a));
+}
+
+__slate_cf80 __slate_cf80_add(__slate_cf80 a, __slate_cf80 b) {
+  return __slate_cf80_store(__slate_cf80_load(a) + __slate_cf80_load(b));
+}
+
+__slate_cf80 __slate_cf80_sub(__slate_cf80 a, __slate_cf80 b) {
+  return __slate_cf80_store(__slate_cf80_load(a) - __slate_cf80_load(b));
+}
+
+__slate_cf80 __slate_cf80_mul(__slate_cf80 a, __slate_cf80 b) {
+  return __slate_cf80_store(__slate_cf80_load(a) * __slate_cf80_load(b));
+}
+
+__slate_cf80 __slate_cf80_div(__slate_cf80 a, __slate_cf80 b) {
+  return __slate_cf80_store(__slate_cf80_load(a) / __slate_cf80_load(b));
+}
+
+__slate_cf80 __slate_cf80_add_assign(__slate_cf80 *a, __slate_cf80 b) {
+  *a = __slate_cf80_add(*a, b);
+  return *a;
+}
+
+__slate_cf80 __slate_cf80_sub_assign(__slate_cf80 *a, __slate_cf80 b) {
+  *a = __slate_cf80_sub(*a, b);
+  return *a;
+}
+
+__slate_cf80 __slate_cf80_mul_assign(__slate_cf80 *a, __slate_cf80 b) {
+  *a = __slate_cf80_mul(*a, b);
+  return *a;
+}
+
+__slate_cf80 __slate_cf80_div_assign(__slate_cf80 *a, __slate_cf80 b) {
+  *a = __slate_cf80_div(*a, b);
+  return *a;
+}
+
+_Bool __slate_cf80_eq(__slate_cf80 a, __slate_cf80 b) {
+  return __slate_cf80_load(a) == __slate_cf80_load(b);
+}
+
+_Bool __slate_cf80_ne(__slate_cf80 a, __slate_cf80 b) {
+  return __slate_cf80_load(a) != __slate_cf80_load(b);
+}
+
+_Bool __slate_cf80_to_bool(__slate_cf80 a) {
+  return __slate_cf80_load(a) != 0.0L;
+}
+
+_Bool __slate_cf80_logical_not(__slate_cf80 a) { return !__slate_cf80_load(a); }
+
+__slate_f80 __slate_cf80_real(__slate_cf80 a) {
+  return __slate_f80_store(creall(__slate_cf80_load(a)));
+}
+
+__slate_f80 __slate_cf80_imag(__slate_cf80 a) {
+  return __slate_f80_store(cimagl(__slate_cf80_load(a)));
+}
+
+__slate_cf80 __slate_cf80_from_f80(__slate_f80 a) {
+  return __slate_cf80_store(CMPLXL(__slate_f80_load(a), 0.0L));
+}
+
+__slate_f80 __slate_cf80_to_f80(__slate_cf80 a) {
+  return __slate_f80_store(creall(__slate_cf80_load(a)));
+}
+
+__slate_cf80 __slate_cf80_from_i64(int64_t a) {
+  return __slate_cf80_store(CMPLXL((long double)a, 0.0L));
+}
+
+int64_t __slate_cf80_to_i64(__slate_cf80 a) {
+  return (int64_t)creall(__slate_cf80_load(a));
+}
+
+#define SLATE_CF80_UNARY(name, fn)                                             \
+  __slate_cf80 __slate_cf80_##name(__slate_cf80 a) {                           \
+    return __slate_cf80_store(fn(__slate_cf80_load(a)));                       \
+  }
+
+#define SLATE_CF80_BINARY(name, fn)                                            \
+  __slate_cf80 __slate_cf80_##name(__slate_cf80 a, __slate_cf80 b) {           \
+    return __slate_cf80_store(fn(__slate_cf80_load(a), __slate_cf80_load(b))); \
+  }
+
+#define SLATE_CF80_REAL(name, fn)                                              \
+  __slate_f80 __slate_cf80_##name(__slate_cf80 a) {                            \
+    return __slate_f80_store(fn(__slate_cf80_load(a)));                        \
+  }
+
+#define SLATE_CF80_UNARY(name, fn)                                             \
+  __slate_cf80 __slate_cf80_##name(__slate_cf80 a) {                           \
+    return __slate_cf80_store(fn(__slate_cf80_load(a)));                       \
+  }
+
+#define SLATE_CF80_BINARY(name, fn)                                            \
+  __slate_cf80 __slate_cf80_##name(__slate_cf80 a, __slate_cf80 b) {           \
+    return __slate_cf80_store(fn(__slate_cf80_load(a), __slate_cf80_load(b))); \
+  }
+
+#define SLATE_CF80_REAL(name, fn)                                              \
+  __slate_f80 __slate_cf80_##name(__slate_cf80 a) {                            \
+    return __slate_f80_store(fn(__slate_cf80_load(a)));                        \
+  }
+
+/* Trigonometric */
+
+SLATE_CF80_UNARY(acos, cacosl)
+SLATE_CF80_UNARY(asin, casinl)
+SLATE_CF80_UNARY(atan, catanl)
+SLATE_CF80_UNARY(cos, ccosl)
+SLATE_CF80_UNARY(sin, csinl)
+SLATE_CF80_UNARY(tan, ctanl)
+
+/* Hyperbolic */
+
+SLATE_CF80_UNARY(acosh, cacoshl)
+SLATE_CF80_UNARY(asinh, casinhl)
+SLATE_CF80_UNARY(atanh, catanhl)
+SLATE_CF80_UNARY(cosh, ccoshl)
+SLATE_CF80_UNARY(sinh, csinhl)
+SLATE_CF80_UNARY(tanh, ctanhl)
+
+/* Exponential / logarithmic */
+
+SLATE_CF80_UNARY(exp, cexpl)
+SLATE_CF80_UNARY(log, clogl)
+
+/* Power */
+
+SLATE_CF80_BINARY(pow, cpowl)
+SLATE_CF80_UNARY(sqrt, csqrtl)
+
+/* Real-valued */
+
+SLATE_CF80_REAL(abs, cabsl)
+SLATE_CF80_REAL(arg, cargl)
+
+/* Manipulation */
+
+SLATE_CF80_UNARY(conj, conjl)
+SLATE_CF80_UNARY(proj, cprojl)
+
+#undef SLATE_CF80_UNARY
+#undef SLATE_CF80_BINARY
+#undef SLATE_CF80_REAL
 
 __slate_f80 __slate_f80_add(__slate_f80 a, __slate_f80 b) {
   return __slate_f80_store(__slate_f80_load(a) + __slate_f80_load(b));
@@ -51,6 +208,26 @@ __slate_f80 __slate_f80_mul(__slate_f80 a, __slate_f80 b) {
 
 __slate_f80 __slate_f80_div(__slate_f80 a, __slate_f80 b) {
   return __slate_f80_store(__slate_f80_load(a) / __slate_f80_load(b));
+}
+
+__slate_f80 __slate_f80_add_assign(__slate_f80 *a, __slate_f80 b) {
+  *a = __slate_f80_add(*a, b);
+  return *a;
+}
+
+__slate_f80 __slate_f80_sub_assign(__slate_f80 *a, __slate_f80 b) {
+  *a = __slate_f80_sub(*a, b);
+  return *a;
+}
+
+__slate_f80 __slate_f80_mul_assign(__slate_f80 *a, __slate_f80 b) {
+  *a = __slate_f80_mul(*a, b);
+  return *a;
+}
+
+__slate_f80 __slate_f80_div_assign(__slate_f80 *a, __slate_f80 b) {
+  *a = __slate_f80_div(*a, b);
+  return *a;
 }
 
 __slate_f80 __slate_f80_inc(__slate_f80 a) {
