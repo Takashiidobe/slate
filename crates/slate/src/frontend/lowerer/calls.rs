@@ -286,7 +286,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             &mut ret,
         );
         let ret_shim_ty = ret.unwrap_or(Type::Unit);
-        let ret_tag = long_double_shim_type_tag(&ret_shim_ty);
+        let ret_tag = if ret_cir_ty
+            .is_some_and(|ty| is_complex_long_double_coercion_type(ty, &self.parent.aliases))
+        {
+            "cf80".to_string()
+        } else {
+            long_double_shim_type_tag(&ret_shim_ty)
+        };
         let arg_tags: Vec<String> = arg_types
             .iter()
             .zip(param_types.iter())

@@ -384,6 +384,23 @@ pub(super) fn parse_rust_array_type(ty: &str) -> Option<(&str, u64)> {
     Some((element.trim(), len.trim().parse().ok()?))
 }
 
+pub(super) fn is_complex_long_double_coercion_type(
+    ty: &str,
+    aliases: &BTreeMap<String, String>,
+) -> bool {
+    let Some(expanded) = aliases.get(ty.trim()) else {
+        return false;
+    };
+    let (Some(open), Some(close)) = (expanded.find('{'), expanded.rfind('}')) else {
+        return false;
+    };
+    let fields = split_record_member_types(&expanded[open + 1..close]);
+    fields.len() == 2
+        && fields
+            .iter()
+            .all(|field| is_long_double(field) || *field == "!cir.f80")
+}
+
 pub(super) fn cir_record_name(ty: &str) -> Option<&str> {
     if let Some(name) = ty.strip_prefix("!rec_") {
         return Some(name);
