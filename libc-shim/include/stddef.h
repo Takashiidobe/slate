@@ -8,8 +8,8 @@
 #undef offsetof
 #define offsetof(type, member)                                                 \
   _Pragma("clang diagnostic push")                                             \
-      _Pragma("clang diagnostic ignored "                                      \
-              "\"-Wc23-extensions\"") __builtin_offsetof(type, member)         \
+      _Pragma("clang diagnostic ignored \"-Wc23-extensions\"")                 \
+          __builtin_offsetof(type, member)                                     \
           _Pragma("clang diagnostic pop")
 #else
 #ifndef _SLATE_STDDEF_H

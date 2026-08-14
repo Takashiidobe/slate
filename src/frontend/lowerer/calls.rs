@@ -1,4 +1,5 @@
 use super::*;
+use crate::function_identity::CallBinding;
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
     pub(super) fn lower_call(&mut self, op: &Op) {
@@ -14,7 +15,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .is_some_and(|target| self.parent.external_weak_targets.contains(target));
         let direct_callee = weak_ref_target.clone().or(direct_callee);
         let mut binding = if weak_ref_target.is_some() {
-            crate::function_identity::CallBinding::Generated
+            CallBinding::Generated
         } else {
             self.parent.call_binding(op, direct_callee.is_some())
         };
@@ -23,14 +24,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             && let Some(identity @ FunctionIdentity::Known(_)) =
                 self.parent.known_functions.get(callee)
         {
-            binding = crate::function_identity::CallBinding::Direct {
+            binding = CallBinding::Direct {
                 identity: *identity,
                 canonical_type: match binding {
-                    crate::function_identity::CallBinding::Direct { canonical_type, .. } => {
-                        canonical_type
-                    }
-                    crate::function_identity::CallBinding::Indirect
-                    | crate::function_identity::CallBinding::Generated => None,
+                    CallBinding::Direct { canonical_type, .. } => canonical_type,
+                    CallBinding::Indirect | CallBinding::Generated => None,
                 },
             };
         }
@@ -104,13 +102,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             let boxed = variadic
                 .into_iter()
                 .map(|arg| Expr::Call {
-                    binding: crate::function_identity::CallBinding::Generated,
+                    binding: CallBinding::Generated,
                     func: Box::new(Expr::Var("__SlateVaArg::new".into())),
                     args: vec![arg],
                 })
                 .collect();
             args.push(Expr::Call {
-                binding: crate::function_identity::CallBinding::Generated,
+                binding: CallBinding::Generated,
                 func: Box::new(Expr::Var("__SlateVaArgs::new".into())),
                 args: vec![Expr::VecLit(boxed)],
             });
@@ -312,7 +310,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             })
             .collect();
         let expr = Self::unsafe_expr(Expr::Call {
-            binding: crate::function_identity::CallBinding::Generated,
+            binding: CallBinding::Generated,
             func: Box::new(Expr::Var(shim_name.into())),
             args: call_args,
         });
@@ -408,7 +406,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         };
         let len = self.usize_operand(&op.operands[2]);
         let call = Expr::Call {
-            binding: crate::function_identity::CallBinding::Generated,
+            binding: CallBinding::Generated,
             func: Box::new(Expr::Var("__slate_memchr".into())),
             args: vec![src, pattern, len],
         };
