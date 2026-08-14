@@ -20,9 +20,9 @@ struct semid_ds {
   time_t          sem_ctime;
 #if __BYTE_ORDER == __LITTLE_ENDIAN
   unsigned short sem_nsems;
-  char __sem_nsems_pad[sizeof(long) - sizeof(short)];
+  char           __sem_nsems_pad[sizeof(long) - sizeof(short)];
 #else
-  char __sem_nsems_pad[sizeof(long) - sizeof(short)];
+  char           __sem_nsems_pad[sizeof(long) - sizeof(short)];
   unsigned short sem_nsems;
 #endif
   long __unused3;
