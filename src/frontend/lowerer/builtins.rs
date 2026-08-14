@@ -91,6 +91,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let expr = if type_mentions_long_double(&rust_ty) {
             let shim = match method {
                 "copysign" => "__slate_f80_copysign",
+                "max" => "__slate_f80_fmax",
+                "min" => "__slate_f80_fmin",
                 _ => {
                     self.emit_todo("long double binary operation");
                     return;

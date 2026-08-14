@@ -709,15 +709,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 })
             {
                 expr
-            } else if let Some(fp) = floating_literal
-                .map(|fact| fact.value)
-                .or_else(|| parse_cir_fp(raw))
-            {
+            } else if let Some(fp) = floating_literal.map(|fact| fact.value) {
                 if crate::cir::emit::uses_f64_long_double_abi() {
                     fp_literal_expr(fp)
                 } else {
                     typed_fp_literal_expr(Some(&crate::backend::rust_ast::Type::LongDouble), fp)
                 }
+            } else if let Some(expr) = long_double_raw_expr(raw) {
+                expr
             } else if let Some(n) = parse_cir_int(raw) {
                 Expr::Cast {
                     expr: Box::new(int_value_expr(n)),
