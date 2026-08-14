@@ -60,7 +60,7 @@ pub struct Unit {
     pub weak_refs: Vec<WeakRefAttribute>,
     pub floating_literals: HashMap<FloatingLiteralLoc, FloatingLiteralFact>,
     pub global_floating_literals: HashMap<String, Vec<FloatingLiteralFact>>,
-    function_types: HashMap<String, String>,
+    pub(crate) function_types: HashMap<String, String>,
     call_bindings: HashMap<Loc, CallBinding>,
 }
 
@@ -255,10 +255,6 @@ impl Unit {
             collect_call_bindings_in_stmts(body, &mut bindings);
         }
         bindings
-    }
-
-    pub fn function_types(&self) -> &HashMap<String, String> {
-        &self.function_types
     }
 }
 

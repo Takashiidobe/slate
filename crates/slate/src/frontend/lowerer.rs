@@ -581,7 +581,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
             .map(|known| (known.symbol().to_string(), FunctionIdentity::Known(known)))
             .collect(),
         function_types: c
-            .function_types()
+            .function_types
             .iter()
             .map(|(name, ty)| (name.clone(), ty.clone()))
             .collect(),
