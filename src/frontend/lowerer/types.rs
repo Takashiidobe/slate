@@ -440,7 +440,7 @@ pub(super) fn collect_anon_alias_keys_inner(
     } else if let Some(expanded) = aliases.get(ty)
         && let (Some(open), Some(close)) = (expanded.find('{'), expanded.rfind('}'))
     {
-        for field_ty in split_top_level(&expanded[open + 1..close], ',') {
+        for field_ty in split_record_member_types(&expanded[open + 1..close]) {
             collect_anon_alias_keys_inner(field_ty, aliases, out, seen);
         }
     }
@@ -500,6 +500,9 @@ pub(super) fn cir_type_to_ctype(
     if let Some((elem, len)) = parse_cir_array_type(ty) {
         return CType::Array(Box::new(cir_type_to_ctype(&elem, aliases)), Some(len));
     }
+    if let Some((elem, len)) = parse_cir_vector_type(ty) {
+        return CType::Array(Box::new(cir_type_to_ctype(&elem, aliases)), Some(len));
+    }
     // resolve records through the alias table so anon fields keep their dotted name.
     if let Some(name) = aliases
         .get(ty)
@@ -551,7 +554,7 @@ pub(super) fn reconcile_anonymous_member_types(
             let (Some(open), Some(close)) = (expanded.find('{'), expanded.rfind('}')) else {
                 continue;
             };
-            let field_types = split_top_level(&expanded[open + 1..close], ',');
+            let field_types = split_record_member_types(&expanded[open + 1..close]);
             if field_types.len() != record.fields.len() {
                 continue;
             }
@@ -616,21 +619,25 @@ pub(super) fn collect_anon_record_info(
                 }
             }
             CirOpKind::GetMember => {
-                if let (Some(key), Some(index), Some(name)) = (
-                    op.ty
-                        .as_deref()
-                        .and_then(split_top_level_arrow)
-                        .and_then(|(inputs, _)| inputs.trim().strip_prefix('(')?.strip_suffix(')'))
-                        .and_then(|inputs| split_top_level(inputs, ',').first().copied())
-                        .and_then(cir_ptr_pointee)
-                        .and_then(|pointee| anon_alias_key(pointee, aliases)),
-                    op.attrs.get("index_attr").and_then(Attr::as_int),
-                    op.attrs
-                        .get("name")
-                        .and_then(Attr::as_str)
-                        .filter(|name| !name.is_empty()),
-                ) {
-                    field_names.insert((key, index), name.to_string());
+                if let Some(key) = op
+                    .ty
+                    .as_deref()
+                    .and_then(split_top_level_arrow)
+                    .and_then(|(inputs, _)| inputs.trim().strip_prefix('(')?.strip_suffix(')'))
+                    .and_then(|inputs| split_top_level(inputs, ',').first().copied())
+                    .and_then(cir_ptr_pointee)
+                    .and_then(|pointee| anon_alias_key(pointee, aliases))
+                {
+                    needed.insert(key.clone());
+                    if let (Some(index), Some(name)) = (
+                        op.attrs.get("index_attr").and_then(Attr::as_int),
+                        op.attrs
+                            .get("name")
+                            .and_then(Attr::as_str)
+                            .filter(|name| !name.is_empty()),
+                    ) {
+                        field_names.insert((key, index), name.to_string());
+                    }
                 }
             }
             CirOpKind::Global => {
@@ -828,7 +835,7 @@ pub fn anon_local_records(module: &Module) -> Vec<crate::frontend::c_ast::Record
         let (Some(open), Some(close)) = (expanded.find('{'), expanded.rfind('}')) else {
             continue;
         };
-        for field_ty in split_top_level(&expanded[open + 1..close], ',') {
+        for field_ty in split_record_member_types(&expanded[open + 1..close]) {
             let mut field_keys = BTreeSet::new();
             collect_anon_alias_keys(field_ty.trim(), &module.aliases, &mut field_keys);
             for field_key in field_keys {
@@ -851,7 +858,7 @@ pub fn anon_local_records(module: &Module) -> Vec<crate::frontend::c_ast::Record
         let (Some(open), Some(close)) = (expanded.find('{'), expanded.rfind('}')) else {
             continue;
         };
-        let fields = split_top_level(&expanded[open + 1..close], ',')
+        let fields = split_record_member_types(&expanded[open + 1..close])
             .iter()
             .map(|s| s.trim())
             .filter(|s| !s.is_empty())

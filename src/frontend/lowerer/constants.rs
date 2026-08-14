@@ -599,3 +599,17 @@ pub(super) fn split_top_level(s: &str, delimiter: char) -> Vec<&str> {
     parts.push(&s[start..]);
     parts
 }
+
+pub(super) fn split_record_member_types(body: &str) -> Vec<&str> {
+    split_top_level(body, ',')
+        .into_iter()
+        .map(|field_ty| {
+            let field_ty = field_ty.trim();
+            field_ty
+                .strip_prefix("data ")
+                .or_else(|| field_ty.strip_prefix("pad "))
+                .or_else(|| field_ty.strip_prefix("empty "))
+                .unwrap_or(field_ty)
+        })
+        .collect()
+}

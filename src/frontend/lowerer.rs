@@ -2222,7 +2222,7 @@ impl __SlateVaArgs {
             .any(|field| field.name.starts_with("__bitfield_"));
         let record_name = sanitize_ident(&record.name).into_string();
         Some(
-            split_top_level(&expanded[open + 1..close], ',')
+            split_record_member_types(&expanded[open + 1..close])
                 .into_iter()
                 .map(str::trim)
                 .filter(|ty| !ty.is_empty())
