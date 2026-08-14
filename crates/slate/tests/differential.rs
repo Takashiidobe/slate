@@ -457,6 +457,7 @@ fn failed_multi_bin_rebuild_does_not_accept_stale_binary() {
         name: "stale_multi_bin".into(),
         main_rs,
         common_rs: common_rs.clone(),
+        types_rs: None,
     }];
     let project = work.join("batch_cargo");
     let first = support::build_multi_bin_batch(&cases, &project).expect("initial multi-bin build");

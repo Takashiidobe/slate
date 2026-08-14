@@ -743,6 +743,7 @@ pub struct MultiBinCase {
     pub name: String,
     pub main_rs: PathBuf,
     pub common_rs: PathBuf,
+    pub types_rs: Option<PathBuf>,
 }
 
 pub fn multi_bin_batch_path(project: &Path, name: &str) -> PathBuf {
@@ -765,7 +766,11 @@ pub fn build_multi_bin_batch(cases: &[MultiBinCase], project: &Path) -> Result<B
         let case_dir = bin_dir.join(bin_name(&case.name));
         std::fs::create_dir_all(&case_dir)
             .map_err(|e| format!("create {}: {e}", case_dir.display()))?;
-        for (src, file) in [(&case.main_rs, "main.rs"), (&case.common_rs, "common.rs")] {
+        let mut files = vec![(&case.main_rs, "main.rs"), (&case.common_rs, "common.rs")];
+        if let Some(types_rs) = &case.types_rs {
+            files.push((types_rs, "types.rs"));
+        }
+        for (src, file) in files {
             let dest = case_dir.join(file);
             expected.insert(dest.clone(), ());
             let contents = std::fs::read(src)
