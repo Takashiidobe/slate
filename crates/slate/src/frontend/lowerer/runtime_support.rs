@@ -351,6 +351,7 @@ pub(super) fn f80_shim_decls() -> Vec<ExternFnDecl> {
         "__slate_f80_fract",
         "__slate_f80_round",
         "__slate_f80_trunc",
+        "__slate_f80_rint",
     ] {
         decls.push(f80_extern_decl(
             shim,

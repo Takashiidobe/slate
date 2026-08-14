@@ -546,6 +546,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 "floor" => "__slate_f80_floor",
                 "round" => "__slate_f80_round",
                 "trunc" => "__slate_f80_trunc",
+                "round_ties_even" => "__slate_f80_rint",
                 _ => {
                     self.emit_todo("long double unary operation");
                     return;
