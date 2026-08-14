@@ -1,22 +1,10 @@
 use super::*;
 
-/// Constructor/destructor call order for one translation unit.
 pub(super) struct LifecycleHooks {
-    /// `__attribute__((constructor))` functions, ascending priority (ties in
-    /// declaration order) — matches `.init_array` execution order.
     pub(super) ctors: Vec<String>,
-    /// `__attribute__((destructor))` functions, in the reverse of their own
-    /// ascending-priority/declaration-order build list — matches how
-    /// `.fini_array` is built like `.init_array` but run back to front.
     pub(super) dtors: Vec<String>,
 }
 
-/// Scans top-level `cir.func` ops for `global_ctor_priority`/`global_dtor_priority`
-/// (present whenever the source had `__attribute__((constructor))`/`(destructor)`,
-/// defaulting to priority 65535 when none was given) and orders the hooks the way
-/// glibc's `.init_array`/`.fini_array` would run them. Hooks this TU can't wire up
-/// (no `main` to splice into, or a non-`void(void)` signature) are diagnosed and
-/// dropped rather than silently ignored.
 pub(super) fn collect_lifecycle_hooks(
     ops: &[&Op],
     has_main: bool,
@@ -73,8 +61,6 @@ pub(super) fn collect_lifecycle_hooks(
     }
 }
 
-/// A no-arg call to a locally defined function, wrapped in `unsafe {}` when the
-/// callee requires it (mirrors the wrapping `lower_call` applies at call sites).
 pub(super) fn hook_call_stmt(name: &str, unsafe_functions: &BTreeSet<String>) -> Stmt {
     let call = Expr::Call {
         binding: crate::function_identity::CallBinding::Generated,
