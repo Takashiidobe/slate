@@ -72,18 +72,8 @@ const WEAK_ANY_LINKAGE: i64 = 4;
 const HIDDEN_VISIBILITY: i64 = 1;
 const PROTECTED_VISIBILITY: i64 = 2;
 
-const SHIM_RECORD_TYPES: &[(&str, &str)] = &[("stat", "__slate_stat")];
-
-fn shim_record_rust_name(name: &str) -> Option<&'static str> {
-    SHIM_RECORD_TYPES
-        .iter()
-        .find_map(|(c_name, rust_name)| (*c_name == name).then_some(*rust_name))
-}
-
 fn rust_record_name(name: &str) -> String {
-    shim_record_rust_name(name)
-        .map(str::to_string)
-        .unwrap_or_else(|| sanitize_ident(name).into_string())
+    sanitize_ident(name).into_string()
 }
 
 fn lowered_record_name(name: &str) -> Option<String> {
@@ -208,14 +198,8 @@ pub fn shim_records_for_module(cir: &Module, c: &Unit) -> Vec<crate::frontend::c
         .collect();
     c.named_header_records
         .iter()
-        .filter_map(|record| {
-            let rust_name = shim_record_rust_name(&record.name)?;
-            referenced.contains(record.name.as_str()).then(|| {
-                let mut record = record.clone();
-                record.name = rust_name.to_string();
-                record
-            })
-        })
+        .filter(|&record| referenced.contains(record.name.as_str()))
+        .cloned()
         .collect()
 }
 
