@@ -234,6 +234,8 @@ fn render_trampoline(name: &str) -> Option<String> {
                 format!("__slate_f80_store(_{i})")
             } else if *tag == "cf80" {
                 format!("__slate_cf80_load(_{i})")
+            } else if *tag == "pcf80" {
+                format!("__slate_cf80_load(*_{i})")
             } else if *tag == "f80" {
                 format!("__slate_f80_load(_{i})")
             } else if *tag == "pf80" {
