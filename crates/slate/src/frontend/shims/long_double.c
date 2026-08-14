@@ -629,11 +629,6 @@ _Bool __slate_f80_to_bool(__slate_f80 a) { return __slate_f80_load(a) != 0.0L; }
 
 _Bool __slate_f80_logical_not(__slate_f80 a) { return !__slate_f80_to_bool(a); }
 
-// useful for casting
-__slate_f80 __slate_f80_canonicalize(__slate_f80 a) {
-  return __slate_f80_store(__slate_f80_load(a));
-}
-
 _Bool __slate_cf80_logical_not(__slate_cf80 a) { return !__slate_cf80_load(a); }
 
 __slate_f80 __slate_cf80_real(__slate_cf80 a) {

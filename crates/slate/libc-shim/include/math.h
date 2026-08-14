@@ -94,6 +94,10 @@ double      atanh(double);
 float       atanhf(float);
 long double atanhl(long double);
 
+int canonicalize(double *, const double *);
+int canonicalizef(float *, const float *);
+int canonicalizel(long double *, const long double *);
+
 double      cbrt(double);
 float       cbrtf(float);
 long double cbrtl(long double);
