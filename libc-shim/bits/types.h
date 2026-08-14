@@ -236,7 +236,13 @@ typedef struct {
 } __mbstate_t;
 
 #else
-typedef long long __mbstate_t;
+typedef struct {
+  int  __count;
+  union {
+    int  __wch;
+    char __wchb[4];
+  } __value;
+} __mbstate_t;
 #endif
 
 #if !defined(__SLATE_LIBC_DARWIN)
