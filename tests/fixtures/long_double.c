@@ -211,6 +211,17 @@ static void check_remaining_math_functions(void) {
          isunordered(vnan, vone), isunordered(vone, vzero));
   printf("subnormal_isnormal=%d\n", isnormal(vsub));
 
+  volatile long double vtwo = 2.0L;
+  printf("islessgreater_lt=%d islessgreater_eq=%d islessgreater_nan=%d\n",
+         islessgreater(vone, vtwo), islessgreater(vone, vone),
+         islessgreater(vnan, vone));
+
+  long double ten_plain = ten;
+  long double canon     = 0.0L;
+  int canon_r           = canonicalizel(&canon, &ten_plain);
+  print_ld("canonicalize", canon);
+  printf("canonicalize_r=%d\n", canon_r);
+
   print_ld("ldbl_min", LDBL_MIN);
   print_ld("ldbl_true_min", LDBL_TRUE_MIN);
   printf("ldbl_mant_dig=%d ldbl_dig=%d ldbl_min_exp=%d ldbl_max_exp=%d "
