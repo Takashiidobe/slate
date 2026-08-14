@@ -784,6 +784,24 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     })
                 }
             }
+            _ if is_wrapped_long_double(result_ty)
+                && !is_long_double(operand_ty)
+                && bitint_generic_parts(&operand_rust_ty).is_some() =>
+            {
+                let (wide_expr, signed) =
+                    bitint_to_int_expr(&operand_rust_ty, self.operand_expr(src)).unwrap();
+                let wide_ty = if signed {
+                    Type::Prim(Prim::I128)
+                } else {
+                    Type::Prim(Prim::U128)
+                };
+                let shim = f80_cast_from_name(&wide_ty).expect("f80 shim for i128/u128 exists");
+                Val::Expr(Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
+                    func: Box::new(Expr::Var(shim.into())),
+                    args: vec![wide_expr],
+                })
+            }
             _ if is_wrapped_long_double(result_ty) && !is_long_double(operand_ty) => {
                 let rust_ty = self.parent.rust_type(operand_ty);
                 let Some(shim) = f80_cast_from_name(&rust_ty) else {
@@ -795,6 +813,25 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     func: Box::new(Expr::Var(shim.into())),
                     args: vec![self.operand_expr(src)],
                 })
+            }
+            _ if is_wrapped_long_double(operand_ty)
+                && !is_long_double(result_ty)
+                && bitint_generic_parts(&result_rust_ty).is_some() =>
+            {
+                let (name, _, _) = bitint_generic_parts(&result_rust_ty).unwrap();
+                let signed = name == "bitint::BInt";
+                let wide_ty = if signed {
+                    Type::Prim(Prim::I128)
+                } else {
+                    Type::Prim(Prim::U128)
+                };
+                let shim = f80_cast_to_name(&wide_ty).expect("f80 shim for i128/u128 exists");
+                let wide_expr = Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
+                    func: Box::new(Expr::Var(shim.into())),
+                    args: vec![self.operand_expr(src)],
+                };
+                Val::Expr(bitint_from_int_expr(&result_rust_ty, wide_expr, signed).unwrap())
             }
             _ if is_wrapped_long_double(operand_ty) && !is_long_double(result_ty) => {
                 let rust_ty = self.parent.rust_type(result_ty);

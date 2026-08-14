@@ -259,6 +259,8 @@ pub(super) fn f80_cast_from_name(ty: &Type) -> Option<&'static str> {
         Type::Prim(Prim::U32) => "u32",
         Type::Prim(Prim::I64) => "i64",
         Type::Prim(Prim::U64) => "u64",
+        Type::Prim(Prim::I128) => "i128",
+        Type::Prim(Prim::U128) => "u128",
         Type::Prim(Prim::F32) => "f32",
         Type::Prim(Prim::F64) => "f64",
         Type::Prim(Prim::Bool) => "bool",
@@ -273,6 +275,8 @@ pub(super) fn f80_cast_from_name(ty: &Type) -> Option<&'static str> {
         "u32" => "__slate_f80_from_u32",
         "i64" => "__slate_f80_from_i64",
         "u64" => "__slate_f80_from_u64",
+        "i128" => "__slate_f80_from_i128",
+        "u128" => "__slate_f80_from_u128",
         "f32" => "__slate_f80_from_f32",
         "f64" => "__slate_f80_from_f64",
         "bool" => "__slate_f80_from_bool",
@@ -290,6 +294,8 @@ pub(super) fn f80_cast_to_name(ty: &Type) -> Option<&'static str> {
         Type::Prim(Prim::U32) => "u32",
         Type::Prim(Prim::I64) => "i64",
         Type::Prim(Prim::U64) => "u64",
+        Type::Prim(Prim::I128) => "i128",
+        Type::Prim(Prim::U128) => "u128",
         Type::Prim(Prim::F32) => "f32",
         Type::Prim(Prim::F64) => "f64",
         Type::Prim(Prim::Bool) => "bool",
@@ -304,6 +310,8 @@ pub(super) fn f80_cast_to_name(ty: &Type) -> Option<&'static str> {
         "u32" => "__slate_f80_to_u32",
         "i64" => "__slate_f80_to_i64",
         "u64" => "__slate_f80_to_u64",
+        "i128" => "__slate_f80_to_i128",
+        "u128" => "__slate_f80_to_u128",
         "f32" => "__slate_f80_to_f32",
         "f64" => "__slate_f80_to_f64",
         "bool" => "__slate_f80_to_bool",
@@ -369,6 +377,16 @@ pub(super) fn f80_shim_decls() -> Vec<ExternFnDecl> {
         Some(f80()),
     ));
     decls.push(f80_extern_decl(
+        "__slate_f80_fmax",
+        vec![f80_param("a", f80()), f80_param("b", f80())],
+        Some(f80()),
+    ));
+    decls.push(f80_extern_decl(
+        "__slate_f80_fmin",
+        vec![f80_param("a", f80()), f80_param("b", f80())],
+        Some(f80()),
+    ));
+    decls.push(f80_extern_decl(
         "__slate_f80_fma",
         vec![
             f80_param("a", f80()),
@@ -400,6 +418,8 @@ pub(super) fn f80_shim_decls() -> Vec<ExternFnDecl> {
         ("__slate_f80_from_u32", Type::Prim(Prim::U32)),
         ("__slate_f80_from_i64", Type::Prim(Prim::I64)),
         ("__slate_f80_from_u64", Type::Prim(Prim::U64)),
+        ("__slate_f80_from_i128", Type::Prim(Prim::I128)),
+        ("__slate_f80_from_u128", Type::Prim(Prim::U128)),
         ("__slate_f80_from_f32", Type::Prim(Prim::F32)),
         ("__slate_f80_from_f64", Type::Prim(Prim::F64)),
         ("__slate_f80_from_bool", Type::Prim(Prim::Bool)),
@@ -415,6 +435,8 @@ pub(super) fn f80_shim_decls() -> Vec<ExternFnDecl> {
         ("__slate_f80_to_u32", Type::Prim(Prim::U32)),
         ("__slate_f80_to_i64", Type::Prim(Prim::I64)),
         ("__slate_f80_to_u64", Type::Prim(Prim::U64)),
+        ("__slate_f80_to_i128", Type::Prim(Prim::I128)),
+        ("__slate_f80_to_u128", Type::Prim(Prim::U128)),
         ("__slate_f80_to_f32", Type::Prim(Prim::F32)),
         ("__slate_f80_to_f64", Type::Prim(Prim::F64)),
         ("__slate_f80_to_bool", Type::Prim(Prim::Bool)),
