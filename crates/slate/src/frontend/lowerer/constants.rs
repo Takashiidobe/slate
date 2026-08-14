@@ -276,6 +276,16 @@ pub(super) fn typed_fp_literal_expr(ty: Option<&Type>, fp: String) -> Expr {
     }
 }
 
+pub(super) fn long_double_raw_expr(raw: &str) -> Option<Expr> {
+    let text = cir_fp_text(raw)?;
+    if let Some(bits) = text.strip_prefix("0x").or_else(|| text.strip_prefix("0X"))
+        && bits.len() == 20
+    {
+        return f80_literal_bits_expr(bits);
+    }
+    parse_cir_fp(raw).map(|fp| typed_fp_literal_expr(Some(&Type::LongDouble), fp))
+}
+
 fn f80_cache() -> &'static Mutex<HashMap<String, [u8; 10]>> {
     static CACHE: OnceLock<Mutex<HashMap<String, [u8; 10]>>> = OnceLock::new();
     CACHE.get_or_init(|| Mutex::new(HashMap::new()))

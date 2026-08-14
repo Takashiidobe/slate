@@ -59,7 +59,7 @@ pub struct Unit {
     pub declaration_comments: Vec<DeclarationComment>,
     pub weak_refs: Vec<WeakRefAttribute>,
     pub floating_literals: HashMap<FloatingLiteralLoc, FloatingLiteralFact>,
-    pub global_floating_literals: HashMap<String, String>,
+    pub global_floating_literals: HashMap<String, Vec<FloatingLiteralFact>>,
     function_types: HashMap<String, String>,
     call_bindings: HashMap<Loc, CallBinding>,
 }
@@ -695,7 +695,14 @@ fn parse_json_with_record_roots(
         collect_floating_literals(&root, source_file, source, &mut floating_literals);
     }
     let mut global_floating_literals = HashMap::new();
-    collect_global_floating_literals(&root, false, &mut global_floating_literals);
+    collect_global_floating_literals(
+        &root,
+        false,
+        source_file,
+        source_text.as_deref(),
+        &floating_literals,
+        &mut global_floating_literals,
+    );
     let mut function_types = HashMap::new();
     collect_function_types(&root, &mut function_types);
     Ok(Unit {
@@ -785,7 +792,10 @@ fn collect_floating_literals(
 fn collect_global_floating_literals(
     node: &Value,
     in_function: bool,
-    out: &mut HashMap<String, String>,
+    source_file: &str,
+    source: Option<&str>,
+    floating_literals: &HashMap<FloatingLiteralLoc, FloatingLiteralFact>,
+    out: &mut HashMap<String, Vec<FloatingLiteralFact>>,
 ) {
     let in_function = in_function || kind(node) == Some("FunctionDecl");
     if kind(node) == Some("VarDecl") {
@@ -794,22 +804,156 @@ fn collect_global_floating_literals(
             .and_then(Value::as_str)
             .is_some_and(|storage| storage == "static");
         if (is_static || !in_function)
-            && let (Some(name), Some(value)) = (
-                node.get("name").and_then(Value::as_str),
-                children(node)
-                    .iter()
-                    .find(|child| kind(child) == Some("FloatingLiteral"))
-                    .and_then(|child| child.get("value"))
-                    .and_then(Value::as_str),
-            )
+            && let Some(name) = node.get("name").and_then(Value::as_str)
         {
-            out.entry(name.to_string())
-                .or_insert_with(|| value.to_string());
+            let mut facts = Vec::new();
+            for child in children(node) {
+                collect_long_double_init_values(
+                    child,
+                    source_file,
+                    source,
+                    floating_literals,
+                    &mut facts,
+                );
+            }
+            out.entry(name.to_string()).or_insert(facts);
         }
     }
     for child in children(node) {
-        collect_global_floating_literals(child, in_function, out);
+        collect_global_floating_literals(
+            child,
+            in_function,
+            source_file,
+            source,
+            floating_literals,
+            out,
+        );
     }
+}
+
+fn collect_long_double_init_values(
+    node: &Value,
+    source_file: &str,
+    source: Option<&str>,
+    floating_literals: &HashMap<FloatingLiteralLoc, FloatingLiteralFact>,
+    out: &mut Vec<FloatingLiteralFact>,
+) {
+    let is_long_double = node
+        .get("type")
+        .and_then(|ty| ty.get("qualType"))
+        .and_then(Value::as_str)
+        == Some("long double");
+    if !is_long_double {
+        for child in children(node) {
+            collect_long_double_init_values(child, source_file, source, floating_literals, out);
+        }
+        return;
+    }
+
+    match kind(node) {
+        Some("FloatingLiteral") => {
+            if let Some(fact) =
+                floating_literal_fact_for_node(node, source_file, source, floating_literals)
+            {
+                out.push(fact);
+            }
+        }
+        Some("ImplicitCastExpr") if node_contains_kind(node, "CallExpr") => {
+            out.push(FloatingLiteralFact {
+                value: String::new(),
+                bits: String::new(),
+                bit_width: 0,
+            });
+        }
+        Some("ImplicitCastExpr") if node_contains_kind(node, "IntegerLiteral") => {
+            let value = descendant_value(node, "IntegerLiteral")
+                .unwrap_or("0")
+                .to_string();
+            out.push(FloatingLiteralFact {
+                value,
+                bits: String::new(),
+                bit_width: 80,
+            });
+        }
+        Some("ImplicitCastExpr") if node_contains_kind(node, "FloatingLiteral") => {
+            let value = descendant_value(node, "FloatingLiteral")
+                .unwrap_or("0.0")
+                .to_string();
+            if value == "0" || value == "0.0" {
+                out.push(FloatingLiteralFact {
+                    value: "0.000000e+00".to_string(),
+                    bits: "0000000000000000".to_string(),
+                    bit_width: 80,
+                });
+            } else {
+                out.push(FloatingLiteralFact {
+                    value,
+                    bits: String::new(),
+                    bit_width: 80,
+                });
+            }
+        }
+        _ => {
+            for child in children(node) {
+                collect_long_double_init_values(child, source_file, source, floating_literals, out);
+            }
+        }
+    }
+}
+
+fn descendant_value<'a>(node: &'a Value, wanted: &str) -> Option<&'a str> {
+    if kind(node) == Some(wanted) {
+        return node.get("value").and_then(Value::as_str);
+    }
+    for child in children(node) {
+        if let Some(value) = descendant_value(child, wanted) {
+            return Some(value);
+        }
+    }
+    None
+}
+
+fn node_contains_kind(node: &Value, wanted: &str) -> bool {
+    if kind(node) == Some(wanted) {
+        return true;
+    }
+    children(node)
+        .iter()
+        .any(|child| node_contains_kind(child, wanted))
+}
+
+fn floating_literal_fact_for_node(
+    node: &Value,
+    source_file: &str,
+    source: Option<&str>,
+    floating_literals: &HashMap<FloatingLiteralLoc, FloatingLiteralFact>,
+) -> Option<FloatingLiteralFact> {
+    let offset = node
+        .get("range")
+        .and_then(|range| range.get("begin"))
+        .and_then(|begin| begin.get("offset"))
+        .and_then(Value::as_u64)?;
+    let loc = source.and_then(|source| loc_from_offset(source, offset as usize))?;
+    let point = SourcePoint {
+        file: source_file.to_string(),
+        line: loc.line,
+        col: loc.col,
+    };
+    let key = FloatingLiteralLoc {
+        spelling: point.clone(),
+        expansion: point,
+    };
+    Some(floating_literals.get(&key).cloned().unwrap_or_else(|| {
+        FloatingLiteralFact {
+            value: node
+                .get("value")
+                .and_then(Value::as_str)
+                .unwrap_or("0.0")
+                .to_string(),
+            bits: String::new(),
+            bit_width: 80,
+        }
+    }))
 }
 
 fn collect_declaration_comments(

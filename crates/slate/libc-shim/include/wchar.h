@@ -37,8 +37,16 @@
 struct tm;
 
 #define WEOF ((wint_t) - 1)
+#if defined(__WCHAR_MAX__)
+#define WCHAR_MAX __WCHAR_MAX__
+#else
 #define WCHAR_MAX ((wchar_t) - 1)
-#define WCHAR_MIN ((wchar_t) 0)
+#endif
+#if defined(__WCHAR_MIN__)
+#define WCHAR_MIN __WCHAR_MIN__
+#else
+#define WCHAR_MIN (-WCHAR_MAX - 1)
+#endif
 
 wint_t        btowc(int);
 int           fwprintf(FILE *, const wchar_t *, ...);

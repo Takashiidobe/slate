@@ -1004,7 +1004,7 @@ struct Lowerer<'a> {
     layout_queries: BTreeMap<String, Vec<LayoutQuery>>,
     macro_consts: BTreeMap<String, Vec<MacroConst>>,
     floating_literals: HashMap<FloatingLiteralLoc, FloatingLiteralFact>,
-    global_floating_literals: HashMap<String, String>,
+    global_floating_literals: HashMap<String, Vec<FloatingLiteralFact>>,
     long_double_callback_trampolines: BTreeMap<String, String>,
     enum_consts: BTreeMap<String, Vec<EnumConstRef>>,
     local_enum_decls: BTreeMap<String, Vec<crate::frontend::c_ast::LocalEnumDecl>>,
@@ -1957,14 +1957,13 @@ impl __SlateVaArgs {
             }
         } else if is_cir_aggregate_init(raw) {
             if is_c_global && let Some(ty) = ty {
-                let literal_raw = self
+                let mut facts: VecDeque<FloatingLiteralFact> = self
                     .global_floating_literals
                     .get(name)
                     .cloned()
-                    .or_else(|| self.ast_floating_literal(op).map(|fact| fact.value))
-                    .map(|fp| format!("#cir.fp<{fp}>"))
-                    .unwrap_or_else(|| raw.to_string());
-                if let Some(init) = self.render_const_value_expr(&ty, &literal_raw) {
+                    .unwrap_or_default()
+                    .into();
+                if let Some(init) = self.render_const_value_expr(&ty, raw, &mut facts) {
                     self.globals.insert(
                         rust_name.clone(),
                         GlobalVar {
@@ -2059,34 +2058,32 @@ impl __SlateVaArgs {
                     },
                 );
             }
-        } else if let Some(ty) = ty
-            && let Some(init) = self
+        } else if let Some(ty) = ty {
+            let mut facts: VecDeque<FloatingLiteralFact> = self
                 .global_floating_literals
                 .get(name)
                 .cloned()
-                .or_else(|| self.ast_floating_literal(op).map(|fact| fact.value))
-                .map(|fp| format!("#cir.fp<{fp}>"))
-                .or_else(|| Some(raw.to_string()))
-                .as_deref()
-                .and_then(|raw| self.render_const_value_expr(&ty, raw))
-        {
-            let external =
-                externally_exported(op) || self.project.cross_referenced_globals.contains(name);
-            self.globals.insert(
-                rust_name.clone(),
-                GlobalVar {
-                    source_name: name.to_string(),
-                    name: rust_name,
-                    ty,
-                    init,
-                    alignment,
-                    thread_local,
-                    external,
-                    weak,
-                    section,
-                    used,
-                },
-            );
+                .unwrap_or_default()
+                .into();
+            if let Some(init) = self.render_const_value_expr(&ty, raw, &mut facts) {
+                let external =
+                    externally_exported(op) || self.project.cross_referenced_globals.contains(name);
+                self.globals.insert(
+                    rust_name.clone(),
+                    GlobalVar {
+                        source_name: name.to_string(),
+                        name: rust_name,
+                        ty,
+                        init,
+                        alignment,
+                        thread_local,
+                        external,
+                        weak,
+                        section,
+                        used,
+                    },
+                );
+            }
         }
     }
 
@@ -3082,7 +3079,12 @@ impl __SlateVaArgs {
         }
     }
 
-    fn render_const_value_expr(&self, ty: &Type, raw: &str) -> Option<Expr> {
+    fn render_const_value_expr(
+        &self,
+        ty: &Type,
+        raw: &str,
+        facts: &mut VecDeque<FloatingLiteralFact>,
+    ) -> Option<Expr> {
         let raw = raw.trim();
         if let Type::Custom(name) = ty
             && let Some(storage) = self
@@ -3093,7 +3095,7 @@ impl __SlateVaArgs {
             return Some(Expr::Transmute {
                 from: storage.backing.clone(),
                 to: ty.clone(),
-                expr: Box::new(self.render_const_value_expr(&storage.backing, raw)?),
+                expr: Box::new(self.render_const_value_expr(&storage.backing, raw, facts)?),
             });
         }
         if let Type::Custom(name) = ty
@@ -3101,6 +3103,11 @@ impl __SlateVaArgs {
                 .records
                 .get(name)
                 .is_some_and(|record| record.kind == RecordKind::Union && record.fields.is_empty())
+        {
+            return Some(self.default_value_expr(ty));
+        }
+        if let Type::CLib(clib) = ty
+            && clib.initializer() == CLibInitializer::Zeroed
         {
             return Some(self.default_value_expr(ty));
         }
@@ -3124,7 +3131,9 @@ impl __SlateVaArgs {
                                 let field_ty = c_record_field_type(&field.ty);
                                 let value = elems
                                     .get(i)
-                                    .and_then(|e| self.render_const_value_expr(&field_ty, e.trim()))
+                                    .and_then(|e| {
+                                        self.render_const_value_expr(&field_ty, e.trim(), facts)
+                                    })
                                     .unwrap_or_else(|| self.default_value_expr(&field_ty));
                                 (field.name.clone(), value)
                             })
@@ -3142,7 +3151,9 @@ impl __SlateVaArgs {
                             let field_ty = c_record_field_type(&field.ty);
                             let value = elems
                                 .get(i)
-                                .and_then(|e| self.render_const_value_expr(&field_ty, e.trim()))
+                                .and_then(|e| {
+                                    self.render_const_value_expr(&field_ty, e.trim(), facts)
+                                })
                                 .unwrap_or_else(|| self.default_value_expr(&field_ty));
                             (sanitize_ident(&field.name).into_string(), value)
                         })
@@ -3164,7 +3175,7 @@ impl __SlateVaArgs {
                     let field_ty = c_record_field_type(&field.ty);
                     let value = elems
                         .first()
-                        .and_then(|e| self.render_const_value_expr(&field_ty, e.trim()))
+                        .and_then(|e| self.render_const_value_expr(&field_ty, e.trim(), facts))
                         .unwrap_or_else(|| self.default_value_expr(&field_ty));
                     Some(wrap_record_lit(
                         record,
@@ -3198,7 +3209,7 @@ impl __SlateVaArgs {
                 .filter(|e| !e.is_empty())
                 .take(len)
                 .map(|e| {
-                    self.render_const_value_expr(elem, &e)
+                    self.render_const_value_expr(elem, &e, facts)
                         .unwrap_or_else(|| self.default_value_expr(elem))
                 })
                 .collect();
@@ -3226,6 +3237,20 @@ impl __SlateVaArgs {
             ])))
         } else if let Some(target) = parse_cir_global_view(raw) {
             self.global_view_init_expr(target, ty)
+        } else if matches!(ty, Type::LongDouble) {
+            let fact = facts.pop_front();
+            if let Some(fact) = fact {
+                if fact.bit_width == 80 && !fact.bits.is_empty() {
+                    let bits = fact.bits.trim_start_matches("0x").trim_start_matches("0X");
+                    f80_literal_bits_expr(bits).or_else(|| long_double_raw_expr(raw))
+                } else if !fact.value.is_empty() {
+                    f80_literal_expr(&fact.value).or_else(|| long_double_raw_expr(raw))
+                } else {
+                    long_double_raw_expr(raw)
+                }
+            } else {
+                long_double_raw_expr(raw)
+            }
         } else if let Some(fp) = parse_cir_fp(raw) {
             Some(typed_fp_literal_expr(Some(ty), fp))
         } else {

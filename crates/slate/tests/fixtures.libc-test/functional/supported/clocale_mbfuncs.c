@@ -66,6 +66,8 @@ int t_printf(const char *s, ...) {
 #include <wchar.h>
 #include <wctype.h>
 
+#define ZERO_MBSTATE(p) memset((p), 0, sizeof *(p))
+
 int main(void) {
   int       i, j;
   mbstate_t st, st2;
@@ -81,7 +83,7 @@ int main(void) {
     t_error("MB_CUR_MAX = %d, expected 1\n", (int)MB_CUR_MAX);
 
   for (i = 0; i < 256; i++) {
-    st = (mbstate_t){0};
+    ZERO_MBSTATE(&st);
     if (mbrtowc(&wc, &(char){i}, 1, &st) != !!i)
       t_error("mbrtowc failed to convert byte %.2x to wchar_t\n", i);
     if ((map[i] = btowc(i)) == WEOF) {
@@ -110,7 +112,7 @@ int main(void) {
       continue;
     if ((c = wctob(i)) != WEOF && ni_errors++ < 50)
       t_error("wctob accepted non-image wchar_t %.4x as byte %.2x\n", i, c);
-    st = (mbstate_t){0};
+    ZERO_MBSTATE(&st);
     if (wcrtomb(s, i, &st) != -1 && ni_errors++ < 50)
       t_error("wcrtomb accepted non-image wchar_t %.4x\n", i);
   }
@@ -118,7 +120,7 @@ int main(void) {
     t_error("additional %d non-image errors (not printed)\n", ni_errors);
 
   map[256] = 0;
-  st       = (mbstate_t){0};
+  ZERO_MBSTATE(&st);
   if ((rv = wcsrtombs(s, &(const wchar_t *){map + 1}, sizeof s, &st)) != 255)
     t_error("wcsrtombs returned %zd, expected 255\n", rv);
   if ((rv = mbsrtowcs(wtmp, &(const char *){s}, 256, &st)) != 255)

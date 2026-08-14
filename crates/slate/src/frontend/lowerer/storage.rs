@@ -376,7 +376,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     ))
                 } else if let Some(raw) = self.parent.const_aggregates.get(name) {
                     let ty = dst_ty?;
-                    self.parent.render_const_value_expr(ty, raw)
+                    let mut facts: std::collections::VecDeque<FloatingLiteralFact> = self
+                        .parent
+                        .global_floating_literals
+                        .get(name)
+                        .cloned()
+                        .unwrap_or_default()
+                        .into();
+                    self.parent.render_const_value_expr(ty, raw, &mut facts)
                 } else if self.parent.const_zero_globals.contains(name) {
                     dst_ty.map(|ty| self.parent.default_value_expr(ty))
                 } else {
