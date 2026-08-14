@@ -57,19 +57,10 @@ enum {
   PTHREAD_PROCESS_SHARED  = 1,
 };
 
-#define PTHREAD_MUTEX_INITIALIZER                                              \
-  {                                                                            \
-    {0}                                                                        \
-  }
-#define PTHREAD_RWLOCK_INITIALIZER                                             \
-  {                                                                            \
-    {0}                                                                        \
-  }
-#define PTHREAD_COND_INITIALIZER                                               \
-  {                                                                            \
-    {0}                                                                        \
-  }
-#define PTHREAD_ONCE_INIT 0
+#define PTHREAD_MUTEX_INITIALIZER  {{0}}
+#define PTHREAD_RWLOCK_INITIALIZER {{0}}
+#define PTHREAD_COND_INITIALIZER   {{0}}
+#define PTHREAD_ONCE_INIT          0
 
 #define PTHREAD_CANCEL_ENABLE  0
 #define PTHREAD_CANCEL_DISABLE 1
@@ -98,7 +89,7 @@ int  pthread_cancel(pthread_t);
 
 #if defined(__GNUC__) || defined(__clang__)
 struct __slate_pthread_cleanup_frame {
-  void (*__cancel_routine)(void *);
+  void  (*__cancel_routine)(void *);
   void *__cancel_arg;
   int   __do_it;
 };
@@ -109,15 +100,13 @@ __slate_pthread_cleanup_routine(struct __slate_pthread_cleanup_frame *__frame) {
     __frame->__cancel_routine(__frame->__cancel_arg);
 }
 
-#define pthread_cleanup_push(routine, arg)                                    \
-  do {                                                                        \
-    struct __slate_pthread_cleanup_frame __clframe                            \
-        __attribute__((__cleanup__(__slate_pthread_cleanup_routine))) = {     \
-            .__cancel_routine = (routine), .__cancel_arg = (arg),              \
-            .__do_it = 1                                                       \
-    };
-#define pthread_cleanup_pop(execute)                                          \
-  __clframe.__do_it = (execute);                                              \
+#define pthread_cleanup_push(routine, arg)                                     \
+  do {                                                                         \
+    struct __slate_pthread_cleanup_frame __clframe __attribute__((             \
+        __cleanup__(__slate_pthread_cleanup_routine))) = {                     \
+        .__cancel_routine = (routine), .__cancel_arg = (arg), .__do_it = 1};
+#define pthread_cleanup_pop(execute)                                           \
+  __clframe.__do_it = (execute);                                               \
   }                                                                            \
   while (0)
 #endif

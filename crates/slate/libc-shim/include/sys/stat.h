@@ -118,7 +118,7 @@ int lchmod(const char *, mode_t);
 #define STATX_BTIME         0x800U
 #define STATX_ALL           0xfffU
 #define STATX_MNT_ID        0x1000U
-#define STATX_DIOALIGN       0x2000U
+#define STATX_DIOALIGN      0x2000U
 #define STATX_MNT_ID_UNIQUE 0x4000U
 #define STATX_SUBVOL        0x8000U
 #define STATX_WRITE_ATOMIC  0x10000U
@@ -137,7 +137,7 @@ int lchmod(const char *, mode_t);
 #endif
 
 #if _REDIR_TIME64
-    __REDIR(stat, __stat_time64);
+__REDIR(stat, __stat_time64);
 __REDIR(fstat, __fstat_time64);
 __REDIR(lstat, __lstat_time64);
 __REDIR(fstatat, __fstatat_time64);

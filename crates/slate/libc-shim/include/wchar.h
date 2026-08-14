@@ -112,35 +112,35 @@ long int      wcstol(const wchar_t *, wchar_t **, int);
 unsigned long wcstoul(const wchar_t *, wchar_t **, int);
 long long     wcstoll(const wchar_t *, wchar_t **, int);
 unsigned long long wcstoull(const wchar_t *, wchar_t **, int);
-wchar_t      *wcswcs(const wchar_t *, const wchar_t *);
-int           wcswidth(const wchar_t *, size_t);
-size_t        wcsxfrm(wchar_t *, const wchar_t *, size_t);
-int           wctob(wint_t);
-wctype_t      wctype(const char *);
-int           wcwidth(wchar_t);
-wchar_t      *wmemchr(const wchar_t *, wchar_t, size_t);
-int           wmemcmp(const wchar_t *, const wchar_t *, size_t);
-wchar_t      *wmemcpy(wchar_t *, const wchar_t *, size_t);
-wchar_t      *wmemmove(wchar_t *, const wchar_t *, size_t);
-wchar_t      *wmemset(wchar_t *, wchar_t, size_t);
-int           wprintf(const wchar_t *, ...);
-int           wscanf(const wchar_t *, ...);
+wchar_t           *wcswcs(const wchar_t *, const wchar_t *);
+int                wcswidth(const wchar_t *, size_t);
+size_t             wcsxfrm(wchar_t *, const wchar_t *, size_t);
+int                wctob(wint_t);
+wctype_t           wctype(const char *);
+int                wcwidth(wchar_t);
+wchar_t           *wmemchr(const wchar_t *, wchar_t, size_t);
+int                wmemcmp(const wchar_t *, const wchar_t *, size_t);
+wchar_t           *wmemcpy(wchar_t *, const wchar_t *, size_t);
+wchar_t           *wmemmove(wchar_t *, const wchar_t *, size_t);
+wchar_t           *wmemset(wchar_t *, wchar_t, size_t);
+int                wprintf(const wchar_t *, ...);
+int                wscanf(const wchar_t *, ...);
 
 #if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
     defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
-size_t mbsnrtowcs(wchar_t *, const char **, size_t, size_t, mbstate_t *);
-FILE  *open_wmemstream(wchar_t **, size_t *);
-size_t wcsnrtombs(char *, const wchar_t **, size_t, size_t, mbstate_t *);
+size_t   mbsnrtowcs(wchar_t *, const char **, size_t, size_t, mbstate_t *);
+FILE    *open_wmemstream(wchar_t **, size_t *);
+size_t   wcsnrtombs(char *, const wchar_t **, size_t, size_t, mbstate_t *);
 wchar_t *wcpcpy(wchar_t *, const wchar_t *);
 wchar_t *wcpncpy(wchar_t *, const wchar_t *, size_t);
-int     wcscasecmp(const wchar_t *, const wchar_t *);
-int     wcscasecmp_l(const wchar_t *, const wchar_t *, locale_t);
-int     wcscoll_l(const wchar_t *, const wchar_t *, locale_t);
+int      wcscasecmp(const wchar_t *, const wchar_t *);
+int      wcscasecmp_l(const wchar_t *, const wchar_t *, locale_t);
+int      wcscoll_l(const wchar_t *, const wchar_t *, locale_t);
 wchar_t *wcsdup(const wchar_t *);
-int     wcsncasecmp(const wchar_t *, const wchar_t *, size_t);
-int     wcsncasecmp_l(const wchar_t *, const wchar_t *, size_t, locale_t);
-size_t  wcsnlen(const wchar_t *, size_t);
-size_t  wcsxfrm_l(wchar_t *, const wchar_t *, size_t, locale_t);
+int      wcsncasecmp(const wchar_t *, const wchar_t *, size_t);
+int      wcsncasecmp_l(const wchar_t *, const wchar_t *, size_t, locale_t);
+size_t   wcsnlen(const wchar_t *, size_t);
+size_t   wcsxfrm_l(wchar_t *, const wchar_t *, size_t, locale_t);
 #endif
 
 #endif

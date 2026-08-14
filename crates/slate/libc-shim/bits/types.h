@@ -38,22 +38,22 @@ typedef unsigned int       __uid_t;
 typedef unsigned int       __gid_t;
 typedef unsigned long long __dev_t;
 #if defined(__SLATE_LIBC_GLIBC) && defined(__SLATE_WORDSIZE_64)
-typedef unsigned long      __nlink_t;
+typedef unsigned long __nlink_t;
 #else
-typedef unsigned int       __nlink_t;
+typedef unsigned int __nlink_t;
 #endif
-typedef unsigned int       __useconds_t;
-typedef int                __clockid_t;
-typedef void              *__timer_t;
-typedef long               __clock_t;
-typedef int                __key_t;
-typedef int                __id_t;
-typedef int                __daddr_t;
-typedef char              *__caddr_t;
-typedef unsigned short     __sa_family_t;
-typedef unsigned int       __socklen_t;
-typedef long               __regoff_t;
-typedef int                __error_t;
+typedef unsigned int   __useconds_t;
+typedef int            __clockid_t;
+typedef void          *__timer_t;
+typedef long           __clock_t;
+typedef int            __key_t;
+typedef int            __id_t;
+typedef int            __daddr_t;
+typedef char          *__caddr_t;
+typedef unsigned short __sa_family_t;
+typedef unsigned int   __socklen_t;
+typedef long           __regoff_t;
+typedef int            __error_t;
 #endif
 
 #ifdef __WINT_TYPE__
@@ -237,7 +237,7 @@ typedef struct {
 
 #else
 typedef struct {
-  int  __count;
+  int __count;
   union {
     int  __wch;
     char __wchb[4];

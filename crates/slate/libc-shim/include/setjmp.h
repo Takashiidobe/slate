@@ -30,8 +30,8 @@ _Noreturn void longjmp(jmp_buf env, int val);
 #if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
     defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 typedef jmp_buf sigjmp_buf;
-int            sigsetjmp(sigjmp_buf env, int savemask) __setjmp_attr;
-_Noreturn void siglongjmp(sigjmp_buf env, int val);
+int             sigsetjmp(sigjmp_buf env, int savemask) __setjmp_attr;
+_Noreturn void  siglongjmp(sigjmp_buf env, int val);
 #endif
 
 #if defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
