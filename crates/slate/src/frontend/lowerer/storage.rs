@@ -691,6 +691,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let macro_expr = if result_ty == Some("!cir.f128") || result_ty.is_some_and(is_long_double)
         {
             self.next_long_double_macro_const_expr(op, result_ty)
+        } else if result_ty == Some("!cir.float") || result_ty == Some("!cir.double") {
+            self.next_float_macro_const_expr(op, result_ty)
         } else {
             None
         };
@@ -774,6 +776,47 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             };
         }
         Some(expr)
+    }
+
+    pub(super) fn next_float_macro_const_expr(
+        &mut self,
+        op: &Op,
+        result_ty: Option<&str>,
+    ) -> Option<Expr> {
+        let macro_const = self.macro_consts.front()?;
+        let known = crate::frontend::macros::lookup(&macro_const.name)?;
+        if op
+            .loc
+            .as_deref()
+            .and_then(|raw| self.parent.resolve_loc(raw))
+            != Some(macro_const.loc)
+        {
+            return None;
+        }
+        let bits: u64 = match known.value {
+            crate::frontend::macros::MacroValue::Float { rust_bits, .. }
+                if result_ty == Some("!cir.float") =>
+            {
+                u64::from(rust_bits)
+            }
+            crate::frontend::macros::MacroValue::Double { rust_bits, .. }
+                if result_ty == Some("!cir.double") =>
+            {
+                rust_bits
+            }
+            _ => return None,
+        };
+        self.macro_consts.pop_front();
+        let func = if result_ty == Some("!cir.float") {
+            "f32::from_bits"
+        } else {
+            "f64::from_bits"
+        };
+        Some(Expr::Call {
+            binding: crate::function_identity::CallBinding::Generated,
+            func: Box::new(Expr::Var(func.into())),
+            args: vec![Expr::Value(RustValue::I64(bits as i64))],
+        })
     }
 
     pub(super) fn next_enum_const_expr(

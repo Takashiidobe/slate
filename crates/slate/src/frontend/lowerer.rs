@@ -16,7 +16,7 @@ use crate::frontend::c_ast::{
     RecordKind, SourcePoint, Unit,
 };
 use crate::frontend::function_abi::repair_function_signature;
-use crate::function_identity::{CallBinding, FunctionIdentity};
+use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
 
 mod analysis;
@@ -3729,71 +3729,41 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::Ceil => self.lower_unary_method(op, "ceil"),
             CirOpKind::ClearCache => {}
             CirOpKind::Copysign => self.lower_binary_method(op, "copysign"),
-            CirOpKind::Cos => {
-                self.lower_known_unary_method(op, crate::function_identity::Known::Cos, "cos")
-            }
-            CirOpKind::Exp => {
-                self.lower_known_unary_method(op, crate::function_identity::Known::Exp, "exp")
-            }
-            CirOpKind::Exp2 => {
-                self.lower_known_unary_method(op, crate::function_identity::Known::Exp2, "exp2")
-            }
+            CirOpKind::Cos => self.lower_known_unary_method(op, Known::Cos, "cos"),
+            CirOpKind::Exp => self.lower_known_unary_method(op, Known::Exp, "exp"),
+            CirOpKind::Exp2 => self.lower_known_unary_method(op, Known::Exp2, "exp2"),
             CirOpKind::Expect => self.lower_expect(op),
             CirOpKind::Fabs => self.lower_unary_method(op, "abs"),
             CirOpKind::Fma => self.lower_ternary_method(op, "mul_add"),
             CirOpKind::Fmaximum => self.lower_binary_method(op, "max"),
             CirOpKind::Fminimum => self.lower_binary_method(op, "min"),
-            CirOpKind::Fmod => {
-                self.lower_known_binary(op, crate::function_identity::Known::Fmod, BinOp::Rem)
-            }
+            CirOpKind::Fmod => self.lower_known_binary(op, Known::Fmod, BinOp::Rem),
             CirOpKind::Floor => self.lower_unary_method(op, "floor"),
             CirOpKind::Fmaxnum => self.lower_binary_method(op, "max"),
             CirOpKind::Fminnum => self.lower_binary_method(op, "min"),
             CirOpKind::IsFpClass => self.lower_is_fp_class(op),
             CirOpKind::Llrint => self.lower_unary_cast_method(op, "round_ties_even"),
-            CirOpKind::Llround => self.lower_known_unary_cast_method(
-                op,
-                crate::function_identity::Known::Llround,
-                "round",
-            ),
-            CirOpKind::Log => {
-                self.lower_known_unary_method(op, crate::function_identity::Known::Log, "ln")
-            }
-            CirOpKind::Log10 => {
-                self.lower_known_unary_method(op, crate::function_identity::Known::Log10, "log10")
-            }
-            CirOpKind::Log2 => {
-                self.lower_known_unary_method(op, crate::function_identity::Known::Log2, "log2")
-            }
+            CirOpKind::Llround => self.lower_known_unary_cast_method(op, Known::Llround, "round"),
+            CirOpKind::Log => self.lower_known_unary_method(op, Known::Log, "ln"),
+            CirOpKind::Log10 => self.lower_known_unary_method(op, Known::Log10, "log10"),
+            CirOpKind::Log2 => self.lower_known_unary_method(op, Known::Log2, "log2"),
             CirOpKind::Lrint => self.lower_unary_cast_method(op, "round_ties_even"),
-            CirOpKind::Lround => self.lower_known_unary_cast_method(
-                op,
-                crate::function_identity::Known::Lround,
-                "round",
-            ),
+            CirOpKind::Lround => self.lower_known_unary_cast_method(op, Known::Lround, "round"),
             CirOpKind::Modf => self.lower_modf(op),
             CirOpKind::Nearbyint => self.lower_unary_method(op, "round_ties_even"),
-            CirOpKind::Pow => {
-                self.lower_known_binary_method(op, crate::function_identity::Known::Pow, "powf")
-            }
+            CirOpKind::Pow => self.lower_known_binary_method(op, Known::Pow, "powf"),
             CirOpKind::Prefetch => {}
             CirOpKind::Rint => self.lower_unary_method(op, "round_ties_even"),
             CirOpKind::Round => self.lower_unary_method(op, "round"),
             CirOpKind::Roundeven => self.lower_unary_method(op, "round_ties_even"),
             CirOpKind::Signbit => self.lower_signbit(op),
-            CirOpKind::Sin => {
-                self.lower_known_unary_method(op, crate::function_identity::Known::Sin, "sin")
-            }
-            CirOpKind::Sqrt => {
-                self.lower_known_unary_method(op, crate::function_identity::Known::Sqrt, "sqrt")
-            }
+            CirOpKind::Sin => self.lower_known_unary_method(op, Known::Sin, "sin"),
+            CirOpKind::Sqrt => self.lower_known_unary_method(op, Known::Sqrt, "sqrt"),
             CirOpKind::FrameAddress => self.lower_opaque_pointer(op, true),
             CirOpKind::ReturnAddress => self.lower_opaque_pointer(op, true),
             CirOpKind::Stacksave => self.lower_opaque_pointer(op, false),
             CirOpKind::Stackrestore => {}
-            CirOpKind::Tan => {
-                self.lower_known_unary_method(op, crate::function_identity::Known::Tan, "tan")
-            }
+            CirOpKind::Tan => self.lower_known_unary_method(op, Known::Tan, "tan"),
             CirOpKind::Trap => self.lower_trap(),
             CirOpKind::Trunc => self.lower_unary_method(op, "trunc"),
             CirOpKind::Unreachable => self.lower_unreachable(),
