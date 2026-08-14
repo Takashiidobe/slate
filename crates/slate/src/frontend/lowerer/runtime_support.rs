@@ -388,6 +388,22 @@ pub(super) fn f80_shim_decls() -> Vec<ExternFnDecl> {
         Some(f80()),
     ));
     decls.push(f80_extern_decl(
+        "__slate_cf80_mul",
+        vec![
+            f80_param("a", Type::Complex(Box::new(f80()))),
+            f80_param("b", Type::Complex(Box::new(f80()))),
+        ],
+        Some(Type::Complex(Box::new(f80()))),
+    ));
+    decls.push(f80_extern_decl(
+        "__slate_cf80_div",
+        vec![
+            f80_param("a", Type::Complex(Box::new(f80()))),
+            f80_param("b", Type::Complex(Box::new(f80()))),
+        ],
+        Some(Type::Complex(Box::new(f80()))),
+    ));
+    decls.push(f80_extern_decl(
         "__slate_f80_fma",
         vec![
             f80_param("a", f80()),

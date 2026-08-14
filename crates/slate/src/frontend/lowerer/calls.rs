@@ -200,6 +200,41 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if crate::cir::emit::uses_f64_long_double_abi() {
             return false;
         }
+        let cf80_shim = match callee_name {
+            "__mulxc3" => Some("__slate_cf80_mul"),
+            "__divxc3" => Some("__slate_cf80_div"),
+            _ => None,
+        };
+        if let Some(shim) = cf80_shim {
+            let Some(result) = op.results.first() else {
+                return true;
+            };
+            if args.len() != 4 {
+                return false;
+            }
+            self.parent.uses_complex.set(true);
+            let lhs = Expr::StructLit {
+                name: COMPLEX_TY.into(),
+                fields: vec![
+                    ("re".into(), args[0].clone()),
+                    ("im".into(), args[1].clone()),
+                ],
+            };
+            let rhs = Expr::StructLit {
+                name: COMPLEX_TY.into(),
+                fields: vec![
+                    ("re".into(), args[2].clone()),
+                    ("im".into(), args[3].clone()),
+                ],
+            };
+            let call = Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
+                func: Box::new(Expr::Var(shim.into())),
+                args: vec![lhs, rhs],
+            };
+            self.materialize_expr(result, call, op_result_type(op));
+            return true;
+        }
         if !self.parent.externs.contains_key(callee_name) {
             return false;
         }
