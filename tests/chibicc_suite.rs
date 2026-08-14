@@ -43,16 +43,20 @@ fn attempt_translate(name: &str, dir: &Path, work: &Path) -> Attempt {
     let out_dir = work.join("translated").join(name);
     let _ = std::fs::remove_dir_all(&out_dir);
     match support::translate_project(dir, &out_dir) {
-        Ok(()) => Attempt {
-            name: name.to_string(),
-            dir: dir.to_path_buf(),
-            multi_bin: Some(support::MultiBinCase {
+        Ok(()) => {
+            let types_rs = out_dir.join("src/types.rs");
+            Attempt {
                 name: name.to_string(),
-                main_rs: out_dir.join("src/main.rs"),
-                common_rs: out_dir.join("src/common.rs"),
-            }),
-            translate_error: None,
-        },
+                dir: dir.to_path_buf(),
+                multi_bin: Some(support::MultiBinCase {
+                    name: name.to_string(),
+                    main_rs: out_dir.join("src/main.rs"),
+                    common_rs: out_dir.join("src/common.rs"),
+                    types_rs: types_rs.is_file().then_some(types_rs),
+                }),
+                translate_error: None,
+            }
+        }
         Err(e) => Attempt {
             name: name.to_string(),
             dir: dir.to_path_buf(),
@@ -78,6 +82,7 @@ fn run_bucket(bucket: &str) -> Vec<(String, Result<(), String>)> {
             name: c.name.clone(),
             main_rs: c.main_rs.clone(),
             common_rs: c.common_rs.clone(),
+            types_rs: c.types_rs.clone(),
         })
         .collect();
 

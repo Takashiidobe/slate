@@ -96,32 +96,6 @@ _Bool __slate_cf80_to_bool(__slate_cf80 a) {
   return __slate_cf80_load(a) != 0.0L;
 }
 
-_Bool __slate_cf80_logical_not(__slate_cf80 a) { return !__slate_cf80_load(a); }
-
-__slate_f80 __slate_cf80_real(__slate_cf80 a) {
-  return __slate_f80_store(creall(__slate_cf80_load(a)));
-}
-
-__slate_f80 __slate_cf80_imag(__slate_cf80 a) {
-  return __slate_f80_store(cimagl(__slate_cf80_load(a)));
-}
-
-__slate_cf80 __slate_cf80_from_f80(__slate_f80 a) {
-  return __slate_cf80_store(CMPLXL(__slate_f80_load(a), 0.0L));
-}
-
-__slate_f80 __slate_cf80_to_f80(__slate_cf80 a) {
-  return __slate_f80_store(creall(__slate_cf80_load(a)));
-}
-
-__slate_cf80 __slate_cf80_from_i64(int64_t a) {
-  return __slate_cf80_store(CMPLXL((long double)a, 0.0L));
-}
-
-int64_t __slate_cf80_to_i64(__slate_cf80 a) {
-  return (int64_t)creall(__slate_cf80_load(a));
-}
-
 #define SLATE_CF80_UNARY(name, fn)                                             \
   __slate_cf80 __slate_cf80_##name(__slate_cf80 a) {                           \
     return __slate_cf80_store(fn(__slate_cf80_load(a)));                       \
@@ -658,4 +632,115 @@ _Bool __slate_f80_logical_not(__slate_f80 a) { return !__slate_f80_to_bool(a); }
 // useful for casting
 __slate_f80 __slate_f80_canonicalize(__slate_f80 a) {
   return __slate_f80_store(__slate_f80_load(a));
+}
+
+_Bool __slate_cf80_logical_not(__slate_cf80 a) { return !__slate_cf80_load(a); }
+
+__slate_f80 __slate_cf80_real(__slate_cf80 a) {
+  return __slate_f80_store(creall(__slate_cf80_load(a)));
+}
+
+__slate_f80 __slate_cf80_imag(__slate_cf80 a) {
+  return __slate_f80_store(cimagl(__slate_cf80_load(a)));
+}
+
+__slate_cf80 __slate_cf80_from_f80(__slate_f80 a) {
+  return __slate_cf80_store(CMPLXL(__slate_f80_load(a), 0.0L));
+}
+
+__slate_f80 __slate_cf80_to_f80(__slate_cf80 a) {
+  return __slate_f80_store(creall(__slate_cf80_load(a)));
+}
+
+float __slate_cf80_to_f32(__slate_cf80 a) { return __slate_f80_to_f32(a.re); }
+
+double __slate_cf80_to_f64(__slate_cf80 a) { return __slate_f80_to_f64(a.re); }
+
+int8_t __slate_cf80_to_i8(__slate_cf80 a) { return __slate_f80_to_i8(a.re); }
+
+uint8_t __slate_cf80_to_u8(__slate_cf80 a) { return __slate_f80_to_u8(a.re); }
+
+int16_t __slate_cf80_to_i16(__slate_cf80 a) { return __slate_f80_to_i16(a.re); }
+
+uint16_t __slate_cf80_to_u16(__slate_cf80 a) {
+  return __slate_f80_to_u16(a.re);
+}
+
+int32_t __slate_cf80_to_i32(__slate_cf80 a) { return __slate_f80_to_i32(a.re); }
+
+uint32_t __slate_cf80_to_u32(__slate_cf80 a) {
+  return __slate_f80_to_u32(a.re);
+}
+
+int64_t __slate_cf80_to_i64(__slate_cf80 a) { return __slate_f80_to_i64(a.re); }
+
+uint64_t __slate_cf80_to_u64(__slate_cf80 a) {
+  return __slate_f80_to_u64(a.re);
+}
+
+__slate_cf80 __slate_cf80_from_f32(float a) {
+  return __slate_cf80_from_f80(__slate_f80_from_f32(a));
+}
+
+__slate_cf80 __slate_cf80_from_f64(double a) {
+  return __slate_cf80_from_f80(__slate_f80_from_f64(a));
+}
+__slate_cf80 __slate_cf80_from_i8(int8_t a) {
+  return __slate_cf80_from_f80(__slate_f80_from_i8(a));
+}
+
+__slate_cf80 __slate_cf80_from_u8(uint8_t a) {
+  return __slate_cf80_from_f80(__slate_f80_from_u8(a));
+}
+
+__slate_cf80 __slate_cf80_from_i16(int16_t a) {
+  return __slate_cf80_from_f80(__slate_f80_from_i16(a));
+}
+
+__slate_cf80 __slate_cf80_from_u16(uint16_t a) {
+  return __slate_cf80_from_f80(__slate_f80_from_u16(a));
+}
+
+__slate_cf80 __slate_cf80_from_i32(int32_t a) {
+  return __slate_cf80_from_f80(__slate_f80_from_i32(a));
+}
+
+__slate_cf80 __slate_cf80_from_u32(uint32_t a) {
+  return __slate_cf80_from_f80(__slate_f80_from_u32(a));
+}
+
+__slate_cf80 __slate_cf80_from_i64(int64_t a) {
+  return __slate_cf80_from_f80(__slate_f80_from_i64(a));
+}
+
+__slate_cf80 __slate_cf80_from_u64(uint64_t a) {
+  return __slate_cf80_from_f80(__slate_f80_from_u64(a));
+}
+
+__slate_cf80 __slate_cf80_from_bool(_Bool a) {
+  return __slate_cf80_from_f80(__slate_f80_from_bool(a));
+}
+
+__int128 __slate_f80_to_i128(__slate_f80 a) {
+  return (__int128)__slate_f80_load(a);
+}
+
+unsigned __int128 __slate_f80_to_u128(__slate_f80 a) {
+  return (unsigned __int128)__slate_f80_load(a);
+}
+
+__int128 __slate_cf80_to_i128(__slate_cf80 a) {
+  return __slate_f80_to_i128(a.re);
+}
+
+unsigned __int128 __slate_cf80_to_u128(__slate_cf80 a) {
+  return __slate_f80_to_u128(a.re);
+}
+
+__slate_f80 __slate_f80_from_i128(__int128 a) {
+  return __slate_f80_store((long double)a);
+}
+
+__slate_f80 __slate_f80_from_u128(unsigned __int128 a) {
+  return __slate_f80_store((long double)a);
 }
