@@ -159,6 +159,66 @@ static void check_math_functions(void) {
   print_ld("epsilon", LDBL_EPSILON);
 }
 
+/* The functions above all round-trip through the generic call-shim (any
+ * known extern function with a long double arg/return links straight to
+ * libm), which check_math_functions already exercises. This covers the
+ * remaining libm entry points -- pointer out-params, integer-returning
+ * variants, and the classification family -- with volatile operands so
+ * they can't constant-fold away and skip the real runtime path. */
+static void check_remaining_math_functions(void) {
+  volatile long double ten = 10.0L;
+  volatile long double three = 3.0L;
+
+  long double ipart = 0.0L;
+  long double frac = modfl(ten / three, &ipart);
+  print_ld("modf_ipart", ipart);
+  print_ld("modf_frac", frac);
+
+  print_ld("remainder", remainderl(ten, three));
+
+  int quo = 0;
+  print_ld("remquo", remquol(ten, three, &quo));
+  printf("remquo_quo=%d\n", quo);
+
+  print_ld("scalbn", scalbnl(ten, 3));
+  print_ld("scalbln", scalblnl(ten, 3L));
+  print_ld("nextafter", nextafterl(ten, three));
+  print_ld("nexttoward", nexttowardl(ten, three));
+  print_ld("fdim", fdiml(ten, three));
+  print_ld("rint", rintl(ten / three));
+  print_ld("nearbyint", nearbyintl(ten / three));
+
+  printf("lrint=%ld llrint=%lld lround=%ld llround=%lld\n",
+         lrintl(ten / three), llrintl(ten / three), lroundl(ten / three),
+         llroundl(ten / three));
+
+  printf("ilogb=%d\n", ilogbl(ten));
+  print_ld("logb", logbl(ten));
+
+  print_ld("erf", erfl(ten / three));
+  print_ld("erfc", erfcl(ten / three));
+  print_ld("tgamma", tgammal(three));
+  print_ld("lgamma", lgammal(ten));
+
+  volatile long double vnan  = nanl("");
+  volatile long double vinf  = HUGE_VALL;
+  volatile long double vzero = 0.0L;
+  volatile long double vone  = 1.0L;
+  volatile long double vsub  = LDBL_TRUE_MIN;
+  printf("isnan_v=%d isinf_v=%d isfinite_v=%d isnormal_v=%d "
+         "isunordered_v=%d isunordered_ok=%d\n",
+         isnan(vnan), isinf(vinf), isfinite(vone), isnormal(vone),
+         isunordered(vnan, vone), isunordered(vone, vzero));
+  printf("subnormal_isnormal=%d\n", isnormal(vsub));
+
+  print_ld("ldbl_min", LDBL_MIN);
+  print_ld("ldbl_true_min", LDBL_TRUE_MIN);
+  printf("ldbl_mant_dig=%d ldbl_dig=%d ldbl_min_exp=%d ldbl_max_exp=%d "
+         "ldbl_min_10_exp=%d ldbl_max_10_exp=%d\n",
+         LDBL_MANT_DIG, LDBL_DIG, LDBL_MIN_EXP, LDBL_MAX_EXP, LDBL_MIN_10_EXP,
+         LDBL_MAX_10_EXP);
+}
+
 int main(void) {
   long double x = 1.5L;
   long double y = 4.5L;
@@ -170,6 +230,7 @@ int main(void) {
   check_i128_casts();
   check_bitint_casts();
   check_math_functions();
+  check_remaining_math_functions();
 
   return 0;
 }

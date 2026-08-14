@@ -460,6 +460,40 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             Some(3) => BinOp::Ge,
             Some(4) => BinOp::Eq,
             Some(5) => BinOp::Ne,
+            Some(6) => {
+                let expr = Expr::Binary {
+                    op: BinOp::Or,
+                    lhs: Box::new(Expr::Binary {
+                        op: BinOp::Lt,
+                        lhs: Box::new(lhs.clone()),
+                        rhs: Box::new(rhs.clone()),
+                    }),
+                    rhs: Box::new(Expr::Binary {
+                        op: BinOp::Gt,
+                        lhs: Box::new(lhs),
+                        rhs: Box::new(rhs),
+                    }),
+                };
+                self.materialize_expr(result, expr, Some("!cir.bool"));
+                return;
+            }
+            Some(7) => {
+                let expr = Expr::Binary {
+                    op: BinOp::Or,
+                    lhs: Box::new(Expr::Binary {
+                        op: BinOp::Ne,
+                        lhs: Box::new(lhs.clone()),
+                        rhs: Box::new(lhs),
+                    }),
+                    rhs: Box::new(Expr::Binary {
+                        op: BinOp::Ne,
+                        lhs: Box::new(rhs.clone()),
+                        rhs: Box::new(rhs),
+                    }),
+                };
+                self.materialize_expr(result, expr, Some("!cir.bool"));
+                return;
+            }
             _ => BinOp::Le,
         };
         self.materialize_expr(
