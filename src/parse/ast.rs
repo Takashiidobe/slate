@@ -156,6 +156,11 @@ pub enum ExprKind {
         lhs: Box<Expr>,
         rhs: Box<Expr>,
     },
+    CompoundAssign {
+        op: BinaryOp,
+        lhs: Box<Expr>,
+        rhs: Box<Expr>,
+    },
     Cond {
         cond: Box<Expr>,
         then: Box<Expr>,

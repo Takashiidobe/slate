@@ -2796,7 +2796,12 @@ impl<'a> Parser<'a> {
             let old_idx = self.new_lvar(String::new(), base_ty.clone());
             let new_idx = self.new_lvar(String::new(), base_ty.clone());
 
-            let mut stmts = vec![];
+            let mut stmts = vec![
+                self.stmt_at(StmtKind::Decl(addr_idx), location),
+                self.stmt_at(StmtKind::Decl(val_idx), location),
+                self.stmt_at(StmtKind::Decl(old_idx), location),
+                self.stmt_at(StmtKind::Decl(new_idx), location),
+            ];
 
             // addr = &lhs
             let addr_var = self.expr_at(
@@ -2916,6 +2921,45 @@ impl<'a> Parser<'a> {
             return Ok(self.expr_at(ExprKind::StmtExpr(stmts), location));
         }
 
+        if let ExprKind::Var { .. } = lhs.kind {
+            let lhs_ty = lhs
+                .ty
+                .clone()
+                .ok_or_else(|| self.err_at(location, "lhs has no type"))?;
+
+            if matches!(lhs_ty, Type::Ptr(_) | Type::Array { .. } | Type::Vla { .. }) {
+                let bin_expr = match op {
+                    BinaryOp::Add => self.new_add(lhs.clone(), rhs, location)?,
+                    BinaryOp::Sub => self.new_sub(lhs.clone(), rhs, location)?,
+                    _ => self.expr_at(
+                        ExprKind::Binary {
+                            op,
+                            lhs: Box::new(lhs.clone()),
+                            rhs: Box::new(rhs),
+                        },
+                        location,
+                    ),
+                };
+                return Ok(self.expr_at(
+                    ExprKind::Assign {
+                        lhs: Box::new(lhs),
+                        rhs: Box::new(bin_expr),
+                    },
+                    location,
+                ));
+            }
+
+            self.cast_expr_in_place(&mut rhs, lhs_ty);
+            return Ok(self.expr_at(
+                ExprKind::CompoundAssign {
+                    op,
+                    lhs: Box::new(lhs),
+                    rhs: Box::new(rhs),
+                },
+                location,
+            ));
+        }
+
         if let ExprKind::Member {
             lhs: member_lhs,
             member,
@@ -2986,10 +3030,11 @@ impl<'a> Parser<'a> {
             );
 
             return Ok(self.expr_at(
-                ExprKind::Comma {
-                    lhs: Box::new(expr1),
-                    rhs: Box::new(expr2),
-                },
+                ExprKind::StmtExpr(vec![
+                    self.stmt_at(StmtKind::Decl(var_idx), location),
+                    self.stmt_at(StmtKind::Expr(expr1), location),
+                    self.stmt_at(StmtKind::Expr(expr2), location),
+                ]),
                 location,
             ));
         }
@@ -3053,12 +3098,12 @@ impl<'a> Parser<'a> {
             location,
         );
 
-        // Return comma expression: expr1, expr2
         Ok(self.expr_at(
-            ExprKind::Comma {
-                lhs: Box::new(expr1),
-                rhs: Box::new(expr2),
-            },
+            ExprKind::StmtExpr(vec![
+                self.stmt_at(StmtKind::Decl(var_idx), location),
+                self.stmt_at(StmtKind::Expr(expr1), location),
+                self.stmt_at(StmtKind::Expr(expr2), location),
+            ]),
             location,
         ))
     }
@@ -6701,6 +6746,11 @@ impl<'a> Parser<'a> {
                     self.cast_expr_in_place(rhs, lhs_ty.clone());
                 }
                 lhs_ty
+            }
+            ExprKind::CompoundAssign { lhs, rhs, .. } => {
+                self.add_type_expr(lhs)?;
+                self.add_type_expr(rhs)?;
+                lhs.ty.clone().unwrap_or(Type::Int)
             }
             ExprKind::Cond { cond, then, els } => {
                 self.add_type_expr(cond)?;

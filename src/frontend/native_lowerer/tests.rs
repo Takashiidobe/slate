@@ -48,6 +48,23 @@ fn empty_main() {
 }
 
 #[test]
+fn compound_assign_temp_decl() {
+    let out = render(
+        r#"
+        int sum_array(int *results, int n) {
+            int sum = 0;
+            for (int i = 0; i < n; i = i + 1) {
+                sum += results[i];
+            }
+            return sum;
+        }
+        "#,
+    );
+    println!("{out}");
+    assert!(out.contains("fn sum_array"));
+}
+
+#[test]
 fn arithmetic_and_locals() {
     let out = render(
         r#"

@@ -55,10 +55,11 @@ pub(crate) fn lower_expr(expr: &Expr, ctx: &FnCtx) -> RExpr {
         },
         ExprKind::Var { idx, is_local } => var_expr(*idx, *is_local, ctx),
         ExprKind::VlaPtr { idx, is_local } => {
-            RExpr::Var(ctx.var(*idx, *is_local).name.as_str().into())
+            RExpr::Var(local_ident(ctx.var(*idx, *is_local)).into())
         }
         ExprKind::StmtExpr(stmts) => stmt_expr(stmts, ctx),
         ExprKind::Assign { lhs, rhs } => assign_expr(lhs, rhs, ctx),
+        ExprKind::CompoundAssign { op, lhs, rhs } => compound_assign_expr(*op, lhs, rhs, ctx),
         ExprKind::Cond { cond, then, els } => RExpr::If {
             cond: Box::new(lower_expr(cond, ctx)),
             then_expr: Box::new(lower_expr(then, ctx)),
@@ -103,7 +104,15 @@ fn var_expr(idx: usize, is_local: bool, ctx: &FnCtx) -> RExpr {
     {
         return RExpr::ByteStr(bytes);
     }
-    RExpr::Var(obj.name.as_str().into())
+    RExpr::Var(local_ident(obj).into())
+}
+
+pub(crate) fn local_ident(obj: &Obj) -> String {
+    if obj.name.is_empty() {
+        format!("__tmp{}", obj.id)
+    } else {
+        obj.name.clone()
+    }
 }
 
 fn num_expr(expr: &Expr, value: i64, fval: f64) -> RExpr {
@@ -267,6 +276,22 @@ fn assign_expr(lhs: &Expr, rhs: &Expr, ctx: &FnCtx) -> RExpr {
             depth: 0,
             stmt: RStmt::Assign {
                 target: target.clone(),
+                value,
+            },
+        }],
+        tail: Some(Box::new(target)),
+    }))
+}
+
+fn compound_assign_expr(op: BinaryOp, lhs: &Expr, rhs: &Expr, ctx: &FnCtx) -> RExpr {
+    let target = lower_expr(lhs, ctx);
+    let value = lower_expr(rhs, ctx);
+    RExpr::Block(Box::new(Block {
+        stmts: vec![IndentStmt {
+            depth: 0,
+            stmt: RStmt::CompoundAssign {
+                target: target.clone(),
+                op: map_binop(op),
                 value,
             },
         }],

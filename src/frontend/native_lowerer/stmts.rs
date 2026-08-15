@@ -146,7 +146,7 @@ pub(crate) fn lower_stmt(stmt: &Stmt, ctx: &FnCtx, out: &mut Vec<IndentStmt>) {
                 return;
             }
             out.push(mk(RStmt::Let {
-                name: local.name.clone(),
+                name: super::exprs::local_ident(local),
                 mutable: true,
                 ty: Some(lower_type(&local.ty, ctx.types)),
                 init: None,
