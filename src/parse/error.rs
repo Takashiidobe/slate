@@ -40,7 +40,10 @@ impl CompileError {
 
 impl fmt::Display for CompileError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.message)
+        match self.location {
+            Some(loc) => write!(f, "{}:{}: {}", loc.line, loc.column, self.message),
+            None => write!(f, "{}", self.message),
+        }
     }
 }
 

@@ -139,6 +139,31 @@ impl<'a> Parser<'a> {
         }
     }
 
+    fn push_builtin_fn(
+        &mut self,
+        name: &str,
+        params: Vec<Type>,
+        return_ty: Type,
+        is_variadic: bool,
+    ) {
+        let ty = Type::Func {
+            return_ty: Box::new(return_ty),
+            params: params
+                .into_iter()
+                .enumerate()
+                .map(|(i, ty)| (format!("arg{i}"), ty))
+                .collect(),
+            is_variadic,
+        };
+        self.globals.push(Obj {
+            name: name.to_string(),
+            ty,
+            is_function: true,
+            is_definition: false, // Declaration only
+            ..Default::default()
+        });
+    }
+
     fn declare_builtin_functions(&mut self) {
         // Declare alloca as a builtin function: void *alloca(int)
         let alloca_ty = Type::Func {
@@ -155,6 +180,135 @@ impl<'a> Parser<'a> {
             ..Default::default()
         });
         self.builtin_alloca_idx = Some(alloca_idx);
+
+        let void_ptr = || Type::Ptr(Box::new(Type::Void));
+
+        // Bit-counting / manipulation builtins (unsigned int width used by every
+        // call site in the fixture corpus today; l/ll-suffixed variants can be
+        // added if a fixture needs them).
+        for name in [
+            "__builtin_clz",
+            "__builtin_ctz",
+            "__builtin_ffs",
+            "__builtin_popcount",
+            "__builtin_parity",
+            "__builtin_clrsb",
+        ] {
+            self.push_builtin_fn(name, vec![Type::UInt], Type::Int, false);
+        }
+        self.push_builtin_fn("__builtin_bswap32", vec![Type::UInt], Type::UInt, false);
+        self.push_builtin_fn(
+            "__builtin_bitreverse32",
+            vec![Type::UInt],
+            Type::UInt,
+            false,
+        );
+        for name in ["__builtin_rotateleft32", "__builtin_rotateright32"] {
+            self.push_builtin_fn(name, vec![Type::UInt, Type::UInt], Type::UInt, false);
+        }
+
+        // Optimizer hints / control-flow builtins.
+        self.push_builtin_fn(
+            "__builtin_expect",
+            vec![Type::Long, Type::Long],
+            Type::Long,
+            false,
+        );
+        self.push_builtin_fn("__builtin_assume", vec![Type::Int], Type::Void, false);
+        self.push_builtin_fn("__builtin_prefetch", vec![void_ptr()], Type::Void, true);
+        self.push_builtin_fn("__builtin_trap", vec![], Type::Void, false);
+        self.push_builtin_fn("__builtin_unreachable", vec![], Type::Void, false);
+        self.push_builtin_fn("__builtin_debugtrap", vec![], Type::Void, false);
+        self.push_builtin_fn(
+            "__builtin_return_address",
+            vec![Type::UInt],
+            void_ptr(),
+            false,
+        );
+        self.push_builtin_fn(
+            "__builtin_frame_address",
+            vec![Type::UInt],
+            void_ptr(),
+            false,
+        );
+        self.push_builtin_fn(
+            "__builtin___clear_cache",
+            vec![void_ptr(), void_ptr()],
+            Type::Void,
+            false,
+        );
+
+        // memcpy-family builtins.
+        self.push_builtin_fn(
+            "__builtin_bcopy",
+            vec![void_ptr(), void_ptr(), Type::ULong],
+            Type::Void,
+            false,
+        );
+        self.push_builtin_fn(
+            "__builtin_bzero",
+            vec![void_ptr(), Type::ULong],
+            Type::Void,
+            false,
+        );
+        self.push_builtin_fn(
+            "__builtin_memchr",
+            vec![void_ptr(), Type::Int, Type::ULong],
+            void_ptr(),
+            false,
+        );
+
+        // libm builtins.
+        for name in [
+            "__builtin_sin",
+            "__builtin_cos",
+            "__builtin_tan",
+            "__builtin_exp",
+            "__builtin_exp2",
+            "__builtin_log",
+            "__builtin_log10",
+            "__builtin_log2",
+            "__builtin_sqrt",
+        ] {
+            self.push_builtin_fn(name, vec![Type::Double], Type::Double, false);
+        }
+        for name in ["__builtin_pow", "__builtin_fmod"] {
+            self.push_builtin_fn(name, vec![Type::Double, Type::Double], Type::Double, false);
+        }
+        self.push_builtin_fn("__builtin_lround", vec![Type::Double], Type::Long, false);
+        self.push_builtin_fn("__builtin_llround", vec![Type::Double], Type::Long, false);
+
+        // Source-location builtins (real per-call-site values are a lowering
+        // concern; a normal declared no-arg function is enough to parse).
+        self.push_builtin_fn("__builtin_FILE", vec![], void_ptr(), false);
+        self.push_builtin_fn("__builtin_FUNCTION", vec![], void_ptr(), false);
+        self.push_builtin_fn("__builtin_LINE", vec![], Type::Int, false);
+        self.push_builtin_fn("__builtin_COLUMN", vec![], Type::Int, false);
+
+        // Compile-time query builtins: lenient signatures since call sites pass
+        // varying pointee/operand types that already convert to void*/long today.
+        self.push_builtin_fn("__builtin_constant_p", vec![Type::Long], Type::Int, false);
+        self.push_builtin_fn(
+            "__builtin_object_size",
+            vec![void_ptr(), Type::Int],
+            Type::ULong,
+            false,
+        );
+
+        // Low-level GCC/clang atomic builtins (distinct from the <stdatomic.h>
+        // macros, which are pure library-level and don't need declarations).
+        self.push_builtin_fn(
+            "__atomic_test_and_set",
+            vec![void_ptr(), Type::Int],
+            Type::Bool,
+            false,
+        );
+        self.push_builtin_fn(
+            "__atomic_clear",
+            vec![void_ptr(), Type::Int],
+            Type::Void,
+            false,
+        );
     }
 
     fn declare_builtin_typedefs(&mut self) {
@@ -2654,6 +2808,12 @@ impl<'a> Parser<'a> {
         match &expr.kind {
             ExprKind::Var { .. } | ExprKind::Deref(_) | ExprKind::Member { .. } => true,
             ExprKind::Comma { rhs, .. } => self.is_lvalue(rhs),
+            // `__real__ z = ...` / `__imag__ z = ...` assign into one component of a
+            // _Complex lvalue.
+            ExprKind::Unary {
+                op: UnaryOp::Real | UnaryOp::Imag,
+                ..
+            } => true,
             _ => false,
         }
     }
@@ -3426,6 +3586,116 @@ impl<'a> Parser<'a> {
                 let new = Box::new(self.parse_assign()?);
                 self.expect_punct(Punct::RParen)?;
                 Ok(self.expr_at(ExprKind::Cas { addr, old, new }, location))
+            }
+            TokenKind::Ident(ref name)
+                if matches!(
+                    name.as_str(),
+                    "__builtin_add_overflow" | "__builtin_sub_overflow" | "__builtin_mul_overflow"
+                ) =>
+            {
+                // Operand widths vary per call site (int/unsigned/long long), so this
+                // can't be a single fixed-signature declared function. Parsing-only
+                // stand-in: `*result = a op b, 0` -- real overflow detection is a
+                // lowering concern once a lowerer for this AST exists.
+                let op = match name.as_str() {
+                    "__builtin_add_overflow" => BinaryOp::Add,
+                    "__builtin_sub_overflow" => BinaryOp::Sub,
+                    _ => BinaryOp::Mul,
+                };
+                let location = token.location;
+                self.pos += 1;
+                self.expect_punct(Punct::LParen)?;
+                let lhs = Box::new(self.parse_assign()?);
+                self.expect_punct(Punct::Comma)?;
+                let rhs = Box::new(self.parse_assign()?);
+                self.expect_punct(Punct::Comma)?;
+                let result_ptr = self.parse_assign()?;
+                self.expect_punct(Punct::RParen)?;
+                let target =
+                    Box::new(self.expr_at(ExprKind::Deref(Box::new(result_ptr)), location));
+                let value = self.expr_at(ExprKind::Binary { op, lhs, rhs }, location);
+                let assign = self.expr_at(
+                    ExprKind::Assign {
+                        lhs: target,
+                        rhs: Box::new(value),
+                    },
+                    location,
+                );
+                let zero = self.expr_at(
+                    ExprKind::Num {
+                        value: 0,
+                        fval: 0.0,
+                    },
+                    location,
+                );
+                let mut expr = self.expr_at(
+                    ExprKind::Comma {
+                        lhs: Box::new(assign),
+                        rhs: Box::new(zero),
+                    },
+                    location,
+                );
+                expr.ty = Some(Type::Int);
+                Ok(expr)
+            }
+            TokenKind::Ident(ref name) if name == "__builtin_complex" => {
+                // Result element type follows the argument type (float/double/long
+                // double); the imaginary part is dropped for now -- constructing a
+                // real complex value is a lowering concern once a lowerer exists.
+                let location = token.location;
+                self.pos += 1;
+                self.expect_punct(Punct::LParen)?;
+                let re = self.parse_assign()?;
+                self.expect_punct(Punct::Comma)?;
+                let im = self.parse_assign()?;
+                self.expect_punct(Punct::RParen)?;
+                let complex_ty = match re.ty {
+                    Some(Type::Float) => Type::FloatComplex,
+                    Some(Type::LDouble) => Type::LDoubleComplex,
+                    _ => Type::DoubleComplex,
+                };
+                let discard = self.expr_at(
+                    ExprKind::Cast {
+                        expr: Box::new(re),
+                        ty: complex_ty.clone(),
+                    },
+                    location,
+                );
+                let mut expr = self.expr_at(
+                    ExprKind::Comma {
+                        lhs: Box::new(im),
+                        rhs: Box::new(discard),
+                    },
+                    location,
+                );
+                expr.ty = Some(complex_ty);
+                Ok(expr)
+            }
+            TokenKind::Ident(ref name) if name == "__builtin_bit_cast" => {
+                let location = token.location;
+                self.pos += 1;
+                self.expect_punct(Punct::LParen)?;
+                let ty = self.parse_typename()?;
+                self.expect_punct(Punct::Comma)?;
+                let inner = self.parse_assign()?;
+                self.expect_punct(Punct::RParen)?;
+                let mut expr = self.expr_at(
+                    ExprKind::Cast {
+                        expr: Box::new(inner),
+                        ty: ty.clone(),
+                    },
+                    location,
+                );
+                expr.ty = Some(ty);
+                Ok(expr)
+            }
+            TokenKind::Ident(ref name) if name == "__builtin_addressof" => {
+                let location = token.location;
+                self.pos += 1;
+                self.expect_punct(Punct::LParen)?;
+                let inner = self.parse_assign()?;
+                self.expect_punct(Punct::RParen)?;
+                Ok(self.expr_at(ExprKind::Addr(Box::new(inner)), location))
             }
             TokenKind::Ident(ref name) if name == "__builtin_atomic_exchange" => {
                 let location = token.location;
