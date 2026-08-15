@@ -1,6 +1,6 @@
 use crate::parse::ast::{
-    BinaryOp, CaseRange, Expr, ExprKind, Member, Obj, Program, Relocation, Stmt, StmtKind,
-    SwitchCase, Type, UnaryOp, is_compatible,
+    BinaryOp, CaseRange, Expr, ExprKind, Member, NodeId, Obj, Program, Relocation, Stmt, StmtKind,
+    SwitchCase, Type, UnaryOp, is_compatible, next_node_id,
 };
 use crate::parse::error::{CompileError, CompileResult, SourceLocation};
 use crate::parse::lexer::{Keyword, Punct, Token, TokenKind};
@@ -12,6 +12,13 @@ use std::{
 pub fn parse(tokens: &[Token]) -> CompileResult<Program> {
     let mut parser = Parser::new(tokens);
     parser.parse_program()
+}
+
+fn type_node_id(ty: &Type) -> Option<NodeId> {
+    match ty {
+        Type::Struct { id, .. } | Type::Union { id, .. } | Type::Enum { id, .. } => Some(*id),
+        _ => None,
+    }
 }
 
 fn x87_to_bytes(value: rustc_apfloat::ieee::X87DoubleExtended) -> [u8; 16] {
@@ -54,6 +61,7 @@ struct Parser<'a> {
     pos: usize,
     locals: Vec<Obj>,
     globals: Vec<Obj>,
+    type_registry: HashMap<NodeId, Type>,
     string_label: usize,
     scopes: Vec<Scope>,
     current_fn_return: Option<Type>,
@@ -181,8 +189,10 @@ impl<'a> Parser<'a> {
             is_variadic,
         };
         self.globals.push(Obj {
+            id: next_node_id(),
             name: name.to_string(),
             ty,
+            location: self.last_location(),
             is_function: true,
             is_definition: false, // Declaration only
             ..Default::default()
@@ -198,8 +208,10 @@ impl<'a> Parser<'a> {
         };
         let alloca_idx = self.globals.len();
         self.globals.push(Obj {
+            id: next_node_id(),
             name: "alloca".to_string(),
             ty: alloca_ty,
+            location: self.last_location(),
             is_function: true,
             is_definition: false, // Declaration only
             ..Default::default()
@@ -430,6 +442,7 @@ impl<'a> Parser<'a> {
         self.scan_globals();
         Ok(Program {
             globals: mem::take(&mut self.globals),
+            types: mem::take(&mut self.type_registry),
         })
     }
 
@@ -2266,6 +2279,11 @@ impl<'a> Parser<'a> {
             self.push_tag_scope(name.clone(), ty);
         }
 
+        let stub_id = tag_name
+            .as_ref()
+            .and_then(|name| self.find_tag_in_current_scope(name))
+            .and_then(|ty| type_node_id(&ty));
+
         // Parse members
         self.expect_punct(Punct::LBrace)?;
         let (members, is_flexible) = self.parse_struct_members()?;
@@ -2274,6 +2292,12 @@ impl<'a> Parser<'a> {
             RecordKind::Struct => Type::complete_struct(members, tag_name.clone(), is_flexible),
             RecordKind::Union => Type::complete_union(members, tag_name.clone(), is_flexible),
         };
+        if let Some(id) = stub_id {
+            match &mut ty {
+                Type::Struct { id: ty_id, .. } | Type::Union { id: ty_id, .. } => *ty_id = id,
+                _ => {}
+            }
+        }
 
         // Parse trailing __attribute__((...)) after closing brace
         let attr_after = self.parse_record_attributes()?;
@@ -2376,6 +2400,7 @@ impl<'a> Parser<'a> {
                     basety.align() as i32
                 };
                 members.push(Member {
+                    id: next_node_id(),
                     name: String::new(), // Anonymous - no name
                     ty: basety,
                     location: self.last_location(),
@@ -2420,6 +2445,7 @@ impl<'a> Parser<'a> {
                 };
 
                 members.push(Member {
+                    id: next_node_id(),
                     name,
                     ty,
                     location: name_token.location,
@@ -2733,10 +2759,7 @@ impl<'a> Parser<'a> {
                 },
                 location,
             );
-            stmts.push(Stmt {
-                kind: StmtKind::Expr(addr_init),
-                location,
-            });
+            stmts.push(self.stmt_at(StmtKind::Expr(addr_init), location));
 
             // val = rhs
             let val_var = self.expr_at(
@@ -2753,10 +2776,7 @@ impl<'a> Parser<'a> {
                 },
                 location,
             );
-            stmts.push(Stmt {
-                kind: StmtKind::Expr(val_init),
-                location,
-            });
+            stmts.push(self.stmt_at(StmtKind::Expr(val_init), location));
 
             // old = *addr
             let old_var = self.expr_at(
@@ -2775,10 +2795,7 @@ impl<'a> Parser<'a> {
                 },
                 location,
             );
-            stmts.push(Stmt {
-                kind: StmtKind::Expr(old_init),
-                location,
-            });
+            stmts.push(self.stmt_at(StmtKind::Expr(old_init), location));
 
             // Create loop body: new = old op val
             let new_var = self.expr_at(
@@ -2827,26 +2844,20 @@ impl<'a> Parser<'a> {
             );
 
             // Create do-while loop
-            let loop_stmt = Stmt {
-                kind: StmtKind::DoWhile {
-                    body: Box::new(Stmt {
-                        kind: StmtKind::Block(vec![Stmt {
-                            kind: StmtKind::Expr(new_assign),
-                            location,
-                        }]),
+            let loop_stmt = self.stmt_at(
+                StmtKind::DoWhile {
+                    body: Box::new(self.stmt_at(
+                        StmtKind::Block(vec![self.stmt_at(StmtKind::Expr(new_assign), location)]),
                         location,
-                    }),
+                    )),
                     cond: not_cas,
                 },
                 location,
-            };
+            );
             stmts.push(loop_stmt);
 
             // Final expression is new
-            stmts.push(Stmt {
-                kind: StmtKind::Expr(new_var),
-                location,
-            });
+            stmts.push(self.stmt_at(StmtKind::Expr(new_var), location));
 
             return Ok(self.expr_at(ExprKind::StmtExpr(stmts), location));
         }
@@ -3542,22 +3553,7 @@ impl<'a> Parser<'a> {
 
     fn struct_ref(&self, mut lhs: Expr, name_token: Token) -> CompileResult<Expr> {
         self.add_type_expr(&mut lhs)?;
-        let members = match lhs.ty.clone().unwrap_or(Type::Int) {
-            Type::Struct {
-                members,
-                tag: Some(tag),
-                is_incomplete: true,
-                ..
-            }
-            | Type::Union {
-                members,
-                tag: Some(tag),
-                is_incomplete: true,
-                ..
-            } => match self.find_tag(&tag) {
-                Some(Type::Struct { members, .. } | Type::Union { members, .. }) => members,
-                _ => members,
-            },
+        let members = match self.canonicalize_type(lhs.ty.clone().unwrap_or(Type::Int)) {
             Type::Struct { members, .. } | Type::Union { members, .. } => members,
             _ => self.bail_at(lhs.location, "not a struct nor a union")?,
         };
@@ -4356,11 +4352,16 @@ impl<'a> Parser<'a> {
     }
 
     fn stmt_at(&self, kind: StmtKind, location: SourceLocation) -> Stmt {
-        Stmt { kind, location }
+        Stmt {
+            id: next_node_id(),
+            kind,
+            location,
+        }
     }
 
     fn expr_at(&self, kind: ExprKind, location: SourceLocation) -> Expr {
         Expr {
+            id: next_node_id(),
             kind,
             location,
             ty: None,
@@ -4572,7 +4573,7 @@ impl<'a> Parser<'a> {
             for scope in self.scopes.iter().rev() {
                 if let Some(var) = scope.vars.get(name) {
                     if let Some(ty) = var.type_def.clone() {
-                        return Some(self.resolve_typedef_type(ty));
+                        return Some(self.canonicalize_type(ty));
                     }
                     return None;
                 }
@@ -4581,43 +4582,10 @@ impl<'a> Parser<'a> {
         None
     }
 
-    fn resolve_typedef_type(&self, ty: Type) -> Type {
-        match ty {
-            Type::Struct {
-                members,
-                tag: Some(tag),
-                is_incomplete: true,
-                is_flexible,
-                is_packed,
-                align_override,
-                id,
-            } => self.find_tag(&tag).unwrap_or(Type::Struct {
-                members,
-                tag: Some(tag),
-                is_incomplete: true,
-                is_flexible,
-                is_packed,
-                align_override,
-                id,
-            }),
-            Type::Union {
-                members,
-                tag: Some(tag),
-                is_incomplete: true,
-                is_flexible,
-                is_packed,
-                align_override,
-                id,
-            } => self.find_tag(&tag).unwrap_or(Type::Union {
-                members,
-                tag: Some(tag),
-                is_incomplete: true,
-                is_flexible,
-                is_packed,
-                align_override,
-                id,
-            }),
-            other => other,
+    fn canonicalize_type(&self, ty: Type) -> Type {
+        match type_node_id(&ty).and_then(|id| self.type_registry.get(&id)) {
+            Some(canonical) => canonical.clone(),
+            None => ty,
         }
     }
 
@@ -4638,6 +4606,7 @@ impl<'a> Parser<'a> {
     }
 
     fn update_tag_in_current_scope(&mut self, name: &str, ty: Type) -> bool {
+        self.register_type(&ty);
         if let Some(scope) = self.scopes.last_mut()
             && let Some(existing) = scope.tags.get_mut(name)
         {
@@ -4648,8 +4617,15 @@ impl<'a> Parser<'a> {
     }
 
     fn push_tag_scope(&mut self, name: String, ty: Type) {
+        self.register_type(&ty);
         if let Some(scope) = self.scopes.last_mut() {
             scope.tags.insert(name, ty);
+        }
+    }
+
+    fn register_type(&mut self, ty: &Type) {
+        if let Some(id) = type_node_id(ty) {
+            self.type_registry.insert(id, ty.clone());
         }
     }
 
@@ -4657,8 +4633,10 @@ impl<'a> Parser<'a> {
         let idx = self.locals.len();
         let align = ty.align() as i32;
         self.locals.push(Obj {
+            id: next_node_id(),
             name,
             ty,
+            location: self.last_location(),
             is_local: true,
             align,
             ..Default::default()
@@ -4671,8 +4649,10 @@ impl<'a> Parser<'a> {
         let idx = self.globals.len();
         let align = ty.align() as i32;
         self.globals.push(Obj {
+            id: next_node_id(),
             name,
             ty,
+            location: self.last_location(),
             align,
             is_static: true,
             is_definition: true,
@@ -4697,13 +4677,17 @@ impl<'a> Parser<'a> {
         is_nodiscard: bool,
         is_maybe_unused: bool,
     ) {
+        let location = self.last_location();
+
         // Extract params from function type
         let params = if let Type::Func { params, .. } = &ty {
             params
                 .iter()
                 .map(|(name, param_ty)| Obj {
+                    id: next_node_id(),
                     name: name.clone(),
                     ty: param_ty.clone(),
+                    location,
                     is_local: true,
                     ..Default::default()
                 })
@@ -4713,8 +4697,10 @@ impl<'a> Parser<'a> {
         };
 
         self.globals.push(Obj {
+            id: next_node_id(),
             name,
             ty,
+            location,
             is_function: true,
             is_static,
             is_inline,
@@ -4779,8 +4765,10 @@ impl<'a> Parser<'a> {
         } else {
             // Create new function definition
             self.globals.push(Obj {
+                id: next_node_id(),
                 name,
                 ty,
+                location: self.last_location(),
                 is_function: true,
                 is_definition: true,
                 is_static,

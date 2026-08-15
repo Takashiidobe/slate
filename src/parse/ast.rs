@@ -1,20 +1,25 @@
 use crate::parse::error::SourceLocation;
 use rustc_apfloat::ieee::X87DoubleExtended;
+use std::collections::HashMap;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
-static TYPE_ID: AtomicUsize = AtomicUsize::new(1);
+pub type NodeId = usize;
 
-fn next_type_id() -> usize {
-    TYPE_ID.fetch_add(1, Ordering::Relaxed)
+static NODE_ID: AtomicUsize = AtomicUsize::new(1);
+
+pub fn next_node_id() -> NodeId {
+    NODE_ID.fetch_add(1, Ordering::Relaxed)
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Program {
     pub globals: Vec<Obj>,
+    pub types: HashMap<NodeId, Type>,
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Member {
+    pub id: NodeId,
     pub name: String,
     pub ty: Type,
     pub location: SourceLocation,
@@ -40,6 +45,7 @@ impl Member {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Stmt {
+    pub id: NodeId,
     pub kind: StmtKind,
     pub location: SourceLocation,
 }
@@ -99,6 +105,7 @@ pub enum StmtKind {
 
 #[derive(Default, Debug, Clone, PartialEq)]
 pub struct Expr {
+    pub id: NodeId,
     pub kind: ExprKind,
     pub location: SourceLocation,
     pub ty: Option<Type>,
@@ -226,8 +233,10 @@ pub struct Relocation {
 
 #[derive(Default, Debug, Clone, PartialEq)]
 pub struct Obj {
+    pub id: NodeId,
     pub name: String,
     pub ty: Type,
+    pub location: SourceLocation,
     pub is_local: bool,
     pub align: i32,
 
@@ -307,7 +316,7 @@ pub enum Type {
     IntComplex(Box<Type>),
     Enum {
         base: Box<Type>,
-        id: usize,
+        id: NodeId,
     },
     NullPtr,
     Ptr(Box<Type>),
@@ -324,7 +333,7 @@ pub enum Type {
         is_flexible: bool,
         is_packed: bool,
         align_override: i64,
-        id: usize,
+        id: NodeId,
     },
     Union {
         members: Vec<Member>,
@@ -333,7 +342,7 @@ pub enum Type {
         is_flexible: bool,
         is_packed: bool,
         align_override: i64,
-        id: usize,
+        id: NodeId,
     },
     Array {
         base: Box<Type>,
@@ -612,7 +621,7 @@ impl Type {
             is_flexible: false,
             is_packed: false,
             align_override: 0,
-            id: next_type_id(),
+            id: next_node_id(),
         }
     }
 
@@ -624,7 +633,7 @@ impl Type {
             is_flexible,
             is_packed: false,
             align_override: 0,
-            id: next_type_id(),
+            id: next_node_id(),
         }
     }
 
@@ -636,7 +645,7 @@ impl Type {
             is_flexible: false,
             is_packed: false,
             align_override: 0,
-            id: next_type_id(),
+            id: next_node_id(),
         }
     }
 
@@ -648,14 +657,14 @@ impl Type {
             is_flexible,
             is_packed: false,
             align_override: 0,
-            id: next_type_id(),
+            id: next_node_id(),
         }
     }
 
     pub fn enum_type(base: Type) -> Type {
         Type::Enum {
             base: Box::new(base),
-            id: next_type_id(),
+            id: next_node_id(),
         }
     }
 }
