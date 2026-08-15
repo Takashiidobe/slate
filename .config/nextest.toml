@@ -16,6 +16,9 @@ default-filter = '''
   )
 '''
 
+[profile.native-lowering]
+default-filter = 'test(generated_differential_native)'
+
 [profile.lowering]
 default-filter = '''
   test(generated_differential)

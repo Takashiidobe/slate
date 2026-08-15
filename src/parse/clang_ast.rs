@@ -1,4 +1,5 @@
-use clang_ast::{Id, SourceLocation, SourceRange};
+pub use clang_ast::SourceLocation;
+use clang_ast::{Id, SourceRange};
 use serde::Deserialize;
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitStatus};
@@ -14,7 +15,9 @@ pub struct QualType {
 
 impl QualType {
     pub fn canonical(&self) -> &str {
-        self.desugared_qual_type.as_deref().unwrap_or(&self.qual_type)
+        self.desugared_qual_type
+            .as_deref()
+            .unwrap_or(&self.qual_type)
     }
 }
 
@@ -327,7 +330,10 @@ pub fn dump_tree(node: &Node, depth: usize, out: &mut String) {
                 write_range(out, range);
             }
         }
-        Clang::FieldDecl(d) | Clang::TypedefDecl(d) | Clang::EnumDecl(d) | Clang::EnumConstantDecl(d) => {
+        Clang::FieldDecl(d)
+        | Clang::TypedefDecl(d)
+        | Clang::EnumDecl(d)
+        | Clang::EnumConstantDecl(d) => {
             let kind = match &node.kind {
                 Clang::FieldDecl(_) => "FieldDecl",
                 Clang::TypedefDecl(_) => "TypedefDecl",

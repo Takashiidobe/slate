@@ -8,4 +8,5 @@ mod native_lowerer;
 pub mod preprocess;
 
 pub use lowerer::*;
+pub use native_lowerer::LowerError;
 pub(crate) use native_lowerer::lower_program;

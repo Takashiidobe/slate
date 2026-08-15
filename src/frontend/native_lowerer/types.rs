@@ -50,30 +50,34 @@ pub(crate) struct RecordInfo {
 
 pub(crate) type RecordRegistry = HashMap<String, RecordInfo>;
 
+const QUALIFIER_WORDS: &[&str] = &[
+    "const",
+    "volatile",
+    "restrict",
+    "_Atomic",
+    "_Nonnull",
+    "_Nullable",
+    "_Null_unspecified",
+];
+
 fn strip_qualifiers(s: &str) -> &str {
     let mut s = s.trim();
     loop {
-        let stripped = s
-            .strip_prefix("const ")
-            .or_else(|| s.strip_prefix("volatile "))
-            .or_else(|| s.strip_prefix("restrict "))
-            .or_else(|| s.strip_prefix("_Atomic "))
-            .map(str::trim_start);
-        match stripped {
-            Some(rest) => s = rest,
-            None => break,
+        let before = s;
+        for word in QUALIFIER_WORDS {
+            if let Some(rest) = s.strip_prefix(word)
+                && rest.starts_with(char::is_whitespace)
+            {
+                s = rest.trim_start();
+            }
+            if let Some(rest) = s.strip_suffix(word)
+                && (rest.is_empty() || rest.ends_with(char::is_whitespace) || rest.ends_with('*'))
+            {
+                s = rest.trim_end();
+            }
         }
-        if let Some(rest) = s.strip_suffix(" const") {
-            s = rest.trim_end();
-            continue;
-        }
-        if let Some(rest) = s.strip_suffix(" volatile") {
-            s = rest.trim_end();
-            continue;
-        }
-        if let Some(rest) = s.strip_suffix(" restrict") {
-            s = rest.trim_end();
-            continue;
+        if s == before {
+            break;
         }
     }
     s
@@ -244,7 +248,12 @@ impl CType {
     pub(crate) fn is_unsigned(&self) -> bool {
         matches!(
             self,
-            CType::UChar | CType::UShort | CType::UInt | CType::ULong | CType::ULongLong | CType::UInt128
+            CType::UChar
+                | CType::UShort
+                | CType::UInt
+                | CType::ULong
+                | CType::ULongLong
+                | CType::UInt128
         )
     }
 
@@ -310,9 +319,7 @@ impl CType {
             CType::UInt128 => Type::Prim(Prim::U128),
             CType::Float => Type::Prim(Prim::F32),
             CType::Double => Type::Prim(Prim::F64),
-            CType::LDouble if crate::cir::emit::uses_f64_long_double_abi() => {
-                Type::Prim(Prim::F64)
-            }
+            CType::LDouble if crate::cir::emit::uses_f64_long_double_abi() => Type::Prim(Prim::F64),
             CType::LDouble => Type::LongDouble,
             CType::Enum { .. } => Type::Prim(Prim::I32),
             CType::Ptr(inner) => match inner.as_ref() {
@@ -335,7 +342,10 @@ impl CType {
                 params,
                 is_variadic,
             } => Self::lower_fn_ptr(return_ty, params, *is_variadic, records),
-            CType::Record { tag, .. } => Type::Custom(rust_record_name(tag)),
+            CType::Record { tag, .. } => match clib_record_type(bare_tag_name(tag)) {
+                Some(clib) => Type::CLib(clib),
+                None => Type::Custom(rust_record_name(tag)),
+            },
             CType::Array { base, len } => Type::Array {
                 elem: Box::new(base.lower(records)),
                 len: len.unwrap_or(0).max(0) as u64,
@@ -362,11 +372,14 @@ impl CType {
     }
 }
 
-pub(crate) fn rust_record_name(tag: &str) -> String {
-    let name = tag
-        .strip_prefix("struct ")
+fn bare_tag_name(tag: &str) -> &str {
+    tag.strip_prefix("struct ")
         .or_else(|| tag.strip_prefix("union "))
-        .unwrap_or(tag);
+        .unwrap_or(tag)
+}
+
+pub(crate) fn rust_record_name(tag: &str) -> String {
+    let name = bare_tag_name(tag);
     clib_record_type(name)
         .map(|ty| ty.c_name().to_string())
         .unwrap_or_else(|| sanitize_ident(name).into_string())

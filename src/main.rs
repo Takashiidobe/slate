@@ -19,9 +19,7 @@ fn usage() -> ExitCode {
     eprintln!(
         "  fixup-debug  <file.c> [--up-to-pass <pass>|--only-pass <pass>|--debug-only-pass <pass>]  print fixup pass trace"
     );
-    eprintln!(
-        "  translate   [--frontend cir|native] [clang args...] <file.c>  C -> Rust"
-    );
+    eprintln!("  translate   [--frontend cir|native] [clang args...] <file.c>  C -> Rust");
     eprintln!(
         "  translate-lowered  <file.c>  C -> Rust, raw lowered output with no fixup passes applied"
     );

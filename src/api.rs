@@ -84,6 +84,12 @@ pub enum Error {
         #[source]
         source: parse::clang_ast::ClangAstError,
     },
+    #[error("lower {path} with native frontend: {source}")]
+    NativeLowering {
+        path: PathBuf,
+        #[source]
+        source: frontend::LowerError,
+    },
     #[error("resolve target for {path}: {source}")]
     Target {
         path: PathBuf,
@@ -262,13 +268,20 @@ pub fn parse_native(path: &Path) -> Result<parse::clang_ast::Node, Error> {
 
 pub fn translate_native(path: &Path) -> Result<String, Error> {
     let tu = parse_native(path)?;
-    let rust_program = frontend::lower_program(&tu);
+    let rust_program =
+        frontend::lower_program(&tu, path).map_err(|source| Error::NativeLowering {
+            path: path.to_path_buf(),
+            source,
+        })?;
     Ok(backend::apply_with(rust_program, &skip_set_from_env()?).emit())
 }
 
 pub fn lowered_program_native(path: &Path) -> Result<rust_ast::Program, Error> {
     let tu = parse_native(path)?;
-    Ok(frontend::lower_program(&tu))
+    frontend::lower_program(&tu, path).map_err(|source| Error::NativeLowering {
+        path: path.to_path_buf(),
+        source,
+    })
 }
 
 pub fn skip_set_from_env() -> Result<backend::SkipSet, Error> {

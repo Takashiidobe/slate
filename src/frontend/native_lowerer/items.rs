@@ -1,14 +1,63 @@
 use super::types::{self, CType, RecordInfo};
-use super::{Ctx, Env, VarInfo};
+use super::{Ctx, Env, LResult, LowerError, VarInfo};
 use crate::backend::rust_ast::{
     Abi, ExternDecl, ExternFnDecl, FnDef, FnParam, Item, RecordDef, RecordField, Type, Visibility,
 };
 use crate::function_identity::FunctionIdentity;
-use crate::parse::clang_ast::{Clang, Decl, Node};
+use crate::parse::clang_ast::{Clang, Decl, Node, SourceLocation};
+use clang_ast::Id;
 use std::collections::HashSet;
+use std::path::Path;
 
 fn qual_type_str(qt: &Option<crate::parse::clang_ast::QualType>) -> &str {
     qt.as_ref().map(|t| t.canonical()).unwrap_or("int")
+}
+
+fn same_file(a: &Path, b: &Path) -> bool {
+    match (std::fs::canonicalize(a), std::fs::canonicalize(b)) {
+        (Ok(a), Ok(b)) => a == b,
+        _ => a == b,
+    }
+}
+
+fn is_primary_loc(loc: &Option<SourceLocation>, primary: &Path) -> bool {
+    let Some(bare) = loc
+        .as_ref()
+        .and_then(|loc| loc.spelling_loc.as_ref().or(loc.expansion_loc.as_ref()))
+    else {
+        return false;
+    };
+    same_file(Path::new(bare.file.as_ref()), primary)
+}
+
+fn has_body(node: &Node) -> bool {
+    node.inner
+        .iter()
+        .any(|c| matches!(c.kind, Clang::CompoundStmt(_)))
+}
+
+fn collect_used_ids(node: &Node, used: &mut HashSet<Id>) {
+    if let Clang::DeclRefExpr(r) = &node.kind {
+        used.insert(r.referenced_decl.id);
+    }
+    for child in &node.inner {
+        collect_used_ids(child, used);
+    }
+}
+
+fn used_ids(tu: &Node, primary: &Path) -> HashSet<Id> {
+    let mut used = HashSet::new();
+    for node in &tu.inner {
+        let primary_here = match &node.kind {
+            Clang::FunctionDecl(d) | Clang::VarDecl(d) => is_primary_loc(&d.loc, primary),
+            Clang::RecordDecl(r) => is_primary_loc(&r.loc, primary),
+            _ => false,
+        };
+        if primary_here {
+            collect_used_ids(node, &mut used);
+        }
+    }
+    used
 }
 
 pub(crate) fn collect_top_level(tu: &Node, ctx: &mut Ctx) {
@@ -21,9 +70,10 @@ pub(crate) fn collect_top_level(tu: &Node, ctx: &mut Ctx) {
                     .inner
                     .iter()
                     .filter_map(|field| match &field.kind {
-                        Clang::FieldDecl(d) => {
-                            Some((d.name.clone().unwrap_or_default(), CType::parse(qual_type_str(&d.qual_type))))
-                        }
+                        Clang::FieldDecl(d) => Some((
+                            d.name.clone().unwrap_or_default(),
+                            CType::parse(qual_type_str(&d.qual_type)),
+                        )),
                         _ => None,
                     })
                     .collect();
@@ -58,21 +108,54 @@ pub(crate) fn collect_top_level(tu: &Node, ctx: &mut Ctx) {
     }
 }
 
-pub(crate) fn lower_items(tu: &Node, ctx: &mut Ctx) -> Vec<Item> {
+pub(crate) fn lower_items(tu: &Node, ctx: &mut Ctx, primary: &Path) -> LResult<Vec<Item>> {
+    let used = used_ids(tu, primary);
+
+    let mut defined_fn_names: HashSet<String> = HashSet::new();
+    for node in &tu.inner {
+        if let Clang::FunctionDecl(d) = &node.kind
+            && has_body(node)
+            && (is_primary_loc(&d.loc, primary) || used.contains(&node.id))
+        {
+            defined_fn_names.insert(d.name.clone().unwrap_or_default());
+        }
+    }
+
     let mut items = Vec::new();
     let mut emitted_records: HashSet<String> = HashSet::new();
+    let mut emitted_fns: HashSet<String> = HashSet::new();
+    let mut emitted_externs: HashSet<String> = HashSet::new();
+
     for node in &tu.inner {
         match &node.kind {
             Clang::FunctionDecl(d) if !d.is_implicit => {
-                let mut extra = Vec::new();
-                let fn_item = lower_function(node, d, ctx, &mut extra);
-                items.extend(extra);
-                items.push(fn_item);
+                let name = d.name.clone().unwrap_or_default();
+                if has_body(node)
+                    && defined_fn_names.contains(&name)
+                    && emitted_fns.insert(name.clone())
+                {
+                    let mut extra = Vec::new();
+                    let fn_item = lower_function(node, d, ctx, &mut extra)?;
+                    items.extend(extra);
+                    items.push(fn_item);
+                } else if !defined_fn_names.contains(&name)
+                    && used.contains(&node.id)
+                    && emitted_externs.insert(name)
+                {
+                    items.push(lower_function(node, d, ctx, &mut Vec::new())?);
+                }
             }
             Clang::VarDecl(d) if !d.is_implicit => {
-                items.push(lower_global(node, d, ctx));
+                let primary_here = is_primary_loc(&d.loc, primary);
+                if primary_here {
+                    items.push(lower_global(node, d, ctx, false)?);
+                } else if used.contains(&node.id) {
+                    items.push(lower_global(node, d, ctx, true)?);
+                }
             }
-            Clang::RecordDecl(r) if r.complete_definition && !r.is_implicit => {
+            Clang::RecordDecl(r)
+                if r.complete_definition && !r.is_implicit && is_primary_loc(&r.loc, primary) =>
+            {
                 let Some(name) = &r.name else { continue };
                 let tag = format!("{} {}", r.tag_used.as_deref().unwrap_or("struct"), name);
                 if emitted_records.insert(tag.clone())
@@ -84,17 +167,22 @@ pub(crate) fn lower_items(tu: &Node, ctx: &mut Ctx) -> Vec<Item> {
             _ => {}
         }
     }
-    items
+    Ok(items)
 }
 
-fn lower_function(node: &Node, d: &Decl, ctx: &mut Ctx, extra_items: &mut Vec<Item>) -> Item {
+fn lower_function(
+    node: &Node,
+    d: &Decl,
+    ctx: &mut Ctx,
+    extra_items: &mut Vec<Item>,
+) -> LResult<Item> {
     let CType::Func {
         return_ty,
         params: proto_params,
         is_variadic,
     } = CType::parse(qual_type_str(&d.qual_type))
     else {
-        unreachable!("FunctionDecl with non-function type")
+        return Err(LowerError::NonFunctionType(d.name.clone()));
     };
     let name = d.name.clone().unwrap_or_default();
     let body_node = node
@@ -110,13 +198,18 @@ fn lower_function(node: &Node, d: &Decl, ctx: &mut Ctx, extra_items: &mut Vec<It
     let fn_params: Vec<FnParam> = if !param_decls.is_empty() {
         param_decls
             .iter()
-            .map(|p| {
+            .enumerate()
+            .map(|(i, p)| {
                 let Clang::ParmVarDecl(pd) = &p.kind else {
                     unreachable!()
                 };
                 let ty = CType::parse(qual_type_str(&pd.qual_type));
+                let name = match &pd.name {
+                    Some(name) if !name.is_empty() => name.clone(),
+                    _ => format!("arg{i}"),
+                };
                 FnParam {
-                    name: pd.name.clone().unwrap_or_default(),
+                    name,
                     mutable: false,
                     ty: ty.lower(&ctx.records),
                 }
@@ -144,7 +237,7 @@ fn lower_function(node: &Node, d: &Decl, ctx: &mut Ctx, extra_items: &mut Vec<It
     };
 
     let Some(body) = body_node else {
-        return Item::ExternBlock {
+        return Ok(Item::ExternBlock {
             abi: Abi::C.spelling().to_string(),
             decls: vec![ExternDecl::Fn(ExternFnDecl {
                 name,
@@ -155,19 +248,19 @@ fn lower_function(node: &Node, d: &Decl, ctx: &mut Ctx, extra_items: &mut Vec<It
                 ret,
                 safe: false,
             })],
-        };
+        });
     };
 
-    collect_locals(node, &name, ctx, extra_items);
+    collect_locals(node, &name, ctx, extra_items)?;
 
     let env = Env {
         vars: &ctx.vars,
         records: &ctx.records,
         is_main: name == "main",
     };
-    let body_stmts = super::stmts::lower_function_body(body, env);
+    let body_stmts = super::stmts::lower_function_body(body, env)?;
 
-    Item::Fn(FnDef {
+    Ok(Item::Fn(FnDef {
         attrs: Vec::new(),
         vis: Visibility::Private,
         unsafe_: name != "main",
@@ -176,10 +269,15 @@ fn lower_function(node: &Node, d: &Decl, ctx: &mut Ctx, extra_items: &mut Vec<It
         params: fn_params,
         ret,
         body: body_stmts,
-    })
+    }))
 }
 
-fn collect_locals(node: &Node, fn_name: &str, ctx: &mut Ctx, extra_items: &mut Vec<Item>) {
+fn collect_locals(
+    node: &Node,
+    fn_name: &str,
+    ctx: &mut Ctx,
+    extra_items: &mut Vec<Item>,
+) -> LResult<()> {
     match &node.kind {
         Clang::ParmVarDecl(d) => {
             ctx.vars.insert(
@@ -200,11 +298,10 @@ fn collect_locals(node: &Node, fn_name: &str, ctx: &mut Ctx, extra_items: &mut V
                     records: &ctx.records,
                     is_main: false,
                 };
-                let init = node
-                    .inner
-                    .first()
-                    .map(|c| super::globals::lower_init(c, &ty, env))
-                    .unwrap_or_else(|| super::globals::zero_value(&ty, &ctx.records));
+                let init = match node.inner.first() {
+                    Some(c) => super::globals::lower_init(c, &ty, env)?,
+                    None => super::globals::zero_value(&ty, &ctx.records),
+                };
                 extra_items.push(Item::Static {
                     attrs: Vec::new(),
                     vis: Visibility::Private,
@@ -221,17 +318,19 @@ fn collect_locals(node: &Node, fn_name: &str, ctx: &mut Ctx, extra_items: &mut V
         _ => {}
     }
     for child in &node.inner {
-        collect_locals(child, fn_name, ctx, extra_items);
+        collect_locals(child, fn_name, ctx, extra_items)?;
     }
+    Ok(())
 }
 
-fn lower_global(node: &Node, d: &Decl, ctx: &Ctx) -> Item {
+fn lower_global(node: &Node, d: &Decl, ctx: &Ctx, force_extern: bool) -> LResult<Item> {
     let ty = CType::parse(qual_type_str(&d.qual_type));
     let rust_ty = ty.lower(&ctx.records);
     let name = d.name.clone().unwrap_or_default();
-    let is_extern = d.storage_class.as_deref() == Some("extern") && node.inner.is_empty();
+    let is_extern =
+        force_extern || (d.storage_class.as_deref() == Some("extern") && node.inner.is_empty());
     if is_extern {
-        return Item::ExternBlock {
+        return Ok(Item::ExternBlock {
             abi: Abi::C.spelling().to_string(),
             decls: vec![ExternDecl::Static {
                 attrs: Vec::new(),
@@ -239,26 +338,25 @@ fn lower_global(node: &Node, d: &Decl, ctx: &Ctx) -> Item {
                 name,
                 ty: rust_ty,
             }],
-        };
+        });
     }
     let env = Env {
         vars: &ctx.vars,
         records: &ctx.records,
         is_main: false,
     };
-    let init = node
-        .inner
-        .first()
-        .map(|c| super::globals::lower_init(c, &ty, env))
-        .unwrap_or_else(|| super::globals::zero_value(&ty, &ctx.records));
-    Item::Static {
+    let init = match node.inner.first() {
+        Some(c) => super::globals::lower_init(c, &ty, env)?,
+        None => super::globals::zero_value(&ty, &ctx.records),
+    };
+    Ok(Item::Static {
         attrs: Vec::new(),
         vis: Visibility::Private,
         mutable: true,
         name,
         ty: rust_ty,
         init,
-    }
+    })
 }
 
 fn lower_record_def(tag: &str, info: &RecordInfo, ctx: &Ctx) -> Item {

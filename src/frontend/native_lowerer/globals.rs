@@ -1,5 +1,5 @@
 use super::types::{CType, RecordRegistry};
-use super::Env;
+use super::{Env, LResult};
 use crate::backend::rust_ast::{Expr, RustValue};
 use crate::parse::clang_ast::{Clang, Node};
 
@@ -35,57 +35,59 @@ pub(crate) fn zero_value(ty: &CType, records: &RecordRegistry) -> Expr {
     }
 }
 
-pub(crate) fn lower_init(node: &Node, ty: &CType, env: Env) -> Expr {
+pub(crate) fn lower_init(node: &Node, ty: &CType, env: Env) -> LResult<Expr> {
     match (&node.kind, ty) {
         (Clang::InitListExpr(_), CType::Record { tag, is_union }) => {
             let Some(info) = env.records.get(tag) else {
-                return zero_value(ty, env.records);
+                return Ok(zero_value(ty, env.records));
             };
             if *is_union {
                 let Some((name, field_ty)) = info.fields.first() else {
-                    return Expr::Value(RustValue::I64(0));
+                    return Ok(Expr::Value(RustValue::I64(0)));
                 };
-                let value = node
-                    .inner
-                    .first()
-                    .map(|c| lower_init(c, field_ty, env))
-                    .unwrap_or_else(|| zero_value(field_ty, env.records));
-                return Expr::StructLit {
+                let value = match node.inner.first() {
+                    Some(c) => lower_init(c, field_ty, env)?,
+                    None => zero_value(field_ty, env.records),
+                };
+                return Ok(Expr::StructLit {
                     name: super::types::rust_record_name(tag),
                     fields: vec![(name.clone(), value)],
-                };
+                });
             }
             let mut children = node.inner.iter();
             let fields = info
                 .fields
                 .iter()
                 .map(|(name, field_ty)| {
-                    let value = children
-                        .next()
-                        .map(|c| lower_init(c, field_ty, env))
-                        .unwrap_or_else(|| zero_value(field_ty, env.records));
-                    (name.clone(), value)
+                    let value = match children.next() {
+                        Some(c) => lower_init(c, field_ty, env)?,
+                        None => zero_value(field_ty, env.records),
+                    };
+                    Ok((name.clone(), value))
                 })
-                .collect();
-            Expr::StructLit {
+                .collect::<LResult<Vec<_>>>()?;
+            Ok(Expr::StructLit {
                 name: super::types::rust_record_name(tag),
                 fields,
-            }
+            })
         }
         (Clang::InitListExpr(_), CType::Array { base, len }) => {
-            let elems: Vec<Expr> = node.inner.iter().map(|c| lower_init(c, base, env)).collect();
+            let elems = node
+                .inner
+                .iter()
+                .map(|c| lower_init(c, base, env))
+                .collect::<LResult<Vec<_>>>()?;
             let pad = len
                 .map(|len| (len as usize).saturating_sub(elems.len()))
                 .unwrap_or(0);
             let mut all = elems;
             all.extend((0..pad).map(|_| zero_value(base, env.records)));
-            Expr::ArrayLit(all)
+            Ok(Expr::ArrayLit(all))
         }
-        (Clang::InitListExpr(_), _) => node
-            .inner
-            .first()
-            .map(|c| lower_init(c, ty, env))
-            .unwrap_or_else(|| zero_value(ty, env.records)),
+        (Clang::InitListExpr(_), _) => match node.inner.first() {
+            Some(c) => lower_init(c, ty, env),
+            None => Ok(zero_value(ty, env.records)),
+        },
         _ => super::exprs::lower_expr(node, env),
     }
 }
