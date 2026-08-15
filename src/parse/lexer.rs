@@ -333,6 +333,7 @@ pub enum TokenKind {
         value: i64,
         fval: f64,
         ty: Type,
+        ldouble: Option<rustc_apfloat::ieee::X87DoubleExtended>,
     },
     PPNum, // Preprocessing numbers
     Str {
@@ -583,9 +584,8 @@ impl Token {
             };
             if rest.eq_ignore_ascii_case("wb") {
                 let is_signed = !has_u_prefix;
-                let width = (integer_literal_bit_width(&num_str, base)
-                    + u32::from(is_signed))
-                .min(512);
+                let width =
+                    (integer_literal_bit_width(&num_str, base) + u32::from(is_signed)).min(512);
                 self.kind = TokenKind::Num {
                     value: 0,
                     fval: 0.0,
@@ -593,6 +593,7 @@ impl Token {
                         width: width as i32,
                         is_signed,
                     },
+                    ldouble: None,
                 };
                 return Ok(());
             }
@@ -686,6 +687,7 @@ impl Token {
             value: value as i64,
             fval: 0.0,
             ty,
+            ldouble: None,
         };
         Ok(())
     }
@@ -733,6 +735,21 @@ impl Token {
         let cleaned = parse_str.replace('\'', "");
         let parse_clean = cleaned.as_str();
 
+        if matches!(ty, Type::LDouble | Type::LDoubleComplex) {
+            let value = parse_clean
+                .parse::<rustc_apfloat::ieee::X87DoubleExtended>()
+                .map_err(|_| {
+                    CompileError::at("invalid numeric constant".to_string(), self.location)
+                })?;
+            self.kind = TokenKind::Num {
+                value: 0,
+                fval: 0.0,
+                ty,
+                ldouble: Some(value),
+            };
+            return Ok(());
+        }
+
         let fval = if parse_clean.starts_with("0x") || parse_clean.starts_with("0X") {
             parse_hex_float(parse_clean).ok_or_else(|| {
                 CompileError::at("invalid numeric constant".to_string(), self.location)
@@ -743,7 +760,12 @@ impl Token {
             })?
         };
 
-        self.kind = TokenKind::Num { value: 0, fval, ty };
+        self.kind = TokenKind::Num {
+            value: 0,
+            fval,
+            ty,
+            ldouble: None,
+        };
         Ok(())
     }
 }
@@ -1119,6 +1141,7 @@ impl<'a> Lexer<'a> {
                         value,
                         fval: 0.0,
                         ty: Type::Int,
+                        ldouble: None,
                     },
                     location,
                     at_bol: self.at_bol,
@@ -1143,6 +1166,7 @@ impl<'a> Lexer<'a> {
                         value,
                         fval: 0.0,
                         ty: Type::UShort,
+                        ldouble: None,
                     },
                     location,
                     at_bol: self.at_bol,
@@ -1166,6 +1190,7 @@ impl<'a> Lexer<'a> {
                         value,
                         fval: 0.0,
                         ty: Type::UInt,
+                        ldouble: None,
                     },
                     location,
                     at_bol: self.at_bol,
@@ -1304,6 +1329,7 @@ impl<'a> Lexer<'a> {
                         value,
                         fval: 0.0,
                         ty: Type::Int,
+                        ldouble: None,
                     },
                     location,
                     at_bol: self.at_bol,

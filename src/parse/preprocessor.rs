@@ -1048,6 +1048,7 @@ fn new_num_token(value: i64, tmpl: &Token) -> Token {
         value,
         fval: 0.0,
         ty: Type::Int,
+        ldouble: None,
     };
     tok.len = 1;
     tok

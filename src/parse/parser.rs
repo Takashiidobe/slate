@@ -14,6 +14,31 @@ pub fn parse(tokens: &[Token]) -> CompileResult<Program> {
     parser.parse_program()
 }
 
+fn x87_to_bytes(value: rustc_apfloat::ieee::X87DoubleExtended) -> [u8; 16] {
+    use rustc_apfloat::Float;
+
+    let mut out = [0u8; 16];
+    let be = value.to_bits().to_be_bytes();
+    out[..10].copy_from_slice(&be[6..]);
+    out[..10].reverse();
+    out
+}
+
+fn x87_to_f64(value: rustc_apfloat::ieee::X87DoubleExtended) -> f64 {
+    use rustc_apfloat::{Float, FloatConvert};
+
+    let mut loses_info = false;
+    let double: rustc_apfloat::ieee::Double = value.convert(&mut loses_info).value;
+    f64::from_bits(double.to_bits() as u64)
+}
+
+fn f64_to_x87_bytes(val: f64) -> [u8; 16] {
+    format!("{val}")
+        .parse::<rustc_apfloat::ieee::X87DoubleExtended>()
+        .map(x87_to_bytes)
+        .unwrap_or([0u8; 16])
+}
+
 pub fn const_expr(tokens: &[Token]) -> CompileResult<i64> {
     let mut parser = Parser::new(tokens);
     let value = parser.const_expr()?;
@@ -3861,11 +3886,14 @@ impl<'a> Parser<'a> {
                 value,
                 fval,
                 ref ty,
+                ldouble,
             } => {
                 let raw_text = matches!(ty, Type::BitInt { .. }).then(|| token.text());
                 self.pos += 1;
                 let expr_kind = if let Some(raw) = raw_text {
                     ExprKind::BigIntLiteral { raw }
+                } else if let Some(value) = ldouble {
+                    ExprKind::LDoubleLiteral { value }
                 } else if ty.is_flonum() || ty.is_complex() {
                     ExprKind::Num { value: 0, fval }
                 } else {
@@ -5953,33 +5981,19 @@ impl<'a> Parser<'a> {
 
     /// Read a value from a buffer based on size (1, 2, 4, or 8 bytes).
     fn read_buf(buf: &[u8], sz: usize, offset: usize) -> u64 {
-        match sz {
-            1 => buf[offset] as u64,
-            2 => {
-                let bytes: [u8; 2] = buf[offset..offset + 2].try_into().unwrap();
-                u16::from_le_bytes(bytes) as u64
-            }
-            4 => {
-                let bytes: [u8; 4] = buf[offset..offset + 4].try_into().unwrap();
-                u32::from_le_bytes(bytes) as u64
-            }
-            8 => {
-                let bytes: [u8; 8] = buf[offset..offset + 8].try_into().unwrap();
-                u64::from_le_bytes(bytes)
-            }
-            _ => panic!("Invalid size: {}", sz),
-        }
+        let n = sz.min(8);
+        let mut bytes = [0u8; 8];
+        bytes[..n].copy_from_slice(&buf[offset..offset + n]);
+        u64::from_le_bytes(bytes)
     }
 
     /// Write a value to a buffer based on size (1, 2, 4, or 8 bytes).
     fn write_buf(buf: &mut [u8], val: u64, sz: usize, offset: usize) {
-        match sz {
-            1 | 2 | 4 | 8 => {
-                let bytes = val.to_le_bytes();
-                let truncated_bytes = &bytes[..sz];
-                buf[offset..offset + sz].copy_from_slice(truncated_bytes);
-            }
-            _ => panic!("Invalid size: {}", sz),
+        let n = sz.min(8);
+        let bytes = val.to_le_bytes();
+        buf[offset..offset + n].copy_from_slice(&bytes[..n]);
+        for b in &mut buf[offset + n..offset + sz] {
+            *b = 0;
         }
     }
 
@@ -6051,6 +6065,21 @@ impl<'a> Parser<'a> {
             let mut expr_clone = expr.clone();
             let val = self.eval_double(&mut expr_clone)?;
             let bytes = val.to_le_bytes();
+            let end = offset + bytes.len();
+            buf[offset..end].copy_from_slice(&bytes);
+            return Ok(Vec::new());
+        }
+
+        if let Type::LDouble = &init.ty
+            && let Some(expr) = &init.expr
+        {
+            let bytes = if let ExprKind::LDoubleLiteral { value } = &expr.kind {
+                x87_to_bytes(*value)
+            } else {
+                let mut expr_clone = expr.clone();
+                let val = self.eval_double(&mut expr_clone)?;
+                f64_to_x87_bytes(val)
+            };
             let end = offset + bytes.len();
             buf[offset..end].copy_from_slice(&bytes);
             return Ok(Vec::new());
@@ -6283,6 +6312,10 @@ impl<'a> Parser<'a> {
             ExprKind::Num { .. } => Type::Int,
             ExprKind::BigIntLiteral { .. } => unreachable!(
                 "BigIntLiteral is only constructed with expr.ty already set, in the \
+                 TokenKind::Num primary-expression case above"
+            ),
+            ExprKind::LDoubleLiteral { .. } => unreachable!(
+                "LDoubleLiteral is only constructed with expr.ty already set, in the \
                  TokenKind::Num primary-expression case above"
             ),
             ExprKind::Var { idx, is_local } | ExprKind::VlaPtr { idx, is_local } => {
@@ -6704,6 +6737,7 @@ impl<'a> Parser<'a> {
                 }
             }
             ExprKind::Num { fval, .. } => Ok(*fval),
+            ExprKind::LDoubleLiteral { value } => Ok(x87_to_f64(*value)),
             _ => self.bail_at(expr.location, "not a compile-time constant"),
         }
     }
@@ -6774,7 +6808,7 @@ impl<'a> Parser<'a> {
                 ) && self.is_const_expr(&mut expr.clone())?
             }
             ExprKind::Cast { expr, .. } => self.is_const_expr(&mut expr.clone())?,
-            ExprKind::Num { .. } => true,
+            ExprKind::Num { .. } | ExprKind::LDoubleLiteral { .. } => true,
             ExprKind::Var { idx, is_local } => {
                 let var = if *is_local {
                     &self.locals[*idx]

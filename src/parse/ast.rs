@@ -1,4 +1,5 @@
 use crate::parse::error::SourceLocation;
+use rustc_apfloat::ieee::X87DoubleExtended;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 static TYPE_ID: AtomicUsize = AtomicUsize::new(1);
@@ -113,6 +114,9 @@ pub enum ExprKind {
     },
     BigIntLiteral {
         raw: String,
+    },
+    LDoubleLiteral {
+        value: X87DoubleExtended,
     },
     /// Zero-clear a stack variable (for initializers)
     Memzero {
