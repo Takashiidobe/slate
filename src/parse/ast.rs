@@ -233,6 +233,15 @@ pub struct Relocation {
     pub addend: i64,
 }
 
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
+pub enum GlobalKind {
+    #[default]
+    Named,
+    Literal,
+    StaticLocal,
+    CompoundLiteral,
+}
+
 #[derive(Default, Debug, Clone, PartialEq)]
 pub struct Obj {
     pub id: NodeId,
@@ -266,6 +275,7 @@ pub struct Obj {
     pub is_tls: bool,
     pub init_data: Option<Vec<u8>>,
     pub relocations: Vec<Relocation>,
+    pub global_kind: GlobalKind,
 
     // Function
     pub params: Vec<Obj>,

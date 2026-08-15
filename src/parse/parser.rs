@@ -1,7 +1,7 @@
 use crate::parse::ast::{
-    BinaryOp, CaseRange, Decl, DeclKind, Expr, ExprKind, Member, NodeId, Obj, Program, Relocation,
-    Stmt, StmtKind, SwitchCase, TagOccurrence, Type, UnaryOp, fold_decls, is_compatible,
-    next_node_id,
+    BinaryOp, CaseRange, Decl, DeclKind, Expr, ExprKind, GlobalKind, Member, NodeId, Obj, Program,
+    Relocation, Stmt, StmtKind, SwitchCase, TagOccurrence, Type, UnaryOp, fold_decls,
+    is_compatible, next_node_id,
 };
 use crate::parse::error::{CompileError, CompileResult, SourceLocation};
 use crate::parse::lexer::{Keyword, Punct, Token, TokenKind};
@@ -1840,6 +1840,7 @@ impl<'a> Parser<'a> {
                 // but are scoped locally with the user-visible name.
                 let idx = self.new_anon_gvar(ty.clone());
                 self.globals[idx].is_static = true;
+                self.globals[idx].global_kind = GlobalKind::StaticLocal;
                 self.globals[idx].is_constexpr = attr.is_constexpr;
                 self.globals[idx].is_const_attr = attr.is_const_attr;
                 if attr.is_deprecated {
@@ -2318,6 +2319,7 @@ impl<'a> Parser<'a> {
             .and_then(|ty| type_node_id(&ty));
 
         // Parse members
+        let brace_location = self.peek().location;
         self.expect_punct(Punct::LBrace)?;
         let (members, is_flexible) = self.parse_struct_members()?;
 
@@ -2341,7 +2343,6 @@ impl<'a> Parser<'a> {
         }
         self.apply_record_attr(&mut ty, attr);
 
-        // Register the struct/union type if a tag was given.
         if let Some(name) = tag_name {
             if let Some(type_id) = type_node_id(&ty) {
                 self.log_tag_decl(
@@ -2356,6 +2357,17 @@ impl<'a> Parser<'a> {
                 return Ok(ty);
             }
             self.push_tag_scope(name, ty.clone());
+        } else {
+            self.register_type(&ty);
+            if let Some(type_id) = type_node_id(&ty) {
+                self.log_tag_decl(
+                    String::new(),
+                    brace_location,
+                    type_id,
+                    true,
+                    DeclKind::Record,
+                );
+            }
         }
 
         Ok(ty)
@@ -3485,6 +3497,7 @@ impl<'a> Parser<'a> {
             if self.scopes.len() == 1 {
                 // Global scope
                 let var_idx = self.new_anon_gvar(ty);
+                self.globals[var_idx].global_kind = GlobalKind::CompoundLiteral;
                 self.parse_gvar_initializer(var_idx, location)?;
                 return Ok(self.expr_at(
                     ExprKind::Var {
@@ -4855,7 +4868,7 @@ impl<'a> Parser<'a> {
     }
 
     fn new_unique_name(&mut self) -> String {
-        let name = format!(".L..{}", self.string_label);
+        let name = format!("__anon{}", self.string_label);
         self.string_label += 1;
         name
     }
@@ -4885,6 +4898,7 @@ impl<'a> Parser<'a> {
         if let Some(obj) = self.globals.get_mut(idx) {
             obj.init_data = Some(bytes);
             obj.is_readonly = true;
+            obj.global_kind = GlobalKind::Literal;
         }
         idx
     }

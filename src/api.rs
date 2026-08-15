@@ -296,10 +296,14 @@ fn parse_native_tokens(
 }
 
 pub fn translate_native(path: &Path) -> Result<String, Error> {
-    parse_native(path)?;
-    Err(Error::NativeLoweringUnimplemented {
-        path: path.to_path_buf(),
-    })
+    let program = parse_native(path)?;
+    let rust_program = frontend::lower_program(&program);
+    Ok(backend::apply_with(rust_program, &skip_set_from_env()?).emit())
+}
+
+pub fn lowered_program_native(path: &Path) -> Result<rust_ast::Program, Error> {
+    let program = parse_native(path)?;
+    Ok(frontend::lower_program(&program))
 }
 
 pub fn skip_set_from_env() -> Result<backend::SkipSet, Error> {

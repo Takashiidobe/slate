@@ -4,6 +4,8 @@ pub mod directive_translate;
 mod function_abi;
 mod lowerer;
 pub mod macros;
+mod native_lowerer;
 pub mod preprocess;
 
 pub use lowerer::*;
+pub(crate) use native_lowerer::lower_program;
