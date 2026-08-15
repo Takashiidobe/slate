@@ -1,5 +1,6 @@
 use slate::backend::{self, codegen, rust_ast};
 use slate::frontend::{self, c_ast, c_shim, directive_translate, preprocess};
+use slate::parse::clang_ast;
 use slate::{api, cir, compile_commands, ctx};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
@@ -29,6 +30,9 @@ fn usage() -> ExitCode {
     );
     eprintln!(
         "  native-frontend-report [dir]  parse every *.c fixture under dir (default tests/fixtures) with the native frontend and report pass/fail counts"
+    );
+    eprintln!(
+        "  dump-clang-ast  <file.c> [clang args...]  dump Clang's own AST (via clang-ast crate, -ast-dump=json) as an indented kind/name/tagUsed/loc tree"
     );
     eprintln!("  translate-directives   experimental multi-config C -> Rust");
     eprintln!("  record-cfg   <file.c> [clang args...]  print preprocessor cfg regions as JSON");
@@ -78,6 +82,10 @@ fn main() -> ExitCode {
                 None => usage(),
             }
         }
+        Some("dump-clang-ast") => match args.get(2) {
+            Some(path) => run(dump_clang_ast(Path::new(path), &args[3..])),
+            None => usage(),
+        },
         Some("native-frontend-report") => {
             let dir = args.get(2).map(PathBuf::from);
             run(native_frontend_report(dir))
@@ -143,6 +151,13 @@ fn parse_only(path: &Path, dump_ast: bool) -> Result<String, String> {
         return Ok(format!("{program:#?}\n"));
     }
     Ok(format!("OK: {} globals\n", program.globals.len()))
+}
+
+fn dump_clang_ast(path: &Path, extra_args: &[String]) -> Result<String, String> {
+    let node = cli_result(clang_ast::parse_file(path, extra_args))?;
+    let mut out = String::new();
+    clang_ast::dump_tree(&node, 0, &mut out);
+    Ok(out)
 }
 
 fn extract_frontend_flag(args: &[String]) -> (String, Vec<String>) {

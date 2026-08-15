@@ -80,6 +80,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "clang-ast"
+version = "0.1.35"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2d76fac0a007075fa8d38a6ec08df340bea2035cc0a6e9b0f6594bff1627692b"
+dependencies = [
+ "foldhash",
+ "serde_core",
+]
+
+[[package]]
 name = "core-foundation-sys"
 version = "0.8.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -507,6 +517,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9a8e94ea7f378bd32cbbd37198a4a91436180c5bb472411e48b5ec2e2124ae9e"
 dependencies = [
  "serde_core",
+ "serde_derive",
 ]
 
 [[package]]
@@ -570,6 +581,7 @@ name = "slate"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "clang-ast",
  "libc",
  "mimalloc",
  "ordered-float",

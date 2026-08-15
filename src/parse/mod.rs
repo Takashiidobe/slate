@@ -1,4 +1,5 @@
 pub mod ast;
+pub mod clang_ast;
 pub mod error;
 pub mod lexer;
 pub mod parser;
