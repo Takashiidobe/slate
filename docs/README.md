@@ -1,9 +1,11 @@
 # slate
 
-`slate` translates C to Rust by lowering **ClangIR (CIR)** — Clang's MLIR-based
-IR — rather than LLVM IR. CIR is high enough to retain structured control flow,
-integer signedness, and named local variables, so this is _transpilation_, not
-decompilation. (See [architecture.md](architecture.md) for more details)
+`slate` translates C to Rust using its own C frontend (`src/parse`): a
+lexer, preprocessor, and parser producing a fully typed AST directly from
+source, with no external compiler IR in between. The AST retains structured
+control flow, integer signedness, and named local variables directly from the
+source, so this is _transpilation_, not decompilation. (See
+[architecture.md](architecture.md) for more details)
 
 ## Approach in one line
 
@@ -27,8 +29,8 @@ surface:
 - `tests/stdlib/<header>/*.c` — one probe per libc function, checked by
   `cargo nextest r --release --test stdlib_coverage`.
 - `bd list --status=open` - tracked gaps and in-flight idiomatization work.
-- `bd list --status=blocked` - blocked tasks by upstream clang IR or
-  rust.
+- `bd list --status=blocked` - blocked tasks by upstream Rust or unported
+  frontend coverage.
 
 Generated Rust trees are ignored inspection artifacts and are not regenerated
 as part of feature work or completion. When explicitly requested for manual
@@ -61,29 +63,25 @@ index use.
 ## Pipeline
 
 ```
-C ──emit──► CIR ──parse──► Op-tree ──lower──► Rust source
-│  clang|cir-opt                    ▲
-└──ast-dump=json──────► Clang AST ──┘
+C ──lex/preprocess──► tokens ──parse──► AST ──lower──► Rust source
 
 verified:  run(C).{stdout,exit}  ==  run(Rust).{stdout,exit}
 ```
 
-## Three sources
+## Frontend
 
-Every C input is available to the translator in three forms, joined by source
-location (`file:line:col`):
-
-- **CIR** — the primary lowering source.
-- **Clang AST** — loaded from `clang -Xclang -ast-dump=json -fsyntax-only` and
-  extracted into structured source context, with raw JSON retained.
-- **C source text** — for comments and naming during final readability polish.
+Every C input is parsed once by `src/parse` into a single, fully typed AST
+(`Program`/`Obj`/`Stmt`/`Expr`/`Type`) — struct/union layout with bitfields,
+VLAs, atomics, `_BitInt`, complex numbers, and inline asm are all represented
+directly on that tree, so there is no separate IR and AST to reconcile by
+source location.
 
 ## Error ownership
 
 Library failures stay typed until they reach a user-facing boundary. Each
-subsystem owns its error enum: CIR parsing and emission, preprocessing, Clang
-AST loading, compile-command decoding, and directive translation. Concrete I/O,
-JSON, target-triple, and nested subsystem failures remain available through the
+subsystem owns its error enum: frontend lexing/preprocessing/parsing,
+compile-command decoding, and directive translation. Concrete I/O, JSON,
+target-triple, and nested subsystem failures remain available through the
 standard error source chain; tool status, stderr, source paths, directive
 locations, predicates, and lowering diagnostics remain structured fields.
 
@@ -97,22 +95,24 @@ a failed case. Library modules do not use `String` as an error type.
 - [fixups.md](fixups.md) — how to state
   query-driven rewrite cases, proofs, typed recipes, definition lifecycles,
   scheduling, and tracing.
-- [architecture.md](architecture.md) — sources, IRs, pipeline, shared context.
+- [architecture.md](architecture.md) — frontend, pipeline, shared context.
 - [passes.md](passes.md) — the pass catalog: what runs, in what order, how.
 - [facts.md](facts.md) — the salsa-memoized facts analysis layer: what each
   collector proves and which rewrite pass consumes it.
 
 ## Toolchain
 
-Requires a CIR-enabled Clang (`CLANG_ENABLE_CIR=ON`). Local build lives at
-`~/llvm-project/build-cir/bin/{clang,cir-opt}`; overridable via `SLATE_CLANG`
-and `SLATE_CIR_OPT`.
+Slate is self-contained: its frontend (`src/parse`) is a from-scratch C lexer,
+preprocessor, and parser, so no external clang installation or build is
+required to translate C. An external `clang`/`cc` is still useful as a
+differential-testing oracle in `tests/`, but it is not a build or runtime
+dependency of the `slate` binary itself.
 
-Target selection can be shared across the CIR and AST Clang invocations with
-`SLATE_TARGET=<triple>` and extra flags in `SLATE_CLANG_ARGS`. Android targets
-also require `SLATE_ANDROID_API=<level>`; the 64-bit Bionic baseline starts at
-API 21. `SLATE_TARGET=aarch64-apple-darwin` selects the narrow AArch64 macOS
-profile at the macOS 11.0 deployment baseline.
+Target selection is shared across preprocessing and lowering with
+`SLATE_TARGET=<triple>`. Android targets also require
+`SLATE_ANDROID_API=<level>`; the 64-bit Bionic baseline starts at API 21.
+`SLATE_TARGET=aarch64-apple-darwin` selects the narrow AArch64 macOS profile
+at the macOS 11.0 deployment baseline.
 
 Slate defaults to GNU C23. Legacy inputs that rely on pre-C23 semantics, such
 as unspecified parameter lists written as `int (*)()`, can select an older
@@ -122,8 +122,8 @@ mode explicitly without changing the default:
 cargo run -- translate -std=gnu17 legacy.c
 ```
 
-Frontend flags precede the input path and apply consistently to preprocessing,
-CIR emission, and Clang AST extraction.
+Frontend flags precede the input path and apply consistently across
+preprocessing and parsing.
 
 The vendored c-testsuite corpus is compiled and translated uniformly as GNU
 C17 because it predates C23 and includes declarations whose meaning changed in
@@ -157,12 +157,12 @@ cargo run -- translate-project --lib \
   project crate
 ```
 
-Each command is normalized into a translation unit, target, and semantic Clang
-arguments. Compiler, output, dependency-file, and source operands are removed;
-relative paths are resolved against the command's `directory`. Slate prefers
-the JSON `arguments` form and shell-splits `command` as a fallback. Commands
-for different targets remain separate through CIR and AST lowering and are
-merged into cfg-gated Rust. Translation units present in only some databases
+Each command is normalized into a translation unit, target, and semantic
+compiler arguments. Compiler, output, dependency-file, and source operands are
+removed; relative paths are resolved against the command's `directory`. Slate
+prefers the JSON `arguments` form and shell-splits `command` as a fallback.
+Commands for different targets remain separate through parsing and lowering
+and are merged into cfg-gated Rust. Translation units present in only some databases
 produce cfg-gated modules. Two different command configurations for the same
 translation unit and Rust target are rejected because Slate cannot express
 that distinction as a target cfg.
