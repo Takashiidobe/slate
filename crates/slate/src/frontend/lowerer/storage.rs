@@ -227,7 +227,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         let alignment = attr_int(op, "alignment")
             .and_then(|alignment| u32::try_from(alignment).ok())
-            .filter(|alignment| *alignment > type_alignment(&ty) && !matches!(ty, Type::Custom(_)));
+            .filter(|alignment| *alignment > effective_type_alignment(&ty, &self.parent.records));
         self.slots.insert(result.clone(), name.clone());
         self.slot_types.insert(result.clone(), ty.clone());
         let init = self.parent.default_value_expr(&ty);
@@ -441,6 +441,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             }
         } else if let Some(slot) = self.slot_place(ptr) {
             slot
+        } else if op_result_type(op)
+            .map(|ty| self.parent.rust_type(ty))
+            .is_some_and(|ty| bitint_generic_parts(&ty).is_some())
+        {
+            Self::unsafe_expr(Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
+                func: Box::new(Expr::Path(Path::new(
+                    ["std", "ptr", "read_unaligned"].map(Ident::from),
+                ))),
+                args: vec![self.operand_expr(ptr)],
+            })
         } else {
             Self::unsafe_deref_expr(self.operand_expr(ptr))
         };
@@ -524,7 +535,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else if let Some(slot) = self.slot_place(ptr) {
             addr_of(slot)
         } else if let Some(global) = self.global_place(ptr) {
-            addr_of(global)
+            let place = addr_of(global);
+            if matches!(place, Expr::AddrOf { ref expr, .. } if matches!(**expr, Expr::Unary { op: UnaryOp::Deref, .. }))
+            {
+                Self::unsafe_expr(place)
+            } else {
+                place
+            }
         } else {
             self.operand_expr(ptr)
         }
@@ -726,7 +743,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 Expr::Value(0.0.into())
             }
         } else {
-            parse_cir_scalar_expr(raw).unwrap_or(Expr::Value(RustValue::I64(0)))
+            parse_cir_scalar_expr(raw).unwrap_or_else(|| {
+                let rust_ty = result_ty.map(|ty| self.parent.rust_type(ty));
+                match rust_ty {
+                    Some(ty @ Type::Custom(_)) => self.parent.default_value_expr(&ty),
+                    _ => Expr::Value(RustValue::I64(0)),
+                }
+            })
         };
         self.materialize_expr(result, value, result_ty);
     }

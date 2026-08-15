@@ -320,6 +320,7 @@ impl CirOpKind {
             "cir.fminnum" => CirOpKind::Fminnum,
             "cir.fmod" => CirOpKind::Fmod,
             "cir.fmul" => CirOpKind::Fmul,
+            "cir.fmuladd" => CirOpKind::Fma,
             "cir.fneg" => CirOpKind::Fneg,
             "cir.for" => CirOpKind::For,
             "cir.frame_address" => CirOpKind::FrameAddress,
