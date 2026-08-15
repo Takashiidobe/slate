@@ -786,6 +786,19 @@ fn type_alignment(ty: &Type) -> u32 {
     }
 }
 
+fn effective_type_alignment(
+    ty: &Type,
+    records: &BTreeMap<String, crate::frontend::c_ast::Record>,
+) -> u32 {
+    if let Type::Custom(name) = ty
+        && let Some(record) = records.get(name)
+        && let Some(align) = record_natural_align(record, records)
+    {
+        return align as u32;
+    }
+    type_alignment(ty)
+}
+
 fn lower_record_def(
     record: &crate::frontend::c_ast::Record,
     vis: Visibility,
@@ -1830,9 +1843,7 @@ impl __SlateVaArgs {
         let alignment = ty.as_ref().and_then(|ty| {
             attr_int(op, "alignment")
                 .and_then(|alignment| u32::try_from(alignment).ok())
-                .filter(|alignment| {
-                    *alignment > type_alignment(ty) && !matches!(ty, Type::Custom(_))
-                })
+                .filter(|alignment| *alignment > effective_type_alignment(ty, &self.records))
         });
         let weak = linkage_is_weak(op);
         let thread_local = op.attrs.contains_key("tls_model");
@@ -3337,18 +3348,19 @@ fn c_type_to_type(ty: &crate::frontend::c_ast::CType) -> Type {
     match ty {
         CType::Void => Type::Unit,
         CType::Bool => Type::Prim(Prim::Bool),
-        CType::Int { signed, bits } => Type::Prim(match (signed, bits) {
-            (true, 8) => Prim::I8,
-            (false, 8) => Prim::U8,
-            (true, 16) => Prim::I16,
-            (false, 16) => Prim::U16,
-            (false, 32) => Prim::U32,
-            (true, 64) => Prim::I64,
-            (false, 64) => Prim::U64,
-            (true, 128) => Prim::I128,
-            (false, 128) => Prim::U128,
-            _ => Prim::I32,
-        }),
+        CType::Int { signed, bits } => match (signed, bits) {
+            (true, 8) => Type::Prim(Prim::I8),
+            (false, 8) => Type::Prim(Prim::U8),
+            (true, 16) => Type::Prim(Prim::I16),
+            (false, 16) => Type::Prim(Prim::U16),
+            (true, 32) => Type::Prim(Prim::I32),
+            (false, 32) => Type::Prim(Prim::U32),
+            (true, 64) => Type::Prim(Prim::I64),
+            (false, 64) => Type::Prim(Prim::U64),
+            (true, 128) => Type::Prim(Prim::I128),
+            (false, 128) => Type::Prim(Prim::U128),
+            (signed, bits) => bitint_type(*signed, *bits),
+        },
         CType::Float { bits: 32 } => Type::Prim(Prim::F32),
         CType::Float { bits: 80 } if crate::cir::emit::uses_f64_long_double_abi() => {
             Type::Prim(Prim::F64)

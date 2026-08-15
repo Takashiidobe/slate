@@ -29,7 +29,7 @@ impl SkipSet {
         set
     }
 
-    #[allow(
+    #[expect(
         dead_code,
         reason = "rewrite passes are temporarily disabled while lowering is the focus"
     )]
@@ -72,7 +72,7 @@ pub struct DebugOptions {
     pub debug_only_pass: Option<Pass>,
 }
 
-#[allow(
+#[expect(
     dead_code,
     reason = "rewrite passes are temporarily disabled while lowering is the focus"
 )]
@@ -1183,7 +1183,7 @@ fn apply_with_logger(
     // program.clone()
 }
 
-#[allow(
+#[expect(
     dead_code,
     reason = "rewrite passes are temporarily disabled while lowering is the focus"
 )]
@@ -1218,7 +1218,7 @@ fn to_fixpoint_program_with_facts(
     }
 }
 
-#[allow(
+#[expect(
     dead_code,
     reason = "rewrite passes are temporarily disabled while lowering is the focus"
 )]
@@ -1228,7 +1228,7 @@ enum FixpointLimit {
     Rounds(usize),
 }
 
-#[allow(
+#[expect(
     dead_code,
     reason = "rewrite passes are temporarily disabled while lowering is the focus"
 )]
@@ -1241,7 +1241,7 @@ impl FixpointLimit {
     }
 }
 
-#[allow(
+#[expect(
     dead_code,
     reason = "rewrite passes are temporarily disabled while lowering is the focus"
 )]
@@ -1267,7 +1267,7 @@ fn late_loop_cleanup(
     }
 }
 
-#[allow(
+#[expect(
     dead_code,
     reason = "rewrite passes are temporarily disabled while lowering is the focus"
 )]
