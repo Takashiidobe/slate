@@ -300,7 +300,7 @@ pub fn render_shim_c_source(shims: &[ExternFnDecl]) -> String {
         blocks.push(F80_SHIMS.to_string());
     }
     for shim in shims {
-        if shim.name.starts_with("__slate_f80_") {
+        if shim.name.starts_with("__slate_f80_") || shim.name.starts_with("__slate_cf80_") {
             continue;
         } else if let Some(source) = render_typed_shim(shim) {
             blocks.push(source);
@@ -334,7 +334,7 @@ pub fn render_shim_c_source_for_program(program: &Program) -> String {
         blocks.push(render_record_def(record));
     }
     for shim in &shims {
-        if shim.name.starts_with("__slate_f80_") {
+        if shim.name.starts_with("__slate_f80_") || shim.name.starts_with("__slate_cf80_") {
             continue;
         } else if let Some(source) = render_typed_shim(shim) {
             blocks.push(source);
