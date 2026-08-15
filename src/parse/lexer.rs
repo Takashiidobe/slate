@@ -716,6 +716,9 @@ impl Token {
         } else if parse_str.ends_with('l') || parse_str.ends_with('L') {
             parse_str = &parse_str[..parse_str.len() - 1];
             Type::LDouble
+        } else if parse_str.ends_with('q') || parse_str.ends_with('Q') {
+            parse_str = &parse_str[..parse_str.len() - 1];
+            Type::F128
         } else {
             Type::Double
         };

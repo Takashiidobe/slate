@@ -295,6 +295,8 @@ pub enum Type {
     Double,
     /// 80-bit extended precision float (stored as 16 bytes on x86-64).
     LDouble,
+    /// GNU/clang `__float128` - 128-bit IEEE binary quad precision.
+    F128,
     /// Complex float - 8 bytes (2x float)
     FloatComplex,
     /// Complex double - 16 bytes (2x double)
@@ -414,6 +416,7 @@ impl Type {
             Type::Float => 4,
             Type::Double => 8,
             Type::LDouble => 16,
+            Type::F128 => 16,
             Type::FloatComplex => 8,
             Type::DoubleComplex => 16,
             Type::LDoubleComplex => 32,
@@ -500,6 +503,7 @@ impl Type {
             Type::Float => 4,
             Type::Double => 8,
             Type::LDouble => 16,
+            Type::F128 => 16,
             Type::FloatComplex => 4,
             Type::DoubleComplex => 8,
             Type::LDoubleComplex => 16,
@@ -583,7 +587,10 @@ impl Type {
     }
 
     pub fn is_flonum(&self) -> bool {
-        matches!(self, Type::Float | Type::Double | Type::LDouble)
+        matches!(
+            self,
+            Type::Float | Type::Double | Type::LDouble | Type::F128
+        )
     }
 
     pub fn is_complex(&self) -> bool {

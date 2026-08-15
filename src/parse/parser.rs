@@ -362,6 +362,22 @@ impl<'a> Parser<'a> {
             Type::ULong,
             false,
         );
+
+        for name in [
+            "__builtin_isnan",
+            "__builtin_isinf",
+            "__builtin_isfinite",
+            "__builtin_isnormal",
+            "__builtin_signbit",
+        ] {
+            self.push_builtin_fn(name, vec![Type::Double], Type::Int, false);
+        }
+        for name in ["__builtin_islessgreater", "__builtin_isunordered"] {
+            self.push_builtin_fn(name, vec![Type::Double, Type::Double], Type::Int, false);
+        }
+        self.push_builtin_fn("__builtin_huge_val", vec![], Type::Double, false);
+        self.push_builtin_fn("__builtin_huge_valf", vec![], Type::Float, false);
+        self.push_builtin_fn("__builtin_huge_vall", vec![], Type::LDouble, false);
     }
 
     fn declare_builtin_typedefs(&mut self) {
@@ -573,7 +589,15 @@ impl<'a> Parser<'a> {
             );
             let is_bitint = matches!(token.kind, TokenKind::Keyword(Keyword::BitInt));
             let is_int128 = matches!(token.kind, TokenKind::Ident(ref name) if name == "__int128");
-            if is_struct_union_enum || is_typeof || is_bitint || is_int128 || typedef_ty.is_some() {
+            let is_float128 =
+                matches!(token.kind, TokenKind::Ident(ref name) if name == "__float128");
+            if is_struct_union_enum
+                || is_typeof
+                || is_bitint
+                || is_int128
+                || is_float128
+                || typedef_ty.is_some()
+            {
                 // Allow _BitInt to follow signed/unsigned, but nothing else
                 let only_signedness = counter == SIGNED || counter == UNSIGNED || counter == 0;
                 if (is_bitint || is_int128) && only_signedness {
@@ -615,6 +639,9 @@ impl<'a> Parser<'a> {
                         width: 128,
                         is_signed,
                     };
+                } else if is_float128 {
+                    self.pos += 1;
+                    ty = Type::F128;
                 } else if let Some(ty2) = typedef_ty {
                     self.pos += 1;
                     ty = ty2;
@@ -747,7 +774,7 @@ impl<'a> Parser<'a> {
                 | Keyword::TypeofUnqual
                 | Keyword::BitInt,
             ) => true,
-            TokenKind::Ident(ref name) if name == "__int128" => true,
+            TokenKind::Ident(ref name) if name == "__int128" || name == "__float128" => true,
             TokenKind::Ident(_) => self.find_typedef(token).is_some(),
             _ => false,
         }
