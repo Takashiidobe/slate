@@ -18,9 +18,17 @@ fn usage() -> ExitCode {
     eprintln!(
         "  fixup-debug  <file.c> [--up-to-pass <pass>|--only-pass <pass>|--debug-only-pass <pass>]  print fixup pass trace"
     );
-    eprintln!("  translate   [clang args...] <file.c>  C -> Rust");
+    eprintln!(
+        "  translate   [--frontend cir|native] [clang args...] <file.c>  C -> Rust (native frontend has no lowerer yet, slate-ozsg.4)"
+    );
     eprintln!(
         "  translate-lowered  <file.c>  C -> Rust, raw lowered output with no fixup passes applied"
+    );
+    eprintln!(
+        "  parse-only  <file.c>  parse with the native (ported chibicc) frontend only, print globals count or error"
+    );
+    eprintln!(
+        "  native-frontend-report [dir]  parse every *.c fixture under dir (default tests/fixtures) with the native frontend and report pass/fail counts"
     );
     eprintln!("  translate-directives   experimental multi-config C -> Rust");
     eprintln!("  record-cfg   <file.c> [clang args...]  print preprocessor cfg regions as JSON");
@@ -46,14 +54,31 @@ fn main() -> ExitCode {
         Some("emit-fixtures") => run(emit_fixtures()),
         Some("emit-lowered-fixtures") => run(emit_lowered_fixtures()),
         Some("fixup-debug") => run(fixup_debug(&args[2..])),
-        Some("translate") => match args[2..].split_last() {
-            Some((path, clang_args)) => run(translate_with_clang_args(Path::new(path), clang_args)),
-            None => usage(),
-        },
+        Some("translate") => {
+            let (frontend, rest) = extract_frontend_flag(&args[2..]);
+            match rest.split_last() {
+                Some((path, clang_args)) if frontend == "native" => {
+                    let _ = clang_args;
+                    run(translate_native(Path::new(path)))
+                }
+                Some((path, clang_args)) => {
+                    run(translate_with_clang_args(Path::new(path), clang_args))
+                }
+                None => usage(),
+            }
+        }
         Some("translate-lowered") => match args.get(2) {
             Some(path) => run(lowered_rust(Path::new(path))),
             None => usage(),
         },
+        Some("parse-only") => match args.get(2) {
+            Some(path) => run(parse_only(Path::new(path))),
+            None => usage(),
+        },
+        Some("native-frontend-report") => {
+            let dir = args.get(2).map(PathBuf::from);
+            run(native_frontend_report(dir))
+        }
         Some("translate-directives") => match args.get(2) {
             Some(path) => run(cli_result(directive_translate::translate_directives(
                 Path::new(path),
@@ -103,6 +128,77 @@ fn translate(path: &Path) -> Result<String, String> {
 
 fn translate_with_clang_args(path: &Path, clang_args: &[String]) -> Result<String, String> {
     cli_result(api::translate_with_args(path, clang_args))
+}
+
+fn translate_native(path: &Path) -> Result<String, String> {
+    cli_result(api::translate_native(path))
+}
+
+fn parse_only(path: &Path) -> Result<String, String> {
+    let program = cli_result(api::parse_native(path))?;
+    Ok(format!("OK: {} globals\n", program.globals.len()))
+}
+
+/// Pulls a `--frontend <cir|native>` pair out of `args`, defaulting to "cir".
+/// Leaves all other arguments (including clang passthrough args) untouched and in order.
+fn extract_frontend_flag(args: &[String]) -> (String, Vec<String>) {
+    let mut frontend = "cir".to_string();
+    let mut rest = Vec::with_capacity(args.len());
+    let mut i = 0;
+    while i < args.len() {
+        if args[i] == "--frontend"
+            && let Some(value) = args.get(i + 1)
+        {
+            frontend = value.clone();
+            i += 2;
+            continue;
+        }
+        rest.push(args[i].clone());
+        i += 1;
+    }
+    (frontend, rest)
+}
+
+fn native_frontend_report(dir: Option<PathBuf>) -> Result<String, String> {
+    let dir = dir.unwrap_or_else(|| PathBuf::from("tests/fixtures"));
+    let exe = std::env::current_exe().map_err(|e| e.to_string())?;
+    let mut entries: Vec<PathBuf> = std::fs::read_dir(&dir)
+        .map_err(|e| format!("read {}: {e}", dir.display()))?
+        .filter_map(|entry| entry.ok().map(|entry| entry.path()))
+        .filter(|path| path.extension().and_then(|ext| ext.to_str()) == Some("c"))
+        .collect();
+    entries.sort();
+
+    let mut passed = Vec::new();
+    let mut failed = Vec::new();
+    for path in &entries {
+        let status = Command::new(&exe)
+            .arg("parse-only")
+            .arg(path)
+            .stdout(std::process::Stdio::null())
+            .stderr(std::process::Stdio::null())
+            .status()
+            .map_err(|e| format!("spawn parse-only for {}: {e}", path.display()))?;
+        if status.success() {
+            passed.push(path.clone());
+        } else {
+            failed.push(path.clone());
+        }
+    }
+
+    let mut out = String::new();
+    out.push_str(&format!(
+        "native frontend parse report: {}/{} passed\n",
+        passed.len(),
+        entries.len()
+    ));
+    if !failed.is_empty() {
+        out.push_str("failed:\n");
+        for path in &failed {
+            out.push_str(&format!("  {}\n", path.display()));
+        }
+    }
+    Ok(out)
 }
 
 fn lowered_program(path: &Path) -> Result<(cir::ir::Module, rust_ast::Program), String> {

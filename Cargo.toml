@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+chrono = "0.4"
 libc = "0.2"
 serde = "1"
 serde_json = { version = "1", features = ["unbounded_depth"] }

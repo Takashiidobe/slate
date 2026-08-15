@@ -5,3 +5,4 @@ pub mod compile_commands;
 pub mod ctx;
 pub mod frontend;
 pub mod function_identity;
+pub mod parse;

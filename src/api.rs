@@ -1,6 +1,6 @@
 use crate::backend::{self, rust_ast};
 use crate::frontend::{self, c_ast, directive_translate, preprocess};
-use crate::{cir, ctx};
+use crate::{cir, ctx, parse};
 use std::path::{Path, PathBuf};
 use thiserror::Error as ThisError;
 
@@ -78,6 +78,14 @@ pub enum Error {
     },
     #[error("unknown SLATE_SKIP_PASS: {name}")]
     UnknownSkipPass { name: String },
+    #[error("parse {path} with native frontend: {source}")]
+    NativeParse {
+        path: PathBuf,
+        #[source]
+        source: parse::error::CompileError,
+    },
+    #[error("{path}: native frontend parsed successfully but lowering is not yet implemented")]
+    NativeLoweringUnimplemented { path: PathBuf },
 }
 
 pub fn translate(path: &Path) -> Result<String, Error> {
@@ -239,6 +247,26 @@ pub fn reject_active_unsupported_file(path: &Path, context: &str) -> Result<(), 
         }
     })?;
     reject_active_unsupported(&pp, context)
+}
+
+/// Parse `path` with the native (ported chibicc) frontend, in place of clang+CIR.
+/// Does not lower or translate — see `translate_native` for that, which is
+/// currently a stub since the native frontend has no lowerer yet (slate-ozsg.4).
+pub fn parse_native(path: &Path) -> Result<parse::ast::Program, Error> {
+    if let Some(dir) = cir::emit::libc_shim_dir() {
+        parse::preprocessor::set_include_paths(vec![PathBuf::from(dir)]);
+    }
+    parse::parse_file(path).map_err(|source| Error::NativeParse {
+        path: path.to_path_buf(),
+        source,
+    })
+}
+
+pub fn translate_native(path: &Path) -> Result<String, Error> {
+    parse_native(path)?;
+    Err(Error::NativeLoweringUnimplemented {
+        path: path.to_path_buf(),
+    })
 }
 
 pub fn skip_set_from_env() -> Result<backend::SkipSet, Error> {
