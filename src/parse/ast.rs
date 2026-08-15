@@ -1,6 +1,7 @@
 use crate::parse::error::SourceLocation;
 use rustc_apfloat::ieee::X87DoubleExtended;
 use std::collections::HashMap;
+use std::path::PathBuf;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 pub type NodeId = usize;
@@ -15,6 +16,7 @@ pub fn next_node_id() -> NodeId {
 pub struct Program {
     pub globals: Vec<Obj>,
     pub types: HashMap<NodeId, Type>,
+    pub decls: Vec<Decl>,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -272,6 +274,132 @@ pub struct Obj {
     pub va_area: Option<usize>,
     pub alloca_bottom: Option<usize>,
     pub stack_size: i32,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct Decl {
+    pub id: NodeId,
+    pub name: String,
+    pub location: SourceLocation,
+    pub kind: DeclKind,
+}
+
+impl Decl {
+    pub fn is_primary_file(&self) -> bool {
+        self.location.file_no == 1
+    }
+
+    pub fn include_chain(&self) -> Vec<PathBuf> {
+        crate::parse::lexer::include_chain(self.location.file_no)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum DeclKind {
+    Function(FunctionDecl),
+    Var(VarDecl),
+    Record(TagOccurrence),
+    Enum(TagOccurrence),
+    Typedef { ty: Type },
+}
+
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
+pub struct DeclAttrs {
+    pub is_const_attr: bool,
+    pub is_deprecated: bool,
+    pub is_nodiscard: bool,
+    pub is_maybe_unused: bool,
+}
+
+#[derive(Default, Debug, Clone, PartialEq)]
+pub struct FunctionDecl {
+    pub ty: Type,
+    pub is_static: bool,
+    pub is_inline: bool,
+    pub attrs: DeclAttrs,
+    pub body: Option<FunctionBody>,
+}
+
+#[derive(Default, Debug, Clone, PartialEq)]
+pub struct FunctionBody {
+    pub params: Vec<Obj>,
+    pub locals: Vec<Obj>,
+    pub stmts: Vec<Stmt>,
+    pub va_area: Option<usize>,
+    pub alloca_bottom: Option<usize>,
+    pub stack_size: i32,
+}
+
+#[derive(Default, Debug, Clone, PartialEq)]
+pub struct VarDecl {
+    pub ty: Type,
+    pub is_static: bool,
+    pub is_tls: bool,
+    pub is_tentative: bool,
+    pub is_constexpr: bool,
+    pub is_readonly: bool,
+    pub const_value: Option<i64>,
+    pub attrs: DeclAttrs,
+    pub init_data: Option<Vec<u8>>,
+    pub relocations: Vec<Relocation>,
+}
+
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
+pub struct TagOccurrence {
+    pub type_id: NodeId,
+    pub is_definition: bool,
+    pub previous_decl: Option<NodeId>,
+}
+
+pub fn fold_decls(globals: &[Obj], tag_decls: &[Decl]) -> Vec<Decl> {
+    let mut decls: Vec<Decl> = globals.iter().map(obj_to_decl).collect();
+    decls.extend(tag_decls.iter().cloned());
+    decls.sort_by_key(|decl| decl.id);
+    decls
+}
+
+fn obj_to_decl(obj: &Obj) -> Decl {
+    let attrs = DeclAttrs {
+        is_const_attr: obj.is_const_attr,
+        is_deprecated: obj.is_deprecated,
+        is_nodiscard: obj.is_nodiscard,
+        is_maybe_unused: obj.is_maybe_unused,
+    };
+    let kind = if obj.is_function {
+        DeclKind::Function(FunctionDecl {
+            ty: obj.ty.clone(),
+            is_static: obj.is_static,
+            is_inline: obj.is_inline,
+            attrs,
+            body: obj.is_definition.then(|| FunctionBody {
+                params: obj.params.clone(),
+                locals: obj.locals.clone(),
+                stmts: obj.body.clone(),
+                va_area: obj.va_area,
+                alloca_bottom: obj.alloca_bottom,
+                stack_size: obj.stack_size,
+            }),
+        })
+    } else {
+        DeclKind::Var(VarDecl {
+            ty: obj.ty.clone(),
+            is_static: obj.is_static,
+            is_tls: obj.is_tls,
+            is_tentative: obj.is_tentative,
+            is_constexpr: obj.is_constexpr,
+            is_readonly: obj.is_readonly,
+            const_value: obj.const_value,
+            attrs,
+            init_data: obj.init_data.clone(),
+            relocations: obj.relocations.clone(),
+        })
+    };
+    Decl {
+        id: obj.id,
+        name: obj.name.clone(),
+        location: obj.location,
+        kind,
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

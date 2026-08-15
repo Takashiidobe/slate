@@ -1,6 +1,7 @@
 use crate::parse::ast::{
-    BinaryOp, CaseRange, Expr, ExprKind, Member, NodeId, Obj, Program, Relocation, Stmt, StmtKind,
-    SwitchCase, Type, UnaryOp, is_compatible, next_node_id,
+    BinaryOp, CaseRange, Decl, DeclKind, Expr, ExprKind, Member, NodeId, Obj, Program, Relocation,
+    Stmt, StmtKind, SwitchCase, TagOccurrence, Type, UnaryOp, fold_decls, is_compatible,
+    next_node_id,
 };
 use crate::parse::error::{CompileError, CompileResult, SourceLocation};
 use crate::parse::lexer::{Keyword, Punct, Token, TokenKind};
@@ -62,6 +63,8 @@ struct Parser<'a> {
     locals: Vec<Obj>,
     globals: Vec<Obj>,
     type_registry: HashMap<NodeId, Type>,
+    tag_decls: Vec<Decl>,
+    last_tag_decl: HashMap<NodeId, NodeId>,
     string_label: usize,
     scopes: Vec<Scope>,
     current_fn_return: Option<Type>,
@@ -440,9 +443,11 @@ impl<'a> Parser<'a> {
         }
         self.apply_inline_liveness();
         self.scan_globals();
+        let decls = fold_decls(&self.globals, &self.tag_decls);
         Ok(Program {
             globals: mem::take(&mut self.globals),
             types: mem::take(&mut self.type_registry),
+            decls,
         })
     }
 
@@ -2065,6 +2070,15 @@ impl<'a> Parser<'a> {
                 TokenKind::Ident(name) => name,
                 _ => unreachable!(),
             };
+            if let Some(type_id) = type_node_id(&enum_ty) {
+                self.log_tag_decl(
+                    name.clone(),
+                    tag_token.location,
+                    type_id,
+                    true,
+                    DeclKind::Enum,
+                );
+            }
             self.push_tag_scope(name, enum_ty.clone());
         }
 
@@ -2246,6 +2260,7 @@ impl<'a> Parser<'a> {
             TokenKind::Ident(name) => name.clone(),
             _ => unreachable!(),
         });
+        let tag_location = tag.as_ref().map(|tag_token| tag_token.location);
 
         // If we have a tag but no opening brace, look up the existing type or
         // create an incomplete type.
@@ -2262,6 +2277,15 @@ impl<'a> Parser<'a> {
                 RecordKind::Union => Type::incomplete_union(Some(name.clone())),
             };
             self.apply_record_attr(&mut ty, attr_before);
+            if let Some(type_id) = type_node_id(&ty) {
+                self.log_tag_decl(
+                    name.clone(),
+                    tag_location.unwrap(),
+                    type_id,
+                    false,
+                    DeclKind::Record,
+                );
+            }
             self.push_tag_scope(name, ty.clone());
             return Ok(ty);
         }
@@ -2276,6 +2300,15 @@ impl<'a> Parser<'a> {
                 RecordKind::Union => Type::incomplete_union(Some(name.clone())),
             };
             self.apply_record_attr(&mut ty, attr_before);
+            if let Some(type_id) = type_node_id(&ty) {
+                self.log_tag_decl(
+                    name.clone(),
+                    tag_location.unwrap(),
+                    type_id,
+                    false,
+                    DeclKind::Record,
+                );
+            }
             self.push_tag_scope(name.clone(), ty);
         }
 
@@ -2310,6 +2343,15 @@ impl<'a> Parser<'a> {
 
         // Register the struct/union type if a tag was given.
         if let Some(name) = tag_name {
+            if let Some(type_id) = type_node_id(&ty) {
+                self.log_tag_decl(
+                    name.clone(),
+                    tag_location.unwrap(),
+                    type_id,
+                    true,
+                    DeclKind::Record,
+                );
+            }
             if self.update_tag_in_current_scope(&name, ty.clone()) {
                 return Ok(ty);
             }
@@ -4627,6 +4669,29 @@ impl<'a> Parser<'a> {
         if let Some(id) = type_node_id(ty) {
             self.type_registry.insert(id, ty.clone());
         }
+    }
+
+    fn log_tag_decl(
+        &mut self,
+        name: String,
+        location: SourceLocation,
+        type_id: NodeId,
+        is_definition: bool,
+        kind: impl FnOnce(TagOccurrence) -> DeclKind,
+    ) {
+        let previous_decl = self.last_tag_decl.get(&type_id).copied();
+        let id = next_node_id();
+        self.tag_decls.push(Decl {
+            id,
+            name,
+            location,
+            kind: kind(TagOccurrence {
+                type_id,
+                is_definition,
+                previous_decl,
+            }),
+        });
+        self.last_tag_decl.insert(type_id, id);
     }
 
     fn new_lvar(&mut self, name: String, ty: Type) -> usize {

@@ -26,7 +26,7 @@ use crate::parse::ast::Type;
 use crate::parse::error::{CompileError, CompileResult, SourceLocation};
 use crate::parse::lexer::{
     HideSet, Keyword, Punct, Token, TokenKind, convert_pp_tokens, get_base_file, get_input_file,
-    tokenize, tokenize_builtin, tokenize_file, tokenize_string_literal,
+    tokenize, tokenize_builtin, tokenize_included_file, tokenize_string_literal,
 };
 use crate::parse::parser::const_expr;
 use chrono::{Datelike, Local, Timelike};
@@ -1764,8 +1764,11 @@ impl Preprocessor {
             return Ok(());
         }
 
-        let included = tokenize_file(include_path)
-            .map_err(|err| CompileError::at(err.message().to_string(), filename_tok.location))?;
+        let included = tokenize_included_file(
+            include_path,
+            (filename_tok.location.file_no, filename_tok.location),
+        )
+        .map_err(|err| CompileError::at(err.message().to_string(), filename_tok.location))?;
 
         if let Some(guard_name) = detect_include_guard(&included)
             && let Ok(mut cache) = include_guard_cache().lock()

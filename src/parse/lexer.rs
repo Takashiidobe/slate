@@ -12,6 +12,7 @@ pub struct File {
     pub contents: String,
     pub display_name: String,
     pub line_delta: i32,
+    pub included_from: Option<(usize, SourceLocation)>,
 }
 
 #[derive(Debug, Clone, PartialEq, Default)]
@@ -94,7 +95,11 @@ pub fn set_line_marker(file_no: usize, line_delta: i32, display_name: Option<Str
     }
 }
 
-fn register_file(path: PathBuf, contents: String) -> File {
+fn register_file(
+    path: PathBuf,
+    contents: String,
+    included_from: Option<(usize, SourceLocation)>,
+) -> File {
     let mut files = input_files().lock().expect("input files lock poisoned");
     let file_no = files.len() + 1;
     let display_name = path.to_string_lossy().into_owned();
@@ -104,12 +109,27 @@ fn register_file(path: PathBuf, contents: String) -> File {
         contents,
         display_name,
         line_delta: 0,
+        included_from,
     };
     files.push(file.clone());
     file
 }
 
 pub fn tokenize_file(path: &Path) -> CompileResult<Vec<Token>> {
+    tokenize_file_with_provenance(path, None)
+}
+
+pub fn tokenize_included_file(
+    path: &Path,
+    included_from: (usize, SourceLocation),
+) -> CompileResult<Vec<Token>> {
+    tokenize_file_with_provenance(path, Some(included_from))
+}
+
+fn tokenize_file_with_provenance(
+    path: &Path,
+    included_from: Option<(usize, SourceLocation)>,
+) -> CompileResult<Vec<Token>> {
     let mut contents = fs::read_to_string(path)
         .map_err(|err| CompileError::new(format!("failed to read {}: {err}", path.display())))?;
     if contents.as_bytes().starts_with(b"\xEF\xBB\xBF") {
@@ -119,13 +139,28 @@ pub fn tokenize_file(path: &Path) -> CompileResult<Vec<Token>> {
     let contents = Lexer::remove_backslash_newline(&contents);
     let contents = Lexer::convert_universal_chars(&contents);
     set_base_file(path);
-    let file = register_file(path.to_path_buf(), contents);
+    let file = register_file(path.to_path_buf(), contents, included_from);
     tokenize(&file.contents, file.file_no)
 }
 
 pub fn tokenize_builtin(name: &str, contents: &str) -> CompileResult<Vec<Token>> {
-    let file = register_file(PathBuf::from(name), contents.to_string());
+    let file = register_file(PathBuf::from(name), contents.to_string(), None);
     tokenize(&file.contents, file.file_no)
+}
+
+pub fn include_chain(file_no: usize) -> Vec<PathBuf> {
+    let mut chain = Vec::new();
+    let mut current = file_no;
+    while let Some(file) = get_input_file(current) {
+        let parent = file.included_from.map(|(parent_no, _)| parent_no);
+        chain.push(file.name);
+        match parent {
+            Some(parent_no) => current = parent_no,
+            None => break,
+        }
+    }
+    chain.reverse();
+    chain
 }
 
 pub fn tokenize_string_literal(token: &Token, base: &Type) -> CompileResult<Token> {
