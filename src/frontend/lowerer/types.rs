@@ -508,7 +508,7 @@ pub(super) fn cir_type_to_ctype(
     if is_quad_long_double(ty) {
         return CType::Float { bits: 128 };
     }
-    if is_long_double(ty) {
+    if is_long_double(ty) || ty == "!cir.f80" {
         return CType::Float { bits: 80 };
     }
     if let Some((signed, bits)) = parse_cir_int_type(ty) {
