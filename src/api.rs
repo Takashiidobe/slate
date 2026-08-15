@@ -275,10 +275,24 @@ pub fn parse_native(path: &Path) -> Result<parse::ast::Program, Error> {
                 source,
             }
         })?;
-    parse::parser::parse(&tokens).map_err(|source| Error::NativeParse {
+    parse_native_tokens(tokens).map_err(|source| Error::NativeParse {
         path: path.to_path_buf(),
         source,
     })
+}
+
+/// Recursive-descent expression/statement parsing can nest deep enough on
+/// pathological (e.g. heavily macro-expanded) input to overflow the default
+/// thread stack, so run it on a thread with a much larger one.
+fn parse_native_tokens(
+    tokens: Vec<parse::lexer::Token>,
+) -> Result<parse::ast::Program, parse::error::CompileError> {
+    std::thread::Builder::new()
+        .stack_size(256 * 1024 * 1024)
+        .spawn(move || parse::parser::parse(&tokens))
+        .expect("spawn native-parser thread")
+        .join()
+        .expect("native-parser thread panicked")
 }
 
 pub fn translate_native(path: &Path) -> Result<String, Error> {
