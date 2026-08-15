@@ -1046,6 +1046,10 @@ fn expr_type(
             let base_ty = base_original_type(base, local_types, plans, record_fields)?;
             Some(plans.get(&base_ty)?.fields.get(*index)?.ty.clone())
         }
+        Expr::Cast { ty, .. } => match ty.peel_aligned() {
+            Type::Ptr { inner, .. } => Some((**inner).clone()),
+            other => Some(other.clone()),
+        },
         _ => None,
     }
 }
