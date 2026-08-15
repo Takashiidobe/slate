@@ -161,6 +161,14 @@ impl<'a> Parser<'a> {
         // C11 char16_t and char32_t types (normally defined in <uchar.h>)
         self.push_scope_typedef("char16_t".to_string(), Type::UShort);
         self.push_scope_typedef("char32_t".to_string(), Type::UInt);
+        // clang/gcc treat __builtin_va_list as a compiler-recognized type with no
+        // preceding typedef; libc headers (e.g. bits/types.h) reference it directly.
+        // Opaque pointer-sized stand-in is enough to parse; va_list is otherwise our
+        // own array-of-struct type from <stdarg.h>.
+        self.push_scope_typedef(
+            "__builtin_va_list".to_string(),
+            Type::Ptr(Box::new(Type::Void)),
+        );
     }
 
     fn parse_program(&mut self) -> CompileResult<Program> {
@@ -672,6 +680,10 @@ impl<'a> Parser<'a> {
             } => (*is_variadic, params.clone()),
             _ => unreachable!("is_function() ensures this is a function type"),
         };
+
+        // GNU allows __attribute__((...)) between the declarator and the
+        // terminating ';' or '{' (e.g. `int f(void) __attribute__((noreturn));`).
+        self.parse_gnu_attributes(None, None)?;
 
         // Check if this is a declaration (;) or definition ({...})
         let is_definition = !self.consume_punct(Punct::Semicolon);
@@ -2325,7 +2337,10 @@ impl<'a> Parser<'a> {
     // In general, `A op= B` is converted to `tmp = &A, *tmp = *tmp op B`.
     // If the lhs is a member access, convert `A.x op= B` to
     // `tmp = &A, (*tmp).x = (*tmp).x op B` to avoid taking the address of a bitfield.
-    #[allow(clippy::wrong_self_convention)]
+    #[expect(
+        clippy::wrong_self_convention,
+        reason = "to_assign names the `A op= B` -> assignment-expression conversion it performs, not a `to_*` self-consuming conversion"
+    )]
     fn to_assign(
         &mut self,
         mut lhs: Expr,
@@ -4099,7 +4114,10 @@ impl<'a> Parser<'a> {
         idx
     }
 
-    #[allow(clippy::too_many_arguments)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "mirrors the Obj/Type fields a C function declaration carries; grouping them into a struct would just move the same arity into a builder"
+    )]
     fn new_function_decl(
         &mut self,
         name: String,
@@ -4142,7 +4160,10 @@ impl<'a> Parser<'a> {
         });
     }
 
-    #[allow(clippy::too_many_arguments)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "mirrors the Obj fields a C function definition carries (body, locals, va_area, stack layout); grouping them into a struct would just move the same arity into a builder"
+    )]
     fn new_function_def(
         &mut self,
         name: String,

@@ -1663,7 +1663,14 @@ impl Preprocessor {
             if let TokenKind::Ident(name) = &self.cur_tok().kind
                 && name == "error"
             {
-                self.error("error", self.cur_tok().location)?;
+                let error_location = start.location;
+                self.pos += 1;
+                let line_tokens = self.copy_line();
+                let tokens = self.expand_macros_only(line_tokens)?;
+                let message = join_tokens(&tokens);
+                let message = message.trim();
+                let msg = if message.is_empty() { "error" } else { message };
+                self.error(msg, error_location)?;
             }
 
             if self.cur_tok().at_bol {

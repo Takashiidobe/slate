@@ -43,7 +43,10 @@ pub struct Stmt {
     pub location: SourceLocation,
 }
 
-#[allow(clippy::large_enum_variant)]
+#[expect(
+    clippy::large_enum_variant,
+    reason = "StmtKind variants intentionally carry differing amounts of data (Switch's case list vs. Break); boxing every variant would add indirection to the common cases for no benefit"
+)]
 #[derive(Debug, Clone, PartialEq)]
 pub enum StmtKind {
     Return(Option<Expr>),

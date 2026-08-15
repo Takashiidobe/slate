@@ -86,6 +86,12 @@ pub enum Error {
     },
     #[error("{path}: native frontend parsed successfully but lowering is not yet implemented")]
     NativeLoweringUnimplemented { path: PathBuf },
+    #[error("resolve target for {path}: {source}")]
+    Target {
+        path: PathBuf,
+        #[source]
+        source: cir::TargetError,
+    },
 }
 
 pub fn translate(path: &Path) -> Result<String, Error> {
@@ -256,7 +262,23 @@ pub fn parse_native(path: &Path) -> Result<parse::ast::Program, Error> {
     if let Some(dir) = cir::emit::libc_shim_dir() {
         parse::preprocessor::set_include_paths(vec![PathBuf::from(dir)]);
     }
-    parse::parse_file(path).map_err(|source| Error::NativeParse {
+    let target = cir::emit::active_target();
+    let defines = cir::emit::target_define_pairs(&target).map_err(|source| Error::Target {
+        path: path.to_path_buf(),
+        source,
+    })?;
+    let tokens = parse::lexer::tokenize_file(path).map_err(|source| Error::NativeParse {
+        path: path.to_path_buf(),
+        source,
+    })?;
+    let tokens =
+        parse::preprocessor::preprocess(tokens, defines, Vec::new()).map_err(|source| {
+            Error::NativeParse {
+                path: path.to_path_buf(),
+                source,
+            }
+        })?;
+    parse::parser::parse(&tokens).map_err(|source| Error::NativeParse {
         path: path.to_path_buf(),
         source,
     })
