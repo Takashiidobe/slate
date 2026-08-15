@@ -2165,9 +2165,6 @@ impl Preprocessor {
         self.define_macro("__x86_64__", "1")?;
         self.define_macro("linux", "1")?;
         self.define_macro("unix", "1")?;
-        // GCC/clang predefine these as the __ATOMIC_* memory-order constants used
-        // by the low-level __atomic_* builtins (distinct from <stdatomic.h>'s
-        // memory_order enum).
         self.define_macro("__ATOMIC_RELAXED", "0")?;
         self.define_macro("__ATOMIC_CONSUME", "1")?;
         self.define_macro("__ATOMIC_ACQUIRE", "2")?;

@@ -183,9 +183,6 @@ impl<'a> Parser<'a> {
 
         let void_ptr = || Type::Ptr(Box::new(Type::Void));
 
-        // Bit-counting / manipulation builtins (unsigned int width used by every
-        // call site in the fixture corpus today; l/ll-suffixed variants can be
-        // added if a fixture needs them).
         for name in [
             "__builtin_clz",
             "__builtin_ctz",
@@ -207,7 +204,6 @@ impl<'a> Parser<'a> {
             self.push_builtin_fn(name, vec![Type::UInt, Type::UInt], Type::UInt, false);
         }
 
-        // Optimizer hints / control-flow builtins.
         self.push_builtin_fn(
             "__builtin_expect",
             vec![Type::Long, Type::Long],
@@ -238,7 +234,6 @@ impl<'a> Parser<'a> {
             false,
         );
 
-        // memcpy-family builtins.
         self.push_builtin_fn(
             "__builtin_bcopy",
             vec![void_ptr(), void_ptr(), Type::ULong],
@@ -258,7 +253,6 @@ impl<'a> Parser<'a> {
             false,
         );
 
-        // libm builtins.
         for name in [
             "__builtin_sin",
             "__builtin_cos",
@@ -278,15 +272,11 @@ impl<'a> Parser<'a> {
         self.push_builtin_fn("__builtin_lround", vec![Type::Double], Type::Long, false);
         self.push_builtin_fn("__builtin_llround", vec![Type::Double], Type::Long, false);
 
-        // Source-location builtins (real per-call-site values are a lowering
-        // concern; a normal declared no-arg function is enough to parse).
         self.push_builtin_fn("__builtin_FILE", vec![], void_ptr(), false);
         self.push_builtin_fn("__builtin_FUNCTION", vec![], void_ptr(), false);
         self.push_builtin_fn("__builtin_LINE", vec![], Type::Int, false);
         self.push_builtin_fn("__builtin_COLUMN", vec![], Type::Int, false);
 
-        // Compile-time query builtins: lenient signatures since call sites pass
-        // varying pointee/operand types that already convert to void*/long today.
         self.push_builtin_fn("__builtin_constant_p", vec![Type::Long], Type::Int, false);
         self.push_builtin_fn(
             "__builtin_object_size",
@@ -295,8 +285,6 @@ impl<'a> Parser<'a> {
             false,
         );
 
-        // Low-level GCC/clang atomic builtins (distinct from the <stdatomic.h>
-        // macros, which are pure library-level and don't need declarations).
         self.push_builtin_fn(
             "__atomic_test_and_set",
             vec![void_ptr(), Type::Int],
@@ -315,10 +303,6 @@ impl<'a> Parser<'a> {
         // C11 char16_t and char32_t types (normally defined in <uchar.h>)
         self.push_scope_typedef("char16_t".to_string(), Type::UShort);
         self.push_scope_typedef("char32_t".to_string(), Type::UInt);
-        // clang/gcc treat __builtin_va_list as a compiler-recognized type with no
-        // preceding typedef; libc headers (e.g. bits/types.h) reference it directly.
-        // Opaque pointer-sized stand-in is enough to parse; va_list is otherwise our
-        // own array-of-struct type from <stdarg.h>.
         self.push_scope_typedef(
             "__builtin_va_list".to_string(),
             Type::Ptr(Box::new(Type::Void)),
@@ -336,9 +320,6 @@ impl<'a> Parser<'a> {
                 continue;
             }
 
-            // File-scope `asm("...")` (GNU basic asm block, e.g. hand-written
-            // functions). Program has no top-level asm-block slot yet -- parsed
-            // and discarded, same as other not-yet-lowered constructs.
             if self.consume_keyword(Keyword::Asm) {
                 self.parse_asm_stmt()?;
                 self.consume_punct(Punct::Semicolon);
@@ -526,10 +507,11 @@ impl<'a> Parser<'a> {
                 TokenKind::Keyword(Keyword::Typeof | Keyword::TypeofUnqual)
             );
             let is_bitint = matches!(token.kind, TokenKind::Keyword(Keyword::BitInt));
-            if is_struct_union_enum || is_typeof || is_bitint || typedef_ty.is_some() {
+            let is_int128 = matches!(token.kind, TokenKind::Ident(ref name) if name == "__int128");
+            if is_struct_union_enum || is_typeof || is_bitint || is_int128 || typedef_ty.is_some() {
                 // Allow _BitInt to follow signed/unsigned, but nothing else
                 let only_signedness = counter == SIGNED || counter == UNSIGNED || counter == 0;
-                if is_bitint && only_signedness {
+                if (is_bitint || is_int128) && only_signedness {
                     // Allow _BitInt after signed/unsigned
                 } else if counter != 0 {
                     break;
@@ -561,6 +543,13 @@ impl<'a> Parser<'a> {
                     // Check if 'unsigned' was specified before _BitInt
                     let is_signed = (counter & UNSIGNED) == 0;
                     ty = Type::BitInt { width, is_signed };
+                } else if is_int128 {
+                    self.pos += 1;
+                    let is_signed = (counter & UNSIGNED) == 0;
+                    ty = Type::BitInt {
+                        width: 128,
+                        is_signed,
+                    };
                 } else if let Some(ty2) = typedef_ty {
                     self.pos += 1;
                     ty = ty2;
@@ -671,6 +660,7 @@ impl<'a> Parser<'a> {
                 | Keyword::TypeofUnqual
                 | Keyword::BitInt,
             ) => true,
+            TokenKind::Ident(ref name) if name == "__int128" => true,
             TokenKind::Ident(_) => self.find_typedef(token).is_some(),
             _ => false,
         }
@@ -844,8 +834,6 @@ impl<'a> Parser<'a> {
             _ => unreachable!("is_function() ensures this is a function type"),
         };
 
-        // GNU allows __attribute__((...)) between the declarator and the
-        // terminating ';' or '{' (e.g. `int f(void) __attribute__((noreturn));`).
         self.parse_gnu_attributes(None, None)?;
 
         // Check if this is a declaration (;) or definition ({...})
@@ -1413,10 +1401,6 @@ impl<'a> Parser<'a> {
             .to_string())
     }
 
-    /// Consumes one comma-separated `[name] "constraint" (expr)` operand list
-    /// (the output or input section of extended asm). Operand expressions are
-    /// parsed (so identifiers must resolve) and discarded -- the AST has no
-    /// operand-list representation yet, since no lowerer consumes it.
     fn parse_asm_operand_list(&mut self) -> CompileResult<()> {
         if matches!(
             self.peek().kind,
@@ -1440,7 +1424,6 @@ impl<'a> Parser<'a> {
         Ok(())
     }
 
-    /// Consumes the comma-separated clobber-list section (plain string literals).
     fn parse_asm_clobber_list(&mut self) -> CompileResult<()> {
         if matches!(
             self.peek().kind,
@@ -1457,7 +1440,6 @@ impl<'a> Parser<'a> {
         Ok(())
     }
 
-    /// Consumes the comma-separated goto-label-list section of `asm goto`.
     fn parse_asm_goto_label_list(&mut self) -> CompileResult<()> {
         if matches!(self.peek().kind, TokenKind::Punct(Punct::RParen)) {
             return Ok(());
@@ -1491,13 +1473,11 @@ impl<'a> Parser<'a> {
         self.expect_punct(Punct::LParen)?;
         let asm_str = self.parse_asm_string_literal()?;
 
-        // Basic asm (no operand sections) closes right after the template string.
         if self.check_punct(Punct::RParen) {
             self.expect_punct(Punct::RParen)?;
             return Ok(self.stmt_at(StmtKind::Asm(asm_str), location));
         }
 
-        // Extended asm: [ : outputs [ : inputs [ : clobbers [ : goto-labels ] ] ] ]
         self.expect_punct(Punct::Colon)?;
         self.parse_asm_operand_list()?;
         if self.consume_punct(Punct::Colon) {
@@ -2904,8 +2884,6 @@ impl<'a> Parser<'a> {
         match &expr.kind {
             ExprKind::Var { .. } | ExprKind::Deref(_) | ExprKind::Member { .. } => true,
             ExprKind::Comma { rhs, .. } => self.is_lvalue(rhs),
-            // `__real__ z = ...` / `__imag__ z = ...` assign into one component of a
-            // _Complex lvalue.
             ExprKind::Unary {
                 op: UnaryOp::Real | UnaryOp::Imag,
                 ..
@@ -3689,10 +3667,6 @@ impl<'a> Parser<'a> {
                     "__builtin_add_overflow" | "__builtin_sub_overflow" | "__builtin_mul_overflow"
                 ) =>
             {
-                // Operand widths vary per call site (int/unsigned/long long), so this
-                // can't be a single fixed-signature declared function. Parsing-only
-                // stand-in: `*result = a op b, 0` -- real overflow detection is a
-                // lowering concern once a lowerer for this AST exists.
                 let op = match name.as_str() {
                     "__builtin_add_overflow" => BinaryOp::Add,
                     "__builtin_sub_overflow" => BinaryOp::Sub,
@@ -3735,9 +3709,6 @@ impl<'a> Parser<'a> {
                 Ok(expr)
             }
             TokenKind::Ident(ref name) if name == "__builtin_complex" => {
-                // Result element type follows the argument type (float/double/long
-                // double); the imaginary part is dropped for now -- constructing a
-                // real complex value is a lowering concern once a lowerer exists.
                 let location = token.location;
                 self.pos += 1;
                 self.expect_punct(Punct::LParen)?;
@@ -3886,9 +3857,16 @@ impl<'a> Parser<'a> {
                     token.location,
                 ))
             }
-            TokenKind::Num { value, fval, ty } => {
+            TokenKind::Num {
+                value,
+                fval,
+                ref ty,
+            } => {
+                let raw_text = matches!(ty, Type::BitInt { .. }).then(|| token.text());
                 self.pos += 1;
-                let expr_kind = if ty.is_flonum() || ty.is_complex() {
+                let expr_kind = if let Some(raw) = raw_text {
+                    ExprKind::BigIntLiteral { raw }
+                } else if ty.is_flonum() || ty.is_complex() {
                     ExprKind::Num { value: 0, fval }
                 } else {
                     ExprKind::Num { value, fval: 0.0 }
@@ -6303,6 +6281,10 @@ impl<'a> Parser<'a> {
             ExprKind::Null => Type::Void,
             ExprKind::Memzero { .. } => Type::Void,
             ExprKind::Num { .. } => Type::Int,
+            ExprKind::BigIntLiteral { .. } => unreachable!(
+                "BigIntLiteral is only constructed with expr.ty already set, in the \
+                 TokenKind::Num primary-expression case above"
+            ),
             ExprKind::Var { idx, is_local } | ExprKind::VlaPtr { idx, is_local } => {
                 let map = if *is_local {
                     &self.locals
@@ -6505,6 +6487,16 @@ impl<'a> Parser<'a> {
 
         match &mut expr.kind {
             ExprKind::Num { value: val, .. } => Ok(*val),
+            ExprKind::BigIntLiteral { raw } => {
+                let digits = raw.trim_end_matches(['w', 'W', 'b', 'B', 'u', 'U']);
+                let mut value: i64 = 0;
+                for byte in digits.bytes() {
+                    if let Some(digit) = (byte as char).to_digit(10) {
+                        value = value.wrapping_mul(10).wrapping_add(digit as i64);
+                    }
+                }
+                Ok(value)
+            }
             ExprKind::LabelVal { label: label_name } => {
                 let label_ref = match label {
                     Some(label_ref) => label_ref,

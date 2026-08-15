@@ -139,8 +139,6 @@ fn parse_only(path: &Path) -> Result<String, String> {
     Ok(format!("OK: {} globals\n", program.globals.len()))
 }
 
-/// Pulls a `--frontend <cir|native>` pair out of `args`, defaulting to "cir".
-/// Leaves all other arguments (including clang passthrough args) untouched and in order.
 fn extract_frontend_flag(args: &[String]) -> (String, Vec<String>) {
     let mut frontend = "cir".to_string();
     let mut rest = Vec::with_capacity(args.len());

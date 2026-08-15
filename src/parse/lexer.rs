@@ -466,6 +466,44 @@ pub struct Token {
     pub line_delta: i32,
 }
 
+fn integer_literal_bit_width(digits: &str, base: u32) -> u32 {
+    if base == 2 {
+        return digits.trim_start_matches('0').len().max(1) as u32;
+    }
+    if base == 8 || base == 16 {
+        let bits_per_digit = if base == 8 { 3 } else { 4 };
+        let trimmed = digits.trim_start_matches('0');
+        if trimmed.is_empty() {
+            return 1;
+        }
+        let first_value = trimmed.as_bytes()[0] as char;
+        let first_value = first_value.to_digit(base).unwrap_or(0);
+        let leading_bits = 32 - first_value.max(1).leading_zeros();
+        return (trimmed.len() as u32 - 1) * bits_per_digit + leading_bits;
+    }
+
+    let mut digits: Vec<u8> = digits.bytes().map(|b| b - b'0').collect();
+    if digits.iter().all(|&d| d == 0) {
+        return 1;
+    }
+    let mut bits = 0u32;
+    while !(digits.len() == 1 && digits[0] == 0) {
+        let mut carry = 0u32;
+        let mut quotient = Vec::with_capacity(digits.len());
+        for &d in &digits {
+            let cur = carry * 10 + d as u32;
+            quotient.push((cur / 2) as u8);
+            carry = cur % 2;
+        }
+        while quotient.len() > 1 && quotient[0] == 0 {
+            quotient.remove(0);
+        }
+        digits = quotient;
+        bits += 1;
+    }
+    bits
+}
+
 impl Token {
     pub fn text(&self) -> String {
         let file = get_input_file(self.location.file_no).expect("file for token");
@@ -535,6 +573,31 @@ impl Token {
         }
 
         let num_str = String::from_utf8(digits).expect("digit bytes");
+
+        {
+            let suffix = &input[i..];
+            let (has_u_prefix, rest) = if suffix.starts_with(['u', 'U']) {
+                (true, &suffix[1..])
+            } else {
+                (false, suffix)
+            };
+            if rest.eq_ignore_ascii_case("wb") {
+                let is_signed = !has_u_prefix;
+                let width = (integer_literal_bit_width(&num_str, base)
+                    + u32::from(is_signed))
+                .min(512);
+                self.kind = TokenKind::Num {
+                    value: 0,
+                    fval: 0.0,
+                    ty: Type::BitInt {
+                        width: width as i32,
+                        is_signed,
+                    },
+                };
+                return Ok(());
+            }
+        }
+
         let value = u128::from_str_radix(&num_str, base)
             .map_err(|_| CompileError::at("invalid integer constant", self.location))?;
         let value = value.min(u64::MAX as u128) as u64;

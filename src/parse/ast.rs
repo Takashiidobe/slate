@@ -111,6 +111,9 @@ pub enum ExprKind {
         value: i64,
         fval: f64,
     },
+    BigIntLiteral {
+        raw: String,
+    },
     /// Zero-clear a stack variable (for initializers)
     Memzero {
         idx: usize,

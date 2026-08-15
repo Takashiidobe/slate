@@ -334,9 +334,6 @@ fn parse_target(target: &str) -> Result<Triple, TargetError> {
     })
 }
 
-/// The `(name, "1")` pairs the CIR pipeline defines via `-D<name>=1` to tell
-/// libc-shim headers which target they're being compiled for. Frontends that
-/// don't shell out to clang (e.g. src/parse) need to inject these themselves.
 pub fn target_define_pairs(target: &str) -> Result<Vec<(String, String)>, TargetError> {
     Ok(target_features(target)?
         .names

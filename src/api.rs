@@ -255,9 +255,6 @@ pub fn reject_active_unsupported_file(path: &Path, context: &str) -> Result<(), 
     reject_active_unsupported(&pp, context)
 }
 
-/// Parse `path` with the native (ported chibicc) frontend, in place of clang+CIR.
-/// Does not lower or translate — see `translate_native` for that, which is
-/// currently a stub since the native frontend has no lowerer yet (slate-ozsg.4).
 pub fn parse_native(path: &Path) -> Result<parse::ast::Program, Error> {
     if let Some(dir) = cir::emit::libc_shim_dir() {
         parse::preprocessor::set_include_paths(vec![PathBuf::from(dir)]);
