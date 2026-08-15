@@ -8,6 +8,14 @@ use thiserror::Error;
 pub struct QualType {
     #[serde(rename = "qualType")]
     pub qual_type: String,
+    #[serde(default, rename = "desugaredQualType")]
+    pub desugared_qual_type: Option<String>,
+}
+
+impl QualType {
+    pub fn canonical(&self) -> &str {
+        self.desugared_qual_type.as_deref().unwrap_or(&self.qual_type)
+    }
 }
 
 #[derive(Deserialize, Debug)]
@@ -35,6 +43,10 @@ pub struct Decl {
     pub init: Option<String>,
     #[serde(default, rename = "isUsed")]
     pub is_used: bool,
+    #[serde(default, rename = "isImplicit")]
+    pub is_implicit: bool,
+    #[serde(default, rename = "isReferenced")]
+    pub is_referenced: bool,
 }
 
 #[derive(Deserialize, Debug, Default)]
@@ -46,6 +58,8 @@ pub struct Record {
     pub name: Option<String>,
     #[serde(default, rename = "completeDefinition")]
     pub complete_definition: bool,
+    #[serde(default, rename = "isImplicit")]
+    pub is_implicit: bool,
 }
 
 #[derive(Deserialize, Debug, Default)]
@@ -157,6 +171,7 @@ pub enum Clang {
     FieldDecl(Decl),
     RecordDecl(Record),
     TypedefDecl(Decl),
+    EnumDecl(Decl),
     EnumConstantDecl(Decl),
     CompoundStmt(Stmt),
     DeclStmt(Stmt),
@@ -168,6 +183,9 @@ pub enum Clang {
     BreakStmt(Stmt),
     ContinueStmt(Stmt),
     NullStmt(Stmt),
+    SwitchStmt(Stmt),
+    CaseStmt(Stmt),
+    DefaultStmt(Stmt),
     ParenExpr(Expr),
     BinaryOperator(BinaryOperator),
     CompoundAssignOperator(BinaryOperator),
@@ -178,6 +196,8 @@ pub enum Clang {
     CallExpr(Expr),
     MemberExpr(MemberExpr),
     ArraySubscriptExpr(Expr),
+    InitListExpr(Expr),
+    ConditionalOperator(Expr),
     IntegerLiteral(Literal),
     FloatingLiteral(Literal),
     CharacterLiteral(CharLiteral),
@@ -307,10 +327,11 @@ pub fn dump_tree(node: &Node, depth: usize, out: &mut String) {
                 write_range(out, range);
             }
         }
-        Clang::FieldDecl(d) | Clang::TypedefDecl(d) | Clang::EnumConstantDecl(d) => {
+        Clang::FieldDecl(d) | Clang::TypedefDecl(d) | Clang::EnumDecl(d) | Clang::EnumConstantDecl(d) => {
             let kind = match &node.kind {
                 Clang::FieldDecl(_) => "FieldDecl",
                 Clang::TypedefDecl(_) => "TypedefDecl",
+                Clang::EnumDecl(_) => "EnumDecl",
                 _ => "EnumConstantDecl",
             };
             write!(out, "{kind}").unwrap();
@@ -351,6 +372,9 @@ pub fn dump_tree(node: &Node, depth: usize, out: &mut String) {
         | Clang::DoStmt(s)
         | Clang::BreakStmt(s)
         | Clang::ContinueStmt(s)
+        | Clang::SwitchStmt(s)
+        | Clang::CaseStmt(s)
+        | Clang::DefaultStmt(s)
         | Clang::NullStmt(s) => {
             let kind = match &node.kind {
                 Clang::CompoundStmt(_) => "CompoundStmt",
@@ -362,6 +386,9 @@ pub fn dump_tree(node: &Node, depth: usize, out: &mut String) {
                 Clang::DoStmt(_) => "DoStmt",
                 Clang::BreakStmt(_) => "BreakStmt",
                 Clang::ContinueStmt(_) => "ContinueStmt",
+                Clang::SwitchStmt(_) => "SwitchStmt",
+                Clang::CaseStmt(_) => "CaseStmt",
+                Clang::DefaultStmt(_) => "DefaultStmt",
                 _ => "NullStmt",
             };
             write!(out, "{kind}").unwrap();
@@ -369,11 +396,17 @@ pub fn dump_tree(node: &Node, depth: usize, out: &mut String) {
                 write_range(out, range);
             }
         }
-        Clang::ParenExpr(e) | Clang::CallExpr(e) | Clang::ArraySubscriptExpr(e) => {
+        Clang::ParenExpr(e)
+        | Clang::CallExpr(e)
+        | Clang::ArraySubscriptExpr(e)
+        | Clang::InitListExpr(e)
+        | Clang::ConditionalOperator(e) => {
             let kind = match &node.kind {
                 Clang::ParenExpr(_) => "ParenExpr",
                 Clang::CallExpr(_) => "CallExpr",
-                _ => "ArraySubscriptExpr",
+                Clang::ArraySubscriptExpr(_) => "ArraySubscriptExpr",
+                Clang::InitListExpr(_) => "InitListExpr",
+                _ => "ConditionalOperator",
             };
             write!(out, "{kind}").unwrap();
             if let Some(ty) = &e.qual_type {

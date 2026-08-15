@@ -1,356 +1,154 @@
-use super::types::{aggregate_type_name, lower_type, resolve_aggregate};
+use super::types::CType;
+use super::Env;
 use crate::backend::rust_ast::{
     BinOp, Block, Expr as RExpr, IndentStmt, Prim, Raw, RustValue, Stmt as RStmt, Type as RType,
     UnaryOp as RUnaryOp,
 };
 use crate::function_identity::CallBinding;
-use crate::parse::ast::{
-    BinaryOp, Expr, ExprKind, GlobalKind, NodeId, Obj, Type as CType, UnaryOp as CUnaryOp,
-};
-use std::collections::HashMap;
+use crate::parse::clang_ast::{Clang, Node, QualType};
+use std::sync::atomic::{AtomicUsize, Ordering};
 
-pub(crate) struct FnCtx<'a> {
-    pub locals: &'a [Obj],
-    pub globals: &'a [Obj],
-    pub types: &'a HashMap<NodeId, CType>,
-    pub is_main: bool,
+static TMP_COUNTER: AtomicUsize = AtomicUsize::new(0);
+
+fn next_tmp() -> String {
+    format!("__tmp{}", TMP_COUNTER.fetch_add(1, Ordering::Relaxed))
 }
 
-impl FnCtx<'_> {
-    fn var(&self, idx: usize, is_local: bool) -> &Obj {
-        if is_local {
-            &self.locals[idx]
-        } else {
-            &self.globals[idx]
+fn qual_type_of(node: &Node) -> Option<&QualType> {
+    match &node.kind {
+        Clang::ParenExpr(e)
+        | Clang::CallExpr(e)
+        | Clang::ArraySubscriptExpr(e)
+        | Clang::InitListExpr(e)
+        | Clang::ConditionalOperator(e) => e.qual_type.as_ref(),
+        Clang::BinaryOperator(b) | Clang::CompoundAssignOperator(b) => b.qual_type.as_ref(),
+        Clang::UnaryOperator(u) => u.qual_type.as_ref(),
+        Clang::DeclRefExpr(r) => r.qual_type.as_ref(),
+        Clang::ImplicitCastExpr(c) | Clang::CStyleCastExpr(c) => c.qual_type.as_ref(),
+        Clang::MemberExpr(m) => m.qual_type.as_ref(),
+        Clang::IntegerLiteral(l) | Clang::FloatingLiteral(l) | Clang::StringLiteral(l) => {
+            l.qual_type.as_ref()
         }
+        Clang::CharacterLiteral(l) => l.qual_type.as_ref(),
+        _ => None,
     }
 }
 
-pub(crate) fn lower_expr(expr: &Expr, ctx: &FnCtx) -> RExpr {
-    match &expr.kind {
-        ExprKind::Null => RExpr::Value(RustValue::I64(0)),
-        ExprKind::Num { value, fval } => num_expr(expr, *value, *fval),
-        ExprKind::BigIntLiteral { raw } => bigint_expr(raw),
-        ExprKind::LDoubleLiteral { value } => ldouble_expr(value),
-        ExprKind::Memzero { idx, is_local } => {
-            zero_value_expr(&ctx.var(*idx, *is_local).ty.clone(), ctx.types)
+fn lowers_to_rust_bool(node: &Node) -> bool {
+    match &node.kind {
+        Clang::BinaryOperator(b) => matches!(
+            b.opcode.as_str(),
+            "==" | "!=" | "<" | "<=" | ">" | ">=" | "&&" | "||"
+        ),
+        Clang::UnaryOperator(u) => u.opcode == "!",
+        _ => false,
+    }
+}
+
+pub(crate) fn node_type(node: &Node) -> CType {
+    if lowers_to_rust_bool(node) {
+        return CType::Bool;
+    }
+    qual_type_of(node)
+        .map(|t| CType::parse(t.canonical()))
+        .unwrap_or(CType::Int)
+}
+
+pub(crate) fn lower_expr(node: &Node, env: Env) -> RExpr {
+    match &node.kind {
+        Clang::ParenExpr(_) => lower_expr(&node.inner[0], env),
+        Clang::IntegerLiteral(l) => {
+            let ty = node_type(node);
+            RExpr::Value(ty.int_value(l.value.trim().parse::<u128>().unwrap_or(0) as i128))
         }
-        ExprKind::Unary { op, expr: inner } => unary_expr(*op, inner, expr, ctx),
-        ExprKind::Call {
-            callee,
-            args,
-            ret_buffer: _,
-        } => RExpr::Call {
-            func: Box::new(lower_expr(callee, ctx)),
-            args: args.iter().map(|arg| lower_expr(arg, ctx)).collect(),
-            binding: CallBinding::Generated,
-        },
-        ExprKind::Addr(inner) => RExpr::Unary {
-            op: RUnaryOp::Raw(Raw::Mut),
-            expr: Box::new(lower_expr(inner, ctx)),
-        },
-        ExprKind::Deref(inner) => RExpr::Unary {
-            op: RUnaryOp::Deref,
-            expr: Box::new(lower_expr(inner, ctx)),
-        },
-        ExprKind::Var { idx, is_local } => var_expr(*idx, *is_local, ctx),
-        ExprKind::VlaPtr { idx, is_local } => {
-            RExpr::Var(local_ident(ctx.var(*idx, *is_local)).into())
+        Clang::FloatingLiteral(l) => {
+            RExpr::Value(RustValue::Float(l.value.parse::<f64>().unwrap_or(0.0).into()))
         }
-        ExprKind::StmtExpr(stmts) => stmt_expr(stmts, ctx),
-        ExprKind::Assign { lhs, rhs } => assign_expr(lhs, rhs, ctx),
-        ExprKind::CompoundAssign { op, lhs, rhs } => compound_assign_expr(*op, lhs, rhs, ctx),
-        ExprKind::Cond { cond, then, els } => RExpr::If {
-            cond: Box::new(lower_expr(cond, ctx)),
-            then_expr: Box::new(lower_expr(then, ctx)),
-            else_expr: Box::new(lower_expr(els, ctx)),
-        },
-        ExprKind::Comma { lhs, rhs } => RExpr::Block(Box::new(Block {
-            stmts: vec![IndentStmt {
-                depth: 0,
-                stmt: RStmt::Expr(lower_expr(lhs, ctx)),
-            }],
-            tail: Some(Box::new(lower_expr(rhs, ctx))),
-        })),
-        ExprKind::Member { lhs, member } => RExpr::Field {
-            base: Box::new(lower_expr(lhs, ctx)),
-            field: member.name.clone(),
-        },
-        ExprKind::Cast { expr: inner, ty } => cast_expr(inner, ty, ctx),
-        ExprKind::LabelVal { label } => RExpr::Var(label.as_str().into()),
-        ExprKind::Binary { op, lhs, rhs } => binary_expr(*op, lhs, rhs, ctx),
-        ExprKind::Cas { addr, old, new } => RExpr::Call {
-            func: Box::new(RExpr::Var("__slate_cas_unsupported".into())),
-            args: vec![
-                lower_expr(addr, ctx),
-                lower_expr(old, ctx),
-                lower_expr(new, ctx),
-            ],
-            binding: CallBinding::Generated,
-        },
-        ExprKind::Exch { addr, val } => RExpr::Call {
-            func: Box::new(RExpr::Var("__slate_exch_unsupported".into())),
-            args: vec![lower_expr(addr, ctx), lower_expr(val, ctx)],
-            binding: CallBinding::Generated,
-        },
-    }
-}
-
-fn var_expr(idx: usize, is_local: bool, ctx: &FnCtx) -> RExpr {
-    let obj = ctx.var(idx, is_local);
-    if !is_local
-        && obj.global_kind == GlobalKind::Literal
-        && let Some(bytes) = obj.init_data.clone()
-    {
-        return RExpr::ByteStr(bytes);
-    }
-    RExpr::Var(local_ident(obj).into())
-}
-
-pub(crate) fn local_ident(obj: &Obj) -> String {
-    if obj.name.is_empty() {
-        format!("__tmp{}", obj.id)
-    } else {
-        obj.name.clone()
-    }
-}
-
-fn num_expr(expr: &Expr, value: i64, fval: f64) -> RExpr {
-    match expr.ty.as_ref() {
-        Some(ty) if ty.is_flonum() => RExpr::Value(RustValue::Float(fval.into())),
-        Some(CType::Bool) => RExpr::Value(RustValue::Bool(value != 0)),
-        Some(ty) => int_literal(value, ty),
-        None => RExpr::Value(RustValue::I64(value)),
-    }
-}
-
-fn int_literal(value: i64, ty: &CType) -> RExpr {
-    let prim = int_prim(ty);
-    if ty.is_unsigned() {
-        RExpr::Value(RustValue::TypedUInt(value as u64 as u128, prim))
-    } else {
-        RExpr::Value(RustValue::TypedInt(value as i128, prim))
-    }
-}
-
-fn int_prim(ty: &CType) -> Prim {
-    match ty.size() {
-        1 => {
-            if ty.is_unsigned() {
-                Prim::U8
-            } else {
-                Prim::I8
+        Clang::CharacterLiteral(l) => {
+            let ty = node_type(node);
+            RExpr::Value(ty.int_value(l.value as i128))
+        }
+        Clang::StringLiteral(l) => RExpr::CStr(unescape_c_string(&l.value)),
+        Clang::DeclRefExpr(r) => {
+            let info = env
+                .vars
+                .get(&r.referenced_decl.id)
+                .unwrap_or_else(|| panic!("unresolved decl reference {:?}", r.referenced_decl.id));
+            RExpr::Var(info.name.as_str().into())
+        }
+        Clang::UnaryOperator(u) => unary_expr(node, u, env),
+        Clang::BinaryOperator(b) => binary_expr(node, b, env),
+        Clang::CompoundAssignOperator(b) => compound_assign_expr(node, b, env),
+        Clang::CallExpr(_) => call_expr(node, env),
+        Clang::MemberExpr(m) => member_expr(node, m, env),
+        Clang::ArraySubscriptExpr(_) => subscript_expr(node, env),
+        Clang::ImplicitCastExpr(c) | Clang::CStyleCastExpr(c) => cast_expr(node, c, env),
+        Clang::ConditionalOperator(_) => {
+            let ty = node_type(node);
+            let _ = ty;
+            RExpr::If {
+                cond: Box::new(truthy(&node.inner[0], env)),
+                then_expr: Box::new(lower_expr(&node.inner[1], env)),
+                else_expr: Box::new(lower_expr(&node.inner[2], env)),
             }
         }
-        2 => {
-            if ty.is_unsigned() {
-                Prim::U16
-            } else {
-                Prim::I16
+        Clang::InitListExpr(_) => super::globals::lower_init(node, &node_type(node), env),
+        Clang::Other(o) if is_transparent_wrapper(o.kind.as_deref()) && node.inner.len() == 1 => {
+            lower_expr(&node.inner[0], env)
+        }
+        other => todo!("native_lowerer: unsupported expr node: {other:?}"),
+    }
+}
+
+fn is_transparent_wrapper(kind: Option<&str>) -> bool {
+    matches!(
+        kind,
+        Some("ConstantExpr")
+            | Some("ExprWithCleanups")
+            | Some("MaterializeTemporaryExpr")
+            | Some("CXXBindTemporaryExpr")
+    )
+}
+
+pub(crate) fn truthy(node: &Node, env: Env) -> RExpr {
+    let ty = node_type(node);
+    match &ty {
+        CType::Bool => lower_expr(node, env),
+        CType::Array { .. } => RExpr::Value(RustValue::Bool(true)),
+        CType::Ptr(_) => {
+            let lowered = lower_expr(node, env);
+            RExpr::Unary {
+                op: RUnaryOp::Not,
+                expr: Box::new(RExpr::MethodCall {
+                    recv: Box::new(lowered),
+                    method: "is_null".into(),
+                    args: Vec::new(),
+                }),
             }
         }
-        4 => {
-            if ty.is_unsigned() {
-                Prim::U32
-            } else {
-                Prim::I32
-            }
-        }
-        16 => {
-            if ty.is_unsigned() {
-                Prim::U128
-            } else {
-                Prim::I128
+        _ if ty.is_flonum() => {
+            let lowered = lower_expr(node, env);
+            RExpr::Binary {
+                op: BinOp::Ne,
+                lhs: Box::new(lowered),
+                rhs: Box::new(RExpr::Value(RustValue::Float(0.0.into()))),
             }
         }
         _ => {
-            if ty.is_unsigned() {
-                Prim::U64
-            } else {
-                Prim::I64
-            }
-        }
-    }
-}
-
-fn bigint_expr(raw: &str) -> RExpr {
-    let digits = raw.trim_end_matches(['w', 'W', 'b', 'B', 'u', 'U']);
-    let mut value: i128 = 0;
-    for byte in digits.bytes() {
-        if let Some(digit) = (byte as char).to_digit(10) {
-            value = value.wrapping_mul(10).wrapping_add(digit as i128);
-        }
-    }
-    RExpr::Value(RustValue::I128(value))
-}
-
-fn ldouble_expr(value: &rustc_apfloat::ieee::X87DoubleExtended) -> RExpr {
-    use rustc_apfloat::{Float, FloatConvert};
-    let mut lost_info = false;
-    let converted: rustc_apfloat::ieee::Double = (*value).convert(&mut lost_info).value;
-    let bits: u128 = converted.to_bits();
-    RExpr::Value(RustValue::Float(f64::from_bits(bits as u64).into()))
-}
-
-fn zero_value_expr(ty: &CType, types: &HashMap<NodeId, CType>) -> RExpr {
-    let resolved = resolve_aggregate(ty, types);
-    match resolved {
-        CType::Struct { members, .. } => RExpr::StructLit {
-            name: aggregate_type_name(resolved),
-            fields: members
-                .iter()
-                .map(|member| (member.name.clone(), zero_value_expr(&member.ty, types)))
-                .collect(),
-        },
-        CType::Union { members, .. } => match members.first() {
-            Some(member) => RExpr::StructLit {
-                name: aggregate_type_name(resolved),
-                fields: vec![(member.name.clone(), zero_value_expr(&member.ty, types))],
-            },
-            None => RExpr::Value(RustValue::I64(0)),
-        },
-        CType::Array { base, len } => RExpr::ArrayRepeat {
-            elem: Box::new(zero_value_expr(base, types)),
-            len: (*len).max(0) as usize,
-        },
-        _ if resolved.is_flonum() => RExpr::Value(RustValue::Float(0.0.into())),
-        CType::Ptr(_) | CType::Func { .. } => RExpr::Value(RustValue::NullPtr),
-        _ => int_literal(0, resolved),
-    }
-}
-
-fn unary_expr(op: CUnaryOp, inner: &Expr, expr: &Expr, ctx: &FnCtx) -> RExpr {
-    let lowered = lower_expr(inner, ctx);
-    match op {
-        CUnaryOp::Neg => RExpr::Unary {
-            op: RUnaryOp::Neg,
-            expr: Box::new(lowered),
-        },
-        CUnaryOp::BitNot => RExpr::Unary {
-            op: RUnaryOp::Not,
-            expr: Box::new(lowered),
-        },
-        CUnaryOp::Not => {
-            let zero = match inner.ty.as_ref() {
-                Some(ty) if ty.is_flonum() => RExpr::Value(RustValue::Float(0.0.into())),
-                Some(ty) => int_literal(0, ty),
-                None => RExpr::Value(RustValue::I64(0)),
-            };
-            let cmp = RExpr::Binary {
-                op: BinOp::Eq,
+            let lowered = lower_expr(node, env);
+            RExpr::Binary {
+                op: BinOp::Ne,
                 lhs: Box::new(lowered),
-                rhs: Box::new(zero),
-            };
-            RExpr::Cast {
-                expr: Box::new(cmp),
-                ty: expr
-                    .ty
-                    .as_ref()
-                    .map(|ty| lower_type(ty, ctx.types))
-                    .unwrap_or(RType::Prim(Prim::I32)),
+                rhs: Box::new(RExpr::Value(ty.int_value(0))),
             }
         }
-        CUnaryOp::Real | CUnaryOp::Imag => lowered,
     }
 }
 
-fn stmt_expr(stmts: &[crate::parse::ast::Stmt], ctx: &FnCtx) -> RExpr {
-    let mut body: Vec<IndentStmt> = Vec::new();
-    let mut tail = None;
-    for (i, stmt) in stmts.iter().enumerate() {
-        let is_last = i + 1 == stmts.len();
-        if is_last && let crate::parse::ast::StmtKind::Expr(value) = &stmt.kind {
-            tail = Some(Box::new(lower_expr(value, ctx)));
-            continue;
-        }
-        super::stmts::lower_stmt(stmt, ctx, &mut body);
-    }
-    RExpr::Block(Box::new(Block { stmts: body, tail }))
-}
-
-fn assign_expr(lhs: &Expr, rhs: &Expr, ctx: &FnCtx) -> RExpr {
-    let target = lower_expr(lhs, ctx);
-    let value = lower_expr(rhs, ctx);
-    RExpr::Block(Box::new(Block {
-        stmts: vec![IndentStmt {
-            depth: 0,
-            stmt: RStmt::Assign {
-                target: target.clone(),
-                value,
-            },
-        }],
-        tail: Some(Box::new(target)),
-    }))
-}
-
-fn compound_assign_expr(op: BinaryOp, lhs: &Expr, rhs: &Expr, ctx: &FnCtx) -> RExpr {
-    let target = lower_expr(lhs, ctx);
-    let value = lower_expr(rhs, ctx);
-    RExpr::Block(Box::new(Block {
-        stmts: vec![IndentStmt {
-            depth: 0,
-            stmt: RStmt::CompoundAssign {
-                target: target.clone(),
-                op: map_binop(op),
-                value,
-            },
-        }],
-        tail: Some(Box::new(target)),
-    }))
-}
-
-fn cast_expr(inner: &Expr, ty: &CType, ctx: &FnCtx) -> RExpr {
-    let target = lower_type(ty, ctx.types);
-    let lowered = if matches!(target, RType::Ptr { .. }) {
-        decay_to_ptr(inner, ctx)
-    } else {
-        lower_expr(inner, ctx)
-    };
-    match &target {
-        RType::Unit => RExpr::Block(Box::new(Block {
-            stmts: vec![IndentStmt {
-                depth: 0,
-                stmt: RStmt::Expr(lowered),
-            }],
-            tail: None,
-        })),
-        _ => RExpr::Cast {
-            expr: Box::new(lowered),
-            ty: target,
-        },
-    }
-}
-
-fn binary_expr(op: BinaryOp, lhs: &Expr, rhs: &Expr, ctx: &FnCtx) -> RExpr {
-    let lhs_is_ptr = innermost_ty(lhs).is_some_and(is_pointerish);
-    let rhs_is_ptr = innermost_ty(rhs).is_some_and(is_pointerish);
-
-    if matches!(op, BinaryOp::Add | BinaryOp::Sub) && (lhs_is_ptr || rhs_is_ptr) {
-        return pointer_arith(op, lhs, rhs, lhs_is_ptr, rhs_is_ptr, ctx);
-    }
-
-    RExpr::Binary {
-        op: map_binop(op),
-        lhs: Box::new(lower_expr(lhs, ctx)),
-        rhs: Box::new(lower_expr(rhs, ctx)),
-    }
-}
-
-fn innermost_ty(expr: &Expr) -> Option<&CType> {
-    match &expr.kind {
-        ExprKind::Cast { expr: inner, .. } => innermost_ty(inner),
-        _ => expr.ty.as_ref(),
-    }
-}
-
-fn is_pointerish(ty: &CType) -> bool {
-    matches!(ty, CType::Ptr(_) | CType::Array { .. } | CType::Vla { .. })
-}
-
-fn decay_to_ptr(expr: &Expr, ctx: &FnCtx) -> RExpr {
-    let lowered = lower_expr(expr, ctx);
-    match expr.ty.as_ref() {
-        Some(CType::Array { .. }) | Some(CType::Vla { .. }) => RExpr::MethodCall {
+fn decay_to_ptr(node: &Node, env: Env) -> RExpr {
+    let lowered = lower_expr(node, env);
+    match node_type(node) {
+        CType::Array { .. } => RExpr::MethodCall {
             recv: Box::new(RExpr::MethodCall {
                 recv: Box::new(lowered),
                 method: "as_ptr".into(),
@@ -363,81 +161,359 @@ fn decay_to_ptr(expr: &Expr, ctx: &FnCtx) -> RExpr {
     }
 }
 
-fn pointer_arith(
-    op: BinaryOp,
-    lhs: &Expr,
-    rhs: &Expr,
-    lhs_is_ptr: bool,
-    rhs_is_ptr: bool,
-    ctx: &FnCtx,
-) -> RExpr {
-    if lhs_is_ptr && rhs_is_ptr {
-        return RExpr::Binary {
-            op: BinOp::Sub,
-            lhs: Box::new(RExpr::Cast {
-                expr: Box::new(decay_to_ptr(lhs, ctx)),
-                ty: RType::Prim(Prim::Isize),
-            }),
-            rhs: Box::new(RExpr::Cast {
-                expr: Box::new(decay_to_ptr(rhs, ctx)),
-                ty: RType::Prim(Prim::Isize),
-            }),
-        };
-    }
-    let (ptr_expr, ptr_ty, byte_offset) = if lhs_is_ptr {
-        (
-            decay_to_ptr(lhs, ctx),
-            lhs.ty.as_ref(),
-            lower_expr(rhs, ctx),
-        )
-    } else {
-        (
-            decay_to_ptr(rhs, ctx),
-            rhs.ty.as_ref(),
-            lower_expr(lhs, ctx),
-        )
-    };
-    let ptr_ty = ptr_ty
-        .map(|ty| lower_type(ty, ctx.types))
-        .unwrap_or(RType::Ptr {
-            mutable: true,
-            inner: Box::new(RType::Prim(Prim::U8)),
-        });
-    let addr = RExpr::Cast {
-        expr: Box::new(ptr_expr),
-        ty: RType::Prim(Prim::Usize),
-    };
+fn subscript_expr(node: &Node, env: Env) -> RExpr {
+    let base = &node.inner[0];
+    let index = &node.inner[1];
+    let ptr = decay_to_ptr(base, env);
     let offset = RExpr::Cast {
-        expr: Box::new(byte_offset),
-        ty: RType::Prim(Prim::Usize),
+        expr: Box::new(lower_expr(index, env)),
+        ty: RType::Prim(Prim::Isize),
     };
-    RExpr::Cast {
-        expr: Box::new(RExpr::Binary {
-            op: map_binop(op),
-            lhs: Box::new(addr),
-            rhs: Box::new(offset),
+    RExpr::Unary {
+        op: RUnaryOp::Deref,
+        expr: Box::new(RExpr::MethodCall {
+            recv: Box::new(ptr),
+            method: "wrapping_offset".into(),
+            args: vec![offset],
         }),
-        ty: ptr_ty,
     }
 }
 
-fn map_binop(op: BinaryOp) -> BinOp {
-    match op {
-        BinaryOp::Add => BinOp::Add,
-        BinaryOp::Sub => BinOp::Sub,
-        BinaryOp::Mul => BinOp::Mul,
-        BinaryOp::Div => BinOp::Div,
-        BinaryOp::Mod => BinOp::Rem,
-        BinaryOp::BitAnd => BinOp::BitAnd,
-        BinaryOp::BitOr => BinOp::BitOr,
-        BinaryOp::BitXor => BinOp::BitXor,
-        BinaryOp::Shl => BinOp::Shl,
-        BinaryOp::Shr => BinOp::Shr,
-        BinaryOp::LogAnd => BinOp::And,
-        BinaryOp::LogOr => BinOp::Or,
-        BinaryOp::Eq => BinOp::Eq,
-        BinaryOp::Ne => BinOp::Ne,
-        BinaryOp::Lt => BinOp::Lt,
-        BinaryOp::Le => BinOp::Le,
+fn member_expr(node: &Node, m: &crate::parse::clang_ast::MemberExpr, env: Env) -> RExpr {
+    let base_node = &node.inner[0];
+    let base = if m.is_arrow {
+        RExpr::Unary {
+            op: RUnaryOp::Deref,
+            expr: Box::new(lower_expr(base_node, env)),
+        }
+    } else {
+        lower_expr(base_node, env)
+    };
+    RExpr::Field {
+        base: Box::new(base),
+        field: m.name.clone().unwrap_or_default(),
     }
+}
+
+fn call_expr(node: &Node, env: Env) -> RExpr {
+    let callee = &node.inner[0];
+    RExpr::Call {
+        func: Box::new(lower_expr(callee, env)),
+        args: node.inner[1..].iter().map(|a| lower_expr(a, env)).collect(),
+        binding: CallBinding::Generated,
+    }
+}
+
+fn cast_expr(node: &Node, c: &crate::parse::clang_ast::CastExpr, env: Env) -> RExpr {
+    let inner = &node.inner[0];
+    match c.cast_kind.as_str() {
+        "LValueToRValue" | "NoOp" | "FunctionToPointerDecay" | "ToVoid" | "BuiltinFnToFnPtr" => {
+            lower_expr(inner, env)
+        }
+        "ArrayToPointerDecay" => decay_to_ptr(inner, env),
+        "IntegralToBoolean" | "FloatingToBoolean" | "PointerToBoolean" => truthy(inner, env),
+        _ => {
+            let target_ty = node_type(node);
+            let target = target_ty.lower(env.records);
+            let lowered = if matches!(target, RType::Ptr { .. }) {
+                decay_to_ptr(inner, env)
+            } else {
+                lower_expr(inner, env)
+            };
+            match &target {
+                RType::Unit => RExpr::Block(Box::new(Block {
+                    stmts: vec![IndentStmt {
+                        depth: 0,
+                        stmt: RStmt::Expr(lowered),
+                    }],
+                    tail: None,
+                })),
+                _ => RExpr::Cast {
+                    expr: Box::new(lowered),
+                    ty: target,
+                },
+            }
+        }
+    }
+}
+
+fn unary_expr(node: &Node, u: &crate::parse::clang_ast::UnaryOperator, env: Env) -> RExpr {
+    let inner = &node.inner[0];
+    match u.opcode.as_str() {
+        "-" => RExpr::Unary {
+            op: RUnaryOp::Neg,
+            expr: Box::new(lower_expr(inner, env)),
+        },
+        "~" => RExpr::Unary {
+            op: RUnaryOp::Not,
+            expr: Box::new(lower_expr(inner, env)),
+        },
+        "!" => RExpr::Unary {
+            op: RUnaryOp::Not,
+            expr: Box::new(truthy(inner, env)),
+        },
+        "+" => lower_expr(inner, env),
+        "&" => RExpr::Unary {
+            op: RUnaryOp::Raw(Raw::Mut),
+            expr: Box::new(lower_expr(inner, env)),
+        },
+        "*" => RExpr::Unary {
+            op: RUnaryOp::Deref,
+            expr: Box::new(decay_to_ptr(inner, env)),
+        },
+        "++" | "--" => inc_dec_expr(u, inner, env),
+        other => todo!("native_lowerer: unsupported unary opcode: {other}"),
+    }
+}
+
+fn inc_dec_expr(u: &crate::parse::clang_ast::UnaryOperator, inner: &Node, env: Env) -> RExpr {
+    let ty = node_type(inner);
+    let target = lower_expr(inner, env);
+    let is_incr = u.opcode == "++";
+    let new_value = if ty.is_pointerish() {
+        let delta = if is_incr { 1i128 } else { -1 };
+        RExpr::MethodCall {
+            recv: Box::new(target.clone()),
+            method: "wrapping_offset".into(),
+            args: vec![RExpr::Value(RustValue::TypedInt(delta, Prim::Isize))],
+        }
+    } else if ty.is_flonum() {
+        let one = RExpr::Value(RustValue::Float(1.0.into()));
+        RExpr::Binary {
+            op: if is_incr { BinOp::Add } else { BinOp::Sub },
+            lhs: Box::new(target.clone()),
+            rhs: Box::new(one),
+        }
+    } else {
+        RExpr::Binary {
+            op: if is_incr { BinOp::Add } else { BinOp::Sub },
+            lhs: Box::new(target.clone()),
+            rhs: Box::new(RExpr::Value(ty.int_value(1))),
+        }
+    };
+
+    if u.is_postfix {
+        let tmp = next_tmp();
+        RExpr::Block(Box::new(Block {
+            stmts: vec![
+                IndentStmt {
+                    depth: 0,
+                    stmt: RStmt::Let {
+                        name: tmp.clone(),
+                        mutable: false,
+                        ty: None,
+                        init: Some(target.clone()),
+                    },
+                },
+                IndentStmt {
+                    depth: 0,
+                    stmt: RStmt::Assign {
+                        target,
+                        value: new_value,
+                    },
+                },
+            ],
+            tail: Some(Box::new(RExpr::Var(tmp.as_str().into()))),
+        }))
+    } else {
+        RExpr::Block(Box::new(Block {
+            stmts: vec![IndentStmt {
+                depth: 0,
+                stmt: RStmt::Assign {
+                    target: target.clone(),
+                    value: new_value,
+                },
+            }],
+            tail: Some(Box::new(target)),
+        }))
+    }
+}
+
+fn assign_expr(lhs: &Node, rhs: &Node, env: Env) -> RExpr {
+    let target = lower_expr(lhs, env);
+    let value = lower_expr(rhs, env);
+    RExpr::Block(Box::new(Block {
+        stmts: vec![IndentStmt {
+            depth: 0,
+            stmt: RStmt::Assign {
+                target: target.clone(),
+                value,
+            },
+        }],
+        tail: Some(Box::new(target)),
+    }))
+}
+
+fn binary_expr(node: &Node, b: &crate::parse::clang_ast::BinaryOperator, env: Env) -> RExpr {
+    let lhs_node = &node.inner[0];
+    let rhs_node = &node.inner[1];
+    match b.opcode.as_str() {
+        "=" => assign_expr(lhs_node, rhs_node, env),
+        "&&" => RExpr::Binary {
+            op: BinOp::And,
+            lhs: Box::new(truthy(lhs_node, env)),
+            rhs: Box::new(truthy(rhs_node, env)),
+        },
+        "||" => RExpr::Binary {
+            op: BinOp::Or,
+            lhs: Box::new(truthy(lhs_node, env)),
+            rhs: Box::new(truthy(rhs_node, env)),
+        },
+        "+" | "-" => {
+            let lhs_ty = node_type(lhs_node);
+            let rhs_ty = node_type(rhs_node);
+            if lhs_ty.is_pointerish() || rhs_ty.is_pointerish() {
+                pointer_arith(&b.opcode, lhs_node, rhs_node, &lhs_ty, &rhs_ty, env)
+            } else {
+                RExpr::Binary {
+                    op: BinOp::from(COpcode(&b.opcode)),
+                    lhs: Box::new(lower_expr(lhs_node, env)),
+                    rhs: Box::new(lower_expr(rhs_node, env)),
+                }
+            }
+        }
+        op => RExpr::Binary {
+            op: BinOp::from(COpcode(op)),
+            lhs: Box::new(lower_expr(lhs_node, env)),
+            rhs: Box::new(lower_expr(rhs_node, env)),
+        },
+    }
+}
+
+fn pointer_arith(
+    op: &str,
+    lhs: &Node,
+    rhs: &Node,
+    lhs_ty: &CType,
+    rhs_ty: &CType,
+    env: Env,
+) -> RExpr {
+    let lhs_is_ptr = lhs_ty.is_pointerish();
+    let rhs_is_ptr = rhs_ty.is_pointerish();
+
+    if lhs_is_ptr && rhs_is_ptr {
+        return RExpr::MethodCall {
+            recv: Box::new(decay_to_ptr(lhs, env)),
+            method: "offset_from".into(),
+            args: vec![decay_to_ptr(rhs, env)],
+        };
+    }
+
+    let (ptr_node, offset_node) = if lhs_is_ptr { (lhs, rhs) } else { (rhs, lhs) };
+    let ptr_expr = decay_to_ptr(ptr_node, env);
+    let offset = RExpr::Cast {
+        expr: Box::new(lower_expr(offset_node, env)),
+        ty: RType::Prim(Prim::Isize),
+    };
+    let delta = if op == "-" {
+        RExpr::Unary {
+            op: RUnaryOp::Neg,
+            expr: Box::new(offset),
+        }
+    } else {
+        offset
+    };
+    RExpr::MethodCall {
+        recv: Box::new(ptr_expr),
+        method: "wrapping_offset".into(),
+        args: vec![delta],
+    }
+}
+
+fn compound_assign_expr(node: &Node, b: &crate::parse::clang_ast::BinaryOperator, env: Env) -> RExpr {
+    let lhs_node = &node.inner[0];
+    let rhs_node = &node.inner[1];
+    let base_op = b.opcode.trim_end_matches('=');
+    let lhs_ty = node_type(lhs_node);
+    let target = lower_expr(lhs_node, env);
+
+    let new_value = if lhs_ty.is_pointerish() {
+        pointer_arith(base_op, lhs_node, rhs_node, &lhs_ty, &node_type(rhs_node), env)
+    } else {
+        RExpr::Binary {
+            op: BinOp::from(COpcode(base_op)),
+            lhs: Box::new(target.clone()),
+            rhs: Box::new(lower_expr(rhs_node, env)),
+        }
+    };
+
+    RExpr::Block(Box::new(Block {
+        stmts: vec![IndentStmt {
+            depth: 0,
+            stmt: RStmt::Assign {
+                target: target.clone(),
+                value: new_value,
+            },
+        }],
+        tail: Some(Box::new(target)),
+    }))
+}
+
+struct COpcode<'a>(&'a str);
+
+impl From<COpcode<'_>> for BinOp {
+    fn from(op: COpcode<'_>) -> BinOp {
+        match op.0 {
+            "+" => BinOp::Add,
+            "-" => BinOp::Sub,
+            "*" => BinOp::Mul,
+            "/" => BinOp::Div,
+            "%" => BinOp::Rem,
+            "&" => BinOp::BitAnd,
+            "|" => BinOp::BitOr,
+            "^" => BinOp::BitXor,
+            "<<" => BinOp::Shl,
+            ">>" => BinOp::Shr,
+            "==" => BinOp::Eq,
+            "!=" => BinOp::Ne,
+            "<" => BinOp::Lt,
+            "<=" => BinOp::Le,
+            ">" => BinOp::Gt,
+            ">=" => BinOp::Ge,
+            "&&" => BinOp::And,
+            "||" => BinOp::Or,
+            other => todo!("native_lowerer: unsupported binary opcode: {other}"),
+        }
+    }
+}
+
+fn unescape_c_string(spelling: &str) -> Vec<u8> {
+    let inner = spelling
+        .strip_prefix('"')
+        .and_then(|s| s.strip_suffix('"'))
+        .unwrap_or(spelling);
+    let mut out = Vec::new();
+    let mut chars = inner.chars().peekable();
+    while let Some(c) = chars.next() {
+        if c != '\\' {
+            let mut buf = [0u8; 4];
+            out.extend_from_slice(c.encode_utf8(&mut buf).as_bytes());
+            continue;
+        }
+        match chars.next() {
+            Some('n') => out.push(b'\n'),
+            Some('t') => out.push(b'\t'),
+            Some('r') => out.push(b'\r'),
+            Some('0') => out.push(0),
+            Some('\\') => out.push(b'\\'),
+            Some('"') => out.push(b'"'),
+            Some('\'') => out.push(b'\''),
+            Some('a') => out.push(0x07),
+            Some('b') => out.push(0x08),
+            Some('f') => out.push(0x0c),
+            Some('v') => out.push(0x0b),
+            Some('x') => {
+                let mut value: u32 = 0;
+                while let Some(d) = chars.peek().and_then(|c| c.to_digit(16)) {
+                    value = value * 16 + d;
+                    chars.next();
+                }
+                out.push(value as u8);
+            }
+            Some(other) => out.push(other as u8),
+            None => {}
+        }
+    }
+    out.push(0);
+    out
 }

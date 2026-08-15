@@ -1,26 +1,25 @@
-use super::exprs::{FnCtx, lower_expr};
-use super::types::lower_type;
+use super::exprs::{lower_expr, truthy};
+use super::types::CType;
+use super::{is_present, Env};
 use crate::backend::rust_ast::{
     Block, Expr as RExpr, IndentStmt, MatchArm, Path, Pattern, Prim, RustValue, Stmt as RStmt,
     Type as RType, UnaryOp as RUnaryOp,
 };
 use crate::function_identity::CallBinding;
-use crate::parse::ast::{ExprKind, Obj, Program, Stmt, StmtKind};
+use crate::parse::clang_ast::{Clang, Decl, Node};
 
-pub(crate) fn lower_function_body(obj: &Obj, program: &Program) -> Vec<IndentStmt> {
-    let ctx = FnCtx {
-        locals: &obj.locals,
-        globals: &program.globals,
-        types: &program.types,
-        is_main: obj.name == "main",
-    };
-    let mut body = Vec::new();
-    for stmt in &obj.body {
-        lower_stmt(stmt, &ctx, &mut body);
+fn decl_type(d: &Decl) -> CType {
+    CType::parse(d.qual_type.as_ref().map(|t| t.canonical()).unwrap_or("int"))
+}
+
+pub(crate) fn lower_function_body(body: &Node, env: Env) -> Vec<IndentStmt> {
+    let mut out = Vec::new();
+    for stmt in &body.inner {
+        lower_stmt(stmt, env, &mut out);
     }
     vec![mk(RStmt::Unsafe {
         body: Block {
-            stmts: body,
+            stmts: out,
             tail: None,
         },
     })]
@@ -30,18 +29,34 @@ fn mk(stmt: RStmt) -> IndentStmt {
     IndentStmt { depth: 0, stmt }
 }
 
-fn block_of(stmt: &Stmt, ctx: &FnCtx) -> Vec<IndentStmt> {
+fn block_of(node: &Node, env: Env) -> Vec<IndentStmt> {
     let mut out = Vec::new();
-    lower_stmt(stmt, ctx, &mut out);
+    lower_stmt(node, env, &mut out);
     out
 }
 
-pub(crate) fn lower_stmt(stmt: &Stmt, ctx: &FnCtx, out: &mut Vec<IndentStmt>) {
-    match &stmt.kind {
-        StmtKind::Return(value) => {
-            let lowered = value.as_ref().map(|expr| lower_expr(expr, ctx));
-            if ctx.is_main {
-                let code = lowered.unwrap_or(RExpr::Value(RustValue::I64(0)));
+fn break_unless(cond: &Node, env: Env) -> IndentStmt {
+    mk(RStmt::If {
+        cond: RExpr::Unary {
+            op: RUnaryOp::Not,
+            expr: Box::new(truthy(cond, env)),
+        },
+        then_body: vec![mk(RStmt::Break(None))],
+        else_body: Vec::new(),
+    })
+}
+
+pub(crate) fn lower_stmt(node: &Node, env: Env, out: &mut Vec<IndentStmt>) {
+    match &node.kind {
+        Clang::CompoundStmt(_) => {
+            for stmt in &node.inner {
+                lower_stmt(stmt, env, out);
+            }
+        }
+        Clang::ReturnStmt(_) => {
+            let value = node.inner.first().map(|e| lower_expr(e, env));
+            if env.is_main {
+                let code = value.unwrap_or(RExpr::Value(RustValue::I64(0)));
                 out.push(mk(RStmt::Expr(RExpr::Call {
                     func: Box::new(RExpr::Path(Path::new(
                         ["std", "process", "exit"].map(Into::into),
@@ -53,136 +68,150 @@ pub(crate) fn lower_stmt(stmt: &Stmt, ctx: &FnCtx, out: &mut Vec<IndentStmt>) {
                     binding: CallBinding::Generated,
                 })));
             } else {
-                out.push(mk(RStmt::Return(lowered)));
+                out.push(mk(RStmt::Return(value)));
             }
         }
-        StmtKind::Block(stmts) => {
-            for inner in stmts {
-                lower_stmt(inner, ctx, out);
-            }
-        }
-        StmtKind::If { cond, then, els } => out.push(mk(RStmt::If {
-            cond: lower_expr(cond, ctx),
-            then_body: block_of(then, ctx),
-            else_body: els
-                .as_ref()
-                .map(|els| block_of(els, ctx))
-                .unwrap_or_default(),
-        })),
-        StmtKind::For {
-            init,
-            cond,
-            inc,
-            body,
-        } => {
-            if let Some(init) = init {
-                lower_stmt(init, ctx, out);
-            }
-            let mut loop_body = Vec::new();
-            if let Some(cond) = cond {
-                loop_body.push(mk(RStmt::If {
-                    cond: RExpr::Unary {
-                        op: RUnaryOp::Not,
-                        expr: Box::new(lower_expr(cond, ctx)),
-                    },
-                    then_body: vec![mk(RStmt::Break(None))],
-                    else_body: Vec::new(),
+        Clang::DeclStmt(_) => {
+            for child in &node.inner {
+                let Clang::VarDecl(d) = &child.kind else {
+                    continue;
+                };
+                if d.is_implicit || d.storage_class.as_deref() == Some("static") {
+                    continue;
+                }
+                let ty = decl_type(d);
+                let info = env
+                    .vars
+                    .get(&child.id)
+                    .expect("local variable registered during function prescan");
+                let init = child
+                    .inner
+                    .first()
+                    .map(|c| super::globals::lower_init(c, &ty, env))
+                    .unwrap_or_else(|| super::globals::zero_value(&ty, env.records));
+                out.push(mk(RStmt::Let {
+                    name: info.name.clone(),
+                    mutable: true,
+                    ty: Some(ty.lower(env.records)),
+                    init: Some(init),
                 }));
             }
-            lower_stmt(body, ctx, &mut loop_body);
-            if let Some(inc) = inc {
-                loop_body.push(mk(RStmt::Expr(lower_expr(inc, ctx))));
+        }
+        Clang::IfStmt(_) => {
+            let cond = &node.inner[0];
+            let then_branch = &node.inner[1];
+            let else_branch = node.inner.get(2);
+            out.push(mk(RStmt::If {
+                cond: truthy(cond, env),
+                then_body: block_of(then_branch, env),
+                else_body: else_branch.map(|e| block_of(e, env)).unwrap_or_default(),
+            }));
+        }
+        Clang::ForStmt(_) => {
+            let init = &node.inner[0];
+            let cond = &node.inner[2];
+            let inc = &node.inner[3];
+            let body = &node.inner[4];
+            if is_present(init) {
+                lower_stmt(init, env, out);
+            }
+            let mut loop_body = Vec::new();
+            if is_present(cond) {
+                loop_body.push(break_unless(cond, env));
+            }
+            lower_stmt(body, env, &mut loop_body);
+            if is_present(inc) {
+                loop_body.push(mk(RStmt::Expr(lower_expr(inc, env))));
             }
             out.push(mk(RStmt::Loop {
                 label: None,
                 body: loop_body,
             }));
         }
-        StmtKind::DoWhile { body, cond } => {
-            let mut loop_body = block_of(body, ctx);
-            loop_body.push(mk(RStmt::If {
-                cond: RExpr::Unary {
-                    op: RUnaryOp::Not,
-                    expr: Box::new(lower_expr(cond, ctx)),
-                },
-                then_body: vec![mk(RStmt::Break(None))],
-                else_body: Vec::new(),
-            }));
+        Clang::WhileStmt(_) => {
+            let cond = &node.inner[0];
+            let body = &node.inner[1];
+            let mut loop_body = vec![break_unless(cond, env)];
+            lower_stmt(body, env, &mut loop_body);
             out.push(mk(RStmt::Loop {
                 label: None,
                 body: loop_body,
             }));
         }
-        StmtKind::Switch { cond, body, .. } => {
-            out.push(mk(RStmt::Match {
-                expr: lower_expr(cond, ctx),
-                arms: lower_switch_arms(body, ctx),
+        Clang::DoStmt(_) => {
+            let body = &node.inner[0];
+            let cond = &node.inner[1];
+            let mut loop_body = block_of(body, env);
+            loop_body.push(break_unless(cond, env));
+            out.push(mk(RStmt::Loop {
+                label: None,
+                body: loop_body,
             }));
         }
-        StmtKind::Case { stmt, .. } => lower_stmt(stmt, ctx, out),
-        StmtKind::Goto { .. } | StmtKind::GotoExpr { .. } => {
+        Clang::SwitchStmt(_) => {
+            let cond = &node.inner[0];
+            let body = &node.inner[1];
+            out.push(mk(RStmt::Match {
+                expr: lower_expr(cond, env),
+                arms: lower_switch_arms(body, env),
+            }));
+        }
+        Clang::CaseStmt(_) | Clang::DefaultStmt(_) => {
+            let mut patterns = Vec::new();
+            push_case_chain(node, &mut patterns, out, env);
+        }
+        Clang::BreakStmt(_) => out.push(mk(RStmt::Break(None))),
+        Clang::ContinueStmt(_) => out.push(mk(RStmt::Continue(None))),
+        Clang::NullStmt(_) => {}
+        Clang::BinaryOperator(b) if b.opcode == "=" => {
+            out.push(mk(RStmt::Assign {
+                target: lower_expr(&node.inner[0], env),
+                value: lower_expr(&node.inner[1], env),
+            }));
+        }
+        Clang::Other(o) if is_goto_or_label(o.kind.as_deref()) => {
             out.push(mk(RStmt::Expr(RExpr::Macro {
                 name: "unimplemented".into(),
                 args: vec![RExpr::Str(
-                    "slate: goto unsupported in native lowering".into(),
+                    "slate: goto/label unsupported in native lowering".into(),
                 )],
             })));
         }
-        StmtKind::Break => out.push(mk(RStmt::Break(None))),
-        StmtKind::Continue => out.push(mk(RStmt::Continue(None))),
-        StmtKind::Label { stmt, .. } => lower_stmt(stmt, ctx, out),
-        StmtKind::Fallthrough => {}
-        StmtKind::Asm(_) => {}
-        StmtKind::Expr(expr) => match &expr.kind {
-            ExprKind::Assign { lhs, rhs } => out.push(mk(RStmt::Assign {
-                target: lower_expr(lhs, ctx),
-                value: lower_expr(rhs, ctx),
-            })),
-            _ => out.push(mk(RStmt::Expr(lower_expr(expr, ctx)))),
-        },
-        StmtKind::Decl(idx) => {
-            let local = &ctx.locals[*idx];
-            if local.name == "__alloca_size__" || local.name == "__va_area__" {
-                return;
-            }
-            out.push(mk(RStmt::Let {
-                name: super::exprs::local_ident(local),
-                mutable: true,
-                ty: Some(lower_type(&local.ty, ctx.types)),
-                init: None,
-            }));
-        }
+        _ => out.push(mk(RStmt::Expr(lower_expr(node, env)))),
     }
 }
 
-fn lower_switch_arms(body: &Stmt, ctx: &FnCtx) -> Vec<MatchArm> {
-    let stmts: &[Stmt] = match &body.kind {
-        StmtKind::Block(stmts) => stmts,
+fn is_goto_or_label(kind: Option<&str>) -> bool {
+    matches!(kind, Some("GotoStmt") | Some("LabelStmt") | Some("IndirectGotoStmt"))
+}
+
+fn lower_switch_arms(body: &Node, env: Env) -> Vec<MatchArm> {
+    let stmts: &[Node] = match &body.kind {
+        Clang::CompoundStmt(_) => &body.inner,
         _ => std::slice::from_ref(body),
     };
     let mut arms: Vec<MatchArm> = Vec::new();
-    let mut current: Option<(Pattern, Vec<IndentStmt>)> = None;
+    let mut patterns: Vec<Pattern> = Vec::new();
+    let mut current: Vec<IndentStmt> = Vec::new();
+
     for stmt in stmts {
-        if let StmtKind::Case { range, .. } = &stmt.kind {
-            if let Some((pattern, out)) = current.take() {
-                arms.push(MatchArm { pattern, body: out });
+        match &stmt.kind {
+            Clang::CaseStmt(_) | Clang::DefaultStmt(_) => {
+                if !patterns.is_empty() {
+                    push_arms(&mut arms, &mut patterns, &mut current);
+                }
+                push_case_chain(stmt, &mut patterns, &mut current, env);
             }
-            let pattern = match range {
-                Some(range) if range.begin == range.end => Pattern::I64(range.begin),
-                Some(range) => Pattern::InclusiveRange {
-                    start: range.begin as i128,
-                    end: range.end as i128,
-                },
-                None => Pattern::Wildcard,
-            };
-            current = Some((pattern, Vec::new()));
+            _ => {
+                if patterns.is_empty() {
+                    patterns.push(Pattern::Wildcard);
+                }
+                lower_stmt(stmt, env, &mut current);
+            }
         }
-        let target = current.get_or_insert_with(|| (Pattern::Wildcard, Vec::new()));
-        lower_stmt(stmt, ctx, &mut target.1);
     }
-    if let Some((pattern, out)) = current {
-        arms.push(MatchArm { pattern, body: out });
-    }
+    push_arms(&mut arms, &mut patterns, &mut current);
+
     if arms.is_empty()
         || !arms
             .iter()
@@ -194,4 +223,45 @@ fn lower_switch_arms(body: &Stmt, ctx: &FnCtx) -> Vec<MatchArm> {
         });
     }
     arms
+}
+
+fn push_case_chain(mut node: &Node, patterns: &mut Vec<Pattern>, body: &mut Vec<IndentStmt>, env: Env) {
+    loop {
+        patterns.push(match &node.kind {
+            Clang::CaseStmt(_) => Pattern::I64(case_label_value(&node.inner[0])),
+            _ => Pattern::Wildcard,
+        });
+        let next = node.inner.last().expect("case/default body");
+        match &next.kind {
+            Clang::CaseStmt(_) | Clang::DefaultStmt(_) => node = next,
+            _ => {
+                lower_stmt(next, env, body);
+                return;
+            }
+        }
+    }
+}
+
+fn push_arms(arms: &mut Vec<MatchArm>, patterns: &mut Vec<Pattern>, body: &mut Vec<IndentStmt>) {
+    let n = patterns.len();
+    for (i, pattern) in patterns.drain(..).enumerate() {
+        let arm_body = if i + 1 == n {
+            std::mem::take(body)
+        } else {
+            body.clone()
+        };
+        arms.push(MatchArm { pattern, body: arm_body });
+    }
+}
+
+fn case_label_value(node: &Node) -> i64 {
+    match &node.kind {
+        Clang::IntegerLiteral(l) => l.value.trim().parse::<i64>().unwrap_or(0),
+        Clang::Other(_) => node
+            .inner
+            .first()
+            .map(case_label_value)
+            .unwrap_or(0),
+        _ => 0,
+    }
 }

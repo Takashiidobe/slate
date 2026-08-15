@@ -1,181 +1,284 @@
-use super::types::{aggregate_type_name, lower_type};
+use super::types::{self, CType, RecordInfo};
+use super::{Ctx, Env, VarInfo};
 use crate::backend::rust_ast::{
     Abi, ExternDecl, ExternFnDecl, FnDef, FnParam, Item, RecordDef, RecordField, Type, Visibility,
 };
 use crate::function_identity::FunctionIdentity;
-use crate::parse::ast::{DeclKind, GlobalKind, NodeId, Obj, Program, Type as CType};
-use std::collections::{HashMap, HashSet};
+use crate::parse::clang_ast::{Clang, Decl, Node};
+use std::collections::HashSet;
 
-pub(crate) fn lower_items(program: &Program) -> Vec<Item> {
+fn qual_type_str(qt: &Option<crate::parse::clang_ast::QualType>) -> &str {
+    qt.as_ref().map(|t| t.canonical()).unwrap_or("int")
+}
+
+pub(crate) fn collect_top_level(tu: &Node, ctx: &mut Ctx) {
+    for item in &tu.inner {
+        match &item.kind {
+            Clang::RecordDecl(r) if r.complete_definition && !r.is_implicit => {
+                let Some(name) = &r.name else { continue };
+                let tag = format!("{} {}", r.tag_used.as_deref().unwrap_or("struct"), name);
+                let fields = item
+                    .inner
+                    .iter()
+                    .filter_map(|field| match &field.kind {
+                        Clang::FieldDecl(d) => {
+                            Some((d.name.clone().unwrap_or_default(), CType::parse(qual_type_str(&d.qual_type))))
+                        }
+                        _ => None,
+                    })
+                    .collect();
+                ctx.records.insert(
+                    tag,
+                    RecordInfo {
+                        is_union: r.tag_used.as_deref() == Some("union"),
+                        fields,
+                        packed: false,
+                        align_override: None,
+                    },
+                );
+            }
+            Clang::VarDecl(d) if !d.is_implicit => {
+                ctx.vars.insert(
+                    item.id,
+                    VarInfo {
+                        name: d.name.clone().unwrap_or_default(),
+                    },
+                );
+            }
+            Clang::FunctionDecl(d) if !d.is_implicit => {
+                ctx.vars.insert(
+                    item.id,
+                    VarInfo {
+                        name: d.name.clone().unwrap_or_default(),
+                    },
+                );
+            }
+            _ => {}
+        }
+    }
+}
+
+pub(crate) fn lower_items(tu: &Node, ctx: &mut Ctx) -> Vec<Item> {
     let mut items = Vec::new();
-    let mut emitted_aggregates: HashSet<NodeId> = HashSet::new();
-    for decl in &program.decls {
-        match &decl.kind {
-            DeclKind::Function(func) => {
-                let Some(obj) = program.globals.iter().find(|obj| obj.id == decl.id) else {
-                    continue;
-                };
-                if !obj.is_live {
-                    continue;
-                }
-                items.push(lower_function(obj, &func.ty, program));
+    let mut emitted_records: HashSet<String> = HashSet::new();
+    for node in &tu.inner {
+        match &node.kind {
+            Clang::FunctionDecl(d) if !d.is_implicit => {
+                let mut extra = Vec::new();
+                let fn_item = lower_function(node, d, ctx, &mut extra);
+                items.extend(extra);
+                items.push(fn_item);
             }
-            DeclKind::Var(var) => {
-                let Some(obj) = program.globals.iter().find(|obj| obj.id == decl.id) else {
-                    continue;
-                };
-                if obj.global_kind == GlobalKind::Literal {
-                    continue;
-                }
-                items.push(lower_global(obj, &var.ty, &program.types));
+            Clang::VarDecl(d) if !d.is_implicit => {
+                items.push(lower_global(node, d, ctx));
             }
-            DeclKind::Record(occurrence) => {
-                if !emitted_aggregates.insert(occurrence.type_id) {
-                    continue;
+            Clang::RecordDecl(r) if r.complete_definition && !r.is_implicit => {
+                let Some(name) = &r.name else { continue };
+                let tag = format!("{} {}", r.tag_used.as_deref().unwrap_or("struct"), name);
+                if emitted_records.insert(tag.clone())
+                    && let Some(info) = ctx.records.get(&tag)
+                {
+                    items.push(lower_record_def(&tag, info, ctx));
                 }
-                let Some(ty) = program.types.get(&occurrence.type_id) else {
-                    continue;
-                };
-                items.push(lower_record_def(ty, &program.types));
             }
-            DeclKind::Enum(_) | DeclKind::Typedef { .. } => {}
+            _ => {}
         }
     }
     items
 }
 
-fn lower_function(obj: &Obj, ty: &CType, program: &Program) -> Item {
-    let types = &program.types;
+fn lower_function(node: &Node, d: &Decl, ctx: &mut Ctx, extra_items: &mut Vec<Item>) -> Item {
     let CType::Func {
         return_ty,
-        params,
+        params: proto_params,
         is_variadic,
-    } = ty
+    } = CType::parse(qual_type_str(&d.qual_type))
     else {
-        unreachable!("function Decl with non-Func type")
+        unreachable!("FunctionDecl with non-function type")
     };
-    let ret = if obj.name == "main" {
-        None
-    } else {
-        match lower_type(return_ty, types) {
-            Type::Unit => None,
-            ret => Some(ret),
-        }
-    };
-    let fn_params: Vec<FnParam> = if obj.is_definition {
-        obj.params
+    let name = d.name.clone().unwrap_or_default();
+    let body_node = node
+        .inner
+        .iter()
+        .find(|c| matches!(c.kind, Clang::CompoundStmt(_)));
+    let param_decls: Vec<&Node> = node
+        .inner
+        .iter()
+        .filter(|c| matches!(c.kind, Clang::ParmVarDecl(_)))
+        .collect();
+
+    let fn_params: Vec<FnParam> = if !param_decls.is_empty() {
+        param_decls
             .iter()
-            .map(|param| FnParam {
-                name: param.name.clone(),
-                mutable: false,
-                ty: lower_type(&param.ty, types),
+            .map(|p| {
+                let Clang::ParmVarDecl(pd) = &p.kind else {
+                    unreachable!()
+                };
+                let ty = CType::parse(qual_type_str(&pd.qual_type));
+                FnParam {
+                    name: pd.name.clone().unwrap_or_default(),
+                    mutable: false,
+                    ty: ty.lower(&ctx.records),
+                }
             })
             .collect()
     } else {
-        params
+        proto_params
             .iter()
             .enumerate()
-            .map(|(i, (name, ty))| FnParam {
-                name: if name.is_empty() {
-                    format!("arg{i}")
-                } else {
-                    name.clone()
-                },
+            .map(|(i, ty)| FnParam {
+                name: format!("arg{i}"),
                 mutable: false,
-                ty: lower_type(ty, types),
+                ty: ty.lower(&ctx.records),
             })
             .collect()
     };
 
-    if !obj.is_definition {
+    let ret = if name == "main" {
+        None
+    } else {
+        match return_ty.lower(&ctx.records) {
+            Type::Unit => None,
+            ty => Some(ty),
+        }
+    };
+
+    let Some(body) = body_node else {
         return Item::ExternBlock {
             abi: Abi::C.spelling().to_string(),
             decls: vec![ExternDecl::Fn(ExternFnDecl {
-                name: obj.name.clone(),
+                name,
                 identity: FunctionIdentity::Unknown,
                 declared_type: None,
                 params: fn_params,
-                variadic: *is_variadic,
+                variadic: is_variadic,
                 ret,
                 safe: false,
             })],
         };
-    }
+    };
+
+    collect_locals(node, &name, ctx, extra_items);
+
+    let env = Env {
+        vars: &ctx.vars,
+        records: &ctx.records,
+        is_main: name == "main",
+    };
+    let body_stmts = super::stmts::lower_function_body(body, env);
 
     Item::Fn(FnDef {
         attrs: Vec::new(),
         vis: Visibility::Private,
-        unsafe_: obj.name != "main",
+        unsafe_: name != "main",
         abi: None,
-        name: obj.name.clone(),
+        name,
         params: fn_params,
         ret,
-        body: super::stmts::lower_function_body(obj, program),
+        body: body_stmts,
     })
 }
 
-fn lower_global(obj: &Obj, ty: &CType, types: &HashMap<NodeId, CType>) -> Item {
-    let rust_ty = lower_type(ty, types);
-    if !obj.is_definition {
+fn collect_locals(node: &Node, fn_name: &str, ctx: &mut Ctx, extra_items: &mut Vec<Item>) {
+    match &node.kind {
+        Clang::ParmVarDecl(d) => {
+            ctx.vars.insert(
+                node.id,
+                VarInfo {
+                    name: d.name.clone().unwrap_or_default(),
+                },
+            );
+        }
+        Clang::VarDecl(d) if !d.is_implicit => {
+            let ty = CType::parse(qual_type_str(&d.qual_type));
+            let is_static = d.storage_class.as_deref() == Some("static");
+            let base_name = d.name.clone().unwrap_or_default();
+            if is_static {
+                let mangled = format!("{fn_name}__{base_name}");
+                let env = Env {
+                    vars: &ctx.vars,
+                    records: &ctx.records,
+                    is_main: false,
+                };
+                let init = node
+                    .inner
+                    .first()
+                    .map(|c| super::globals::lower_init(c, &ty, env))
+                    .unwrap_or_else(|| super::globals::zero_value(&ty, &ctx.records));
+                extra_items.push(Item::Static {
+                    attrs: Vec::new(),
+                    vis: Visibility::Private,
+                    mutable: true,
+                    name: mangled.clone(),
+                    ty: ty.lower(&ctx.records),
+                    init,
+                });
+                ctx.vars.insert(node.id, VarInfo { name: mangled });
+            } else {
+                ctx.vars.insert(node.id, VarInfo { name: base_name });
+            }
+        }
+        _ => {}
+    }
+    for child in &node.inner {
+        collect_locals(child, fn_name, ctx, extra_items);
+    }
+}
+
+fn lower_global(node: &Node, d: &Decl, ctx: &Ctx) -> Item {
+    let ty = CType::parse(qual_type_str(&d.qual_type));
+    let rust_ty = ty.lower(&ctx.records);
+    let name = d.name.clone().unwrap_or_default();
+    let is_extern = d.storage_class.as_deref() == Some("extern") && node.inner.is_empty();
+    if is_extern {
         return Item::ExternBlock {
             abi: Abi::C.spelling().to_string(),
             decls: vec![ExternDecl::Static {
                 attrs: Vec::new(),
                 mutable: true,
-                name: obj.name.clone(),
+                name,
                 ty: rust_ty,
             }],
         };
     }
-    let init = super::globals::lower_global_init(ty, obj, types);
+    let env = Env {
+        vars: &ctx.vars,
+        records: &ctx.records,
+        is_main: false,
+    };
+    let init = node
+        .inner
+        .first()
+        .map(|c| super::globals::lower_init(c, &ty, env))
+        .unwrap_or_else(|| super::globals::zero_value(&ty, &ctx.records));
     Item::Static {
         attrs: Vec::new(),
         vis: Visibility::Private,
         mutable: true,
-        name: obj.name.clone(),
+        name,
         ty: rust_ty,
         init,
     }
 }
 
-fn lower_record_def(ty: &CType, types: &HashMap<NodeId, CType>) -> Item {
-    let (CType::Struct { members, .. } | CType::Union { members, .. }) = ty else {
-        unreachable!("lower_record_def called with non-aggregate type")
-    };
+fn lower_record_def(tag: &str, info: &RecordInfo, ctx: &Ctx) -> Item {
     Item::Record(RecordDef {
         comments: Vec::new(),
         vis: Visibility::Private,
         field_vis: Visibility::Private,
-        is_union: matches!(ty, CType::Union { .. }),
+        is_union: info.is_union,
         allow_non_camel_case: true,
-        name: aggregate_type_name(ty),
-        fields: members
+        name: types::rust_record_name(tag),
+        fields: info
+            .fields
             .iter()
-            .map(|member| RecordField {
+            .map(|(name, ty)| RecordField {
                 comments: Vec::new(),
-                name: member.name.as_str().into(),
-                ty: lower_type(&member.ty, types),
+                name: name.as_str().into(),
+                ty: ty.lower(&ctx.records),
             })
             .collect(),
-        packed: is_packed(ty),
-        align: align_override(ty),
+        packed: info.packed.then_some(1),
+        align: info.align_override,
     })
-}
-
-fn is_packed(ty: &CType) -> Option<u32> {
-    match ty {
-        CType::Struct { is_packed, .. } | CType::Union { is_packed, .. } if *is_packed => Some(1),
-        _ => None,
-    }
-}
-
-fn align_override(ty: &CType) -> Option<u32> {
-    match ty {
-        CType::Struct { align_override, .. } | CType::Union { align_override, .. }
-            if *align_override > 0 =>
-        {
-            Some(*align_override as u32)
-        }
-        _ => None,
-    }
 }

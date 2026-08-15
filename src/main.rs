@@ -20,13 +20,13 @@ fn usage() -> ExitCode {
         "  fixup-debug  <file.c> [--up-to-pass <pass>|--only-pass <pass>|--debug-only-pass <pass>]  print fixup pass trace"
     );
     eprintln!(
-        "  translate   [--frontend cir|native] [clang args...] <file.c>  C -> Rust (native frontend has no lowerer yet, slate-ozsg.4)"
+        "  translate   [--frontend cir|native] [clang args...] <file.c>  C -> Rust"
     );
     eprintln!(
         "  translate-lowered  <file.c>  C -> Rust, raw lowered output with no fixup passes applied"
     );
     eprintln!(
-        "  parse-only  [--dump-ast] <file.c>  parse with the native (ported chibicc) frontend only, print globals count (or the full Program AST with --dump-ast) or error"
+        "  parse-only  [--dump-ast] <file.c>  parse with the native (clang AST) frontend only, print top-level decl count (or the full Clang AST tree with --dump-ast) or error"
     );
     eprintln!(
         "  native-frontend-report [dir]  parse every *.c fixture under dir (default tests/fixtures) with the native frontend and report pass/fail counts"
@@ -146,11 +146,13 @@ fn translate_native(path: &Path) -> Result<String, String> {
 }
 
 fn parse_only(path: &Path, dump_ast: bool) -> Result<String, String> {
-    let program = cli_result(api::parse_native(path))?;
+    let tu = cli_result(api::parse_native(path))?;
     if dump_ast {
-        return Ok(format!("{program:#?}\n"));
+        let mut out = String::new();
+        clang_ast::dump_tree(&tu, 0, &mut out);
+        return Ok(out);
     }
-    Ok(format!("OK: {} globals\n", program.globals.len()))
+    Ok(format!("OK: {} top-level decls\n", tu.inner.len()))
 }
 
 fn dump_clang_ast(path: &Path, extra_args: &[String]) -> Result<String, String> {

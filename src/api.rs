@@ -82,10 +82,8 @@ pub enum Error {
     NativeParse {
         path: PathBuf,
         #[source]
-        source: parse::error::CompileError,
+        source: parse::clang_ast::ClangAstError,
     },
-    #[error("{path}: native frontend parsed successfully but lowering is not yet implemented")]
-    NativeLoweringUnimplemented { path: PathBuf },
     #[error("resolve target for {path}: {source}")]
     Target {
         path: PathBuf,
@@ -255,55 +253,22 @@ pub fn reject_active_unsupported_file(path: &Path, context: &str) -> Result<(), 
     reject_active_unsupported(&pp, context)
 }
 
-pub fn parse_native(path: &Path) -> Result<parse::ast::Program, Error> {
-    if let Some(dir) = cir::emit::libc_shim_dir() {
-        parse::preprocessor::set_include_paths(vec![PathBuf::from(dir)]);
-    }
-    let target = cir::emit::active_target();
-    let defines = cir::emit::target_define_pairs(&target).map_err(|source| Error::Target {
-        path: path.to_path_buf(),
-        source,
-    })?;
-    let tokens = parse::lexer::tokenize_file(path).map_err(|source| Error::NativeParse {
-        path: path.to_path_buf(),
-        source,
-    })?;
-    let tokens =
-        parse::preprocessor::preprocess(tokens, defines, Vec::new()).map_err(|source| {
-            Error::NativeParse {
-                path: path.to_path_buf(),
-                source,
-            }
-        })?;
-    parse_native_tokens(tokens).map_err(|source| Error::NativeParse {
+pub fn parse_native(path: &Path) -> Result<parse::clang_ast::Node, Error> {
+    parse::clang_ast::parse_file(path, &[]).map_err(|source| Error::NativeParse {
         path: path.to_path_buf(),
         source,
     })
 }
 
-/// Recursive-descent expression/statement parsing can nest deep enough on
-/// pathological (e.g. heavily macro-expanded) input to overflow the default
-/// thread stack, so run it on a thread with a much larger one.
-fn parse_native_tokens(
-    tokens: Vec<parse::lexer::Token>,
-) -> Result<parse::ast::Program, parse::error::CompileError> {
-    std::thread::Builder::new()
-        .stack_size(256 * 1024 * 1024)
-        .spawn(move || parse::parser::parse(&tokens))
-        .expect("spawn native-parser thread")
-        .join()
-        .expect("native-parser thread panicked")
-}
-
 pub fn translate_native(path: &Path) -> Result<String, Error> {
-    let program = parse_native(path)?;
-    let rust_program = frontend::lower_program(&program);
+    let tu = parse_native(path)?;
+    let rust_program = frontend::lower_program(&tu);
     Ok(backend::apply_with(rust_program, &skip_set_from_env()?).emit())
 }
 
 pub fn lowered_program_native(path: &Path) -> Result<rust_ast::Program, Error> {
-    let program = parse_native(path)?;
-    Ok(frontend::lower_program(&program))
+    let tu = parse_native(path)?;
+    Ok(frontend::lower_program(&tu))
 }
 
 pub fn skip_set_from_env() -> Result<backend::SkipSet, Error> {
