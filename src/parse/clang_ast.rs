@@ -1,11 +1,143 @@
-use clang_ast::{SourceLocation, SourceRange};
+use clang_ast::{Id, SourceLocation, SourceRange};
 use serde::Deserialize;
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitStatus};
 use thiserror::Error;
 
+#[derive(Deserialize, Debug)]
+pub struct QualType {
+    #[serde(rename = "qualType")]
+    pub qual_type: String,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct BareDeclRef {
+    pub id: Id,
+    pub kind: String,
+    pub name: Option<String>,
+    #[serde(rename = "type")]
+    pub qual_type: Option<QualType>,
+}
+
 #[derive(Deserialize, Debug, Default)]
-pub struct Clang {
+pub struct Decl {
+    pub loc: Option<SourceLocation>,
+    pub range: Option<SourceRange>,
+    pub name: Option<String>,
+    #[serde(rename = "mangledName")]
+    pub mangled_name: Option<String>,
+    #[serde(rename = "type")]
+    pub qual_type: Option<QualType>,
+    #[serde(rename = "storageClass")]
+    pub storage_class: Option<String>,
+    #[serde(default)]
+    pub variadic: bool,
+    pub init: Option<String>,
+    #[serde(default, rename = "isUsed")]
+    pub is_used: bool,
+}
+
+#[derive(Deserialize, Debug, Default)]
+pub struct Record {
+    pub loc: Option<SourceLocation>,
+    pub range: Option<SourceRange>,
+    #[serde(rename = "tagUsed")]
+    pub tag_used: Option<String>,
+    pub name: Option<String>,
+    #[serde(default, rename = "completeDefinition")]
+    pub complete_definition: bool,
+}
+
+#[derive(Deserialize, Debug, Default)]
+pub struct Stmt {
+    pub range: Option<SourceRange>,
+}
+
+#[derive(Deserialize, Debug, Default)]
+pub struct Expr {
+    pub range: Option<SourceRange>,
+    #[serde(rename = "type")]
+    pub qual_type: Option<QualType>,
+    #[serde(rename = "valueCategory")]
+    pub value_category: Option<String>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct CastExpr {
+    pub range: Option<SourceRange>,
+    #[serde(rename = "type")]
+    pub qual_type: Option<QualType>,
+    #[serde(rename = "valueCategory")]
+    pub value_category: Option<String>,
+    #[serde(rename = "castKind")]
+    pub cast_kind: String,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct DeclRefExpr {
+    pub range: Option<SourceRange>,
+    #[serde(rename = "type")]
+    pub qual_type: Option<QualType>,
+    #[serde(rename = "valueCategory")]
+    pub value_category: Option<String>,
+    #[serde(rename = "referencedDecl")]
+    pub referenced_decl: BareDeclRef,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct BinaryOperator {
+    pub range: Option<SourceRange>,
+    #[serde(rename = "type")]
+    pub qual_type: Option<QualType>,
+    #[serde(rename = "valueCategory")]
+    pub value_category: Option<String>,
+    pub opcode: String,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct UnaryOperator {
+    pub range: Option<SourceRange>,
+    #[serde(rename = "type")]
+    pub qual_type: Option<QualType>,
+    #[serde(rename = "valueCategory")]
+    pub value_category: Option<String>,
+    pub opcode: String,
+    #[serde(default, rename = "isPostfix")]
+    pub is_postfix: bool,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct Literal {
+    pub range: Option<SourceRange>,
+    #[serde(rename = "type")]
+    pub qual_type: Option<QualType>,
+    pub value: String,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct CharLiteral {
+    pub range: Option<SourceRange>,
+    #[serde(rename = "type")]
+    pub qual_type: Option<QualType>,
+    pub value: i64,
+}
+
+#[derive(Deserialize, Debug, Default)]
+pub struct MemberExpr {
+    pub range: Option<SourceRange>,
+    #[serde(rename = "type")]
+    pub qual_type: Option<QualType>,
+    #[serde(rename = "valueCategory")]
+    pub value_category: Option<String>,
+    pub name: Option<String>,
+    #[serde(default, rename = "isArrow")]
+    pub is_arrow: bool,
+    #[serde(rename = "referencedMemberDecl")]
+    pub referenced_member_decl: Option<String>,
+}
+
+#[derive(Deserialize, Debug, Default)]
+pub struct Other {
     #[serde(default)]
     pub kind: Option<String>,
     pub name: Option<String>,
@@ -14,13 +146,43 @@ pub struct Clang {
     #[serde(rename = "type")]
     pub qual_type: Option<QualType>,
     pub loc: Option<SourceLocation>,
-    pub range: Option<SourceRange>,
 }
 
 #[derive(Deserialize, Debug)]
-pub struct QualType {
-    #[serde(rename = "qualType")]
-    pub qual_type: String,
+pub enum Clang {
+    TranslationUnitDecl,
+    FunctionDecl(Decl),
+    ParmVarDecl(Decl),
+    VarDecl(Decl),
+    FieldDecl(Decl),
+    RecordDecl(Record),
+    TypedefDecl(Decl),
+    EnumConstantDecl(Decl),
+    CompoundStmt(Stmt),
+    DeclStmt(Stmt),
+    ReturnStmt(Stmt),
+    IfStmt(Stmt),
+    ForStmt(Stmt),
+    WhileStmt(Stmt),
+    DoStmt(Stmt),
+    BreakStmt(Stmt),
+    ContinueStmt(Stmt),
+    NullStmt(Stmt),
+    ParenExpr(Expr),
+    BinaryOperator(BinaryOperator),
+    CompoundAssignOperator(BinaryOperator),
+    UnaryOperator(UnaryOperator),
+    DeclRefExpr(DeclRefExpr),
+    ImplicitCastExpr(CastExpr),
+    CStyleCastExpr(CastExpr),
+    CallExpr(Expr),
+    MemberExpr(MemberExpr),
+    ArraySubscriptExpr(Expr),
+    IntegerLiteral(Literal),
+    FloatingLiteral(Literal),
+    CharacterLiteral(CharLiteral),
+    StringLiteral(Literal),
+    Other(Other),
 }
 
 pub type Node = clang_ast::Node<Clang>;
@@ -87,41 +249,248 @@ pub fn dump_json(src: &Path, extra_args: &[String]) -> Result<String, ClangAstEr
 
 pub fn parse_file(src: &Path, extra_args: &[String]) -> Result<Node, ClangAstError> {
     let json = dump_json(src, extra_args)?;
-    serde_json::from_str(&json).map_err(|source| ClangAstError::ParseJson {
+    let mut deserializer = serde_json::Deserializer::from_str(&json);
+    deserializer.disable_recursion_limit();
+    let deserializer = serde_stacker::Deserializer::new(&mut deserializer);
+    Node::deserialize(deserializer).map_err(|source| ClangAstError::ParseJson {
         path: src.to_path_buf(),
         source,
     })
 }
 
-pub fn dump_tree(node: &Node, depth: usize, out: &mut String) {
+fn write_loc(out: &mut String, loc: &SourceLocation) {
     use std::fmt::Write;
-
-    let indent = "  ".repeat(depth);
-    write!(
-        out,
-        "{indent}[{}] {}",
-        node.id,
-        node.kind.kind.as_deref().unwrap_or("<unknown>")
-    )
-    .unwrap();
-    if let Some(name) = &node.kind.name {
-        write!(out, " name={name:?}").unwrap();
-    }
-    if let Some(tag_used) = &node.kind.tag_used {
-        write!(out, " tagUsed={tag_used:?}").unwrap();
-    }
-    if let Some(ty) = &node.kind.qual_type {
-        write!(out, " type={:?}", ty.qual_type).unwrap();
-    }
-    if let Some(loc) = &node.kind.loc
-        && let Some(spelling) = &loc.spelling_loc
-    {
+    if let Some(spelling) = &loc.spelling_loc {
         write!(
             out,
             " @ {}:{}:{}",
             spelling.file, spelling.line, spelling.col
         )
         .unwrap();
+    }
+}
+
+fn write_range(out: &mut String, range: &SourceRange) {
+    write_loc(out, &range.begin);
+}
+
+pub fn dump_tree(node: &Node, depth: usize, out: &mut String) {
+    use std::fmt::Write;
+
+    let indent = "  ".repeat(depth);
+    write!(out, "{indent}[{}] ", node.id).unwrap();
+    match &node.kind {
+        Clang::TranslationUnitDecl => write!(out, "TranslationUnitDecl").unwrap(),
+        Clang::FunctionDecl(d) | Clang::ParmVarDecl(d) | Clang::VarDecl(d) => {
+            let kind = match &node.kind {
+                Clang::FunctionDecl(_) => "FunctionDecl",
+                Clang::ParmVarDecl(_) => "ParmVarDecl",
+                _ => "VarDecl",
+            };
+            write!(out, "{kind}").unwrap();
+            if let Some(name) = &d.name {
+                write!(out, " name={name:?}").unwrap();
+            }
+            if let Some(ty) = &d.qual_type {
+                write!(out, " type={:?}", ty.qual_type).unwrap();
+            }
+            if let Some(sc) = &d.storage_class {
+                write!(out, " storageClass={sc:?}").unwrap();
+            }
+            if d.variadic {
+                write!(out, " variadic").unwrap();
+            }
+            if let Some(loc) = &d.loc {
+                write_loc(out, loc);
+            }
+            if let Some(range) = &d.range {
+                write_range(out, range);
+            }
+        }
+        Clang::FieldDecl(d) | Clang::TypedefDecl(d) | Clang::EnumConstantDecl(d) => {
+            let kind = match &node.kind {
+                Clang::FieldDecl(_) => "FieldDecl",
+                Clang::TypedefDecl(_) => "TypedefDecl",
+                _ => "EnumConstantDecl",
+            };
+            write!(out, "{kind}").unwrap();
+            if let Some(name) = &d.name {
+                write!(out, " name={name:?}").unwrap();
+            }
+            if let Some(ty) = &d.qual_type {
+                write!(out, " type={:?}", ty.qual_type).unwrap();
+            }
+            if let Some(loc) = &d.loc {
+                write_loc(out, loc);
+            }
+            if let Some(range) = &d.range {
+                write_range(out, range);
+            }
+        }
+        Clang::RecordDecl(r) => {
+            write!(out, "RecordDecl").unwrap();
+            if let Some(tag) = &r.tag_used {
+                write!(out, " tagUsed={tag:?}").unwrap();
+            }
+            if let Some(name) = &r.name {
+                write!(out, " name={name:?}").unwrap();
+            }
+            if let Some(loc) = &r.loc {
+                write_loc(out, loc);
+            }
+            if let Some(range) = &r.range {
+                write_range(out, range);
+            }
+        }
+        Clang::CompoundStmt(s)
+        | Clang::DeclStmt(s)
+        | Clang::ReturnStmt(s)
+        | Clang::IfStmt(s)
+        | Clang::ForStmt(s)
+        | Clang::WhileStmt(s)
+        | Clang::DoStmt(s)
+        | Clang::BreakStmt(s)
+        | Clang::ContinueStmt(s)
+        | Clang::NullStmt(s) => {
+            let kind = match &node.kind {
+                Clang::CompoundStmt(_) => "CompoundStmt",
+                Clang::DeclStmt(_) => "DeclStmt",
+                Clang::ReturnStmt(_) => "ReturnStmt",
+                Clang::IfStmt(_) => "IfStmt",
+                Clang::ForStmt(_) => "ForStmt",
+                Clang::WhileStmt(_) => "WhileStmt",
+                Clang::DoStmt(_) => "DoStmt",
+                Clang::BreakStmt(_) => "BreakStmt",
+                Clang::ContinueStmt(_) => "ContinueStmt",
+                _ => "NullStmt",
+            };
+            write!(out, "{kind}").unwrap();
+            if let Some(range) = &s.range {
+                write_range(out, range);
+            }
+        }
+        Clang::ParenExpr(e) | Clang::CallExpr(e) | Clang::ArraySubscriptExpr(e) => {
+            let kind = match &node.kind {
+                Clang::ParenExpr(_) => "ParenExpr",
+                Clang::CallExpr(_) => "CallExpr",
+                _ => "ArraySubscriptExpr",
+            };
+            write!(out, "{kind}").unwrap();
+            if let Some(ty) = &e.qual_type {
+                write!(out, " type={:?}", ty.qual_type).unwrap();
+            }
+            if let Some(range) = &e.range {
+                write_range(out, range);
+            }
+        }
+        Clang::BinaryOperator(b) | Clang::CompoundAssignOperator(b) => {
+            let kind = match &node.kind {
+                Clang::BinaryOperator(_) => "BinaryOperator",
+                _ => "CompoundAssignOperator",
+            };
+            write!(out, "{kind} opcode={:?}", b.opcode).unwrap();
+            if let Some(ty) = &b.qual_type {
+                write!(out, " type={:?}", ty.qual_type).unwrap();
+            }
+            if let Some(range) = &b.range {
+                write_range(out, range);
+            }
+        }
+        Clang::UnaryOperator(u) => {
+            write!(
+                out,
+                "UnaryOperator opcode={:?} isPostfix={}",
+                u.opcode, u.is_postfix
+            )
+            .unwrap();
+            if let Some(ty) = &u.qual_type {
+                write!(out, " type={:?}", ty.qual_type).unwrap();
+            }
+            if let Some(range) = &u.range {
+                write_range(out, range);
+            }
+        }
+        Clang::DeclRefExpr(r) => {
+            write!(
+                out,
+                "DeclRefExpr referencedDecl=[{}] {}",
+                r.referenced_decl.id, r.referenced_decl.kind
+            )
+            .unwrap();
+            if let Some(name) = &r.referenced_decl.name {
+                write!(out, " name={name:?}").unwrap();
+            }
+            if let Some(ty) = &r.qual_type {
+                write!(out, " type={:?}", ty.qual_type).unwrap();
+            }
+            if let Some(range) = &r.range {
+                write_range(out, range);
+            }
+        }
+        Clang::ImplicitCastExpr(c) | Clang::CStyleCastExpr(c) => {
+            let kind = match &node.kind {
+                Clang::ImplicitCastExpr(_) => "ImplicitCastExpr",
+                _ => "CStyleCastExpr",
+            };
+            write!(out, "{kind} castKind={:?}", c.cast_kind).unwrap();
+            if let Some(ty) = &c.qual_type {
+                write!(out, " type={:?}", ty.qual_type).unwrap();
+            }
+            if let Some(range) = &c.range {
+                write_range(out, range);
+            }
+        }
+        Clang::MemberExpr(m) => {
+            write!(out, "MemberExpr").unwrap();
+            if let Some(name) = &m.name {
+                write!(out, " name={name:?}").unwrap();
+            }
+            write!(out, " isArrow={}", m.is_arrow).unwrap();
+            if let Some(ty) = &m.qual_type {
+                write!(out, " type={:?}", ty.qual_type).unwrap();
+            }
+            if let Some(range) = &m.range {
+                write_range(out, range);
+            }
+        }
+        Clang::IntegerLiteral(l) | Clang::FloatingLiteral(l) | Clang::StringLiteral(l) => {
+            let kind = match &node.kind {
+                Clang::IntegerLiteral(_) => "IntegerLiteral",
+                Clang::FloatingLiteral(_) => "FloatingLiteral",
+                _ => "StringLiteral",
+            };
+            write!(out, "{kind} value={:?}", l.value).unwrap();
+            if let Some(ty) = &l.qual_type {
+                write!(out, " type={:?}", ty.qual_type).unwrap();
+            }
+            if let Some(range) = &l.range {
+                write_range(out, range);
+            }
+        }
+        Clang::CharacterLiteral(l) => {
+            write!(out, "CharacterLiteral value={}", l.value).unwrap();
+            if let Some(ty) = &l.qual_type {
+                write!(out, " type={:?}", ty.qual_type).unwrap();
+            }
+            if let Some(range) = &l.range {
+                write_range(out, range);
+            }
+        }
+        Clang::Other(o) => {
+            write!(out, "{}", o.kind.as_deref().unwrap_or("<unknown>")).unwrap();
+            if let Some(name) = &o.name {
+                write!(out, " name={name:?}").unwrap();
+            }
+            if let Some(tag_used) = &o.tag_used {
+                write!(out, " tagUsed={tag_used:?}").unwrap();
+            }
+            if let Some(ty) = &o.qual_type {
+                write!(out, " type={:?}", ty.qual_type).unwrap();
+            }
+            if let Some(loc) = &o.loc {
+                write_loc(out, loc);
+            }
+        }
     }
     out.push('\n');
     for child in &node.inner {
