@@ -25,7 +25,7 @@ fn usage() -> ExitCode {
         "  translate-lowered  <file.c>  C -> Rust, raw lowered output with no fixup passes applied"
     );
     eprintln!(
-        "  parse-only  <file.c>  parse with the native (ported chibicc) frontend only, print globals count or error"
+        "  parse-only  [--dump-ast] <file.c>  parse with the native (ported chibicc) frontend only, print globals count (or the full Program AST with --dump-ast) or error"
     );
     eprintln!(
         "  native-frontend-report [dir]  parse every *.c fixture under dir (default tests/fixtures) with the native frontend and report pass/fail counts"
@@ -71,10 +71,13 @@ fn main() -> ExitCode {
             Some(path) => run(lowered_rust(Path::new(path))),
             None => usage(),
         },
-        Some("parse-only") => match args.get(2) {
-            Some(path) => run(parse_only(Path::new(path))),
-            None => usage(),
-        },
+        Some("parse-only") => {
+            let dump_ast = args[2..].iter().any(|arg| arg == "--dump-ast");
+            match args[2..].iter().find(|arg| *arg != "--dump-ast") {
+                Some(path) => run(parse_only(Path::new(path), dump_ast)),
+                None => usage(),
+            }
+        }
         Some("native-frontend-report") => {
             let dir = args.get(2).map(PathBuf::from);
             run(native_frontend_report(dir))
@@ -134,8 +137,11 @@ fn translate_native(path: &Path) -> Result<String, String> {
     cli_result(api::translate_native(path))
 }
 
-fn parse_only(path: &Path) -> Result<String, String> {
+fn parse_only(path: &Path, dump_ast: bool) -> Result<String, String> {
     let program = cli_result(api::parse_native(path))?;
+    if dump_ast {
+        return Ok(format!("{program:#?}\n"));
+    }
     Ok(format!("OK: {} globals\n", program.globals.len()))
 }
 
