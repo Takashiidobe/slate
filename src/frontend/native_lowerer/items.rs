@@ -257,6 +257,7 @@ fn lower_function(
         vars: &ctx.vars,
         records: &ctx.records,
         is_main: name == "main",
+        continue_label: None,
     };
     let body_stmts = super::stmts::lower_function_body(body, env)?;
 
@@ -297,6 +298,7 @@ fn collect_locals(
                     vars: &ctx.vars,
                     records: &ctx.records,
                     is_main: false,
+                    continue_label: None,
                 };
                 let init = match node.inner.first() {
                     Some(c) => super::globals::lower_init(c, &ty, env)?,
@@ -344,6 +346,7 @@ fn lower_global(node: &Node, d: &Decl, ctx: &Ctx, force_extern: bool) -> LResult
         vars: &ctx.vars,
         records: &ctx.records,
         is_main: false,
+        continue_label: None,
     };
     let init = match node.inner.first() {
         Some(c) => super::globals::lower_init(c, &ty, env)?,

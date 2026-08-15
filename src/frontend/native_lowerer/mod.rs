@@ -4,7 +4,7 @@ mod items;
 mod stmts;
 mod types;
 
-use crate::backend::rust_ast::Program as RustProgram;
+use crate::backend::rust_ast::{Label, Program as RustProgram};
 use crate::parse::clang_ast::Node;
 use clang_ast::Id;
 use std::collections::HashMap;
@@ -47,6 +47,7 @@ pub(crate) struct Env<'a> {
     pub(crate) vars: &'a HashMap<Id, VarInfo>,
     pub(crate) records: &'a RecordRegistry,
     pub(crate) is_main: bool,
+    pub(crate) continue_label: Option<&'a Label>,
 }
 
 pub(crate) fn is_present(node: &Node) -> bool {

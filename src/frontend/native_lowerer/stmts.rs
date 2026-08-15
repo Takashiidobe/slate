@@ -2,11 +2,56 @@ use super::exprs::{lower_expr, truthy};
 use super::types::CType;
 use super::{Env, LResult, LowerError, NodeExt, is_present};
 use crate::backend::rust_ast::{
-    Block, Expr as RExpr, IndentStmt, MatchArm, Path, Pattern, Prim, RustValue, Stmt as RStmt,
-    Type as RType, UnaryOp as RUnaryOp,
+    Block, Expr as RExpr, IndentStmt, Label, MatchArm, Path, Pattern, Prim, RustValue,
+    Stmt as RStmt, Type as RType, UnaryOp as RUnaryOp,
 };
 use crate::function_identity::CallBinding;
 use crate::parse::clang_ast::{Clang, Decl, Node};
+use std::sync::atomic::{AtomicUsize, Ordering};
+
+static CONTINUE_LABEL_COUNTER: AtomicUsize = AtomicUsize::new(0);
+
+fn next_continue_label() -> Label {
+    Label::new(format!(
+        "__continue{}",
+        CONTINUE_LABEL_COUNTER.fetch_add(1, Ordering::Relaxed)
+    ))
+}
+
+// True if `node` contains a `continue` that targets its own enclosing loop,
+// i.e. one not swallowed by a nested loop. Everything else (if/switch/scope)
+// is transparent, so we recurse through it.
+fn body_has_direct_continue(node: &Node) -> bool {
+    match &node.kind {
+        Clang::ContinueStmt(_) => true,
+        Clang::ForStmt(_) | Clang::WhileStmt(_) | Clang::DoStmt(_) => false,
+        _ => node.inner.iter().any(body_has_direct_continue),
+    }
+}
+
+/// Lower a loop body that may `continue`. A bare Rust `continue` jumps to the
+/// top of `loop {}`, skipping any statements (e.g. a `for` loop's increment)
+/// pushed after the body — so when a direct `continue` is present, the body
+/// is wrapped in a labeled block and `continue` becomes `break` out of it,
+/// falling through to whatever runs after.
+fn lower_loop_body(body: &Node, env: Env, out: &mut Vec<IndentStmt>) -> LResult<()> {
+    if body_has_direct_continue(body) {
+        let label = next_continue_label();
+        let mut inner = Vec::new();
+        lower_stmt(
+            body,
+            Env {
+                continue_label: Some(&label),
+                ..env
+            },
+            &mut inner,
+        )?;
+        out.push(mk(RStmt::LabeledBlock { label, body: inner }));
+    } else {
+        lower_stmt(body, env, out)?;
+    }
+    Ok(())
+}
 
 fn decl_type(d: &Decl) -> CType {
     CType::parse(d.qual_type.as_ref().map(|t| t.canonical()).unwrap_or("int"))
@@ -124,7 +169,7 @@ pub(crate) fn lower_stmt(node: &Node, env: Env, out: &mut Vec<IndentStmt>) -> LR
             if is_present(cond) {
                 loop_body.push(break_unless(cond, env)?);
             }
-            lower_stmt(body, env, &mut loop_body)?;
+            lower_loop_body(body, env, &mut loop_body)?;
             if is_present(inc) {
                 loop_body.push(mk(RStmt::Expr(lower_expr(inc, env)?)));
             }
@@ -146,7 +191,8 @@ pub(crate) fn lower_stmt(node: &Node, env: Env, out: &mut Vec<IndentStmt>) -> LR
         Clang::DoStmt(_) => {
             let body = node.child(0)?;
             let cond = node.child(1)?;
-            let mut loop_body = block_of(body, env)?;
+            let mut loop_body = Vec::new();
+            lower_loop_body(body, env, &mut loop_body)?;
             loop_body.push(break_unless(cond, env)?);
             out.push(mk(RStmt::Loop {
                 label: None,
@@ -166,7 +212,10 @@ pub(crate) fn lower_stmt(node: &Node, env: Env, out: &mut Vec<IndentStmt>) -> LR
             push_case_chain(node, &mut patterns, out, env)?;
         }
         Clang::BreakStmt(_) => out.push(mk(RStmt::Break(None))),
-        Clang::ContinueStmt(_) => out.push(mk(RStmt::Continue(None))),
+        Clang::ContinueStmt(_) => out.push(mk(match env.continue_label {
+            Some(label) => RStmt::Break(Some(label.clone())),
+            None => RStmt::Continue(None),
+        })),
         Clang::NullStmt(_) => {}
         Clang::BinaryOperator(b) if b.opcode == "=" => {
             out.push(mk(RStmt::Assign {
