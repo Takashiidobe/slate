@@ -1,8 +1,4 @@
 //! Rust AST, cleanup passes, and source generation after faithful CIR lowering.
-#![expect(
-    dead_code,
-    reason = "rewrite passes are temporarily disabled while lowering is the focus"
-)]
 
 pub mod codegen;
 pub(crate) mod facts;
@@ -33,6 +29,10 @@ impl SkipSet {
         set
     }
 
+    #[allow(
+        dead_code,
+        reason = "rewrite passes are temporarily disabled while lowering is the focus"
+    )]
     fn contains(&self, pass: Pass) -> bool {
         self.0.contains(&pass)
     }
@@ -72,6 +72,10 @@ pub struct DebugOptions {
     pub debug_only_pass: Option<Pass>,
 }
 
+#[allow(
+    dead_code,
+    reason = "rewrite passes are temporarily disabled while lowering is the focus"
+)]
 impl DebugOptions {
     fn should_run(self, pass: Pass) -> bool {
         self.only_pass.is_none_or(|only| only == pass)
@@ -103,9 +107,9 @@ pub fn valid_pass_names() -> String {
 
 fn apply_with_logger(
     input: Program,
-    skip: &SkipSet,
-    logger: &mut impl TraceLogger,
-    debug_options: DebugOptions,
+    _skip: &SkipSet,
+    _logger: &mut impl TraceLogger,
+    _debug_options: DebugOptions,
 ) -> Program {
     input
     // let mut debug_done = false;
@@ -1179,6 +1183,10 @@ fn apply_with_logger(
     // program.clone()
 }
 
+#[allow(
+    dead_code,
+    reason = "rewrite passes are temporarily disabled while lowering is the focus"
+)]
 fn to_fixpoint_program_with_facts(
     program: &mut Program,
     incremental: &mut salsa::SalsaFacts,
@@ -1210,12 +1218,20 @@ fn to_fixpoint_program_with_facts(
     }
 }
 
+#[allow(
+    dead_code,
+    reason = "rewrite passes are temporarily disabled while lowering is the focus"
+)]
 #[derive(Clone, Copy)]
 enum FixpointLimit {
     Unlimited,
     Rounds(usize),
 }
 
+#[allow(
+    dead_code,
+    reason = "rewrite passes are temporarily disabled while lowering is the focus"
+)]
 impl FixpointLimit {
     fn permits(self, completed_rounds: usize) -> bool {
         match self {
@@ -1225,6 +1241,10 @@ impl FixpointLimit {
     }
 }
 
+#[allow(
+    dead_code,
+    reason = "rewrite passes are temporarily disabled while lowering is the focus"
+)]
 fn late_loop_cleanup(
     program: &mut Program,
     incremental: &mut salsa::SalsaFacts,
@@ -1247,6 +1267,10 @@ fn late_loop_cleanup(
     }
 }
 
+#[allow(
+    dead_code,
+    reason = "rewrite passes are temporarily disabled while lowering is the focus"
+)]
 fn inline_temp_fixpoint_limit(program: &Program) -> FixpointLimit {
     if ProgramSummary::from_program(program).stmts > 2_000 {
         FixpointLimit::Rounds(5)

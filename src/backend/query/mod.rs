@@ -1,3 +1,8 @@
+#![allow(
+    dead_code,
+    reason = "rewrite passes are temporarily disabled while lowering is the focus"
+)]
+
 mod array_env;
 mod atomic;
 mod context;

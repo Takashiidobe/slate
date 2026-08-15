@@ -1,3 +1,8 @@
+#![allow(
+    dead_code,
+    reason = "rewrite passes are temporarily disabled while lowering is the focus"
+)]
+
 use crate::backend::rust_ast::{Expr, Ident, Item, Path, Program, SupportModule};
 use crate::backend::support::walk;
 
