@@ -336,6 +336,15 @@ impl<'a> Parser<'a> {
                 continue;
             }
 
+            // File-scope `asm("...")` (GNU basic asm block, e.g. hand-written
+            // functions). Program has no top-level asm-block slot yet -- parsed
+            // and discarded, same as other not-yet-lowered constructs.
+            if self.consume_keyword(Keyword::Asm) {
+                self.parse_asm_stmt()?;
+                self.consume_punct(Punct::Semicolon);
+                continue;
+            }
+
             let mut attr = VarAttr::default();
             let basety = self.parse_declspec(Some(&mut attr))?;
 
@@ -1388,6 +1397,85 @@ impl<'a> Parser<'a> {
         self.parse_expr_stmt()
     }
 
+    fn parse_asm_string_literal(&mut self) -> CompileResult<String> {
+        let TokenKind::Str { bytes, ty } = self.peek().kind.clone() else {
+            return self.bail_here("expected string literal");
+        };
+        if !matches!(
+            ty,
+            Type::Array { base, .. } if matches!(*base, Type::Char)
+        ) {
+            return self.bail_here("expected string literal");
+        }
+        self.pos += 1;
+        Ok(String::from_utf8_lossy(&bytes)
+            .trim_end_matches('\0')
+            .to_string())
+    }
+
+    /// Consumes one comma-separated `[name] "constraint" (expr)` operand list
+    /// (the output or input section of extended asm). Operand expressions are
+    /// parsed (so identifiers must resolve) and discarded -- the AST has no
+    /// operand-list representation yet, since no lowerer consumes it.
+    fn parse_asm_operand_list(&mut self) -> CompileResult<()> {
+        if matches!(
+            self.peek().kind,
+            TokenKind::Punct(Punct::Colon | Punct::RParen)
+        ) {
+            return Ok(());
+        }
+        loop {
+            if self.consume_punct(Punct::LBracket) {
+                self.expect_ident_token()?;
+                self.expect_punct(Punct::RBracket)?;
+            }
+            self.parse_asm_string_literal()?;
+            self.expect_punct(Punct::LParen)?;
+            self.parse_assign()?;
+            self.expect_punct(Punct::RParen)?;
+            if !self.consume_punct(Punct::Comma) {
+                break;
+            }
+        }
+        Ok(())
+    }
+
+    /// Consumes the comma-separated clobber-list section (plain string literals).
+    fn parse_asm_clobber_list(&mut self) -> CompileResult<()> {
+        if matches!(
+            self.peek().kind,
+            TokenKind::Punct(Punct::Colon | Punct::RParen)
+        ) {
+            return Ok(());
+        }
+        loop {
+            self.parse_asm_string_literal()?;
+            if !self.consume_punct(Punct::Comma) {
+                break;
+            }
+        }
+        Ok(())
+    }
+
+    /// Consumes the comma-separated goto-label-list section of `asm goto`.
+    fn parse_asm_goto_label_list(&mut self) -> CompileResult<()> {
+        if matches!(self.peek().kind, TokenKind::Punct(Punct::RParen)) {
+            return Ok(());
+        }
+        loop {
+            let name_token = self.expect_ident_token()?;
+            let label = match name_token.kind {
+                TokenKind::Ident(name) => name,
+                _ => unreachable!(),
+            };
+            self.fn_gotos.push((label, name_token.location));
+            if !self.consume_punct(Punct::Comma) {
+                break;
+            }
+        }
+        Ok(())
+    }
+
     fn parse_asm_stmt(&mut self) -> CompileResult<Stmt> {
         let location = self.last_location();
         loop {
@@ -1399,20 +1487,28 @@ impl<'a> Parser<'a> {
             }
             break;
         }
+        let is_goto = self.consume_keyword(Keyword::Goto);
         self.expect_punct(Punct::LParen)?;
-        let TokenKind::Str { bytes, ty } = self.peek().kind.clone() else {
-            return self.bail_here("expected string literal");
-        };
-        if !matches!(
-            ty,
-            Type::Array { base, .. } if matches!(*base, Type::Char)
-        ) {
-            return self.bail_here("expected string literal");
+        let asm_str = self.parse_asm_string_literal()?;
+
+        // Basic asm (no operand sections) closes right after the template string.
+        if self.check_punct(Punct::RParen) {
+            self.expect_punct(Punct::RParen)?;
+            return Ok(self.stmt_at(StmtKind::Asm(asm_str), location));
         }
-        let asm_str = String::from_utf8_lossy(&bytes)
-            .trim_end_matches('\0')
-            .to_string();
-        self.pos += 1;
+
+        // Extended asm: [ : outputs [ : inputs [ : clobbers [ : goto-labels ] ] ] ]
+        self.expect_punct(Punct::Colon)?;
+        self.parse_asm_operand_list()?;
+        if self.consume_punct(Punct::Colon) {
+            self.parse_asm_operand_list()?;
+            if self.consume_punct(Punct::Colon) {
+                self.parse_asm_clobber_list()?;
+                if is_goto && self.consume_punct(Punct::Colon) {
+                    self.parse_asm_goto_label_list()?;
+                }
+            }
+        }
         self.expect_punct(Punct::RParen)?;
         Ok(self.stmt_at(StmtKind::Asm(asm_str), location))
     }
