@@ -21,7 +21,7 @@ typedef enum {
   memory_order_seq_cst,
 } memory_order;
 
-#define ATOMIC_FLAG_INIT(x) (x)
+#define ATOMIC_FLAG_INIT 0
 #define atomic_init(addr, val) (*(addr) = (val))
 #define kill_dependency(x) (x)
 #define atomic_thread_fence(order)

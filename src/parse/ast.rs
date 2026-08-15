@@ -301,6 +301,8 @@ pub enum Type {
     DoubleComplex,
     /// Complex long double - 32 bytes (2x long double)
     LDoubleComplex,
+    /// GNU `_Complex`/`__complex__` applied to an integer type - 2x the base type.
+    IntComplex(Box<Type>),
     Enum {
         base: Box<Type>,
         id: usize,
@@ -332,6 +334,11 @@ pub enum Type {
         id: usize,
     },
     Array {
+        base: Box<Type>,
+        len: i32,
+    },
+    /// GNU `__attribute__((vector_size(N)))` - a fixed-width SIMD vector of `len` `base` elements.
+    Vector {
         base: Box<Type>,
         len: i32,
     },
@@ -373,6 +380,7 @@ impl Type {
             Type::Ptr(base) => Some(base),
             Type::Atomic(base) => Some(base),
             Type::Array { base, .. } => Some(base),
+            Type::Vector { base, .. } => Some(base),
             Type::Vla { base, .. } => Some(base),
             _ => None,
         }
@@ -380,6 +388,15 @@ impl Type {
 
     pub fn is_atomic(&self) -> bool {
         matches!(self, Type::Atomic(_))
+    }
+
+    /// The type an atomic-qualified lvalue converts to when used as an
+    /// rvalue (C11 6.3.2.1p2); a no-op for non-atomic types.
+    pub fn decay_atomic(&self) -> Type {
+        match self {
+            Type::Atomic(inner) => (**inner).clone(),
+            _ => self.clone(),
+        }
     }
 
     pub fn size(&self) -> i64 {
@@ -400,6 +417,7 @@ impl Type {
             Type::FloatComplex => 8,
             Type::DoubleComplex => 16,
             Type::LDoubleComplex => 32,
+            Type::IntComplex(base) => base.size() * 2,
             Type::Enum { base, .. } => base.size(),
             Type::NullPtr => 8,
             Type::Ptr(_) => 8,
@@ -437,7 +455,7 @@ impl Type {
                 // Round up to alignment
                 ((max_size + align - 1) / align) * align
             }
-            Type::Array { base, len } => {
+            Type::Array { base, len } | Type::Vector { base, len } => {
                 if *len < 0 {
                     return -1;
                 }
@@ -485,6 +503,7 @@ impl Type {
             Type::FloatComplex => 4,
             Type::DoubleComplex => 8,
             Type::LDoubleComplex => 16,
+            Type::IntComplex(base) => base.align(),
             Type::Enum { base, .. } => base.align(),
             Type::NullPtr => 8,
             Type::Ptr(_) => 8,
@@ -521,6 +540,7 @@ impl Type {
                 align
             }
             Type::Array { base, .. } => base.align(),
+            Type::Vector { .. } => self.size().max(1),
             Type::Vla { base, .. } => base.align(),
             Type::Atomic(base) => base.align(),
             Type::BitInt { .. } => {
@@ -569,7 +589,7 @@ impl Type {
     pub fn is_complex(&self) -> bool {
         matches!(
             self,
-            Type::FloatComplex | Type::DoubleComplex | Type::LDoubleComplex
+            Type::FloatComplex | Type::DoubleComplex | Type::LDoubleComplex | Type::IntComplex(_)
         )
     }
 
@@ -655,6 +675,7 @@ pub fn is_compatible(t1: &Type, t2: &Type) -> bool {
         | (LDoubleComplex, LDoubleComplex)
         | (NullPtr, NullPtr) => true,
         (Ptr(base1), Ptr(base2)) => is_compatible(base1, base2),
+        (IntComplex(base1), IntComplex(base2)) => is_compatible(base1, base2),
         (
             Func {
                 return_ty: ret1,

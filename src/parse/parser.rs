@@ -322,6 +322,46 @@ impl<'a> Parser<'a> {
             Type::Void,
             false,
         );
+
+        for name in [
+            "__builtin_ia32_pause",
+            "__builtin_ia32_lfence",
+            "__builtin_ia32_mfence",
+            "__builtin_ia32_sfence",
+        ] {
+            self.push_builtin_fn(name, vec![], Type::Void, false);
+        }
+        self.push_builtin_fn("__builtin_ia32_rdtsc", vec![], Type::ULong, false);
+        self.push_builtin_fn(
+            "__builtin_ia32_rdtscp",
+            vec![Type::Ptr(Box::new(Type::UInt))],
+            Type::ULong,
+            false,
+        );
+        self.push_builtin_fn(
+            "_mm_crc32_u8",
+            vec![Type::UInt, Type::UChar],
+            Type::UInt,
+            false,
+        );
+        self.push_builtin_fn(
+            "_mm_crc32_u16",
+            vec![Type::UInt, Type::UShort],
+            Type::UInt,
+            false,
+        );
+        self.push_builtin_fn(
+            "_mm_crc32_u32",
+            vec![Type::UInt, Type::UInt],
+            Type::UInt,
+            false,
+        );
+        self.push_builtin_fn(
+            "_mm_crc32_u64",
+            vec![Type::ULong, Type::ULong],
+            Type::ULong,
+            false,
+        );
     }
 
     fn declare_builtin_typedefs(&mut self) {
@@ -630,6 +670,28 @@ impl<'a> Parser<'a> {
                 FLOAT_COMPLEX => Type::FloatComplex,
                 DOUBLE_COMPLEX | COMPLEX => Type::DoubleComplex,
                 LONG_DOUBLE_COMPLEX => Type::LDoubleComplex,
+                // GNU _Complex/__complex__ applied to an integer type (e.g. `_Complex int`):
+                // resolve the integer type from the remaining bits and wrap it.
+                _ if counter & COMPLEX != 0 => match counter & !COMPLEX {
+                    BOOL => Type::IntComplex(Box::new(Type::Bool)),
+                    CHAR | SIGNED_CHAR => Type::IntComplex(Box::new(Type::Char)),
+                    UNSIGNED_CHAR => Type::IntComplex(Box::new(Type::UChar)),
+                    SHORT | SHORT_INT | SIGNED_SHORT | SIGNED_SHORT_INT => {
+                        Type::IntComplex(Box::new(Type::Short))
+                    }
+                    UNSIGNED_SHORT | UNSIGNED_SHORT_INT => Type::IntComplex(Box::new(Type::UShort)),
+                    INT | SIGNED | SIGNED_INT => Type::IntComplex(Box::new(Type::Int)),
+                    UNSIGNED | UNSIGNED_INT => Type::IntComplex(Box::new(Type::UInt)),
+                    LONG | LONG_INT | LONG_LONG | LONG_LONG_INT | SIGNED_LONG | SIGNED_LONG_INT
+                    | SIGNED_LONG_LONG | SIGNED_LONG_LONG_INT => {
+                        Type::IntComplex(Box::new(Type::Long))
+                    }
+                    UNSIGNED_LONG
+                    | UNSIGNED_LONG_INT
+                    | UNSIGNED_LONG_LONG
+                    | UNSIGNED_LONG_LONG_INT => Type::IntComplex(Box::new(Type::ULong)),
+                    _ => self.bail_at(location, "invalid type")?,
+                },
                 _ => self.bail_at(location, "invalid type")?,
             };
         }
@@ -2616,10 +2678,14 @@ impl<'a> Parser<'a> {
                 .ok_or_else(|| self.err_at(location, "atomic type has no base"))?;
             let base_ty = base_ty.clone();
             let ptr_ty = Type::Ptr(Box::new(lhs_ty.clone()));
+            // The addend's type may legitimately differ from the atomic's own
+            // type -- e.g. `_Atomic(T*) += n` takes an integer offset `n`, not
+            // a `T*` -- so size `val` from the actual rhs, not from base_ty.
+            let val_ty = rhs.ty.clone().unwrap_or_else(|| base_ty.clone());
 
             // Create local variables
             let addr_idx = self.new_lvar(String::new(), ptr_ty.clone());
-            let val_idx = self.new_lvar(String::new(), base_ty.clone());
+            let val_idx = self.new_lvar(String::new(), val_ty);
             let old_idx = self.new_lvar(String::new(), base_ty.clone());
             let new_idx = self.new_lvar(String::new(), base_ty.clone());
 
@@ -3799,6 +3865,31 @@ impl<'a> Parser<'a> {
                 self.expect_punct(Punct::RParen)?;
                 Ok(self.expr_at(ExprKind::Exch { addr, val }, location))
             }
+            TokenKind::Ident(ref name) if name == "__builtin_shufflevector" => {
+                // (vec1, vec2, idx...) -> a vector of vec1's type; the shuffle
+                // indices don't affect parsing/type-checking, only real codegen
+                // (which doesn't exist yet for this frontend), so every operand
+                // is chained through a Comma so it's still parsed and type-checked.
+                let location = token.location;
+                self.pos += 1;
+                self.expect_punct(Punct::LParen)?;
+                let first = self.parse_assign()?;
+                let result_ty = first.ty.clone();
+                let mut chain = first;
+                while self.consume_punct(Punct::Comma) {
+                    let next = self.parse_assign()?;
+                    chain = self.expr_at(
+                        ExprKind::Comma {
+                            lhs: Box::new(chain),
+                            rhs: Box::new(next),
+                        },
+                        location,
+                    );
+                }
+                self.expect_punct(Punct::RParen)?;
+                chain.ty = result_ty;
+                Ok(chain)
+            }
             TokenKind::Ident(ref name) => {
                 let name = name.clone();
                 let expr = if let Some(scope) = self.find_var_scope(&name) {
@@ -3915,6 +4006,7 @@ impl<'a> Parser<'a> {
             }
             first = false;
             let (ty, name_token) = self.parse_declarator(basety.clone())?;
+            let ty = self.parse_type_attributes(ty)?;
             let name = match name_token.kind {
                 TokenKind::Ident(name) => name,
                 _ => self.bail_at(name_token.location, "typedef name omitted")?,
@@ -3922,6 +4014,76 @@ impl<'a> Parser<'a> {
             self.push_scope_typedef(name, ty);
         }
         Ok(())
+    }
+
+    /// Parse `__attribute__((...))` after a declarator, applying type-affecting
+    /// attributes (currently just GNU `vector_size`) to `ty`; anything else is
+    /// consumed and discarded, same as parse_gnu_attributes.
+    fn parse_type_attributes(&mut self, mut ty: Type) -> CompileResult<Type> {
+        while self.consume_keyword(Keyword::Attribute) {
+            self.expect_punct(Punct::LParen)?;
+            self.expect_punct(Punct::LParen)?;
+
+            let mut first = true;
+            while !self.consume_punct(Punct::RParen) {
+                if !first {
+                    self.expect_punct(Punct::Comma)?;
+                }
+                first = false;
+
+                let token = self.peek().clone();
+                let name = match token.kind {
+                    TokenKind::Ident(name) => {
+                        self.pos += 1;
+                        name
+                    }
+                    TokenKind::Keyword(keyword) => {
+                        self.pos += 1;
+                        keyword.to_string()
+                    }
+                    _ => self.bail_here("invalid attribute")?,
+                };
+
+                if name == "vector_size" {
+                    self.expect_punct(Punct::LParen)?;
+                    let bytes = self.const_expr()?;
+                    self.expect_punct(Punct::RParen)?;
+                    let elem_size = ty.size().max(1);
+                    if bytes < 1 || bytes % elem_size != 0 {
+                        self.bail_here(
+                            "vector_size must be a positive multiple of the base type's size",
+                        )?;
+                    }
+                    ty = Type::Vector {
+                        base: Box::new(ty),
+                        len: (bytes / elem_size) as i32,
+                    };
+                    continue;
+                }
+
+                if self.consume_punct(Punct::LParen) {
+                    let mut depth = 1i32;
+                    while depth > 0 {
+                        if matches!(self.peek().kind, TokenKind::Eof) {
+                            self.bail_here("unterminated attribute")?;
+                        }
+                        if self.consume_punct(Punct::LParen) {
+                            depth += 1;
+                            continue;
+                        }
+                        if self.consume_punct(Punct::RParen) {
+                            depth -= 1;
+                            continue;
+                        }
+                        self.pos += 1;
+                    }
+                }
+            }
+
+            self.expect_punct(Punct::RParen)?;
+        }
+
+        Ok(ty)
     }
 
     /// Parse _Static_assert(constant-expression, string-literal);
@@ -3963,6 +4125,13 @@ impl<'a> Parser<'a> {
     }
 
     fn get_common_type(&self, ty1: &Type, ty2: &Type) -> Type {
+        if matches!(ty1, Type::Vector { .. }) {
+            return ty1.clone();
+        }
+        if matches!(ty2, Type::Vector { .. }) {
+            return ty2.clone();
+        }
+
         if let Some(base) = ty1.base() {
             return Type::Ptr(Box::new(base.clone()));
         }
@@ -4856,10 +5025,12 @@ impl<'a> Parser<'a> {
         self.add_type_expr(&mut lhs)?;
         self.add_type_expr(&mut rhs)?;
 
-        let mut lhs_ty = lhs.ty.clone().unwrap_or(Type::Int);
-        let mut rhs_ty = rhs.ty.clone().unwrap_or(Type::Int);
+        let mut lhs_ty = lhs.ty.clone().unwrap_or(Type::Int).decay_atomic();
+        let mut rhs_ty = rhs.ty.clone().unwrap_or(Type::Int).decay_atomic();
 
-        if lhs_ty.is_numeric() && rhs_ty.is_numeric() {
+        if lhs_ty.is_numeric() && rhs_ty.is_numeric()
+            || matches!(lhs_ty, Type::Vector { .. }) && matches!(rhs_ty, Type::Vector { .. })
+        {
             return Ok(self.expr_at(
                 ExprKind::Binary {
                     op: BinaryOp::Add,
@@ -4954,10 +5125,12 @@ impl<'a> Parser<'a> {
         self.add_type_expr(&mut lhs)?;
         self.add_type_expr(&mut rhs)?;
 
-        let lhs_ty = lhs.ty.clone().unwrap_or(Type::Int);
-        let rhs_ty = rhs.ty.clone().unwrap_or(Type::Int);
+        let lhs_ty = lhs.ty.clone().unwrap_or(Type::Int).decay_atomic();
+        let rhs_ty = rhs.ty.clone().unwrap_or(Type::Int).decay_atomic();
 
-        if lhs_ty.is_numeric() && rhs_ty.is_numeric() {
+        if lhs_ty.is_numeric() && rhs_ty.is_numeric()
+            || matches!(lhs_ty, Type::Vector { .. }) && matches!(rhs_ty, Type::Vector { .. })
+        {
             return Ok(self.expr_at(
                 ExprKind::Binary {
                     op: BinaryOp::Sub,
@@ -5084,7 +5257,7 @@ impl<'a> Parser<'a> {
             };
         }
 
-        let children = if let Type::Array { base, len } = &ty {
+        let children = if let Type::Array { base, len } | Type::Vector { base, len } = &ty {
             (0..(*len as usize))
                 .map(|_| self.new_initializer(*base.clone(), false))
                 .collect()
@@ -5427,7 +5600,7 @@ impl<'a> Parser<'a> {
             *init = self.new_initializer(new_ty, false);
         }
 
-        let len = if let Type::Array { len, .. } = &init.ty {
+        let len = if let Type::Array { len, .. } | Type::Vector { len, .. } = &init.ty {
             *len
         } else {
             return Ok(());
@@ -5638,6 +5811,15 @@ impl<'a> Parser<'a> {
             } else {
                 return self.array_initializer2(init, 0);
             }
+        }
+
+        // A GNU vector (`__attribute__((vector_size(N)))`) can be brace-initialized
+        // like an array, e.g. `v4si a = {1, 2, 3, 4};`; without braces it's just a
+        // plain expression (e.g. `v4si c = a + b;`), handled by the scalar case below.
+        if let Type::Vector { .. } = &init.ty
+            && self.check_punct(Punct::LBrace)
+        {
+            return self.array_initializer1(init);
         }
 
         // Check for struct initializer
@@ -6358,6 +6540,7 @@ impl<'a> Parser<'a> {
                             Type::FloatComplex => Type::Float,
                             Type::DoubleComplex => Type::Double,
                             Type::LDoubleComplex => Type::LDouble,
+                            Type::IntComplex(base) => (**base).clone(),
                             // For non-complex types, return the same type
                             _ => expr_ty.clone(),
                         }
