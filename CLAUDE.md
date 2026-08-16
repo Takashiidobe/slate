@@ -148,8 +148,17 @@ parses the generic-form CIR op-tree.
   consume instead of re-deriving facts by hand.
 - [docs/architecture.md](docs/architecture.md) — sources, the two IRs, the
   pipeline, and why CIR over LLVM IR.
+- [docs/lowerer.md](docs/lowerer.md) — the lowerer's internal module split:
+  `Lowerer` vs `FunctionLowerer`, the `src/frontend/lowerer/*.rs` submodule
+  map, op dispatch, and how to wire in a new `cir.*` handler. Read this before
+  touching anything under `src/frontend/lowerer.rs` or `src/frontend/lowerer/`.
 - [docs/passes.md](docs/passes.md) — the pass catalog: what runs, in what order.
 - [docs/README.md](docs/README.md) — the supported-subset surface.
+- [docs/gcc-torture-triage.md](docs/gcc-torture-triage.md) — working the
+  gcc-torture/c-testsuite/chibicc/libc-test unsupported-corpus triage epics
+  (`slate-os0h.3.1` and children): the three-test pattern, which nextest
+  profile to use, how to dig into one failing case, where the compiled batch
+  binary lives, and what failure signatures mean.
 
 ## Conventions & Patterns
 
