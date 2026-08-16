@@ -3,8 +3,8 @@ use std::fmt::{self, Write};
 use crate::backend::rust_ast::{
     Abi, AsmDialect, AsmOperand, AsmReg, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType,
     Attr, Block, Cfg, Comment, CrateAttr, Derive, Expr, ExternDecl, FnDef, GenericParam, ImplBlock,
-    ImplItem, IndentStmt, Item, Method, Path, Program, RecordDef, Repr, RustValue, SelfKind, Stmt,
-    StructDef, StructFields, TraitBound, TraitRef, Type,
+    ImplItem, IndentStmt, Item, Method, Path, Program, RecordDef, RecordField, Repr, RustValue,
+    SelfKind, Stmt, StructDef, StructFields, TraitBound, TraitRef, Type,
 };
 
 const INDENT: &str = "    ";
@@ -327,7 +327,11 @@ impl<W: Write> Codegen<W> {
         if r.allow_non_camel_case {
             self.out.write_str("#[expect(non_camel_case_types)]\n")?;
         }
-        self.out.write_str("#[derive(Clone, Copy)]\n")?;
+        if record_fields_are_copy(&r.fields) {
+            self.out.write_str("#[derive(Clone, Copy)]\n")?;
+        } else {
+            self.out.write_str("#[derive(Clone)]\n")?;
+        }
         let kw = if r.is_union { "union" } else { "struct" };
         if let Some(vis) = r.vis.keyword() {
             write!(self.out, "{vis} ")?;
@@ -1498,6 +1502,18 @@ impl<W: Write> Codegen<W> {
             Type::Variadic => self.out.write_str("..."),
             Type::Never => self.out.write_char('!'),
         }
+    }
+}
+
+fn record_fields_are_copy(fields: &[RecordField]) -> bool {
+    fields.iter().all(|field| type_is_copy(&field.ty))
+}
+
+fn type_is_copy(ty: &Type) -> bool {
+    match ty {
+        Type::Custom(name) => name != "__SlateVaArgs",
+        Type::Array { elem, .. } => type_is_copy(elem),
+        _ => true,
     }
 }
 

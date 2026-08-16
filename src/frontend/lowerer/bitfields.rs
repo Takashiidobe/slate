@@ -82,7 +82,7 @@ fn collect_function_bitfields(
                         .entry(member.field.clone())
                         .or_insert_with(|| BitfieldField {
                             name: member.field.clone(),
-                            ty: rust_type_with_aliases(result_ty, aliases),
+                            ty: rust_type_with_aliases(result_ty, aliases, false),
                             size,
                             offset,
                         });
@@ -107,7 +107,7 @@ fn member_storage(op: &Op, aliases: &BTreeMap<String, String>) -> Option<MemberS
     let index = aggregate_member_index(op)?;
     let backing = op_result_type(op)
         .and_then(cir_ptr_pointee)
-        .map(|ty| rust_type_with_aliases(ty, aliases))?;
+        .map(|ty| rust_type_with_aliases(ty, aliases, false))?;
     let field = sanitize_ident(attr_str(op, "name")?).into_string();
     Some(MemberStorage {
         record,

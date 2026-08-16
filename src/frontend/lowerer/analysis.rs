@@ -242,20 +242,44 @@ pub(super) fn c_abi_function_targets(op: &Op) -> BTreeSet<String> {
     targets
 }
 
-pub(super) fn function_forwards_va_list(op: &Op) -> bool {
+pub(super) fn module_requires_native_va_list(
+    module_op: &Op,
+    c_abi_functions: &BTreeSet<String>,
+    emit_pub: bool,
+) -> bool {
     let mut ops = Vec::new();
-    collect_region_ops_recursive(op, &mut ops);
-    ops.iter().any(|op| {
-        op.kind() == CirOpKind::Call
+    collect_region_ops_recursive(module_op, &mut ops);
+    let defined_functions: BTreeSet<&str> = ops
+        .iter()
+        .filter(|op| op.kind() == CirOpKind::Func && !region_ops(op).is_empty())
+        .filter_map(|op| attr_str(op, "sym_name"))
+        .collect();
+    ops.iter().any(|op| match op.kind() {
+        CirOpKind::Func if !region_ops(op).is_empty() => {
+            let name = attr_str(op, "sym_name").unwrap_or_default();
+            let function_type = attr_str(op, "function_type").unwrap_or("");
+            let has_va_list = function_type_is_variadic(function_type)
+                || parse_function_type(function_type)
+                    .0
+                    .iter()
+                    .any(|ty| is_cir_va_list_type(ty));
+            has_va_list
+                && (c_abi_functions.contains(name) || (emit_pub && externally_exported(op)))
+        }
+        CirOpKind::Call => attr_str(op, "callee")
+            .map(|callee| callee.trim_start_matches('@'))
+            .is_some_and(|callee| !defined_functions.contains(callee))
             && op_operand_types(op.ty.as_deref().unwrap_or(""))
                 .into_iter()
-                .any(is_cir_va_list_type)
+                .any(is_cir_va_list_type),
+        _ => false,
     })
 }
 
 pub(super) fn declared_function_param_types(
     op: &Op,
     aliases: &BTreeMap<String, String>,
+    va_list_boxed: bool,
 ) -> BTreeMap<String, Vec<Type>> {
     let mut ops = Vec::new();
     collect_region_ops_recursive(op, &mut ops);
@@ -267,7 +291,7 @@ pub(super) fn declared_function_param_types(
             let (param_tys, _) = parse_function_type(function_type);
             let params = param_tys
                 .iter()
-                .map(|ty| rust_type_with_aliases(ty, aliases))
+                .map(|ty| rust_type_with_aliases(ty, aliases, va_list_boxed))
                 .collect();
             Some((name.to_string(), params))
         })
@@ -277,6 +301,7 @@ pub(super) fn declared_function_param_types(
 pub(super) fn declared_function_return_types(
     op: &Op,
     aliases: &BTreeMap<String, String>,
+    va_list_boxed: bool,
 ) -> BTreeMap<String, Type> {
     let mut ops = Vec::new();
     collect_region_ops_recursive(op, &mut ops);
@@ -286,7 +311,8 @@ pub(super) fn declared_function_return_types(
             let name = attr_str(op, "sym_name")?;
             let function_type = attr_str(op, "function_type").unwrap_or("");
             let (_, ret_ty) = parse_function_type(function_type);
-            let ty = rust_type_with_aliases(ret_ty.as_deref().unwrap_or("()"), aliases);
+            let ty =
+                rust_type_with_aliases(ret_ty.as_deref().unwrap_or("()"), aliases, va_list_boxed);
             Some((name.to_string(), ty))
         })
         .collect()

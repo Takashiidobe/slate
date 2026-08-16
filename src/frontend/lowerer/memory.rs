@@ -43,6 +43,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
+    pub(super) fn va_target_place(&self, ptr: &str) -> Option<Expr> {
+        self.va_places
+            .get(ptr)
+            .cloned()
+            .or_else(|| self.place_expr(ptr))
+    }
+
     pub(super) fn place_or_deref_expr(&self, ptr: &str) -> Expr {
         if self.aligned_slots.contains(ptr)
             && let Some(place) = self.slot_receiver(ptr)
@@ -633,17 +640,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(src) = op.operands.first() else {
             return;
         };
-        if let Some(slot) = self.va_places.get(src).cloned() {
-            self.va_places.insert(result.clone(), slot.clone());
-            self.values
-                .insert(result.clone(), Val::Expr(Expr::Var(slot.into())));
-            return;
-        }
         let result_ty = op_result_type(op).unwrap_or("");
         let operand_ty = op_operand_types(op.ty.as_deref().unwrap_or(""))
             .into_iter()
             .next()
             .unwrap_or("");
+        if (is_cir_va_list_type(result_ty) || is_cir_va_list_type(operand_ty))
+            && let Some(place) = self.va_target_place(src)
+        {
+            self.va_places.insert(result.clone(), place.clone());
+            self.values.insert(result.clone(), Val::Expr(place));
+            return;
+        }
         let result_rust_ty = self.parent.rust_type(result_ty);
         let operand_rust_ty = self.parent.rust_type(operand_ty);
         let value = match self.values.get(src).cloned() {

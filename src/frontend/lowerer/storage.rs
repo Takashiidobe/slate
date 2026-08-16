@@ -195,24 +195,24 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             });
             return;
         }
-        // a `va_list` local becomes a Rust `VaList`, assigned by `va_start`.
-        if self.va_allocas.contains(result)
-            || op
-                .ty
-                .as_deref()
-                .is_some_and(|ty| ty.contains("__va_list_tag") || ty.contains("rec___va_list"))
-        {
+        let va_list_pointee = self
+            .pointee_type(op.ty.as_deref().unwrap_or(""))
+            .filter(|ty| matches!(ty, Type::VaList) || is_boxed_va_args_type(ty));
+        if self.va_allocas.contains(result) || va_list_pointee.is_some() {
+            let ty = va_list_pointee.unwrap_or(if self.parent.va_list_boxed {
+                Type::Custom("__SlateVaArgs".into())
+            } else {
+                Type::VaList
+            });
+            let boxed = is_boxed_va_args_type(&ty);
             self.slots.insert(result.clone(), name.clone());
-            self.va_places.insert(result.clone(), name.clone());
+            self.va_places
+                .insert(result.clone(), Expr::Var(name.clone().into()));
             self.push_stmt(Stmt::Let {
                 name,
                 mutable: true,
-                ty: Some(if self.boxed_va_args {
-                    Type::Custom("__SlateVaArgs".into())
-                } else {
-                    Type::VaList
-                }),
-                init: None,
+                ty: Some(ty),
+                init: boxed.then(empty_va_args_expr),
             });
             return;
         }
@@ -408,6 +408,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if let Some(expr) = self.block_addr_dispatch_expr(ptr) {
             self.indirect_target_values.insert(result.clone(), expr);
             self.lower_opaque_pointer(op, true);
+            return;
+        }
+        if op_result_type(op).is_some_and(is_cir_va_list_type)
+            && let Some(place) = self.va_target_place(ptr)
+        {
+            self.va_places.insert(result.clone(), place.clone());
+            self.values.insert(result.clone(), Val::Expr(place));
             return;
         }
         let mut value = if attr_bool(op, "is_volatile") {

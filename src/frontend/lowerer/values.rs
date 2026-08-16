@@ -322,7 +322,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn call_arg_expr(&self, operand: &str, ty: &str) -> Expr {
-        if is_cir_function_pointer_type(ty) {
+        if is_boxed_va_args_type(&self.parent.rust_type(ty))
+            && let Some(place) = self.va_target_place(operand)
+        {
+            Expr::MethodCall {
+                recv: Box::new(place),
+                method: "clone".into(),
+                args: vec![],
+            }
+        } else if is_cir_function_pointer_type(ty) {
             self.function_pointer_operand_expr(operand)
         } else if ty.starts_with("!cir.ptr<") {
             let expr = self.pointer_operand_expr(operand);
