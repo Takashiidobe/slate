@@ -666,6 +666,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         enum_wrapper_fns: std::cell::RefCell::new(BTreeMap::new()),
         needed_enum_from_impls: std::cell::RefCell::new(BTreeSet::new()),
         bitfield_storages: collect_bitfield_storages(cir),
+        global_sym_types: BTreeMap::new(),
     };
     lowerer.lower_module(cir, c)
 }
@@ -1011,6 +1012,7 @@ struct Lowerer<'a> {
     enum_wrapper_fns: std::cell::RefCell<BTreeMap<String, FnDef>>,
     needed_enum_from_impls: std::cell::RefCell<BTreeSet<(String, Type)>>,
     bitfield_storages: BitfieldStorages,
+    global_sym_types: BTreeMap<String, String>,
 }
 
 struct FunctionLowerer<'a, 'b> {
@@ -1456,6 +1458,16 @@ impl<'a> Lowerer<'a> {
         self.ctor_calls = hooks.ctors;
         self.dtor_calls = hooks.dtors;
         self.used_symbols = collect_used_symbols(&ops);
+        self.global_sym_types = ops
+            .iter()
+            .filter(|op| op.kind() == CirOpKind::Global)
+            .filter_map(|op| {
+                Some((
+                    attr_str(op, "sym_name")?.to_string(),
+                    attr_str(op, "sym_type")?.to_string(),
+                ))
+            })
+            .collect();
         for op in ops.iter().filter(|op| {
             op.kind() == CirOpKind::Global
                 && attr_str(op, "sym_name").is_some_and(|name| name.starts_with(".str"))
@@ -2034,7 +2046,8 @@ impl __SlateVaArgs {
         } else if let Some(target) = parse_cir_global_view(raw) {
             if is_c_global
                 && let Some(ty) = ty
-                && let Some(init) = self.global_view_init_expr(target, &ty)
+                && let Some(init) =
+                    self.global_view_init_expr(target, &parse_cir_global_view_indices(raw), &ty)
             {
                 self.globals.insert(
                     rust_name.clone(),
@@ -3218,6 +3231,11 @@ impl __SlateVaArgs {
             } else {
                 Expr::Value(RustValue::NullPtr)
             })
+        } else if let Some(addr) = parse_cir_int_ptr(raw) {
+            Some(Expr::Cast {
+                expr: Box::new(int_value_expr(addr)),
+                ty: ty.clone(),
+            })
         } else if let Type::Custom(name) = ty
             && let Some(enm) = self.enums.get(name)
             && let Some(value) = parse_cir_int(raw)
@@ -3231,7 +3249,7 @@ impl __SlateVaArgs {
                 Ident::from(sanitize_ident(&variant.name).as_str()),
             ])))
         } else if let Some(target) = parse_cir_global_view(raw) {
-            self.global_view_init_expr(target, ty)
+            self.global_view_init_expr(target, &parse_cir_global_view_indices(raw), ty)
         } else if matches!(ty, Type::LongDouble) {
             let fact = facts.pop_front();
             if let Some(fact) = fact {
@@ -3253,14 +3271,27 @@ impl __SlateVaArgs {
         }
     }
 
-    fn global_view_init_expr(&self, target: &str, ty: &Type) -> Option<Expr> {
+    fn global_view_init_expr(&self, target: &str, indices: &[i128], ty: &Type) -> Option<Expr> {
         if let Some(bytes) = self.strings.get(target) {
+            let ptr_expr = Expr::MethodCall {
+                recv: Box::new(Expr::ByteStr(bytes.clone())),
+                method: "as_ptr".into(),
+                args: Vec::new(),
+            };
+            let ptr_expr = match indices {
+                [] => ptr_expr,
+                [offset] => Expr::Unsafe(Box::new(crate::backend::rust_ast::Block {
+                    stmts: Vec::new(),
+                    tail: Some(Box::new(Expr::MethodCall {
+                        recv: Box::new(ptr_expr),
+                        method: "add".into(),
+                        args: vec![int_value_expr(*offset)],
+                    })),
+                })),
+                _ => return None,
+            };
             return Some(Expr::Cast {
-                expr: Box::new(Expr::MethodCall {
-                    recv: Box::new(Expr::ByteStr(bytes.clone())),
-                    method: "as_ptr".into(),
-                    args: Vec::new(),
-                }),
+                expr: Box::new(ptr_expr),
                 ty: ty.clone(),
             });
         }
@@ -3296,13 +3327,76 @@ impl __SlateVaArgs {
                 ty: ty.clone(),
             });
         }
+        if indices.is_empty() {
+            return Some(Expr::Cast {
+                expr: Box::new(Expr::AddrOf {
+                    mutable: *mutable,
+                    expr: Box::new(Expr::Var(sanitize_ident(target).into_string().into())),
+                }),
+                ty: ty.clone(),
+            });
+        }
+        let base_ty = self
+            .global_sym_types
+            .get(target)
+            .map(|ty| self.rust_type(ty))?;
+        let path = self.global_view_index_path(target, &base_ty, indices)?;
+        let addr_expr = Expr::AddrOf {
+            mutable: *mutable,
+            expr: Box::new(path),
+        };
         Some(Expr::Cast {
-            expr: Box::new(Expr::AddrOf {
-                mutable: *mutable,
-                expr: Box::new(Expr::Var(sanitize_ident(target).into_string().into())),
-            }),
+            expr: Box::new(Expr::Unsafe(Box::new(crate::backend::rust_ast::Block {
+                stmts: Vec::new(),
+                tail: Some(Box::new(addr_expr)),
+            }))),
             ty: ty.clone(),
         })
+    }
+
+    fn global_view_index_path(
+        &self,
+        target: &str,
+        base_ty: &Type,
+        indices: &[i128],
+    ) -> Option<Expr> {
+        let raw_ptr_ty = Type::Ptr {
+            mutable: true,
+            inner: Box::new(base_ty.clone()),
+        };
+        let mut expr = Expr::Unary {
+            op: UnaryOp::Deref,
+            expr: Box::new(Expr::Cast {
+                expr: Box::new(Expr::AddrOf {
+                    mutable: true,
+                    expr: Box::new(Expr::Var(sanitize_ident(target).into_string().into())),
+                }),
+                ty: raw_ptr_ty,
+            }),
+        };
+        let mut ty = base_ty.clone();
+        for &index in indices {
+            match ty {
+                Type::Array { elem, .. } => {
+                    expr = Expr::Index {
+                        base: Box::new(expr),
+                        index: Box::new(int_value_expr(index)),
+                    };
+                    ty = *elem;
+                }
+                Type::Custom(name) => {
+                    let record = self.records.get(&name)?;
+                    let field = record.fields.get(usize::try_from(index).ok()?)?;
+                    expr = Expr::Field {
+                        base: Box::new(expr),
+                        field: sanitize_ident(&field.name).into_string(),
+                    };
+                    ty = self.record_field_type(&field.ty);
+                }
+                _ => return None,
+            }
+        }
+        Some(expr)
     }
 }
 

@@ -653,9 +653,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         if let Some(target) = parse_cir_global_view(raw)
             && let Some(result_ty) = result_ty
-            && let Some(value) = self
-                .parent
-                .global_view_init_expr(target, &self.parent.rust_type(result_ty))
+            && let Some(value) = self.parent.global_view_init_expr(
+                target,
+                &parse_cir_global_view_indices(raw),
+                &self.parent.rust_type(result_ty),
+            )
         {
             self.materialize_expr(result, value, Some(result_ty));
             return;
