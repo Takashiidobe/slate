@@ -274,6 +274,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else {
             self.operand_expr(&op.operands[0])
         };
+        if value_ty.is_some_and(is_cir_va_list_value_type) {
+            value = Expr::MethodCall {
+                recv: Box::new(value),
+                method: "clone".into(),
+                args: vec![],
+            };
+        }
         value = self.coerce_store_value(ptr, value, &op.operands[0]);
         if self.forward_allocas.contains(ptr) {
             let value = self.forward_safe_value(value, value_ty);
