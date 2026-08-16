@@ -590,6 +590,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
             .iter()
             .map(|attribute| (attribute.name.clone(), attribute.target.clone()))
             .collect(),
+        naked_functions: c.naked_functions.clone(),
         external_weak_targets: BTreeSet::new(),
         weak_aliases: BTreeMap::new(),
         records,
@@ -961,6 +962,7 @@ struct Lowerer<'a> {
     known_functions: BTreeMap<String, FunctionIdentity>,
     function_types: BTreeMap<String, String>,
     weak_refs: BTreeMap<String, String>,
+    naked_functions: BTreeSet<String>,
     external_weak_targets: BTreeSet<String>,
     weak_aliases: BTreeMap<String, String>,
     records: BTreeMap<String, crate::frontend::c_ast::Record>,
@@ -2499,6 +2501,9 @@ impl __SlateVaArgs {
         let asm_gotos: VecDeque<_> = self.asm_gotos.get(name).cloned().unwrap_or_default().into();
         let mut function_ops = Vec::new();
         collect_region_ops_recursive(op, &mut function_ops);
+        if self.naked_functions.contains(name) {
+            return self.lower_naked_func(name, &function_ops, attrs, vis, params, ret);
+        }
         let local_enum_decls = self
             .local_enum_decls
             .get(name)
@@ -2598,6 +2603,56 @@ impl __SlateVaArgs {
             params,
             ret,
             body: f.body,
+        }))
+    }
+
+    fn lower_naked_func(
+        &mut self,
+        name: &str,
+        function_ops: &[&Op],
+        mut attrs: Vec<RustAttr>,
+        vis: Visibility,
+        params: Vec<FnParam>,
+        ret: Option<Type>,
+    ) -> Option<Item> {
+        let asm_ops: Vec<&Op> = function_ops
+            .iter()
+            .filter(|op| op.kind() == CirOpKind::Asm)
+            .copied()
+            .collect();
+        let Some(dialect) = asm_ops.first().map(|op| cir_asm_dialect(op)) else {
+            self.ctx.diagnostics.error(format!(
+                "lower: __attribute__((naked)) function `{name}` has no inline assembly body"
+            ));
+            return None;
+        };
+        let mut lines = Vec::with_capacity(asm_ops.len());
+        for asm_op in asm_ops {
+            let Some(raw) = attr_str(asm_op, "asm_string") else {
+                continue;
+            };
+            let Ok(template) = String::from_utf8(decode_cir_string(raw)) else {
+                self.ctx
+                    .diagnostics
+                    .error("lower: inline assembly template is not valid UTF-8");
+                return None;
+            };
+            lines.push(template.replace("$$", "$"));
+        }
+        attrs.push(RustAttr::Naked);
+        let stmt = Stmt::Expr(Expr::Macro {
+            name: "core::arch::naked_asm".into(),
+            args: asm_macro_args(lines.join("\n\t"), dialect),
+        });
+        Some(Item::Fn(FnDef {
+            attrs,
+            vis,
+            unsafe_: false,
+            abi: Some(Abi::C),
+            name: name.to_string(),
+            params,
+            ret,
+            body: vec![IndentStmt { depth: 1, stmt }],
         }))
     }
 

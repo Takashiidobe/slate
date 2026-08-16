@@ -506,6 +506,7 @@ impl<W: Write> Codegen<W> {
                 self.out.write_char(')')
             }
             Attr::NoMangle => self.out.write_str("unsafe(no_mangle)"),
+            Attr::Naked => self.out.write_str("unsafe(naked)"),
             Attr::ExportName(name) => {
                 write!(self.out, "unsafe(export_name = {})", string_literal(name))
             }

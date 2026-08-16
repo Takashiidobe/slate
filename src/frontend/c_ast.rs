@@ -58,6 +58,7 @@ pub struct Unit {
     pub functions: Vec<Function>,
     pub declaration_comments: Vec<DeclarationComment>,
     pub weak_refs: Vec<WeakRefAttribute>,
+    pub naked_functions: BTreeSet<String>,
     pub floating_literals: HashMap<FloatingLiteralLoc, FloatingLiteralFact>,
     pub global_floating_literals: HashMap<String, Vec<FloatingLiteralFact>>,
     pub(crate) function_types: HashMap<String, String>,
@@ -636,6 +637,7 @@ fn parse_json_with_record_roots(
     let mut functions = Vec::new();
     let mut declaration_comments = Vec::new();
     let mut weak_refs = Vec::new();
+    let mut naked_functions = BTreeSet::new();
     collect_enums(&root, source_file, record_roots, &enum_typedefs, &mut enums);
     collect_records(
         &root,
@@ -686,6 +688,7 @@ fn parse_json_with_record_roots(
         &mut functions,
     );
     collect_weak_ref_attributes(&root, source_file, &mut weak_refs);
+    collect_naked_functions(&root, source_file, &mut naked_functions);
     let mut floating_literals = plugin_events.floating_literals;
     if let Some(source) = source_text.as_deref() {
         collect_floating_literals(&root, source_file, source, &mut floating_literals);
@@ -709,6 +712,7 @@ fn parse_json_with_record_roots(
         functions,
         declaration_comments,
         weak_refs,
+        naked_functions,
         floating_literals,
         global_floating_literals,
         function_types,
@@ -1178,6 +1182,21 @@ fn collect_weak_ref_attributes(node: &Value, source_file: &str, out: &mut Vec<We
     }
     for child in children(node) {
         collect_weak_ref_attributes(child, source_file, out);
+    }
+}
+
+fn collect_naked_functions(node: &Value, source_file: &str, out: &mut BTreeSet<String>) {
+    if kind(node) == Some("FunctionDecl")
+        && is_source_node(node, source_file)
+        && children(node)
+            .iter()
+            .any(|child| kind(child) == Some("NakedAttr"))
+        && let Some(name) = node.get("name").and_then(Value::as_str)
+    {
+        out.insert(name.to_string());
+    }
+    for child in children(node) {
+        collect_naked_functions(child, source_file, out);
     }
 }
 
