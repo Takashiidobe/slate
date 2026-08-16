@@ -931,6 +931,19 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     expr: Box::new(self.function_pointer_operand_expr(src)),
                 })
             }
+            _ if is_cir_function_pointer_type(operand_ty)
+                && !result_ty.starts_with("!cir.ptr<")
+                && result_ty != "!cir.bool" =>
+            {
+                Val::Expr(Expr::Cast {
+                    expr: Box::new(Expr::Transmute {
+                        from: self.parent.rust_type(operand_ty),
+                        to: Type::Prim(Prim::Usize),
+                        expr: Box::new(self.function_pointer_operand_expr(src)),
+                    }),
+                    ty: result_rust_ty.clone(),
+                })
+            }
             _ if result_ty.starts_with("!cir.ptr<")
                 && operand_ty.starts_with("!cir.ptr<")
                 && !(is_cir_function_pointer_type(result_ty)
@@ -995,6 +1008,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 })
             }
             _ if result_ty == operand_ty => Val::Expr(self.operand_expr(src)),
+            _ if matches!(result_rust_ty, Type::Array { .. })
+                || matches!(operand_rust_ty, Type::Array { .. }) =>
+            {
+                Val::Expr(Expr::Transmute {
+                    from: operand_rust_ty.clone(),
+                    to: result_rust_ty.clone(),
+                    expr: Box::new(self.operand_expr(src)),
+                })
+            }
             _ => Val::Expr(Expr::Cast {
                 expr: Box::new(self.operand_expr(src)),
                 ty: self.parent.rust_type(result_ty),
