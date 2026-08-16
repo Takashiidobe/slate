@@ -410,7 +410,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.lower_opaque_pointer(op, true);
             return;
         }
-        if op_result_type(op).is_some_and(is_cir_va_list_type)
+        if op_result_type(op).is_some_and(is_cir_va_list_value_type)
             && let Some(place) = self.va_target_place(ptr)
         {
             self.va_places.insert(result.clone(), place.clone());

@@ -263,15 +263,16 @@ pub(super) fn module_requires_native_va_list(
                     .0
                     .iter()
                     .any(|ty| is_cir_va_list_type(ty));
-            has_va_list
-                && (c_abi_functions.contains(name) || (emit_pub && externally_exported(op)))
+            has_va_list && (c_abi_functions.contains(name) || (emit_pub && externally_exported(op)))
         }
-        CirOpKind::Call => attr_str(op, "callee")
-            .map(|callee| callee.trim_start_matches('@'))
-            .is_some_and(|callee| !defined_functions.contains(callee))
-            && op_operand_types(op.ty.as_deref().unwrap_or(""))
-                .into_iter()
-                .any(is_cir_va_list_type),
+        CirOpKind::Call => {
+            attr_str(op, "callee")
+                .map(|callee| callee.trim_start_matches('@'))
+                .is_some_and(|callee| !defined_functions.contains(callee))
+                && op_operand_types(op.ty.as_deref().unwrap_or(""))
+                    .into_iter()
+                    .any(is_cir_va_list_type)
+        }
         _ => false,
     })
 }
