@@ -96,6 +96,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let unsafe_access = self.place_expr(base_ptr).is_none()
             || self.ptr_requires_unsafe(base_ptr)
             || self.op_base_is_union(op);
+        let field_is_trailing = self.member_field_is_trailing(base_ptr, op, &field);
         self.member_ptrs.insert(
             result.clone(),
             MemberPtr {
@@ -106,6 +107,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 bitfield_name: storage
                     .as_ref()
                     .and_then(|(_, _, wrapped)| wrapped.then_some(logical_field)),
+                field_is_trailing,
             },
         );
     }
@@ -310,31 +312,41 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         })
     }
 
-    pub(super) fn member_field_type(&self, base_ptr: &str, field: &str) -> Option<Type> {
+    pub(super) fn member_record_name(&self, base_ptr: &str) -> Option<String> {
         if let Some(Type::Custom(record_name)) = self.slot_types.get(base_ptr) {
-            return self.record_field_type_by_name(record_name, field);
+            return Some(record_name.clone());
         }
         if let Some(Type::Custom(record_name)) = self
             .member_ptrs
             .get(base_ptr)
             .and_then(|member| member.field_ty.as_ref())
         {
-            return self.record_field_type_by_name(record_name, field);
+            return Some(record_name.clone());
         }
         if let Some(Type::Custom(record_name)) = self
             .element_ptrs
             .get(base_ptr)
             .and_then(|element| element.elem_ty.as_ref())
         {
-            return self.record_field_type_by_name(record_name, field);
+            return Some(record_name.clone());
         }
         None
     }
 
-    pub(super) fn member_field_type_from_op(&self, op: &Op, field: &str) -> Option<Type> {
+    pub(super) fn record_name_from_op(op: &Op) -> Option<String> {
         let base_ty = op_operand_types(op.ty.as_deref()?).first().copied()?;
         let record_name = cir_ptr_pointee(base_ty).and_then(cir_record_name)?;
-        self.record_field_type_by_name(&sanitize_ident(record_name).into_string(), field)
+        Some(sanitize_ident(record_name).into_string())
+    }
+
+    pub(super) fn member_field_type(&self, base_ptr: &str, field: &str) -> Option<Type> {
+        let record_name = self.member_record_name(base_ptr)?;
+        self.record_field_type_by_name(&record_name, field)
+    }
+
+    pub(super) fn member_field_type_from_op(&self, op: &Op, field: &str) -> Option<Type> {
+        let record_name = Self::record_name_from_op(op)?;
+        self.record_field_type_by_name(&record_name, field)
     }
 
     pub(super) fn record_field_type_by_name(&self, record_name: &str, field: &str) -> Option<Type> {
@@ -344,6 +356,25 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .iter()
             .find(|candidate| sanitize_ident(&candidate.name).as_str() == field)
             .map(|candidate| self.parent.record_field_type(&candidate.ty))
+    }
+
+    pub(super) fn member_field_is_trailing(&self, base_ptr: &str, op: &Op, field: &str) -> bool {
+        let Some(record_name) = self
+            .member_record_name(base_ptr)
+            .or_else(|| Self::record_name_from_op(op))
+        else {
+            return false;
+        };
+        let Some(record) = self.parent.records.get(&record_name) else {
+            return false;
+        };
+        if record.kind == crate::frontend::c_ast::RecordKind::Union {
+            return true;
+        }
+        record
+            .fields
+            .last()
+            .is_some_and(|last| sanitize_ident(&last.name).as_str() == field)
     }
 
     pub(super) fn lower_set_bitfield(&mut self, op: &Op) {
@@ -520,10 +551,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         let base_ptr = &op.operands[0];
         let index = self.operand_expr(&op.operands[1]);
-        let unbounded = self
-            .member_ptrs
-            .get(base_ptr)
-            .is_some_and(|member| matches!(&member.field_ty, Some(Type::Array { len: 0, .. })));
+        let unbounded = self.member_ptrs.get(base_ptr).is_some_and(|member| {
+            member.field_is_trailing
+                && matches!(&member.field_ty, Some(Type::Array { len: 0 | 1, .. }))
+        });
         let array_len = op_operand_types(op.ty.as_deref().unwrap_or(""))
             .into_iter()
             .next()

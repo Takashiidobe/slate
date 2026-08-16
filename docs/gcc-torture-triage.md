@@ -53,6 +53,22 @@ Promotion is always a `git mv` of the fixture from unsupported to supported —
 `gcc_torture_unsupported_tests_still_fail`'s failure message prints the exact
 command. Never hand-copy a fixture; `git mv` preserves history.
 
+### The `.ignored` bucket (gcc-torture only, so far)
+
+`tests/fixtures.gcc-torture.ignored/` holds cases that are genuinely
+undefined behavior per the C standard, not a Slate lowering gap -- e.g.
+`strlen-5`, which reads past one array/struct member's declared bound into
+an adjacent sibling member by relying on incidental memory layout (C11
+6.5.6p8), unlike the struct-hack/flexible-array-member idiom (also
+technically UB pre-C99, but universally treated as a de facto supported
+contract, which Slate does support). This is not the same as "unsupported":
+`.unsupported/` is tracked work we intend to eventually fix; `.ignored/` is
+work we've decided not to chase because Slate correctly declining to
+reproduce the UB isn't a bug. No test suite scans this directory, so cases
+there don't count against `.unsupported` triage progress. Every fixture
+moved here needs a top-of-file comment explaining which standard clause
+makes it UB and why it's not the same as an idiom Slate does support.
+
 ## How to dig into one failing case
 
 1. **`cargo run -- translate <file.c>`** — full pipeline output: lowering +
