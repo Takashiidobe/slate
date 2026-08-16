@@ -12,7 +12,7 @@ use crate::backend::rust_ast::{
 use crate::cir::ir::{Attr, Block, CirOpKind, Module, Op, Region};
 use crate::ctx::Ctx;
 use crate::frontend::c_ast::{
-    EnumConstRef, FloatingLiteralFact, FloatingLiteralLoc, LayoutQuery, Loc, MacroConst,
+    CType, EnumConstRef, FloatingLiteralFact, FloatingLiteralLoc, LayoutQuery, Loc, MacroConst,
     RecordKind, SourcePoint, Unit,
 };
 use crate::frontend::function_abi::repair_function_signature;
@@ -101,6 +101,68 @@ fn collect_record_dependencies(
             }
         }
         _ => {}
+    }
+}
+
+fn widen_flexible_array_members(
+    cir: &Module,
+    records: &mut BTreeMap<String, crate::frontend::c_ast::Record>,
+) {
+    for op in module_ops(cir) {
+        if op.kind() != CirOpKind::Global {
+            continue;
+        }
+        let Some(sym_type) = attr_str(op, "sym_type") else {
+            continue;
+        };
+        let expanded = cir
+            .aliases
+            .get(sym_type.trim())
+            .map(String::as_str)
+            .unwrap_or(sym_type);
+        let Some(record_name) = cir_record_name(expanded) else {
+            continue;
+        };
+        let record_name = sanitize_ident(record_name).into_string();
+        let Some(record) = records.get(&record_name) else {
+            continue;
+        };
+        let is_flexible_array_candidate = record.kind == RecordKind::Struct
+            && matches!(
+                record.fields.last(),
+                Some(field) if matches!(field.ty, CType::Array(_, None | Some(0) | Some(1)))
+            );
+        if !is_flexible_array_candidate {
+            continue;
+        }
+        let Some(raw) = attr_str(op, "initial_value") else {
+            continue;
+        };
+        let raw = raw.trim();
+        if !raw.starts_with("#cir.const_record<") {
+            continue;
+        }
+        let Some(open) = raw.find('{') else { continue };
+        let Some(close) = raw.rfind('}') else {
+            continue;
+        };
+        let elems = split_top_level(&raw[open + 1..close], ',');
+        let Some(last_elem) = elems.last() else {
+            continue;
+        };
+        let Some((_, ty_text)) = last_elem.trim().rsplit_once(" : ") else {
+            continue;
+        };
+        let Some((_, len)) = parse_cir_array_type(ty_text.trim()) else {
+            continue;
+        };
+        let record = records.get_mut(&record_name).expect("checked above");
+        if let Some(field) = record.fields.last_mut()
+            && let CType::Array(_, declared_len) = &mut field.ty
+            && declared_len.unwrap_or(0) < len
+        {
+            *declared_len = Some(len);
+        }
     }
 }
 
@@ -542,6 +604,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
             anon_records.push(record);
         }
     }
+    widen_flexible_array_members(cir, &mut records);
     let record_defs = required_record_defs(cir, c, &mut records, &project.shared_records);
     let global_rust_names = allocate_global_rust_names(cir, &records, &enums);
     let mut declaration_comments: BTreeMap<(String, String), Vec<Comment>> = BTreeMap::new();
