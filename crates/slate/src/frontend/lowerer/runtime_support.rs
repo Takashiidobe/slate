@@ -445,7 +445,7 @@ pub(super) fn f80_shim_decls() -> Vec<ExternFnDecl> {
 }
 
 pub(super) fn is_long_double(ty: &str) -> bool {
-    ty.starts_with("!cir.long_double")
+    ty.trim() == "!cir.f80" || ty.starts_with("!cir.long_double")
 }
 
 pub(super) fn is_quad_long_double(ty: &str) -> bool {
