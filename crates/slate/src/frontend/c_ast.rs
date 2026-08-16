@@ -894,6 +894,10 @@ fn collect_long_double_init_values(
                 });
             }
         }
+        Some("BinaryOperator")
+        | Some("UnaryOperator")
+        | Some("CompoundAssignOperator")
+        | Some("ConditionalOperator") => {}
         _ => {
             for child in children(node) {
                 collect_long_double_init_values(child, source_file, source, floating_literals, out);
