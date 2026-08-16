@@ -469,10 +469,7 @@ pub(super) fn is_complex_long_double_coercion_type(
         return false;
     };
     let fields = split_record_member_types(&expanded[open + 1..close]);
-    fields.len() == 2
-        && fields
-            .iter()
-            .all(|field| is_long_double(field) || *field == "!cir.f80")
+    fields.len() == 2 && fields.iter().all(|field| is_long_double(field))
 }
 
 pub(super) fn is_abi_coercion_record_name(name: &str) -> bool {
@@ -585,7 +582,7 @@ pub(super) fn cir_type_to_ctype(
     if is_quad_long_double(ty) {
         return CType::Float { bits: 128 };
     }
-    if is_long_double(ty) || ty == "!cir.f80" {
+    if is_long_double(ty) {
         return CType::Float { bits: 80 };
     }
     if let Some((signed, bits)) = parse_cir_int_type(ty) {
