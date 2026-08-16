@@ -97,7 +97,7 @@ pub fn lowered_program_with_args(
     path: &Path,
     extra_args: &[String],
 ) -> Result<(cir::ir::Module, rust_ast::Program), Error> {
-    let source = std::fs::read_to_string(path).map_err(|source| Error::Read {
+    let (source, raw) = preprocess::read_source(path).map_err(|source| Error::Read {
         path: path.to_path_buf(),
         source,
     })?;
@@ -128,12 +128,11 @@ pub fn lowered_program_with_args(
             });
         }
     }
-    let input = preprocess::clang_input(path, &source, &diagnostics).map_err(|source| {
-        Error::ClangInput {
+    let input =
+        preprocess::clang_input(path, &raw, &diagnostics).map_err(|source| Error::ClangInput {
             path: path.to_path_buf(),
             source,
-        }
-    })?;
+        })?;
     let all_args: Vec<String> = extra_args
         .iter()
         .cloned()
@@ -228,7 +227,7 @@ pub fn reject_active_unsupported(
 }
 
 pub fn reject_active_unsupported_file(path: &Path, context: &str) -> Result<(), Error> {
-    let source = std::fs::read_to_string(path).map_err(|source| Error::Read {
+    let (source, _raw) = preprocess::read_source(path).map_err(|source| Error::Read {
         path: path.to_path_buf(),
         source,
     })?;

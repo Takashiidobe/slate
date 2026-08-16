@@ -118,7 +118,7 @@ struct CfgPlan {
 }
 
 pub fn translate_directives(path: &Path) -> Result<String, DirectiveError> {
-    let source = std::fs::read_to_string(path).map_err(|source| DirectiveError::Read {
+    let (source, _raw) = preprocess::read_source(path).map_err(|source| DirectiveError::Read {
         path: path.to_path_buf(),
         source,
     })?;
@@ -553,7 +553,7 @@ fn line_start_depths(source: &str) -> Vec<i32> {
 }
 
 fn translate_one(path: &Path, clang_args: &[String]) -> Result<Translation, DirectiveError> {
-    let source = std::fs::read_to_string(path).map_err(|source| DirectiveError::Read {
+    let (source, raw) = preprocess::read_source(path).map_err(|source| DirectiveError::Read {
         path: path.to_path_buf(),
         source,
     })?;
@@ -570,7 +570,7 @@ fn translate_one(path: &Path, clang_args: &[String]) -> Result<Translation, Dire
                     || directive.condition.is_some() && !directive.is_poison_pragma())
         })
         .collect();
-    let input = preprocess::clang_input(path, &source, &sanitized).map_err(|source| {
+    let input = preprocess::clang_input(path, &raw, &sanitized).map_err(|source| {
         DirectiveError::Preprocess {
             path: path.to_path_buf(),
             source,

@@ -665,8 +665,9 @@ fn parse_json_with_record_roots(
         }
     }
     let source_text = (!source_file.is_empty())
-        .then(|| std::fs::read_to_string(source_file).ok())
-        .flatten();
+        .then(|| super::preprocess::read_source(Path::new(source_file)).ok())
+        .flatten()
+        .map(|(source, _raw)| source);
     collect_declaration_comments(&root, source_file, false, None, &mut declaration_comments);
     if let Some(source) = source_text.as_deref() {
         for (offset, fact) in &mut plugin_events.calls {

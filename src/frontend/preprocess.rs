@@ -6,6 +6,32 @@ use thiserror::Error;
 
 static NEXT_SANITIZED_INPUT: AtomicU64 = AtomicU64::new(0);
 
+pub fn read_source(path: &Path) -> std::io::Result<(String, Vec<u8>)> {
+    let raw = std::fs::read(path)?;
+    Ok((sanitize_utf8_preserving_layout(&raw), raw))
+}
+
+fn sanitize_utf8_preserving_layout(bytes: &[u8]) -> String {
+    let mut out = Vec::with_capacity(bytes.len());
+    let mut rest = bytes;
+    loop {
+        match std::str::from_utf8(rest) {
+            Ok(valid) => {
+                out.extend_from_slice(valid.as_bytes());
+                break;
+            }
+            Err(error) => {
+                let valid_up_to = error.valid_up_to();
+                out.extend_from_slice(&rest[..valid_up_to]);
+                let bad_len = error.error_len().unwrap_or(rest.len() - valid_up_to);
+                out.resize(out.len() + bad_len, b'?');
+                rest = &rest[valid_up_to + bad_len..];
+            }
+        }
+    }
+    String::from_utf8(out).expect("invalid UTF-8 runs replaced with ASCII placeholders")
+}
+
 #[derive(Debug, Error)]
 pub enum PreprocessError {
     #[error("directive span {start}..{end} is outside {source_len} bytes of source")]
@@ -474,7 +500,7 @@ impl Drop for ClangInput {
 
 pub fn clang_input(
     path: &Path,
-    source: &str,
+    raw: &[u8],
     directives: &[&DirectiveRecord],
 ) -> Result<ClangInput, PreprocessError> {
     if directives.is_empty() {
@@ -484,7 +510,7 @@ pub fn clang_input(
         });
     }
 
-    let mut bytes = source.as_bytes().to_vec();
+    let mut bytes = raw.to_vec();
     let source_len = bytes.len();
     for directive in directives {
         for byte in bytes
