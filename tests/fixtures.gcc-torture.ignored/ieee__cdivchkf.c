@@ -1,3 +1,14 @@
+/* SLATE: not a lowering bug -- both C and Rust call the same extern "C"
+   __divsc3, but which library answers is a host/link-time choice outside
+   Slate's control. On this host, clang statically links compiler-rt's
+   __divsc3 while the Rust binary dynamically links the system's
+   libgcc_s.so.1; the two implement Smith's algorithm with different
+   edge-case scaling and disagree on this suite's extreme/subnormal-adjacent
+   vectors (that's the whole point of this GCC "known failure points" test).
+   Verified independent of Slate codegen with a hand-written Rust repro
+   calling extern "C" fn __divsc3(...) -> repr(C){f32,f32}. Ignored, not
+   tracked as unsupported work; see tests/fixtures.gcc-torture.ignored/. */
+
 /* { dg-do run }
 
    # Floating-point support is incomplete.
