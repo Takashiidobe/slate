@@ -174,6 +174,10 @@ pub struct Other {
     pub qual_type: Option<QualType>,
     pub loc: Option<SourceLocation>,
     pub value: Option<serde_json::Value>,
+    #[serde(default, rename = "targetLabelDeclId")]
+    pub target_label_decl_id: Option<Id>,
+    #[serde(default, rename = "declId")]
+    pub decl_id: Option<Id>,
 }
 
 #[derive(Deserialize, Debug)]

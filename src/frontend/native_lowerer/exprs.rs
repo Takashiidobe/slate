@@ -37,6 +37,7 @@ fn qual_type_of(node: &Node) -> Option<&QualType> {
 
 fn lowers_to_rust_bool(node: &Node) -> bool {
     match &node.kind {
+        Clang::ParenExpr(_) => node.inner.first().is_some_and(lowers_to_rust_bool),
         Clang::BinaryOperator(b) => matches!(
             b.opcode.as_str(),
             "==" | "!=" | "<" | "<=" | ">" | ">=" | "&&" | "||"
@@ -131,6 +132,9 @@ pub(crate) fn lower_expr(node: &Node, env: Env) -> LResult<RExpr> {
             else_expr: Box::new(lower_expr(node.child(2)?, env)?),
         }),
         Clang::InitListExpr(_) => super::globals::lower_init(node, &node_type(node), env),
+        Clang::Other(o) if o.kind.as_deref() == Some("CXXNullPtrLiteralExpr") => {
+            Ok(RExpr::Value(RustValue::NullPtr))
+        }
         Clang::Other(o) if is_transparent_wrapper(o.kind.as_deref()) && node.inner.len() == 1 => {
             lower_expr(node.child(0)?, env)
         }
@@ -492,16 +496,35 @@ fn binary_expr(
             } else {
                 Ok(RExpr::Binary {
                     op: BinOp::try_from(COpcode(&b.opcode))?,
-                    lhs: Box::new(lower_expr(lhs_node, env)?),
-                    rhs: Box::new(lower_expr(rhs_node, env)?),
+                    lhs: Box::new(arith_operand(lhs_node, env)?),
+                    rhs: Box::new(arith_operand(rhs_node, env)?),
                 })
             }
         }
+        "*" | "/" | "%" | "&" | "|" | "^" | "<<" | ">>" => Ok(RExpr::Binary {
+            op: BinOp::try_from(COpcode(&b.opcode))?,
+            lhs: Box::new(arith_operand(lhs_node, env)?),
+            rhs: Box::new(arith_operand(rhs_node, env)?),
+        }),
         op => Ok(RExpr::Binary {
             op: BinOp::try_from(COpcode(op))?,
             lhs: Box::new(lower_expr(lhs_node, env)?),
             rhs: Box::new(lower_expr(rhs_node, env)?),
         }),
+    }
+}
+
+// C promotes comparison/logical results (which lower to Rust `bool`) to `int`
+// in arithmetic contexts; Rust has no bool-to-numeric coercion, so cast explicitly.
+fn arith_operand(node: &Node, env: Env) -> LResult<RExpr> {
+    let lowered = lower_expr(node, env)?;
+    if matches!(node_type(node), CType::Bool) {
+        Ok(RExpr::Cast {
+            expr: Box::new(lowered),
+            ty: RType::Prim(Prim::I32),
+        })
+    } else {
+        Ok(lowered)
     }
 }
 
@@ -615,7 +638,7 @@ impl TryFrom<COpcode<'_>> for BinOp {
     }
 }
 
-fn unescape_c_string(spelling: &str) -> Vec<u8> {
+pub(super) fn unescape_c_string(spelling: &str) -> Vec<u8> {
     let inner = spelling
         .strip_prefix('"')
         .and_then(|s| s.strip_suffix('"'))
@@ -632,7 +655,6 @@ fn unescape_c_string(spelling: &str) -> Vec<u8> {
             Some('n') => out.push(b'\n'),
             Some('t') => out.push(b'\t'),
             Some('r') => out.push(b'\r'),
-            Some('0') => out.push(0),
             Some('\\') => out.push(b'\\'),
             Some('"') => out.push(b'"'),
             Some('\'') => out.push(b'\''),
@@ -645,6 +667,19 @@ fn unescape_c_string(spelling: &str) -> Vec<u8> {
                 while let Some(d) = chars.peek().and_then(|c| c.to_digit(16)) {
                     value = value * 16 + d;
                     chars.next();
+                }
+                out.push(value as u8);
+            }
+            Some(c) if c.is_digit(8) => {
+                let mut value = c.to_digit(8).unwrap();
+                let mut count = 1;
+                while count < 3 {
+                    let Some(d) = chars.peek().and_then(|c| c.to_digit(8)) else {
+                        break;
+                    };
+                    value = value * 8 + d;
+                    chars.next();
+                    count += 1;
                 }
                 out.push(value as u8);
             }

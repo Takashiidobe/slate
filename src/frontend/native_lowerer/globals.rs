@@ -89,6 +89,31 @@ pub(crate) fn lower_init(node: &Node, ty: &CType, env: Env) -> LResult<Expr> {
             Some(c) => lower_init(c, ty, env),
             None => Ok(zero_value(ty, env.records)),
         },
+        (Clang::StringLiteral(l), CType::Array { base, len })
+            if matches!(**base, CType::Char | CType::UChar) =>
+        {
+            let signed = matches!(**base, CType::Char);
+            let mut bytes = super::exprs::unescape_c_string(&l.value);
+            bytes.push(0);
+            let target_len = len.map(|n| n.max(0) as usize).unwrap_or(bytes.len());
+            bytes.truncate(target_len);
+            let mut elems: Vec<Expr> = bytes
+                .iter()
+                .map(|b| {
+                    let value = if signed {
+                        i128::from(i8::from_ne_bytes([*b]))
+                    } else {
+                        i128::from(*b)
+                    };
+                    Expr::Value(base.int_value(value))
+                })
+                .collect();
+            elems.resize_with(target_len, || zero_value(base, env.records));
+            Ok(Expr::ArrayLit(elems))
+        }
+        (Clang::Other(o), _) if o.kind.as_deref() == Some("ImplicitValueInitExpr") => {
+            Ok(zero_value(ty, env.records))
+        }
         _ => super::exprs::lower_expr(node, env),
     }
 }

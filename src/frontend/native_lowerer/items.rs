@@ -76,37 +76,111 @@ fn used_ids(tu: &Node, primary: &Path) -> HashSet<Id> {
     used
 }
 
+fn find_record_tag(ty: &CType) -> Option<String> {
+    match ty {
+        CType::Record { tag, .. } => Some(tag.clone()),
+        CType::Array { base, .. } | CType::Ptr(base) => find_record_tag(base),
+        _ => None,
+    }
+}
+
+fn record_tag(r: &crate::parse::clang_ast::Record, next: Option<&Node>) -> Option<String> {
+    if let Some(name) = &r.name {
+        return Some(format!(
+            "{} {}",
+            r.tag_used.as_deref().unwrap_or("struct"),
+            name
+        ));
+    }
+    let d = match &next?.kind {
+        Clang::TypedefDecl(d) | Clang::VarDecl(d) | Clang::FieldDecl(d) => d,
+        _ => return None,
+    };
+    find_record_tag(&CType::parse(qual_type_str(&d.qual_type)))
+}
+
+fn collect_records(siblings: &[Node], ctx: &mut Ctx) {
+    for (i, item) in siblings.iter().enumerate() {
+        if let Clang::RecordDecl(r) = &item.kind
+            && r.complete_definition
+            && !r.is_implicit
+            && let Some(tag) = record_tag(r, siblings.get(i + 1))
+            && !ctx.records.contains_key(&tag)
+        {
+            let fields = item
+                .inner
+                .iter()
+                .filter_map(|field| match &field.kind {
+                    Clang::FieldDecl(d) => Some((
+                        d.name.clone().unwrap_or_default(),
+                        CType::parse(qual_type_str(&d.qual_type)),
+                    )),
+                    _ => None,
+                })
+                .collect();
+            ctx.records.insert(
+                tag,
+                RecordInfo {
+                    is_union: r.tag_used.as_deref() == Some("union"),
+                    fields,
+                    packed: false,
+                    align_override: None,
+                },
+            );
+        }
+        collect_records(&item.inner, ctx);
+    }
+}
+
+fn attr_priority(attr_node: &Node) -> i64 {
+    attr_node
+        .inner
+        .first()
+        .and_then(enum_const_value)
+        .map(|v| v as i64)
+        .unwrap_or(65535)
+}
+
+fn collect_lifecycle_hooks(tu: &Node, ctx: &mut Ctx) {
+    let mut ctors: Vec<(i64, String)> = Vec::new();
+    let mut dtors: Vec<(i64, String)> = Vec::new();
+    for item in &tu.inner {
+        let Clang::FunctionDecl(d) = &item.kind else {
+            continue;
+        };
+        if !has_body(item) {
+            continue;
+        }
+        let Some(name) = &d.name else { continue };
+        for attr in &item.inner {
+            let Clang::Other(o) = &attr.kind else {
+                continue;
+            };
+            match o.kind.as_deref() {
+                Some("ConstructorAttr") => ctors.push((attr_priority(attr), name.clone())),
+                Some("DestructorAttr") => dtors.push((attr_priority(attr), name.clone())),
+                _ => {}
+            }
+        }
+    }
+    ctors.sort_by_key(|(prio, _)| *prio);
+    dtors.sort_by_key(|(prio, _)| *prio);
+    dtors.reverse();
+    ctx.ctor_calls = ctors.into_iter().map(|(_, name)| name).collect();
+    ctx.dtor_calls = dtors.into_iter().map(|(_, name)| name).collect();
+}
+
 pub(crate) fn collect_top_level(tu: &Node, ctx: &mut Ctx) {
+    collect_records(&tu.inner, ctx);
+    collect_lifecycle_hooks(tu, ctx);
     for item in &tu.inner {
         match &item.kind {
-            Clang::RecordDecl(r) if r.complete_definition && !r.is_implicit => {
+            Clang::RecordDecl(_) => {
                 for field in &item.inner {
                     if let Clang::EnumDecl(_) = &field.kind {
                         register_enum_constants(field, ctx);
                     }
                 }
-                let Some(name) = &r.name else { continue };
-                let tag = format!("{} {}", r.tag_used.as_deref().unwrap_or("struct"), name);
-                let fields = item
-                    .inner
-                    .iter()
-                    .filter_map(|field| match &field.kind {
-                        Clang::FieldDecl(d) => Some((
-                            d.name.clone().unwrap_or_default(),
-                            CType::parse(qual_type_str(&d.qual_type)),
-                        )),
-                        _ => None,
-                    })
-                    .collect();
-                ctx.records.insert(
-                    tag,
-                    RecordInfo {
-                        is_union: r.tag_used.as_deref() == Some("union"),
-                        fields,
-                        packed: false,
-                        align_override: None,
-                    },
-                );
             }
             Clang::VarDecl(d) if !d.is_implicit => {
                 ctx.vars.insert(
@@ -279,6 +353,40 @@ fn expr_has_long_double(expr: &crate::backend::rust_ast::Expr) -> bool {
     }
 }
 
+fn is_shim_loc(loc: &Option<SourceLocation>) -> bool {
+    let Some(bare) = loc
+        .as_ref()
+        .and_then(|loc| loc.spelling_loc.as_ref().or(loc.expansion_loc.as_ref()))
+    else {
+        return false;
+    };
+    let Some(shim_dir) = crate::cir::emit::libc_shim_dir() else {
+        return false;
+    };
+    Path::new(bare.file.as_ref()).starts_with(Path::new(&shim_dir))
+}
+
+fn emit_records(
+    siblings: &[Node],
+    ctx: &Ctx,
+    items: &mut Vec<Item>,
+    emitted: &mut HashSet<String>,
+) {
+    for (i, item) in siblings.iter().enumerate() {
+        if let Clang::RecordDecl(r) = &item.kind
+            && r.complete_definition
+            && !r.is_implicit
+            && !is_shim_loc(&r.loc)
+            && let Some(tag) = record_tag(r, siblings.get(i + 1))
+            && emitted.insert(tag.clone())
+            && let Some(info) = ctx.records.get(&tag)
+        {
+            items.push(lower_record_def(&tag, info, ctx));
+        }
+        emit_records(&item.inner, ctx, items, emitted);
+    }
+}
+
 pub(crate) fn lower_items(tu: &Node, ctx: &mut Ctx, primary: &Path) -> LResult<Vec<Item>> {
     let used = used_ids(tu, primary);
 
@@ -296,6 +404,8 @@ pub(crate) fn lower_items(tu: &Node, ctx: &mut Ctx, primary: &Path) -> LResult<V
     let mut emitted_records: HashSet<String> = HashSet::new();
     let mut emitted_fns: HashSet<String> = HashSet::new();
     let mut emitted_externs: HashSet<String> = HashSet::new();
+
+    emit_records(&tu.inner, ctx, &mut items, &mut emitted_records);
 
     for node in &tu.inner {
         match &node.kind {
@@ -322,17 +432,6 @@ pub(crate) fn lower_items(tu: &Node, ctx: &mut Ctx, primary: &Path) -> LResult<V
                     items.push(lower_global(node, d, ctx, false)?);
                 } else if used.contains(&node.id) {
                     items.push(lower_global(node, d, ctx, true)?);
-                }
-            }
-            Clang::RecordDecl(r)
-                if r.complete_definition && !r.is_implicit && is_primary_loc(&r.loc, primary) =>
-            {
-                let Some(name) = &r.name else { continue };
-                let tag = format!("{} {}", r.tag_used.as_deref().unwrap_or("struct"), name);
-                if emitted_records.insert(tag.clone())
-                    && let Some(info) = ctx.records.get(&tag)
-                {
-                    items.push(lower_record_def(&tag, info, ctx));
                 }
             }
             _ => {}
@@ -431,8 +530,13 @@ fn lower_function(
         is_main: name == "main",
         continue_label: None,
         break_label: None,
+        goto: None,
+        dtor_calls: &ctx.dtor_calls,
     };
-    let body_stmts = super::stmts::lower_function_body(body, env)?;
+    let mut body_stmts = super::stmts::lower_function_body(body, env, ret.is_some())?;
+    if env.is_main {
+        super::stmts::splice_ctor_prelude(&mut body_stmts, &ctx.ctor_calls);
+    }
 
     let abi = ctx.address_taken_fns.contains(&name).then_some(Abi::C);
     Ok(Item::Fn(FnDef {
@@ -475,6 +579,8 @@ fn collect_locals(
                     is_main: false,
                     continue_label: None,
                     break_label: None,
+                    goto: None,
+                    dtor_calls: &[],
                 };
                 let init = match node.inner.first() {
                     Some(c) => super::globals::lower_init(c, &ty, env)?,
@@ -525,6 +631,8 @@ fn lower_global(node: &Node, d: &Decl, ctx: &Ctx, force_extern: bool) -> LResult
         is_main: false,
         continue_label: None,
         break_label: None,
+        goto: None,
+        dtor_calls: &[],
     };
     let init = match node.inner.first() {
         Some(c) => super::globals::lower_init(c, &ty, env)?,

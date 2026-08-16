@@ -32,6 +32,8 @@ pub enum LowerError {
     UnregisteredLocal,
     #[error("case/default statement has no body")]
     MissingCaseBody,
+    #[error("unsupported goto/label form in native lowering")]
+    UnsupportedGoto,
 }
 
 pub(crate) struct VarInfo {
@@ -44,6 +46,16 @@ pub(crate) struct Ctx {
     pub(crate) vars: HashMap<Id, VarInfo>,
     pub(crate) enum_values: HashMap<Id, i128>,
     pub(crate) address_taken_fns: HashSet<String>,
+    pub(crate) ctor_calls: Vec<String>,
+    pub(crate) dtor_calls: Vec<String>,
+}
+
+#[derive(Clone, Copy)]
+pub(crate) struct GotoCtx<'a> {
+    pub(crate) state_var: &'a str,
+    pub(crate) dispatch_label: &'a Label,
+    pub(crate) label_to_state: &'a HashMap<Id, usize>,
+    pub(crate) hoisted_vars: &'a HashSet<Id>,
 }
 
 #[derive(Clone, Copy)]
@@ -54,6 +66,8 @@ pub(crate) struct Env<'a> {
     pub(crate) is_main: bool,
     pub(crate) continue_label: Option<&'a Label>,
     pub(crate) break_label: Option<&'a Label>,
+    pub(crate) goto: Option<GotoCtx<'a>>,
+    pub(crate) dtor_calls: &'a [String],
 }
 
 pub(crate) fn is_present(node: &Node) -> bool {

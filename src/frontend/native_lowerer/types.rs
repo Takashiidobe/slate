@@ -105,6 +105,7 @@ impl From<&str> for CType {
             "float" => CType::Float,
             "double" => CType::Double,
             "long double" => CType::LDouble,
+            "nullptr_t" => CType::Ptr(Box::new(CType::Void)),
             other => CType::Unknown(other.to_string()),
         }
     }
@@ -209,7 +210,9 @@ impl CType {
             return parse_array(base, dims);
         }
 
-        if let Some(params_start) = trailing_paren_params(s) {
+        if let Some(params_start) = trailing_paren_params(s)
+            && !matches!(s[..params_start].trim_end(), "struct" | "union" | "enum")
+        {
             let ret = &s[..params_start];
             let params_str = &s[params_start + 1..s.len() - 1];
             let (params, is_variadic) = parse_param_list(params_str);
