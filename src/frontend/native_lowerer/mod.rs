@@ -4,10 +4,12 @@ mod items;
 mod stmts;
 mod types;
 
-use crate::backend::rust_ast::{Label, Program as RustProgram};
+use crate::backend::rust_ast::{
+    ExternDecl, Item, Label, Program as RustProgram, Visibility as RustVisibility,
+};
 use crate::parse::clang_ast::Node;
 use clang_ast::Id;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::path::Path;
 use thiserror::Error;
 use types::RecordRegistry;
@@ -40,14 +42,18 @@ pub(crate) struct VarInfo {
 pub(crate) struct Ctx {
     pub(crate) records: RecordRegistry,
     pub(crate) vars: HashMap<Id, VarInfo>,
+    pub(crate) enum_values: HashMap<Id, i128>,
+    pub(crate) address_taken_fns: HashSet<String>,
 }
 
 #[derive(Clone, Copy)]
 pub(crate) struct Env<'a> {
     pub(crate) vars: &'a HashMap<Id, VarInfo>,
     pub(crate) records: &'a RecordRegistry,
+    pub(crate) enum_values: &'a HashMap<Id, i128>,
     pub(crate) is_main: bool,
     pub(crate) continue_label: Option<&'a Label>,
+    pub(crate) break_label: Option<&'a Label>,
 }
 
 pub(crate) fn is_present(node: &Node) -> bool {
@@ -72,7 +78,23 @@ impl NodeExt for Node {
 pub(crate) fn lower_program(tu: &Node, primary: &Path) -> LResult<RustProgram> {
     let mut ctx = Ctx::default();
     items::collect_top_level(tu, &mut ctx);
-    Ok(RustProgram {
-        items: items::lower_items(tu, &mut ctx, primary)?,
-    })
+    items::collect_address_taken_fns(tu, &mut ctx.address_taken_fns);
+    let mut items = items::lower_items(tu, &mut ctx, primary)?;
+    if items::program_uses_long_double(&items) {
+        items.splice(
+            0..0,
+            [Item::ExternBlock {
+                abi: "C".into(),
+                decls: crate::frontend::lowerer::runtime_support::f80_shim_decls()
+                    .into_iter()
+                    .map(ExternDecl::Fn)
+                    .collect(),
+            }],
+        );
+        items.splice(
+            0..0,
+            crate::frontend::lowerer::runtime_support::long_double_prelude(RustVisibility::Private),
+        );
+    }
+    Ok(RustProgram { items })
 }

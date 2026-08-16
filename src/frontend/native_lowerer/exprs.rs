@@ -26,6 +26,7 @@ fn qual_type_of(node: &Node) -> Option<&QualType> {
         Clang::DeclRefExpr(r) => r.qual_type.as_ref(),
         Clang::ImplicitCastExpr(c) | Clang::CStyleCastExpr(c) => c.qual_type.as_ref(),
         Clang::MemberExpr(m) => m.qual_type.as_ref(),
+        Clang::UnaryExprOrTypeTraitExpr(s) => s.qual_type.as_ref(),
         Clang::IntegerLiteral(l) | Clang::FloatingLiteral(l) | Clang::StringLiteral(l) => {
             l.qual_type.as_ref()
         }
@@ -63,6 +64,23 @@ pub(crate) fn lower_expr(node: &Node, env: Env) -> LResult<RExpr> {
                 l.value.trim().parse::<u128>().unwrap_or(0) as i128,
             )))
         }
+        Clang::FloatingLiteral(l) if matches!(node_type(node), CType::LDouble) => {
+            // Clang's `value` text is already rounded to 80-bit precision, so
+            // parse it directly rather than round-tripping through f64 (which
+            // would silently truncate literals with more significant digits
+            // than f64 can carry).
+            Ok(
+                crate::frontend::lowerer::constants::f80_literal_expr(&l.value).unwrap_or_else(
+                    || RExpr::Call {
+                        binding: CallBinding::Generated,
+                        func: Box::new(RExpr::Var("__slate_f80_from_f64".into())),
+                        args: vec![RExpr::Value(RustValue::Float(
+                            l.value.parse::<f64>().unwrap_or(0.0).into(),
+                        ))],
+                    },
+                ),
+            )
+        }
         Clang::FloatingLiteral(l) => Ok(RExpr::Value(RustValue::Float(
             l.value.parse::<f64>().unwrap_or(0.0).into(),
         ))),
@@ -72,11 +90,33 @@ pub(crate) fn lower_expr(node: &Node, env: Env) -> LResult<RExpr> {
         }
         Clang::StringLiteral(l) => Ok(RExpr::CStr(unescape_c_string(&l.value))),
         Clang::DeclRefExpr(r) => {
-            let info = env
-                .vars
-                .get(&r.referenced_decl.id)
-                .ok_or(LowerError::UnresolvedDecl(r.referenced_decl.id))?;
-            Ok(RExpr::Var(info.name.as_str().into()))
+            if let Some(info) = env.vars.get(&r.referenced_decl.id) {
+                return Ok(RExpr::Var(info.name.as_str().into()));
+            }
+            if let Some(value) = env.enum_values.get(&r.referenced_decl.id) {
+                return Ok(RExpr::Value(node_type(node).int_value(*value)));
+            }
+            Err(LowerError::UnresolvedDecl(r.referenced_decl.id))
+        }
+        Clang::UnaryExprOrTypeTraitExpr(s) => {
+            let operand_ty = match &s.arg_type {
+                Some(qt) => CType::parse(qt.canonical()),
+                None => node_type(node.child(0)?),
+            };
+            let rust_ty = operand_ty.lower(env.records).render();
+            let op = match s.name.as_deref() {
+                Some("alignof" | "_Alignof" | "__alignof") => "align_of",
+                _ => "size_of",
+            };
+            let call = RExpr::Call {
+                func: Box::new(RExpr::Var(format!("std::mem::{op}::<{rust_ty}>").into())),
+                args: Vec::new(),
+                binding: CallBinding::Generated,
+            };
+            Ok(RExpr::Cast {
+                expr: Box::new(call),
+                ty: node_type(node).lower(env.records),
+            })
         }
         Clang::UnaryOperator(u) => unary_expr(node, u, env),
         Clang::BinaryOperator(b) => binary_expr(node, b, env),
@@ -196,27 +236,101 @@ fn member_expr(node: &Node, m: &crate::parse::clang_ast::MemberExpr, env: Env) -
 
 fn call_expr(node: &Node, env: Env) -> LResult<RExpr> {
     let callee = node.child(0)?;
+    let callee_ty = node_type(callee);
+    let fn_ty = match &callee_ty {
+        CType::Func { .. } => Some(&callee_ty),
+        CType::Ptr(inner) => Some(inner.as_ref()),
+        _ => None,
+    };
+    let fixed_params = match fn_ty {
+        Some(CType::Func {
+            params,
+            is_variadic: true,
+            ..
+        }) => Some(params.len()),
+        _ => None,
+    };
     let args = node.inner[1..]
         .iter()
-        .map(|a| lower_expr(a, env))
+        .enumerate()
+        .map(|(i, a)| {
+            let lowered = lower_expr(a, env)?;
+            // C's variadic calling convention promotes int-typed args (which
+            // include comparison/logical results in C, but lower to Rust
+            // `bool` here) -- Rust rejects passing a bare `bool` to a
+            // variadic function, so promote it explicitly.
+            if fixed_params.is_some_and(|n| i >= n) && matches!(node_type(a), CType::Bool) {
+                Ok(RExpr::Cast {
+                    expr: Box::new(lowered),
+                    ty: RType::Prim(Prim::I32),
+                })
+            } else {
+                Ok(lowered)
+            }
+        })
         .collect::<LResult<Vec<_>>>()?;
     Ok(RExpr::Call {
-        func: Box::new(lower_expr(callee, env)?),
+        func: Box::new(lower_callee(callee, env)?),
         args,
         binding: CallBinding::Generated,
     })
 }
 
+/// A direct call's callee is a `FunctionToPointerDecay` cast wrapping the
+/// called function's own name -- unlike every other use of that cast (which
+/// needs `Some(..)` to satisfy the `Option<extern fn>` representation of a
+/// function-pointer *value*, see `cast_expr`), calling it directly needs the
+/// bare, callable function item, so that one cast is bypassed here. Calling
+/// through an already-pointer-typed value (a variable, field, etc.) has no
+/// such cast and unwraps the `Option` instead.
+fn lower_callee(node: &Node, env: Env) -> LResult<RExpr> {
+    if let Clang::ImplicitCastExpr(c) = &node.kind
+        && c.cast_kind == "FunctionToPointerDecay"
+    {
+        return lower_expr(node.child(0)?, env);
+    }
+    Ok(RExpr::MethodCall {
+        recv: Box::new(lower_expr(node, env)?),
+        method: "unwrap".into(),
+        args: Vec::new(),
+    })
+}
+
+fn long_double_conversion_shim(
+    target_ty: &CType,
+    source_ty: &CType,
+    records: &super::types::RecordRegistry,
+) -> Option<&'static str> {
+    use crate::frontend::lowerer::runtime_support::{f80_cast_from_name, f80_cast_to_name};
+    match (target_ty, source_ty) {
+        (CType::LDouble, CType::LDouble) => None,
+        (CType::LDouble, _) => f80_cast_from_name(&source_ty.lower(records)),
+        (_, CType::LDouble) => f80_cast_to_name(&target_ty.lower(records)),
+        _ => None,
+    }
+}
+
 fn cast_expr(node: &Node, c: &crate::parse::clang_ast::CastExpr, env: Env) -> LResult<RExpr> {
     let inner = node.child(0)?;
     match c.cast_kind.as_str() {
-        "LValueToRValue" | "NoOp" | "FunctionToPointerDecay" | "ToVoid" | "BuiltinFnToFnPtr" => {
-            lower_expr(inner, env)
-        }
+        "LValueToRValue" | "NoOp" | "ToVoid" | "BuiltinFnToFnPtr" => lower_expr(inner, env),
+        "FunctionToPointerDecay" => Ok(RExpr::Call {
+            binding: CallBinding::Generated,
+            func: Box::new(RExpr::Var("Some".into())),
+            args: vec![lower_expr(inner, env)?],
+        }),
         "ArrayToPointerDecay" => decay_to_ptr(inner, env),
         "IntegralToBoolean" | "FloatingToBoolean" | "PointerToBoolean" => truthy(inner, env),
         _ => {
             let target_ty = node_type(node);
+            let source_ty = node_type(inner);
+            if let Some(shim) = long_double_conversion_shim(&target_ty, &source_ty, env.records) {
+                return Ok(RExpr::Call {
+                    binding: CallBinding::Generated,
+                    func: Box::new(RExpr::Var(shim.into())),
+                    args: vec![lower_expr(inner, env)?],
+                });
+            }
             let target = target_ty.lower(env.records);
             let lowered = if matches!(target, RType::Ptr { .. }) {
                 decay_to_ptr(inner, env)?

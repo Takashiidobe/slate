@@ -3,7 +3,7 @@ use super::*;
 pub(super) const LONG_DOUBLE_TY: &str = "LongDouble";
 pub(super) const COMPLEX_TY: &str = "num_complex::Complex";
 
-pub(super) fn long_double_zero_expr() -> Expr {
+pub(crate) fn long_double_zero_expr() -> Expr {
     Expr::TupleStructLit {
         name: LONG_DOUBLE_TY.into(),
         fields: vec![Expr::ArrayRepeat {
@@ -14,7 +14,7 @@ pub(super) fn long_double_zero_expr() -> Expr {
 }
 
 // x86-64 SysV long double is the 10-byte x87 payload in a 16-byte slot.
-pub(super) fn long_double_prelude(vis: Visibility) -> Vec<Item> {
+pub(crate) fn long_double_prelude(vis: Visibility) -> Vec<Item> {
     let mut items = vec![Item::Struct(StructDef {
         attrs: vec![
             RustAttr::Repr(vec![Repr::C, Repr::Align(16)]),
@@ -249,7 +249,7 @@ fn f80_extern_decl(name: &str, params: Vec<FnParam>, ret: Option<Type>) -> Exter
     }
 }
 
-pub(super) fn f80_cast_from_name(ty: &Type) -> Option<&'static str> {
+pub(crate) fn f80_cast_from_name(ty: &Type) -> Option<&'static str> {
     let tag = match ty {
         Type::Prim(Prim::I8) => "i8",
         Type::Prim(Prim::U8) => "u8",
@@ -284,7 +284,7 @@ pub(super) fn f80_cast_from_name(ty: &Type) -> Option<&'static str> {
     })
 }
 
-pub(super) fn f80_cast_to_name(ty: &Type) -> Option<&'static str> {
+pub(crate) fn f80_cast_to_name(ty: &Type) -> Option<&'static str> {
     let tag = match ty {
         Type::Prim(Prim::I8) => "i8",
         Type::Prim(Prim::U8) => "u8",
@@ -319,7 +319,7 @@ pub(super) fn f80_cast_to_name(ty: &Type) -> Option<&'static str> {
     })
 }
 
-pub(super) fn f80_shim_decls() -> Vec<ExternFnDecl> {
+pub(crate) fn f80_shim_decls() -> Vec<ExternFnDecl> {
     let f80 = || Type::LongDouble;
     let mut decls = vec![
         f80_extern_decl(

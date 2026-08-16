@@ -1,7 +1,8 @@
 use super::types::{self, CType, RecordInfo};
 use super::{Ctx, Env, LResult, LowerError, VarInfo};
 use crate::backend::rust_ast::{
-    Abi, ExternDecl, ExternFnDecl, FnDef, FnParam, Item, RecordDef, RecordField, Type, Visibility,
+    Abi, Block, ExternDecl, ExternFnDecl, FnDef, FnParam, IndentStmt, Item, RecordDef, RecordField,
+    Stmt, Type, Visibility,
 };
 use crate::function_identity::FunctionIdentity;
 use crate::parse::clang_ast::{Clang, Decl, Node, SourceLocation};
@@ -45,6 +46,21 @@ fn collect_used_ids(node: &Node, used: &mut HashSet<Id>) {
     }
 }
 
+pub(crate) fn collect_address_taken_fns(node: &Node, names: &mut HashSet<String>) {
+    if let Clang::ImplicitCastExpr(c) = &node.kind
+        && c.cast_kind == "FunctionToPointerDecay"
+        && let Some(child) = node.inner.first()
+        && let Clang::DeclRefExpr(r) = &child.kind
+        && r.referenced_decl.kind == "FunctionDecl"
+        && let Some(name) = &r.referenced_decl.name
+    {
+        names.insert(name.clone());
+    }
+    for child in &node.inner {
+        collect_address_taken_fns(child, names);
+    }
+}
+
 fn used_ids(tu: &Node, primary: &Path) -> HashSet<Id> {
     let mut used = HashSet::new();
     for node in &tu.inner {
@@ -64,6 +80,11 @@ pub(crate) fn collect_top_level(tu: &Node, ctx: &mut Ctx) {
     for item in &tu.inner {
         match &item.kind {
             Clang::RecordDecl(r) if r.complete_definition && !r.is_implicit => {
+                for field in &item.inner {
+                    if let Clang::EnumDecl(_) = &field.kind {
+                        register_enum_constants(field, ctx);
+                    }
+                }
                 let Some(name) = &r.name else { continue };
                 let tag = format!("{} {}", r.tag_used.as_deref().unwrap_or("struct"), name);
                 let fields = item
@@ -103,8 +124,158 @@ pub(crate) fn collect_top_level(tu: &Node, ctx: &mut Ctx) {
                     },
                 );
             }
+            Clang::EnumDecl(_) => register_enum_constants(item, ctx),
             _ => {}
         }
+    }
+}
+
+fn register_enum_constants(enum_decl: &Node, ctx: &mut Ctx) {
+    let mut next_value: i128 = 0;
+    for child in &enum_decl.inner {
+        let Clang::EnumConstantDecl(_) = &child.kind else {
+            continue;
+        };
+        let value = child
+            .inner
+            .first()
+            .and_then(enum_const_value)
+            .unwrap_or(next_value);
+        ctx.enum_values.insert(child.id, value);
+        next_value = value + 1;
+    }
+}
+
+fn enum_const_value(node: &Node) -> Option<i128> {
+    match &node.kind {
+        Clang::IntegerLiteral(l) => l.value.trim().parse().ok(),
+        Clang::Other(o) => match o.value.as_ref().and_then(serde_json::Value::as_str) {
+            Some(v) => v.trim().parse().ok(),
+            None => node.inner.first().and_then(enum_const_value),
+        },
+        _ => node.inner.first().and_then(enum_const_value),
+    }
+}
+
+pub(crate) fn program_uses_long_double(items: &[Item]) -> bool {
+    items.iter().any(|item| match item {
+        Item::Fn(f) => {
+            f.ret.as_ref().is_some_and(type_contains_long_double)
+                || f.params.iter().any(|p| type_contains_long_double(&p.ty))
+                || body_has_long_double(&f.body)
+        }
+        Item::Static { ty, .. } => type_contains_long_double(ty),
+        Item::Record(r) => r.fields.iter().any(|f| type_contains_long_double(&f.ty)),
+        Item::ExternBlock { decls, .. } => decls.iter().any(|d| match d {
+            ExternDecl::Fn(f) => {
+                f.ret.as_ref().is_some_and(type_contains_long_double)
+                    || f.params.iter().any(|p| type_contains_long_double(&p.ty))
+            }
+            ExternDecl::Static { ty, .. } => type_contains_long_double(ty),
+        }),
+        _ => false,
+    })
+}
+
+fn type_contains_long_double(ty: &Type) -> bool {
+    match ty {
+        Type::LongDouble => true,
+        Type::Ref { inner, .. } | Type::Ptr { inner, .. } | Type::Complex(inner) => {
+            type_contains_long_double(inner)
+        }
+        Type::Slice(inner) => type_contains_long_double(inner),
+        Type::Array { elem, .. } => type_contains_long_double(elem),
+        Type::FnPtr { params, ret, .. } => {
+            type_contains_long_double(ret) || params.iter().any(type_contains_long_double)
+        }
+        Type::Generic { args, .. } => args.iter().any(type_contains_long_double),
+        _ => false,
+    }
+}
+
+fn body_has_long_double(body: &[IndentStmt]) -> bool {
+    body.iter().any(|s| stmt_has_long_double(&s.stmt))
+}
+
+fn block_has_long_double(block: &Block) -> bool {
+    body_has_long_double(&block.stmts)
+}
+
+fn stmt_has_long_double(stmt: &Stmt) -> bool {
+    match stmt {
+        Stmt::Let {
+            ty: Some(ty), init, ..
+        } => type_contains_long_double(ty) || init.as_ref().is_some_and(expr_has_long_double),
+        Stmt::Let { init, .. } => init.as_ref().is_some_and(expr_has_long_double),
+        Stmt::LetIf {
+            cond,
+            then_body,
+            then_value,
+            else_body,
+            else_value,
+            ..
+        } => {
+            expr_has_long_double(cond)
+                || body_has_long_double(then_body)
+                || expr_has_long_double(then_value)
+                || body_has_long_double(else_body)
+                || expr_has_long_double(else_value)
+        }
+        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
+            expr_has_long_double(target) || expr_has_long_double(value)
+        }
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => expr_has_long_double(expr),
+        Stmt::If {
+            cond,
+            then_body,
+            else_body,
+        } => {
+            expr_has_long_double(cond)
+                || body_has_long_double(then_body)
+                || body_has_long_double(else_body)
+        }
+        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+            body_has_long_double(body)
+        }
+        Stmt::For { iter, body, .. } => expr_has_long_double(iter) || body_has_long_double(body),
+        Stmt::Unsafe { body } | Stmt::Block(body) => block_has_long_double(body),
+        Stmt::While { cond, body } => expr_has_long_double(cond) || block_has_long_double(body),
+        Stmt::Match { expr, arms } => {
+            expr_has_long_double(expr) || arms.iter().any(|arm| body_has_long_double(&arm.body))
+        }
+        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) | Stmt::InlineAsm(_) => false,
+    }
+}
+
+fn expr_has_long_double(expr: &crate::backend::rust_ast::Expr) -> bool {
+    use crate::backend::rust_ast::Expr;
+    match expr {
+        Expr::Cast { expr, ty } => type_contains_long_double(ty) || expr_has_long_double(expr),
+        Expr::TupleStructLit { name, fields } => {
+            name == "LongDouble" || fields.iter().any(expr_has_long_double)
+        }
+        Expr::Unary { expr, .. } | Expr::Ref { expr, .. } | Expr::AddrOf { expr, .. } => {
+            expr_has_long_double(expr)
+        }
+        Expr::Binary { lhs, rhs, .. } => expr_has_long_double(lhs) || expr_has_long_double(rhs),
+        Expr::Call { func, args, .. } => {
+            expr_has_long_double(func) || args.iter().any(expr_has_long_double)
+        }
+        Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
+            expr_has_long_double(recv) || args.iter().any(expr_has_long_double)
+        }
+        Expr::Field { base, .. } | Expr::TupleField { base, .. } => expr_has_long_double(base),
+        Expr::Index { base, index } => expr_has_long_double(base) || expr_has_long_double(index),
+        Expr::If {
+            cond,
+            then_expr,
+            else_expr,
+        } => {
+            expr_has_long_double(cond)
+                || expr_has_long_double(then_expr)
+                || expr_has_long_double(else_expr)
+        }
+        _ => false,
     }
 }
 
@@ -256,16 +427,19 @@ fn lower_function(
     let env = Env {
         vars: &ctx.vars,
         records: &ctx.records,
+        enum_values: &ctx.enum_values,
         is_main: name == "main",
         continue_label: None,
+        break_label: None,
     };
     let body_stmts = super::stmts::lower_function_body(body, env)?;
 
+    let abi = ctx.address_taken_fns.contains(&name).then_some(Abi::C);
     Ok(Item::Fn(FnDef {
         attrs: Vec::new(),
         vis: Visibility::Private,
         unsafe_: name != "main",
-        abi: None,
+        abi,
         name,
         params: fn_params,
         ret,
@@ -297,8 +471,10 @@ fn collect_locals(
                 let env = Env {
                     vars: &ctx.vars,
                     records: &ctx.records,
+                    enum_values: &ctx.enum_values,
                     is_main: false,
                     continue_label: None,
+                    break_label: None,
                 };
                 let init = match node.inner.first() {
                     Some(c) => super::globals::lower_init(c, &ty, env)?,
@@ -345,8 +521,10 @@ fn lower_global(node: &Node, d: &Decl, ctx: &Ctx, force_extern: bool) -> LResult
     let env = Env {
         vars: &ctx.vars,
         records: &ctx.records,
+        enum_values: &ctx.enum_values,
         is_main: false,
         continue_label: None,
+        break_label: None,
     };
     let init = match node.inner.first() {
         Some(c) => super::globals::lower_init(c, &ty, env)?,

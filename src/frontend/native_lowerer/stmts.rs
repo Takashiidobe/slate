@@ -2,25 +2,15 @@ use super::exprs::{lower_expr, truthy};
 use super::types::CType;
 use super::{Env, LResult, LowerError, NodeExt, is_present};
 use crate::backend::rust_ast::{
-    Block, Expr as RExpr, IndentStmt, Label, MatchArm, Path, Pattern, Prim, RustValue,
-    Stmt as RStmt, Type as RType, UnaryOp as RUnaryOp,
+    Block, Expr as RExpr, ExprMatchArm, IndentStmt, Label, MatchArm, Path, Pattern, Prim,
+    RustValue, Stmt as RStmt, Type as RType, UnaryOp as RUnaryOp,
 };
 use crate::function_identity::CallBinding;
 use crate::parse::clang_ast::{Clang, Decl, Node};
 use std::sync::atomic::{AtomicUsize, Ordering};
 
-static CONTINUE_LABEL_COUNTER: AtomicUsize = AtomicUsize::new(0);
+static LOOP_LABEL_COUNTER: AtomicUsize = AtomicUsize::new(0);
 
-fn next_continue_label() -> Label {
-    Label::new(format!(
-        "__continue{}",
-        CONTINUE_LABEL_COUNTER.fetch_add(1, Ordering::Relaxed)
-    ))
-}
-
-// True if `node` contains a `continue` that targets its own enclosing loop,
-// i.e. one not swallowed by a nested loop. Everything else (if/switch/scope)
-// is transparent, so we recurse through it.
 fn body_has_direct_continue(node: &Node) -> bool {
     match &node.kind {
         Clang::ContinueStmt(_) => true,
@@ -29,26 +19,46 @@ fn body_has_direct_continue(node: &Node) -> bool {
     }
 }
 
-/// Lower a loop body that may `continue`. A bare Rust `continue` jumps to the
-/// top of `loop {}`, skipping any statements (e.g. a `for` loop's increment)
-/// pushed after the body — so when a direct `continue` is present, the body
-/// is wrapped in a labeled block and `continue` becomes `break` out of it,
-/// falling through to whatever runs after.
-fn lower_loop_body(body: &Node, env: Env, out: &mut Vec<IndentStmt>) -> LResult<()> {
-    if body_has_direct_continue(body) {
-        let label = next_continue_label();
-        let mut inner = Vec::new();
-        lower_stmt(
-            body,
-            Env {
-                continue_label: Some(&label),
-                ..env
-            },
-            &mut inner,
-        )?;
-        out.push(mk(RStmt::LabeledBlock { label, body: inner }));
-    } else {
-        lower_stmt(body, env, out)?;
+fn loop_labels_if_needed(body: &Node) -> Option<(Label, Label)> {
+    if !body_has_direct_continue(body) {
+        return None;
+    }
+    let n = LOOP_LABEL_COUNTER.fetch_add(1, Ordering::Relaxed);
+    Some((
+        Label::new(format!("__loop{n}")),
+        Label::new(format!("__continue{n}")),
+    ))
+}
+
+fn lower_loop_body(
+    body: &Node,
+    labels: Option<&(Label, Label)>,
+    env: Env,
+    out: &mut Vec<IndentStmt>,
+) -> LResult<()> {
+    let base_env = Env {
+        continue_label: None,
+        break_label: None,
+        ..env
+    };
+    match labels {
+        Some((loop_label, continue_label)) => {
+            let mut inner = Vec::new();
+            lower_stmt(
+                body,
+                Env {
+                    continue_label: Some(continue_label),
+                    break_label: Some(loop_label),
+                    ..base_env
+                },
+                &mut inner,
+            )?;
+            out.push(mk(RStmt::LabeledBlock {
+                label: continue_label.clone(),
+                body: inner,
+            }));
+        }
+        None => lower_stmt(body, base_env, out)?,
     }
     Ok(())
 }
@@ -165,53 +175,65 @@ pub(crate) fn lower_stmt(node: &Node, env: Env, out: &mut Vec<IndentStmt>) -> LR
             if is_present(init) {
                 lower_stmt(init, env, out)?;
             }
+            let labels = loop_labels_if_needed(body);
             let mut loop_body = Vec::new();
             if is_present(cond) {
                 loop_body.push(break_unless(cond, env)?);
             }
-            lower_loop_body(body, env, &mut loop_body)?;
+            lower_loop_body(body, labels.as_ref(), env, &mut loop_body)?;
             if is_present(inc) {
                 loop_body.push(mk(RStmt::Expr(lower_expr(inc, env)?)));
             }
             out.push(mk(RStmt::Loop {
-                label: None,
+                label: labels.map(|(loop_label, _)| loop_label),
                 body: loop_body,
             }));
         }
         Clang::WhileStmt(_) => {
             let cond = node.child(0)?;
             let body = node.child(1)?;
+            let labels = loop_labels_if_needed(body);
             let mut loop_body = vec![break_unless(cond, env)?];
-            lower_stmt(body, env, &mut loop_body)?;
+            lower_loop_body(body, labels.as_ref(), env, &mut loop_body)?;
             out.push(mk(RStmt::Loop {
-                label: None,
+                label: labels.map(|(loop_label, _)| loop_label),
                 body: loop_body,
             }));
         }
         Clang::DoStmt(_) => {
             let body = node.child(0)?;
             let cond = node.child(1)?;
+            let labels = loop_labels_if_needed(body);
             let mut loop_body = Vec::new();
-            lower_loop_body(body, env, &mut loop_body)?;
+            lower_loop_body(body, labels.as_ref(), env, &mut loop_body)?;
             loop_body.push(break_unless(cond, env)?);
             out.push(mk(RStmt::Loop {
-                label: None,
+                label: labels.map(|(loop_label, _)| loop_label),
                 body: loop_body,
             }));
         }
         Clang::SwitchStmt(_) => {
             let cond = node.child(0)?;
             let body = node.child(1)?;
-            out.push(mk(RStmt::Match {
-                expr: lower_expr(cond, env)?,
-                arms: lower_switch_arms(body, env)?,
-            }));
+            lower_switch(cond, body, env, out)?;
         }
         Clang::CaseStmt(_) | Clang::DefaultStmt(_) => {
-            let mut patterns = Vec::new();
-            push_case_chain(node, &mut patterns, out, env)?;
+            let mut n = node;
+            loop {
+                let next = n.inner.last().ok_or(LowerError::MissingCaseBody)?;
+                match &next.kind {
+                    Clang::CaseStmt(_) | Clang::DefaultStmt(_) => n = next,
+                    _ => {
+                        lower_stmt(next, env, out)?;
+                        break;
+                    }
+                }
+            }
         }
-        Clang::BreakStmt(_) => out.push(mk(RStmt::Break(None))),
+        Clang::BreakStmt(_) => out.push(mk(match env.break_label {
+            Some(label) => RStmt::Break(Some(label.clone())),
+            None => RStmt::Break(None),
+        })),
         Clang::ContinueStmt(_) => out.push(mk(match env.continue_label {
             Some(label) => RStmt::Break(Some(label.clone())),
             None => RStmt::Continue(None),
@@ -243,86 +265,168 @@ fn is_goto_or_label(kind: Option<&str>) -> bool {
     )
 }
 
-fn lower_switch_arms(body: &Node, env: Env) -> LResult<Vec<MatchArm>> {
+static SWITCH_LABEL_COUNTER: AtomicUsize = AtomicUsize::new(0);
+
+struct SwitchCase<'a> {
+    patterns: Vec<i64>,
+    is_default: bool,
+    stmts: Vec<&'a Node>,
+}
+
+/// Lower a switch as an index-dispatch loop rather than a bare `match`, so
+/// break can target the switch itself (a bare Rust `break` inside a `match`
+/// binds to the nearest enclosing *loop*, not the switch) and real C
+/// fallthrough (no break, execution continues into the next case's body) is
+/// representable at all -- a `match` arm can't fall into the next arm.
+fn lower_switch(cond: &Node, body: &Node, env: Env, out: &mut Vec<IndentStmt>) -> LResult<()> {
+    let cases = collect_switch_cases(body);
+    if cases.is_empty() {
+        return Ok(());
+    }
+
+    let n = SWITCH_LABEL_COUNTER.fetch_add(1, Ordering::Relaxed);
+    let switch_label = Label::new(format!("__switch{n}"));
+    let selector_name = format!("__switch_value{n}");
+    let case_name = format!("__switch_case{n}");
+    let default_index = cases.iter().position(|case| case.is_default);
+    let fallback = default_index.map(|index| index as i64).unwrap_or(-1);
+
+    let mut selector_arms = Vec::new();
+    for (index, case) in cases.iter().enumerate() {
+        for &value in &case.patterns {
+            selector_arms.push(ExprMatchArm {
+                pattern: Pattern::I64(value),
+                value: RExpr::Value(RustValue::I64(index as i64)),
+            });
+        }
+    }
+    selector_arms.push(ExprMatchArm {
+        pattern: Pattern::Wildcard,
+        value: RExpr::Value(RustValue::I64(fallback)),
+    });
+
+    let switch_env = Env {
+        break_label: Some(&switch_label),
+        ..env
+    };
+    let mut case_arms = Vec::new();
+    for (index, case) in cases.iter().enumerate() {
+        let mut case_body = Vec::new();
+        for stmt in &case.stmts {
+            lower_stmt(stmt, switch_env, &mut case_body)?;
+        }
+        if !ends_in_control_flow(&case_body) {
+            if index + 1 < cases.len() {
+                case_body.push(mk(RStmt::Assign {
+                    target: RExpr::Var(case_name.clone().into()),
+                    value: RExpr::Value(RustValue::I64((index + 1) as i64)),
+                }));
+                case_body.push(mk(RStmt::Continue(Some(switch_label.clone()))));
+            } else {
+                case_body.push(mk(RStmt::Break(Some(switch_label.clone()))));
+            }
+        }
+        case_arms.push(MatchArm {
+            pattern: Pattern::I64(index as i64),
+            body: case_body,
+        });
+    }
+    case_arms.push(MatchArm {
+        pattern: Pattern::Wildcard,
+        body: vec![mk(RStmt::Break(Some(switch_label.clone())))],
+    });
+
+    let selector = lower_expr(cond, env)?;
+    out.push(mk(RStmt::Scope {
+        body: vec![
+            mk(RStmt::Let {
+                name: selector_name.clone(),
+                mutable: false,
+                ty: None,
+                init: Some(selector),
+            }),
+            mk(RStmt::Let {
+                name: case_name.clone(),
+                mutable: true,
+                ty: Some(RType::Prim(Prim::I32)),
+                init: Some(RExpr::Match {
+                    expr: Box::new(RExpr::Var(selector_name.into())),
+                    arms: selector_arms,
+                }),
+            }),
+            mk(RStmt::Loop {
+                label: Some(switch_label),
+                body: vec![mk(RStmt::Match {
+                    expr: RExpr::Var(case_name.into()),
+                    arms: case_arms,
+                })],
+            }),
+        ],
+    }));
+    Ok(())
+}
+
+fn ends_in_control_flow(body: &[IndentStmt]) -> bool {
+    matches!(
+        body.last().map(|stmt| &stmt.stmt),
+        Some(RStmt::Break(_) | RStmt::Continue(_) | RStmt::Return(_))
+    )
+}
+
+fn collect_switch_cases(body: &Node) -> Vec<SwitchCase<'_>> {
     let stmts: &[Node] = match &body.kind {
         Clang::CompoundStmt(_) => &body.inner,
         _ => std::slice::from_ref(body),
     };
-    let mut arms: Vec<MatchArm> = Vec::new();
-    let mut patterns: Vec<Pattern> = Vec::new();
-    let mut current: Vec<IndentStmt> = Vec::new();
-
+    let mut cases: Vec<SwitchCase<'_>> = Vec::new();
     for stmt in stmts {
         match &stmt.kind {
             Clang::CaseStmt(_) | Clang::DefaultStmt(_) => {
-                if !patterns.is_empty() {
-                    push_arms(&mut arms, &mut patterns, &mut current);
-                }
-                push_case_chain(stmt, &mut patterns, &mut current, env)?;
+                let mut patterns = Vec::new();
+                let mut is_default = false;
+                let mut node = stmt;
+                let first_body_stmt = loop {
+                    match &node.kind {
+                        Clang::CaseStmt(_) => {
+                            if let Ok(value_node) = node.child(0) {
+                                patterns.push(case_label_value(value_node));
+                            }
+                        }
+                        _ => is_default = true,
+                    }
+                    let Some(next) = node.inner.last() else {
+                        break None;
+                    };
+                    match &next.kind {
+                        Clang::CaseStmt(_) | Clang::DefaultStmt(_) => node = next,
+                        _ => break Some(next),
+                    }
+                };
+                cases.push(SwitchCase {
+                    patterns,
+                    is_default,
+                    stmts: first_body_stmt.into_iter().collect(),
+                });
             }
             _ => {
-                if patterns.is_empty() {
-                    patterns.push(Pattern::Wildcard);
+                if let Some(case) = cases.last_mut() {
+                    case.stmts.push(stmt);
                 }
-                lower_stmt(stmt, env, &mut current)?;
             }
         }
     }
-    push_arms(&mut arms, &mut patterns, &mut current);
-
-    if arms.is_empty()
-        || !arms
-            .iter()
-            .any(|arm| matches!(arm.pattern, Pattern::Wildcard))
-    {
-        arms.push(MatchArm {
-            pattern: Pattern::Wildcard,
-            body: Vec::new(),
-        });
-    }
-    Ok(arms)
-}
-
-fn push_case_chain(
-    mut node: &Node,
-    patterns: &mut Vec<Pattern>,
-    body: &mut Vec<IndentStmt>,
-    env: Env,
-) -> LResult<()> {
-    loop {
-        patterns.push(match &node.kind {
-            Clang::CaseStmt(_) => Pattern::I64(case_label_value(node.child(0)?)),
-            _ => Pattern::Wildcard,
-        });
-        let next = node.inner.last().ok_or(LowerError::MissingCaseBody)?;
-        match &next.kind {
-            Clang::CaseStmt(_) | Clang::DefaultStmt(_) => node = next,
-            _ => {
-                lower_stmt(next, env, body)?;
-                return Ok(());
-            }
-        }
-    }
-}
-
-fn push_arms(arms: &mut Vec<MatchArm>, patterns: &mut Vec<Pattern>, body: &mut Vec<IndentStmt>) {
-    let n = patterns.len();
-    for (i, pattern) in patterns.drain(..).enumerate() {
-        let arm_body = if i + 1 == n {
-            std::mem::take(body)
-        } else {
-            body.clone()
-        };
-        arms.push(MatchArm {
-            pattern,
-            body: arm_body,
-        });
-    }
+    cases
 }
 
 fn case_label_value(node: &Node) -> i64 {
     match &node.kind {
         Clang::IntegerLiteral(l) => l.value.trim().parse::<i64>().unwrap_or(0),
+        Clang::UnaryOperator(u) if u.opcode == "-" => node
+            .inner
+            .first()
+            .map(case_label_value)
+            .unwrap_or(0)
+            .wrapping_neg(),
         Clang::Other(_) => node.inner.first().map(case_label_value).unwrap_or(0),
         _ => 0,
     }

@@ -131,6 +131,16 @@ pub struct Literal {
     pub value: String,
 }
 
+#[derive(Deserialize, Debug, Default)]
+pub struct SizeOfAlignOfExpr {
+    pub range: Option<SourceRange>,
+    #[serde(rename = "type")]
+    pub qual_type: Option<QualType>,
+    pub name: Option<String>,
+    #[serde(rename = "argType")]
+    pub arg_type: Option<QualType>,
+}
+
 #[derive(Deserialize, Debug)]
 pub struct CharLiteral {
     pub range: Option<SourceRange>,
@@ -163,6 +173,7 @@ pub struct Other {
     #[serde(rename = "type")]
     pub qual_type: Option<QualType>,
     pub loc: Option<SourceLocation>,
+    pub value: Option<serde_json::Value>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -205,6 +216,7 @@ pub enum Clang {
     FloatingLiteral(Literal),
     CharacterLiteral(CharLiteral),
     StringLiteral(Literal),
+    UnaryExprOrTypeTraitExpr(SizeOfAlignOfExpr),
     Other(Other),
 }
 
@@ -512,6 +524,18 @@ pub fn dump_tree(node: &Node, depth: usize, out: &mut String) {
                 write!(out, " type={:?}", ty.qual_type).unwrap();
             }
             if let Some(range) = &l.range {
+                write_range(out, range);
+            }
+        }
+        Clang::UnaryExprOrTypeTraitExpr(s) => {
+            write!(out, "UnaryExprOrTypeTraitExpr name={:?}", s.name).unwrap();
+            if let Some(ty) = &s.arg_type {
+                write!(out, " argType={:?}", ty.qual_type).unwrap();
+            }
+            if let Some(ty) = &s.qual_type {
+                write!(out, " type={:?}", ty.qual_type).unwrap();
+            }
+            if let Some(range) = &s.range {
                 write_range(out, range);
             }
         }

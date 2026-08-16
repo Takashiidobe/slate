@@ -213,6 +213,13 @@ impl CType {
             let ret = &s[..params_start];
             let params_str = &s[params_start + 1..s.len() - 1];
             let (params, is_variadic) = parse_param_list(params_str);
+            if let Some(fn_ptr_ret) = ret.trim_end().strip_suffix("(*)") {
+                return CType::Ptr(Box::new(CType::Func {
+                    return_ty: Box::new(CType::parse(strip_qualifiers(fn_ptr_ret))),
+                    params,
+                    is_variadic,
+                }));
+            }
             return CType::Func {
                 return_ty: Box::new(CType::parse(strip_qualifiers(ret))),
                 params,

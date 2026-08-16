@@ -306,7 +306,7 @@ fn host_f80_bytes(fp: &str) -> Option<[u8; 10]> {
     Some(bytes)
 }
 
-pub(super) fn f80_literal_expr(fp: &str) -> Option<Expr> {
+pub(crate) fn f80_literal_expr(fp: &str) -> Option<Expr> {
     let bytes = host_f80_bytes(fp)?;
     Some(f80_bytes_expr(&bytes))
 }

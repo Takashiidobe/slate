@@ -29,6 +29,7 @@ pub(crate) fn zero_value(ty: &CType, records: &RecordRegistry) -> Expr {
             elem: Box::new(zero_value(base, records)),
             len: len.unwrap_or(0).max(0) as usize,
         },
+        CType::LDouble => crate::frontend::lowerer::runtime_support::long_double_zero_expr(),
         _ if ty.is_flonum() => Expr::Value(RustValue::Float(0.0.into())),
         CType::Ptr(_) | CType::Func { .. } => Expr::Value(RustValue::NullPtr),
         _ => Expr::Value(ty.int_value(0)),
