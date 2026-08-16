@@ -21,7 +21,9 @@ default-filter = '''
   test(generated_differential)
   + test(c_testsuite_supported_tests_match_c)
   + test(chibicc_supported_tests_match_c)
+  + test(chibicc_unsupported_tests_still_fail)
   + test(gcc_torture_supported_tests_match_c)
+  + test(gcc_torture_unsupported_tests_still_fail)
   + test(libc_test_functional_supported_tests_match_c)
   + test(stdlib_coverage)
 '''

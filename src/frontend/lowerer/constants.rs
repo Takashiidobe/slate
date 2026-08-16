@@ -183,6 +183,15 @@ pub(super) fn parse_cir_scalar_expr(s: &str) -> Option<Expr> {
         })
 }
 
+pub(super) fn parse_cir_int_ptr(s: &str) -> Option<i128> {
+    let s = s.trim_start().strip_prefix("#cir.ptr<")?;
+    if s.starts_with("null") {
+        return None;
+    }
+    let end = s.find([':', '>'])?;
+    s[..end].trim().parse().ok()
+}
+
 pub(super) fn parse_cir_const_vector(s: &str) -> Option<Expr> {
     let s = s.trim_start();
     let start = s.find("#cir.const_vector<[")?;
@@ -200,8 +209,34 @@ pub(super) fn parse_cir_const_vector(s: &str) -> Option<Expr> {
 
 pub(super) fn parse_cir_global_view(s: &str) -> Option<&str> {
     let s = s.trim_start().strip_prefix("#cir.global_view<@")?;
-    let end = s.find('>')?;
+    let end = s.find([',', '>'])?;
     Some(s[..end].trim_matches('"'))
+}
+
+pub(super) fn parse_cir_global_view_indices(s: &str) -> Vec<i128> {
+    let Some(s) = s.trim_start().strip_prefix("#cir.global_view<@") else {
+        return Vec::new();
+    };
+    let Some(rest) = s.find(',').map(|comma| &s[comma + 1..]) else {
+        return Vec::new();
+    };
+    let rest = rest.trim_start();
+    let Some(rest) = rest.strip_prefix('[') else {
+        return Vec::new();
+    };
+    let Some(close) = rest.find(']') else {
+        return Vec::new();
+    };
+    split_top_level(&rest[..close], ',')
+        .into_iter()
+        .filter_map(|part| {
+            part.trim()
+                .split_once(':')
+                .map_or(part.trim(), |(value, _)| value.trim())
+                .parse()
+                .ok()
+        })
+        .collect()
 }
 
 pub(super) fn parse_cir_global_views(s: &str) -> Vec<&str> {
