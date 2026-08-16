@@ -1110,6 +1110,8 @@ pub const CLIB_RECORD_TYPES: &[CLibType] = &[
         8,
         CLibInitializer::Fields(&["tv_sec", "tv_nsec"]),
     ),
+    CLibType::new("tm", "libc::tm", 4, CLibInitializer::Zeroed),
+    CLibType::new("stat", "libc::stat", 8, CLibInitializer::Zeroed),
 ];
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]

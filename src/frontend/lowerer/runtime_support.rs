@@ -535,7 +535,7 @@ pub(super) fn complex_runtime_decl(name: &str, prim: Prim) -> ExternDecl {
 
 // C `_Complex` is `num_complex::Complex`; the extern runtime routines keep
 // float/double `*`/`/` bit-identical to clang's libgcc lowering.
-pub(super) fn complex_prelude() -> Vec<Item> {
+pub(crate) fn complex_prelude() -> Vec<Item> {
     vec![Item::ExternBlock {
         abi: "C".into(),
         decls: vec![

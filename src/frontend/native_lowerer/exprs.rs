@@ -31,6 +31,7 @@ fn qual_type_of(node: &Node) -> Option<&QualType> {
             l.qual_type.as_ref()
         }
         Clang::CharacterLiteral(l) => l.qual_type.as_ref(),
+        Clang::Other(o) => o.qual_type.as_ref(),
         _ => None,
     }
 }
@@ -146,6 +147,22 @@ pub(crate) fn lower_expr(node: &Node, env: Env) -> LResult<RExpr> {
         Clang::Other(o) if is_transparent_wrapper(o.kind.as_deref()) && node.inner.len() == 1 => {
             lower_expr(node.child(0)?, env)
         }
+        Clang::Other(o) if o.kind.as_deref() == Some("BuiltinBitCastExpr") => Ok(RExpr::Call {
+            binding: CallBinding::Generated,
+            func: Box::new(RExpr::Var("std::mem::transmute".into())),
+            args: vec![lower_expr(node.child(0)?, env)?],
+        }),
+        Clang::Other(o) if o.kind.as_deref() == Some("ImaginaryLiteral") => {
+            let CType::Complex(inner_ty) = node_type(node) else {
+                return Err(LowerError::UnsupportedExpr(Some("ImaginaryLiteral".into())));
+            };
+            let imag = lower_expr(node.child(0)?, env)?;
+            let real = super::globals::zero_value(&inner_ty, env.records);
+            Ok(RExpr::StructLit {
+                name: "num_complex::Complex".into(),
+                fields: vec![("re".into(), real), ("im".into(), imag)],
+            })
+        }
         Clang::Other(o) => Err(LowerError::UnsupportedExpr(o.kind.clone())),
         _ => Err(LowerError::UnsupportedExpr(None)),
     }
@@ -158,6 +175,8 @@ fn is_transparent_wrapper(kind: Option<&str>) -> bool {
             | Some("ExprWithCleanups")
             | Some("MaterializeTemporaryExpr")
             | Some("CXXBindTemporaryExpr")
+            | Some("PredefinedExpr")
+            | Some("CompoundLiteralExpr")
     )
 }
 
@@ -253,6 +272,17 @@ fn call_expr(node: &Node, env: Env) -> LResult<RExpr> {
     {
         return result;
     }
+    if let Some(name) = super::builtins::intrinsic_passthrough_name(callee, env) {
+        let args = node.inner[1..]
+            .iter()
+            .map(|a| lower_expr(a, env))
+            .collect::<LResult<Vec<_>>>()?;
+        return Ok(RExpr::Call {
+            binding: CallBinding::Generated,
+            func: Box::new(RExpr::Var(format!("core::arch::x86_64::{name}").into())),
+            args,
+        });
+    }
     let callee_ty = node_type(callee);
     let fn_ty = match &callee_ty {
         CType::Func { .. } => Some(&callee_ty),
@@ -327,6 +357,33 @@ fn long_double_conversion_shim(
     }
 }
 
+/// Casts a single already-lowered scalar value between C types, routing through
+/// the long-double software shim when either side is `LDouble` (mirrors the
+/// generic scalar-cast fallback in `cast_expr`) -- shared with the `_Complex`
+/// component-wise casts below, since a complex value's re/im parts need the
+/// exact same scalar conversion its real-typed counterpart would.
+fn cast_scalar(
+    expr: RExpr,
+    target_ty: &CType,
+    source_ty: &CType,
+    records: &super::types::RecordRegistry,
+) -> RExpr {
+    if let Some(shim) = long_double_conversion_shim(target_ty, source_ty, records) {
+        return RExpr::Call {
+            binding: CallBinding::Generated,
+            func: Box::new(RExpr::Var(shim.into())),
+            args: vec![expr],
+        };
+    }
+    if target_ty == source_ty {
+        return expr;
+    }
+    RExpr::Cast {
+        expr: Box::new(expr),
+        ty: target_ty.lower(records),
+    }
+}
+
 fn cast_expr(node: &Node, c: &crate::parse::clang_ast::CastExpr, env: Env) -> LResult<RExpr> {
     let inner = node.child(0)?;
     match c.cast_kind.as_str() {
@@ -338,6 +395,83 @@ fn cast_expr(node: &Node, c: &crate::parse::clang_ast::CastExpr, env: Env) -> LR
         }),
         "ArrayToPointerDecay" => decay_to_ptr(inner, env),
         "IntegralToBoolean" | "FloatingToBoolean" | "PointerToBoolean" => truthy(inner, env),
+        "FloatingRealToComplex" | "IntegralRealToComplex" => {
+            let CType::Complex(inner_ty) = node_type(node) else {
+                return Err(LowerError::UnsupportedExpr(Some(c.cast_kind.clone())));
+            };
+            let real = lower_expr(inner, env)?;
+            let imag = super::globals::zero_value(&inner_ty, env.records);
+            Ok(RExpr::StructLit {
+                name: "num_complex::Complex".into(),
+                fields: vec![("re".into(), real), ("im".into(), imag)],
+            })
+        }
+        "FloatingComplexToReal" => {
+            let CType::Complex(source_inner) = node_type(inner) else {
+                return Err(LowerError::UnsupportedExpr(Some(
+                    "FloatingComplexToReal".into(),
+                )));
+            };
+            let target_ty = node_type(node);
+            let real = RExpr::Field {
+                base: Box::new(lower_expr(inner, env)?),
+                field: "re".into(),
+            };
+            Ok(cast_scalar(real, &target_ty, &source_inner, env.records))
+        }
+        "FloatingComplexCast" => {
+            let CType::Complex(target_inner) = node_type(node) else {
+                return Err(LowerError::UnsupportedExpr(Some(
+                    "FloatingComplexCast".into(),
+                )));
+            };
+            let CType::Complex(source_inner) = node_type(inner) else {
+                return Err(LowerError::UnsupportedExpr(Some(
+                    "FloatingComplexCast".into(),
+                )));
+            };
+            let tmp = next_tmp();
+            Ok(RExpr::Block(Box::new(Block {
+                stmts: vec![IndentStmt {
+                    depth: 0,
+                    stmt: RStmt::Let {
+                        name: tmp.clone(),
+                        mutable: false,
+                        ty: None,
+                        init: Some(lower_expr(inner, env)?),
+                    },
+                }],
+                tail: Some(Box::new(RExpr::StructLit {
+                    name: "num_complex::Complex".into(),
+                    fields: vec![
+                        (
+                            "re".into(),
+                            cast_scalar(
+                                RExpr::Field {
+                                    base: Box::new(RExpr::Var(tmp.as_str().into())),
+                                    field: "re".into(),
+                                },
+                                &target_inner,
+                                &source_inner,
+                                env.records,
+                            ),
+                        ),
+                        (
+                            "im".into(),
+                            cast_scalar(
+                                RExpr::Field {
+                                    base: Box::new(RExpr::Var(tmp.as_str().into())),
+                                    field: "im".into(),
+                                },
+                                &target_inner,
+                                &source_inner,
+                                env.records,
+                            ),
+                        ),
+                    ],
+                })),
+            })))
+        }
         _ => {
             let target_ty = node_type(node);
             let source_ty = node_type(inner);
@@ -374,6 +508,32 @@ fn cast_expr(node: &Node, c: &crate::parse::clang_ast::CastExpr, env: Env) -> LR
 fn unary_expr(node: &Node, u: &crate::parse::clang_ast::UnaryOperator, env: Env) -> LResult<RExpr> {
     let inner = node.child(0)?;
     match u.opcode.as_str() {
+        "-" if matches!(node_type(inner), CType::Complex(_)) => {
+            let lowered = lower_expr(inner, env)?;
+            let field = |name: &str| RExpr::Field {
+                base: Box::new(lowered.clone()),
+                field: name.into(),
+            };
+            Ok(RExpr::StructLit {
+                name: "num_complex::Complex".into(),
+                fields: vec![
+                    (
+                        "re".into(),
+                        RExpr::Unary {
+                            op: RUnaryOp::Neg,
+                            expr: Box::new(field("re")),
+                        },
+                    ),
+                    (
+                        "im".into(),
+                        RExpr::Unary {
+                            op: RUnaryOp::Neg,
+                            expr: Box::new(field("im")),
+                        },
+                    ),
+                ],
+            })
+        }
         "-" => Ok(RExpr::Unary {
             op: RUnaryOp::Neg,
             expr: Box::new(lower_expr(inner, env)?),
@@ -386,7 +546,7 @@ fn unary_expr(node: &Node, u: &crate::parse::clang_ast::UnaryOperator, env: Env)
             op: RUnaryOp::Not,
             expr: Box::new(truthy(inner, env)?),
         }),
-        "+" => lower_expr(inner, env),
+        "+" | "__extension__" => lower_expr(inner, env),
         "&" => Ok(RExpr::Unary {
             op: RUnaryOp::Raw(Raw::Mut),
             expr: Box::new(lower_expr(inner, env)?),
@@ -396,6 +556,10 @@ fn unary_expr(node: &Node, u: &crate::parse::clang_ast::UnaryOperator, env: Env)
             expr: Box::new(decay_to_ptr(inner, env)?),
         }),
         "++" | "--" => inc_dec_expr(u, inner, env),
+        "__real" | "__imag" => Ok(RExpr::Field {
+            base: Box::new(lower_expr(inner, env)?),
+            field: if u.opcode == "__real" { "re" } else { "im" }.into(),
+        }),
         other => Err(LowerError::UnsupportedUnaryOp(other.to_string())),
     }
 }
@@ -482,6 +646,232 @@ fn assign_expr(lhs: &Node, rhs: &Node, env: Env) -> LResult<RExpr> {
     })))
 }
 
+/// C99 6.3.1.8 lets a `_Complex` operator mix with a real operand (`z / 2.0L`)
+/// without Clang ever inserting a `FloatingRealToComplex` cast node for that
+/// operand -- the promotion is implicit at the BinaryOperator itself, unlike
+/// an assignment/cast context where the cast node is always explicit. Widen
+/// the scalar side by hand before routing into `complex_binary_expr`.
+fn to_complex(
+    expr: RExpr,
+    ty: &CType,
+    inner: &CType,
+    records: &super::types::RecordRegistry,
+) -> RExpr {
+    if matches!(ty, CType::Complex(_)) {
+        return expr;
+    }
+    RExpr::StructLit {
+        name: "num_complex::Complex".into(),
+        fields: vec![
+            ("re".into(), expr),
+            ("im".into(), super::globals::zero_value(inner, records)),
+        ],
+    }
+}
+
+/// `num_complex::Complex<T>`'s `Add`/`Sub`/`Mul`/`Div` impls require `T: Num`
+/// (from the `num-traits` crate), which `LongDouble` (the f80 software-float
+/// shim struct) doesn't implement even though it has its own `std::ops::Add`
+/// etc. -- so arithmetic on `_Complex` values can never rely on the whole-struct
+/// operator, only ever on the scalar `T: Add`/`Mul`/etc. of the `.re`/`.im`
+/// fields. Mirrors the mature CIR lowerer's lower_complex_addsub/mul/div
+/// (src/frontend/lowerer/expressions.rs), including its `*`/`/` runtime-call
+/// route for `f32`/`f64` (clang lowers `_Complex` `*`/`/` to libgcc's
+/// `__mul?c3`/`__div?c3` for IEEE-correct results; only LongDouble/other bases
+/// fall back to the naive per-component formula).
+fn complex_binary_expr(
+    op: &str,
+    lhs: RExpr,
+    rhs: RExpr,
+    inner: &CType,
+    env: Env,
+) -> LResult<RExpr> {
+    let field = |base: RExpr, name: &str| RExpr::Field {
+        base: Box::new(base),
+        field: name.into(),
+    };
+    let runtime_name = |mul: bool| match inner {
+        CType::Float => Some(if mul { "__mulsc3" } else { "__divsc3" }),
+        CType::Double => Some(if mul { "__muldc3" } else { "__divdc3" }),
+        _ => None,
+    };
+    if matches!(op, "*" | "/") && runtime_name(true).is_some() {
+        env.uses_complex_runtime.set(true);
+    }
+    match op {
+        "+" | "-" => {
+            let bin_op = BinOp::try_from(COpcode(op))?;
+            Ok(RExpr::StructLit {
+                name: "num_complex::Complex".into(),
+                fields: vec![
+                    (
+                        "re".into(),
+                        RExpr::Binary {
+                            op: bin_op,
+                            lhs: Box::new(field(lhs.clone(), "re")),
+                            rhs: Box::new(field(rhs.clone(), "re")),
+                        },
+                    ),
+                    (
+                        "im".into(),
+                        RExpr::Binary {
+                            op: bin_op,
+                            lhs: Box::new(field(lhs, "im")),
+                            rhs: Box::new(field(rhs, "im")),
+                        },
+                    ),
+                ],
+            })
+        }
+        "*" => {
+            if let Some(name) = runtime_name(true) {
+                return Ok(RExpr::Call {
+                    binding: CallBinding::Generated,
+                    func: Box::new(RExpr::Var(name.into())),
+                    args: vec![
+                        field(lhs.clone(), "re"),
+                        field(lhs, "im"),
+                        field(rhs.clone(), "re"),
+                        field(rhs, "im"),
+                    ],
+                });
+            }
+            let ac = RExpr::Binary {
+                op: BinOp::Mul,
+                lhs: Box::new(field(lhs.clone(), "re")),
+                rhs: Box::new(field(rhs.clone(), "re")),
+            };
+            let bd = RExpr::Binary {
+                op: BinOp::Mul,
+                lhs: Box::new(field(lhs.clone(), "im")),
+                rhs: Box::new(field(rhs.clone(), "im")),
+            };
+            let ad = RExpr::Binary {
+                op: BinOp::Mul,
+                lhs: Box::new(field(lhs.clone(), "re")),
+                rhs: Box::new(field(rhs.clone(), "im")),
+            };
+            let bc = RExpr::Binary {
+                op: BinOp::Mul,
+                lhs: Box::new(field(lhs, "im")),
+                rhs: Box::new(field(rhs, "re")),
+            };
+            Ok(RExpr::StructLit {
+                name: "num_complex::Complex".into(),
+                fields: vec![
+                    (
+                        "re".into(),
+                        RExpr::Binary {
+                            op: BinOp::Sub,
+                            lhs: Box::new(ac),
+                            rhs: Box::new(bd),
+                        },
+                    ),
+                    (
+                        "im".into(),
+                        RExpr::Binary {
+                            op: BinOp::Add,
+                            lhs: Box::new(ad),
+                            rhs: Box::new(bc),
+                        },
+                    ),
+                ],
+            })
+        }
+        "/" => {
+            if let Some(name) = runtime_name(false) {
+                return Ok(RExpr::Call {
+                    binding: CallBinding::Generated,
+                    func: Box::new(RExpr::Var(name.into())),
+                    args: vec![
+                        field(lhs.clone(), "re"),
+                        field(lhs, "im"),
+                        field(rhs.clone(), "re"),
+                        field(rhs, "im"),
+                    ],
+                });
+            }
+            let c = field(rhs.clone(), "re");
+            let d = field(rhs.clone(), "im");
+            let tmp = next_tmp();
+            let denom = RExpr::Binary {
+                op: BinOp::Add,
+                lhs: Box::new(RExpr::Binary {
+                    op: BinOp::Mul,
+                    lhs: Box::new(c.clone()),
+                    rhs: Box::new(c),
+                }),
+                rhs: Box::new(RExpr::Binary {
+                    op: BinOp::Mul,
+                    lhs: Box::new(d.clone()),
+                    rhs: Box::new(d),
+                }),
+            };
+            let ac = RExpr::Binary {
+                op: BinOp::Mul,
+                lhs: Box::new(field(lhs.clone(), "re")),
+                rhs: Box::new(field(rhs.clone(), "re")),
+            };
+            let bd = RExpr::Binary {
+                op: BinOp::Mul,
+                lhs: Box::new(field(lhs.clone(), "im")),
+                rhs: Box::new(field(rhs.clone(), "im")),
+            };
+            let bc = RExpr::Binary {
+                op: BinOp::Mul,
+                lhs: Box::new(field(lhs.clone(), "im")),
+                rhs: Box::new(field(rhs.clone(), "re")),
+            };
+            let ad = RExpr::Binary {
+                op: BinOp::Mul,
+                lhs: Box::new(field(lhs, "re")),
+                rhs: Box::new(field(rhs, "im")),
+            };
+            Ok(RExpr::Block(Box::new(Block {
+                stmts: vec![IndentStmt {
+                    depth: 0,
+                    stmt: RStmt::Let {
+                        name: tmp.clone(),
+                        mutable: false,
+                        ty: None,
+                        init: Some(denom),
+                    },
+                }],
+                tail: Some(Box::new(RExpr::StructLit {
+                    name: "num_complex::Complex".into(),
+                    fields: vec![
+                        (
+                            "re".into(),
+                            RExpr::Binary {
+                                op: BinOp::Div,
+                                lhs: Box::new(RExpr::Binary {
+                                    op: BinOp::Add,
+                                    lhs: Box::new(ac),
+                                    rhs: Box::new(bd),
+                                }),
+                                rhs: Box::new(RExpr::Var(tmp.clone().into())),
+                            },
+                        ),
+                        (
+                            "im".into(),
+                            RExpr::Binary {
+                                op: BinOp::Div,
+                                lhs: Box::new(RExpr::Binary {
+                                    op: BinOp::Sub,
+                                    lhs: Box::new(bc),
+                                    rhs: Box::new(ad),
+                                }),
+                                rhs: Box::new(RExpr::Var(tmp.into())),
+                            },
+                        ),
+                    ],
+                })),
+            })))
+        }
+        _ => unreachable!("complex_binary_expr only called for + - * /"),
+    }
+}
+
 fn binary_expr(
     node: &Node,
     b: &crate::parse::clang_ast::BinaryOperator,
@@ -501,6 +891,20 @@ fn binary_expr(
             lhs: Box::new(truthy(lhs_node, env)?),
             rhs: Box::new(truthy(rhs_node, env)?),
         }),
+        "+" | "-" | "*" | "/"
+            if matches!(node_type(lhs_node), CType::Complex(_))
+                || matches!(node_type(rhs_node), CType::Complex(_)) =>
+        {
+            let lhs_ty = node_type(lhs_node);
+            let rhs_ty = node_type(rhs_node);
+            let inner = match (&lhs_ty, &rhs_ty) {
+                (CType::Complex(inner), _) | (_, CType::Complex(inner)) => inner.as_ref().clone(),
+                _ => unreachable!(),
+            };
+            let lhs = to_complex(lower_expr(lhs_node, env)?, &lhs_ty, &inner, env.records);
+            let rhs = to_complex(lower_expr(rhs_node, env)?, &rhs_ty, &inner, env.records);
+            complex_binary_expr(&b.opcode, lhs, rhs, &inner, env)
+        }
         "+" | "-" => {
             let lhs_ty = node_type(lhs_node);
             let rhs_ty = node_type(rhs_node);
@@ -599,7 +1003,11 @@ fn compound_assign_expr(
     let lhs_ty = node_type(lhs_node);
     let target = lower_expr(lhs_node, env)?;
 
-    let new_value = if lhs_ty.is_pointerish() {
+    let new_value = if let CType::Complex(inner) = &lhs_ty {
+        let rhs_ty = node_type(rhs_node);
+        let rhs = to_complex(lower_expr(rhs_node, env)?, &rhs_ty, inner, env.records);
+        complex_binary_expr(base_op, target.clone(), rhs, inner, env)?
+    } else if lhs_ty.is_pointerish() {
         pointer_arith(
             base_op,
             lhs_node,

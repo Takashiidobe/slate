@@ -49,6 +49,8 @@ pub(crate) struct Ctx {
     pub(crate) address_taken_fns: HashSet<String>,
     pub(crate) ctor_calls: Vec<String>,
     pub(crate) dtor_calls: Vec<String>,
+    pub(crate) intrinsic_passthroughs: HashMap<Id, String>,
+    pub(crate) uses_complex_runtime: std::cell::Cell<bool>,
 }
 
 #[derive(Clone, Copy)]
@@ -70,6 +72,8 @@ pub(crate) struct Env<'a> {
     pub(crate) goto: Option<GotoCtx<'a>>,
     pub(crate) dtor_calls: &'a [String],
     pub(crate) ret_ty: &'a types::CType,
+    pub(crate) intrinsic_passthroughs: &'a HashMap<Id, String>,
+    pub(crate) uses_complex_runtime: &'a std::cell::Cell<bool>,
 }
 
 pub(crate) const VOID_RET: types::CType = types::CType::Void;
@@ -97,7 +101,14 @@ pub(crate) fn lower_program(tu: &Node, primary: &Path) -> LResult<RustProgram> {
     let mut ctx = Ctx::default();
     items::collect_top_level(tu, &mut ctx);
     items::collect_address_taken_fns(tu, &mut ctx.address_taken_fns);
+    ctx.intrinsic_passthroughs = builtins::collect_intrinsic_passthroughs(tu);
     let mut items = items::lower_items(tu, &mut ctx, primary)?;
+    if ctx.uses_complex_runtime.get() {
+        items.splice(
+            0..0,
+            crate::frontend::lowerer::runtime_support::complex_prelude(),
+        );
+    }
     let math_builtin_externs = builtins::collect_math_builtin_externs(tu);
     if !math_builtin_externs.is_empty() {
         items.splice(
@@ -105,6 +116,19 @@ pub(crate) fn lower_program(tu: &Node, primary: &Path) -> LResult<RustProgram> {
             [Item::ExternBlock {
                 abi: "C".into(),
                 decls: math_builtin_externs
+                    .into_iter()
+                    .map(ExternDecl::Fn)
+                    .collect(),
+            }],
+        );
+    }
+    let libc_passthrough_externs = builtins::collect_libc_passthrough_externs(tu);
+    if !libc_passthrough_externs.is_empty() {
+        items.splice(
+            0..0,
+            [Item::ExternBlock {
+                abi: "C".into(),
+                decls: libc_passthrough_externs
                     .into_iter()
                     .map(ExternDecl::Fn)
                     .collect(),

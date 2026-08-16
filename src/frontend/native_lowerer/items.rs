@@ -410,6 +410,9 @@ pub(crate) fn lower_items(tu: &Node, ctx: &mut Ctx, primary: &Path) -> LResult<V
     for node in &tu.inner {
         match &node.kind {
             Clang::FunctionDecl(d) if !d.is_implicit => {
+                if ctx.intrinsic_passthroughs.contains_key(&node.id) {
+                    continue;
+                }
                 let name = d.name.clone().unwrap_or_default();
                 if has_body(node)
                     && defined_fn_names.contains(&name)
@@ -533,6 +536,8 @@ fn lower_function(
         goto: None,
         dtor_calls: &ctx.dtor_calls,
         ret_ty: return_ty.as_ref(),
+        intrinsic_passthroughs: &ctx.intrinsic_passthroughs,
+        uses_complex_runtime: &ctx.uses_complex_runtime,
     };
     let mut body_stmts = super::stmts::lower_function_body(body, env, ret.is_some())?;
     if env.is_main {
@@ -583,6 +588,8 @@ fn collect_locals(
                     goto: None,
                     dtor_calls: &[],
                     ret_ty: &super::VOID_RET,
+                    intrinsic_passthroughs: &ctx.intrinsic_passthroughs,
+                    uses_complex_runtime: &ctx.uses_complex_runtime,
                 };
                 let init = match node.inner.first() {
                     Some(c) => super::globals::lower_init(c, &ty, env)?,
@@ -636,6 +643,8 @@ fn lower_global(node: &Node, d: &Decl, ctx: &Ctx, force_extern: bool) -> LResult
         goto: None,
         dtor_calls: &[],
         ret_ty: &super::VOID_RET,
+        intrinsic_passthroughs: &ctx.intrinsic_passthroughs,
+        uses_complex_runtime: &ctx.uses_complex_runtime,
     };
     let init = match node.inner.first() {
         Some(c) => super::globals::lower_init(c, &ty, env)?,

@@ -1,11 +1,46 @@
 use super::types::{CType, RecordRegistry};
 use super::{Env, LResult};
-use crate::backend::rust_ast::{Expr, RustValue};
+use crate::backend::rust_ast::{Block, CLibInitializer, Expr, RustValue};
+use crate::function_identity::CallBinding;
 use crate::parse::clang_ast::{Clang, Node};
+
+/// Opaque libc record types (`stat`, `mbstate_t`, ...) can't be built via a
+/// field-by-field struct literal -- their Rust definitions in the `libc`
+/// crate often rename or privatize fields relative to the C layout our own
+/// `RecordRegistry` reads off the shim header, so zero-init has to go through
+/// `std::mem::zeroed`/a literal fixed-name field list instead, mirroring how
+/// the mature CIR-based lowerer treats `Type::CLib` (see
+/// `src/frontend/lowerer.rs`'s `default_value_expr`).
+fn clib_zero_value(tag: &str) -> Option<Expr> {
+    let clib = super::types::clib_record_type(super::types::bare_tag_name(tag))?;
+    Some(match clib.initializer() {
+        CLibInitializer::ScalarZero => Expr::Value(RustValue::I64(0)),
+        CLibInitializer::Zeroed => Expr::Unsafe(Box::new(Block {
+            stmts: Vec::new(),
+            tail: Some(Box::new(Expr::Call {
+                binding: CallBinding::Generated,
+                func: Box::new(Expr::Var(
+                    format!("std::mem::zeroed::<{}>", clib.path()).into(),
+                )),
+                args: Vec::new(),
+            })),
+        })),
+        CLibInitializer::Fields(fields) => Expr::StructLit {
+            name: clib.path().into(),
+            fields: fields
+                .iter()
+                .map(|field| ((*field).into(), Expr::Value(RustValue::I64(0))))
+                .collect(),
+        },
+    })
+}
 
 pub(crate) fn zero_value(ty: &CType, records: &RecordRegistry) -> Expr {
     match ty {
         CType::Record { tag, is_union } => {
+            if let Some(clib_zero) = clib_zero_value(tag) {
+                return clib_zero;
+            }
             let Some(info) = records.get(tag) else {
                 return Expr::Value(RustValue::I64(0));
             };
@@ -31,6 +66,13 @@ pub(crate) fn zero_value(ty: &CType, records: &RecordRegistry) -> Expr {
         },
         CType::LDouble => crate::frontend::lowerer::runtime_support::long_double_zero_expr(),
         _ if ty.is_flonum() => Expr::Value(RustValue::Float(0.0.into())),
+        CType::Complex(inner) => Expr::StructLit {
+            name: "num_complex::Complex".into(),
+            fields: vec![
+                ("re".into(), zero_value(inner, records)),
+                ("im".into(), zero_value(inner, records)),
+            ],
+        },
         CType::Ptr(_) | CType::Func { .. } => Expr::Value(RustValue::NullPtr),
         _ => Expr::Value(ty.int_value(0)),
     }
@@ -38,6 +80,18 @@ pub(crate) fn zero_value(ty: &CType, records: &RecordRegistry) -> Expr {
 
 pub(crate) fn lower_init(node: &Node, ty: &CType, env: Env) -> LResult<Expr> {
     match (&node.kind, ty) {
+        (Clang::InitListExpr(_), CType::Record { tag, is_union })
+            if super::types::clib_record_type(super::types::bare_tag_name(tag)).is_some_and(
+                |clib| {
+                    !matches!(
+                        clib.initializer(),
+                        crate::backend::rust_ast::CLibInitializer::Fields(_)
+                    )
+                },
+            ) =>
+        {
+            Ok(zero_value(ty, env.records))
+        }
         (Clang::InitListExpr(_), CType::Record { tag, is_union }) => {
             let Some(info) = env.records.get(tag) else {
                 return Ok(zero_value(ty, env.records));

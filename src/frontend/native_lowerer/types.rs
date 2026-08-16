@@ -21,6 +21,7 @@ pub(crate) enum CType {
     Double,
     LDouble,
     Ptr(Box<CType>),
+    Complex(Box<CType>),
     Array {
         base: Box<CType>,
         len: Option<i64>,
@@ -81,6 +82,43 @@ fn strip_qualifiers(s: &str) -> &str {
         }
     }
     s
+}
+
+/// Strips trailing `__attribute__((...))` groups from a type spelling (e.g.
+/// `void (void) __attribute__((noreturn))`). Clang keeps these attached to the
+/// canonical qualType string, and `trailing_paren_params`'s right-to-left paren
+/// balancing would otherwise mistake the attribute's own `(( ))` for the
+/// function's parameter-list parens, corrupting the parsed signature.
+fn strip_trailing_attributes(s: &str) -> &str {
+    let mut s = s.trim_end();
+    while let Some(stripped) = strip_one_trailing_attribute(s) {
+        s = stripped.trim_end();
+    }
+    s
+}
+
+fn strip_one_trailing_attribute(s: &str) -> Option<&str> {
+    if !s.ends_with(')') {
+        return None;
+    }
+    let bytes = s.as_bytes();
+    let mut depth = 0i32;
+    let mut i = bytes.len();
+    while i > 0 {
+        i -= 1;
+        match bytes[i] {
+            b')' => depth += 1,
+            b'(' => {
+                depth -= 1;
+                if depth == 0 {
+                    let prefix = s[..i].trim_end();
+                    return prefix.strip_suffix("__attribute__").map(str::trim_end);
+                }
+            }
+            _ => {}
+        }
+    }
+    None
 }
 
 impl From<&str> for CType {
@@ -198,7 +236,7 @@ fn parse_param_list(s: &str) -> (Vec<CType>, bool) {
 
 impl CType {
     pub(crate) fn parse(spelling: &str) -> CType {
-        let s = strip_qualifiers(spelling.trim());
+        let s = strip_trailing_attributes(strip_qualifiers(spelling.trim()));
 
         if let Some(inner) = s.strip_suffix('*') {
             return CType::Ptr(Box::new(CType::parse(strip_qualifiers(inner))));
@@ -228,6 +266,12 @@ impl CType {
                 params,
                 is_variadic,
             };
+        }
+
+        if let Some(inner) = s.strip_prefix("_Complex")
+            && inner.starts_with(char::is_whitespace)
+        {
+            return CType::Complex(Box::new(CType::parse(inner.trim())));
         }
 
         if let Some(tag) = s.strip_prefix("struct ") {
@@ -284,6 +328,7 @@ impl CType {
             CType::LDouble => 16,
             CType::Ptr(_) => 8,
             CType::Enum { .. } => 4,
+            CType::Complex(inner) => inner.size() * 2,
             _ => 8,
         }
     }
@@ -332,6 +377,7 @@ impl CType {
             CType::LDouble if crate::cir::emit::uses_f64_long_double_abi() => Type::Prim(Prim::F64),
             CType::LDouble => Type::LongDouble,
             CType::Enum { .. } => Type::Prim(Prim::I32),
+            CType::Complex(inner) => Type::Complex(Box::new(inner.lower(records))),
             CType::Ptr(inner) => match inner.as_ref() {
                 CType::Void => Type::Ptr {
                     mutable: true,
@@ -382,7 +428,7 @@ impl CType {
     }
 }
 
-fn bare_tag_name(tag: &str) -> &str {
+pub(crate) fn bare_tag_name(tag: &str) -> &str {
     tag.strip_prefix("struct ")
         .or_else(|| tag.strip_prefix("union "))
         .unwrap_or(tag)
@@ -391,11 +437,11 @@ fn bare_tag_name(tag: &str) -> &str {
 pub(crate) fn rust_record_name(tag: &str) -> String {
     let name = bare_tag_name(tag);
     clib_record_type(name)
-        .map(|ty| ty.c_name().to_string())
+        .map(|ty| ty.path().to_string())
         .unwrap_or_else(|| sanitize_ident(name).into_string())
 }
 
-fn clib_record_type(name: &str) -> Option<CLibType> {
+pub(crate) fn clib_record_type(name: &str) -> Option<CLibType> {
     let name = match name {
         "__mbstate_t" => "mbstate_t",
         _ => name,
