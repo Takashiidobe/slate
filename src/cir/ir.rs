@@ -58,7 +58,7 @@ pub enum Attr {
     Str(String),
     Type(String),
     Array(Vec<Attr>),
-    Dict,
+    Dict(BTreeMap<String, Attr>),
 }
 
 impl Attr {
@@ -72,6 +72,13 @@ impl Attr {
     pub fn as_str(&self) -> Option<&str> {
         match self {
             Attr::Str(s) | Attr::Raw(s) | Attr::Type(s) => Some(s),
+            _ => None,
+        }
+    }
+
+    pub fn as_dict(&self) -> Option<&BTreeMap<String, Attr>> {
+        match self {
+            Attr::Dict(dict) => Some(dict),
             _ => None,
         }
     }

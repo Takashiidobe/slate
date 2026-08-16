@@ -10,6 +10,17 @@ pub(super) fn attr_int(op: &Op, key: &str) -> Option<i64> {
     op.attrs.get(key).and_then(Attr::as_int)
 }
 
+pub(super) fn call_arg_byval_type(op: &Op, operand_index: usize) -> Option<&str> {
+    let Attr::Array(entries) = op.attrs.get("arg_attrs")? else {
+        return None;
+    };
+    entries
+        .get(operand_index)?
+        .as_dict()?
+        .get("llvm.byval")
+        .and_then(Attr::as_str)
+}
+
 pub(super) fn successor_operand_groups(op: &Op) -> Vec<Vec<String>> {
     match op.kind() {
         CirOpKind::Br => vec![op.operands.clone()],

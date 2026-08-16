@@ -2,6 +2,13 @@ use super::*;
 use crate::function_identity::CallBinding;
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
+    fn coerce_group_alloca(&self, load_result: &str) -> Option<(&str, &str, &str)> {
+        let ptr = self.load_ptr_operand.get(load_result)?;
+        let base = self.member_base_operand.get(ptr)?;
+        let (address, real_type) = self.coerce_alloca_real_type.get(base)?;
+        Some((base.as_str(), address.as_str(), real_type.as_str()))
+    }
+
     pub(super) fn lower_call(&mut self, op: &Op) {
         let operand_types = op_operand_types(op.ty.as_deref().unwrap_or(""));
         let direct_callee =
@@ -66,6 +73,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     Some(callee_operand.clone()),
                 )
             };
+        let arg_attrs_offset = op.operands.len() - arg_operands.len();
         let mut args = arg_operands
             .iter()
             .zip(arg_types.iter().copied())
@@ -97,16 +105,66 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 .parent
                 .function_param_types
                 .get(&callee_name)
-                .map_or(0, Vec::len);
-            let variadic = args.split_off(fixed.min(args.len()));
-            let boxed = variadic
-                .into_iter()
-                .map(|arg| Expr::Call {
+                .map_or(0, Vec::len)
+                .min(args.len());
+            let variadic = args.split_off(fixed);
+            let variadic_operands = &arg_operands[fixed..];
+            let mut boxed = Vec::new();
+            let mut i = 0;
+            while i < variadic.len() {
+                let group = variadic_operands
+                    .get(i)
+                    .and_then(|id| self.coerce_group_alloca(id));
+                let arg = if let Some((group_key, address, real_record)) = group {
+                    let group_key = group_key.to_string();
+                    let address = address.to_string();
+                    let mut j = i + 1;
+                    while variadic_operands
+                        .get(j)
+                        .and_then(|id| self.coerce_group_alloca(id))
+                        .is_some_and(|(key, _, _)| key == group_key)
+                    {
+                        j += 1;
+                    }
+                    let real_ty = Type::Custom(rust_record_name(real_record));
+                    let read = Self::unsafe_expr(Expr::Call {
+                        binding: CallBinding::Generated,
+                        func: Box::new(Expr::Path(Path::new(
+                            ["std", "ptr", "read_unaligned"].map(Ident::from),
+                        ))),
+                        args: vec![Expr::Cast {
+                            expr: Box::new(self.pointer_operand_expr(&address)),
+                            ty: Type::Ptr {
+                                mutable: false,
+                                inner: Box::new(real_ty),
+                            },
+                        }],
+                    });
+                    i = j;
+                    read
+                } else {
+                    let byval = call_arg_byval_type(op, arg_attrs_offset + fixed + i).is_some();
+                    let arg = variadic[i].clone();
+                    let arg = if byval {
+                        Self::unsafe_expr(Expr::Call {
+                            binding: CallBinding::Generated,
+                            func: Box::new(Expr::Path(Path::new(
+                                ["std", "ptr", "read_unaligned"].map(Ident::from),
+                            ))),
+                            args: vec![arg],
+                        })
+                    } else {
+                        arg
+                    };
+                    i += 1;
+                    arg
+                };
+                boxed.push(Expr::Call {
                     binding: CallBinding::Generated,
                     func: Box::new(Expr::Var("__SlateVaArg::new".into())),
                     args: vec![arg],
-                })
-                .collect();
+                });
+            }
             args.push(Expr::Call {
                 binding: CallBinding::Generated,
                 func: Box::new(Expr::Var("__SlateVaArgs::new".into())),

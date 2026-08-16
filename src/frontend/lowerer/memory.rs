@@ -69,6 +69,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(base_ptr) = op.operands.first() else {
             return;
         };
+        self.member_base_operand
+            .insert(result.clone(), base_ptr.clone());
         if let Some(outputs) = self.asm_outputs.get(base_ptr)
             && let Some(output) = aggregate_member_index(op).and_then(|index| outputs.get(index))
         {
@@ -683,6 +685,21 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.values.insert(result.clone(), Val::Expr(place));
             return;
         }
+        if let Some(operand_record) = cir_ptr_inner(operand_ty).and_then(cir_record_name)
+            && is_abi_coercion_record_name(operand_record)
+            && let Some(real_record) = cir_ptr_inner(result_ty).and_then(cir_record_name)
+            && !is_abi_coercion_record_name(real_record)
+        {
+            self.coerce_alloca_real_type
+                .insert(src.clone(), (src.clone(), real_record.to_string()));
+        } else if let Some(result_record) = cir_ptr_inner(result_ty).and_then(cir_record_name)
+            && is_abi_coercion_record_name(result_record)
+            && let Some(real_record) = cir_ptr_inner(operand_ty).and_then(cir_record_name)
+            && !is_abi_coercion_record_name(real_record)
+        {
+            self.coerce_alloca_real_type
+                .insert(result.clone(), (src.clone(), real_record.to_string()));
+        }
         let result_rust_ty = self.parent.rust_type(result_ty);
         let operand_rust_ty = self.parent.rust_type(operand_ty);
         let value = match self.values.get(src).cloned() {
@@ -857,7 +874,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 && !is_long_double(result_ty)
                 && bitint_generic_parts(&result_rust_ty).is_some() =>
             {
-                let (name, _, _) = bitint_generic_parts(&result_rust_ty).unwrap();
+                let (name, _, _, _) = bitint_generic_parts(&result_rust_ty).unwrap();
                 let signed = name == "bitint::BInt";
                 let wide_ty = if signed {
                     Type::Prim(Prim::I128)
