@@ -698,13 +698,9 @@ pub fn lower_shared_types(
             .iter()
             .filter_map(|enm| lower_enum_def(enm, Visibility::Pub).map(Item::Enum)),
     );
-    items.extend(
-        records
-            .iter()
-            .flat_map(|record| {
-                lower_record_def(record, Visibility::Pub, Visibility::Pub, true, false)
-            }),
-    );
+    items.extend(records.iter().flat_map(|record| {
+        lower_record_def(record, Visibility::Pub, Visibility::Pub, true, false)
+    }));
     Program { items }
 }
 
@@ -2009,9 +2005,9 @@ impl __SlateVaArgs {
                     .insert(name.to_string(), raw.to_string());
             }
         } else if raw.trim_start().starts_with("#cir.zero")
-            && !ty.as_ref().is_some_and(|ty| {
-                matches!(ty, Type::VaList) || is_boxed_va_args_type(ty)
-            })
+            && !ty
+                .as_ref()
+                .is_some_and(|ty| matches!(ty, Type::VaList) || is_boxed_va_args_type(ty))
             && let Some((elem, len)) = parse_cir_array_type(attr_str(op, "sym_type").unwrap_or(""))
         {
             if is_c_global && let Some(ty) = ty {
@@ -2989,7 +2985,9 @@ impl __SlateVaArgs {
                                 .map(|field| {
                                     (
                                         field.name.clone(),
-                                        self.default_value_expr(&self.c_record_field_type(&field.ty)),
+                                        self.default_value_expr(
+                                            &self.c_record_field_type(&field.ty),
+                                        ),
                                     )
                                 })
                                 .collect(),
@@ -3003,7 +3001,9 @@ impl __SlateVaArgs {
                                 .map(|field| {
                                     (
                                         sanitize_ident(&field.name).into_string(),
-                                        self.default_value_expr(&self.c_record_field_type(&field.ty)),
+                                        self.default_value_expr(
+                                            &self.c_record_field_type(&field.ty),
+                                        ),
                                     )
                                 })
                                 .collect();

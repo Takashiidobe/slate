@@ -71,10 +71,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn value_or_place_address_expr(&self, operand: &str) -> Expr {
-        if self.values.contains_key(operand) || self.slot_place(operand).is_some() {
+        if self.values.contains_key(operand) {
             return self.operand_expr(operand);
         }
-        if self.member_ptrs.contains_key(operand)
+        if self.slot_place(operand).is_some()
+            || self.member_ptrs.contains_key(operand)
             || self.element_ptrs.contains_key(operand)
             || self.global_name(operand).is_some()
         {

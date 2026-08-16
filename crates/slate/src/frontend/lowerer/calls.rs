@@ -127,7 +127,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         {
                             arg
                         }
-                        Some(Type::VaList) => arg,
+                        Some(Type::VaList) => Expr::MethodCall {
+                            recv: Box::new(arg),
+                            method: "clone".into(),
+                            args: vec![],
+                        },
                         Some(ty) => Expr::Cast {
                             expr: Box::new(arg),
                             ty: ty.clone(),

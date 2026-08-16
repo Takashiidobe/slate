@@ -47,7 +47,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.va_places
             .get(ptr)
             .cloned()
-            .or_else(|| self.place_expr(ptr))
+            .or_else(|| Some(self.place_or_deref_expr(ptr)))
     }
 
     pub(super) fn place_or_deref_expr(&self, ptr: &str) -> Expr {
@@ -645,7 +645,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .into_iter()
             .next()
             .unwrap_or("");
-        if (is_cir_va_list_type(result_ty) || is_cir_va_list_type(operand_ty))
+        if (is_cir_va_list_value_type(result_ty) || is_cir_va_list_value_type(operand_ty))
             && let Some(place) = self.va_target_place(src)
         {
             self.va_places.insert(result.clone(), place.clone());

@@ -219,6 +219,10 @@ pub(super) fn is_cir_va_list_type(ty: &str) -> bool {
     va_list_shaped_type(ty, false).is_some()
 }
 
+pub(super) fn is_cir_va_list_value_type(ty: &str) -> bool {
+    matches!(va_list_shaped_type(ty, false), Some(ty) if !matches!(ty, Type::Ptr { .. }))
+}
+
 pub(super) fn is_boxed_va_args_type(ty: &Type) -> bool {
     matches!(ty, Type::Custom(name) if name == "__SlateVaArgs")
 }
