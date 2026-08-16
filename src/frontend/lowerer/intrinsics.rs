@@ -551,6 +551,85 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
+    pub(super) fn lower_vec_create(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        let elems = op.operands.iter().map(|v| self.operand_expr(v)).collect();
+        self.materialize_expr(result, Expr::ArrayLit(elems), op_result_type(op));
+    }
+
+    pub(super) fn lower_vec_splat(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        let Some(value) = op.operands.first() else {
+            return;
+        };
+        let Some((_, len)) = op_result_type(op).and_then(parse_cir_vector_type) else {
+            self.lower_unsupported_value(op, "cir.vec.splat");
+            return;
+        };
+        let value = self.operand_expr(value);
+        self.materialize_expr(
+            result,
+            Expr::ArrayLit((0..len).map(|_| value.clone()).collect()),
+            op_result_type(op),
+        );
+    }
+
+    pub(super) fn lower_vec_cmp(&mut self, op: &Op) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        if op.operands.len() < 2 {
+            return;
+        }
+        let Some((elem_ty, len)) = op_result_type(op).and_then(parse_cir_vector_type) else {
+            self.lower_unsupported_value(op, "cir.vec.cmp");
+            return;
+        };
+        let Some(cmp) = (match attr_int(op, "kind") {
+            Some(0) => Some(BinOp::Lt),
+            Some(1) => Some(BinOp::Le),
+            Some(2) => Some(BinOp::Gt),
+            Some(3) => Some(BinOp::Ge),
+            Some(4) => Some(BinOp::Eq),
+            Some(5) => Some(BinOp::Ne),
+            _ => None,
+        }) else {
+            self.lower_unsupported_value(op, "cir.vec.cmp kind");
+            return;
+        };
+        let lhs = self.operand_expr(&op.operands[0]);
+        let rhs = self.operand_expr(&op.operands[1]);
+        let elem_rust_ty = self.parent.rust_type(&elem_ty);
+        self.materialize_expr(
+            result,
+            Expr::ArrayLit(
+                (0..len)
+                    .map(|i| {
+                        let l = vector_index_expr(lhs.clone(), i);
+                        let r = vector_index_expr(rhs.clone(), i);
+                        Expr::MethodCall {
+                            recv: Box::new(Expr::Cast {
+                                expr: Box::new(Expr::Binary {
+                                    op: cmp,
+                                    lhs: Box::new(l),
+                                    rhs: Box::new(r),
+                                }),
+                                ty: elem_rust_ty.clone(),
+                            }),
+                            method: "wrapping_neg".into(),
+                            args: vec![],
+                        }
+                    })
+                    .collect(),
+            ),
+            op_result_type(op),
+        );
+    }
+
     pub(super) fn lower_trap(&mut self) {
         self.push_stmt(Stmt::Expr(Expr::Call {
             binding: crate::function_identity::CallBinding::Generated,

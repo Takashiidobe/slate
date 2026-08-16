@@ -334,7 +334,24 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else if is_cir_function_pointer_type(ty) {
             self.function_pointer_operand_expr(operand)
         } else if ty.starts_with("!cir.ptr<") {
-            let expr = self.pointer_operand_expr(operand);
+            // A pointer-to-whole-aggregate parameter (e.g. `V*` for a GNU vector
+            // typedef, or `int (*)[N]`) must not decay to an element pointer the
+            // way a bare array-to-pointer argument would.
+            let points_to_whole_aggregate = self
+                .slot_types
+                .get(operand)
+                .is_some_and(|slot_ty| matches!(slot_ty, Type::Array { .. }))
+                && cir_ptr_inner(ty).is_some_and(|inner| {
+                    parse_cir_array_type(inner).is_some() || parse_cir_vector_type(inner).is_some()
+                });
+            let expr = if points_to_whole_aggregate {
+                Expr::AddrOf {
+                    mutable: true,
+                    expr: Box::new(self.slot_place(operand).expect("checked slot_types above")),
+                }
+            } else {
+                self.pointer_operand_expr(operand)
+            };
             if self
                 .slot_types
                 .get(operand)

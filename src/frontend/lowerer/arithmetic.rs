@@ -182,6 +182,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if op.operands.len() < 2 {
             return;
         }
+        if let Some((_, len)) = op_result_type(op).and_then(parse_cir_vector_type) {
+            self.materialize_expr(
+                result,
+                self.vector_binary_expr(&op.operands[0], &op.operands[1], len, rust_op),
+                op_result_type(op),
+            );
+            return;
+        }
         let lhs = self.operand_expr(&op.operands[0]);
         let rhs = self.operand_expr(&op.operands[1]);
         self.materialize_expr(
@@ -408,6 +416,22 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(value) = op.operands.first() else {
             return;
         };
+        if let Some((_, len)) = op_result_type(op).and_then(parse_cir_vector_type) {
+            let value = self.operand_expr(value);
+            self.materialize_expr(
+                result,
+                Expr::ArrayLit(
+                    (0..len)
+                        .map(|i| Expr::Unary {
+                            op: UnaryOp::Not,
+                            expr: Box::new(vector_index_expr(value.clone(), i)),
+                        })
+                        .collect(),
+                ),
+                op_result_type(op),
+            );
+            return;
+        }
         if let Some(folded) = self.fold_unary_arith(&op.operands[0], UnaryOp::Not) {
             self.macro_arith_values.insert(result.clone(), folded);
         }
@@ -430,6 +454,51 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(value) = op.operands.first() else {
             return;
         };
+        if let Some((elem_ty, len)) = op_result_type(op).and_then(parse_cir_vector_type) {
+            let value = self.operand_expr(value);
+            let elem_rust_ty = self.parent.rust_type(&elem_ty);
+            let elem_is_wrapping_int = matches!(
+                &elem_rust_ty,
+                Type::Prim(
+                    Prim::I8
+                        | Prim::I16
+                        | Prim::I32
+                        | Prim::I64
+                        | Prim::I128
+                        | Prim::Isize
+                        | Prim::U8
+                        | Prim::U16
+                        | Prim::U32
+                        | Prim::U64
+                        | Prim::U128
+                        | Prim::Usize
+                )
+            );
+            self.materialize_expr(
+                result,
+                Expr::ArrayLit(
+                    (0..len)
+                        .map(|i| {
+                            let elem = vector_index_expr(value.clone(), i);
+                            if elem_is_wrapping_int {
+                                Expr::MethodCall {
+                                    recv: Box::new(elem),
+                                    method: "wrapping_neg".into(),
+                                    args: vec![],
+                                }
+                            } else {
+                                Expr::Unary {
+                                    op: UnaryOp::Neg,
+                                    expr: Box::new(elem),
+                                }
+                            }
+                        })
+                        .collect(),
+                ),
+                op_result_type(op),
+            );
+            return;
+        }
         if let Some(folded) = self.fold_unary_arith(&op.operands[0], UnaryOp::Neg) {
             self.macro_arith_values.insert(result.clone(), folded);
         }

@@ -3328,6 +3328,8 @@ impl __SlateVaArgs {
                 .collect();
             out.resize(len, self.default_value_expr(elem));
             Some(Expr::ArrayLit(out))
+        } else if raw.starts_with("#cir.const_vector<[") {
+            parse_cir_const_vector(raw)
         } else if raw.starts_with("#cir.zero") {
             Some(self.default_value_expr(ty))
         } else if raw.starts_with("#cir.ptr<null>") {
@@ -4075,9 +4077,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::Br => self.lower_br(op),
             CirOpKind::Brcond => self.lower_brcond(op),
             CirOpKind::IndirectBr => self.lower_indirect_br(op),
+            CirOpKind::VecCmp => self.lower_vec_cmp(op),
+            CirOpKind::VecCreate => self.lower_vec_create(op),
             CirOpKind::VecExtract => self.lower_vec_extract(op),
             CirOpKind::VecInsert => self.lower_vec_insert(op),
             CirOpKind::VecShuffle => self.lower_vec_shuffle(op),
+            CirOpKind::VecSplat => self.lower_vec_splat(op),
             CirOpKind::EhSetjmp => self.lower_eh_setjmp(op),
             CirOpKind::CallLlvmIntrinsic => self.lower_llvm_intrinsic(op),
             CirOpKind::Label => {}
