@@ -319,29 +319,25 @@ pub(super) fn f80_cast_to_name(ty: &Type) -> Option<&'static str> {
     })
 }
 
+fn f80_binary_extern_decl(name: &str) -> ExternFnDecl {
+    let f80 = || Type::LongDouble;
+    f80_extern_decl(
+        name,
+        vec![f80_param("a", f80()), f80_param("b", f80())],
+        Some(f80()),
+    )
+}
+
 pub(super) fn f80_shim_decls() -> Vec<ExternFnDecl> {
     let f80 = || Type::LongDouble;
     let mut decls = vec![
-        f80_extern_decl(
-            "__slate_f80_add",
-            vec![f80_param("a", f80()), f80_param("b", f80())],
-            Some(f80()),
-        ),
-        f80_extern_decl(
-            "__slate_f80_sub",
-            vec![f80_param("a", f80()), f80_param("b", f80())],
-            Some(f80()),
-        ),
-        f80_extern_decl(
-            "__slate_f80_mul",
-            vec![f80_param("a", f80()), f80_param("b", f80())],
-            Some(f80()),
-        ),
-        f80_extern_decl(
-            "__slate_f80_div",
-            vec![f80_param("a", f80()), f80_param("b", f80())],
-            Some(f80()),
-        ),
+        f80_binary_extern_decl("__slate_f80_add"),
+        f80_binary_extern_decl("__slate_f80_sub"),
+        f80_binary_extern_decl("__slate_f80_mul"),
+        f80_binary_extern_decl("__slate_f80_div"),
+        f80_binary_extern_decl("__slate_f80_copysign"),
+        f80_binary_extern_decl("__slate_f80_fmax"),
+        f80_binary_extern_decl("__slate_f80_fmin"),
         f80_extern_decl("__slate_f80_neg", vec![f80_param("a", f80())], Some(f80())),
     ];
     for shim in [
@@ -371,21 +367,6 @@ pub(super) fn f80_shim_decls() -> Vec<ExternFnDecl> {
             f80_param("flags", Type::Prim(Prim::I32)),
         ],
         Some(Type::Prim(Prim::Bool)),
-    ));
-    decls.push(f80_extern_decl(
-        "__slate_f80_copysign",
-        vec![f80_param("a", f80()), f80_param("b", f80())],
-        Some(f80()),
-    ));
-    decls.push(f80_extern_decl(
-        "__slate_f80_fmax",
-        vec![f80_param("a", f80()), f80_param("b", f80())],
-        Some(f80()),
-    ));
-    decls.push(f80_extern_decl(
-        "__slate_f80_fmin",
-        vec![f80_param("a", f80()), f80_param("b", f80())],
-        Some(f80()),
     ));
     decls.push(f80_extern_decl(
         "__slate_cf80_mul",
