@@ -918,8 +918,8 @@ fn translate_project_lib_crate_with_manifest(
     let mut cross_referenced_globals: BTreeSet<String> = BTreeSet::new();
     let mut address_taken_functions: BTreeSet<String> = BTreeSet::new();
     for (stem, path) in &modules {
-        let source =
-            std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
+        let (source, _raw) =
+            preprocess::read_source(path).map_err(|e| format!("read {}: {e}", path.display()))?;
         let pp = cli_result(preprocess::record_file(&source, &[]))?;
         reject_active_unsupported(&pp, "translate-project --lib")?;
         let warning_items = project_warning_items(
@@ -1241,7 +1241,7 @@ fn translate_project_lib_crate_with_compile_commands(
             .map(rust_ident)
             .ok_or_else(|| format!("bad file stem: {}", path.display()))?;
         let args = compile_command_args(command)?;
-        let source = std::fs::read_to_string(path)
+        let (source, _raw) = preprocess::read_source(path)
             .map_err(|error| format!("read {}: {error}", path.display()))?;
         let pp = cli_result(preprocess::record_translation_unit(path, &source, &args))?;
         reject_active_unsupported(&pp, "translate-project --lib --compile-commands")?;
@@ -1748,8 +1748,8 @@ fn translate_project_with_targets(
                 .or_insert_with(|| shim.clone());
         }
         add_shared_long_double_externs(&mut program, shared_long_double);
-        let source =
-            std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
+        let (source, _raw) =
+            preprocess::read_source(path).map_err(|e| format!("read {}: {e}", path.display()))?;
         let pp = cli_result(preprocess::record_file(&source, &[]))?;
         let warning_items = project_warning_items(
             &pp,
@@ -1880,8 +1880,8 @@ fn translate_project_with_compile_commands(
             .expect("module has a compile command variant");
         let (_, primary) = &variants[0];
         let args = compile_command_args(primary)?;
-        let source =
-            std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
+        let (source, _raw) =
+            preprocess::read_source(path).map_err(|e| format!("read {}: {e}", path.display()))?;
         let pp = cli_result(preprocess::record_translation_unit(path, &source, &args))?;
         reject_active_unsupported(&pp, "translate-project --compile-commands")?;
         let module = cli_result(cir::emit_module(path, &args))?;
@@ -2091,8 +2091,8 @@ fn translate_project_with_compile_commands(
         add_shared_long_double_externs(&mut program, shared_long_double);
         let (_, primary) = &variants[0];
         let primary_args = compile_command_args(primary)?;
-        let source =
-            std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
+        let (source, _raw) =
+            preprocess::read_source(path).map_err(|e| format!("read {}: {e}", path.display()))?;
         let pp = cli_result(preprocess::record_translation_unit(
             path,
             &source,
@@ -2155,8 +2155,8 @@ fn translate_project_with_compile_commands(
 /// Record the preprocessor conditional regions of `path` (resolving active
 /// branches for the given clang args) and print them as JSON for later stages.
 fn record_cfg(path: &Path, clang_args: &[String]) -> Result<String, String> {
-    let source =
-        std::fs::read_to_string(path).map_err(|e| format!("read {}: {e}", path.display()))?;
+    let (source, _raw) =
+        preprocess::read_source(path).map_err(|e| format!("read {}: {e}", path.display()))?;
     let pp = cli_result(preprocess::record_file(&source, clang_args))?;
     let directives: Vec<serde_json::Value> = pp
         .directives
