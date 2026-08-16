@@ -106,6 +106,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     .map(|ty| self.parent.rust_type(ty)),
                 unsafe_access,
                 bitfield_name: None,
+                field_is_trailing: false,
             },
         );
     }

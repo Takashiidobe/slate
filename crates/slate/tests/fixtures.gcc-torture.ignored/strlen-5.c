@@ -1,3 +1,9 @@
+/* SLATE: genuinely UB (C11 6.5.6p8), not a lowering bug -- reads past one
+   array/struct member's declared bound into an adjacent sibling member by
+   relying on incidental memory layout. Unlike the struct-hack/flexible-
+   array-member idiom, this isn't a de facto supported contract. Ignored,
+   not tracked as unsupported work; see tests/fixtures.gcc-torture.ignored/. */
+
 /* Test to verify that even strictly undefined strlen() calls with
    unterminated character arrays yield the "expected" results when
    the terminating nul is present in a subsequent suobobject.  */

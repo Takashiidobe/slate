@@ -1091,6 +1091,7 @@ struct MemberPtr {
     field_ty: Option<Type>,
     unsafe_access: bool,
     bitfield_name: Option<String>,
+    field_is_trailing: bool,
 }
 
 #[derive(Debug, Clone)]
