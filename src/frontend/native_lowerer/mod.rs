@@ -1,3 +1,4 @@
+mod builtins;
 mod exprs;
 mod globals;
 mod items;
@@ -68,7 +69,10 @@ pub(crate) struct Env<'a> {
     pub(crate) break_label: Option<&'a Label>,
     pub(crate) goto: Option<GotoCtx<'a>>,
     pub(crate) dtor_calls: &'a [String],
+    pub(crate) ret_ty: &'a types::CType,
 }
+
+pub(crate) const VOID_RET: types::CType = types::CType::Void;
 
 pub(crate) fn is_present(node: &Node) -> bool {
     node.id != Id::NULL
@@ -94,6 +98,19 @@ pub(crate) fn lower_program(tu: &Node, primary: &Path) -> LResult<RustProgram> {
     items::collect_top_level(tu, &mut ctx);
     items::collect_address_taken_fns(tu, &mut ctx.address_taken_fns);
     let mut items = items::lower_items(tu, &mut ctx, primary)?;
+    let math_builtin_externs = builtins::collect_math_builtin_externs(tu);
+    if !math_builtin_externs.is_empty() {
+        items.splice(
+            0..0,
+            [Item::ExternBlock {
+                abi: "C".into(),
+                decls: math_builtin_externs
+                    .into_iter()
+                    .map(ExternDecl::Fn)
+                    .collect(),
+            }],
+        );
+    }
     if items::program_uses_long_double(&items) {
         items.splice(
             0..0,

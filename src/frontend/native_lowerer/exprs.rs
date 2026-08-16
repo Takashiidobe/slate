@@ -10,7 +10,7 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 
 static TMP_COUNTER: AtomicUsize = AtomicUsize::new(0);
 
-fn next_tmp() -> String {
+pub(super) fn next_tmp() -> String {
     format!("__tmp{}", TMP_COUNTER.fetch_add(1, Ordering::Relaxed))
 }
 
@@ -135,6 +135,14 @@ pub(crate) fn lower_expr(node: &Node, env: Env) -> LResult<RExpr> {
         Clang::Other(o) if o.kind.as_deref() == Some("CXXNullPtrLiteralExpr") => {
             Ok(RExpr::Value(RustValue::NullPtr))
         }
+        Clang::Other(o) if o.kind.as_deref() == Some("CXXBoolLiteralExpr") => {
+            Ok(RExpr::Value(RustValue::Bool(
+                o.value
+                    .as_ref()
+                    .and_then(serde_json::Value::as_bool)
+                    .unwrap_or(false),
+            )))
+        }
         Clang::Other(o) if is_transparent_wrapper(o.kind.as_deref()) && node.inner.len() == 1 => {
             lower_expr(node.child(0)?, env)
         }
@@ -240,6 +248,11 @@ fn member_expr(node: &Node, m: &crate::parse::clang_ast::MemberExpr, env: Env) -
 
 fn call_expr(node: &Node, env: Env) -> LResult<RExpr> {
     let callee = node.child(0)?;
+    if let Some(name) = super::builtins::builtin_callee_name(callee)
+        && let Some(result) = super::builtins::try_lower_builtin_call(node, name, env)
+    {
+        return result;
+    }
     let callee_ty = node_type(callee);
     let fn_ty = match &callee_ty {
         CType::Func { .. } => Some(&callee_ty),
@@ -506,6 +519,13 @@ fn binary_expr(
             lhs: Box::new(arith_operand(lhs_node, env)?),
             rhs: Box::new(arith_operand(rhs_node, env)?),
         }),
+        "," => Ok(RExpr::Block(Box::new(Block {
+            stmts: vec![IndentStmt {
+                depth: 0,
+                stmt: RStmt::Expr(lower_expr(lhs_node, env)?),
+            }],
+            tail: Some(Box::new(lower_expr(rhs_node, env)?)),
+        }))),
         op => Ok(RExpr::Binary {
             op: BinOp::try_from(COpcode(op))?,
             lhs: Box::new(lower_expr(lhs_node, env)?),
@@ -592,7 +612,7 @@ fn compound_assign_expr(
         RExpr::Binary {
             op: BinOp::try_from(COpcode(base_op))?,
             lhs: Box::new(target.clone()),
-            rhs: Box::new(lower_expr(rhs_node, env)?),
+            rhs: Box::new(arith_operand(rhs_node, env)?),
         }
     };
 

@@ -532,6 +532,7 @@ fn lower_function(
         break_label: None,
         goto: None,
         dtor_calls: &ctx.dtor_calls,
+        ret_ty: return_ty.as_ref(),
     };
     let mut body_stmts = super::stmts::lower_function_body(body, env, ret.is_some())?;
     if env.is_main {
@@ -581,6 +582,7 @@ fn collect_locals(
                     break_label: None,
                     goto: None,
                     dtor_calls: &[],
+                    ret_ty: &super::VOID_RET,
                 };
                 let init = match node.inner.first() {
                     Some(c) => super::globals::lower_init(c, &ty, env)?,
@@ -633,6 +635,7 @@ fn lower_global(node: &Node, d: &Decl, ctx: &Ctx, force_extern: bool) -> LResult
         break_label: None,
         goto: None,
         dtor_calls: &[],
+        ret_ty: &super::VOID_RET,
     };
     let init = match node.inner.first() {
         Some(c) => super::globals::lower_init(c, &ty, env)?,

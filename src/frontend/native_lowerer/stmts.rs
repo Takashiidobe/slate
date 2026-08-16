@@ -293,7 +293,19 @@ pub(crate) fn lower_stmt(node: &Node, env: Env, out: &mut Vec<IndentStmt>) -> LR
         }
         Clang::ReturnStmt(_) => {
             let value = match node.inner.first() {
-                Some(e) => Some(lower_expr(e, env)?),
+                Some(e) => {
+                    let lowered = lower_expr(e, env)?;
+                    Some(
+                        if super::exprs::node_type(e) == CType::Bool && *env.ret_ty != CType::Bool {
+                            RExpr::Cast {
+                                expr: Box::new(lowered),
+                                ty: env.ret_ty.lower(env.records),
+                            }
+                        } else {
+                            lowered
+                        },
+                    )
+                }
                 None => None,
             };
             if env.is_main {

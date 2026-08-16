@@ -527,8 +527,21 @@ impl BatchBuild {
         if let Some(error) = self.errors.get(name) {
             return error.clone();
         }
+        let needle = format!("src/bin/{name}.rs");
+        let scoped: String = self
+            .stderr
+            .split("\n\n")
+            .filter(|block| block.contains(&needle))
+            .collect::<Vec<_>>()
+            .join("\n\n");
+        if !scoped.is_empty() {
+            return scoped;
+        }
         if !self.stderr.trim().is_empty() {
-            return self.stderr.clone();
+            return format!(
+                "no per-bin error found for {name}; raw batch stderr:\n{}",
+                self.stderr
+            );
         }
         format!("Cargo did not report a successful bin artifact for {name}")
     }
@@ -722,15 +735,14 @@ fn parse_batch_build(output: &std::process::Output) -> BatchBuild {
                 }
             }
             Some("compiler-message") if message["message"]["level"].as_str() == Some("error") => {
-                if let Some(rendered) = message["message"]["rendered"].as_str() {
-                    build.stderr.push_str(rendered);
-                    if let Some(name) = target {
-                        build
-                            .errors
-                            .entry(name.to_string())
-                            .and_modify(|errors| errors.push_str(rendered))
-                            .or_insert_with(|| rendered.to_string());
-                    }
+                if let Some(rendered) = message["message"]["rendered"].as_str()
+                    && let Some(name) = target
+                {
+                    build
+                        .errors
+                        .entry(name.to_string())
+                        .and_modify(|errors| errors.push_str(rendered))
+                        .or_insert_with(|| rendered.to_string());
                 }
             }
             _ => {}
