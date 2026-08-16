@@ -39,27 +39,20 @@ impl Op {
     }
 }
 
-/// A region is an ordered list of blocks.
 #[derive(Debug, Default, Clone)]
 pub struct Region {
     pub blocks: Vec<Block>,
 }
 
-/// A block: an optional label, block arguments, and its ops.
 #[derive(Debug, Default, Clone)]
 pub struct Block {
-    /// Block label without the `^`, e.g. `bb1`. The entry block is often unlabeled.
     pub label: Option<String>,
-    /// Block arguments as `(name, type-text)` pairs.
     pub args: Vec<(String, String)>,
     pub ops: Vec<Op>,
 }
 
-/// Attribute values. V0 keeps most as raw text and only distinguishes the shapes
-/// lowering actually needs to branch on.
 #[derive(Debug, Clone)]
 pub enum Attr {
-    /// Anything not yet given a richer shape — stored as it was printed.
     Raw(String),
     Int(i64),
     Str(String),
@@ -84,11 +77,7 @@ impl Attr {
     }
 }
 
-/// A classification of `Op::name` for typed dispatch, computed on demand
-/// from the raw string CIR text actually printed (kept as-is on `Op` for
-/// diagnostics/round-tripping). `Other` covers op names this enum doesn't
-/// (yet) enumerate — CIR gains ops across Clang versions, so this can't be
-/// a closed world.
+#[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum CirOpKind {
     Abs,

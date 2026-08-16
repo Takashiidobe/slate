@@ -1,4 +1,5 @@
 use super::*;
+use crate::function_identity;
 
 fn overflow_for_result_width(
     arithmetic_overflow: Expr,
@@ -197,7 +198,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     pub(super) fn lower_known_binary(
         &mut self,
         op: &Op,
-        known: crate::function_identity::Known,
+        known: function_identity::Known,
         rust_op: BinOp,
     ) {
         if self.lower_known_libc_op(op, known) {
@@ -513,7 +514,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             }
         } else if type_mentions_long_double(&rust_ty) {
             Expr::Call {
-                binding: crate::function_identity::CallBinding::Generated,
+                binding: function_identity::CallBinding::Generated,
                 func: Box::new(Expr::Var("__slate_f80_abs".into())),
                 args: vec![value],
             }
@@ -553,7 +554,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 }
             };
             Expr::Call {
-                binding: crate::function_identity::CallBinding::Generated,
+                binding: function_identity::CallBinding::Generated,
                 func: Box::new(Expr::Var(shim.into())),
                 args: vec![value],
             }
@@ -570,7 +571,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     pub(super) fn lower_known_unary_method(
         &mut self,
         op: &Op,
-        known: crate::function_identity::Known,
+        known: function_identity::Known,
         method: &str,
     ) {
         if self.lower_known_libc_op(op, known) {
@@ -603,7 +604,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     pub(super) fn lower_known_unary_cast_method(
         &mut self,
         op: &Op,
-        known: crate::function_identity::Known,
+        known: function_identity::Known,
         method: &str,
     ) {
         if self.lower_known_libc_op(op, known) {
@@ -665,7 +666,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         };
         self.push_stmt(Stmt::Expr(Self::unsafe_expr(Expr::Call {
-            binding: crate::function_identity::CallBinding::Generated,
+            binding: function_identity::CallBinding::Generated,
             func: Box::new(Expr::Path(Path::new(
                 ["core", "hint", "assert_unchecked"].map(Ident::from),
             ))),

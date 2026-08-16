@@ -425,8 +425,7 @@ pub(super) fn anon_alias_key(ty: &str, aliases: &BTreeMap<String, String>) -> Op
     let ty = ty.trim();
     let expanded = aliases.get(ty)?;
     let name = cir_record_name(expanded).or_else(|| ty.strip_prefix("!rec_"))?;
-    (name.starts_with("anon.") || name.starts_with("anon_") || name == "__once_flag")
-        .then(|| ty.to_string())
+    (name.starts_with("anon.") || name.starts_with("anon_")).then(|| ty.to_string())
 }
 
 pub(super) fn collect_anon_alias_keys(
@@ -435,30 +434,29 @@ pub(super) fn collect_anon_alias_keys(
     out: &mut BTreeSet<String>,
 ) {
     collect_anon_alias_keys_inner(ty, aliases, out, &mut BTreeSet::new());
-}
-
-pub(super) fn collect_anon_alias_keys_inner(
-    ty: &str,
-    aliases: &BTreeMap<String, String>,
-    out: &mut BTreeSet<String>,
-    seen: &mut BTreeSet<String>,
-) {
-    let ty = ty.trim();
-    if !seen.insert(ty.to_string()) {
-        return;
-    }
-    if let Some(key) = anon_alias_key(ty, aliases) {
-        out.insert(key);
-    }
-    if let Some(inner) = cir_ptr_pointee(ty) {
-        collect_anon_alias_keys_inner(inner, aliases, out, seen);
-    } else if let Some((elem, _)) = parse_cir_array_type(ty) {
-        collect_anon_alias_keys_inner(&elem, aliases, out, seen);
-    } else if let Some(expanded) = aliases.get(ty)
-        && let (Some(open), Some(close)) = (expanded.find('{'), expanded.rfind('}'))
-    {
-        for field_ty in split_record_member_types(&expanded[open + 1..close]) {
-            collect_anon_alias_keys_inner(field_ty, aliases, out, seen);
+    fn collect_anon_alias_keys_inner(
+        ty: &str,
+        aliases: &BTreeMap<String, String>,
+        out: &mut BTreeSet<String>,
+        seen: &mut BTreeSet<String>,
+    ) {
+        let ty = ty.trim();
+        if !seen.insert(ty.to_string()) {
+            return;
+        }
+        if let Some(key) = anon_alias_key(ty, aliases) {
+            out.insert(key);
+        }
+        if let Some(inner) = cir_ptr_pointee(ty) {
+            collect_anon_alias_keys_inner(inner, aliases, out, seen);
+        } else if let Some((elem, _)) = parse_cir_array_type(ty) {
+            collect_anon_alias_keys_inner(&elem, aliases, out, seen);
+        } else if let Some(expanded) = aliases.get(ty)
+            && let (Some(open), Some(close)) = (expanded.find('{'), expanded.rfind('}'))
+        {
+            for field_ty in split_record_member_types(&expanded[open + 1..close]) {
+                collect_anon_alias_keys_inner(field_ty, aliases, out, seen);
+            }
         }
     }
 }
