@@ -26,9 +26,13 @@ fn cargo() -> String {
     std::env::var("SLATE_CARGO").unwrap_or_else(|_| "cargo".into())
 }
 
-fn c23_clang_args() -> String {
+fn std_clang_args(std: &str) -> String {
     let existing = std::env::var("SLATE_CLANG_ARGS").unwrap_or_default();
-    format!("{existing} -std=c23").trim().to_string()
+    format!("{existing} -std={std}").trim().to_string()
+}
+
+fn c23_clang_args() -> String {
+    std_clang_args("c23")
 }
 
 fn ensure_c23_clang_args() {
@@ -219,12 +223,16 @@ pub fn compile_c_object(src: &Path, out: &Path) -> Result<(), String> {
 
 /// Compile several C translation units together into one binary (cross-TU link).
 pub fn compile_c_multi(srcs: &[PathBuf], out: &Path) -> Result<(), String> {
-    let cache_key = serde_json::to_string(&(3, srcs, cc()))
+    compile_c_multi_with_std(srcs, out, "c23")
+}
+
+pub fn compile_c_multi_with_std(srcs: &[PathBuf], out: &Path, std: &str) -> Result<(), String> {
+    let cache_key = serde_json::to_string(&(3, srcs, cc(), std))
         .map_err(|e| format!("encode multi-file C cache key: {e}"))?;
     let inputs: Vec<&Path> = srcs.iter().map(PathBuf::as_path).collect();
     compile_c_cached(&inputs, out, &cache_key, "C compile failed", |temporary| {
         Command::new(cc())
-            .args(["-O0", "-std=c23", "-o"])
+            .args(["-O0", &format!("-std={std}"), "-o"])
             .arg(temporary)
             .args(srcs)
             .arg("-lm")
@@ -286,11 +294,23 @@ fn compile_c_cached(
 /// (Cargo.toml, vendored `aligned`, one Rust module per C translation unit
 /// under `src/`; the unit with `main` becomes `src/main.rs`) at `crate_dir`.
 pub fn translate_project(dir: &Path, crate_dir: &Path) -> Result<(), String> {
+    translate_project_with_clang_args(dir, crate_dir, c23_clang_args())
+}
+
+pub fn translate_project_with_std(dir: &Path, crate_dir: &Path, std: &str) -> Result<(), String> {
+    translate_project_with_clang_args(dir, crate_dir, std_clang_args(std))
+}
+
+fn translate_project_with_clang_args(
+    dir: &Path,
+    crate_dir: &Path,
+    clang_args: String,
+) -> Result<(), String> {
     let o = Command::new(env!("CARGO_BIN_EXE_slate"))
         .arg("translate-project")
         .arg(dir)
         .arg(crate_dir)
-        .env("SLATE_CLANG_ARGS", c23_clang_args())
+        .env("SLATE_CLANG_ARGS", clang_args)
         .output()
         .map_err(|e| format!("spawn slate translate-project: {e}"))?;
     if !o.status.success() {

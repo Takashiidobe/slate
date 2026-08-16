@@ -13,12 +13,12 @@ _Static_assert(sizeof(int) >= sizeof(short),
 _Static_assert((1 << 4) == 16, "bit shift failed");
 
 // Test static_assert macro (C11 convenience macro)
-static_assert(sizeof(short) == 2, "short must be 2 bytes");
+_Static_assert(sizeof(short) == 2, "short must be 2 bytes");
 
 int main() {
   // Test _Static_assert at block scope
   _Static_assert(sizeof(int) == 4, "int must be 4 bytes in function");
-  static_assert(1, "constant 1 should be true");
+  _Static_assert(1, "constant 1 should be true");
 
   // Test with local sizeof
   int arr[10];

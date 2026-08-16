@@ -39,10 +39,18 @@ struct Attempt {
     translate_error: Option<String>,
 }
 
+fn fixture_std(dir: &Path) -> &'static str {
+    if dir.join("gnu23.txt").is_file() {
+        "gnu23"
+    } else {
+        "gnu11"
+    }
+}
+
 fn attempt_translate(name: &str, dir: &Path, work: &Path) -> Attempt {
     let out_dir = work.join("translated").join(name);
     let _ = std::fs::remove_dir_all(&out_dir);
-    match support::translate_project(dir, &out_dir) {
+    match support::translate_project_with_std(dir, &out_dir, fixture_std(dir)) {
         Ok(()) => {
             let types_rs = out_dir.join("src/types.rs");
             Attempt {
@@ -113,7 +121,11 @@ fn run_bucket(bucket: &str) -> Vec<(String, Result<(), String>)> {
                 .executable(&attempt.name)
                 .map_err(|error| format!("Rust build failed:\n{error}"))?;
             let c_bin = work.join(format!("{}_c", attempt.name));
-            support::compile_c_multi(&c_sources(&attempt.dir), &c_bin)?;
+            support::compile_c_multi_with_std(
+                &c_sources(&attempt.dir),
+                &c_bin,
+                fixture_std(&attempt.dir),
+            )?;
             let run_dir = work.join("runs").join(&attempt.name);
             let _ = std::fs::remove_dir_all(&run_dir);
             std::fs::create_dir_all(&run_dir)
