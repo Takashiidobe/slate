@@ -1054,6 +1054,9 @@ struct FunctionLowerer<'a, 'b> {
     asm_output_places: BTreeMap<String, Expr>,
     local_enum_types: BTreeMap<String, String>,
     loaded_field_types: BTreeMap<String, Type>,
+    load_ptr_operand: BTreeMap<String, String>,
+    member_base_operand: BTreeMap<String, String>,
+    coerce_alloca_real_type: BTreeMap<String, (String, String)>,
 }
 
 struct DispatchCtx {
@@ -1674,7 +1677,7 @@ impl __SlateVaArg {
         if let Some(value) = self.value.downcast_ref::<T>() {
             return *value;
         }
-        assert_eq!(self.size, std::mem::size_of::<T>());
+        assert!(self.size >= std::mem::size_of::<T>());
         unsafe {
             std::ptr::read_unaligned(
                 (self.value.as_ref() as *const dyn std::any::Any) as *const () as *const T,
@@ -1699,6 +1702,9 @@ impl __SlateVaArgs {
     }
 
     fn next_arg<T: Copy + 'static>(&mut self) -> T {
+        if std::mem::size_of::<T>() == 0 {
+            return unsafe { std::mem::zeroed() };
+        }
         let args = self.args.as_ref().expect("va_arg with no arguments");
         let value = args[self.index].read::<T>();
         self.index += 1;
@@ -2553,6 +2559,9 @@ impl __SlateVaArgs {
             asm_output_places: BTreeMap::new(),
             local_enum_types,
             loaded_field_types: BTreeMap::new(),
+            load_ptr_operand: BTreeMap::new(),
+            member_base_operand: BTreeMap::new(),
+            coerce_alloca_real_type: BTreeMap::new(),
         };
 
         for stmt in prelude {

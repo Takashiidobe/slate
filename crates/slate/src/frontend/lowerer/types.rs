@@ -125,11 +125,9 @@ pub(super) fn rust_type_with_aliases(
     }
 }
 
-// `_BitInt(N)` for N outside {8, 16, 32, 64, 128} has no native Rust integer
-// type; lower it to the vendored `bitint` crate's fixed-width wrapping
-// integer, sized to the exact C bit width (LIMBS = ceil(bits / 64)).
 pub(super) fn bitint_type(signed: bool, bits: u32) -> Type {
     let limbs = bits.div_ceil(64);
+    let bytes = bitint_storage_bytes(bits);
     Type::Generic {
         name: (if signed {
             "bitint::BInt"
@@ -140,21 +138,32 @@ pub(super) fn bitint_type(signed: bool, bits: u32) -> Type {
         args: vec![
             Type::Custom(bits.to_string()),
             Type::Custom(limbs.to_string()),
+            Type::Custom(bytes.to_string()),
         ],
     }
 }
 
-pub(super) fn bitint_generic_parts(ty: &Type) -> Option<(&str, &str, &str)> {
+fn bitint_storage_bytes(bits: u32) -> u32 {
+    match bits {
+        0..=8 => 1,
+        9..=16 => 2,
+        17..=32 => 4,
+        33..=64 => 8,
+        _ => bits.div_ceil(64) * 8,
+    }
+}
+
+pub(super) fn bitint_generic_parts(ty: &Type) -> Option<(&str, &str, &str, &str)> {
     let Type::Generic { name, args } = ty else {
         return None;
     };
     if name != "bitint::BInt" && name != "bitint::BUint" {
         return None;
     }
-    let [Type::Custom(bits), Type::Custom(limbs)] = args.as_slice() else {
+    let [Type::Custom(bits), Type::Custom(limbs), Type::Custom(bytes)] = args.as_slice() else {
         return None;
     };
-    Some((name.as_str(), bits.as_str(), limbs.as_str()))
+    Some((name.as_str(), bits.as_str(), limbs.as_str(), bytes.as_str()))
 }
 
 // `bitint::{BInt,BUint}` are ordinary structs, not native Rust integer
@@ -162,18 +171,18 @@ pub(super) fn bitint_generic_parts(ty: &Type) -> Option<(&str, &str, &str)> {
 // coerces into e.g. `u32`; every construction goes through `from_decimal_str`,
 // which (unlike `from_i128`) has no magnitude ceiling.
 pub(super) fn bitint_from_decimal_str_expr(ty: &Type, digits: &str) -> Option<Expr> {
-    let (name, bits, limbs) = bitint_generic_parts(ty)?;
+    let (name, bits, limbs, bytes) = bitint_generic_parts(ty)?;
     Some(Expr::Call {
         binding: crate::function_identity::CallBinding::Generated,
         func: Box::new(Expr::Var(
-            format!("{name}::<{bits}, {limbs}>::from_decimal_str").into(),
+            format!("{name}::<{bits}, {limbs}, {bytes}>::from_decimal_str").into(),
         )),
         args: vec![Expr::Str(digits.to_string())],
     })
 }
 
 pub(super) fn bitint_from_int_expr(ty: &Type, value: Expr, signed: bool) -> Option<Expr> {
-    let (name, bits, limbs) = bitint_generic_parts(ty)?;
+    let (name, bits, limbs, bytes) = bitint_generic_parts(ty)?;
     let (method, wide_ty) = if signed {
         ("from_i128", Type::Prim(Prim::I128))
     } else {
@@ -182,7 +191,7 @@ pub(super) fn bitint_from_int_expr(ty: &Type, value: Expr, signed: bool) -> Opti
     Some(Expr::Call {
         binding: crate::function_identity::CallBinding::Generated,
         func: Box::new(Expr::Var(
-            format!("{name}::<{bits}, {limbs}>::{method}").into(),
+            format!("{name}::<{bits}, {limbs}, {bytes}>::{method}").into(),
         )),
         args: vec![Expr::Cast {
             expr: Box::new(value),
@@ -192,7 +201,7 @@ pub(super) fn bitint_from_int_expr(ty: &Type, value: Expr, signed: bool) -> Opti
 }
 
 pub(super) fn bitint_to_int_expr(ty: &Type, value: Expr) -> Option<(Expr, bool)> {
-    let (name, _, _) = bitint_generic_parts(ty)?;
+    let (name, _, _, _) = bitint_generic_parts(ty)?;
     let signed = name == "bitint::BInt";
     Some((
         Expr::MethodCall {
@@ -205,8 +214,10 @@ pub(super) fn bitint_to_int_expr(ty: &Type, value: Expr) -> Option<(Expr, bool)>
 }
 
 pub(super) fn bitint_zero_expr(ty: &Type) -> Option<Expr> {
-    let (name, bits, limbs) = bitint_generic_parts(ty)?;
-    Some(Expr::Var(format!("{name}::<{bits}, {limbs}>::ZERO").into()))
+    let (name, bits, limbs, bytes) = bitint_generic_parts(ty)?;
+    Some(Expr::Var(
+        format!("{name}::<{bits}, {limbs}, {bytes}>::ZERO").into(),
+    ))
 }
 
 pub(super) fn is_cir_va_list_record_type(ty: &str) -> bool {
@@ -462,6 +473,11 @@ pub(super) fn is_complex_long_double_coercion_type(
         && fields
             .iter()
             .all(|field| is_long_double(field) || *field == "!cir.f80")
+}
+
+pub(super) fn is_abi_coercion_record_name(name: &str) -> bool {
+    name.strip_prefix("anon_struct")
+        .is_some_and(|suffix| suffix.chars().all(|c| c.is_ascii_digit()))
 }
 
 pub(super) fn cir_record_name(ty: &str) -> Option<&str> {

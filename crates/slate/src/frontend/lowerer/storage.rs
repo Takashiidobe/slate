@@ -408,6 +408,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(ptr) = op.operands.first() else {
             return;
         };
+        self.load_ptr_operand.insert(result.clone(), ptr.clone());
         if let Some(value) = self.forward_values.get(ptr) {
             self.values.insert(result.clone(), Val::Expr(value.clone()));
             return;

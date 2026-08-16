@@ -796,7 +796,7 @@ fn parse_attr_value(s: &str) -> Attr {
         return Attr::Type(s.to_string());
     }
     if s.starts_with('{') && s.ends_with('}') {
-        return Attr::Dict;
+        return Attr::Dict(parse_attr_dict(strip_outer(s)));
     }
     if s.starts_with('[') && s.ends_with(']') {
         let inner = s[1..s.len() - 1].trim();
