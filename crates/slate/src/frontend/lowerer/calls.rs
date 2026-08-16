@@ -828,15 +828,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(ptr) = op.operands.first() else {
             return;
         };
-        let Some(slot) = self.va_places.get(ptr).cloned() else {
+        let Some(place) = self.va_target_place(ptr) else {
             return;
         };
         let args = self
             .va_args_param
             .clone()
             .unwrap_or_else(|| "__slate_va_args".into());
-        self.push_assign(
-            Expr::Var(slot.into()),
+        self.push_unsafe_assign(
+            place,
             Expr::MethodCall {
                 recv: Box::new(Expr::Var(args.into())),
                 method: "clone".into(),
@@ -852,7 +852,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(ptr) = op.operands.first() else {
             return;
         };
-        let Some(slot) = self.va_places.get(ptr).cloned() else {
+        let Some(place) = self.va_target_place(ptr) else {
             return;
         };
         let ty = op_result_type(op)
@@ -861,12 +861,31 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(
             result,
             Self::unsafe_expr(Expr::MethodCallGeneric {
-                recv: Box::new(Expr::Var(slot.into())),
+                recv: Box::new(place),
                 method: "next_arg".into(),
                 type_args: vec![ty],
                 args: vec![],
             }),
             op_result_type(op),
+        );
+    }
+
+    pub(super) fn lower_va_copy(&mut self, op: &Op) {
+        let [dst, src] = op.operands.as_slice() else {
+            return;
+        };
+        let (Some(dst_place), Some(src_place)) =
+            (self.va_target_place(dst), self.va_target_place(src))
+        else {
+            return;
+        };
+        self.push_unsafe_assign(
+            dst_place,
+            Expr::MethodCall {
+                recv: Box::new(src_place),
+                method: "clone".into(),
+                args: vec![],
+            },
         );
     }
 }

@@ -626,6 +626,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
             .map(str::to_string),
         variadic_defs: BTreeSet::new(),
         boxed_variadic_defs: BTreeSet::new(),
+        va_list_boxed: false,
         c_abi_functions: BTreeSet::new(),
         project: project.clone(),
         unsafe_functions: project.unsafe_functions.clone(),
@@ -700,7 +701,9 @@ pub fn lower_shared_types(
     items.extend(
         records
             .iter()
-            .flat_map(|record| lower_record_def(record, Visibility::Pub, Visibility::Pub, true)),
+            .flat_map(|record| {
+                lower_record_def(record, Visibility::Pub, Visibility::Pub, true, false)
+            }),
     );
     Program { items }
 }
@@ -805,6 +808,7 @@ fn lower_record_def(
     vis: Visibility,
     field_vis: Visibility,
     allow_empty: bool,
+    va_list_boxed: bool,
 ) -> Vec<Item> {
     if record.fields.is_empty() && !allow_empty {
         return Vec::new();
@@ -816,7 +820,7 @@ fn lower_record_def(
         .map(|field| RecordField {
             comments: comments(&field.comments),
             name: sanitize_ident(&field.name),
-            ty: c_record_field_type(&field.ty),
+            ty: c_record_field_type(&field.ty, va_list_boxed),
         })
         .collect();
     let name = sanitize_ident(&record.name).into_string();
@@ -992,6 +996,7 @@ struct Lowerer<'a> {
     target_arch: Option<String>,
     variadic_defs: BTreeSet<String>,
     boxed_variadic_defs: BTreeSet<String>,
+    va_list_boxed: bool,
     c_abi_functions: BTreeSet<String>,
     project: ProjectInfo,
     unsafe_functions: BTreeSet<String>,
@@ -1042,9 +1047,8 @@ struct FunctionLowerer<'a, 'b> {
     forward_values: BTreeMap<String, Expr>,
     immutable_temps: BTreeSet<String>,
     va_allocas: BTreeSet<String>,
-    va_places: BTreeMap<String, String>,
+    va_places: BTreeMap<String, Expr>,
     va_args_param: Option<String>,
-    boxed_va_args: bool,
     layout_queries: VecDeque<LayoutQuery>,
     macro_consts: VecDeque<MacroConst>,
     enum_consts: VecDeque<EnumConstRef>,
@@ -1377,6 +1381,17 @@ impl<'a> Lowerer<'a> {
             Lint::UnusedComparisons,
         ])])];
 
+        if let Some(module_op) = builtin_module(module) {
+            self.c_abi_functions = c_abi_function_targets(module_op);
+            self.c_abi_functions
+                .extend(self.project.address_taken_functions.iter().cloned());
+            self.va_list_boxed = !module_requires_native_va_list(
+                module_op,
+                &self.c_abi_functions,
+                self.project.emit_pub,
+            );
+        }
+
         items.extend(bitfield_items(&self.bitfield_storages));
 
         for enm in &c.enums {
@@ -1425,11 +1440,10 @@ impl<'a> Lowerer<'a> {
             })
             .cloned()
             .collect();
-        self.c_abi_functions = c_abi_function_targets(module_op);
-        self.c_abi_functions
-            .extend(self.project.address_taken_functions.iter().cloned());
-        self.function_return_types = declared_function_return_types(module_op, &self.aliases);
-        self.function_param_types = declared_function_param_types(module_op, &self.aliases);
+        self.function_return_types =
+            declared_function_return_types(module_op, &self.aliases, self.va_list_boxed);
+        self.function_param_types =
+            declared_function_param_types(module_op, &self.aliases, self.va_list_boxed);
         let mut assembly_strings = Vec::new();
         collect_assembly_strings(module_op, &mut assembly_strings);
         let asm_referenced_globals: BTreeSet<String> = ops
@@ -1641,10 +1655,7 @@ impl<'a> Lowerer<'a> {
             {
                 let name = attr_str(op, "sym_name").unwrap().to_string();
                 self.variadic_defs.insert(name.clone());
-                if !self.project.emit_pub
-                    && !self.c_abi_functions.contains(&name)
-                    && !function_forwards_va_list(op)
-                {
+                if self.va_list_boxed {
                     self.boxed_variadic_defs.insert(name);
                 }
             }
@@ -1677,17 +1688,22 @@ impl __SlateVaArg {
 
 #[derive(Clone)]
 struct __SlateVaArgs {
-    args: std::rc::Rc<Vec<__SlateVaArg>>,
+    args: Option<std::rc::Rc<Vec<__SlateVaArg>>>,
     index: usize,
 }
 
 impl __SlateVaArgs {
     fn new(args: Vec<__SlateVaArg>) -> Self {
-        Self { args: std::rc::Rc::new(args), index: 0 }
+        Self { args: Some(std::rc::Rc::new(args)), index: 0 }
+    }
+
+    const fn empty() -> Self {
+        Self { args: None, index: 0 }
     }
 
     fn next_arg<T: Copy + 'static>(&mut self) -> T {
-        let value = self.args[self.index].read::<T>();
+        let args = self.args.as_ref().expect("va_arg with no arguments");
+        let value = args[self.index].read::<T>();
         self.index += 1;
         value
     }
@@ -1993,6 +2009,9 @@ impl __SlateVaArgs {
                     .insert(name.to_string(), raw.to_string());
             }
         } else if raw.trim_start().starts_with("#cir.zero")
+            && !ty.as_ref().is_some_and(|ty| {
+                matches!(ty, Type::VaList) || is_boxed_va_args_type(ty)
+            })
             && let Some((elem, len)) = parse_cir_array_type(attr_str(op, "sym_type").unwrap_or(""))
         {
             if is_c_global && let Some(ty) = ty {
@@ -2001,11 +2020,11 @@ impl __SlateVaArgs {
                     GlobalVar {
                         source_name: name.to_string(),
                         name: rust_name,
+                        init: self.default_value_expr(&Type::Array {
+                            elem: Box::new(self.rust_type(&elem)),
+                            len,
+                        }),
                         ty,
-                        init: Expr::ArrayRepeat {
-                            elem: Box::new(self.default_value_expr(&self.rust_type(&elem))),
-                            len: len as usize,
-                        },
                         alignment,
                         thread_local,
                         external: externally_exported(op)
@@ -2223,7 +2242,13 @@ impl __SlateVaArgs {
         } else {
             record
         };
-        lower_record_def(record, Visibility::Private, Visibility::Private, true)
+        lower_record_def(
+            record,
+            Visibility::Private,
+            Visibility::Private,
+            true,
+            self.va_list_boxed,
+        )
     }
 
     fn bitfield_storage_fields(
@@ -2485,8 +2510,13 @@ impl __SlateVaArgs {
             .collect();
         let va_allocas = function_ops
             .iter()
-            .filter(|op| matches!(op.kind(), CirOpKind::VaStart | CirOpKind::VaArg))
-            .filter_map(|op| op.operands.first().cloned())
+            .filter(|op| {
+                matches!(
+                    op.kind(),
+                    CirOpKind::VaStart | CirOpKind::VaArg | CirOpKind::VaCopy
+                )
+            })
+            .flat_map(|op| op.operands.iter().cloned())
             .collect();
         let mut f = FunctionLowerer {
             parent: self,
@@ -2517,7 +2547,6 @@ impl __SlateVaArgs {
             va_allocas,
             va_places: BTreeMap::new(),
             va_args_param,
-            boxed_va_args: boxed_variadic,
             layout_queries,
             macro_consts,
             enum_consts,
@@ -2734,7 +2763,7 @@ impl __SlateVaArgs {
     }
 
     fn rust_type(&self, cir_ty: &str) -> Type {
-        let ty = rust_type_with_aliases(cir_ty, &self.aliases);
+        let ty = rust_type_with_aliases(cir_ty, &self.aliases, self.va_list_boxed);
         if type_mentions_long_double(&ty) {
             self.uses_long_double.set(true);
         }
@@ -2800,7 +2829,7 @@ impl __SlateVaArgs {
         if ctype_uses_long_double(ty) {
             self.uses_long_double.set(true);
         }
-        c_record_field_type(ty)
+        self.c_record_field_type(ty)
     }
 
     fn enum_return_mismatch_wrap(&self, fn_name: &str, target_ty: &Type) -> Option<Expr> {
@@ -2917,6 +2946,9 @@ impl __SlateVaArgs {
     }
 
     fn default_value_expr(&self, ty: &Type) -> Expr {
+        if is_boxed_va_args_type(ty) {
+            return empty_va_args_expr();
+        }
         match ty {
             Type::Custom(name) => {
                 if let Some(storage) = self
@@ -2946,7 +2978,7 @@ impl __SlateVaArgs {
                                 name: record_lit_name(record),
                                 fields: vec![(
                                     field.name.clone(),
-                                    self.default_value_expr(&c_record_field_type(&field.ty)),
+                                    self.default_value_expr(&self.c_record_field_type(&field.ty)),
                                 )],
                             };
                         }
@@ -2957,7 +2989,7 @@ impl __SlateVaArgs {
                                 .map(|field| {
                                     (
                                         field.name.clone(),
-                                        self.default_value_expr(&c_record_field_type(&field.ty)),
+                                        self.default_value_expr(&self.c_record_field_type(&field.ty)),
                                     )
                                 })
                                 .collect(),
@@ -2971,7 +3003,7 @@ impl __SlateVaArgs {
                                 .map(|field| {
                                     (
                                         sanitize_ident(&field.name).into_string(),
-                                        self.default_value_expr(&c_record_field_type(&field.ty)),
+                                        self.default_value_expr(&self.c_record_field_type(&field.ty)),
                                     )
                                 })
                                 .collect();
@@ -2991,9 +3023,9 @@ impl __SlateVaArgs {
                                         name: record_lit_name(record),
                                         fields: vec![(
                                             sanitize_ident(&field.name).into_string(),
-                                            self.default_value_expr(&c_record_field_type(
-                                                &field.ty,
-                                            )),
+                                            self.default_value_expr(
+                                                &self.c_record_field_type(&field.ty),
+                                            ),
                                         )],
                                     },
                                 );
@@ -3015,6 +3047,14 @@ impl __SlateVaArgs {
                     fields: vec![("re".into(), d.clone()), ("im".into(), d)],
                 }
             }
+            Type::Array { elem, .. } if is_boxed_va_args_type(elem) => Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
+                func: Box::new(Expr::Var("core::array::from_fn".into())),
+                args: vec![Expr::Closure {
+                    params: vec![Ident::from("_")],
+                    body: Box::new(self.default_value_expr(elem)),
+                }],
+            },
             Type::Array { elem, len } => Expr::ArrayRepeat {
                 elem: Box::new(self.default_value_expr(elem)),
                 len: *len as usize,
@@ -3067,10 +3107,10 @@ impl __SlateVaArgs {
     fn layout_query_expr(&self, query: &LayoutQuery) -> Option<Expr> {
         match query {
             LayoutQuery::Size(ty @ crate::frontend::c_ast::CType::Record(_)) => {
-                Some(layout_call("size_of", &c_type_to_type(ty)))
+                Some(layout_call("size_of", &self.c_type_to_type(ty)))
             }
             LayoutQuery::Align(ty @ crate::frontend::c_ast::CType::Record(_)) => {
-                Some(layout_call("align_of", &c_type_to_type(ty)))
+                Some(layout_call("align_of", &self.c_type_to_type(ty)))
             }
             LayoutQuery::Size(_) | LayoutQuery::Align(_) => None,
             LayoutQuery::Offset { record, field } => {
@@ -3136,7 +3176,7 @@ impl __SlateVaArgs {
                             .iter()
                             .enumerate()
                             .map(|(i, field)| {
-                                let field_ty = c_record_field_type(&field.ty);
+                                let field_ty = self.c_record_field_type(&field.ty);
                                 let value = elems
                                     .get(i)
                                     .and_then(|e| {
@@ -3156,7 +3196,7 @@ impl __SlateVaArgs {
                         .iter()
                         .enumerate()
                         .map(|(i, field)| {
-                            let field_ty = c_record_field_type(&field.ty);
+                            let field_ty = self.c_record_field_type(&field.ty);
                             let value = elems
                                 .get(i)
                                 .and_then(|e| {
@@ -3180,7 +3220,7 @@ impl __SlateVaArgs {
                         .as_ref()
                         .and_then(|fields| fields.first())
                         .or_else(|| record.fields.first())?;
-                    let field_ty = c_record_field_type(&field.ty);
+                    let field_ty = self.c_record_field_type(&field.ty);
                     let value = elems
                         .first()
                         .and_then(|e| self.render_const_value_expr(&field_ty, e.trim(), facts))
@@ -3433,11 +3473,62 @@ fn clib_record_type(name: &str) -> Option<CLibType> {
         .find(|ty| ty.c_name() == name)
 }
 
-fn c_type_to_type(ty: &crate::frontend::c_ast::CType) -> Type {
+fn c_va_list_shaped_type(ty: &crate::frontend::c_ast::CType, boxed: bool) -> Option<Type> {
     use crate::frontend::c_ast::CType;
+    let value_ty = || {
+        if boxed {
+            Type::Custom("__SlateVaArgs".into())
+        } else {
+            Type::VaList
+        }
+    };
+    let is_va_list_record =
+        |ty: &CType| matches!(ty, CType::Record(name) if name == "__va_list_tag");
+    if is_va_list_record(ty) {
+        return Some(value_ty());
+    }
+    if let CType::Array(inner, Some(1)) = ty
+        && is_va_list_record(inner)
+    {
+        return Some(value_ty());
+    }
+    if let CType::Array(inner, Some(len)) = ty
+        && let Some(inner_ty) = c_va_list_shaped_type(inner, boxed)
+    {
+        return Some(Type::Array {
+            elem: Box::new(inner_ty),
+            len: *len,
+        });
+    }
+    if let CType::Ptr(inner) = ty
+        && let Some(inner_ty) = c_va_list_shaped_type(inner, boxed)
+    {
+        return Some(Type::Ptr {
+            mutable: true,
+            inner: Box::new(inner_ty),
+        });
+    }
+    None
+}
+
+impl<'a> Lowerer<'a> {
+    fn c_type_to_type(&self, ty: &crate::frontend::c_ast::CType) -> Type {
+        c_type_to_type(ty, self.va_list_boxed)
+    }
+
+    fn c_record_field_type(&self, ty: &crate::frontend::c_ast::CType) -> Type {
+        c_record_field_type(ty, self.va_list_boxed)
+    }
+}
+
+fn c_type_to_type(ty: &crate::frontend::c_ast::CType, va_list_boxed: bool) -> Type {
+    use crate::frontend::c_ast::CType;
+    if let Some(va_list_ty) = c_va_list_shaped_type(ty, va_list_boxed) {
+        return va_list_ty;
+    }
     let ptr = |inner: &CType| Type::Ptr {
         mutable: true,
-        inner: Box::new(c_type_to_type(inner)),
+        inner: Box::new(c_type_to_type(inner, va_list_boxed)),
     };
     match ty {
         CType::Void => Type::Unit,
@@ -3469,11 +3560,14 @@ fn c_type_to_type(ty: &crate::frontend::c_ast::CType) -> Type {
         CType::Ptr(inner) => ptr(inner),
         CType::FuncPtr { ret, params } => Type::FnPtr {
             abi: Abi::C,
-            params: params.iter().map(c_type_to_type).collect(),
-            ret: Box::new(c_type_to_type(ret)),
+            params: params
+                .iter()
+                .map(|ty| c_type_to_type(ty, va_list_boxed))
+                .collect(),
+            ret: Box::new(c_type_to_type(ret, va_list_boxed)),
         },
         CType::Array(inner, Some(len)) => Type::Array {
-            elem: Box::new(c_type_to_type(inner)),
+            elem: Box::new(c_type_to_type(inner, va_list_boxed)),
             len: *len,
         },
         CType::Array(inner, None) => ptr(inner),
@@ -3487,13 +3581,13 @@ fn c_type_to_type(ty: &crate::frontend::c_ast::CType) -> Type {
     }
 }
 
-fn c_record_field_type(ty: &crate::frontend::c_ast::CType) -> Type {
+fn c_record_field_type(ty: &crate::frontend::c_ast::CType, va_list_boxed: bool) -> Type {
     match ty {
         crate::frontend::c_ast::CType::Array(inner, None) => Type::Array {
-            elem: Box::new(c_type_to_type(inner)),
+            elem: Box::new(c_type_to_type(inner, va_list_boxed)),
             len: 0,
         },
-        _ => c_type_to_type(ty),
+        _ => c_type_to_type(ty, va_list_boxed),
     }
 }
 
@@ -3893,7 +3987,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::LibcMemchr => self.lower_mem_chr(op),
             CirOpKind::VaStart => self.lower_va_start(op),
             CirOpKind::VaArg => self.lower_va_arg(op),
-            // `VaList` drops on scope exit.
+            CirOpKind::VaCopy => self.lower_va_copy(op),
             CirOpKind::VaEnd => {}
             CirOpKind::AtomicFetch => self.lower_atomic_fetch(op),
             CirOpKind::AtomicXchg => self.lower_atomic_xchg(op),

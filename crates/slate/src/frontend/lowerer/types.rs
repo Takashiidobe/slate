@@ -1,7 +1,7 @@
 use super::*;
 
 pub(super) fn rust_type(cir_ty: &str) -> Type {
-    rust_type_with_aliases(cir_ty, &BTreeMap::new())
+    rust_type_with_aliases(cir_ty, &BTreeMap::new(), false)
 }
 
 // True if the region contains a `cir.continue` that targets the enclosing loop,
@@ -22,10 +22,14 @@ pub(super) fn ops_have_direct_continue(ops: &[Op]) -> bool {
     })
 }
 
-pub(super) fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, String>) -> Type {
+pub(super) fn rust_type_with_aliases(
+    cir_ty: &str,
+    aliases: &BTreeMap<String, String>,
+    va_list_boxed: bool,
+) -> Type {
     let ty = cir_ty.trim();
-    if is_cir_va_list_type(ty) {
-        return Type::VaList;
+    if let Some(va_list_ty) = va_list_shaped_type(ty, va_list_boxed) {
+        return va_list_ty;
     }
     if let Some(expanded) = aliases.get(ty) {
         if (expanded.starts_with("!cir.struct<{") || expanded.starts_with("!cir.union<{"))
@@ -33,7 +37,7 @@ pub(super) fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, St
         {
             return Type::Custom(rust_record_name(name));
         }
-        return rust_type_with_aliases(expanded, aliases);
+        return rust_type_with_aliases(expanded, aliases, va_list_boxed);
     }
     if ty == "()" || ty.is_empty() {
         Type::Unit
@@ -83,27 +87,31 @@ pub(super) fn rust_type_with_aliases(cir_ty: &str, aliases: &BTreeMap<String, St
         .strip_prefix("!cir.complex<")
         .and_then(|s| s.strip_suffix('>'))
     {
-        Type::Complex(Box::new(rust_type_with_aliases(inner, aliases)))
+        Type::Complex(Box::new(rust_type_with_aliases(
+            inner,
+            aliases,
+            va_list_boxed,
+        )))
     } else if let Some((inner, len)) = parse_cir_vector_type(ty) {
         Type::Array {
-            elem: Box::new(rust_type_with_aliases(&inner, aliases)),
+            elem: Box::new(rust_type_with_aliases(&inner, aliases, va_list_boxed)),
             len,
         }
     } else if let Some(inner) = ty
         .strip_prefix("!cir.ptr<")
         .and_then(|s| s.strip_suffix('>'))
     {
-        if let Some(fn_ty) = cir_fn_type_to_type(inner, aliases) {
+        if let Some(fn_ty) = cir_fn_type_to_type(inner, aliases, va_list_boxed) {
             fn_ty
         } else {
             Type::Ptr {
                 mutable: true,
-                inner: Box::new(rust_type_with_aliases(inner, aliases)),
+                inner: Box::new(rust_type_with_aliases(inner, aliases, va_list_boxed)),
             }
         }
     } else if let Some((inner, len)) = parse_cir_array_type(ty) {
         Type::Array {
-            elem: Box::new(rust_type_with_aliases(&inner, aliases)),
+            elem: Box::new(rust_type_with_aliases(&inner, aliases, va_list_boxed)),
             len,
         }
     } else if let Some(name) = cir_record_name(ty) {
@@ -208,11 +216,58 @@ pub(super) fn is_cir_va_list_record_type(ty: &str) -> bool {
 }
 
 pub(super) fn is_cir_va_list_type(ty: &str) -> bool {
+    va_list_shaped_type(ty, false).is_some()
+}
+
+pub(super) fn is_boxed_va_args_type(ty: &Type) -> bool {
+    matches!(ty, Type::Custom(name) if name == "__SlateVaArgs")
+}
+
+pub(super) fn empty_va_args_expr() -> Expr {
+    Expr::Call {
+        binding: crate::function_identity::CallBinding::Generated,
+        func: Box::new(Expr::Var("__SlateVaArgs::empty".into())),
+        args: vec![],
+    }
+}
+
+pub(super) fn va_list_shaped_type(ty: &str, boxed: bool) -> Option<Type> {
     let ty = ty.trim();
-    is_cir_va_list_record_type(ty)
-        || cir_ptr_inner(ty).is_some_and(is_cir_va_list_record_type)
-        || parse_cir_array_type(ty)
-            .is_some_and(|(elem, len)| len == 1 && is_cir_va_list_record_type(&elem))
+    let value_ty = || {
+        if boxed {
+            Type::Custom("__SlateVaArgs".into())
+        } else {
+            Type::VaList
+        }
+    };
+    if is_cir_va_list_record_type(ty) {
+        return Some(value_ty());
+    }
+    if cir_ptr_inner(ty).is_some_and(is_cir_va_list_record_type) {
+        return Some(value_ty());
+    }
+    if let Some((elem, 1)) = parse_cir_array_type(ty)
+        && is_cir_va_list_record_type(&elem)
+    {
+        return Some(value_ty());
+    }
+    if let Some((elem, len)) = parse_cir_array_type(ty)
+        && let Some(inner) = va_list_shaped_type(&elem, boxed)
+    {
+        return Some(Type::Array {
+            elem: Box::new(inner),
+            len,
+        });
+    }
+    if let Some(inner) = cir_ptr_inner(ty)
+        && let Some(inner_ty) = va_list_shaped_type(inner, boxed)
+    {
+        return Some(Type::Ptr {
+            mutable: true,
+            inner: Box::new(inner_ty),
+        });
+    }
+    None
 }
 
 pub(super) fn function_type_contains_va_list(ty: &str) -> bool {
@@ -221,7 +276,11 @@ pub(super) fn function_type_contains_va_list(ty: &str) -> bool {
         || ty.contains("!rec___builtin_va_list")
 }
 
-pub(super) fn cir_fn_type_to_type(ty: &str, aliases: &BTreeMap<String, String>) -> Option<Type> {
+pub(super) fn cir_fn_type_to_type(
+    ty: &str,
+    aliases: &BTreeMap<String, String>,
+    va_list_boxed: bool,
+) -> Option<Type> {
     let inner = ty
         .trim()
         .strip_prefix("!cir.func<")
@@ -236,11 +295,11 @@ pub(super) fn cir_fn_type_to_type(ty: &str, aliases: &BTreeMap<String, String>) 
             if param == "..." {
                 Type::Variadic
             } else {
-                rust_type_with_aliases(param, aliases)
+                rust_type_with_aliases(param, aliases, va_list_boxed)
             }
         })
         .collect::<Vec<_>>();
-    let ret = rust_type_with_aliases(ret.trim(), aliases);
+    let ret = rust_type_with_aliases(ret.trim(), aliases, va_list_boxed);
     Some(Type::FnPtr {
         abi: Abi::C,
         params,
