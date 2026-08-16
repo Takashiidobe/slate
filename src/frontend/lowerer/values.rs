@@ -112,13 +112,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             ty: Type::Prim(Prim::Usize),
         };
         if element.unbounded || element.out_of_bounds {
+            let array_ptr = self
+                .global_array_ptr_expr(&element.base, element.elem_ty.as_ref())
+                .unwrap_or_else(|| Expr::ArrayPtr {
+                    array: Box::new(element.base.clone()),
+                    mutable: true,
+                });
             return Expr::Unary {
                 op: UnaryOp::Deref,
                 expr: Box::new(Expr::MethodCall {
-                    recv: Box::new(Expr::ArrayPtr {
-                        array: Box::new(element.base.clone()),
-                        mutable: true,
-                    }),
+                    recv: Box::new(array_ptr),
                     method: "add".into(),
                     args: vec![index],
                 }),
@@ -128,6 +131,35 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             base: Box::new(element.base.clone()),
             index: Box::new(index),
         }
+    }
+
+    fn place_root_is_global(&self, expr: &Expr) -> bool {
+        match expr {
+            Expr::Var(name) => {
+                let name = name.as_str();
+                self.parent.globals.contains_key(name)
+                    || self.parent.extern_globals.contains_key(name)
+            }
+            Expr::Field { base, .. } | Expr::TupleField { base, .. } | Expr::Index { base, .. } => {
+                self.place_root_is_global(base)
+            }
+            _ => false,
+        }
+    }
+
+    fn global_array_ptr_expr(&self, base: &Expr, elem_ty: Option<&Type>) -> Option<Expr> {
+        if !self.place_root_is_global(base) {
+            return None;
+        }
+        Some(Expr::MethodCallGeneric {
+            recv: Box::new(Expr::AddrOf {
+                mutable: true,
+                expr: Box::new(base.clone()),
+            }),
+            method: "cast".into(),
+            type_args: vec![elem_ty.cloned()?],
+            args: Vec::new(),
+        })
     }
 
     pub(super) fn pointer_operand_expr(&self, operand: &str) -> Expr {
