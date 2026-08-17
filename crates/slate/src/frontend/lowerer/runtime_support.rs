@@ -444,15 +444,18 @@ pub(super) fn f80_shim_decls() -> Vec<ExternFnDecl> {
     decls
 }
 
-pub(super) fn is_long_double(ty: &str) -> bool {
-    ty.trim() == "!cir.f80" || ty.starts_with("!cir.long_double")
+pub(super) fn is_long_double(ty: &CirType) -> bool {
+    matches!(
+        ty,
+        CirType::LongDouble(_) | CirType::Float(clang_ir::ast::FloatKind::F80)
+    )
 }
 
-pub(super) fn is_quad_long_double(ty: &str) -> bool {
-    ty.starts_with("!cir.long_double<!cir.f128>")
+pub(super) fn is_quad_long_double(ty: &CirType) -> bool {
+    matches!(ty, CirType::LongDouble(inner) if matches!(**inner, CirType::Float(clang_ir::ast::FloatKind::F128)))
 }
 
-pub(super) fn is_wrapped_long_double(ty: &str) -> bool {
+pub(super) fn is_wrapped_long_double(ty: &CirType) -> bool {
     is_long_double(ty) && !is_quad_long_double(ty) && !crate::cir::emit::uses_f64_long_double_abi()
 }
 

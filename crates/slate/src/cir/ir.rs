@@ -1,86 +1,21 @@
-//! The parsed CIR, kept as a generic MLIR Op-tree rather than a typed enum. The
-//! generic form `%res = "name"(%operands) <{attrs}> ({regions}) : (types) -> types`
-//! is completely op-agnostic, so this model stays stable as op coverage grows;
-//! lowering interprets `op.name` and reads attrs/operands through typed views.
+//! The parsed CIR, re-exported from `clang-ir`'s generic MLIR op-tree rather
+//! than a hand-rolled one. `clang-ir` owns the text parser and the typed
+//! `Attribute`/`Type` representations; `CirOpKind` (Slate's own op-name
+//! dispatch classifier) stays here since it's specific to how the lowerer
+//! organizes its `cir.*` handlers, not something the generic op-tree needs.
 
-use std::collections::BTreeMap;
+pub use clang_ir::ast::{Attribute as Attr, Block, Module, Operation as Op, Region, Type as CirType};
 
-/// A whole translation unit: the top-level ops (a `builtin.module` and its body).
-#[derive(Debug, Default, Clone)]
-pub struct Module {
-    pub ops: Vec<Op>,
-    pub aliases: BTreeMap<String, String>,
+/// Slate's op-name dispatch key. Lives here (not in `clang-ir`) because it's
+/// keyed off exactly the `cir.*` handler split the lowerer uses, not a
+/// general-purpose classification `clang-ir` itself would need.
+pub trait OpKindExt {
+    fn kind(&self) -> CirOpKind;
 }
 
-/// One MLIR operation in generic form.
-#[derive(Debug, Clone)]
-pub struct Op {
-    /// SSA results this op defines, e.g. `%3`, `%c` (names without the `%`).
-    pub results: Vec<String>,
-    /// Dialect-qualified op name, e.g. `cir.const`, `cir.binop`, `cir.func`.
-    pub name: String,
-    /// SSA operands referenced (names without the `%`).
-    pub operands: Vec<String>,
-    /// Successor block labels from a `[^bbN, ...]` list (names without the `^`).
-    pub successors: Vec<String>,
-    /// `<{...}>` inherent attributes plus `{...}` discardable attributes, merged.
-    pub attrs: BTreeMap<String, Attr>,
-    /// Nested regions `({ ... })`.
-    pub regions: Vec<Region>,
-    /// Functional type signature `: (a, b) -> r`, kept as raw text for V0.
-    pub ty: Option<String>,
-    /// Trailing `loc(...)`, kept verbatim for the source-location join.
-    pub loc: Option<String>,
-}
-
-impl Op {
-    pub fn kind(&self) -> CirOpKind {
+impl OpKindExt for Op {
+    fn kind(&self) -> CirOpKind {
         CirOpKind::parse(&self.name)
-    }
-}
-
-#[derive(Debug, Default, Clone)]
-pub struct Region {
-    pub blocks: Vec<Block>,
-}
-
-#[derive(Debug, Default, Clone)]
-pub struct Block {
-    pub label: Option<String>,
-    pub args: Vec<(String, String)>,
-    pub ops: Vec<Op>,
-}
-
-#[derive(Debug, Clone)]
-pub enum Attr {
-    Raw(String),
-    Int(i64),
-    Str(String),
-    Type(String),
-    Array(Vec<Attr>),
-    Dict(BTreeMap<String, Attr>),
-}
-
-impl Attr {
-    pub fn as_int(&self) -> Option<i64> {
-        match self {
-            Attr::Int(n) => Some(*n),
-            _ => None,
-        }
-    }
-
-    pub fn as_str(&self) -> Option<&str> {
-        match self {
-            Attr::Str(s) | Attr::Raw(s) | Attr::Type(s) => Some(s),
-            _ => None,
-        }
-    }
-
-    pub fn as_dict(&self) -> Option<&BTreeMap<String, Attr>> {
-        match self {
-            Attr::Dict(dict) => Some(dict),
-            _ => None,
-        }
     }
 }
 
