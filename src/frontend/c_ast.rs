@@ -859,7 +859,7 @@ fn collect_long_double_init_values(
                 out.push(fact);
             }
         }
-        Some("ImplicitCastExpr") if node_contains_kind(node, "CallExpr") => {
+        Some("CallExpr") | Some("ImplicitCastExpr") if node_contains_kind(node, "CallExpr") => {
             out.push(FloatingLiteralFact {
                 value: String::new(),
                 bits: String::new(),
@@ -877,21 +877,48 @@ fn collect_long_double_init_values(
             });
         }
         Some("ImplicitCastExpr") if node_contains_kind(node, "FloatingLiteral") => {
-            let value = descendant_value(node, "FloatingLiteral")
-                .unwrap_or("0.0")
-                .to_string();
-            if value == "0" || value == "0.0" {
-                out.push(FloatingLiteralFact {
-                    value: "0.000000e+00".to_string(),
-                    bits: "0000000000000000".to_string(),
-                    bit_width: 80,
+            let (negated, raw_value) =
+                descendant_signed_value(node, "FloatingLiteral").unwrap_or((false, "0.0"));
+            if raw_value == "0" || raw_value == "0.0" {
+                out.push(if negated {
+                    FloatingLiteralFact {
+                        value: "-0.000000e+00".to_string(),
+                        bits: String::new(),
+                        bit_width: 80,
+                    }
+                } else {
+                    FloatingLiteralFact {
+                        value: "0.000000e+00".to_string(),
+                        bits: "0000000000000000".to_string(),
+                        bit_width: 80,
+                    }
                 });
             } else {
+                let value = if negated {
+                    format!("-{raw_value}")
+                } else {
+                    raw_value.to_string()
+                };
                 out.push(FloatingLiteralFact {
                     value,
                     bits: String::new(),
                     bit_width: 80,
                 });
+            }
+        }
+        Some("UnaryOperator") if node.get("opcode").and_then(Value::as_str) == Some("-") => {
+            let mut inner = Vec::new();
+            for child in children(node) {
+                collect_long_double_init_values(
+                    child,
+                    source_file,
+                    source,
+                    floating_literals,
+                    &mut inner,
+                );
+            }
+            if let Some(fact) = inner.into_iter().next() {
+                out.push(negate_floating_literal_fact(fact));
             }
         }
         Some("BinaryOperator")
@@ -916,6 +943,46 @@ fn descendant_value<'a>(node: &'a Value, wanted: &str) -> Option<&'a str> {
         }
     }
     None
+}
+
+fn descendant_signed_value<'a>(node: &'a Value, wanted: &str) -> Option<(bool, &'a str)> {
+    if kind(node) == Some(wanted) {
+        return node
+            .get("value")
+            .and_then(Value::as_str)
+            .map(|v| (false, v));
+    }
+    if kind(node) == Some("UnaryOperator")
+        && node.get("opcode").and_then(Value::as_str) == Some("-")
+    {
+        for child in children(node) {
+            if let Some((negated, value)) = descendant_signed_value(child, wanted) {
+                return Some((!negated, value));
+            }
+        }
+        return None;
+    }
+    for child in children(node) {
+        if let Some(result) = descendant_signed_value(child, wanted) {
+            return Some(result);
+        }
+    }
+    None
+}
+
+fn negate_floating_literal_fact(fact: FloatingLiteralFact) -> FloatingLiteralFact {
+    if fact.value.is_empty() {
+        return fact;
+    }
+    let value = match fact.value.strip_prefix('-') {
+        Some(rest) => rest.to_string(),
+        None => format!("-{}", fact.value),
+    };
+    FloatingLiteralFact {
+        value,
+        bits: String::new(),
+        bit_width: fact.bit_width,
+    }
 }
 
 fn node_contains_kind(node: &Value, wanted: &str) -> bool {
