@@ -10,7 +10,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_call(&mut self, op: &Op) {
-        let operand_types = op_operand_types(op.ty.as_deref().unwrap_or(""));
+        let operand_types = op_operand_types(op);
         let direct_callee =
             attr_str(op, "callee").map(|callee| callee.trim_start_matches('@').to_string());
         let weak_ref_target = direct_callee
@@ -54,7 +54,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     callee.clone(),
                     callee_expr,
                     op.operands.as_slice(),
-                    operand_types.as_slice(),
+                    operand_types,
                     None,
                 )
             } else {
@@ -76,7 +76,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let arg_attrs_offset = op.operands.len() - arg_operands.len();
         let mut args = arg_operands
             .iter()
-            .zip(arg_types.iter().copied())
+            .zip(arg_types.iter())
             .map(|(operand, ty)| self.call_arg_expr(operand, ty))
             .collect::<Vec<_>>();
         if self.try_long_double_call_shim(op, &callee_name, &args, arg_types)
@@ -198,9 +198,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     })
                     .collect()
             } else if let Some(param_types) = self.parent.function_param_types.get(&callee_name) {
-                cast_void_ptr_call_args(args, arg_types, param_types)
+                let arg_types = arg_types.iter().collect::<Vec<_>>();
+                cast_void_ptr_call_args(args, &arg_types, param_types)
             } else if let Some(param_types) = &indirect_param_types {
-                cast_void_ptr_call_args(args, arg_types, param_types)
+                let arg_types = arg_types.iter().collect::<Vec<_>>();
+                cast_void_ptr_call_args(args, &arg_types, param_types)
             } else {
                 args
             },
@@ -226,7 +228,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             expr
         };
 
-        if let Some(result) = op.results.first() {
+        if let Some((result, _)) = op.results.first() {
             let indirect_ret_ty = indirect_callee_operand
                 .and_then(|operand| self.loaded_field_types.get(&operand))
                 .and_then(|ty| match ty {
@@ -247,7 +249,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         op: &Op,
         callee_name: &str,
         args: &[Expr],
-        arg_types: &[&str],
+        arg_types: &[CirType],
     ) -> bool {
         self.try_long_double_call_shim(op, callee_name, args, arg_types)
     }
@@ -257,7 +259,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         op: &Op,
         callee_name: &str,
         args: &[Expr],
-        arg_types: &[&str],
+        arg_types: &[CirType],
     ) -> bool {
         if crate::cir::emit::uses_f64_long_double_abi() {
             return false;
@@ -268,7 +270,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             _ => None,
         };
         if let Some(shim) = cf80_shim {
-            let Some(result) = op.results.first() else {
+            let Some((result, _)) = op.results.first() else {
                 return true;
             };
             if args.len() != 4 {
@@ -417,7 +419,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             func: Box::new(Expr::Var(shim_name.into())),
             args: call_args,
         });
-        if let Some(result) = op.results.first() {
+        if let Some((result, _)) = op.results.first() {
             self.materialize_expr(result, expr, op_result_type(op));
         } else {
             self.push_stmt(Stmt::Expr(expr));
@@ -495,7 +497,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if !self.lower_known_libc_op(op, crate::function_identity::Known::MemChr) {
             return;
         }
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         if op.operands.len() < 3 {
@@ -550,7 +552,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else {
             call
         };
-        if let Some(result) = op.results.first() {
+        if let Some((result, _)) = op.results.first() {
             self.materialize_expr(result, expr, op_result_type(op));
         } else {
             self.push_stmt(Stmt::Expr(expr));
@@ -570,7 +572,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_atomic_fetch(&mut self, op: &Op) {
-        let Some(result) = op.results.first().cloned() else {
+        let Some((result, _)) = op.results.first().cloned() else {
             return;
         };
         if op.operands.len() < 2 {
@@ -650,7 +652,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_atomic_xchg(&mut self, op: &Op) {
-        let Some(result) = op.results.first().cloned() else {
+        let Some((result, _)) = op.results.first().cloned() else {
             return;
         };
         if op.operands.len() < 2 {
@@ -691,7 +693,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_atomic_test_and_set(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         let Some(ptr) = op.operands.first() else {
@@ -793,9 +795,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.immutable_temps.insert(old.clone());
             self.immutable_temps.insert(ok.clone());
             self.values
-                .insert(op.results[0].clone(), Val::Expr(Expr::Var(old.into())));
+                .insert(op.results[0].0.clone(), Val::Expr(Expr::Var(old.into())));
             self.values
-                .insert(op.results[1].clone(), Val::Expr(Expr::Var(ok.into())));
+                .insert(op.results[1].0.clone(), Val::Expr(Expr::Var(ok.into())));
             return;
         }
         let addr = self.store_address_expr(&op.operands[0]);
@@ -834,9 +836,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.immutable_temps.insert(old.clone());
         self.immutable_temps.insert(ok.clone());
         self.values
-            .insert(op.results[0].clone(), Val::Expr(Expr::Var(old.into())));
+            .insert(op.results[0].0.clone(), Val::Expr(Expr::Var(old.into())));
         self.values
-            .insert(op.results[1].clone(), Val::Expr(Expr::Var(ok.into())));
+            .insert(op.results[1].0.clone(), Val::Expr(Expr::Var(ok.into())));
     }
 
     pub(super) fn lower_atomic_fence(&mut self, op: &Op) {
@@ -864,7 +866,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         &mut self,
         op: &Op,
         ptr: &str,
-        value_ty: Option<&str>,
+        value_ty: Option<&CirType>,
         value: Expr,
     ) -> bool {
         let Some(mem_order) = attr_int(op, "mem_order") else {
@@ -908,7 +910,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_va_arg(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         let Some(ptr) = op.operands.first() else {

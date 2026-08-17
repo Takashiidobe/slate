@@ -2,7 +2,7 @@ use super::*;
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
     pub(super) fn lower_complex_create(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         if op.operands.len() < 2 {
@@ -30,7 +30,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn lower_complex_addsub(&mut self, op: &Op, component_op: BinOp) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         if op.operands.len() < 2 {
@@ -70,7 +70,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_complex_part(&mut self, op: &Op, field: &str) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         let Some(src) = op.operands.first() else {
@@ -87,7 +87,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_complex_part_ptr(&mut self, op: &Op, field: &str) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         let Some(base_ptr) = op.operands.first() else {
@@ -112,7 +112,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_complex_mul(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         if op.operands.len() < 2 {
@@ -176,7 +176,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_complex_div(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         if op.operands.len() < 2 {
@@ -270,7 +270,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_complex_conj(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         let Some(src) = op.operands.first() else {
@@ -311,13 +311,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         f32_name: &str,
         f64_name: &str,
     ) -> Option<Expr> {
-        let inner = op_result_type(op).and_then(cir_complex_inner)?;
-        let name = if inner == "!cir.float" {
-            f32_name
-        } else if inner == "!cir.double" {
-            f64_name
-        } else {
-            return None;
+        let inner = match op_result_type(op) {
+            Some(CirType::Complex(inner)) => inner.as_ref(),
+            _ => return None,
+        };
+        let name = match inner {
+            CirType::Float(clang_ir::ast::FloatKind::F32) => f32_name,
+            CirType::Float(clang_ir::ast::FloatKind::F64) => f64_name,
+            _ => return None,
         };
         let lhs = self.operand_expr(&op.operands[0]);
         let rhs = self.operand_expr(&op.operands[1]);

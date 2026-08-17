@@ -381,7 +381,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         dst_len.unwrap_or(elems.len()),
                         default,
                     ))
-                } else if let Some(raw) = self.parent.const_aggregates.get(name) {
+                } else if let Some(init) = self.parent.const_aggregates.get(name) {
                     let ty = dst_ty?;
                     let mut facts: std::collections::VecDeque<FloatingLiteralFact> = self
                         .parent
@@ -390,7 +390,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         .cloned()
                         .unwrap_or_default()
                         .into();
-                    self.parent.render_const_value_expr(ty, raw, &mut facts)
+                    self.parent.render_const_value_expr(ty, init, &mut facts)
                 } else if self.parent.const_zero_globals.contains(name) {
                     dst_ty.map(|ty| self.parent.default_value_expr(ty))
                 } else {
@@ -710,8 +710,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             let value = if result_ty.is_some_and(is_cir_function_pointer_type) {
                 self.function_pointer_null_values.insert(result.clone());
                 Expr::Value(RustValue::None)
-            } else if result_ty.is_some_and(|ty| self.parent.expand_alias(ty) == "!cir.ptr<!void>")
-            {
+            } else if result_ty.is_some_and(|ty| {
+                matches!(self.parent.expand_alias(ty), CirType::Ptr(inner) if matches!(**inner, CirType::Void))
+            }) {
                 Expr::Cast {
                     expr: Box::new(Expr::Value(RustValue::NullPtr)),
                     ty: self.parent.rust_type(result_ty.unwrap()),

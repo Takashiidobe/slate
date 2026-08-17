@@ -23,7 +23,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if self.lower_extended_asm(op) {
             return;
         }
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         let expr = op
@@ -104,17 +104,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 return false;
             }
         }
-        let result_types = if output_count == 0 {
+        let result_types: Vec<&CirType> = if output_count == 0 {
             Vec::new()
         } else {
             let Some(result_types) = asm_output_types(op, &self.parent.aliases, output_count)
-                .map(|types| types.into_iter().map(str::to_string).collect::<Vec<_>>())
             else {
                 return false;
             };
             result_types
         };
-        let operand_types = op.ty.as_deref().map(op_operand_types).unwrap_or_default();
+        let operand_types = op_operand_types(op);
         if operand_types.len() != op.operands.len() {
             return false;
         }
@@ -147,12 +146,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         let mut template_constraints = constraints.clone();
         template_constraints.extend(std::iter::repeat_n("X", label_count));
+        let void_ty = CirType::Void;
         let mut template_types = result_types
             .iter()
-            .map(String::as_str)
-            .chain(operand_types.iter().copied())
+            .copied()
+            .chain(operand_types.iter())
             .collect::<Vec<_>>();
-        template_types.extend(std::iter::repeat_n("()", label_count));
+        template_types.extend(std::iter::repeat_n(&void_ty, label_count));
         let Some(template) = translate_asm_template(
             &template,
             &slot_to_rust,

@@ -122,7 +122,7 @@ pub(super) fn standard_record_default_expr(ty: &str) -> Option<Expr> {
     })
 }
 
-pub(super) fn zero_for_cir_type(ty: &str) -> Expr {
+pub(super) fn zero_for_cir_type(ty: &CirType) -> Expr {
     default_value_for_type(&rust_type(ty))
 }
 
@@ -400,6 +400,44 @@ pub(super) fn complex_component_expr(ty: Option<&Type>, component: CirComplexCom
     }
 }
 
+pub(super) fn complex_component_from_attr(attr: &Attr) -> Option<CirComplexComponent> {
+    match attr {
+        Attr::CirInt { text, .. } => text
+            .parse::<i128>()
+            .ok()
+            .map(CirComplexComponent::Int)
+            .or_else(|| text.parse::<u128>().ok().map(CirComplexComponent::Uint)),
+        Attr::CirFloat { text, .. } => fp_text_value(text).map(CirComplexComponent::Float),
+        _ => None,
+    }
+}
+
+/// Renders a scalar (non-aggregate) attribute directly: `#cir.int<>`,
+/// `#cir.fp<>`, `#cir.bool<>`/`#true`/`#false`, and `#cir.ptr<null>` (the
+/// only unmodeled-but-relevant `Attribute::Dialect` case here - other
+/// `!cir.ptr` forms, e.g. int-to-pointer casts, need the destination type
+/// and are handled by the caller instead).
+pub(super) fn scalar_attr_expr(attr: &Attr) -> Option<Expr> {
+    match attr {
+        Attr::CirInt { text, .. } => text
+            .parse::<i128>()
+            .ok()
+            .map(int_value_expr)
+            .or_else(|| text.parse::<u128>().ok().map(|n| Expr::Value(RustValue::U128(n)))),
+        Attr::CirFloat { text, .. } => fp_text_value(text).map(fp_literal_expr),
+        Attr::CirBool { value, .. } | Attr::Bool(value) => Some(Expr::Value(RustValue::Bool(*value))),
+        Attr::Dialect {
+            dialect,
+            mnemonic,
+            raw: Some(raw),
+            ..
+        } if dialect == "cir" && mnemonic == "ptr" && raw.trim() == "null" => {
+            Some(Expr::Value(RustValue::NullPtr))
+        }
+        _ => None,
+    }
+}
+
 pub(super) fn cir_int_digits(s: &str) -> Option<&str> {
     let start = s.find("#cir.int<")? + "#cir.int<".len();
     let rest = &s[start..];
@@ -455,6 +493,35 @@ pub(super) fn cir_fp_text(s: &str) -> Option<&str> {
     let rest = &s[start..];
     let end = rest.find('>')?;
     Some(rest[..end].trim())
+}
+
+/// Like [`parse_cir_fp`], but starting from a `#cir.fp<...>` literal's
+/// already-extracted text (e.g. `Attribute::CirFloat::text`) instead of
+/// locating and stripping the `#cir.fp<...>` wrapper syntax itself.
+pub(super) fn fp_text_value(text: &str) -> Option<String> {
+    let text = text.trim();
+    if text.starts_with("0x") || text.starts_with("0X") {
+        let bits = u64::from_str_radix(&text[2..], 16).ok()?;
+        return match text.len() - 2 {
+            8 => Some(format!("f32::from_bits(0x{bits:08x})")),
+            16 => Some(format!("f64::from_bits(0x{bits:016x})")),
+            _ => None,
+        };
+    }
+    Some(text.to_string())
+}
+
+/// Like [`long_double_raw_expr`], but starting from a `#cir.fp<...>`
+/// literal's already-extracted text instead of a whole `#cir.fp<...> : ty`
+/// snippet.
+pub(super) fn long_double_from_text(text: &str) -> Option<Expr> {
+    let text = text.trim();
+    if let Some(bits) = text.strip_prefix("0x").or_else(|| text.strip_prefix("0X"))
+        && bits.len() == 20
+    {
+        return f80_literal_bits_expr(bits);
+    }
+    fp_text_value(text).map(|fp| typed_fp_literal_expr(Some(&Type::LongDouble), fp))
 }
 
 pub(super) fn parse_cir_const_complex(

@@ -2,7 +2,7 @@ use super::*;
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
     pub(super) fn lower_ffs(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         let Some(value) = op.operands.first() else {
@@ -37,7 +37,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_clrsb(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         let Some(value) = op.operands.first() else {
@@ -76,7 +76,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_binary_method(&mut self, op: &Op, method: &str) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         if op.operands.len() < 2 {
@@ -125,7 +125,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_ternary_method(&mut self, op: &Op, method: &str) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         if op.operands.len() < 3 {
@@ -162,16 +162,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_signbit(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         let Some(value) = op.operands.first() else {
             return;
         };
-        let operand_ty = op
-            .ty
-            .as_deref()
-            .and_then(|ty| op_operand_types(ty).into_iter().next());
+        let operand_ty = op_operand_types(op).first();
         if operand_ty.is_some_and(is_wrapped_long_double) {
             self.materialize_expr(
                 result,
@@ -197,7 +194,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_is_fp_class(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         let Some(value) = op.operands.first() else {
@@ -206,10 +203,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(flags) = attr_int(op, "flags") else {
             return;
         };
-        let operand_ty = op
-            .ty
-            .as_deref()
-            .and_then(|ty| op_operand_types(ty).into_iter().next());
+        let operand_ty = op_operand_types(op).first();
         if operand_ty.is_some_and(is_wrapped_long_double) {
             self.materialize_expr(
                 result,
@@ -348,14 +342,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(result, expr, op_result_type(op));
     }
 
-    pub(super) fn float_predicate_operand_expr(&self, operand: &str, ty: Option<&str>) -> Expr {
+    pub(super) fn float_predicate_operand_expr(&self, operand: &str, ty: Option<&CirType>) -> Expr {
         let value = self.operand_expr(operand);
         match ty {
             Some(ty) if is_wrapped_long_double(ty) => Expr::Field {
                 base: Box::new(value),
                 field: "0".into(),
             },
-            Some("!cir.float") => Expr::Cast {
+            Some(CirType::Float(clang_ir::ast::FloatKind::F32)) => Expr::Cast {
                 expr: Box::new(value),
                 ty: Type::Prim(Prim::F64),
             },
@@ -377,7 +371,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .is_some_and(|ty| is_wrapped_long_double(ty))
         {
             self.materialize_expr(
-                &op.results[0],
+                &op.results[0].0,
                 Expr::Call {
                     binding: crate::function_identity::CallBinding::Generated,
                     func: Box::new(Expr::Var("__slate_f80_fract".into())),
@@ -386,7 +380,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 result_types.first().copied(),
             );
             self.materialize_expr(
-                &op.results[1],
+                &op.results[1].0,
                 Expr::Call {
                     binding: crate::function_identity::CallBinding::Generated,
                     func: Box::new(Expr::Var("__slate_f80_trunc".into())),
@@ -397,7 +391,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         self.materialize_expr(
-            &op.results[0],
+            &op.results[0].0,
             Expr::MethodCall {
                 recv: Box::new(value.clone()),
                 method: "fract".into(),
@@ -406,7 +400,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             result_types.first().copied(),
         );
         self.materialize_expr(
-            &op.results[1],
+            &op.results[1].0,
             Expr::MethodCall {
                 recv: Box::new(value),
                 method: "trunc".into(),
@@ -417,17 +411,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_cmp(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         if op.operands.len() < 2 {
             return;
         }
         if let Some(expr) = self.lower_function_pointer_null_cmp(op) {
-            self.materialize_expr(result, expr, Some("!cir.bool"));
+            self.materialize_expr(result, expr, Some(&CirType::Bool));
             return;
         }
-        let operand_types = op_operand_types(op.ty.as_deref().unwrap_or(""));
+        let operand_types = op_operand_types(op);
         let concrete_function_symbols = operand_types
             .first()
             .zip(operand_types.get(1))
@@ -474,7 +468,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         rhs: Box::new(rhs),
                     }),
                 };
-                self.materialize_expr(result, expr, Some("!cir.bool"));
+                self.materialize_expr(result, expr, Some(&CirType::Bool));
                 return;
             }
             Some(7) => {
@@ -491,7 +485,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         rhs: Box::new(rhs),
                     }),
                 };
-                self.materialize_expr(result, expr, Some("!cir.bool"));
+                self.materialize_expr(result, expr, Some(&CirType::Bool));
                 return;
             }
             _ => BinOp::Le,
@@ -503,7 +497,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 lhs: Box::new(lhs),
                 rhs: Box::new(rhs),
             },
-            Some("!cir.bool"),
+            Some(&CirType::Bool),
         );
     }
 

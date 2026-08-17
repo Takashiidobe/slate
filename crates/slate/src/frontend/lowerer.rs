@@ -10,6 +10,7 @@ use crate::backend::rust_ast::{
     UsedKind, Visibility,
 };
 use crate::cir::ir::{Attr, Block, CirOpKind, CirType, Module, Op, OpKindExt, Region};
+use clang_ir::ast::ConstArrayData;
 use crate::ctx::Ctx;
 use crate::frontend::c_ast::{
     CType, EnumConstRef, FloatingLiteralFact, FloatingLiteralLoc, LayoutQuery, Loc, MacroConst,
@@ -112,14 +113,10 @@ fn widen_flexible_array_members(
         if op.kind() != CirOpKind::Global {
             continue;
         }
-        let Some(sym_type) = attr_str(op, "sym_type") else {
+        let Some(sym_type) = attr_type(op, "sym_type") else {
             continue;
         };
-        let expanded = cir
-            .aliases
-            .get(sym_type.trim())
-            .map(String::as_str)
-            .unwrap_or(sym_type);
+        let expanded = cir.resolve_type(sym_type);
         let Some(record_name) = cir_record_name(expanded) else {
             continue;
         };
@@ -135,25 +132,15 @@ fn widen_flexible_array_members(
         if !is_flexible_array_candidate {
             continue;
         }
-        let Some(raw) = attr_str(op, "initial_value") else {
-            continue;
-        };
-        let raw = raw.trim();
-        if !raw.starts_with("#cir.const_record<") {
-            continue;
-        }
-        let Some(open) = raw.find('{') else { continue };
-        let Some(close) = raw.rfind('}') else {
-            continue;
-        };
-        let elems = split_top_level(&raw[open + 1..close], ',');
-        let Some(last_elem) = elems.last() else {
-            continue;
-        };
-        let Some((_, ty_text)) = last_elem.trim().rsplit_once(" : ") else {
-            continue;
-        };
-        let Some((_, len)) = parse_cir_array_type(ty_text.trim()) else {
+        let Some(len) = op.attr("initial_value").and_then(|attr| match attr {
+            Attr::ConstRecord { ty, .. } => match ty {
+                CirType::Struct(s) => s.members.last().and_then(|(_, member_ty)| {
+                    parse_cir_array_type(member_ty).map(|(_, len)| len)
+                }),
+                _ => None,
+            },
+            _ => None,
+        }) else {
             continue;
         };
         let record = records.get_mut(&record_name).expect("checked above");
@@ -184,17 +171,17 @@ fn required_record_defs(
             .or_insert_with(|| record.clone());
     }
     let cir_kinds: BTreeMap<String, RecordKind> = cir
-        .aliases
+        .type_aliases
         .iter()
         .filter_map(|(alias, ty)| {
             let name =
                 lowered_record_name(cir_record_name(ty).or_else(|| alias.strip_prefix("!rec_"))?)?;
-            let kind = if ty.trim_start().starts_with("!cir.union") {
-                RecordKind::Union
-            } else if ty.trim_start().starts_with("!cir.struct") {
-                RecordKind::Struct
-            } else {
-                return None;
+            let kind = match ty {
+                CirType::Struct(s) => match s.kind {
+                    clang_ir::ast::RecordKind::Union => RecordKind::Union,
+                    clang_ir::ast::RecordKind::Struct => RecordKind::Struct,
+                },
+                _ => return None,
             };
             Some((name, kind))
         })
@@ -254,7 +241,7 @@ fn required_record_defs(
 
 pub fn shim_records_for_module(cir: &Module, c: &Unit) -> Vec<crate::frontend::c_ast::Record> {
     let referenced: BTreeSet<&str> = cir
-        .aliases
+        .type_aliases
         .values()
         .filter_map(|ty| cir_record_name(ty))
         .collect();
@@ -340,8 +327,11 @@ fn region_ends_in_noreturn_call(region: &Region) -> bool {
 }
 
 fn function_requires_unsafe_contract(op: &Op) -> bool {
-    let (params, _) = parse_function_type(attr_str(op, "function_type").unwrap_or(""));
-    if !params.iter().any(|ty| ty.starts_with("!cir.ptr<")) {
+    let Some(function_type) = attr_type(op, "function_type") else {
+        return false;
+    };
+    let (params, _) = parse_function_type(function_type);
+    if !params.iter().any(|ty| matches!(ty, CirType::Ptr(_))) {
         return false;
     }
 
@@ -356,7 +346,7 @@ fn function_requires_unsafe_contract(op: &Op) -> bool {
                     .first()
                     .is_some_and(|base| local_ptrs.contains(base)))
         {
-            local_ptrs.extend(op.results.iter().cloned());
+            local_ptrs.extend(op.results.iter().map(|(id, _)| id.clone()));
         } else if matches!(op.kind(), CirOpKind::Load | CirOpKind::Store)
             && op
                 .operands
@@ -375,6 +365,34 @@ fn builtin_module(module: &Module) -> Option<&Op> {
 
 fn module_ops(module: &Module) -> Vec<&Op> {
     builtin_module(module).map(region_ops).unwrap_or_default()
+}
+
+/// Extracts `#cir.block_addr_info<"label", ...>` labels from a `#cir.const_array<[...]>`
+/// element list, if every element carries one - anything else (a plain
+/// numeric/aggregate array) isn't a block-address table.
+fn block_addr_labels(items: &[Attr]) -> Option<Vec<String>> {
+    let labels: Vec<String> = items
+        .iter()
+        .filter_map(|item| {
+            let Attr::Dialect {
+                dialect,
+                mnemonic,
+                raw: Some(raw),
+                ..
+            } = item
+            else {
+                return None;
+            };
+            if dialect != "cir" || mnemonic != "block_addr_info" {
+                return None;
+            }
+            let start = raw.find('"')? + 1;
+            let rest = &raw[start..];
+            let end = rest.find('"')?;
+            Some(rest[..end].to_string())
+        })
+        .collect();
+    (labels.len() == items.len() && !labels.is_empty()).then_some(labels)
 }
 
 pub fn defined_functions(module: &Module) -> Vec<String> {
@@ -478,7 +496,7 @@ pub fn unsafe_defined_functions(module: &Module) -> BTreeSet<String> {
         })
         .filter(|op| {
             function_requires_unsafe_contract(op)
-                || function_type_is_variadic(attr_str(op, "function_type").unwrap_or(""))
+                || attr_type(op, "function_type").is_some_and(function_type_is_variadic)
         })
         .filter_map(|op| attr_str(op, "sym_name").map(str::to_string))
         .filter(|name| name != "main")
@@ -500,15 +518,61 @@ pub fn unsafe_defined_functions(module: &Module) -> BTreeSet<String> {
     unsafe_functions
 }
 
+fn cir_type_mentions_f128(ty: &CirType) -> bool {
+    match ty {
+        CirType::Float(clang_ir::ast::FloatKind::F128) => true,
+        CirType::LongDouble(inner) | CirType::Ptr(inner) | CirType::Complex(inner) => {
+            cir_type_mentions_f128(inner)
+        }
+        CirType::Array { element, .. } | CirType::Vector { element, .. } => {
+            cir_type_mentions_f128(element)
+        }
+        CirType::CirFunc { inputs, output, .. } => {
+            inputs.iter().any(cir_type_mentions_f128) || cir_type_mentions_f128(output)
+        }
+        CirType::FunctionType { inputs, results } => {
+            inputs.iter().any(cir_type_mentions_f128) || results.iter().any(cir_type_mentions_f128)
+        }
+        CirType::Struct(s) => s.members.iter().any(|(_, ty)| cir_type_mentions_f128(ty)),
+        _ => false,
+    }
+}
+
+fn attr_mentions_f128(attr: &Attr) -> bool {
+    match attr {
+        Attr::Type(ty)
+        | Attr::CirFloat { ty, .. }
+        | Attr::CirInt { ty, .. }
+        | Attr::CirBool { ty, .. }
+        | Attr::ConstArray { ty, .. }
+        | Attr::ConstVector { ty, .. }
+        | Attr::ConstRecord { ty, .. }
+        | Attr::GlobalView { ty, .. }
+        | Attr::Zero { ty }
+        | Attr::Poison { ty } => cir_type_mentions_f128(ty),
+        Attr::Int { ty: Some(ty), .. }
+        | Attr::Float { ty: Some(ty), .. }
+        | Attr::Dialect { ty: Some(ty), .. } => cir_type_mentions_f128(ty),
+        Attr::BitfieldInfo { storage_type, .. } => cir_type_mentions_f128(storage_type),
+        Attr::ConstComplex { real, imag, .. } => attr_mentions_f128(real) || attr_mentions_f128(imag),
+        Attr::Array(items) => items.iter().any(attr_mentions_f128),
+        Attr::Dict(entries) => entries.iter().any(|(_, v)| attr_mentions_f128(v)),
+        _ => false,
+    }
+}
+
 pub fn required_features(module: &Module) -> BTreeSet<Feature> {
     let mut features = BTreeSet::new();
     for op in module_ops(module) {
-        if op.ty.as_deref().is_some_and(|ty| ty.contains("!cir.f128"))
+        if op
+            .results
+            .iter()
+            .any(|(_, ty)| cir_type_mentions_f128(ty))
             || op
-                .attrs
-                .values()
-                .filter_map(Attr::as_str)
-                .any(|value| value.contains("!cir.f128"))
+                .properties
+                .iter()
+                .chain(op.attributes.iter())
+                .any(|(_, attr)| attr_mentions_f128(attr))
         {
             features.insert(Feature::F128);
         }
@@ -522,9 +586,9 @@ pub fn required_features(module: &Module) -> BTreeSet<Feature> {
             features.insert(Feature::AsmGotoWithOutputs);
         }
         if op.kind() == CirOpKind::Func {
-            let function_type = attr_str(op, "function_type").unwrap_or("");
-            if function_type_is_variadic(function_type)
-                || function_type_contains_va_list(function_type)
+            if let Some(function_type) = attr_type(op, "function_type")
+                && (function_type_is_variadic(function_type)
+                    || function_type_contains_va_list(function_type))
             {
                 features.insert(Feature::CVariadic);
             }
@@ -545,7 +609,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
     let mut anon_records = anon_local_records(cir);
     let shim_records = shim_records_for_module(cir, c);
     let cir_record_names: BTreeSet<String> = cir
-        .aliases
+        .type_aliases
         .values()
         .filter_map(|ty| cir_record_name(ty))
         .map(|name| sanitize_ident(name).into_string())
@@ -635,7 +699,9 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
     }
     let mut lowerer = Lowerer {
         ctx,
-        aliases: cir.aliases.clone(),
+        aliases: cir.type_aliases.clone(),
+        loc_aliases: cir.loc_aliases.clone(),
+        attr_aliases: cir.attr_aliases.clone(),
         call_bindings: c.call_bindings(),
         known_functions: c
             .call_bindings()
@@ -1020,7 +1086,9 @@ fn comments(lines: &[String]) -> Vec<crate::backend::rust_ast::Comment> {
 
 struct Lowerer<'a> {
     ctx: &'a mut Ctx,
-    aliases: BTreeMap<String, String>,
+    aliases: BTreeMap<String, CirType>,
+    loc_aliases: BTreeMap<String, String>,
+    attr_aliases: BTreeMap<String, Attr>,
     call_bindings: HashMap<Loc, CallBinding>,
     known_functions: BTreeMap<String, FunctionIdentity>,
     function_types: BTreeMap<String, String>,
@@ -1038,7 +1106,7 @@ struct Lowerer<'a> {
     strings: BTreeMap<String, Vec<u8>>,
     const_arrays: BTreeMap<String, Vec<Expr>>,
     block_addr_globals: BTreeMap<String, Vec<String>>,
-    const_aggregates: BTreeMap<String, String>,
+    const_aggregates: BTreeMap<String, Attr>,
     const_zero_globals: BTreeSet<String>,
     used_symbols: BTreeMap<String, Vec<UsedKind>>,
     externs: BTreeMap<String, Vec<Type>>,
@@ -1078,7 +1146,7 @@ struct Lowerer<'a> {
     enum_wrapper_fns: std::cell::RefCell<BTreeMap<String, FnDef>>,
     needed_enum_from_impls: std::cell::RefCell<BTreeSet<(String, Type)>>,
     bitfield_storages: BitfieldStorages,
-    global_sym_types: BTreeMap<String, String>,
+    global_sym_types: BTreeMap<String, CirType>,
 }
 
 struct FunctionLowerer<'a, 'b> {
@@ -1285,7 +1353,7 @@ impl<'a> Lowerer<'a> {
     fn resolve_floating_literal_loc(&self, raw: &str) -> Option<FloatingLiteralLoc> {
         let raw = raw.trim();
         if raw.starts_with('#') {
-            return self.resolve_floating_literal_loc(self.aliases.get(raw)?);
+            return self.resolve_floating_literal_loc(self.loc_aliases.get(raw)?);
         }
         let inner = raw
             .strip_prefix("loc(")
@@ -1293,7 +1361,7 @@ impl<'a> Lowerer<'a> {
             .unwrap_or(raw)
             .trim();
         if inner.starts_with('#') {
-            return self.resolve_floating_literal_loc(self.aliases.get(inner)?);
+            return self.resolve_floating_literal_loc(self.loc_aliases.get(inner)?);
         }
         if let Some(callsite) = inner
             .strip_prefix("callsite(")
@@ -1318,7 +1386,7 @@ impl<'a> Lowerer<'a> {
         }
         let raw = raw.trim();
         if raw.starts_with('#') {
-            return self.resolve_expansion_source_point(self.aliases.get(raw)?, depth + 1);
+            return self.resolve_expansion_source_point(self.loc_aliases.get(raw)?, depth + 1);
         }
         let inner = raw
             .strip_prefix("loc(")
@@ -1326,7 +1394,7 @@ impl<'a> Lowerer<'a> {
             .unwrap_or(raw)
             .trim();
         if inner.starts_with('#') {
-            return self.resolve_expansion_source_point(self.aliases.get(inner)?, depth + 1);
+            return self.resolve_expansion_source_point(self.loc_aliases.get(inner)?, depth + 1);
         }
         if let Some(callsite) = inner
             .strip_prefix("callsite(")
@@ -1344,7 +1412,7 @@ impl<'a> Lowerer<'a> {
         }
         let raw = raw.trim();
         if raw.starts_with('#') {
-            return self.resolve_macro_group_loc(self.aliases.get(raw)?, depth + 1);
+            return self.resolve_macro_group_loc(self.loc_aliases.get(raw)?, depth + 1);
         }
         let inner = raw
             .strip_prefix("loc(")
@@ -1352,7 +1420,7 @@ impl<'a> Lowerer<'a> {
             .unwrap_or(raw)
             .trim();
         if inner.starts_with('#') {
-            return self.resolve_macro_group_loc(self.aliases.get(inner)?, depth + 1);
+            return self.resolve_macro_group_loc(self.loc_aliases.get(inner)?, depth + 1);
         }
         if let Some(fused) = inner
             .strip_prefix("fused[")
@@ -1374,7 +1442,7 @@ impl<'a> Lowerer<'a> {
         }
         let raw = raw.trim();
         if raw.starts_with('#') {
-            return self.resolve_source_point(self.aliases.get(raw)?, depth + 1);
+            return self.resolve_source_point(self.loc_aliases.get(raw)?, depth + 1);
         }
         let inner = raw
             .strip_prefix("loc(")
@@ -1382,7 +1450,7 @@ impl<'a> Lowerer<'a> {
             .unwrap_or(raw)
             .trim();
         if inner.starts_with('#') {
-            return self.resolve_source_point(self.aliases.get(inner)?, depth + 1);
+            return self.resolve_source_point(self.loc_aliases.get(inner)?, depth + 1);
         }
         let (file, line_col) = inner.rsplit_once("\":")?;
         let (line, col) = line_col.split_once(':')?;
@@ -1454,6 +1522,7 @@ impl<'a> Lowerer<'a> {
                 module_op,
                 &self.c_abi_functions,
                 self.project.emit_pub,
+                &self.aliases,
             );
         }
 
@@ -1543,7 +1612,7 @@ impl<'a> Lowerer<'a> {
             .filter_map(|op| {
                 Some((
                     attr_str(op, "sym_name")?.to_string(),
-                    attr_str(op, "sym_type")?.to_string(),
+                    attr_type(op, "sym_type")?.clone(),
                 ))
             })
             .collect();
@@ -1645,7 +1714,7 @@ impl<'a> Lowerer<'a> {
                     let Some(name) = attr_str(op, "sym_name") else {
                         continue;
                     };
-                    let function_type = attr_str(op, "function_type").unwrap_or("");
+                    let function_type = attr_type(op, "function_type").unwrap_or(&CirType::Void);
                     let (decl, params, ret) = self.extern_fn_signature(name, function_type);
                     if decl.variadic {
                         self.uses_c_variadic.set(true);
@@ -1663,7 +1732,7 @@ impl<'a> Lowerer<'a> {
                 if self.external_weak_targets.contains(&target)
                     && emitted_weak_targets.insert(target.clone())
                 {
-                    let function_type = attr_str(op, "function_type").unwrap_or("");
+                    let function_type = attr_type(op, "function_type").unwrap_or(&CirType::Void);
                     let (decl, params, ret) = self.extern_fn_signature(&target, function_type);
                     if decl.variadic {
                         self.ctx.diagnostics.error(format!(
@@ -1696,7 +1765,7 @@ impl<'a> Lowerer<'a> {
                 });
                 continue;
             }
-            let function_type = attr_str(op, "function_type").unwrap_or("");
+            let function_type = attr_type(op, "function_type").unwrap_or(&CirType::Void);
             let (mut decl, params, ret) = self.extern_fn_signature(name, function_type);
             if attr_bool(op, "noreturn") {
                 decl.ret = Some(Type::Never);
@@ -1716,7 +1785,7 @@ impl<'a> Lowerer<'a> {
             if op.kind() == CirOpKind::Func
                 && !region_ops(op).is_empty()
                 && attr_str(op, "sym_name").is_some_and(|name| name != "main")
-                && function_type_is_variadic(attr_str(op, "function_type").unwrap_or(""))
+                && attr_type(op, "function_type").is_some_and(function_type_is_variadic)
             {
                 let name = attr_str(op, "sym_name").unwrap().to_string();
                 self.variadic_defs.insert(name.clone());
@@ -1935,14 +2004,14 @@ impl __SlateVaArgs {
             return;
         }
         let rust_name = self.rust_global_name(name);
-        let ty = attr_str(op, "sym_type").map(|ty| self.rust_type(ty));
+        let ty = attr_type(op, "sym_type").map(|ty| self.rust_type(ty));
         let alignment = ty.as_ref().and_then(|ty| {
             attr_int(op, "alignment")
                 .and_then(|alignment| u32::try_from(alignment).ok())
                 .filter(|alignment| *alignment > effective_type_alignment(ty, &self.records))
         });
         let weak = linkage_is_weak(op);
-        let thread_local = op.attrs.contains_key("tls_model");
+        let thread_local = op.attr("tls_model").is_some();
         if thread_local {
             self.uses_thread_local.set(true);
         }
@@ -1954,7 +2023,7 @@ impl __SlateVaArgs {
             .cloned()
             .unwrap_or_default();
         let is_c_global = !name.starts_with("__") && !name.starts_with(".str");
-        let Some(raw) = attr_str(op, "initial_value") else {
+        let Some(init) = op.attr("initial_value").map(|attr| self.resolve_attr(attr)) else {
             let Some(ty) = ty else {
                 return;
             };
@@ -1968,7 +2037,12 @@ impl __SlateVaArgs {
             );
             return;
         };
-        if let Some(labels) = parse_cir_block_addr_labels(raw) {
+        if let Attr::ConstArray {
+            data: ConstArrayData::Elements(items),
+            ..
+        } = init
+            && let Some(labels) = block_addr_labels(items)
+        {
             self.block_addr_globals.insert(rust_name.clone(), labels);
             if is_c_global && let Some(ty) = ty {
                 let init = self.default_value_expr(&ty);
@@ -1989,12 +2063,18 @@ impl __SlateVaArgs {
                     },
                 );
             }
-        } else if let Some(mut bytes) = parse_cir_const_array(raw) {
+            return;
+        }
+        if let Attr::ConstArray {
+            data: ConstArrayData::Str(bytes),
+            ..
+        } = init
+        {
             if is_c_global && let Some(ty) = ty {
                 let len = type_array_len(&ty)
                     .and_then(|len| usize::try_from(len).ok())
                     .unwrap_or(bytes.len());
-                let elems = byte_array_elems(&bytes, &ty);
+                let elems = byte_array_elems(bytes, &ty);
                 self.globals.insert(
                     rust_name.clone(),
                     GlobalVar {
@@ -2016,71 +2096,17 @@ impl __SlateVaArgs {
                     },
                 );
             } else {
+                let mut bytes = bytes.clone();
                 bytes.push(0);
                 self.strings.insert(name.to_string(), bytes);
             }
-        } else if let Some(elems) = parse_cir_const_array_elems(raw) {
-            if is_c_global && let Some(ty) = ty {
-                if let Some((_, len)) = parse_rust_array_type(&ty.render()) {
-                    let default = match &ty {
-                        Type::Array { elem, .. } => self.default_value_expr(elem),
-                        _ => Expr::Value(RustValue::I64(0)),
-                    };
-                    self.globals.insert(
-                        rust_name.clone(),
-                        GlobalVar {
-                            source_name: name.to_string(),
-                            name: rust_name,
-                            ty,
-                            init: render_array_literal_expr(&elems, len as usize, default),
-                            alignment,
-                            thread_local,
-                            external: externally_exported(op)
-                                || self.project.cross_referenced_globals.contains(name),
-                            weak,
-                            section: section.clone(),
-                            used: used.clone(),
-                        },
-                    );
-                }
-            } else {
-                self.const_arrays.insert(name.to_string(), elems);
-            }
-        } else if is_cir_aggregate_init(raw) {
-            if is_c_global && let Some(ty) = ty {
-                let mut facts: VecDeque<FloatingLiteralFact> = self
-                    .global_floating_literals
-                    .get(name)
-                    .cloned()
-                    .unwrap_or_default()
-                    .into();
-                if let Some(init) = self.render_const_value_expr(&ty, raw, &mut facts) {
-                    self.globals.insert(
-                        rust_name.clone(),
-                        GlobalVar {
-                            source_name: name.to_string(),
-                            name: rust_name,
-                            ty,
-                            init,
-                            alignment,
-                            thread_local,
-                            external: externally_exported(op)
-                                || self.project.cross_referenced_globals.contains(name),
-                            weak,
-                            section: section.clone(),
-                            used: used.clone(),
-                        },
-                    );
-                }
-            } else {
-                self.const_aggregates
-                    .insert(name.to_string(), raw.to_string());
-            }
-        } else if raw.trim_start().starts_with("#cir.zero")
+            return;
+        }
+        if let Attr::Zero { .. } = init
             && !ty
                 .as_ref()
                 .is_some_and(|ty| matches!(ty, Type::VaList) || is_boxed_va_args_type(ty))
-            && let Some((elem, len)) = parse_cir_array_type(attr_str(op, "sym_type").unwrap_or(""))
+            && let Some((elem, len)) = attr_type(op, "sym_type").and_then(parse_cir_array_type)
         {
             if is_c_global && let Some(ty) = ty {
                 self.globals.insert(
@@ -2089,7 +2115,7 @@ impl __SlateVaArgs {
                         source_name: name.to_string(),
                         name: rust_name,
                         init: self.default_value_expr(&Type::Array {
-                            elem: Box::new(self.rust_type(&elem)),
+                            elem: Box::new(self.rust_type(elem)),
                             len,
                         }),
                         ty,
@@ -2102,14 +2128,16 @@ impl __SlateVaArgs {
                         used: used.clone(),
                     },
                 );
-            } else if elem == "!s8i" && name.starts_with(".str") {
+            } else if matches!(elem, CirType::Named(n) if n == "s8i") && name.starts_with(".str") {
                 self.strings.insert(name.to_string(), vec![0; len as usize]);
-            } else if parse_cir_int_type(&elem).is_some() {
+            } else if parse_cir_int_type(elem).is_some() {
                 self.const_arrays.insert(name.to_string(), Vec::new());
             } else {
                 self.const_zero_globals.insert(name.to_string());
             }
-        } else if raw.trim_start().starts_with("#cir.zero") {
+            return;
+        }
+        if let Attr::Zero { .. } = init {
             if is_c_global && let Some(ty) = ty {
                 self.globals.insert(
                     rust_name.clone(),
@@ -2130,37 +2158,16 @@ impl __SlateVaArgs {
             } else {
                 self.const_zero_globals.insert(name.to_string());
             }
-        } else if let Some(target) = parse_cir_global_view(raw) {
-            if is_c_global
-                && let Some(ty) = ty
-                && let Some(init) =
-                    self.global_view_init_expr(target, &parse_cir_global_view_indices(raw), &ty)
-            {
-                self.globals.insert(
-                    rust_name.clone(),
-                    GlobalVar {
-                        source_name: name.to_string(),
-                        name: rust_name,
-                        ty,
-                        init,
-                        alignment,
-                        thread_local,
-                        external: externally_exported(op)
-                            || self.project.cross_referenced_globals.contains(name),
-                        weak,
-                        section: section.clone(),
-                        used: used.clone(),
-                    },
-                );
-            }
-        } else if let Some(ty) = ty {
+            return;
+        }
+        if is_c_global && let Some(ty) = ty {
             let mut facts: VecDeque<FloatingLiteralFact> = self
                 .global_floating_literals
                 .get(name)
                 .cloned()
                 .unwrap_or_default()
                 .into();
-            if let Some(init) = self.render_const_value_expr(&ty, raw, &mut facts) {
+            if let Some(init) = self.render_const_value_expr(&ty, init, &mut facts) {
                 let external =
                     externally_exported(op) || self.project.cross_referenced_globals.contains(name);
                 self.globals.insert(
@@ -2179,6 +2186,8 @@ impl __SlateVaArgs {
                     },
                 );
             }
+        } else if !is_c_global {
+            self.const_aggregates.insert(name.to_string(), init.clone());
         }
     }
 
@@ -2200,7 +2209,7 @@ impl __SlateVaArgs {
             return None;
         }
 
-        let function_type = attr_str(op, "function_type").unwrap_or("");
+        let function_type = attr_type(op, "function_type").unwrap_or(&CirType::Void);
         let (decl, _, _) = self.extern_fn_signature(name, function_type);
         if decl.variadic {
             self.ctx.diagnostics.error(format!(
@@ -2331,18 +2340,18 @@ impl __SlateVaArgs {
                 sanitize_ident(name).as_str() == sanitize_ident(&record.name).as_str()
             })
         })?;
-        let open = expanded.find('{')?;
-        let close = expanded.rfind('}')?;
+        let CirType::Struct(s) = expanded else {
+            return None;
+        };
         let preserve_field_names = record
             .fields
             .iter()
             .any(|field| field.name.starts_with("__bitfield_"));
         let record_name = sanitize_ident(&record.name).into_string();
         Some(
-            split_record_member_types(&expanded[open + 1..close])
-                .into_iter()
-                .map(str::trim)
-                .filter(|ty| !ty.is_empty())
+            s.members
+                .iter()
+                .map(|(_, ty)| ty)
                 .enumerate()
                 .map(|(index, ty)| crate::frontend::c_ast::Decl {
                     name: if preserve_field_names {
@@ -2388,11 +2397,13 @@ impl __SlateVaArgs {
     fn lower_func(&mut self, op: &Op) -> Option<Item> {
         let name = attr_str(op, "sym_name")?;
         let weak_alias_target = self.weak_aliases.values().any(|target| target == name);
-        let function_type = attr_str(op, "function_type").unwrap_or("");
-        let (param_types, ret_ty) = parse_function_type(function_type);
+        let function_type = attr_type(op, "function_type");
+        let (param_types, ret_ty) = function_type
+            .map(parse_function_type)
+            .unwrap_or_default();
         let entry = op.regions.first()?.blocks.first()?;
         let is_main = name == "main";
-        let is_variadic = !is_main && function_type_is_variadic(function_type);
+        let is_variadic = !is_main && function_type.is_some_and(function_type_is_variadic);
         let boxed_variadic = self.boxed_variadic_defs.contains(name);
 
         let mut declared_param_names = BTreeSet::new();
@@ -2402,7 +2413,7 @@ impl __SlateVaArgs {
             .iter()
             .enumerate()
             .map(|(i, (arg, ty))| {
-                let ty = param_types.get(i).map(String::as_str).unwrap_or(ty);
+                let ty = param_types.get(i).unwrap_or(ty);
                 let base = sanitize_ident(arg).into_string();
                 let rust_name = if is_main {
                     declared_param_names.insert(base.clone());
@@ -2481,7 +2492,7 @@ impl __SlateVaArgs {
                 }
                 self.variadic_defs.insert(name.to_string());
             }
-            let ret = Some(self.rust_type(ret_ty.as_deref().unwrap_or("()")));
+            let ret = Some(self.rust_type(ret_ty.as_ref().unwrap_or(&CirType::Void)));
             (vis, abi, ret, Vec::<Stmt>::new())
         };
 
@@ -2826,41 +2837,23 @@ impl __SlateVaArgs {
     fn extern_fn_signature(
         &self,
         name: &str,
-        function_type: &str,
+        function_type: &CirType,
     ) -> (ExternFnDecl, Vec<Type>, Option<String>) {
-        let inner = function_type
-            .strip_prefix("!cir.func<")
-            .and_then(|s| s.strip_suffix('>'))
-            .unwrap_or("");
-        let (params_str, ret) = match split_top_level_arrow(inner) {
-            Some((params, ret)) => (params.trim(), Some(ret.trim())),
-            None => (inner.trim(), None),
-        };
-        let params_str = params_str.trim_start_matches('(').trim_end_matches(')');
+        let (param_tys, ret_ty) = parse_function_type(function_type);
+        let variadic = function_type_is_variadic(function_type);
 
-        let mut params = Vec::new();
-        let mut variadic = false;
-        for (i, raw) in split_top_level(params_str, ',')
-            .into_iter()
-            .map(str::trim)
-            .filter(|s| !s.is_empty())
+        let params = param_tys
+            .iter()
             .enumerate()
-        {
-            if raw == "..." {
-                variadic = true;
-            } else {
-                let ty = self.rust_type(raw);
-                params.push(FnParam {
-                    name: format!("_{i}"),
-                    mutable: false,
-                    ty: ty.clone(),
-                });
-            }
-        }
-        let ret_ast = match ret {
-            Some(ret) if ret != "()" => Some(self.rust_type(ret)),
-            _ => None,
-        };
+            .map(|(i, ty)| FnParam {
+                name: format!("_{i}"),
+                mutable: false,
+                ty: self.rust_type(ty),
+            })
+            .collect::<Vec<_>>();
+        let ret_ast = ret_ty.as_ref().map(|ty| self.rust_type(ty)).filter(|ty| {
+            !matches!(ty, Type::CLib(c) if *c == CLibType::VOID)
+        });
         let identity = *self
             .known_functions
             .get(name)
@@ -2886,7 +2879,7 @@ impl __SlateVaArgs {
         (decl, param_types, ret_ty)
     }
 
-    fn rust_type(&self, cir_ty: &str) -> Type {
+    fn rust_type(&self, cir_ty: &CirType) -> Type {
         let ty = rust_type_with_aliases(cir_ty, &self.aliases, self.va_list_boxed);
         if type_mentions_long_double(&ty) {
             self.uses_long_double.set(true);
@@ -2927,9 +2920,9 @@ impl __SlateVaArgs {
         }
     }
 
-    fn cir_type_is_union(&self, ty: &str) -> bool {
+    fn cir_type_is_union(&self, ty: &CirType) -> bool {
         let ty = self.expand_alias(ty);
-        if ty.starts_with("!cir.union<") {
+        if matches!(ty, CirType::Struct(s) if s.kind == clang_ir::ast::RecordKind::Union) {
             return true;
         }
         cir_record_name(ty)
@@ -2937,14 +2930,32 @@ impl __SlateVaArgs {
             .is_some_and(|record| record.kind == RecordKind::Union)
     }
 
-    fn expand_alias<'b>(&'b self, ty: &'b str) -> &'b str {
-        let mut ty = ty.trim();
+    fn resolve_attr<'b>(&'b self, attr: &'b Attr) -> &'b Attr {
+        let mut current = attr;
         let mut seen = BTreeSet::new();
-        while let Some(expanded) = self.aliases.get(ty) {
-            if !seen.insert(ty.to_string()) {
+        while let Attr::Named(name) = current {
+            if !seen.insert(name.clone()) {
                 break;
             }
-            ty = expanded.trim();
+            match self.attr_aliases.get(name) {
+                Some(next) => current = next,
+                None => break,
+            }
+        }
+        current
+    }
+
+    fn expand_alias<'b>(&'b self, ty: &'b CirType) -> &'b CirType {
+        let mut ty = ty;
+        let mut seen = BTreeSet::new();
+        while let CirType::Named(name) = ty {
+            if !seen.insert(name.clone()) {
+                break;
+            }
+            match self.aliases.get(name) {
+                Some(expanded) => ty = expanded,
+                None => break,
+            }
         }
         ty
     }
@@ -3258,10 +3269,10 @@ impl __SlateVaArgs {
     fn render_const_value_expr(
         &self,
         ty: &Type,
-        raw: &str,
+        attr: &Attr,
         facts: &mut VecDeque<FloatingLiteralFact>,
     ) -> Option<Expr> {
-        let raw = raw.trim();
+        let attr = self.resolve_attr(attr);
         if let Type::Custom(name) = ty
             && let Some(storage) = self
                 .bitfield_storages
@@ -3271,7 +3282,7 @@ impl __SlateVaArgs {
             return Some(Expr::Transmute {
                 from: storage.backing.clone(),
                 to: ty.clone(),
-                expr: Box::new(self.render_const_value_expr(&storage.backing, raw, facts)?),
+                expr: Box::new(self.render_const_value_expr(&storage.backing, attr, facts)?),
             });
         }
         if let Type::Custom(name) = ty
@@ -3287,157 +3298,188 @@ impl __SlateVaArgs {
         {
             return Some(self.default_value_expr(ty));
         }
-        if let Some((re, im)) = parse_cir_const_complex(raw) {
-            Some(complex_const_expr(Some(ty), re, im))
-        } else if raw.starts_with("#cir.const_record<") {
-            let Type::Custom(name) = ty else {
-                return None;
-            };
-            let record = self.records.get(name)?;
-            let open = raw.find('{')?;
-            let close = raw.rfind('}')?;
-            let elems = split_top_level(&raw[open + 1..close], ',');
-            match record.kind {
-                RecordKind::Struct => {
-                    if let Some(storage_fields) = self.bitfield_storage_fields(record) {
-                        let fields = storage_fields
+        match attr {
+            Attr::ConstComplex { real, imag, .. } => {
+                let re = complex_component_from_attr(real)?;
+                let im = complex_component_from_attr(imag)?;
+                Some(complex_const_expr(Some(ty), re, im))
+            }
+            Attr::ConstRecord { elements, .. } => {
+                let Type::Custom(name) = ty else {
+                    return None;
+                };
+                let record = self.records.get(name)?;
+                match record.kind {
+                    RecordKind::Struct => {
+                        if let Some(storage_fields) = self.bitfield_storage_fields(record) {
+                            let fields = storage_fields
+                                .iter()
+                                .enumerate()
+                                .map(|(i, field)| {
+                                    let field_ty = self.c_record_field_type(&field.ty);
+                                    let value = elements
+                                        .get(i)
+                                        .and_then(|e| {
+                                            self.render_const_value_expr(&field_ty, e, facts)
+                                        })
+                                        .unwrap_or_else(|| self.default_value_expr(&field_ty));
+                                    (field.name.clone(), value)
+                                })
+                                .collect();
+                            return Some(Expr::StructLit {
+                                name: record_lit_name(record),
+                                fields,
+                            });
+                        }
+                        let fields = record
+                            .fields
                             .iter()
                             .enumerate()
                             .map(|(i, field)| {
                                 let field_ty = self.c_record_field_type(&field.ty);
-                                let value = elems
+                                let value = elements
                                     .get(i)
                                     .and_then(|e| {
-                                        self.render_const_value_expr(&field_ty, e.trim(), facts)
+                                        self.render_const_value_expr(&field_ty, e, facts)
                                     })
                                     .unwrap_or_else(|| self.default_value_expr(&field_ty));
-                                (field.name.clone(), value)
+                                (sanitize_ident(&field.name).into_string(), value)
                             })
                             .collect();
-                        return Some(Expr::StructLit {
-                            name: record_lit_name(record),
-                            fields,
-                        });
+                        Some(wrap_record_lit(
+                            record,
+                            Expr::StructLit {
+                                name: record_lit_name(record),
+                                fields,
+                            },
+                        ))
                     }
-                    let fields = record
-                        .fields
-                        .iter()
-                        .enumerate()
-                        .map(|(i, field)| {
-                            let field_ty = self.c_record_field_type(&field.ty);
-                            let value = elems
-                                .get(i)
-                                .and_then(|e| {
-                                    self.render_const_value_expr(&field_ty, e.trim(), facts)
-                                })
-                                .unwrap_or_else(|| self.default_value_expr(&field_ty));
-                            (sanitize_ident(&field.name).into_string(), value)
-                        })
-                        .collect();
-                    Some(wrap_record_lit(
-                        record,
-                        Expr::StructLit {
-                            name: record_lit_name(record),
-                            fields,
-                        },
-                    ))
-                }
-                RecordKind::Union => {
-                    let storage_fields = self.bitfield_storage_fields(record);
-                    let field = storage_fields
-                        .as_ref()
-                        .and_then(|fields| fields.first())
-                        .or_else(|| record.fields.first())?;
-                    let field_ty = self.c_record_field_type(&field.ty);
-                    let value = elems
-                        .first()
-                        .and_then(|e| self.render_const_value_expr(&field_ty, e.trim(), facts))
-                        .unwrap_or_else(|| self.default_value_expr(&field_ty));
-                    Some(wrap_record_lit(
-                        record,
-                        Expr::StructLit {
-                            name: record_lit_name(record),
-                            fields: vec![(sanitize_ident(&field.name).into_string(), value)],
-                        },
-                    ))
+                    RecordKind::Union => {
+                        let storage_fields = self.bitfield_storage_fields(record);
+                        let field = storage_fields
+                            .as_ref()
+                            .and_then(|fields| fields.first())
+                            .or_else(|| record.fields.first())?;
+                        let field_ty = self.c_record_field_type(&field.ty);
+                        let value = elements
+                            .first()
+                            .and_then(|e| self.render_const_value_expr(&field_ty, e, facts))
+                            .unwrap_or_else(|| self.default_value_expr(&field_ty));
+                        Some(wrap_record_lit(
+                            record,
+                            Expr::StructLit {
+                                name: record_lit_name(record),
+                                fields: vec![(sanitize_ident(&field.name).into_string(), value)],
+                            },
+                        ))
+                    }
                 }
             }
-        } else if let Some(bytes) = parse_cir_const_array(raw) {
-            let Type::Array { elem, len } = ty else {
-                return None;
-            };
-            let elems = byte_array_elems(&bytes, ty);
-            Some(render_array_literal_expr(
-                &elems,
-                *len as usize,
-                self.default_value_expr(elem),
-            ))
-        } else if raw.starts_with("#cir.const_array<[") {
-            let Type::Array { elem, len } = ty else {
-                return None;
-            };
-            let len = *len as usize;
-            let open = raw.find('[')?;
-            let close = raw.rfind(']')?;
-            let mut out: Vec<Expr> = split_top_level(&raw[open + 1..close], ',')
-                .into_iter()
-                .map(|e| e.trim().to_string())
-                .filter(|e| !e.is_empty())
-                .take(len)
-                .map(|e| {
-                    self.render_const_value_expr(elem, &e, facts)
-                        .unwrap_or_else(|| self.default_value_expr(elem))
-                })
-                .collect();
-            out.resize(len, self.default_value_expr(elem));
-            Some(Expr::ArrayLit(out))
-        } else if raw.starts_with("#cir.const_vector<[") {
-            parse_cir_const_vector(raw)
-        } else if raw.starts_with("#cir.zero") {
-            Some(self.default_value_expr(ty))
-        } else if raw.starts_with("#cir.ptr<null>") {
-            Some(if matches!(ty, Type::FnPtr { .. }) {
-                Expr::Value(RustValue::None)
-            } else {
-                Expr::Value(RustValue::NullPtr)
-            })
-        } else if let Some(addr) = parse_cir_int_ptr(raw) {
-            Some(Expr::Cast {
-                expr: Box::new(int_value_expr(addr)),
-                ty: ty.clone(),
-            })
-        } else if let Type::Custom(name) = ty
-            && let Some(enm) = self.enums.get(name)
-            && let Some(value) = parse_cir_int(raw)
-            && let Some(variant) = enm
-                .variants
-                .iter()
-                .find(|variant| i128::from(variant.value) == value)
-        {
-            Some(Expr::Path(Path::new([
-                Ident::from(name.as_str()),
-                Ident::from(sanitize_ident(&variant.name).as_str()),
-            ])))
-        } else if let Some(target) = parse_cir_global_view(raw) {
-            self.global_view_init_expr(target, &parse_cir_global_view_indices(raw), ty)
-        } else if matches!(ty, Type::LongDouble) {
-            let fact = facts.pop_front();
-            if let Some(fact) = fact {
-                if fact.bit_width == 80 && !fact.bits.is_empty() {
-                    let bits = fact.bits.trim_start_matches("0x").trim_start_matches("0X");
-                    f80_literal_bits_expr(bits).or_else(|| long_double_raw_expr(raw))
-                } else if !fact.value.is_empty() {
-                    f80_literal_expr(&fact.value).or_else(|| long_double_raw_expr(raw))
+            Attr::ConstArray {
+                data: ConstArrayData::Str(bytes),
+                ..
+            } => {
+                let Type::Array { elem, len } = ty else {
+                    return None;
+                };
+                let elems = byte_array_elems(bytes, ty);
+                Some(render_array_literal_expr(
+                    &elems,
+                    *len as usize,
+                    self.default_value_expr(elem),
+                ))
+            }
+            Attr::ConstArray {
+                data: ConstArrayData::Elements(elements),
+                ..
+            } => {
+                let Type::Array { elem, len } = ty else {
+                    return None;
+                };
+                let len = *len as usize;
+                let mut out: Vec<Expr> = elements
+                    .iter()
+                    .take(len)
+                    .map(|e| {
+                        self.render_const_value_expr(elem, e, facts)
+                            .unwrap_or_else(|| self.default_value_expr(elem))
+                    })
+                    .collect();
+                out.resize(len, self.default_value_expr(elem));
+                Some(Expr::ArrayLit(out))
+            }
+            Attr::ConstVector { elements, .. } => Some(Expr::ArrayLit(
+                elements
+                    .iter()
+                    .map(scalar_attr_expr)
+                    .collect::<Option<Vec<_>>>()?,
+            )),
+            Attr::Zero { .. } => Some(self.default_value_expr(ty)),
+            Attr::Dialect {
+                dialect,
+                mnemonic,
+                raw: Some(raw),
+                ..
+            } if dialect == "cir" && mnemonic == "ptr" => {
+                let raw = raw.trim();
+                if raw == "null" {
+                    Some(if matches!(ty, Type::FnPtr { .. }) {
+                        Expr::Value(RustValue::None)
+                    } else {
+                        Expr::Value(RustValue::NullPtr)
+                    })
                 } else {
-                    long_double_raw_expr(raw)
+                    raw.parse::<i128>().ok().map(|addr| Expr::Cast {
+                        expr: Box::new(int_value_expr(addr)),
+                        ty: ty.clone(),
+                    })
                 }
-            } else {
-                long_double_raw_expr(raw)
             }
-        } else if let Some(fp) = parse_cir_fp(raw) {
-            Some(typed_fp_literal_expr(Some(ty), fp))
-        } else {
-            parse_cir_scalar_expr(raw)
+            Attr::CirInt { text, .. }
+                if matches!(ty, Type::Custom(name) if self.enums.contains_key(name)) =>
+            {
+                let Type::Custom(name) = ty else {
+                    unreachable!()
+                };
+                let value: i128 = text.parse().ok()?;
+                let enm = self.enums.get(name)?;
+                let variant = enm
+                    .variants
+                    .iter()
+                    .find(|variant| i128::from(variant.value) == value)?;
+                Some(Expr::Path(Path::new([
+                    Ident::from(name.as_str()),
+                    Ident::from(sanitize_ident(&variant.name).as_str()),
+                ])))
+            }
+            Attr::GlobalView {
+                symbol, indices, ..
+            } => self.global_view_init_expr(symbol, indices, ty),
+            _ if matches!(ty, Type::LongDouble) => {
+                let fp_text = match attr {
+                    Attr::CirFloat { text, .. } => Some(text.as_str()),
+                    _ => None,
+                };
+                let fact = facts.pop_front();
+                if let Some(fact) = fact {
+                    if fact.bit_width == 80 && !fact.bits.is_empty() {
+                        let bits = fact.bits.trim_start_matches("0x").trim_start_matches("0X");
+                        f80_literal_bits_expr(bits)
+                            .or_else(|| fp_text.and_then(long_double_from_text))
+                    } else if !fact.value.is_empty() {
+                        f80_literal_expr(&fact.value)
+                            .or_else(|| fp_text.and_then(long_double_from_text))
+                    } else {
+                        fp_text.and_then(long_double_from_text)
+                    }
+                } else {
+                    fp_text.and_then(long_double_from_text)
+                }
+            }
+            Attr::CirFloat { text, .. } => {
+                Some(typed_fp_literal_expr(Some(ty), fp_text_value(text)?))
+            }
+            _ => scalar_attr_expr(attr),
         }
     }
 
@@ -3930,7 +3972,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             if op.kind() == CirOpKind::Asm
                 && attr_str(op, "asm_string").is_some_and(asm_template_has_labels)
             {
-                for result in &op.results {
+                for (result, _) in &op.results {
                     if let Some(store) = block.ops[index + 1..].iter().find(|candidate| {
                         candidate.kind() == CirOpKind::Store
                             && candidate.operands.first() == Some(result)
@@ -3951,7 +3993,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if self.dispatch.is_none() {
             return;
         }
-        for result in &op.results {
+        for (result, _) in &op.results {
             let Some(name) = self
                 .dispatch
                 .as_ref()

@@ -1,7 +1,7 @@
 use super::*;
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
-    pub(super) fn materialize_expr(&mut self, result: &str, expr: Expr, cir_ty: Option<&str>) {
+    pub(super) fn materialize_expr(&mut self, result: &str, expr: Expr, cir_ty: Option<&CirType>) {
         let ty = cir_ty
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or(Type::Prim(Prim::I32));
@@ -40,7 +40,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .insert(result.to_string(), Val::Expr(Expr::Var(name.into())));
     }
 
-    pub(super) fn forward_safe_value(&mut self, value: Expr, cir_ty: Option<&str>) -> Expr {
+    pub(super) fn forward_safe_value(&mut self, value: Expr, cir_ty: Option<&CirType>) -> Expr {
         let stable = match &value {
             Expr::Value(_) => true,
             Expr::Var(name) => self.immutable_temps.contains(name.as_str()),
@@ -197,7 +197,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         &mut self,
         operand: &str,
         ptr: &str,
-        source_cir_ty: &str,
+        source_cir_ty: &CirType,
     ) -> Expr {
         let target_ty = self
             .member_ptrs
@@ -312,7 +312,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     pub(super) fn fn_ptr_aware_operand_expr(
         &self,
         operand: &str,
-        ty: Option<&str>,
+        ty: Option<&CirType>,
         fn_ptr_expr: fn(&Self, &str) -> Expr,
         plain_expr: fn(&Self, &str) -> Expr,
     ) -> Expr {
@@ -354,7 +354,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         )
     }
 
-    pub(super) fn call_arg_expr(&self, operand: &str, ty: &str) -> Expr {
+    pub(super) fn call_arg_expr(&self, operand: &str, ty: &CirType) -> Expr {
         if is_boxed_va_args_type(&self.parent.rust_type(ty))
             && let Some(place) = self.va_target_place(operand)
         {
@@ -365,7 +365,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             }
         } else if is_cir_function_pointer_type(ty) {
             self.function_pointer_operand_expr(operand)
-        } else if ty.starts_with("!cir.ptr<") {
+        } else if matches!(ty, CirType::Ptr(_)) {
             // A pointer-to-whole-aggregate parameter (e.g. `V*` for a GNU vector
             // typedef, or `int (*)[N]`) must not decay to an element pointer the
             // way a bare array-to-pointer argument would.
@@ -492,10 +492,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.push_stmt(Self::unsafe_stmt(Self::assign_stmt(target, value)));
     }
 
-    pub(super) fn pointee_type(&self, ty: &str) -> Option<Type> {
-        let ret = op_type_return(ty)?;
-        ret.strip_prefix("!cir.ptr<")
-            .and_then(|s| s.strip_suffix('>'))
-            .map(|ty| self.parent.rust_type(ty))
+    pub(super) fn pointee_type(&self, ty: &CirType) -> Option<Type> {
+        cir_ptr_pointee(ty).map(|ty| self.parent.rust_type(ty))
     }
 }

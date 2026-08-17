@@ -89,7 +89,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     // cir.select(cond, t, f) is a pure value pick; all three operands are already
     // materialized, so it collapses to a Rust `if` expression.
     pub(super) fn lower_select(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         if op.operands.len() < 3 {
@@ -124,7 +124,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     // arm of complex `*` (the taken branch calls __muldc3). Lower to an `if` whose
     // block bodies run each region's ops and tail-yield the region result.
     pub(super) fn lower_ternary(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         let Some(cond) = op.operands.first() else {
@@ -176,7 +176,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_binary(&mut self, op: &Op, rust_op: BinOp) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         if op.operands.len() < 2 {
@@ -215,7 +215,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_saturating_arith(&mut self, op: &Op, rust_method: &str) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         if op.operands.len() < 2 {
@@ -252,7 +252,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     // `/` and `%` still trap on div-by-zero and INT_MIN/-1 on both sides, so the
     // generator avoids those.
     pub(super) fn lower_int_arith(&mut self, op: &Op, rust_op: BinOp) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         if op.operands.len() < 2 {
@@ -348,12 +348,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     fn finish_checked_arith(
         &mut self,
         op: &Op,
-        result_types: &[&str],
+        result_types: &[&CirType],
         wide_result: Expr,
         wide_overflow: Expr,
         wide_signed: bool,
     ) {
-        match result_types.first().and_then(|ty| parse_cir_int_type(ty)) {
+        match result_types.first().copied().and_then(parse_cir_int_type) {
             Some((result_signed, result_bits)) if result_bits <= 128 => {
                 let result_rust_ty = self.parent.rust_type(result_types[0]);
                 let narrowed =
@@ -362,7 +362,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                             expr: Box::new(wide_result.clone()),
                             ty: result_rust_ty,
                         });
-                self.materialize_expr(&op.results[0], narrowed, result_types.first().copied());
+                self.materialize_expr(&op.results[0].0, narrowed, result_types.first().copied());
                 let overflow = overflow_for_result_width(
                     wide_overflow,
                     wide_result,
@@ -370,11 +370,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     result_signed,
                     result_bits,
                 );
-                self.materialize_expr(&op.results[1], overflow, result_types.get(1).copied());
+                self.materialize_expr(&op.results[1].0, overflow, result_types.get(1).copied());
             }
             _ => {
-                self.materialize_expr(&op.results[0], wide_result, result_types.first().copied());
-                self.materialize_expr(&op.results[1], wide_overflow, result_types.get(1).copied());
+                self.materialize_expr(&op.results[0].0, wide_result, result_types.first().copied());
+                self.materialize_expr(
+                    &op.results[1].0,
+                    wide_overflow,
+                    result_types.get(1).copied(),
+                );
             }
         }
     }
@@ -384,7 +388,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         let result_types = op_result_types(op);
-        let operand_types = op_operand_types(op.ty.as_deref().unwrap_or(""));
+        let operand_types = op_operand_types(op);
         let operand_rust_ty = operand_types
             .first()
             .map(|ty| self.parent.rust_type(ty))
@@ -421,7 +425,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_step(&mut self, op: &Op, rust_op: BinOp) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         let Some(value) = op.operands.first() else {
@@ -453,7 +457,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     // cir.not is C's unary `~`; Rust spells integer bitwise complement `!`.
     pub(super) fn lower_not(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         let Some(value) = op.operands.first() else {
@@ -491,7 +495,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_neg(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         let Some(value) = op.operands.first() else {
@@ -547,10 +551,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         let value = self.operand_expr(value);
         let result_ty = op_result_type(op);
-        let operand_ty = op_operand_types(op.ty.as_deref().unwrap_or(""))
-            .into_iter()
-            .next()
-            .unwrap_or("");
+        let operand_ty = op_operand_types(op).first();
         let rust_ty = result_ty
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or(Type::Prim(Prim::I32));
@@ -571,7 +572,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     | Prim::Usize
             )
         );
-        let expr = if operand_ty == "!cir.bool" {
+        let expr = if operand_ty.is_some_and(|ty| matches!(ty, CirType::Bool)) {
             let cast = Expr::Cast {
                 expr: Box::new(value),
                 ty: rust_ty,
@@ -604,7 +605,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_abs(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         let Some(value) = op.operands.first() else {
@@ -641,7 +642,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_unary_method(&mut self, op: &Op, method: &str) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         let Some(value) = op.operands.first() else {
@@ -692,7 +693,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_unary_cast_method(&mut self, op: &Op, method: &str) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         let Some(value) = op.operands.first() else {
@@ -725,7 +726,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_parity(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         let Some(value) = op.operands.first() else {
@@ -744,7 +745,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_rotate(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         if op.operands.len() < 2 {
@@ -764,7 +765,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_expect(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         let Some(value) = op.operands.first() else {
