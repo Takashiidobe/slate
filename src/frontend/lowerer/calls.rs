@@ -43,12 +43,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             if let Some(callee) = direct_callee {
                 let callee_expr = if external_weak_call {
                     Expr::MethodCall {
-                        recv: Box::new(Expr::Var(callee.clone().into())),
+                        recv: Box::new(Expr::Var(sanitize_ident(&callee))),
                         method: "unwrap".into(),
                         args: vec![],
                     }
                 } else {
-                    Expr::Var(callee.clone().into())
+                    Expr::Var(sanitize_ident(&callee))
                 };
                 (
                     callee.clone(),
