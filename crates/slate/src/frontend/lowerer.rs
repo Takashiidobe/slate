@@ -2662,7 +2662,7 @@ impl __SlateVaArgs {
             vis,
             unsafe_,
             abi,
-            name: name.to_string(),
+            name: sanitize_ident(name).into_string(),
             params,
             ret,
             body: f.body,
@@ -3477,7 +3477,7 @@ impl __SlateVaArgs {
                 from: raw_ptr.clone(),
                 to: ty.clone(),
                 expr: Box::new(Expr::Cast {
-                    expr: Box::new(Expr::Var(sanitize_ident(target))),
+                    expr: Box::new(Expr::Var(self.rust_global_name(target).into())),
                     ty: raw_ptr,
                 }),
             });
@@ -3488,7 +3488,7 @@ impl __SlateVaArgs {
         if self.function_return_types.contains_key(target) {
             return Some(Expr::Cast {
                 expr: Box::new(Expr::Cast {
-                    expr: Box::new(Expr::Var(sanitize_ident(target))),
+                    expr: Box::new(Expr::Var(self.rust_global_name(target).into())),
                     ty: Type::Ptr {
                         mutable: false,
                         inner: Box::new(Type::Unit),
@@ -3501,7 +3501,7 @@ impl __SlateVaArgs {
             return Some(Expr::Cast {
                 expr: Box::new(Expr::AddrOf {
                     mutable: *mutable,
-                    expr: Box::new(Expr::Var(sanitize_ident(target).into_string().into())),
+                    expr: Box::new(Expr::Var(self.rust_global_name(target).into())),
                 }),
                 ty: ty.clone(),
             });
@@ -3539,7 +3539,7 @@ impl __SlateVaArgs {
             expr: Box::new(Expr::Cast {
                 expr: Box::new(Expr::AddrOf {
                     mutable: true,
-                    expr: Box::new(Expr::Var(sanitize_ident(target).into_string().into())),
+                    expr: Box::new(Expr::Var(self.rust_global_name(target).into())),
                 }),
                 ty: raw_ptr_ty,
             }),
