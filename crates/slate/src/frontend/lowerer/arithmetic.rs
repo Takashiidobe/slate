@@ -288,66 +288,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    pub(super) fn lower_overflow_arith(&mut self, op: &Op, rust_method: &str) {
-        if op.results.len() < 2 || op.operands.len() < 2 {
-            return;
-        }
-        let result_types = op_result_types(op);
-        let operand_types = op_operand_types(op.ty.as_deref().unwrap_or(""));
-        let operand_rust_ty = operand_types
-            .first()
-            .map(|ty| self.parent.rust_type(ty))
-            .unwrap_or(Type::Prim(Prim::I32));
-        if bitint_generic_parts(&operand_rust_ty).is_some()
-            && let Some((result_signed, result_bits)) =
-                result_types.first().and_then(|ty| parse_cir_int_type(ty))
-            && result_bits <= 128
-            && operand_types
-                .first()
-                .and_then(|ty| parse_cir_int_type(ty))
-                .is_some_and(|(_, bits)| bits <= 128)
-        {
-            let result_rust_ty = self.parent.rust_type(result_types[0]);
-            let (lhs, wide_signed) =
-                bitint_to_int_expr(&operand_rust_ty, self.operand_expr(&op.operands[0])).unwrap();
-            let (rhs, _) =
-                bitint_to_int_expr(&operand_rust_ty, self.operand_expr(&op.operands[1])).unwrap();
-            let pair = self.next_temp();
-            self.push_stmt(Stmt::Let {
-                name: pair.clone(),
-                mutable: false,
-                ty: None,
-                init: Some(Expr::MethodCall {
-                    recv: Box::new(lhs),
-                    method: rust_method.to_string(),
-                    args: vec![rhs],
-                }),
-            });
-            let wide_result = Expr::Field {
-                base: Box::new(Expr::Var(pair.clone().into())),
-                field: "0".into(),
-            };
-            let narrowed = bitint_from_int_expr(&result_rust_ty, wide_result.clone(), wide_signed)
-                .unwrap_or_else(|| Expr::Cast {
-                    expr: Box::new(wide_result.clone()),
-                    ty: result_rust_ty,
-                });
-            self.materialize_expr(&op.results[0], narrowed, result_types.first().copied());
-            let overflow = overflow_for_result_width(
-                Expr::Field {
-                    base: Box::new(Expr::Var(pair.into())),
-                    field: "1".into(),
-                },
-                wide_result,
-                wide_signed,
-                result_signed,
-                result_bits,
-            );
-            self.materialize_expr(&op.results[1], overflow, result_types.get(1).copied());
-            return;
-        }
-        let lhs = self.operand_expr(&op.operands[0]);
-        let rhs = self.operand_expr(&op.operands[1]);
+    fn checked_arith_pair(&mut self, lhs: Expr, rhs: Expr, rust_method: &str) -> (Expr, Expr) {
         let pair = self.next_temp();
         self.push_stmt(Stmt::Let {
             name: pair.clone(),
@@ -359,22 +300,91 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 args: vec![rhs],
             }),
         });
-        self.materialize_expr(
-            &op.results[0],
+        (
             Expr::Field {
                 base: Box::new(Expr::Var(pair.clone().into())),
                 field: "0".into(),
             },
-            result_types.first().copied(),
-        );
-        self.materialize_expr(
-            &op.results[1],
             Expr::Field {
                 base: Box::new(Expr::Var(pair.into())),
                 field: "1".into(),
             },
-            result_types.get(1).copied(),
-        );
+        )
+    }
+
+    fn finish_checked_arith(
+        &mut self,
+        op: &Op,
+        result_types: &[&str],
+        wide_result: Expr,
+        wide_overflow: Expr,
+        wide_signed: bool,
+    ) {
+        match result_types.first().and_then(|ty| parse_cir_int_type(ty)) {
+            Some((result_signed, result_bits)) if result_bits <= 128 => {
+                let result_rust_ty = self.parent.rust_type(result_types[0]);
+                let narrowed =
+                    bitint_from_int_expr(&result_rust_ty, wide_result.clone(), wide_signed)
+                        .unwrap_or_else(|| Expr::Cast {
+                            expr: Box::new(wide_result.clone()),
+                            ty: result_rust_ty,
+                        });
+                self.materialize_expr(&op.results[0], narrowed, result_types.first().copied());
+                let overflow = overflow_for_result_width(
+                    wide_overflow,
+                    wide_result,
+                    wide_signed,
+                    result_signed,
+                    result_bits,
+                );
+                self.materialize_expr(&op.results[1], overflow, result_types.get(1).copied());
+            }
+            _ => {
+                self.materialize_expr(&op.results[0], wide_result, result_types.first().copied());
+                self.materialize_expr(&op.results[1], wide_overflow, result_types.get(1).copied());
+            }
+        }
+    }
+
+    pub(super) fn lower_overflow_arith(&mut self, op: &Op, rust_method: &str) {
+        if op.results.len() < 2 || op.operands.len() < 2 {
+            return;
+        }
+        let result_types = op_result_types(op);
+        let operand_types = op_operand_types(op.ty.as_deref().unwrap_or(""));
+        let operand_rust_ty = operand_types
+            .first()
+            .map(|ty| self.parent.rust_type(ty))
+            .unwrap_or(Type::Prim(Prim::I32));
+        let operand_int_ty = operand_types.first().and_then(|ty| parse_cir_int_type(ty));
+
+        if bitint_generic_parts(&operand_rust_ty).is_some()
+            && operand_int_ty.is_some_and(|(_, bits)| bits <= 128)
+        {
+            let (lhs, wide_signed) =
+                bitint_to_int_expr(&operand_rust_ty, self.operand_expr(&op.operands[0])).unwrap();
+            let (rhs, _) =
+                bitint_to_int_expr(&operand_rust_ty, self.operand_expr(&op.operands[1])).unwrap();
+            let (wide_result, wide_overflow) = self.checked_arith_pair(lhs, rhs, rust_method);
+            self.finish_checked_arith(op, &result_types, wide_result, wide_overflow, wide_signed);
+            return;
+        }
+
+        if bitint_generic_parts(&operand_rust_ty).is_some() {
+            let lhs = self.operand_expr(&op.operands[0]);
+            let rhs = self.operand_expr(&op.operands[1]);
+            let (pair_result, wide_overflow) = self.checked_arith_pair(lhs, rhs, rust_method);
+            let (wide_result, wide_signed) =
+                bitint_to_int_expr(&operand_rust_ty, pair_result).unwrap();
+            self.finish_checked_arith(op, &result_types, wide_result, wide_overflow, wide_signed);
+            return;
+        }
+
+        let lhs = self.operand_expr(&op.operands[0]);
+        let rhs = self.operand_expr(&op.operands[1]);
+        let wide_signed = operand_int_ty.is_none_or(|(signed, _)| signed);
+        let (wide_result, wide_overflow) = self.checked_arith_pair(lhs, rhs, rust_method);
+        self.finish_checked_arith(op, &result_types, wide_result, wide_overflow, wide_signed);
     }
 
     pub(super) fn lower_step(&mut self, op: &Op, rust_op: BinOp) {
