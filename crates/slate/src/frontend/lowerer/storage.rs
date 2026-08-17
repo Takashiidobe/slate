@@ -323,14 +323,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let dst = op.operands[0].clone();
         let src = op.operands[1].clone();
         let Some(value) = self.copy_source_value(&dst, &src) else {
-            // opaque aggregate copy: fall back to a one-element memcpy.
             let d = self.pointer_operand_expr(&dst);
             let s = self.pointer_operand_expr(&src);
-            self.push_stmt(Stmt::Expr(Expr::CopyNonoverlapping {
+            self.push_stmt(Stmt::Expr(Self::unsafe_expr(Expr::PtrCopy {
                 src: Box::new(s),
                 dst: Box::new(d),
-                count: 1,
-            }));
+                count: Box::new(Expr::Value(RustValue::I64(1))),
+                overlapping: true,
+            })));
             return;
         };
         if let Some(target) = self.place_expr(&dst) {
