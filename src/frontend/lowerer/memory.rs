@@ -767,18 +767,31 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     ty: ptr_ty,
                 })
             }
-            Some(Val::Global(_)) if !result_ty.starts_with("!cir.ptr<") => {
-                let Some(name) = self.global_name(src) else {
+            Some(Val::Global(global_name)) if !result_ty.starts_with("!cir.ptr<") => {
+                if let Some(name) = self.global_name(src) {
+                    Val::Expr(Expr::Cast {
+                        expr: Box::new(Expr::AddrOf {
+                            mutable: false,
+                            expr: Box::new(Expr::Var(name.into())),
+                        }),
+                        ty: self.parent.rust_type(result_ty),
+                    })
+                } else if self.parent.function_return_types.contains_key(&global_name) {
+                    let raw_ptr = Type::Ptr {
+                        mutable: false,
+                        inner: Box::new(Type::Unit),
+                    };
+                    Val::Expr(Expr::Cast {
+                        expr: Box::new(Expr::Cast {
+                            expr: Box::new(Expr::Var(sanitize_ident(&global_name))),
+                            ty: raw_ptr,
+                        }),
+                        ty: self.parent.rust_type(result_ty),
+                    })
+                } else {
                     self.emit_todo("cir.cast (global ptrtoint)");
                     return;
-                };
-                Val::Expr(Expr::Cast {
-                    expr: Box::new(Expr::AddrOf {
-                        mutable: false,
-                        expr: Box::new(Expr::Var(name.into())),
-                    }),
-                    ty: self.parent.rust_type(result_ty),
-                })
+                }
             }
             Some(Val::Global(name))
                 if result_ty.starts_with("!cir.ptr<")
