@@ -4,8 +4,8 @@ use std::path::Path;
 use super::emit::{
     EmitError, Tool, ToolOperation, emit_generic_with_args, emit_generic_with_args_flattened,
 };
-use super::ir::{Attr, CirOpKind, Module, Op};
-use super::parse::{ParseError, parse_module};
+use super::ir::{CirOpKind, Module, Op, OpKindExt};
+use clang_ir::Error as ParseError;
 use thiserror::Error;
 
 #[derive(Debug, Error)]
@@ -16,11 +16,12 @@ pub enum ModuleError {
     Parse(#[from] ParseError),
 }
 
+fn parse_module(text: &str) -> Result<Module, ParseError> {
+    clang_ir::parse_generic_str(text)
+}
+
 fn sym_name(op: &Op) -> Option<&str> {
-    match op.attrs.get("sym_name")? {
-        Attr::Str(s) | Attr::Raw(s) | Attr::Type(s) => Some(s),
-        _ => None,
-    }
+    op.attr("sym_name")?.as_str()
 }
 
 fn contains_goto(op: &Op) -> bool {

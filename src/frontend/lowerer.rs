@@ -9,7 +9,7 @@ use crate::backend::rust_ast::{
     StdTrait, Stmt, StructDef, StructField, StructFields, SupportModule, TraitRef, Type, UnaryOp,
     UsedKind, Visibility,
 };
-use crate::cir::ir::{Attr, Block, CirOpKind, Module, Op, Region};
+use crate::cir::ir::{Attr, Block, CirOpKind, CirType, Module, Op, OpKindExt, Region};
 use crate::ctx::Ctx;
 use crate::frontend::c_ast::{
     CType, EnumConstRef, FloatingLiteralFact, FloatingLiteralLoc, LayoutQuery, Loc, MacroConst,

@@ -3,7 +3,7 @@ use super::*;
 pub(super) fn switch_case<'a>(op: &'a Op, bitint_ty: Option<&Type>) -> Option<SwitchCase<'a>> {
     let kind = attr_int(op, "kind");
     let is_default = kind == Some(0);
-    let raw_values: &[Attr] = match op.attrs.get("value") {
+    let raw_values: &[Attr] = match op.attr("value") {
         Some(Attr::Array(values)) => values,
         _ => &[],
     };
@@ -24,7 +24,7 @@ pub(super) fn switch_case<'a>(op: &'a Op, bitint_ty: Option<&Type>) -> Option<Sw
 }
 
 pub(super) fn switch_flat_case_patterns(op: &Op, bitint_ty: Option<&Type>) -> Option<Vec<Pattern>> {
-    let raw_values: &[Attr] = match op.attrs.get("caseValues") {
+    let raw_values: &[Attr] = match op.attr("caseValues") {
         Some(Attr::Array(values)) => values,
         _ => &[],
     };
@@ -43,21 +43,14 @@ fn case_values_to_patterns(raw_values: &[Attr], bitint_ty: Option<&Type>) -> Opt
 }
 
 fn case_value_i128(value: &Attr) -> Option<i128> {
-    match value {
-        Attr::Int(n) => Some(i128::from(*n)),
-        Attr::Raw(raw) => parse_cir_int(raw),
-        _ => None,
-    }
+    value.as_int()
 }
 
 fn case_value_pattern(value: &Attr) -> Option<Pattern> {
-    match value {
-        Attr::Int(n) => Some(int_pattern(i128::from(*n))),
-        Attr::Raw(raw) => parse_cir_int(raw)
-            .map(int_pattern)
-            .or_else(|| parse_cir_uint128(raw).map(Pattern::U128)),
-        _ => None,
-    }
+    value
+        .as_int()
+        .map(int_pattern)
+        .or_else(|| value.as_u128().map(Pattern::U128))
 }
 
 fn case_range_pattern(start: &Attr, end: &Attr, bitint_ty: Option<&Type>) -> Option<Pattern> {
@@ -72,8 +65,8 @@ fn case_range_pattern(start: &Attr, end: &Attr, bitint_ty: Option<&Type>) -> Opt
 
 fn case_value_digits(value: &Attr) -> Option<String> {
     match value {
-        Attr::Int(n) => Some(n.to_string()),
-        Attr::Raw(raw) => cir_int_digits(raw).map(str::to_string),
+        Attr::Int { value, .. } => Some(value.to_string()),
+        Attr::CirInt { text, .. } => Some(text.clone()),
         _ => None,
     }
 }
@@ -206,11 +199,8 @@ pub(super) fn region_ends_control_flow(region: &Region) -> bool {
         })
 }
 
-pub(super) fn op_result_type(op: &Op) -> Option<&str> {
-    op.ty
-        .as_deref()
-        .and_then(split_top_level_arrow)
-        .map(|(_, ret)| ret.trim())
+pub(super) fn op_result_type(op: &Op) -> Option<&CirType> {
+    op.results.first().map(|(_, ty)| ty)
 }
 
 // `u32` -> 32; None for bool/isize/usize/non-integers (no fixed width to mask to).
@@ -222,107 +212,52 @@ pub(super) fn int_bits(rust_ty: &str) -> Option<u32> {
         .ok()
 }
 
-pub(super) fn op_result_types(op: &Op) -> Vec<&str> {
-    let Some(ret) = op_result_type(op) else {
-        return Vec::new();
-    };
-    let ret = ret.trim();
-    if ret.starts_with('(') && ret.ends_with(')') {
-        split_top_level(&ret[1..ret.len() - 1], ',')
-            .into_iter()
-            .map(str::trim)
-            .filter(|ty| !ty.is_empty())
-            .collect()
-    } else {
-        vec![ret]
-    }
+pub(super) fn op_result_types(op: &Op) -> Vec<&CirType> {
+    op.results.iter().map(|(_, ty)| ty).collect()
 }
 
 pub(super) fn asm_output_types<'a>(
     op: &'a Op,
-    aliases: &'a BTreeMap<String, String>,
+    aliases: &'a BTreeMap<String, CirType>,
     output_count: usize,
-) -> Option<Vec<&'a str>> {
+) -> Option<Vec<&'a CirType>> {
     let direct = op_result_types(op);
     if direct.len() == output_count {
         return Some(direct);
     }
-    let aggregate = aliases.get(op_result_type(op)?)?.trim();
-    let fields = aggregate
-        .strip_prefix("!cir.struct<{")?
-        .strip_suffix("}>")?;
-    let fields = split_top_level(fields, ',')
-        .into_iter()
-        .map(str::trim)
-        .filter(|field| !field.is_empty())
-        .collect::<Vec<_>>();
+    let CirType::Named(name) = op_result_type(op)? else {
+        return None;
+    };
+    let CirType::Struct(s) = aliases.get(name)? else {
+        return None;
+    };
+    let fields: Vec<&CirType> = s.members.iter().map(|(_, ty)| ty).collect();
     (fields.len() == output_count).then_some(fields)
 }
 
-pub(super) fn op_operand_types(ty: &str) -> Vec<&str> {
-    let Some((params, _)) = split_top_level_arrow(ty) else {
-        return Vec::new();
-    };
-    let params = params.trim().trim_start_matches('(').trim_end_matches(')');
-    split_top_level(params, ',')
-        .into_iter()
-        .map(str::trim)
-        .filter(|ty| !ty.is_empty())
-        .collect()
+pub(super) fn op_operand_types(op: &Op) -> &[CirType] {
+    &op.operand_types
 }
 
-pub(super) fn cir_ptr_inner(ty: &str) -> Option<&str> {
-    ty.trim()
-        .strip_prefix("!cir.ptr<")
-        .and_then(|ty| ty.strip_suffix('>'))
-        .map(str::trim)
+pub(super) fn cir_ptr_inner(ty: &CirType) -> Option<&CirType> {
+    match ty {
+        CirType::Ptr(inner) => Some(inner),
+        _ => None,
+    }
 }
 
-pub(super) fn parse_function_type(s: &str) -> (Vec<String>, Option<String>) {
-    let Some(inner) = s
-        .strip_prefix("!cir.func<")
-        .and_then(|s| s.strip_suffix('>'))
-    else {
-        return (Vec::new(), None);
-    };
-    let (params, ret) = split_top_level_arrow(inner)
-        .map(|(params, ret)| (params, Some(ret.trim().to_string())))
-        .unwrap_or((inner, None));
-    let params = params.trim().trim_start_matches('(').trim_end_matches(')');
-    let params = split_top_level(params, ',')
-        .into_iter()
-        .map(str::trim)
-        .filter(|s| !s.is_empty() && *s != "...")
-        .map(str::to_string)
-        .collect();
-    (params, ret)
+pub(super) fn parse_function_type(ty: &CirType) -> (Vec<CirType>, Option<CirType>) {
+    match ty {
+        CirType::CirFunc { inputs, output, .. } => (inputs.clone(), Some((**output).clone())),
+        _ => (Vec::new(), None),
+    }
 }
 
-pub(super) fn function_type_has_params(s: &str) -> bool {
-    let Some(inner) = s
-        .strip_prefix("!cir.func<")
-        .and_then(|s| s.strip_suffix('>'))
-    else {
-        return false;
-    };
-    let params = split_top_level_arrow(inner).map_or(inner, |(params, _)| params);
-    let params = params.trim().trim_start_matches('(').trim_end_matches(')');
-    split_top_level(params, ',')
-        .into_iter()
-        .any(|s| !s.trim().is_empty())
+pub(super) fn function_type_has_params(ty: &CirType) -> bool {
+    matches!(ty, CirType::CirFunc { inputs, .. } if !inputs.is_empty())
 }
 
 /// Whether a `!cir.func<..>` type ends its parameter list with `...`.
-pub(super) fn function_type_is_variadic(s: &str) -> bool {
-    let Some(inner) = s
-        .strip_prefix("!cir.func<")
-        .and_then(|s| s.strip_suffix('>'))
-    else {
-        return false;
-    };
-    let params = split_top_level_arrow(inner).map_or(inner, |(params, _)| params);
-    let params = params.trim().trim_start_matches('(').trim_end_matches(')');
-    split_top_level(params, ',')
-        .into_iter()
-        .any(|s| s.trim() == "...")
+pub(super) fn function_type_is_variadic(ty: &CirType) -> bool {
+    matches!(ty, CirType::CirFunc { varargs: true, .. })
 }

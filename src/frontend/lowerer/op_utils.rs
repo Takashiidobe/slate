@@ -7,17 +7,20 @@ pub(super) fn attr_symbol_ref<'a>(op: &'a Op, key: &str) -> Option<&'a str> {
 }
 
 pub(super) fn attr_int(op: &Op, key: &str) -> Option<i64> {
-    op.attrs.get(key).and_then(Attr::as_int)
+    op.attr(key).and_then(Attr::as_int).map(|v| v as i64)
+}
+
+pub(super) fn attr_type<'a>(op: &'a Op, key: &str) -> Option<&'a CirType> {
+    op.attr(key).and_then(Attr::as_type)
 }
 
 pub(super) fn call_arg_byval_type(op: &Op, operand_index: usize) -> Option<&str> {
-    let Attr::Array(entries) = op.attrs.get("arg_attrs")? else {
+    let Attr::Array(entries) = op.attr("arg_attrs")? else {
         return None;
     };
     entries
         .get(operand_index)?
-        .as_dict()?
-        .get("llvm.byval")
+        .dict_get("llvm.byval")
         .and_then(Attr::as_str)
 }
 
@@ -66,38 +69,24 @@ pub(super) fn successor_operand_groups(op: &Op) -> Vec<Vec<String>> {
 }
 
 pub(super) fn attr_i64_array(op: &Op, key: &str) -> Option<Vec<i64>> {
-    let Attr::Array(values) = op.attrs.get(key)? else {
+    let Attr::Array(values) = op.attr(key)? else {
         return None;
     };
     Some(
         values
             .iter()
-            .filter_map(|value| match value {
-                Attr::Int(n) => Some(*n),
-                Attr::Raw(raw) => parse_cir_int(raw).map(|n| n as i64),
-                _ => None,
-            })
+            .filter_map(|value| value.as_int().map(|n| n as i64))
             .collect(),
     )
 }
 
 pub(super) fn attr_int_array(op: &Op, key: &str) -> Option<Vec<u64>> {
-    let Attr::Array(values) = op.attrs.get(key)? else {
+    let Attr::Array(values) = op.attr(key)? else {
         return None;
     };
     values
         .iter()
-        .map(|value| {
-            value
-                .as_int()
-                .and_then(|value| u64::try_from(value).ok())
-                .or_else(|| {
-                    value
-                        .as_str()
-                        .and_then(parse_cir_int)
-                        .and_then(|value| u64::try_from(value).ok())
-                })
-        })
+        .map(|value| value.as_int().and_then(|value| u64::try_from(value).ok()))
         .collect()
 }
 
@@ -108,11 +97,12 @@ pub(super) fn aggregate_member_index(op: &Op) -> Option<usize> {
 }
 
 pub(super) fn attr_bool(op: &Op, key: &str) -> bool {
-    match op.attrs.get(key) {
-        Some(Attr::Raw(value)) => value != "false",
-        Some(_) => true,
-        None => false,
-    }
+    op.attr(key).is_some_and(|value| {
+        !matches!(
+            value,
+            Attr::Bool(false) | Attr::CirBool { value: false, .. }
+        )
+    })
 }
 
 /// Alloca results for clang-generated temps (`.atomictmp`, `atomic-temp`,
@@ -138,9 +128,9 @@ pub(super) fn forwardable_temp_allocas(body: &Region) -> BTreeSet<String> {
             *next_block += 1;
             for (pos, op) in block.ops.iter().enumerate() {
                 if op.kind() == CirOpKind::Alloca
-                    && let Some(name) = op.attrs.get("name").and_then(Attr::as_str)
+                    && let Some(name) = op.attr("name").and_then(Attr::as_str)
                     && name.chars().any(|c| !c.is_ascii_alphanumeric() && c != '_')
-                    && let Some(result) = op.results.first()
+                    && let Some((result, _)) = op.results.first()
                 {
                     uses.entry(result.clone()).or_default();
                 }
