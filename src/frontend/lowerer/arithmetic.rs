@@ -214,6 +214,39 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
+    pub(super) fn lower_saturating_arith(&mut self, op: &Op, rust_method: &str) {
+        let Some(result) = op.results.first() else {
+            return;
+        };
+        if op.operands.len() < 2 {
+            return;
+        }
+        if let Some((_, len)) = op_result_type(op).and_then(parse_cir_vector_type) {
+            let lhs = self.operand_expr(&op.operands[0]);
+            let rhs = self.operand_expr(&op.operands[1]);
+            let elems = (0..len)
+                .map(|i| Expr::MethodCall {
+                    recv: Box::new(vector_index_expr(lhs.clone(), i)),
+                    method: rust_method.to_string(),
+                    args: vec![vector_index_expr(rhs.clone(), i)],
+                })
+                .collect();
+            self.materialize_expr(result, Expr::ArrayLit(elems), op_result_type(op));
+            return;
+        }
+        let lhs = self.operand_expr(&op.operands[0]);
+        let rhs = self.operand_expr(&op.operands[1]);
+        self.materialize_expr(
+            result,
+            Expr::MethodCall {
+                recv: Box::new(lhs),
+                method: rust_method.to_string(),
+                args: vec![rhs],
+            },
+            op_result_type(op),
+        );
+    }
+
     // The batch crate builds with `overflow-checks = false`, so plain `+`/`-`/`*`
     // wrap two's-complement just like clang's `-O0` C — no `wrapping_*` needed.
     // `/` and `%` still trap on div-by-zero and INT_MIN/-1 on both sides, so the

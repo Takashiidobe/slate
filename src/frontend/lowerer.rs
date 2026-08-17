@@ -4010,6 +4010,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::MulOverflow => self.lower_overflow_arith(op, "overflowing_mul"),
             CirOpKind::DivOverflow => self.lower_overflow_arith(op, "overflowing_div"),
             CirOpKind::RemOverflow => self.lower_overflow_arith(op, "overflowing_rem"),
+            CirOpKind::Add if attr_bool(op, "saturated") => {
+                self.lower_saturating_arith(op, "saturating_add")
+            }
+            CirOpKind::Sub if attr_bool(op, "saturated") => {
+                self.lower_saturating_arith(op, "saturating_sub")
+            }
             CirOpKind::Add => self.lower_int_arith(op, BinOp::Add),
             CirOpKind::Sub => self.lower_int_arith(op, BinOp::Sub),
             CirOpKind::Mul => self.lower_int_arith(op, BinOp::Mul),
