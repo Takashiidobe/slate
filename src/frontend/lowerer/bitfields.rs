@@ -37,7 +37,7 @@ pub(super) fn collect_bitfield_storages(module: &Module) -> BitfieldStorages {
         let mut members = BTreeMap::new();
         collect_function_bitfields(
             &function.regions,
-            &module.aliases,
+            &module.type_aliases,
             &mut members,
             &mut storages,
         );
@@ -47,7 +47,7 @@ pub(super) fn collect_bitfield_storages(module: &Module) -> BitfieldStorages {
 
 fn collect_function_bitfields(
     regions: &[Region],
-    aliases: &BTreeMap<String, String>,
+    aliases: &BTreeMap<String, CirType>,
     members: &mut BTreeMap<String, MemberStorage>,
     storages: &mut BitfieldStorages,
 ) {
@@ -57,14 +57,14 @@ fn collect_function_bitfields(
                 if op.kind() == CirOpKind::GetMember
                     && let Some(member) = member_storage(op, aliases)
                 {
-                    for result in &op.results {
+                    for (result, _) in &op.results {
                         members.insert(result.clone(), member.clone());
                     }
                 }
                 if matches!(op.kind(), CirOpKind::GetBitfield | CirOpKind::SetBitfield)
                     && let Some(ptr) = op.operands.first()
                     && let Some(member) = members.get(ptr)
-                    && let Some((size, offset)) = bitfield_info(op, aliases)
+                    && let Some((size, offset)) = bitfield_info(op)
                     && let Some(result_ty) = op_result_type(op)
                 {
                     let key = (member.record.clone(), member.index);
@@ -93,15 +93,26 @@ fn collect_function_bitfields(
     }
 }
 
-fn member_storage(op: &Op, aliases: &BTreeMap<String, String>) -> Option<MemberStorage> {
-    let record = op
-        .ty
-        .as_deref()
-        .and_then(split_top_level_arrow)
-        .and_then(|(inputs, _)| inputs.trim().strip_prefix('(')?.strip_suffix(')'))
-        .and_then(|inputs| split_top_level(inputs, ',').first().copied())
+fn resolve_type_alias<'a>(ty: &'a CirType, aliases: &'a BTreeMap<String, CirType>) -> &'a CirType {
+    let mut ty = ty;
+    let mut seen = BTreeSet::new();
+    while let CirType::Named(name) = ty {
+        if !seen.insert(name.clone()) {
+            break;
+        }
+        match aliases.get(name) {
+            Some(expanded) => ty = expanded,
+            None => break,
+        }
+    }
+    ty
+}
+
+fn member_storage(op: &Op, aliases: &BTreeMap<String, CirType>) -> Option<MemberStorage> {
+    let record = op_operand_types(op)
+        .first()
         .and_then(cir_ptr_pointee)
-        .map(|ty| aliases.get(ty).map(String::as_str).unwrap_or(ty))
+        .map(|ty| resolve_type_alias(ty, aliases))
         .and_then(cir_record_name)
         .map(|name| sanitize_ident(name).into_string())?;
     let index = aggregate_member_index(op)?;
@@ -117,13 +128,11 @@ fn member_storage(op: &Op, aliases: &BTreeMap<String, String>) -> Option<MemberS
     })
 }
 
-fn bitfield_info(op: &Op, aliases: &BTreeMap<String, String>) -> Option<(u32, u32)> {
-    let raw = attr_str(op, "bitfield_info")?;
-    let resolved = aliases.get(raw).map_or(raw, String::as_str);
-    Some((
-        bitfield_info_number(resolved, "size = ")?,
-        bitfield_info_number(resolved, "offset = ")?,
-    ))
+fn bitfield_info(op: &Op) -> Option<(u32, u32)> {
+    match op.attr("bitfield_info") {
+        Some(Attr::BitfieldInfo { size, offset, .. }) => Some((*size, *offset)),
+        _ => None,
+    }
 }
 
 pub(super) fn bitfield_items(storages: &BitfieldStorages) -> Vec<Item> {

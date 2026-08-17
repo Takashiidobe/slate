@@ -267,7 +267,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.emit_todo("cir.switch");
             return;
         };
-        let selector_rust_ty = op_operand_types(op.ty.as_deref().unwrap_or(""))
+        let selector_rust_ty = op_operand_types(op)
             .first()
             .map(|ty| self.parent.rust_type(ty));
         let bitint_ty = selector_rust_ty.filter(|ty| bitint_generic_parts(ty).is_some());
@@ -574,7 +574,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             for op in &block.ops {
                 if op.kind() == CirOpKind::Alloca {
                     self.lower_alloca(op);
-                    if let Some(result) = op.results.first() {
+                    if let Some((result, _)) = op.results.first() {
                         self.hoisted.insert(result.clone());
                     }
                 }
@@ -840,7 +840,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.emit_todo("cir.switch.flat: unknown default successor");
             return;
         };
-        let selector_rust_ty = op_operand_types(op.ty.as_deref().unwrap_or(""))
+        let selector_rust_ty = op_operand_types(op)
             .first()
             .map(|ty| self.parent.rust_type(ty));
         let bitint_ty = selector_rust_ty.filter(|ty| bitint_generic_parts(ty).is_some());

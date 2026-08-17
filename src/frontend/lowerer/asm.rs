@@ -6,7 +6,7 @@ pub(super) fn collect_assembly_strings<'a>(op: &'a Op, out: &mut Vec<&'a str>) {
     {
         out.push(template);
     }
-    if let Some(Attr::Array(values)) = op.attrs.get("cir.module_asm") {
+    if let Some(Attr::Array(values)) = op.attr("cir.module_asm") {
         out.extend(values.iter().filter_map(Attr::as_str));
     }
     for region in &op.regions {
@@ -34,7 +34,7 @@ pub(super) fn lower_module_asm(
     module_op: &Op,
     diagnostics: &mut crate::ctx::Diagnostics,
 ) -> Vec<Item> {
-    let Some(Attr::Array(values)) = module_op.attrs.get("cir.module_asm") else {
+    let Some(Attr::Array(values)) = module_op.attr("cir.module_asm") else {
         return Vec::new();
     };
     let mut templates = Vec::new();
