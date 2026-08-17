@@ -96,6 +96,16 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BUint<BITS, LIMB
         (out, out.wrapping_div(self) != rhs)
     }
 
+    pub fn saturating_add(self, rhs: Self) -> Self {
+        let (out, overflow) = self.overflowing_add(rhs);
+        if overflow { !Self::ZERO } else { out }
+    }
+
+    pub fn saturating_sub(self, rhs: Self) -> Self {
+        let (out, overflow) = self.overflowing_sub(rhs);
+        if overflow { Self::ZERO } else { out }
+    }
+
     pub const fn wrapping_div(self, rhs: Self) -> Self {
         Self::from_limbs(self.to_limbs().wrapping_div(rhs.to_limbs()))
     }
@@ -411,6 +421,24 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BInt<BITS, LIMBS
             return (out, rhs == Self::min_value());
         }
         (out, out.wrapping_div(self) != rhs)
+    }
+
+    fn saturated_bound(self) -> Self {
+        if self.to_limbs().is_negative() {
+            Self::min_value()
+        } else {
+            !Self::min_value()
+        }
+    }
+
+    pub fn saturating_add(self, rhs: Self) -> Self {
+        let (out, overflow) = self.overflowing_add(rhs);
+        if overflow { self.saturated_bound() } else { out }
+    }
+
+    pub fn saturating_sub(self, rhs: Self) -> Self {
+        let (out, overflow) = self.overflowing_sub(rhs);
+        if overflow { self.saturated_bound() } else { out }
     }
 
     pub const fn wrapping_neg(self) -> Self {

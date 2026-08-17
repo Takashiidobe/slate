@@ -108,7 +108,11 @@ pub(super) fn aggregate_member_index(op: &Op) -> Option<usize> {
 }
 
 pub(super) fn attr_bool(op: &Op, key: &str) -> bool {
-    op.attrs.contains_key(key)
+    match op.attrs.get(key) {
+        Some(Attr::Raw(value)) => value != "false",
+        Some(_) => true,
+        None => false,
+    }
 }
 
 /// Alloca results for clang-generated temps (`.atomictmp`, `atomic-temp`,
