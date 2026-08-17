@@ -1473,6 +1473,7 @@ fn anonymous_record_name_from_field(node: &Value) -> Option<String> {
         return None;
     }
     let ty = qual_type(node)?;
+    let ty = ty.split('[').next().unwrap_or(ty).trim();
     let name = ty
         .strip_prefix("struct (unnamed at ")
         .or_else(|| ty.strip_prefix("union (unnamed at "))?
