@@ -11,8 +11,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     pub(super) fn lower_call(&mut self, op: &Op) {
         let operand_types = op_operand_types(op);
-        let direct_callee =
-            attr_str(op, "callee").map(|callee| callee.trim_start_matches('@').to_string());
+        let direct_callee = attr_symbol_ref(op, "callee").map(str::to_string);
         let weak_ref_target = direct_callee
             .as_ref()
             .and_then(|callee| self.parent.weak_refs.get(callee))

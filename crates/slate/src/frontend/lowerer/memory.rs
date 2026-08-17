@@ -2,14 +2,10 @@ use super::*;
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
     pub(super) fn lower_get_global(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
-        let name = attr_str(op, "name")
-            .unwrap_or("")
-            .trim_start_matches('@')
-            .trim_matches('"')
-            .to_string();
+        let name = attr_symbol_ref(op, "name").unwrap_or("").to_string();
         let name = self.parent.weak_refs.get(&name).cloned().unwrap_or(name);
         let name = if self.parent.strings.contains_key(&name)
             || self.parent.const_arrays.contains_key(&name)
@@ -63,7 +59,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_get_member(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         let Some(base_ptr) = op.operands.first() else {
@@ -78,11 +74,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         let base = self.place_or_deref_expr(base_ptr);
-        let raw_field = attr_str(op, "name").unwrap_or(result);
+        let raw_field = attr_str(op, "name").unwrap_or(result.as_str());
         let logical_field = if raw_field.is_empty() {
             aggregate_member_index(op)
                 .map(|index| format!("__slate_anon_{index}"))
-                .unwrap_or_else(|| sanitize_ident(result).into_string())
+                .unwrap_or_else(|| sanitize_ident(result.as_str()).into_string())
         } else {
             sanitize_ident(raw_field).into_string()
         };
@@ -115,20 +111,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn bitfield_storage_member(&self, op: &Op) -> Option<(String, Type, bool)> {
-        let record_name = op
-            .ty
-            .as_deref()
-            .and_then(split_top_level_arrow)
-            .and_then(|(inputs, _)| inputs.trim().strip_prefix('(')?.strip_suffix(')'))
-            .and_then(|inputs| split_top_level(inputs, ',').first().copied())
+        let record_name = op_operand_types(op)
+            .first()
             .and_then(cir_ptr_pointee)
-            .map(|ty| {
-                self.parent
-                    .aliases
-                    .get(ty)
-                    .map(String::as_str)
-                    .unwrap_or(ty)
-            })
+            .map(|ty| self.parent.expand_alias(ty))
             .and_then(cir_record_name)?;
         let record_name = sanitize_ident(record_name).into_string();
         let record = self.parent.records.get(&record_name)?;
@@ -153,7 +139,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_extract_member(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         let Some(base) = op.operands.first() else {
@@ -174,7 +160,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_insert_member(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         if op.operands.len() < 2 {
@@ -240,9 +226,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     pub(super) fn value_member_field(&self, op: &Op, operand_index: usize) -> Option<String> {
         let index = aggregate_member_index(op)?;
-        let record_ty = op_operand_types(op.ty.as_deref()?)
-            .get(operand_index)
-            .copied()?;
+        let record_ty = op_operand_types(op).get(operand_index)?;
         let Type::Custom(record_name) = self.parent.rust_type(record_ty) else {
             return None;
         };
@@ -335,9 +319,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         None
     }
 
-    pub(super) fn record_name_from_op(op: &Op) -> Option<String> {
-        let base_ty = op_operand_types(op.ty.as_deref()?).first().copied()?;
-        let record_name = cir_ptr_pointee(base_ty).and_then(cir_record_name)?;
+    pub(super) fn record_name_from_op(&self, op: &Op) -> Option<String> {
+        let base_ty = op_operand_types(op).first()?;
+        let record_name = cir_ptr_pointee(base_ty)
+            .map(|ty| self.parent.expand_alias(ty))
+            .and_then(cir_record_name)?;
         Some(sanitize_ident(record_name).into_string())
     }
 
@@ -347,7 +333,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn member_field_type_from_op(&self, op: &Op, field: &str) -> Option<Type> {
-        let record_name = Self::record_name_from_op(op)?;
+        let record_name = self.record_name_from_op(op)?;
         self.record_field_type_by_name(&record_name, field)
     }
 
@@ -363,7 +349,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     pub(super) fn member_field_is_trailing(&self, base_ptr: &str, op: &Op, field: &str) -> bool {
         let Some(record_name) = self
             .member_record_name(base_ptr)
-            .or_else(|| Self::record_name_from_op(op))
+            .or_else(|| self.record_name_from_op(op))
         else {
             return false;
         };
@@ -380,7 +366,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_set_bitfield(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         if op.operands.len() < 2 {
@@ -456,7 +442,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_get_bitfield(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         let Some(ptr) = op.operands.first() else {
@@ -510,12 +496,19 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     // shift up then arithmetic-shift down masks to `size` bits, sign-extending signed types.
-    pub(super) fn truncate_bitfield_expr(&self, op: &Op, expr: Expr, ty: Option<&str>) -> Expr {
-        let bits = ty
-            .map(|ty| self.parent.rust_type(ty))
-            .and_then(|t| int_bits(&t.render()));
+    pub(super) fn truncate_bitfield_expr(&self, op: &Op, expr: Expr, ty: Option<&CirType>) -> Expr {
+        let rust_ty = ty.map(|ty| self.parent.rust_type(ty));
+        let bits = rust_ty.as_ref().and_then(|t| int_bits(&t.render()));
         match (self.bitfield_size(op), bits) {
             (Some(size), Some(bits)) if size < bits => {
+                // the storage field's own type may have different signedness (or, for a
+                // shared multi-field storage unit, no fixed signedness at all) than this
+                // particular logical bitfield, so reinterpret to the logical type first -
+                // same-width `as` casts preserve the bit pattern, matching C semantics.
+                let expr = Expr::Cast {
+                    expr: Box::new(expr),
+                    ty: rust_ty.expect("checked by `bits` above"),
+                };
                 let sh = Box::new(Expr::Value(RustValue::I64((bits - size) as i64)));
                 Expr::Binary {
                     op: BinOp::Shr,
@@ -536,16 +529,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn bitfield_size_offset(&self, op: &Op) -> Option<(u32, u32)> {
-        let raw = attr_str(op, "bitfield_info")?;
-        let resolved = self.parent.aliases.get(raw).map_or(raw, String::as_str);
-        Some((
-            bitfield_info_number(resolved, "size = ")?,
-            bitfield_info_number(resolved, "offset = ")?,
-        ))
+        let attr = self.parent.resolve_attr(op.attr("bitfield_info")?);
+        let Attr::BitfieldInfo { size, offset, .. } = attr else {
+            return None;
+        };
+        Some((*size, *offset))
     }
 
     pub(super) fn lower_get_element(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         if op.operands.len() < 2 {
@@ -557,9 +549,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             member.field_is_trailing
                 && matches!(&member.field_ty, Some(Type::Array { len: 0 | 1, .. }))
         });
-        let array_len = op_operand_types(op.ty.as_deref().unwrap_or(""))
-            .into_iter()
-            .next()
+        let array_len = op_operand_types(op)
+            .first()
             .and_then(cir_ptr_inner)
             .and_then(parse_cir_array_type)
             .map(|(_, len)| len);
@@ -659,26 +650,27 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn op_base_is_union(&self, op: &Op) -> bool {
-        op.ty
-            .as_deref()
-            .and_then(|ty| op_operand_types(ty).into_iter().next())
+        op_operand_types(op)
+            .first()
             .and_then(cir_ptr_inner)
             .is_some_and(|ty| self.parent.cir_type_is_union(ty))
     }
 
     pub(super) fn lower_cast(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         let Some(src) = op.operands.first() else {
             return;
         };
-        let result_ty = op_result_type(op).unwrap_or("");
-        let operand_ty = op_operand_types(op.ty.as_deref().unwrap_or(""))
-            .into_iter()
-            .next()
-            .unwrap_or("");
-        if (is_cir_va_list_value_type(result_ty) || is_cir_va_list_value_type(operand_ty))
+        let Some(result_ty) = op_result_type(op) else {
+            return;
+        };
+        let Some(operand_ty) = op_operand_types(op).first() else {
+            return;
+        };
+        if (is_cir_va_list_value_type(result_ty, &self.parent.aliases)
+            || is_cir_va_list_value_type(operand_ty, &self.parent.aliases))
             && let Some(place) = self.va_target_place(src)
         {
             self.va_places.insert(result.clone(), place.clone());
@@ -727,7 +719,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 }
             }
             Some(Val::Global(name))
-                if result_ty.starts_with("!cir.ptr<")
+                if matches!(result_ty, CirType::Ptr(_))
                     && self.parent.strings.contains_key(&name) =>
             {
                 let bytes = self.parent.strings[&name].clone();
@@ -741,14 +733,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 })
             }
             Some(Val::Global(name))
-                if result_ty.starts_with("!cir.ptr<")
+                if matches!(result_ty, CirType::Ptr(_))
                     && self.parent.const_arrays.contains_key(&name) =>
             {
                 let elems = &self.parent.const_arrays[&name];
                 let (elem_ty, len) = cir_ptr_inner(operand_ty)
                     .and_then(parse_cir_array_type)
                     .map_or((Type::Prim(Prim::I32), elems.len()), |(elem, len)| {
-                        (self.parent.rust_type(&elem), len as usize)
+                        (self.parent.rust_type(elem), len as usize)
                     });
                 let default = self.parent.default_value_expr(&elem_ty);
                 let mut typed: Vec<Expr> = elems.clone();
@@ -767,7 +759,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     ty: ptr_ty,
                 })
             }
-            Some(Val::Global(global_name)) if !result_ty.starts_with("!cir.ptr<") => {
+            Some(Val::Global(global_name)) if !matches!(result_ty, CirType::Ptr(_)) => {
                 if let Some(name) = self.global_name(src) {
                     Val::Expr(Expr::Cast {
                         expr: Box::new(Expr::AddrOf {
@@ -794,7 +786,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 }
             }
             Some(Val::Global(name))
-                if result_ty.starts_with("!cir.ptr<")
+                if matches!(result_ty, CirType::Ptr(_))
                     && !is_cir_function_pointer_type(result_ty)
                     && !self.parent.strings.contains_key(&name)
                     && !self.parent.const_arrays.contains_key(&name)
@@ -834,16 +826,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     ),
                     mutable: true,
                 };
-                let elem_ty_matches = result_ty
-                    .strip_prefix("!cir.ptr<")
-                    .and_then(|s| s.strip_suffix('>'))
-                    .is_some_and(|pointee| {
-                        matches!(
-                            self.slot_types.get(src),
-                            Some(Type::Array { elem, .. })
-                                if **elem == self.parent.rust_type(pointee)
-                        )
-                    });
+                let elem_ty_matches = cir_ptr_pointee(result_ty).is_some_and(|pointee| {
+                    matches!(
+                        self.slot_types.get(src),
+                        Some(Type::Array { elem, .. })
+                            if **elem == self.parent.rust_type(pointee)
+                    )
+                });
                 if elem_ty_matches {
                     Val::Expr(array_ptr)
                 } else {
@@ -934,7 +923,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     })
                 }
             }
-            _ if result_ty.starts_with("!cir.ptr<")
+            _ if matches!(result_ty, CirType::Ptr(_))
                 && is_cir_function_pointer_type(operand_ty)
                 && !is_cir_function_pointer_type(result_ty) =>
             {
@@ -945,8 +934,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 })
             }
             _ if is_cir_function_pointer_type(operand_ty)
-                && !result_ty.starts_with("!cir.ptr<")
-                && result_ty != "!cir.bool" =>
+                && !matches!(result_ty, CirType::Ptr(_))
+                && !matches!(result_ty, CirType::Bool) =>
             {
                 Val::Expr(Expr::Cast {
                     expr: Box::new(Expr::Transmute {
@@ -957,8 +946,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     ty: result_rust_ty.clone(),
                 })
             }
-            _ if result_ty.starts_with("!cir.ptr<")
-                && operand_ty.starts_with("!cir.ptr<")
+            _ if matches!(result_ty, CirType::Ptr(_))
+                && matches!(operand_ty, CirType::Ptr(_))
                 && !(is_cir_function_pointer_type(result_ty)
                     && !is_cir_function_pointer_type(operand_ty)) =>
             {
@@ -967,8 +956,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     ty: self.parent.rust_type(result_ty),
                 })
             }
-            _ if operand_ty.starts_with("!cir.ptr<")
-                && result_ty != "!cir.bool"
+            _ if matches!(operand_ty, CirType::Ptr(_))
+                && !matches!(result_ty, CirType::Bool)
                 && !is_cir_function_pointer_type(operand_ty)
                 && !is_cir_function_pointer_type(result_ty) =>
             {
@@ -977,7 +966,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     ty: self.parent.rust_type(result_ty),
                 })
             }
-            _ if result_ty.starts_with("!cir.ptr<!cir.func<") => {
+            _ if is_cir_function_pointer_type(result_ty) => {
                 let ptr_ty = self.parent.rust_type(result_ty);
                 Val::Expr(Expr::Transmute {
                     from: Type::Prim(Prim::Usize),
@@ -988,18 +977,20 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     }),
                 })
             }
-            _ if result_ty == "!cir.bool" && is_cir_function_pointer_type(operand_ty) => {
+            _ if matches!(result_ty, CirType::Bool) && is_cir_function_pointer_type(operand_ty) => {
                 Val::Expr(Expr::MethodCall {
                     recv: Box::new(self.function_pointer_operand_expr(src)),
                     method: "is_some".into(),
                     args: Vec::new(),
                 })
             }
-            _ if result_ty == "!cir.bool" && operand_ty != "!cir.bool" => Val::Expr(Expr::Binary {
-                op: BinOp::Ne,
-                lhs: Box::new(self.operand_expr(src)),
-                rhs: Box::new(zero_for_cir_type(operand_ty)),
-            }),
+            _ if matches!(result_ty, CirType::Bool) && !matches!(operand_ty, CirType::Bool) => {
+                Val::Expr(Expr::Binary {
+                    op: BinOp::Ne,
+                    lhs: Box::new(self.operand_expr(src)),
+                    rhs: Box::new(zero_for_cir_type(operand_ty)),
+                })
+            }
             _ if bitint_generic_parts(&result_rust_ty).is_some()
                 && bitint_generic_parts(&operand_rust_ty).is_none()
                 && parse_cir_int_type(operand_ty).is_some() =>
@@ -1050,22 +1041,22 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_ptr_diff(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         if op.operands.len() < 2 {
             return;
         }
-        let operand_types = op_operand_types(op.ty.as_deref().unwrap_or(""));
+        let operand_types = op_operand_types(op);
         let lhs = self.fn_ptr_aware_operand_expr(
             &op.operands[0],
-            operand_types.first().copied(),
+            operand_types.first(),
             Self::function_pointer_byte_operand_expr,
             Self::pointer_operand_expr,
         );
         let rhs = self.fn_ptr_aware_operand_expr(
             &op.operands[1],
-            operand_types.get(1).copied(),
+            operand_types.get(1),
             Self::function_pointer_byte_operand_expr,
             Self::pointer_operand_expr,
         );
@@ -1087,21 +1078,21 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_ptr_stride(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         if op.operands.len() < 2 {
             return;
         }
-        let operand_types = op_operand_types(op.ty.as_deref().unwrap_or(""));
+        let operand_types = op_operand_types(op);
         let function_pointer_stride = operand_types
             .first()
-            .is_some_and(|ty| is_cir_function_pointer_type(ty))
+            .is_some_and(is_cir_function_pointer_type)
             && op_result_type(op).is_some_and(is_cir_function_pointer_type);
         let base = self.fn_ptr_aware_operand_expr(
             &op.operands[0],
             function_pointer_stride
-                .then(|| operand_types.first().copied())
+                .then(|| operand_types.first())
                 .flatten(),
             Self::function_pointer_byte_operand_expr,
             Self::pointer_operand_expr,
@@ -1137,7 +1128,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             {
                 return ("add".into(), vec![int_value_expr(*value)]);
             }
-            if op_operand_types(op.ty.as_deref().unwrap_or(""))
+            if op_operand_types(op)
                 .get(1)
                 .is_some_and(|ty| self.cir_int_is_unsigned(ty))
             {
@@ -1159,15 +1150,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         )
     }
 
-    pub(super) fn cir_int_is_unsigned(&self, ty: &str) -> bool {
-        let resolved = self.parent.aliases.get(ty).map_or(ty, String::as_str);
-        if let Some((signed, _)) = parse_cir_int_type(resolved) {
-            return !signed;
-        }
-        resolved
-            .trim()
-            .strip_prefix("!cir.int<")
-            .and_then(|rest| rest.split(',').next())
-            .is_some_and(|sign| sign.trim() == "u")
+    pub(super) fn cir_int_is_unsigned(&self, ty: &CirType) -> bool {
+        let resolved = self.parent.expand_alias(ty);
+        parse_cir_int_type(resolved).is_some_and(|(signed, _)| !signed)
     }
 }

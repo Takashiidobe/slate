@@ -149,14 +149,6 @@ pub(super) fn expr_int_value(expr: &Expr) -> Option<i128> {
     }
 }
 
-pub(super) fn bitfield_info_number(info: &str, key: &str) -> Option<u32> {
-    let rest = info.split(key).nth(1)?;
-    let end = rest
-        .find(|c: char| !c.is_ascii_digit())
-        .unwrap_or(rest.len());
-    rest[..end].parse().ok()
-}
-
 pub(super) fn render_array_literal_expr(elems: &[Expr], len: usize, default: Expr) -> Expr {
     let mut out: Vec<Expr> = elems.iter().take(len).cloned().collect();
     out.resize(len, default);
@@ -170,96 +162,13 @@ pub(super) fn vector_index_expr(base: Expr, index: u64) -> Expr {
     }
 }
 
-pub(super) fn parse_cir_scalar_expr(s: &str) -> Option<Expr> {
-    parse_cir_int(s)
-        .map(int_value_expr)
-        .or_else(|| parse_cir_uint128(s).map(|n| Expr::Value(RustValue::U128(n))))
-        .or_else(|| parse_cir_fp_expr(s))
-        .or_else(|| parse_cir_bool(s).map(|b| Expr::Value(RustValue::Bool(b))))
-        .or_else(|| {
-            s.trim_start()
-                .starts_with("#cir.ptr<null>")
-                .then_some(Expr::Value(RustValue::NullPtr))
-        })
-}
-
-pub(super) fn parse_cir_int_ptr(s: &str) -> Option<i128> {
-    let s = s.trim_start().strip_prefix("#cir.ptr<")?;
-    if s.starts_with("null") {
-        return None;
-    }
-    let end = s.find([':', '>'])?;
-    s[..end].trim().parse().ok()
-}
-
-pub(super) fn parse_cir_const_vector(s: &str) -> Option<Expr> {
-    let s = s.trim_start();
-    let start = s.find("#cir.const_vector<[")?;
-    let rest = &s[start + "#cir.const_vector<[".len()..];
-    let close = rest.find("]>")?;
+pub(super) fn const_vector_expr(elements: &[Attr]) -> Option<Expr> {
     Some(Expr::ArrayLit(
-        split_top_level(&rest[..close], ',')
-            .into_iter()
-            .map(str::trim)
-            .filter(|part| !part.is_empty())
-            .map(parse_cir_scalar_expr)
+        elements
+            .iter()
+            .map(scalar_attr_expr)
             .collect::<Option<Vec<_>>>()?,
     ))
-}
-
-pub(super) fn parse_cir_global_view(s: &str) -> Option<&str> {
-    let s = s.trim_start().strip_prefix("#cir.global_view<@")?;
-    let end = s.find([',', '>'])?;
-    Some(s[..end].trim_matches('"'))
-}
-
-pub(super) fn parse_cir_global_view_indices(s: &str) -> Vec<i128> {
-    let Some(s) = s.trim_start().strip_prefix("#cir.global_view<@") else {
-        return Vec::new();
-    };
-    let Some(rest) = s.find(',').map(|comma| &s[comma + 1..]) else {
-        return Vec::new();
-    };
-    let rest = rest.trim_start();
-    let Some(rest) = rest.strip_prefix('[') else {
-        return Vec::new();
-    };
-    let Some(close) = rest.find(']') else {
-        return Vec::new();
-    };
-    split_top_level(&rest[..close], ',')
-        .into_iter()
-        .filter_map(|part| {
-            part.trim()
-                .split_once(':')
-                .map_or(part.trim(), |(value, _)| value.trim())
-                .parse()
-                .ok()
-        })
-        .collect()
-}
-
-pub(super) fn parse_cir_global_views(s: &str) -> Vec<&str> {
-    s.match_indices("#cir.global_view<@")
-        .filter_map(|(start, _)| parse_cir_global_view(&s[start..]))
-        .collect()
-}
-
-pub(super) fn parse_cir_global_view_array(s: &str) -> Vec<&str> {
-    let s = s.trim_start();
-    if !s.starts_with("#cir.const_array<[") {
-        return Vec::new();
-    }
-    let Some(open) = s.find('[') else {
-        return Vec::new();
-    };
-    let Some(close) = s.rfind(']') else {
-        return Vec::new();
-    };
-    split_top_level(&s[open + 1..close], ',')
-        .into_iter()
-        .filter_map(parse_cir_global_view)
-        .collect()
 }
 
 pub(super) fn int_value_expr(n: i128) -> Expr {
@@ -276,17 +185,15 @@ pub(super) fn int_pattern(n: i128) -> Pattern {
     }
 }
 
-pub(super) fn parse_cir_fp_expr(s: &str) -> Option<Expr> {
-    parse_cir_fp(s).map(fp_literal_expr)
-}
-
-pub(super) fn parse_cir_f128_expr(s: &str) -> Option<Expr> {
-    let fp = cir_fp_text(s)?;
-    if let Some(hex) = fp.strip_prefix("0x").or_else(|| fp.strip_prefix("0X")) {
+/// Like [`long_double_from_text`], but for a `!cir.f128` literal's
+/// already-extracted `#cir.fp<...>` text.
+pub(super) fn f128_from_text(text: &str) -> Option<Expr> {
+    let text = text.trim();
+    if let Some(hex) = text.strip_prefix("0x").or_else(|| text.strip_prefix("0X")) {
         let bits = u128::from_str_radix(hex, 16).ok()?;
         Some(Expr::HexFloat(format!("f128::from_bits(0x{bits:032x})")))
     } else {
-        Some(Expr::HexFloat(format!("{fp}f128")))
+        Some(Expr::HexFloat(format!("{text}f128")))
     }
 }
 
@@ -309,16 +216,6 @@ pub(super) fn typed_fp_literal_expr(ty: Option<&Type>, fp: String) -> Expr {
     } else {
         fp_literal_expr(fp)
     }
-}
-
-pub(super) fn long_double_raw_expr(raw: &str) -> Option<Expr> {
-    let text = cir_fp_text(raw)?;
-    if let Some(bits) = text.strip_prefix("0x").or_else(|| text.strip_prefix("0X"))
-        && bits.len() == 20
-    {
-        return f80_literal_bits_expr(bits);
-    }
-    parse_cir_fp(raw).map(|fp| typed_fp_literal_expr(Some(&Type::LongDouble), fp))
 }
 
 fn f80_cache() -> &'static Mutex<HashMap<String, [u8; 10]>> {
@@ -419,13 +316,15 @@ pub(super) fn complex_component_from_attr(attr: &Attr) -> Option<CirComplexCompo
 /// and are handled by the caller instead).
 pub(super) fn scalar_attr_expr(attr: &Attr) -> Option<Expr> {
     match attr {
-        Attr::CirInt { text, .. } => text
-            .parse::<i128>()
-            .ok()
-            .map(int_value_expr)
-            .or_else(|| text.parse::<u128>().ok().map(|n| Expr::Value(RustValue::U128(n)))),
+        Attr::CirInt { text, .. } => text.parse::<i128>().ok().map(int_value_expr).or_else(|| {
+            text.parse::<u128>()
+                .ok()
+                .map(|n| Expr::Value(RustValue::U128(n)))
+        }),
         Attr::CirFloat { text, .. } => fp_text_value(text).map(fp_literal_expr),
-        Attr::CirBool { value, .. } | Attr::Bool(value) => Some(Expr::Value(RustValue::Bool(*value))),
+        Attr::CirBool { value, .. } | Attr::Bool(value) => {
+            Some(Expr::Value(RustValue::Bool(*value)))
+        }
         Attr::Dialect {
             dialect,
             mnemonic,
@@ -438,66 +337,8 @@ pub(super) fn scalar_attr_expr(attr: &Attr) -> Option<Expr> {
     }
 }
 
-pub(super) fn cir_int_digits(s: &str) -> Option<&str> {
-    let start = s.find("#cir.int<")? + "#cir.int<".len();
-    let rest = &s[start..];
-    let end = rest.find('>')?;
-    Some(&rest[..end])
-}
-
-// i128 so a full-range `!u64i` value (e.g. SIG_ERR = (void(*)(int))-1, which CIR
-// prints as the unsigned bit pattern 18446744073709551615) survives as a valid
-// unsigned literal rather than overflowing i64 and collapsing to 0.
-pub(super) fn parse_cir_int(s: &str) -> Option<i128> {
-    cir_int_digits(s)?.parse().ok()
-}
-
-// separate from parse_cir_int: a u128 constant above i128::MAX (e.g. near
-// UINT128_MAX) doesn't fit in i128, so this is the fallback for scalar-expr
-// construction, not for callers that need a plain i128 (offsets, lengths, ...).
-pub(super) fn parse_cir_uint128(s: &str) -> Option<u128> {
-    cir_int_digits(s)?.parse().ok()
-}
-
-pub(super) fn parse_cir_bool(s: &str) -> Option<bool> {
-    match s.trim() {
-        "#true" => return Some(true),
-        "#false" => return Some(false),
-        _ => {}
-    }
-    let start = s.find("#cir.bool<")? + "#cir.bool<".len();
-    let rest = &s[start..];
-    let end = rest.find('>')?;
-    match rest[..end].trim() {
-        "true" => Some(true),
-        "false" => Some(false),
-        _ => None,
-    }
-}
-
-pub(super) fn parse_cir_fp(s: &str) -> Option<String> {
-    let text = cir_fp_text(s)?;
-    if text.starts_with("0x") || text.starts_with("0X") {
-        let bits = u64::from_str_radix(&text[2..], 16).ok()?;
-        return match text.len() - 2 {
-            8 => Some(format!("f32::from_bits(0x{bits:08x})")),
-            16 => Some(format!("f64::from_bits(0x{bits:016x})")),
-            _ => None,
-        };
-    }
-    Some(text.to_string())
-}
-
-pub(super) fn cir_fp_text(s: &str) -> Option<&str> {
-    let start = s.find("#cir.fp<")? + "#cir.fp<".len();
-    let rest = &s[start..];
-    let end = rest.find('>')?;
-    Some(rest[..end].trim())
-}
-
-/// Like [`parse_cir_fp`], but starting from a `#cir.fp<...>` literal's
-/// already-extracted text (e.g. `Attribute::CirFloat::text`) instead of
-/// locating and stripping the `#cir.fp<...>` wrapper syntax itself.
+/// Renders a `#cir.fp<...>` literal's already-extracted text (e.g.
+/// `Attribute::CirFloat::text`) as a Rust float literal or `fN::from_bits` call.
 pub(super) fn fp_text_value(text: &str) -> Option<String> {
     let text = text.trim();
     if text.starts_with("0x") || text.starts_with("0X") {
@@ -511,9 +352,8 @@ pub(super) fn fp_text_value(text: &str) -> Option<String> {
     Some(text.to_string())
 }
 
-/// Like [`long_double_raw_expr`], but starting from a `#cir.fp<...>`
-/// literal's already-extracted text instead of a whole `#cir.fp<...> : ty`
-/// snippet.
+/// Long-double literal from a `#cir.fp<...>` literal's already-extracted text
+/// (e.g. `Attribute::CirFloat::text`).
 pub(super) fn long_double_from_text(text: &str) -> Option<Expr> {
     let text = text.trim();
     if let Some(bits) = text.strip_prefix("0x").or_else(|| text.strip_prefix("0X"))
@@ -522,90 +362,6 @@ pub(super) fn long_double_from_text(text: &str) -> Option<Expr> {
         return f80_literal_bits_expr(bits);
     }
     fp_text_value(text).map(|fp| typed_fp_literal_expr(Some(&Type::LongDouble), fp))
-}
-
-pub(super) fn parse_cir_const_complex(
-    s: &str,
-) -> Option<(CirComplexComponent, CirComplexComponent)> {
-    let start = s.find("#cir.const_complex<")? + "#cir.const_complex<".len();
-    let inner = &s[start..];
-    let parts = split_top_level(inner, ',');
-    let re = parse_cir_complex_component(parts.first()?.trim())?;
-    let im = parse_cir_complex_component(parts.get(1)?.trim())?;
-    Some((re, im))
-}
-
-pub(super) fn parse_cir_complex_component(s: &str) -> Option<CirComplexComponent> {
-    parse_cir_int(s)
-        .map(CirComplexComponent::Int)
-        .or_else(|| parse_cir_uint128(s).map(CirComplexComponent::Uint))
-        .or_else(|| parse_cir_fp(s).map(CirComplexComponent::Float))
-}
-
-pub(super) fn parse_cir_const_array(s: &str) -> Option<Vec<u8>> {
-    let s = s.trim_start();
-    if !s.starts_with("#cir.const_array<\"") {
-        return None;
-    }
-    let start = s.find('"')? + 1;
-    let rest = &s[start..];
-    let end = rest.find('"')?;
-    Some(decode_cir_string(&rest[..end]))
-}
-
-/// Parse the numeric form `#cir.const_array<[#cir.int<1> : !s32i, ...]>` into
-/// per-element Rust literals. Returns `None` for the string form (handled by
-/// [`parse_cir_const_array`]) or any element we cannot render.
-pub(super) fn parse_cir_const_array_elems(s: &str) -> Option<Vec<Expr>> {
-    let s = s.trim_start();
-    if !s.starts_with("#cir.const_array<[") {
-        return None;
-    }
-    let open = s.find('[')?;
-    let close = s.rfind(']')?;
-    let inner = &s[open + 1..close];
-    split_top_level(inner, ',')
-        .into_iter()
-        .map(str::trim)
-        .filter(|part| !part.is_empty())
-        .map(|part| {
-            if is_cir_aggregate_init(part) {
-                return None; // array of aggregates → render_const_value handles it
-            }
-            parse_cir_scalar_expr(part)
-        })
-        .collect()
-}
-
-pub(super) fn parse_cir_block_addr_labels(s: &str) -> Option<Vec<String>> {
-    let s = s.trim_start();
-    if !s.starts_with("#cir.const_array<[") {
-        return None;
-    }
-    let open = s.find('[')?;
-    let close = s.rfind(']')?;
-    let mut labels = Vec::new();
-    for part in split_top_level(&s[open + 1..close], ',') {
-        let part = part.trim();
-        if part.is_empty() {
-            continue;
-        }
-        if !part.contains("#cir.block_addr_info<") {
-            return None;
-        }
-        let start = part.find('"')? + 1;
-        let rest = &part[start..];
-        let end = rest.find('"')?;
-        labels.push(rest[..end].to_string());
-    }
-    (!labels.is_empty()).then_some(labels)
-}
-
-/// A `cir.global` initializer that is a struct/union or nested-aggregate array,
-/// rendered on demand by [`FunctionLowerer::render_const_value_expr`].
-pub(super) fn is_cir_aggregate_init(raw: &str) -> bool {
-    let raw = raw.trim_start();
-    raw.starts_with("#cir.const_record<") || raw.starts_with("#cir.const_array<[")
 }
 
 pub(super) fn decode_cir_string(s: &str) -> Vec<u8> {
@@ -653,65 +409,4 @@ pub(super) fn sanitize_ident(s: &str) -> Ident {
         out.push('_');
     }
     Ident::from(out)
-}
-
-pub(super) fn split_top_level_arrow(s: &str) -> Option<(&str, &str)> {
-    let mut angle = 0usize;
-    let mut paren = 0usize;
-    let bytes = s.as_bytes();
-    let mut i = 0usize;
-    while i + 1 < bytes.len() {
-        match bytes[i] as char {
-            '<' => angle += 1,
-            '>' if i > 0 && bytes[i - 1] == b'-' => {}
-            '>' => angle = angle.saturating_sub(1),
-            '(' => paren += 1,
-            ')' => paren = paren.saturating_sub(1),
-            '-' if bytes[i + 1] == b'>' && angle == 0 && paren == 0 => {
-                return Some((&s[..i], &s[i + 2..]));
-            }
-            _ => {}
-        }
-        i += 1;
-    }
-    None
-}
-
-pub(super) fn split_top_level(s: &str, delimiter: char) -> Vec<&str> {
-    let mut parts = Vec::new();
-    let mut start = 0usize;
-    let mut angle = 0usize;
-    let mut paren = 0usize;
-    let mut prev = '\0';
-    for (i, c) in s.char_indices() {
-        match c {
-            '<' => angle += 1,
-            '>' if prev == '-' => {}
-            '>' => angle = angle.saturating_sub(1),
-            '(' => paren += 1,
-            ')' => paren = paren.saturating_sub(1),
-            c if c == delimiter && angle == 0 && paren == 0 => {
-                parts.push(&s[start..i]);
-                start = i + c.len_utf8();
-            }
-            _ => {}
-        }
-        prev = c;
-    }
-    parts.push(&s[start..]);
-    parts
-}
-
-pub(super) fn split_record_member_types(body: &str) -> Vec<&str> {
-    split_top_level(body, ',')
-        .into_iter()
-        .map(|field_ty| {
-            let field_ty = field_ty.trim();
-            field_ty
-                .strip_prefix("data ")
-                .or_else(|| field_ty.strip_prefix("pad "))
-                .or_else(|| field_ty.strip_prefix("empty "))
-                .unwrap_or(field_ty)
-        })
-        .collect()
 }

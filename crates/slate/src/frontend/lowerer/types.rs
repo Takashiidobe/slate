@@ -1,7 +1,7 @@
 use super::*;
 use clang_ir::ast::{
-    FloatKind as CirFloatKind, RecordKind as CirRecordKind, RecordMemberKind as CirRecordMemberKind,
-    StructType,
+    FloatKind as CirFloatKind, RecordKind as CirRecordKind,
+    RecordMemberKind as CirRecordMemberKind, StructType,
 };
 
 pub(super) fn rust_type(cir_ty: &CirType) -> Type {
@@ -249,7 +249,10 @@ fn record_name_matches_va_list(name: &str) -> bool {
     name == "__va_list_tag" || name == "__va_list" || name == "__builtin_va_list"
 }
 
-pub(super) fn is_cir_va_list_record_type(ty: &CirType, aliases: &BTreeMap<String, CirType>) -> bool {
+pub(super) fn is_cir_va_list_record_type(
+    ty: &CirType,
+    aliases: &BTreeMap<String, CirType>,
+) -> bool {
     match ty {
         CirType::Struct(s) => s.name.as_deref().is_some_and(record_name_matches_va_list),
         CirType::Named(name) => match aliases.get(name) {
@@ -334,9 +337,7 @@ pub(super) fn function_type_contains_va_list(ty: &CirType) -> bool {
         }
     }
     match ty {
-        CirType::CirFunc { inputs, output, .. } => {
-            inputs.iter().any(walk) || walk(output)
-        }
+        CirType::CirFunc { inputs, output, .. } => inputs.iter().any(walk) || walk(output),
         _ => false,
     }
 }
@@ -455,7 +456,10 @@ pub(super) fn parse_cir_vector_type(ty: &CirType) -> Option<(&CirType, u64)> {
 }
 
 pub(super) fn parse_rust_array_type(ty: &str) -> Option<(&str, u64)> {
-    let inner = ty.trim().strip_prefix('[').and_then(|s| s.strip_suffix(']'))?;
+    let inner = ty
+        .trim()
+        .strip_prefix('[')
+        .and_then(|s| s.strip_suffix(']'))?;
     let (element, len) = inner.rsplit_once(';')?;
     Some((element.trim(), len.trim().parse().ok()?))
 }
@@ -535,7 +539,10 @@ pub(super) fn cir_ptr_pointee(ty: &CirType) -> Option<&CirType> {
     }
 }
 
-pub(super) fn anon_alias_key<'a>(ty: &'a CirType, aliases: &BTreeMap<String, CirType>) -> Option<&'a str> {
+pub(super) fn anon_alias_key<'a>(
+    ty: &'a CirType,
+    aliases: &BTreeMap<String, CirType>,
+) -> Option<&'a str> {
     let CirType::Named(name) = ty else {
         return None;
     };
@@ -890,7 +897,10 @@ pub(super) fn cir_record_base_name(name: &str) -> &str {
     }
 }
 
-pub(super) fn any_alias_key<'a>(ty: &'a CirType, aliases: &BTreeMap<String, CirType>) -> Option<&'a str> {
+pub(super) fn any_alias_key<'a>(
+    ty: &'a CirType,
+    aliases: &BTreeMap<String, CirType>,
+) -> Option<&'a str> {
     let CirType::Named(name) = ty else {
         return None;
     };

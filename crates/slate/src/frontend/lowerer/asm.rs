@@ -208,7 +208,7 @@ pub(super) fn translate_asm_template(
     template: &str,
     slot_to_rust: &[usize],
     constraints: &[&str],
-    types: &[&str],
+    types: &[Type],
 ) -> Option<String> {
     let mut translated = String::new();
     let mut referenced_operands = BTreeSet::new();
@@ -271,7 +271,7 @@ pub(super) fn translate_asm_template(
                     .ok()
                     .and_then(|output| constraints.get(output))
                     .is_some_and(|output| output.contains('r')))
-            && let Some(modifier) = rust_asm_register_modifier(types.get(slot).copied()?)
+            && let Some(modifier) = rust_asm_register_modifier(types.get(slot)?)
         {
             translated.push(':');
             translated.push(modifier);
@@ -294,7 +294,7 @@ pub(super) fn translate_asm_template(
                 .ok()
                 .and_then(|output| constraints.get(output))
                 .is_some_and(|output| output.contains('r')))
-            && let Some(modifier) = rust_asm_register_modifier(types.get(source_slot).copied()?)
+            && let Some(modifier) = rust_asm_register_modifier(types.get(source_slot)?)
         {
             translated.push(':');
             translated.push(modifier);
@@ -304,15 +304,8 @@ pub(super) fn translate_asm_template(
     Some(translated)
 }
 
-pub(super) fn rust_asm_register_modifier(cir_ty: &str) -> Option<char> {
-    let bits = cir_ty
-        .trim()
-        .strip_prefix("!s")
-        .or_else(|| cir_ty.trim().strip_prefix("!u"))?
-        .strip_suffix('i')?
-        .parse::<u16>()
-        .ok()?;
-    match bits {
+pub(super) fn rust_asm_register_modifier(ty: &Type) -> Option<char> {
+    match int_bits(&ty.render())? {
         8 => Some('l'),
         16 => Some('x'),
         32 => Some('e'),

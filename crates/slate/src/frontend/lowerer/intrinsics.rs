@@ -104,14 +104,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 return false;
             }
         }
-        let result_types: Vec<&CirType> = if output_count == 0 {
+        let result_types: Vec<CirType> = if output_count == 0 {
             Vec::new()
         } else {
             let Some(result_types) = asm_output_types(op, &self.parent.aliases, output_count)
             else {
                 return false;
             };
-            result_types
+            result_types.into_iter().cloned().collect()
         };
         let operand_types = op_operand_types(op);
         if operand_types.len() != op.operands.len() {
@@ -146,13 +146,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         let mut template_constraints = constraints.clone();
         template_constraints.extend(std::iter::repeat_n("X", label_count));
-        let void_ty = CirType::Void;
-        let mut template_types = result_types
+        let mut template_types: Vec<Type> = result_types
             .iter()
-            .copied()
             .chain(operand_types.iter())
-            .collect::<Vec<_>>();
-        template_types.extend(std::iter::repeat_n(&void_ty, label_count));
+            .map(|ty| self.parent.rust_type(ty))
+            .collect();
+        template_types.extend(std::iter::repeat_n(Type::Unit, label_count));
         let Some(template) = translate_asm_template(
             &template,
             &slot_to_rust,
@@ -170,7 +169,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 || op
                     .results
                     .iter()
-                    .any(|result| !self.asm_output_places.contains_key(result)))
+                    .any(|(result, _)| !self.asm_output_places.contains_key(result)))
         {
             self.parent
                 .ctx
@@ -182,7 +181,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             let direct_output = op
                 .results
                 .get(output_index)
-                .and_then(|result| self.asm_output_places.get(result))
+                .and_then(|(result, _)| self.asm_output_places.get(result))
                 .cloned();
             let (output, output_name) = if let Some(output) = direct_output {
                 (output, None)
@@ -269,14 +268,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             raw: false,
         })));
         if output_count == op.results.len() {
-            for ((result, output), name) in op.results.iter().zip(output_exprs).zip(output_names) {
+            for (((result, _), output), name) in
+                op.results.iter().zip(output_exprs).zip(output_names)
+            {
                 self.values.insert(result.clone(), Val::Expr(output));
                 if let Some(name) = name {
                     self.immutable_temps.insert(name);
                 }
             }
         } else {
-            self.asm_outputs.insert(op.results[0].clone(), output_exprs);
+            self.asm_outputs
+                .insert(op.results[0].0.clone(), output_exprs);
             self.immutable_temps
                 .extend(output_names.into_iter().flatten());
         }
@@ -284,14 +286,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_eh_setjmp(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         self.materialize_expr(result, Expr::Value(RustValue::I64(0)), op_result_type(op));
     }
 
     pub(super) fn lower_unsupported_value(&mut self, op: &Op, note: &str) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             self.push_stmt(Stmt::Expr(Expr::Macro {
                 name: "panic".into(),
                 args: vec![Expr::Str(format!("unsupported CIR op: {note}"))],
@@ -350,14 +352,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             "x86.sse2.pause" | "x86.sse2.lfence" | "x86.sse2.mfence" | "x86.sse.sfence"
         ) {
             self.push_stmt(Stmt::Expr(call));
-        } else if let Some(result) = op.results.first() {
+        } else if let Some((result, _)) = op.results.first() {
             self.materialize_expr(result, call, op_result_type(op));
         }
         true
     }
 
     pub(super) fn lower_x86_rdtscp(&mut self, op: &Op) -> bool {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return false;
         };
         let Some(result_ty) = op_result_type(op) else {
@@ -457,7 +459,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_vec_extract(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         if op.operands.len() < 2 {
@@ -477,7 +479,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_vec_insert(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         if op.operands.len() < 3 {
@@ -516,7 +518,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_vec_shuffle(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         if op.operands.len() < 2 {
@@ -552,7 +554,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_vec_create(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         let elems = op.operands.iter().map(|v| self.operand_expr(v)).collect();
@@ -560,7 +562,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_vec_splat(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         let Some(value) = op.operands.first() else {
@@ -579,7 +581,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_vec_cmp(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         if op.operands.len() < 2 {
@@ -648,7 +650,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_opaque_pointer(&mut self, op: &Op, non_null: bool) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         let result_ty = op_result_type(op);
@@ -670,7 +672,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_is_constant(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         let Some(value) = op.operands.first() else {
@@ -695,7 +697,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_objsize(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         let result_ty = op_result_type(op);
@@ -707,21 +709,21 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(result, expr, result_ty);
     }
 
-    pub(super) fn bool_or_int_literal(&self, value: bool, cir_ty: Option<&str>) -> Expr {
+    pub(super) fn bool_or_int_literal(&self, value: bool, cir_ty: Option<&CirType>) -> Expr {
         match cir_ty.map(|ty| self.parent.rust_type(ty)) {
             Some(Type::Prim(Prim::Bool)) => Expr::Value(RustValue::Bool(value)),
             _ => Expr::Value(RustValue::I64(if value { 1 } else { 0 })),
         }
     }
 
-    pub(super) fn zero_literal(&self, cir_ty: Option<&str>) -> Expr {
+    pub(super) fn zero_literal(&self, cir_ty: Option<&CirType>) -> Expr {
         match cir_ty.map(|ty| self.parent.rust_type(ty)) {
             Some(Type::Prim(Prim::Bool)) => Expr::Value(RustValue::Bool(false)),
             _ => Expr::Value(RustValue::I64(0)),
         }
     }
 
-    pub(super) fn max_literal(&self, cir_ty: Option<&str>) -> Expr {
+    pub(super) fn max_literal(&self, cir_ty: Option<&CirType>) -> Expr {
         match cir_ty.map(|ty| self.parent.rust_type(ty)) {
             Some(Type::Prim(Prim::Bool)) => Expr::Value(RustValue::Bool(true)),
             Some(Type::Prim(prim)) => Expr::Path(Path::new([

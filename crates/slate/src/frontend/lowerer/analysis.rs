@@ -202,7 +202,7 @@ pub(super) fn enum_locals_requiring_integer_storage(
         .filter(|op| op.kind() == CirOpKind::Const)
         .filter_map(|op| {
             let (result, _) = op.results.first()?;
-            let value = attr_str(op, "value").and_then(parse_cir_int)?;
+            let value = op.attr("value").and_then(Attr::as_int)?;
             Some((result.as_str(), value))
         })
         .collect();
@@ -227,7 +227,7 @@ pub(super) fn enum_locals_requiring_integer_storage(
 
 fn collect_global_view_symbols(attr: &Attr, out: &mut Vec<String>) {
     match attr {
-        Attr::GlobalView { symbol, .. } => out.push(symbol.trim_start_matches('@').to_string()),
+        Attr::GlobalView { symbol, .. } => out.push(symbol.clone()),
         Attr::ConstArray {
             data: clang_ir::ast::ConstArrayData::Elements(elements),
             ..
@@ -292,9 +292,7 @@ pub(super) fn module_requires_native_va_list(
             has_va_list && (c_abi_functions.contains(name) || (emit_pub && externally_exported(op)))
         }
         CirOpKind::Call => {
-            attr_str(op, "callee")
-                .map(|callee| callee.trim_start_matches('@'))
-                .is_some_and(|callee| !defined_functions.contains(callee))
+            attr_symbol_ref(op, "callee").is_some_and(|callee| !defined_functions.contains(callee))
                 && op_operand_types(op)
                     .iter()
                     .any(|ty| is_cir_va_list_type(ty, aliases))
