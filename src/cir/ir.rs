@@ -4,7 +4,9 @@
 //! dispatch classifier) stays here since it's specific to how the lowerer
 //! organizes its `cir.*` handlers, not something the generic op-tree needs.
 
-pub use clang_ir::ast::{Attribute as Attr, Block, Module, Operation as Op, Region, Type as CirType};
+pub use clang_ir::ast::{
+    Attribute as Attr, Block, Module, Operation as Op, Region, Type as CirType,
+};
 
 /// Slate's op-name dispatch key. Lives here (not in `clang-ir`) because it's
 /// keyed off exactly the `cir.*` handler split the lowerer uses, not a

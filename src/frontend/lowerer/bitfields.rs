@@ -37,7 +37,7 @@ pub(super) fn collect_bitfield_storages(module: &Module) -> BitfieldStorages {
         let mut members = BTreeMap::new();
         collect_function_bitfields(
             &function.regions,
-            &module.type_aliases,
+            module,
             &mut members,
             &mut storages,
         );
@@ -47,10 +47,11 @@ pub(super) fn collect_bitfield_storages(module: &Module) -> BitfieldStorages {
 
 fn collect_function_bitfields(
     regions: &[Region],
-    aliases: &BTreeMap<String, CirType>,
+    module: &Module,
     members: &mut BTreeMap<String, MemberStorage>,
     storages: &mut BitfieldStorages,
 ) {
+    let aliases = &module.type_aliases;
     for region in regions {
         for block in &region.blocks {
             for op in &block.ops {
@@ -64,7 +65,7 @@ fn collect_function_bitfields(
                 if matches!(op.kind(), CirOpKind::GetBitfield | CirOpKind::SetBitfield)
                     && let Some(ptr) = op.operands.first()
                     && let Some(member) = members.get(ptr)
-                    && let Some((size, offset)) = bitfield_info(op)
+                    && let Some((size, offset)) = bitfield_info(op, module)
                     && let Some(result_ty) = op_result_type(op)
                 {
                     let key = (member.record.clone(), member.index);
@@ -87,7 +88,7 @@ fn collect_function_bitfields(
                             offset,
                         });
                 }
-                collect_function_bitfields(&op.regions, aliases, members, storages);
+                collect_function_bitfields(&op.regions, module, members, storages);
             }
         }
     }
@@ -128,9 +129,9 @@ fn member_storage(op: &Op, aliases: &BTreeMap<String, CirType>) -> Option<Member
     })
 }
 
-fn bitfield_info(op: &Op) -> Option<(u32, u32)> {
-    match op.attr("bitfield_info") {
-        Some(Attr::BitfieldInfo { size, offset, .. }) => Some((*size, *offset)),
+fn bitfield_info(op: &Op, module: &Module) -> Option<(u32, u32)> {
+    match module.resolve_attr(op.attr("bitfield_info")?) {
+        Attr::BitfieldInfo { size, offset, .. } => Some((*size, *offset)),
         _ => None,
     }
 }

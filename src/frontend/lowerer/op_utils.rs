@@ -1,9 +1,7 @@
 use super::*;
 
 pub(super) fn attr_symbol_ref<'a>(op: &'a Op, key: &str) -> Option<&'a str> {
-    attr_str(op, key)
-        .and_then(|value| value.trim().strip_prefix('@'))
-        .map(|value| value.trim_matches('"'))
+    op.attr(key).and_then(Attr::as_symbol_ref)
 }
 
 pub(super) fn attr_int(op: &Op, key: &str) -> Option<i64> {

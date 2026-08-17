@@ -10,7 +10,6 @@ use crate::backend::rust_ast::{
     UsedKind, Visibility,
 };
 use crate::cir::ir::{Attr, Block, CirOpKind, CirType, Module, Op, OpKindExt, Region};
-use clang_ir::ast::ConstArrayData;
 use crate::ctx::Ctx;
 use crate::frontend::c_ast::{
     CType, EnumConstRef, FloatingLiteralFact, FloatingLiteralLoc, LayoutQuery, Loc, MacroConst,
@@ -18,6 +17,7 @@ use crate::frontend::c_ast::{
 };
 use crate::frontend::function_abi::repair_function_signature;
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
+use clang_ir::ast::ConstArrayData;
 use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
 
 mod analysis;
@@ -134,9 +134,10 @@ fn widen_flexible_array_members(
         }
         let Some(len) = op.attr("initial_value").and_then(|attr| match attr {
             Attr::ConstRecord { ty, .. } => match ty {
-                CirType::Struct(s) => s.members.last().and_then(|(_, member_ty)| {
-                    parse_cir_array_type(member_ty).map(|(_, len)| len)
-                }),
+                CirType::Struct(s) => s
+                    .members
+                    .last()
+                    .and_then(|(_, member_ty)| parse_cir_array_type(member_ty).map(|(_, len)| len)),
                 _ => None,
             },
             _ => None,
@@ -427,7 +428,7 @@ pub fn defined_globals(module: &Module) -> Vec<String> {
         .iter()
         .filter(|op| {
             op.kind() == CirOpKind::Global
-                && attr_str(op, "initial_value").is_some()
+                && op.attr("initial_value").is_some()
                 && linkage_is_external(op)
         })
         .filter_map(|op| attr_str(op, "sym_name").map(|name| sanitize_ident(name).into_string()))
@@ -437,7 +438,7 @@ pub fn defined_globals(module: &Module) -> Vec<String> {
 pub fn declared_globals(module: &Module) -> Vec<String> {
     module_ops(module)
         .iter()
-        .filter(|op| op.kind() == CirOpKind::Global && attr_str(op, "initial_value").is_none())
+        .filter(|op| op.kind() == CirOpKind::Global && op.attr("initial_value").is_none())
         .filter_map(|op| attr_str(op, "sym_name").map(|name| sanitize_ident(name).into_string()))
         .collect()
 }
@@ -554,7 +555,9 @@ fn attr_mentions_f128(attr: &Attr) -> bool {
         | Attr::Float { ty: Some(ty), .. }
         | Attr::Dialect { ty: Some(ty), .. } => cir_type_mentions_f128(ty),
         Attr::BitfieldInfo { storage_type, .. } => cir_type_mentions_f128(storage_type),
-        Attr::ConstComplex { real, imag, .. } => attr_mentions_f128(real) || attr_mentions_f128(imag),
+        Attr::ConstComplex { real, imag, .. } => {
+            attr_mentions_f128(real) || attr_mentions_f128(imag)
+        }
         Attr::Array(items) => items.iter().any(attr_mentions_f128),
         Attr::Dict(entries) => entries.iter().any(|(_, v)| attr_mentions_f128(v)),
         _ => false,
@@ -564,10 +567,7 @@ fn attr_mentions_f128(attr: &Attr) -> bool {
 pub fn required_features(module: &Module) -> BTreeSet<Feature> {
     let mut features = BTreeSet::new();
     for op in module_ops(module) {
-        if op
-            .results
-            .iter()
-            .any(|(_, ty)| cir_type_mentions_f128(ty))
+        if op.results.iter().any(|(_, ty)| cir_type_mentions_f128(ty))
             || op
                 .properties
                 .iter()
@@ -2398,9 +2398,7 @@ impl __SlateVaArgs {
         let name = attr_str(op, "sym_name")?;
         let weak_alias_target = self.weak_aliases.values().any(|target| target == name);
         let function_type = attr_type(op, "function_type");
-        let (param_types, ret_ty) = function_type
-            .map(parse_function_type)
-            .unwrap_or_default();
+        let (param_types, ret_ty) = function_type.map(parse_function_type).unwrap_or_default();
         let entry = op.regions.first()?.blocks.first()?;
         let is_main = name == "main";
         let is_variadic = !is_main && function_type.is_some_and(function_type_is_variadic);
@@ -2492,7 +2490,8 @@ impl __SlateVaArgs {
                 }
                 self.variadic_defs.insert(name.to_string());
             }
-            let ret = Some(self.rust_type(ret_ty.as_ref().unwrap_or(&CirType::Void)));
+            let ret = Some(self.rust_type(ret_ty.as_ref().unwrap_or(&CirType::Void)))
+                .filter(|ty| !matches!(ty, Type::CLib(c) if *c == CLibType::VOID));
             (vis, abi, ret, Vec::<Stmt>::new())
         };
 
@@ -2851,9 +2850,10 @@ impl __SlateVaArgs {
                 ty: self.rust_type(ty),
             })
             .collect::<Vec<_>>();
-        let ret_ast = ret_ty.as_ref().map(|ty| self.rust_type(ty)).filter(|ty| {
-            !matches!(ty, Type::CLib(c) if *c == CLibType::VOID)
-        });
+        let ret_ast = ret_ty
+            .as_ref()
+            .map(|ty| self.rust_type(ty))
+            .filter(|ty| !matches!(ty, Type::CLib(c) if *c == CLibType::VOID));
         let identity = *self
             .known_functions
             .get(name)
@@ -3339,9 +3339,7 @@ impl __SlateVaArgs {
                                 let field_ty = self.c_record_field_type(&field.ty);
                                 let value = elements
                                     .get(i)
-                                    .and_then(|e| {
-                                        self.render_const_value_expr(&field_ty, e, facts)
-                                    })
+                                    .and_then(|e| self.render_const_value_expr(&field_ty, e, facts))
                                     .unwrap_or_else(|| self.default_value_expr(&field_ty));
                                 (sanitize_ident(&field.name).into_string(), value)
                             })
@@ -3435,8 +3433,7 @@ impl __SlateVaArgs {
                     })
                 }
             }
-            Attr::CirInt { text, .. }
-                if matches!(ty, Type::Custom(name) if self.enums.contains_key(name)) =>
+            Attr::CirInt { text, .. } if matches!(ty, Type::Custom(name) if self.enums.contains_key(name)) =>
             {
                 let Type::Custom(name) = ty else {
                     unreachable!()

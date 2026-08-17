@@ -21,19 +21,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     pub(super) fn alloca_group_is_lowerable(&self, ops: &[Op]) -> bool {
         ops.iter().all(|op| {
+            let Some((result, cir_ty)) = op.results.first() else {
+                return false;
+            };
             op.operands.is_empty()
-                && op
-                    .results
-                    .first()
-                    .is_some_and(|result| !self.forward_allocas.contains(result))
-                && !op
-                    .ty
-                    .as_deref()
-                    .is_some_and(|ty| ty.contains("__va_list_tag"))
-                && !matches!(
-                    self.pointee_type(op.ty.as_deref().unwrap_or("")),
-                    Some(Type::Custom(_))
-                )
+                && !self.forward_allocas.contains(result)
+                && !cir_ptr_pointee(cir_ty).is_some_and(|pointee| {
+                    is_cir_va_list_record_type(pointee, &self.parent.aliases)
+                })
+                && !matches!(self.pointee_type(cir_ty), Some(Type::Custom(_)))
         })
     }
 
@@ -46,12 +42,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let mut places = Vec::with_capacity(ops.len());
 
         for (field_index, op) in ops.iter().rev().enumerate() {
-            let Some(result) = op.results.first() else {
+            let Some((result, cir_ty)) = op.results.first() else {
                 return;
             };
-            let ty = self
-                .pointee_type(op.ty.as_deref().unwrap_or(""))
-                .unwrap_or(Type::Prim(Prim::I32));
+            let ty = self.pointee_type(cir_ty).unwrap_or(Type::Prim(Prim::I32));
             let alignment = attr_int(op, "alignment")
                 .and_then(|alignment| u32::try_from(alignment).ok())
                 .unwrap_or_else(|| type_alignment(&ty));
@@ -117,13 +111,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_alloca(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, cir_ty)) = op.results.first() else {
             return;
         };
         // a forwarded compiler temp carries one SSA value: its single store
         // records the value and its single load reads it back, so no local.
         if self.forward_allocas.contains(result) {
-            if let Some(ty) = self.pointee_type(op.ty.as_deref().unwrap_or("")) {
+            if let Some(ty) = self.pointee_type(cir_ty) {
                 self.slot_types.insert(result.clone(), ty);
             }
             return;
@@ -142,9 +136,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     _ => None,
                 })
             {
-                let ty = self
-                    .pointee_type(op.ty.as_deref().unwrap_or(""))
-                    .unwrap_or(Type::Prim(Prim::I32));
+                let ty = self.pointee_type(cir_ty).unwrap_or(Type::Prim(Prim::I32));
                 self.push_stmt(Stmt::Expr(Expr::MethodCall {
                     recv: Box::new(Expr::Var(name.into())),
                     method: "resize".into(),
@@ -160,12 +152,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         let name = self.unique_local_name(
-            sanitize_ident(attr_str(op, "name").unwrap_or(result)).into_string(),
+            sanitize_ident(attr_str(op, "name").unwrap_or(result.as_str())).into_string(),
         );
         if let Some(count) = op.operands.first() {
-            let ty = self
-                .pointee_type(op.ty.as_deref().unwrap_or(""))
-                .unwrap_or(Type::Prim(Prim::I32));
+            let ty = self.pointee_type(cir_ty).unwrap_or(Type::Prim(Prim::I32));
             self.values.insert(
                 result.clone(),
                 Val::Expr(Expr::MethodCall {
@@ -196,7 +186,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         let va_list_pointee = self
-            .pointee_type(op.ty.as_deref().unwrap_or(""))
+            .pointee_type(cir_ty)
             .filter(|ty| matches!(ty, Type::VaList) || is_boxed_va_args_type(ty));
         if self.va_allocas.contains(result) || va_list_pointee.is_some() {
             let ty = va_list_pointee.unwrap_or(if self.parent.va_list_boxed {
@@ -216,9 +206,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             });
             return;
         }
-        let mut ty = self
-            .pointee_type(op.ty.as_deref().unwrap_or(""))
-            .unwrap_or(Type::Prim(Prim::I32));
+        let mut ty = self.pointee_type(cir_ty).unwrap_or(Type::Prim(Prim::I32));
         if matches!(ty, Type::Prim(_))
             && let Some(enum_name) =
                 attr_str(op, "name").and_then(|c_name| self.local_enum_types.get(c_name))
@@ -264,17 +252,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.asm_outputs.insert(op.operands[1].clone(), outputs);
             return;
         }
-        let operand_types = op_operand_types(op.ty.as_deref().unwrap_or(""));
-        let value_ty = operand_types.first().copied();
+        let operand_types = op_operand_types(op);
+        let value_ty = operand_types.first();
         let ptr = &op.operands[1];
         let mut value = if value_ty.is_some_and(is_cir_function_pointer_type) {
             self.store_function_pointer_value(&op.operands[0], ptr, value_ty.unwrap())
-        } else if value_ty.is_some_and(|ty| ty.starts_with("!cir.ptr<")) {
+        } else if value_ty.is_some_and(|ty| matches!(ty, CirType::Ptr(_))) {
             self.pointer_operand_expr(&op.operands[0])
         } else {
             self.operand_expr(&op.operands[0])
         };
-        if value_ty.is_some_and(is_cir_va_list_value_type) {
+        if value_ty.is_some_and(|ty| is_cir_va_list_value_type(ty, &self.parent.aliases)) {
             value = Expr::MethodCall {
                 recv: Box::new(value),
                 method: "clone".into(),
@@ -402,7 +390,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_load(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
         let Some(ptr) = op.operands.first() else {
@@ -418,7 +406,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.lower_opaque_pointer(op, true);
             return;
         }
-        if op_result_type(op).is_some_and(is_cir_va_list_value_type)
+        if op_result_type(op).is_some_and(|ty| is_cir_va_list_value_type(ty, &self.parent.aliases))
             && let Some(place) = self.va_target_place(ptr)
         {
             self.va_places.insert(result.clone(), place.clone());
@@ -585,7 +573,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .or(Some(base))
     }
 
-    pub(super) fn global_array_decay_expr(&self, name: &str, result_ty: &str) -> Option<Expr> {
+    pub(super) fn global_array_decay_expr(&self, name: &str, result_ty: &CirType) -> Option<Expr> {
         let name = sanitize_ident(name).into_string();
         let ty = self
             .parent
@@ -619,45 +607,47 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_const(&mut self, op: &Op) {
-        let Some(result) = op.results.first() else {
+        let Some((result, _)) = op.results.first() else {
             return;
         };
-        let raw = attr_str(op, "value").unwrap_or("");
         // MLIR may print a const as an attribute alias (e.g. `#false`); expand it.
-        let raw = self
-            .parent
-            .aliases
-            .get(raw)
-            .cloned()
-            .unwrap_or_else(|| raw.to_string());
-        let raw = raw.as_str();
-        if let Some(value) = parse_cir_int(raw) {
+        let attr = op
+            .attr("value")
+            .map(|attr| self.parent.resolve_attr(attr).clone());
+        let result_ty = op_result_type(op);
+        let const_int = attr.as_ref().and_then(Attr::as_int);
+
+        if let Some(value) = const_int {
             self.const_int_values.insert(result.clone(), value);
         }
-        let result_ty = op_result_type(op);
-        if let Some(value) = parse_cir_int(raw)
+        if let Some(value) = const_int
             && let Some(expr) = self.next_layout_query_expr(value, result_ty)
         {
             self.materialize_expr(result, expr, result_ty);
             return;
         }
-        if let Some(value) = parse_cir_int(raw)
+        if let Some(value) = const_int
             && let Some(expr) = self.next_macro_const_expr(value, result_ty)
         {
             self.materialize_expr(result, expr, result_ty);
             return;
         }
-        if let Some(value) = parse_cir_int(raw)
+        if let Some(value) = const_int
             && let Some(expr) = self.next_enum_const_expr(op, value, result_ty)
         {
             self.materialize_expr(result, expr, result_ty);
             return;
         }
-        if let Some(value) = parse_cir_const_vector(raw) {
+        if let Some(Attr::ConstVector { elements, .. }) = &attr
+            && let Some(value) = const_vector_expr(elements)
+        {
             self.materialize_expr(result, value, result_ty);
             return;
         }
-        if let Some((re, im)) = parse_cir_const_complex(raw) {
+        if let Some(Attr::ConstComplex { real, imag, .. }) = &attr
+            && let Some(re) = complex_component_from_attr(real)
+            && let Some(im) = complex_component_from_attr(imag)
+        {
             let rust_ty = result_ty.map(|ty| self.parent.rust_type(ty));
             self.materialize_expr(
                 result,
@@ -666,18 +656,20 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             );
             return;
         }
-        if let Some(target) = parse_cir_global_view(raw)
+        if let Some(Attr::GlobalView {
+            symbol, indices, ..
+        }) = &attr
             && let Some(result_ty) = result_ty
             && let Some(value) = self.parent.global_view_init_expr(
-                target,
-                &parse_cir_global_view_indices(raw),
+                symbol,
+                indices,
                 &self.parent.rust_type(result_ty),
             )
         {
             self.materialize_expr(result, value, Some(result_ty));
             return;
         }
-        if let Some(b) = parse_cir_bool(raw) {
+        if let Some(b) = attr.as_ref().and_then(Attr::as_bool) {
             self.materialize_expr(result, Expr::Value(RustValue::Bool(b)), result_ty);
             return;
         }
@@ -686,11 +678,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             && let Type::Prim(prim) = self.parent.rust_type(result_ty.unwrap())
         {
             let value = if signed {
-                parse_cir_int(raw)
+                const_int
                     .filter(|value| i32::try_from(*value).is_err())
                     .map(|value| Expr::Value(RustValue::TypedInt(value, prim)))
             } else {
-                parse_cir_uint128(raw)
+                attr.as_ref()
+                    .and_then(Attr::as_u128)
                     .filter(|value| i32::try_from(*value).is_err())
                     .map(|value| Expr::Value(RustValue::TypedUInt(value, prim)))
             };
@@ -699,14 +692,19 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 return;
             }
         }
-        if let Some(digits) = cir_int_digits(raw)
+        if let Some(Attr::CirInt { text, .. }) = &attr
             && let Some(rust_ty) = result_ty.map(|ty| self.parent.rust_type(ty))
-            && let Some(expr) = bitint_from_decimal_str_expr(&rust_ty, digits)
+            && let Some(expr) = bitint_from_decimal_str_expr(&rust_ty, text)
         {
             self.materialize_expr(result, expr, result_ty);
             return;
         }
-        if raw.starts_with("#cir.ptr<null>") {
+        let is_ptr_null = matches!(
+            &attr,
+            Some(Attr::Dialect { dialect, mnemonic, raw: Some(raw), .. })
+                if dialect == "cir" && mnemonic == "ptr" && raw.trim() == "null"
+        );
+        if is_ptr_null {
             let value = if result_ty.is_some_and(is_cir_function_pointer_type) {
                 self.function_pointer_null_values.insert(result.clone());
                 Expr::Value(RustValue::None)
@@ -723,18 +721,31 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.materialize_expr(result, value, result_ty);
             return;
         }
-        let macro_expr = if result_ty == Some("!cir.f128") || result_ty.is_some_and(is_long_double)
-        {
+        let is_f128 = matches!(
+            result_ty,
+            Some(CirType::Float(clang_ir::ast::FloatKind::F128))
+        );
+        let macro_expr = if is_f128 || result_ty.is_some_and(is_long_double) {
             self.next_long_double_macro_const_expr(op, result_ty)
-        } else if result_ty == Some("!cir.float") || result_ty == Some("!cir.double") {
+        } else if matches!(
+            result_ty,
+            Some(CirType::Float(
+                clang_ir::ast::FloatKind::F32 | clang_ir::ast::FloatKind::F64
+            ))
+        ) {
             self.next_float_macro_const_expr(op, result_ty)
         } else {
             None
         };
         let value = if let Some(expr) = macro_expr {
             expr
-        } else if result_ty == Some("!cir.f128") || result_ty.is_some_and(is_quad_long_double) {
-            parse_cir_f128_expr(raw).unwrap_or_else(|| Expr::HexFloat("0.0f128".into()))
+        } else if is_f128 || result_ty.is_some_and(is_quad_long_double) {
+            attr.as_ref()
+                .and_then(|attr| match attr {
+                    Attr::CirFloat { text, .. } => f128_from_text(text),
+                    _ => None,
+                })
+                .unwrap_or_else(|| Expr::HexFloat("0.0f128".into()))
         } else if result_ty.is_some_and(is_long_double) {
             if !crate::cir::emit::uses_f64_long_double_abi()
                 && let Some(expr) = floating_literal.as_ref().and_then(|fact| {
@@ -750,9 +761,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 } else {
                     typed_fp_literal_expr(Some(&crate::backend::rust_ast::Type::LongDouble), fp)
                 }
-            } else if let Some(expr) = long_double_raw_expr(raw) {
+            } else if let Some(expr) = attr.as_ref().and_then(|attr| match attr {
+                Attr::CirFloat { text, .. } => long_double_from_text(text),
+                _ => None,
+            }) {
                 expr
-            } else if let Some(n) = parse_cir_int(raw) {
+            } else if let Some(n) = const_int {
                 Expr::Cast {
                     expr: Box::new(int_value_expr(n)),
                     ty: crate::backend::rust_ast::Type::Prim(Prim::F64),
@@ -761,7 +775,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 Expr::Value(0.0.into())
             }
         } else {
-            parse_cir_scalar_expr(raw).unwrap_or_else(|| {
+            attr.as_ref().and_then(scalar_attr_expr).unwrap_or_else(|| {
                 let rust_ty = result_ty.map(|ty| self.parent.rust_type(ty));
                 match rust_ty {
                     Some(ty @ Type::Custom(_)) => self.parent.default_value_expr(&ty),
@@ -775,7 +789,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     pub(super) fn next_layout_query_expr(
         &mut self,
         value: i128,
-        result_ty: Option<&str>,
+        result_ty: Option<&CirType>,
     ) -> Option<Expr> {
         let query = self.layout_queries.front()?;
         let expected = self.parent.layout_query_value(query)?;
@@ -797,7 +811,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     pub(super) fn next_macro_const_expr(
         &mut self,
         value: i128,
-        result_ty: Option<&str>,
+        result_ty: Option<&CirType>,
     ) -> Option<Expr> {
         let macro_const = self.macro_consts.front()?;
         let known = crate::frontend::macros::lookup(&macro_const.name)?;
@@ -821,7 +835,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     pub(super) fn next_float_macro_const_expr(
         &mut self,
         op: &Op,
-        result_ty: Option<&str>,
+        result_ty: Option<&CirType>,
     ) -> Option<Expr> {
         let macro_const = self.macro_consts.front()?;
         let known = crate::frontend::macros::lookup(&macro_const.name)?;
@@ -833,21 +847,26 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         {
             return None;
         }
+        let is_f32 = matches!(
+            result_ty,
+            Some(CirType::Float(clang_ir::ast::FloatKind::F32))
+        );
         let bits: u64 = match known.value {
-            crate::frontend::macros::MacroValue::Float { rust_bits, .. }
-                if result_ty == Some("!cir.float") =>
-            {
+            crate::frontend::macros::MacroValue::Float { rust_bits, .. } if is_f32 => {
                 u64::from(rust_bits)
             }
             crate::frontend::macros::MacroValue::Double { rust_bits, .. }
-                if result_ty == Some("!cir.double") =>
+                if matches!(
+                    result_ty,
+                    Some(CirType::Float(clang_ir::ast::FloatKind::F64))
+                ) =>
             {
                 rust_bits
             }
             _ => return None,
         };
         self.macro_consts.pop_front();
-        let func = if result_ty == Some("!cir.float") {
+        let func = if is_f32 {
             "f32::from_bits"
         } else {
             "f64::from_bits"
@@ -863,7 +882,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         &mut self,
         op: &Op,
         value: i128,
-        result_ty: Option<&str>,
+        result_ty: Option<&CirType>,
     ) -> Option<Expr> {
         let enum_const = self.enum_consts.front()?;
         if enum_const.value as i128 != value {
@@ -894,7 +913,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     pub(super) fn next_long_double_macro_const_expr(
         &mut self,
         op: &Op,
-        result_ty: Option<&str>,
+        result_ty: Option<&CirType>,
     ) -> Option<Expr> {
         let macro_const = self.macro_consts.front()?;
         let known = crate::frontend::macros::lookup(&macro_const.name)?;
@@ -922,7 +941,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 args: vec![Expr::Value(RustValue::I64(rust_bits as i64))],
             });
         }
-        if result_ty == Some("!cir.f128") || result_ty.is_some_and(is_quad_long_double) {
+        if matches!(
+            result_ty,
+            Some(CirType::Float(clang_ir::ast::FloatKind::F128))
+        ) || result_ty.is_some_and(is_quad_long_double)
+        {
             return Some(Expr::HexFloat(format!(
                 "f128::from_bits(0x{:032x})",
                 u128::from(rust_bits)
