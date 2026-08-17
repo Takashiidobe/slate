@@ -79,6 +79,23 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BUint<BITS, LIMB
         Self::from_limbs(self.to_limbs().wrapping_mul(rhs.to_limbs()))
     }
 
+    pub fn overflowing_add(self, rhs: Self) -> (Self, bool) {
+        let out = self.wrapping_add(rhs);
+        (out, out < self)
+    }
+
+    pub fn overflowing_sub(self, rhs: Self) -> (Self, bool) {
+        (self.wrapping_sub(rhs), self < rhs)
+    }
+
+    pub fn overflowing_mul(self, rhs: Self) -> (Self, bool) {
+        if self == Self::ZERO || rhs == Self::ZERO {
+            return (Self::ZERO, false);
+        }
+        let out = self.wrapping_mul(rhs);
+        (out, out.wrapping_div(self) != rhs)
+    }
+
     pub const fn wrapping_div(self, rhs: Self) -> Self {
         Self::from_limbs(self.to_limbs().wrapping_div(rhs.to_limbs()))
     }
@@ -355,6 +372,45 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BInt<BITS, LIMBS
 
     pub const fn wrapping_mul(self, rhs: Self) -> Self {
         Self::from_limbs(self.to_limbs().wrapping_mul(rhs.to_limbs()))
+    }
+
+    fn min_value() -> Self {
+        let sign_limb = BIntLimbs::<BITS, LIMBS>::SIGN_LIMB;
+        let sign_bit = BIntLimbs::<BITS, LIMBS>::SIGN_BIT;
+        let mut limbs = [0u64; LIMBS];
+        if sign_limb < LIMBS {
+            limbs[sign_limb] = 1u64 << sign_bit;
+        }
+        Self::from_limbs(BIntLimbs {
+            bits: BUintLimbs::masked(limbs),
+        })
+    }
+
+    pub fn overflowing_add(self, rhs: Self) -> (Self, bool) {
+        let out = self.wrapping_add(rhs);
+        let lhs_neg = self.to_limbs().is_negative();
+        let overflow =
+            lhs_neg == rhs.to_limbs().is_negative() && lhs_neg != out.to_limbs().is_negative();
+        (out, overflow)
+    }
+
+    pub fn overflowing_sub(self, rhs: Self) -> (Self, bool) {
+        let out = self.wrapping_sub(rhs);
+        let lhs_neg = self.to_limbs().is_negative();
+        let overflow =
+            lhs_neg != rhs.to_limbs().is_negative() && lhs_neg != out.to_limbs().is_negative();
+        (out, overflow)
+    }
+
+    pub fn overflowing_mul(self, rhs: Self) -> (Self, bool) {
+        if self == Self::ZERO || rhs == Self::ZERO {
+            return (Self::ZERO, false);
+        }
+        let out = self.wrapping_mul(rhs);
+        if self == Self::from_i128(-1) {
+            return (out, rhs == Self::min_value());
+        }
+        (out, out.wrapping_div(self) != rhs)
     }
 
     pub const fn wrapping_neg(self) -> Self {
