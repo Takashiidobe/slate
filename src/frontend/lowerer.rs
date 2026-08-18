@@ -4110,6 +4110,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn lower_op(&mut self, op: &Op) {
+        if let clang_ir::model::Instruction::Binary {
+            op: bop, saturated, ..
+        } = clang_ir::model::instruction::lower_op(op)
+        {
+            self.lower_binary_family(op, bop, saturated);
+            return;
+        }
         match op.kind() {
             CirOpKind::Alloca => self.lower_alloca(op),
             CirOpKind::Store => self.lower_store(op),
@@ -4121,21 +4128,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::MulOverflow => self.lower_overflow_arith(op, "overflowing_mul"),
             CirOpKind::DivOverflow => self.lower_overflow_arith(op, "overflowing_div"),
             CirOpKind::RemOverflow => self.lower_overflow_arith(op, "overflowing_rem"),
-            CirOpKind::Add if attr_bool(op, "saturated") => {
-                self.lower_saturating_arith(op, "saturating_add")
-            }
-            CirOpKind::Sub if attr_bool(op, "saturated") => {
-                self.lower_saturating_arith(op, "saturating_sub")
-            }
-            CirOpKind::Add => self.lower_int_arith(op, BinOp::Add),
-            CirOpKind::Sub => self.lower_int_arith(op, BinOp::Sub),
-            CirOpKind::Mul => self.lower_int_arith(op, BinOp::Mul),
-            CirOpKind::Div => self.lower_int_arith(op, BinOp::Div),
-            CirOpKind::Rem => self.lower_int_arith(op, BinOp::Rem),
-            CirOpKind::And => self.lower_int_arith(op, BinOp::BitAnd),
             CirOpKind::Asm => self.lower_asm(op),
-            CirOpKind::Or => self.lower_int_arith(op, BinOp::BitOr),
-            CirOpKind::Xor => self.lower_int_arith(op, BinOp::BitXor),
             CirOpKind::Bitreverse => self.lower_unary_method(op, "reverse_bits"),
             CirOpKind::BlockAddress => self.lower_opaque_pointer(op, true),
             CirOpKind::ByteSwap => self.lower_unary_method(op, "swap_bytes"),
@@ -4198,10 +4191,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::Trap => self.lower_trap(),
             CirOpKind::Trunc => self.lower_unary_method(op, "trunc"),
             CirOpKind::Unreachable => self.lower_unreachable(),
-            CirOpKind::Fadd => self.lower_binary(op, BinOp::Add),
-            CirOpKind::Fsub => self.lower_binary(op, BinOp::Sub),
-            CirOpKind::Fmul => self.lower_binary(op, BinOp::Mul),
-            CirOpKind::Fdiv => self.lower_binary(op, BinOp::Div),
             CirOpKind::ComplexAdd => self.lower_complex_add(op),
             CirOpKind::ComplexSub => self.lower_complex_sub(op),
             CirOpKind::ComplexMul => self.lower_complex_mul(op),

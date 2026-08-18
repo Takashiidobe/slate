@@ -1,5 +1,27 @@
 use super::*;
 use crate::function_identity;
+use clang_ir::model::BinaryOp;
+
+impl<'a, 'b> FunctionLowerer<'a, 'b> {
+    pub(super) fn lower_binary_family(&mut self, op: &Op, bop: BinaryOp, saturated: bool) {
+        match bop {
+            BinaryOp::Add if saturated => self.lower_saturating_arith(op, "saturating_add"),
+            BinaryOp::Sub if saturated => self.lower_saturating_arith(op, "saturating_sub"),
+            BinaryOp::Add => self.lower_int_arith(op, BinOp::Add),
+            BinaryOp::Sub => self.lower_int_arith(op, BinOp::Sub),
+            BinaryOp::Mul => self.lower_int_arith(op, BinOp::Mul),
+            BinaryOp::Div => self.lower_int_arith(op, BinOp::Div),
+            BinaryOp::Rem => self.lower_int_arith(op, BinOp::Rem),
+            BinaryOp::And => self.lower_int_arith(op, BinOp::BitAnd),
+            BinaryOp::Or => self.lower_int_arith(op, BinOp::BitOr),
+            BinaryOp::Xor => self.lower_int_arith(op, BinOp::BitXor),
+            BinaryOp::FAdd => self.lower_binary(op, BinOp::Add),
+            BinaryOp::FSub => self.lower_binary(op, BinOp::Sub),
+            BinaryOp::FMul => self.lower_binary(op, BinOp::Mul),
+            BinaryOp::FDiv => self.lower_binary(op, BinOp::Div),
+        }
+    }
+}
 
 fn overflow_for_result_width(
     arithmetic_overflow: Expr,
