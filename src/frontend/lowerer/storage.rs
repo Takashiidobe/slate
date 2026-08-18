@@ -1,4 +1,5 @@
 use super::*;
+use clang_ir::model::Instruction;
 
 fn type_contains_va_list(ty: &Type) -> bool {
     match ty {
@@ -321,12 +322,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    pub(super) fn lower_copy(&mut self, op: &Op) {
-        if op.operands.len() < 2 {
-            return;
-        }
-        let dst = op.operands[0].clone();
-        let src = op.operands[1].clone();
+    pub(super) fn lower_copy(&mut self, instr: Instruction) {
+        let Instruction::Copy { dst, src } = instr else {
+            unreachable!()
+        };
         let Some(value) = self.copy_source_value(&dst, &src) else {
             let d = self.pointer_operand_expr(&dst);
             let s = self.pointer_operand_expr(&src);

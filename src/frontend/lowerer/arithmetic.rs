@@ -1,6 +1,7 @@
 use super::*;
 use crate::function_identity;
 use clang_ir::model::BinaryOp;
+use clang_ir::model::Instruction;
 use clang_ir::model::UnaryOp as CirUnaryOp;
 use clang_ir::model::instruction::MathUnaryKind;
 
@@ -143,35 +144,38 @@ fn overflow_for_result_width(
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
     // cir.select(cond, t, f) is a pure value pick; all three operands are already
     // materialized, so it collapses to a Rust `if` expression.
-    pub(super) fn lower_select(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
+    pub(super) fn lower_select(&mut self, instr: Instruction) {
+        let Instruction::Select {
+            result,
+            ty,
+            condition,
+            true_value,
+            false_value,
+        } = instr
+        else {
+            unreachable!()
         };
-        if op.operands.len() < 3 {
-            return;
-        }
-        let cond = self.operand_expr(&op.operands[0]);
-        let result_ty = op_result_type(op);
+        let cond = self.operand_expr(&condition);
         let t = self.fn_ptr_aware_operand_expr(
-            &op.operands[1],
-            result_ty,
+            &true_value,
+            Some(&ty),
             Self::function_pointer_operand_expr,
             Self::value_or_place_address_expr,
         );
         let f = self.fn_ptr_aware_operand_expr(
-            &op.operands[2],
-            result_ty,
+            &false_value,
+            Some(&ty),
             Self::function_pointer_operand_expr,
             Self::value_or_place_address_expr,
         );
         self.materialize_expr(
-            result,
+            &result,
             Expr::If {
                 cond: Box::new(cond),
                 then_expr: Box::new(t),
                 else_expr: Box::new(f),
             },
-            op_result_type(op),
+            Some(&ty),
         );
     }
 
@@ -501,12 +505,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     // cir.shift carries the isShiftleft unit attr for `<<`; its absence means `>>`.
     // Rust's `>>` is arithmetic on signed and logical on unsigned, matching C by type.
-    pub(super) fn lower_shift(&mut self, op: &Op) {
-        let rust_op = if attr_bool(op, "isShiftleft") {
-            BinOp::Shl
-        } else {
-            BinOp::Shr
+    pub(super) fn lower_shift(&mut self, op: &Op, instr: Instruction) {
+        let Instruction::Shift { left, .. } = instr else {
+            unreachable!()
         };
+        let rust_op = if left { BinOp::Shl } else { BinOp::Shr };
         self.lower_int_arith(op, rust_op);
     }
 
@@ -799,24 +802,24 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(result, expr, op_result_type(op));
     }
 
-    pub(super) fn lower_rotate(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
+    pub(super) fn lower_rotate(&mut self, instr: Instruction) {
+        let Instruction::Rotate {
+            result,
+            ty,
+            value,
+            amount,
+            left,
+        } = instr
+        else {
+            unreachable!()
         };
-        if op.operands.len() < 2 {
-            return;
-        }
-        let method = if attr_bool(op, "rotateLeft") {
-            "rotate_left"
-        } else {
-            "rotate_right"
-        };
+        let method = if left { "rotate_left" } else { "rotate_right" };
         let expr = Expr::MethodCall {
-            recv: Box::new(self.operand_expr(&op.operands[0])),
+            recv: Box::new(self.operand_expr(&value)),
             method: method.into(),
-            args: vec![self.operand_expr(&op.operands[1])],
+            args: vec![self.operand_expr(&amount)],
         };
-        self.materialize_expr(result, expr, op_result_type(op));
+        self.materialize_expr(&result, expr, Some(&ty));
     }
 
     pub(super) fn lower_expect(&mut self, op: &Op) {
