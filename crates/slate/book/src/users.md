@@ -47,7 +47,7 @@ And a build of the MacroDumpPlugin in `./tools/macro-dump-plugin/MacroDump.cpp`.
 Building requires running the build script:
 
 ```sh
-$ ../../tools/macro-dump-plugin/build.sh
+$ tools/macro-dump-plugin/build.sh
 ```
 
 ## Usage
