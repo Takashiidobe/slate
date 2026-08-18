@@ -177,11 +177,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 args.into_iter()
                     .enumerate()
                     .map(|(i, arg)| match param_types.get(i) {
-                        Some(_)
-                            if arg_types
-                                .get(i)
-                                .is_some_and(is_cir_function_pointer_type) =>
-                        {
+                        Some(_) if arg_types.get(i).is_some_and(is_cir_function_pointer_type) => {
                             arg
                         }
                         Some(Type::VaList) => Expr::MethodCall {
