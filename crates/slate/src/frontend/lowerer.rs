@@ -4197,6 +4197,202 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 self.lower_overflow_arith(op, "overflowing_mul");
                 return;
             }
+            clang_ir::model::Instruction::Call { .. } => {
+                self.lower_call(op);
+                return;
+            }
+            clang_ir::model::Instruction::GetMember { .. } => {
+                self.lower_get_member(op);
+                return;
+            }
+            clang_ir::model::Instruction::ExtractMember { .. } => {
+                self.lower_extract_member(op);
+                return;
+            }
+            clang_ir::model::Instruction::VecSplat { .. } => {
+                self.lower_vec_splat(op);
+                return;
+            }
+            clang_ir::model::Instruction::VecExtract { .. } => {
+                self.lower_vec_extract(op);
+                return;
+            }
+            clang_ir::model::Instruction::VecCreate { .. } => {
+                self.lower_vec_create(op);
+                return;
+            }
+            clang_ir::model::Instruction::VecCmp { .. } => {
+                self.lower_vec_cmp(op);
+                return;
+            }
+            clang_ir::model::Instruction::VecInsert { .. } => {
+                self.lower_vec_insert(op);
+                return;
+            }
+            clang_ir::model::Instruction::VecShuffle { .. } => {
+                self.lower_vec_shuffle(op);
+                return;
+            }
+            clang_ir::model::Instruction::IsFpClass { .. } => {
+                self.lower_is_fp_class(op);
+                return;
+            }
+            clang_ir::model::Instruction::ObjSize { .. } => {
+                self.lower_objsize(op);
+                return;
+            }
+            clang_ir::model::Instruction::IsConstant { .. } => {
+                self.lower_is_constant(op);
+                return;
+            }
+            clang_ir::model::Instruction::Copysign { .. } => {
+                self.lower_binary_method(op, "copysign");
+                return;
+            }
+            clang_ir::model::Instruction::FMaxNum { .. } => {
+                self.lower_binary_method(op, "max");
+                return;
+            }
+            clang_ir::model::Instruction::FMinNum { .. } => {
+                self.lower_binary_method(op, "min");
+                return;
+            }
+            clang_ir::model::Instruction::Fmuladd { .. } => {
+                self.lower_ternary_method(op, "mul_add");
+                return;
+            }
+            clang_ir::model::Instruction::Fma { .. } => {
+                self.lower_ternary_method(op, "mul_add");
+                return;
+            }
+            clang_ir::model::Instruction::Modf { .. } => {
+                self.lower_modf(op);
+                return;
+            }
+            clang_ir::model::Instruction::ComplexCreate { .. } => {
+                self.lower_complex_create(op);
+                return;
+            }
+            clang_ir::model::Instruction::ComplexReal { .. } => {
+                self.lower_complex_part(op, "re");
+                return;
+            }
+            clang_ir::model::Instruction::ComplexImag { .. } => {
+                self.lower_complex_part(op, "im");
+                return;
+            }
+            clang_ir::model::Instruction::ComplexRealPtr { .. } => {
+                self.lower_complex_part_ptr(op, "re");
+                return;
+            }
+            clang_ir::model::Instruction::ComplexImagPtr { .. } => {
+                self.lower_complex_part_ptr(op, "im");
+                return;
+            }
+            clang_ir::model::Instruction::ComplexAdd { .. } => {
+                self.lower_complex_add(op);
+                return;
+            }
+            clang_ir::model::Instruction::ComplexSub { .. } => {
+                self.lower_complex_sub(op);
+                return;
+            }
+            clang_ir::model::Instruction::VaStart { .. } => {
+                self.lower_va_start(op);
+                return;
+            }
+            clang_ir::model::Instruction::VaEnd { .. } => {
+                return;
+            }
+            clang_ir::model::Instruction::VaCopy { .. } => {
+                self.lower_va_copy(op);
+                return;
+            }
+            clang_ir::model::Instruction::VaArg { .. } => {
+                self.lower_va_arg(op);
+                return;
+            }
+            clang_ir::model::Instruction::EhSetjmp { .. } => {
+                self.lower_eh_setjmp(op);
+                return;
+            }
+            clang_ir::model::Instruction::FrameAddress { .. } => {
+                self.lower_opaque_pointer(op, true);
+                return;
+            }
+            clang_ir::model::Instruction::ReturnAddress { .. } => {
+                self.lower_opaque_pointer(op, true);
+                return;
+            }
+            clang_ir::model::Instruction::Prefetch { .. } => {
+                return;
+            }
+            clang_ir::model::Instruction::InlineAsm { .. } => {
+                self.lower_asm(op);
+                return;
+            }
+            clang_ir::model::Instruction::StackSave { .. } => {
+                self.lower_opaque_pointer(op, false);
+                return;
+            }
+            clang_ir::model::Instruction::StackRestore { .. } => {
+                return;
+            }
+            clang_ir::model::Instruction::MemChr { .. } => {
+                self.lower_mem_chr(op);
+                return;
+            }
+            clang_ir::model::Instruction::CallLlvmIntrinsic { .. } => {
+                self.lower_llvm_intrinsic(op);
+                return;
+            }
+            clang_ir::model::Instruction::BlockAddress { .. } => {
+                self.lower_opaque_pointer(op, true);
+                return;
+            }
+            clang_ir::model::Instruction::Assume { .. } => {
+                self.lower_assume(op);
+                return;
+            }
+            clang_ir::model::Instruction::MemCpy { .. } => {
+                self.lower_mem_copy(op, false);
+                return;
+            }
+            clang_ir::model::Instruction::MemMove { .. } => {
+                self.lower_mem_copy(op, true);
+                return;
+            }
+            clang_ir::model::Instruction::MemSet { .. } => {
+                self.lower_mem_set(op);
+                return;
+            }
+            clang_ir::model::Instruction::ClearCache { .. } => {
+                return;
+            }
+            clang_ir::model::Instruction::AtomicFetch { .. } => {
+                self.lower_atomic_fetch(op);
+                return;
+            }
+            clang_ir::model::Instruction::AtomicXchg { .. } => {
+                self.lower_atomic_xchg(op);
+                return;
+            }
+            clang_ir::model::Instruction::AtomicFence { .. } => {
+                self.lower_atomic_fence(op);
+                return;
+            }
+            clang_ir::model::Instruction::AtomicCmpXchg { .. } => {
+                self.lower_atomic_cmpxchg(op);
+                return;
+            }
+            clang_ir::model::Instruction::AtomicTestAndSet { .. } => {
+                self.lower_atomic_test_and_set(op);
+                return;
+            }
+            clang_ir::model::Instruction::AtomicClear { .. } => {
+                self.lower_atomic_clear(op);
+                return;
+            }
             _ => {}
         }
         match op.kind() {
@@ -4207,27 +4403,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::DivOverflow => self.lower_overflow_arith(op, "overflowing_div"),
             CirOpKind::RemOverflow => self.lower_overflow_arith(op, "overflowing_rem"),
             CirOpKind::Asm => self.lower_asm(op),
-            CirOpKind::BlockAddress => self.lower_opaque_pointer(op, true),
-            CirOpKind::IsConstant => self.lower_is_constant(op),
-            CirOpKind::Objsize => self.lower_objsize(op),
             CirOpKind::Acos => self.lower_unary_method(op, "acos"),
             CirOpKind::Asin => self.lower_unary_method(op, "asin"),
             CirOpKind::Atan => self.lower_unary_method(op, "atan"),
             CirOpKind::Atan2 => self.lower_binary_method(op, "atan2"),
-            CirOpKind::Assume => self.lower_assume(op),
-            CirOpKind::ClearCache => {}
-            CirOpKind::Copysign => self.lower_binary_method(op, "copysign"),
             CirOpKind::Cos => self.lower_known_unary_method(op, Known::Cos, "cos"),
             CirOpKind::Exp => self.lower_known_unary_method(op, Known::Exp, "exp"),
             CirOpKind::Exp2 => self.lower_known_unary_method(op, Known::Exp2, "exp2"),
             CirOpKind::Expect => self.lower_expect(op),
-            CirOpKind::Fma => self.lower_ternary_method(op, "mul_add"),
             CirOpKind::Fmaximum => self.lower_binary_method(op, "max"),
             CirOpKind::Fminimum => self.lower_binary_method(op, "min"),
             CirOpKind::Fmod => self.lower_known_binary(op, Known::Fmod, BinOp::Rem),
-            CirOpKind::Fmaxnum => self.lower_binary_method(op, "max"),
-            CirOpKind::Fminnum => self.lower_binary_method(op, "min"),
-            CirOpKind::IsFpClass => self.lower_is_fp_class(op),
             CirOpKind::Llrint => self.lower_unary_cast_method(op, "round_ties_even"),
             CirOpKind::Llround => self.lower_known_unary_cast_method(op, Known::Llround, "round"),
             CirOpKind::Log => self.lower_known_unary_method(op, Known::Log, "ln"),
@@ -4235,52 +4421,29 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::Log2 => self.lower_known_unary_method(op, Known::Log2, "log2"),
             CirOpKind::Lrint => self.lower_unary_cast_method(op, "round_ties_even"),
             CirOpKind::Lround => self.lower_known_unary_cast_method(op, Known::Lround, "round"),
-            CirOpKind::Modf => self.lower_modf(op),
             CirOpKind::Pow => self.lower_known_binary_method(op, Known::Pow, "powf"),
-            CirOpKind::Prefetch => {}
             CirOpKind::Roundeven => self.lower_unary_method(op, "round_ties_even"),
             CirOpKind::Sin => self.lower_known_unary_method(op, Known::Sin, "sin"),
             CirOpKind::Sqrt => self.lower_known_unary_method(op, Known::Sqrt, "sqrt"),
-            CirOpKind::FrameAddress => self.lower_opaque_pointer(op, true),
-            CirOpKind::ReturnAddress => self.lower_opaque_pointer(op, true),
-            CirOpKind::Stacksave => self.lower_opaque_pointer(op, false),
             CirOpKind::Stackrestore => {}
             CirOpKind::Tan => self.lower_known_unary_method(op, Known::Tan, "tan"),
             CirOpKind::Trap => self.lower_trap(),
             CirOpKind::Unreachable => self.lower_unreachable(),
-            CirOpKind::ComplexAdd => self.lower_complex_add(op),
-            CirOpKind::ComplexSub => self.lower_complex_sub(op),
             CirOpKind::ComplexMul => self.lower_complex_mul(op),
             CirOpKind::ComplexDiv => self.lower_complex_div(op),
             CirOpKind::ComplexConj => self.lower_complex_conj(op),
-            CirOpKind::ComplexCreate => self.lower_complex_create(op),
-            CirOpKind::ComplexReal => self.lower_complex_part(op, "re"),
-            CirOpKind::ComplexImag => self.lower_complex_part(op, "im"),
-            CirOpKind::ComplexRealPtr => self.lower_complex_part_ptr(op, "re"),
-            CirOpKind::ComplexImagPtr => self.lower_complex_part_ptr(op, "im"),
             CirOpKind::Ternary => self.lower_ternary(op),
             CirOpKind::GetGlobal => self.lower_get_global(op),
             CirOpKind::GetMember => self.lower_get_member(op),
-            CirOpKind::ExtractMember => self.lower_extract_member(op),
             CirOpKind::InsertMember => self.lower_insert_member(op),
             CirOpKind::GetBitfield => self.lower_get_bitfield(op),
             CirOpKind::SetBitfield => self.lower_set_bitfield(op),
             CirOpKind::GetElement => self.lower_get_element(op),
             CirOpKind::Call => self.lower_call(op),
-            CirOpKind::LibcMemcpy => self.lower_mem_copy(op, false),
-            CirOpKind::LibcMemmove => self.lower_mem_copy(op, true),
-            CirOpKind::LibcMemset => self.lower_mem_set(op),
-            CirOpKind::LibcMemchr => self.lower_mem_chr(op),
             CirOpKind::VaStart => self.lower_va_start(op),
             CirOpKind::VaArg => self.lower_va_arg(op),
             CirOpKind::VaCopy => self.lower_va_copy(op),
-            CirOpKind::VaEnd => {}
-            CirOpKind::AtomicFetch => self.lower_atomic_fetch(op),
-            CirOpKind::AtomicXchg => self.lower_atomic_xchg(op),
-            CirOpKind::AtomicCmpxchg => self.lower_atomic_cmpxchg(op),
-            CirOpKind::AtomicTestAndSet => self.lower_atomic_test_and_set(op),
-            CirOpKind::AtomicClear => self.lower_atomic_clear(op),
-            CirOpKind::AtomicFence => self.lower_atomic_fence(op),
+            CirOpKind::CallLlvmIntrinsic => self.lower_llvm_intrinsic(op),
             CirOpKind::Return => self.lower_return(op),
             CirOpKind::Scope => self.lower_scope(op),
             CirOpKind::CleanupScope => self.lower_cleanup_scope(op),
@@ -4296,14 +4459,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::Br => self.lower_br(op),
             CirOpKind::Brcond => self.lower_brcond(op),
             CirOpKind::IndirectBr => self.lower_indirect_br(op),
-            CirOpKind::VecCmp => self.lower_vec_cmp(op),
-            CirOpKind::VecCreate => self.lower_vec_create(op),
-            CirOpKind::VecExtract => self.lower_vec_extract(op),
-            CirOpKind::VecInsert => self.lower_vec_insert(op),
-            CirOpKind::VecShuffle => self.lower_vec_shuffle(op),
-            CirOpKind::VecSplat => self.lower_vec_splat(op),
-            CirOpKind::EhSetjmp => self.lower_eh_setjmp(op),
-            CirOpKind::CallLlvmIntrinsic => self.lower_llvm_intrinsic(op),
             CirOpKind::Label => {}
             CirOpKind::Yield | CirOpKind::Condition => {}
             _ => {

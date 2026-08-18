@@ -29,6 +29,45 @@ and the legacy arm is still reachable as the malformed-op fallback per the
 gotcha below. Only variants with exactly one reference repo-wide (the dead
 `lower_op` arm) were deleted this slice.
 
+Also done (session 3, same sitting as session 2): every remaining
+non-control-flow `Instruction` variant that clang-ir models — Call,
+GetMember, ExtractMember, the Vec* family (Splat/Extract/Create/Cmp/Insert/
+Shuffle), IsFpClass, ObjSize, IsConstant, Copysign, FMaxNum, FMinNum,
+Fmuladd, Fma, Modf, the Complex* value ops (Create/Real/Imag/RealPtr/
+ImagPtr/Add/Sub — Mul/Div/Conj aren't in clang-ir's Instruction enum, still
+legacy), VaStart/VaEnd/VaCopy/VaArg, EhSetjmp, FrameAddress/ReturnAddress,
+Prefetch, InlineAsm, StackSave/StackRestore, MemChr, CallLlvmIntrinsic,
+BlockAddress, Assume, MemCpy/MemMove/MemSet, ClearCache, and the six atomic
+ops (Fetch/Xchg/Fence/CmpXchg/TestAndSet/Clear). All dispatch straight from
+the same typed match in `lower_op`, no new family fns needed (each
+Instruction variant maps to exactly one CirOpKind already).
+
+Of those, Call/GetMember/VaStart/VaCopy/VaArg/Asm/Stackrestore/
+CallLlvmIntrinsic keep their `CirOpKind` variant + parse arm + legacy match
+arm (same reasoning as the Load/Store group above — grep found other
+classification call sites: `lower_op` noreturn/varargs checks,
+`analysis.rs`, `types.rs`, `bitfields.rs`, `asm.rs`, `control_flow.rs`'s
+stackrestore detection). The other 41 variants had exactly one reference
+(the dead `lower_op` arm) and were fully deleted.
+
+**Explicitly not attempted**: structured control flow (`If`/`While`/
+`DoWhile`/`For`/`Switch`/`Case`/`Ternary`/`Try`/`Scope`/`CleanupScope`/
+`Return`/`Yield`/`Condition`/`Break`/`Continue`/`Br`/`BrCond`/`Goto`/
+`Label`/`IndirectGoto`/`Unreachable`/`Trap`). clang-ir's typed
+`Instruction` variants for these carry a `Body`/`InstBlock` tree (from
+`clang_ir::model::instruction::lower_region`), not slate's own `Region`/
+`Block`. Migrating them means rewriting `lower_if`/`lower_while`/
+`lower_for`/`lower_switch`/etc. to consume that shape instead of `&Op`'s
+regions — an actual statement-lowering rewrite, not a dispatch
+reclassification like every family above. Left on `CirOpKind` for now;
+needs its own design pass, not a family-at-a-time mechanical slice.
+Also untouched: vtables (`VtableGetVptr`/`VtableGetVirtualFnAddr`/
+`BaseClassAddr`/`DerivedClassAddr`) and C++ exception-handling ops
+(`EhLongjmp`/`BeginCatch`/`EndCatch`/`InitCatchParam`/`Resume`) — these
+have zero `CirOpKind` variants today (slate doesn't support C++), so
+there's nothing to migrate; wiring them up would be adding new op support,
+out of scope for this ticket.
+
 ## Why this is safe to do incrementally
 
 `clang_ir::model::instruction::ValueId` is just a type alias for `String` —
