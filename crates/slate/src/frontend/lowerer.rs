@@ -44,6 +44,7 @@ use asm::*;
 use atomic::*;
 use bitfields::*;
 use cir_ops::*;
+use clang_ir::model::{Instruction, instruction};
 use constants::*;
 use op_utils::*;
 use runtime_support::*;
@@ -4110,331 +4111,331 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn lower_op(&mut self, op: &Op) {
-        match clang_ir::model::instruction::lower_op(op) {
-            clang_ir::model::Instruction::Binary {
+        match instruction::lower_op(op) {
+            Instruction::Binary {
                 op: bop, saturated, ..
             } => {
                 self.lower_binary_family(op, bop, saturated);
                 return;
             }
-            clang_ir::model::Instruction::Unary { op: uop, .. } => {
+            Instruction::Unary { op: uop, .. } => {
                 self.lower_unary_family(op, uop);
                 return;
             }
-            clang_ir::model::Instruction::MathUnary { kind, .. } => {
+            Instruction::MathUnary { kind, .. } => {
                 self.lower_math_unary_family(op, kind);
                 return;
             }
-            clang_ir::model::Instruction::Shift { .. } => {
-                self.lower_shift(op);
+            instr @ Instruction::Shift { .. } => {
+                self.lower_shift(op, instr);
                 return;
             }
-            clang_ir::model::Instruction::Rotate { .. } => {
-                self.lower_rotate(op);
+            instr @ Instruction::Rotate { .. } => {
+                self.lower_rotate(instr);
                 return;
             }
-            clang_ir::model::Instruction::Cmp { .. } => {
+            Instruction::Cmp { .. } => {
                 self.lower_cmp(op);
                 return;
             }
-            clang_ir::model::Instruction::Select { .. } => {
-                self.lower_select(op);
+            instr @ Instruction::Select { .. } => {
+                self.lower_select(instr);
                 return;
             }
-            clang_ir::model::Instruction::Load { .. } => {
+            Instruction::Load { .. } => {
                 self.lower_load(op);
                 return;
             }
-            clang_ir::model::Instruction::Store { .. } => {
+            Instruction::Store { .. } => {
                 self.lower_store(op);
                 return;
             }
-            clang_ir::model::Instruction::Copy { .. } => {
-                self.lower_copy(op);
+            instr @ Instruction::Copy { .. } => {
+                self.lower_copy(instr);
                 return;
             }
-            clang_ir::model::Instruction::Const { .. } => {
+            Instruction::Const { .. } => {
                 self.lower_const(op);
                 return;
             }
-            clang_ir::model::Instruction::GetGlobal { .. } => {
+            Instruction::GetGlobal { .. } => {
                 self.lower_get_global(op);
                 return;
             }
-            clang_ir::model::Instruction::Cast { .. } => {
+            Instruction::Cast { .. } => {
                 self.lower_cast(op);
                 return;
             }
-            clang_ir::model::Instruction::GetBitfield { .. } => {
+            Instruction::GetBitfield { .. } => {
                 self.lower_get_bitfield(op);
                 return;
             }
-            clang_ir::model::Instruction::SetBitfield { .. } => {
+            Instruction::SetBitfield { .. } => {
                 self.lower_set_bitfield(op);
                 return;
             }
-            clang_ir::model::Instruction::GetElement { .. } => {
+            Instruction::GetElement { .. } => {
                 self.lower_get_element(op);
                 return;
             }
-            clang_ir::model::Instruction::PtrStride { .. } => {
+            Instruction::PtrStride { .. } => {
                 self.lower_ptr_stride(op);
                 return;
             }
-            clang_ir::model::Instruction::PtrDiff { .. } => {
+            Instruction::PtrDiff { .. } => {
                 self.lower_ptr_diff(op);
                 return;
             }
-            clang_ir::model::Instruction::AddOverflow { .. } => {
+            Instruction::AddOverflow { .. } => {
                 self.lower_overflow_arith(op, "overflowing_add");
                 return;
             }
-            clang_ir::model::Instruction::SubOverflow { .. } => {
+            Instruction::SubOverflow { .. } => {
                 self.lower_overflow_arith(op, "overflowing_sub");
                 return;
             }
-            clang_ir::model::Instruction::MulOverflow { .. } => {
+            Instruction::MulOverflow { .. } => {
                 self.lower_overflow_arith(op, "overflowing_mul");
                 return;
             }
-            clang_ir::model::Instruction::Call { .. } => {
+            Instruction::Call { .. } => {
                 self.lower_call(op);
                 return;
             }
-            clang_ir::model::Instruction::GetMember { .. } => {
+            Instruction::GetMember { .. } => {
                 self.lower_get_member(op);
                 return;
             }
-            clang_ir::model::Instruction::ExtractMember { .. } => {
+            Instruction::ExtractMember { .. } => {
                 self.lower_extract_member(op);
                 return;
             }
-            clang_ir::model::Instruction::VecSplat { .. } => {
+            Instruction::VecSplat { .. } => {
                 self.lower_vec_splat(op);
                 return;
             }
-            clang_ir::model::Instruction::VecExtract { .. } => {
+            Instruction::VecExtract { .. } => {
                 self.lower_vec_extract(op);
                 return;
             }
-            clang_ir::model::Instruction::VecCreate { .. } => {
+            Instruction::VecCreate { .. } => {
                 self.lower_vec_create(op);
                 return;
             }
-            clang_ir::model::Instruction::VecCmp { .. } => {
+            Instruction::VecCmp { .. } => {
                 self.lower_vec_cmp(op);
                 return;
             }
-            clang_ir::model::Instruction::VecInsert { .. } => {
+            Instruction::VecInsert { .. } => {
                 self.lower_vec_insert(op);
                 return;
             }
-            clang_ir::model::Instruction::VecShuffle { .. } => {
+            Instruction::VecShuffle { .. } => {
                 self.lower_vec_shuffle(op);
                 return;
             }
-            clang_ir::model::Instruction::IsFpClass { .. } => {
+            Instruction::IsFpClass { .. } => {
                 self.lower_is_fp_class(op);
                 return;
             }
-            clang_ir::model::Instruction::ObjSize { .. } => {
+            Instruction::ObjSize { .. } => {
                 self.lower_objsize(op);
                 return;
             }
-            clang_ir::model::Instruction::IsConstant { .. } => {
+            Instruction::IsConstant { .. } => {
                 self.lower_is_constant(op);
                 return;
             }
-            clang_ir::model::Instruction::Copysign { .. } => {
+            Instruction::Copysign { .. } => {
                 self.lower_binary_method(op, "copysign");
                 return;
             }
-            clang_ir::model::Instruction::FMaxNum { .. } => {
+            Instruction::FMaxNum { .. } => {
                 self.lower_binary_method(op, "max");
                 return;
             }
-            clang_ir::model::Instruction::FMinNum { .. } => {
+            Instruction::FMinNum { .. } => {
                 self.lower_binary_method(op, "min");
                 return;
             }
-            clang_ir::model::Instruction::Fmuladd { .. } => {
+            Instruction::Fmuladd { .. } => {
                 self.lower_ternary_method(op, "mul_add");
                 return;
             }
-            clang_ir::model::Instruction::Fma { .. } => {
+            Instruction::Fma { .. } => {
                 self.lower_ternary_method(op, "mul_add");
                 return;
             }
-            clang_ir::model::Instruction::Modf { .. } => {
+            Instruction::Modf { .. } => {
                 self.lower_modf(op);
                 return;
             }
-            clang_ir::model::Instruction::ComplexCreate { .. } => {
+            Instruction::ComplexCreate { .. } => {
                 self.lower_complex_create(op);
                 return;
             }
-            clang_ir::model::Instruction::ComplexReal { .. } => {
+            Instruction::ComplexReal { .. } => {
                 self.lower_complex_part(op, "re");
                 return;
             }
-            clang_ir::model::Instruction::ComplexImag { .. } => {
+            Instruction::ComplexImag { .. } => {
                 self.lower_complex_part(op, "im");
                 return;
             }
-            clang_ir::model::Instruction::ComplexRealPtr { .. } => {
+            Instruction::ComplexRealPtr { .. } => {
                 self.lower_complex_part_ptr(op, "re");
                 return;
             }
-            clang_ir::model::Instruction::ComplexImagPtr { .. } => {
+            Instruction::ComplexImagPtr { .. } => {
                 self.lower_complex_part_ptr(op, "im");
                 return;
             }
-            clang_ir::model::Instruction::ComplexAdd { .. } => {
+            Instruction::ComplexAdd { .. } => {
                 self.lower_complex_add(op);
                 return;
             }
-            clang_ir::model::Instruction::ComplexSub { .. } => {
+            Instruction::ComplexSub { .. } => {
                 self.lower_complex_sub(op);
                 return;
             }
-            clang_ir::model::Instruction::VaStart { .. } => {
+            Instruction::VaStart { .. } => {
                 self.lower_va_start(op);
                 return;
             }
-            clang_ir::model::Instruction::VaEnd { .. } => {
+            Instruction::VaEnd { .. } => {
                 return;
             }
-            clang_ir::model::Instruction::VaCopy { .. } => {
+            Instruction::VaCopy { .. } => {
                 self.lower_va_copy(op);
                 return;
             }
-            clang_ir::model::Instruction::VaArg { .. } => {
+            Instruction::VaArg { .. } => {
                 self.lower_va_arg(op);
                 return;
             }
-            clang_ir::model::Instruction::EhSetjmp { .. } => {
+            Instruction::EhSetjmp { .. } => {
                 self.lower_eh_setjmp(op);
                 return;
             }
-            clang_ir::model::Instruction::FrameAddress { .. } => {
+            Instruction::FrameAddress { .. } => {
                 self.lower_opaque_pointer(op, true);
                 return;
             }
-            clang_ir::model::Instruction::ReturnAddress { .. } => {
+            Instruction::ReturnAddress { .. } => {
                 self.lower_opaque_pointer(op, true);
                 return;
             }
-            clang_ir::model::Instruction::Prefetch { .. } => {
+            Instruction::Prefetch { .. } => {
                 return;
             }
-            clang_ir::model::Instruction::InlineAsm { .. } => {
+            Instruction::InlineAsm { .. } => {
                 self.lower_asm(op);
                 return;
             }
-            clang_ir::model::Instruction::StackSave { .. } => {
+            Instruction::StackSave { .. } => {
                 self.lower_opaque_pointer(op, false);
                 return;
             }
-            clang_ir::model::Instruction::StackRestore { .. } => {
+            Instruction::StackRestore { .. } => {
                 return;
             }
-            clang_ir::model::Instruction::MemChr { .. } => {
+            Instruction::MemChr { .. } => {
                 self.lower_mem_chr(op);
                 return;
             }
-            clang_ir::model::Instruction::CallLlvmIntrinsic { .. } => {
+            Instruction::CallLlvmIntrinsic { .. } => {
                 self.lower_llvm_intrinsic(op);
                 return;
             }
-            clang_ir::model::Instruction::BlockAddress { .. } => {
+            Instruction::BlockAddress { .. } => {
                 self.lower_opaque_pointer(op, true);
                 return;
             }
-            clang_ir::model::Instruction::Assume { .. } => {
+            Instruction::Assume { .. } => {
                 self.lower_assume(op);
                 return;
             }
-            clang_ir::model::Instruction::MemCpy { .. } => {
+            Instruction::MemCpy { .. } => {
                 self.lower_mem_copy(op, false);
                 return;
             }
-            clang_ir::model::Instruction::MemMove { .. } => {
+            Instruction::MemMove { .. } => {
                 self.lower_mem_copy(op, true);
                 return;
             }
-            clang_ir::model::Instruction::MemSet { .. } => {
+            Instruction::MemSet { .. } => {
                 self.lower_mem_set(op);
                 return;
             }
-            clang_ir::model::Instruction::ClearCache { .. } => {
+            Instruction::ClearCache { .. } => {
                 return;
             }
-            clang_ir::model::Instruction::AtomicFetch { .. } => {
+            Instruction::AtomicFetch { .. } => {
                 self.lower_atomic_fetch(op);
                 return;
             }
-            clang_ir::model::Instruction::AtomicXchg { .. } => {
+            Instruction::AtomicXchg { .. } => {
                 self.lower_atomic_xchg(op);
                 return;
             }
-            clang_ir::model::Instruction::AtomicFence { .. } => {
+            Instruction::AtomicFence { .. } => {
                 self.lower_atomic_fence(op);
                 return;
             }
-            clang_ir::model::Instruction::AtomicCmpXchg { .. } => {
+            Instruction::AtomicCmpXchg { .. } => {
                 self.lower_atomic_cmpxchg(op);
                 return;
             }
-            clang_ir::model::Instruction::AtomicTestAndSet { .. } => {
+            Instruction::AtomicTestAndSet { .. } => {
                 self.lower_atomic_test_and_set(op);
                 return;
             }
-            clang_ir::model::Instruction::AtomicClear { .. } => {
+            Instruction::AtomicClear { .. } => {
                 self.lower_atomic_clear(op);
                 return;
             }
-            clang_ir::model::Instruction::If { .. } => {
+            Instruction::If { .. } => {
                 self.lower_if(op);
                 return;
             }
-            clang_ir::model::Instruction::Return { .. } => {
+            Instruction::Return { .. } => {
                 self.lower_return(op);
                 return;
             }
-            clang_ir::model::Instruction::Yield { .. } => {
+            Instruction::Yield { .. } => {
                 return;
             }
-            clang_ir::model::Instruction::Condition { .. } => {
+            Instruction::Condition { .. } => {
                 return;
             }
-            clang_ir::model::Instruction::Break => {
+            Instruction::Break => {
                 self.lower_break();
                 return;
             }
-            clang_ir::model::Instruction::Continue => {
+            Instruction::Continue => {
                 self.lower_continue();
                 return;
             }
-            clang_ir::model::Instruction::Br { .. } => {
+            Instruction::Br { .. } => {
                 self.lower_br(op);
                 return;
             }
-            clang_ir::model::Instruction::BrCond { .. } => {
+            Instruction::BrCond { .. } => {
                 self.lower_brcond(op);
                 return;
             }
-            clang_ir::model::Instruction::Goto { .. } => {
+            Instruction::Goto { .. } => {
                 self.lower_goto(op);
                 return;
             }
-            clang_ir::model::Instruction::Label { .. } => {
+            Instruction::Label { .. } => {
                 return;
             }
-            clang_ir::model::Instruction::Unreachable => {
+            Instruction::Unreachable => {
                 self.lower_unreachable();
                 return;
             }
-            clang_ir::model::Instruction::Trap => {
+            Instruction::Trap => {
                 self.lower_trap();
                 return;
             }

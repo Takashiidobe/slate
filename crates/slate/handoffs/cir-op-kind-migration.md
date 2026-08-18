@@ -256,3 +256,96 @@ behavior to break — just build clean is enough. But removing a
 *spelling/shim* like `indirect_br` changes what real parse output matches
 against, so that one does need the `lowering` profile to actually confirm
 nothing hits the removed path, same bar as any other behavior change.
+
+## Phase 2.5: stop just using `Instruction` as a discriminant (session 6+)
+
+Everything migrated so far (sessions 1-5) only used the typed `Instruction`
+to *classify* the op, then immediately threw the typed fields away and
+called the existing `lower_*(op: &Op)` helper, which re-derives everything
+by hand from `op.operands`/`op.attr(...)` — including attrs the crate
+already decoded into real enums (`CmpOpKind`, `MemOrder`,
+`AtomicFetchKind`, `SyncScopeKind`, `FpClassFlags`, `AssumeBundleKind`,
+`AsmFlavor`, ...). That was the right call while burning through ~90
+variants for dispatch coverage, but it means slate is still carrying
+hand-rolled duplicate decoders (e.g. `atomic.rs`'s `atomic_rmw_op(binop:
+i64)` / `rust_ordering(mem_order: i64)` reimplement `AtomicFetchKind`/
+`MemOrder` from raw ordinals, independently of and never verified against
+the crate's own `try_from` impls) — worth retiring per family as this
+phase proceeds, not just leaving as a permanent parallel-decode.
+
+**New convention going forward, agreed with the user**: `lower_*` helpers
+take the whole matched `Instruction` (by value — it's freshly constructed
+per call by `clang_ir::model::instruction::lower_op(op)`, never borrowed,
+so no extra clone from moving it) instead of a loose parameter list per
+field. The dispatch arm becomes uniform regardless of arity:
+
+```rust
+instr @ Instruction::Rotate { .. } => {
+    self.lower_rotate(instr);
+    return;
+}
+```
+
+and the helper re-narrows itself as the first line:
+
+```rust
+pub(super) fn lower_rotate(&mut self, instr: Instruction) {
+    let Instruction::Rotate { result, ty, value, amount, left } = instr else {
+        unreachable!()
+    };
+    ...
+}
+```
+
+**Why this over destructuring at the call site and passing a loose field
+list** (which is what `lower_rotate` looked like before this session, and
+what `Cmp`/`Select`/`Load`/etc. still look like as of session 6 — not yet
+converted): the field-list form makes every field name appear twice
+(pattern + parameter list), which is fine for 2-field ops but genuinely
+bad for the wide ones (`InlineAsm` has 8 fields, `AtomicCmpXchg` has 12).
+The `unreachable!()` re-match isn't compiler-checked the way the
+field-list form is — a copy-paste error wiring `Rotate`'s dispatch arm to
+call `lower_shift` would compile fine under this convention and only
+panic the first time a fixture hits it. Accepted anyway per the user:
+every op family here has fixture coverage, so a dispatch/destructure
+mismatch fails immediately and loudly, not silently — this codebase's
+whole correctness model is differential fixture testing already (see
+CLAUDE.md), not compile-time exhaustiveness, so this isn't introducing a
+new category of risk, just moving where an existing kind of bug would
+surface.
+
+**Also motivates the eventual field-decoder cleanup above**: with the
+whole `Instruction` in hand inside each `lower_*`, there's no reason left
+to re-derive `kind`/`binop`/`mem_order`/etc. from raw attrs — the typed
+fields are right there. Do that swap per family as you convert it to this
+call convention, not as a separate pass — e.g. when converting
+`lower_cmp`, replace its `attr_int(op, "kind")` raw-int match with the
+`kind: CmpOpKind` field that's already on `Instruction::Cmp`, in the same
+edit, and delete whatever local decode table becomes dead as a result.
+
+**Bare/zero-payload ops aren't worth converting**: `Break`, `Continue`,
+`Unreachable`, `Trap` (and any other unit-like variant) already take no
+arguments — leave those as direct `self.lower_break()` etc. calls, no
+`Instruction` plumbing needed.
+
+**Done under this convention so far**: `Rotate` (`arithmetic.rs`), as the
+reference example — converted per direct user request, one family, to
+validate the pattern before doing the rest. `lower_shift` is the natural
+next one (identical shape to `Rotate`: `Shift { result, ty, value,
+amount, left }`, same `rotate_left`/`rotate_right`-style method-name
+branch). After that, work through the rest of the already-migrated
+dispatch arms (`Cmp`, `Select`, `Load`, `Store`, `Copy`, `Const`,
+`GetGlobal`, `Cast`, `GetBitfield`, `SetBitfield`, `GetElement`,
+`PtrStride`, `PtrDiff`, the three `*Overflow`s, and everything from
+sessions 3-5) converting each to this shape — and while doing each one,
+also fold in the "use the crate's decoded attr enum instead of the local
+one" cleanup from the section above wherever that family has one.
+
+**Where this doesn't apply cleanly**: the family-dispatch fns
+(`lower_binary_family`, `lower_unary_family`, `lower_math_unary_family`)
+already take destructured discriminant fields (`bop: BinaryOp`, `uop:
+UnaryOp`, `kind: MathUnaryKind`) rather than a loose value list, because
+they immediately re-dispatch to a *different* per-case helper rather than
+doing the op's own lowering — that's a different shape (a second-level
+dispatch, not a leaf lowering), so it doesn't need this treatment, only
+the leaf `lower_*` functions those call into.
