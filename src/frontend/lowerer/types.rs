@@ -68,7 +68,7 @@ pub(super) fn rust_type_with_aliases(
                 return ty;
             }
             match aliases.get(name) {
-                Some(CirType::Struct(s)) => record_struct_type(s),
+                Some(CirType::Struct(s)) => record_struct_type(s, name.strip_prefix("rec_")),
                 Some(expanded) => rust_type_with_aliases(expanded, aliases, va_list_boxed),
                 None => Type::Prim(Prim::I32),
             }
@@ -116,7 +116,7 @@ pub(super) fn rust_type_with_aliases(
             elem: Box::new(rust_type_with_aliases(element, aliases, va_list_boxed)),
             len: *size,
         },
-        CirType::Struct(s) => record_struct_type(s),
+        CirType::Struct(s) => record_struct_type(s, None),
         CirType::FunctionType { .. }
         | CirType::CirFunc { .. }
         | CirType::Integer(_)
@@ -125,8 +125,8 @@ pub(super) fn rust_type_with_aliases(
     }
 }
 
-fn record_struct_type(s: &StructType) -> Type {
-    let Some(name) = s.name.as_deref() else {
+fn record_struct_type(s: &StructType, alias_key: Option<&str>) -> Type {
+    let Some(name) = s.name.as_deref().or(alias_key) else {
         return Type::Prim(Prim::I32);
     };
     clib_record_type(name)
@@ -363,6 +363,15 @@ pub(super) fn cir_fn_type_to_type(
         params.push(Type::Variadic);
     }
     let ret = rust_type_with_aliases(output, aliases, va_list_boxed);
+    // a `void`-returning function is `Type::Unit`, not `Type::CLib(VOID)` -
+    // the latter is only for `void*` pointee positions, and a mismatch here
+    // means function items (which return `()`) don't unify with this fn
+    // pointer type (e.g. `Option<unsafe extern "C" fn() -> c_void>`).
+    let ret = if matches!(ret, Type::CLib(CLibType::VOID)) {
+        Type::Unit
+    } else {
+        ret
+    };
     Some(Type::FnPtr {
         abi: Abi::C,
         params,
@@ -455,15 +464,6 @@ pub(super) fn parse_cir_vector_type(ty: &CirType) -> Option<(&CirType, u64)> {
     }
 }
 
-pub(super) fn parse_rust_array_type(ty: &str) -> Option<(&str, u64)> {
-    let inner = ty
-        .trim()
-        .strip_prefix('[')
-        .and_then(|s| s.strip_suffix(']'))?;
-    let (element, len) = inner.rsplit_once(';')?;
-    Some((element.trim(), len.trim().parse().ok()?))
-}
-
 pub(super) fn is_complex_long_double_coercion_type(
     ty: &CirType,
     aliases: &BTreeMap<String, CirType>,
@@ -521,13 +521,6 @@ pub(super) fn cir_record_name(ty: &CirType) -> Option<&str> {
     match ty {
         CirType::Named(name) => name.strip_prefix("rec_"),
         CirType::Struct(s) => s.name.as_deref(),
-        _ => None,
-    }
-}
-
-pub(super) fn op_type_return(ty: &CirType) -> Option<&CirType> {
-    match ty {
-        CirType::FunctionType { results, .. } => results.first(),
         _ => None,
     }
 }
@@ -648,6 +641,14 @@ pub(super) fn cir_type_to_ctype(
     };
     if let Some(name) = named {
         return CType::Record(name.to_string());
+    }
+    // non-record, non-scalar aliases (e.g. bare `!void`, `!bool` top-level
+    // aliases) still need expanding - only record aliases keep the raw key
+    // for dotted-name derivation above.
+    if let CirType::Named(name) = ty
+        && let Some(expanded) = aliases.get(name)
+    {
+        return cir_type_to_ctype(expanded, aliases);
     }
     CType::Int {
         signed: true,
@@ -983,8 +984,10 @@ pub fn anon_local_records(module: &Module) -> Vec<crate::frontend::c_ast::Record
         let fields = s
             .members
             .iter()
-            .filter(|(kind, _)| *kind == CirRecordMemberKind::Data)
             .enumerate()
+            .filter(|(_, (kind, _))| {
+                matches!(kind, CirRecordMemberKind::Data | CirRecordMemberKind::Pad)
+            })
             .map(|(i, (_, field_ty))| crate::frontend::c_ast::Decl {
                 name: if bitfield_slots.contains(&(key.clone(), i as i64)) {
                     format!("__bitfield_{i}")

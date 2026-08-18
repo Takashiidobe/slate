@@ -1,5 +1,18 @@
 use super::*;
 
+fn type_contains_va_list(ty: &Type) -> bool {
+    match ty {
+        Type::VaList => true,
+        Type::Ptr { inner, .. } | Type::Ref { inner, .. } | Type::Slice(inner) => {
+            type_contains_va_list(inner)
+        }
+        Type::Array { elem, .. } => type_contains_va_list(elem),
+        Type::Complex(inner) => type_contains_va_list(inner),
+        Type::Generic { args, .. } => args.iter().any(type_contains_va_list),
+        _ => false,
+    }
+}
+
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
     pub(super) fn unique_local_name(&mut self, base: String) -> String {
         if !self.parent.globals.contains_key(&base)
@@ -26,9 +39,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             };
             op.operands.is_empty()
                 && !self.forward_allocas.contains(result)
+                && !self.hoisted.contains(result)
                 && !cir_ptr_pointee(cir_ty).is_some_and(|pointee| {
                     is_cir_va_list_record_type(pointee, &self.parent.aliases)
                 })
+                && !self
+                    .pointee_type(cir_ty)
+                    .is_some_and(|ty| type_contains_va_list(&ty))
                 && !matches!(self.pointee_type(cir_ty), Some(Type::Custom(_)))
         })
     }
@@ -720,6 +737,29 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             };
             self.materialize_expr(result, value, result_ty);
             return;
+        }
+        if let Some(Attr::Dialect {
+            dialect,
+            mnemonic,
+            raw: Some(raw),
+            ..
+        }) = &attr
+            && dialect == "cir"
+            && mnemonic == "ptr"
+        {
+            // `#cir.ptr<N : ty>` embeds its own type suffix inside the body
+            // text, unlike most other `#cir.*` attrs.
+            let digits = raw.split(':').next().unwrap_or(raw).trim();
+            if let Ok(addr) = digits.parse::<i128>() {
+                let value = Expr::Cast {
+                    expr: Box::new(int_value_expr(addr)),
+                    ty: result_ty
+                        .map(|ty| self.parent.rust_type(ty))
+                        .unwrap_or(Type::Prim(Prim::I64)),
+                };
+                self.materialize_expr(result, value, result_ty);
+                return;
+            }
         }
         let is_f128 = matches!(
             result_ty,

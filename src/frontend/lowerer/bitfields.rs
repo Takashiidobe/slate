@@ -35,12 +35,7 @@ pub(super) fn collect_bitfield_storages(module: &Module) -> BitfieldStorages {
         .filter(|op| op.kind() == CirOpKind::Func)
     {
         let mut members = BTreeMap::new();
-        collect_function_bitfields(
-            &function.regions,
-            module,
-            &mut members,
-            &mut storages,
-        );
+        collect_function_bitfields(&function.regions, module, &mut members, &mut storages);
     }
     storages
 }

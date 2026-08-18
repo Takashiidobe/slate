@@ -133,13 +133,12 @@ fn widen_flexible_array_members(
             continue;
         }
         let Some(len) = op.attr("initial_value").and_then(|attr| match attr {
-            Attr::ConstRecord { ty, .. } => match ty {
-                CirType::Struct(s) => s
-                    .members
-                    .last()
-                    .and_then(|(_, member_ty)| parse_cir_array_type(member_ty).map(|(_, len)| len)),
+            Attr::ConstRecord { elements, .. } => elements.last().and_then(|elem| match elem {
+                Attr::ConstArray { ty, .. } | Attr::Zero { ty } => {
+                    parse_cir_array_type(ty).map(|(_, len)| len)
+                }
                 _ => None,
-            },
+            }),
             _ => None,
         }) else {
             continue;
@@ -176,7 +175,7 @@ fn required_record_defs(
         .iter()
         .filter_map(|(alias, ty)| {
             let name =
-                lowered_record_name(cir_record_name(ty).or_else(|| alias.strip_prefix("!rec_"))?)?;
+                lowered_record_name(cir_record_name(ty).or_else(|| alias.strip_prefix("rec_"))?)?;
             let kind = match ty {
                 CirType::Struct(s) => match s.kind {
                     clang_ir::ast::RecordKind::Union => RecordKind::Union,
@@ -1353,7 +1352,9 @@ impl<'a> Lowerer<'a> {
     fn resolve_floating_literal_loc(&self, raw: &str) -> Option<FloatingLiteralLoc> {
         let raw = raw.trim();
         if raw.starts_with('#') {
-            return self.resolve_floating_literal_loc(self.loc_aliases.get(raw)?);
+            return self.resolve_floating_literal_loc(
+                self.loc_aliases.get(raw.strip_prefix('#').unwrap_or(raw))?,
+            );
         }
         let inner = raw
             .strip_prefix("loc(")
@@ -1361,7 +1362,10 @@ impl<'a> Lowerer<'a> {
             .unwrap_or(raw)
             .trim();
         if inner.starts_with('#') {
-            return self.resolve_floating_literal_loc(self.loc_aliases.get(inner)?);
+            return self.resolve_floating_literal_loc(
+                self.loc_aliases
+                    .get(inner.strip_prefix('#').unwrap_or(inner))?,
+            );
         }
         if let Some(callsite) = inner
             .strip_prefix("callsite(")
@@ -1386,7 +1390,10 @@ impl<'a> Lowerer<'a> {
         }
         let raw = raw.trim();
         if raw.starts_with('#') {
-            return self.resolve_expansion_source_point(self.loc_aliases.get(raw)?, depth + 1);
+            return self.resolve_expansion_source_point(
+                self.loc_aliases.get(raw.strip_prefix('#').unwrap_or(raw))?,
+                depth + 1,
+            );
         }
         let inner = raw
             .strip_prefix("loc(")
@@ -1394,7 +1401,11 @@ impl<'a> Lowerer<'a> {
             .unwrap_or(raw)
             .trim();
         if inner.starts_with('#') {
-            return self.resolve_expansion_source_point(self.loc_aliases.get(inner)?, depth + 1);
+            return self.resolve_expansion_source_point(
+                self.loc_aliases
+                    .get(inner.strip_prefix('#').unwrap_or(inner))?,
+                depth + 1,
+            );
         }
         if let Some(callsite) = inner
             .strip_prefix("callsite(")
@@ -1412,7 +1423,10 @@ impl<'a> Lowerer<'a> {
         }
         let raw = raw.trim();
         if raw.starts_with('#') {
-            return self.resolve_macro_group_loc(self.loc_aliases.get(raw)?, depth + 1);
+            return self.resolve_macro_group_loc(
+                self.loc_aliases.get(raw.strip_prefix('#').unwrap_or(raw))?,
+                depth + 1,
+            );
         }
         let inner = raw
             .strip_prefix("loc(")
@@ -1420,7 +1434,11 @@ impl<'a> Lowerer<'a> {
             .unwrap_or(raw)
             .trim();
         if inner.starts_with('#') {
-            return self.resolve_macro_group_loc(self.loc_aliases.get(inner)?, depth + 1);
+            return self.resolve_macro_group_loc(
+                self.loc_aliases
+                    .get(inner.strip_prefix('#').unwrap_or(inner))?,
+                depth + 1,
+            );
         }
         if let Some(fused) = inner
             .strip_prefix("fused[")
@@ -1429,11 +1447,14 @@ impl<'a> Lowerer<'a> {
         {
             return self.resolve_macro_group_loc(first, depth + 1);
         }
-        let callsite = inner
+        if let Some(callsite) = inner
             .strip_prefix("callsite(")
-            .and_then(|raw| raw.strip_suffix(')'))?;
-        let (_, expansion) = callsite.split_once(" at ")?;
-        self.resolve_source_point(expansion, depth + 1)
+            .and_then(|raw| raw.strip_suffix(')'))
+            && let Some((_, expansion)) = callsite.split_once(" at ")
+        {
+            return self.resolve_source_point(expansion, depth + 1);
+        }
+        self.resolve_source_point(inner, depth + 1)
     }
 
     fn resolve_source_point(&self, raw: &str, depth: usize) -> Option<SourcePoint> {
@@ -1442,7 +1463,10 @@ impl<'a> Lowerer<'a> {
         }
         let raw = raw.trim();
         if raw.starts_with('#') {
-            return self.resolve_source_point(self.loc_aliases.get(raw)?, depth + 1);
+            return self.resolve_source_point(
+                self.loc_aliases.get(raw.strip_prefix('#').unwrap_or(raw))?,
+                depth + 1,
+            );
         }
         let inner = raw
             .strip_prefix("loc(")
@@ -1450,7 +1474,11 @@ impl<'a> Lowerer<'a> {
             .unwrap_or(raw)
             .trim();
         if inner.starts_with('#') {
-            return self.resolve_source_point(self.loc_aliases.get(inner)?, depth + 1);
+            return self.resolve_source_point(
+                self.loc_aliases
+                    .get(inner.strip_prefix('#').unwrap_or(inner))?,
+                depth + 1,
+            );
         }
         let (file, line_col) = inner.rsplit_once("\":")?;
         let (line, col) = line_col.split_once(':')?;
@@ -2041,29 +2069,70 @@ impl __SlateVaArgs {
             data: ConstArrayData::Elements(items),
             ..
         } = init
-            && let Some(labels) = block_addr_labels(items)
         {
-            self.block_addr_globals.insert(rust_name.clone(), labels);
-            if is_c_global && let Some(ty) = ty {
-                let init = self.default_value_expr(&ty);
-                self.globals.insert(
-                    rust_name.clone(),
-                    GlobalVar {
-                        source_name: name.to_string(),
-                        name: rust_name,
-                        ty,
-                        init,
-                        alignment,
-                        thread_local,
-                        external: externally_exported(op)
-                            || self.project.cross_referenced_globals.contains(name),
-                        weak,
-                        section: section.clone(),
-                        used: used.clone(),
-                    },
-                );
+            if let Some(labels) = block_addr_labels(items) {
+                self.block_addr_globals.insert(rust_name.clone(), labels);
+                if is_c_global && let Some(ty) = ty {
+                    let init = self.default_value_expr(&ty);
+                    self.globals.insert(
+                        rust_name.clone(),
+                        GlobalVar {
+                            source_name: name.to_string(),
+                            name: rust_name,
+                            ty,
+                            init,
+                            alignment,
+                            thread_local,
+                            external: externally_exported(op)
+                                || self.project.cross_referenced_globals.contains(name),
+                            weak,
+                            section: section.clone(),
+                            used: used.clone(),
+                        },
+                    );
+                }
+                return;
             }
-            return;
+            let elem_is_byte_sized = matches!(
+                &ty,
+                Some(Type::Array { elem, .. }) if matches!(**elem, Type::Prim(Prim::I8 | Prim::U8))
+            );
+            // synthetic (non-`is_c_global`) element arrays of byte-typed
+            // elements are narrow string literals in per-element CIR form -
+            // render them the same way narrow string literals are.
+            if !is_c_global
+                && elem_is_byte_sized
+                && let Some(bytes) = items
+                    .iter()
+                    .map(|item| item.as_int().and_then(|value| u8::try_from(value).ok()))
+                    .collect::<Option<Vec<u8>>>()
+            {
+                self.strings.insert(name.to_string(), bytes);
+                return;
+            }
+            // wide-char string literals (`s32i`/`s16i` code-point elements)
+            // can't go through the byte-string path above - render them as
+            // a plain integer-element const array instead.
+            if !is_c_global
+                && name.starts_with(".str")
+                && !elem_is_byte_sized
+                && let Some(values) = items
+                    .iter()
+                    .map(Attr::as_int)
+                    .collect::<Option<Vec<i128>>>()
+            {
+                let total_len = ty
+                    .as_ref()
+                    .and_then(type_array_len)
+                    .unwrap_or(values.len() as u64) as usize;
+                let mut elems: Vec<Expr> = values
+                    .into_iter()
+                    .map(|value| Expr::Value(RustValue::I64(value as i64)))
+                    .collect();
+                elems.resize(total_len, Expr::Value(RustValue::I64(0)));
+                self.const_arrays.insert(name.to_string(), elems);
+                return;
+            }
         }
         if let Attr::ConstArray {
             data: ConstArrayData::Str(bytes),
@@ -3427,7 +3496,10 @@ impl __SlateVaArgs {
                         Expr::Value(RustValue::NullPtr)
                     })
                 } else {
-                    raw.parse::<i128>().ok().map(|addr| Expr::Cast {
+                    // `#cir.ptr<N : ty>` embeds its own type suffix inside the
+                    // body text, unlike most other `#cir.*` attrs.
+                    let digits = raw.split(':').next().unwrap_or(raw).trim();
+                    digits.parse::<i128>().ok().map(|addr| Expr::Cast {
                         expr: Box::new(int_value_expr(addr)),
                         ty: ty.clone(),
                     })
