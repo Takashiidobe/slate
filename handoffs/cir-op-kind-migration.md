@@ -50,23 +50,97 @@ classification call sites: `lower_op` noreturn/varargs checks,
 stackrestore detection). The other 41 variants had exactly one reference
 (the dead `lower_op` arm) and were fully deleted.
 
-**Explicitly not attempted**: structured control flow (`If`/`While`/
-`DoWhile`/`For`/`Switch`/`Case`/`Ternary`/`Try`/`Scope`/`CleanupScope`/
-`Return`/`Yield`/`Condition`/`Break`/`Continue`/`Br`/`BrCond`/`Goto`/
-`Label`/`IndirectGoto`/`Unreachable`/`Trap`). clang-ir's typed
-`Instruction` variants for these carry a `Body`/`InstBlock` tree (from
-`clang_ir::model::instruction::lower_region`), not slate's own `Region`/
-`Block`. Migrating them means rewriting `lower_if`/`lower_while`/
-`lower_for`/`lower_switch`/etc. to consume that shape instead of `&Op`'s
-regions — an actual statement-lowering rewrite, not a dispatch
-reclassification like every family above. Left on `CirOpKind` for now;
-needs its own design pass, not a family-at-a-time mechanical slice.
-Also untouched: vtables (`VtableGetVptr`/`VtableGetVirtualFnAddr`/
+**Correction (session 4)**: the paragraph above claiming structured control
+flow "requires rewriting the statement-lowering functions" was **wrong** —
+tested and disproven by actually migrating `If`. Reasoning error: I looked
+at `Instruction::If { condition, then_body: Body, else_body: Body }` and
+assumed slate's `lower_if` would need to consume that typed `Body` tree.
+It doesn't. `lower_if(op: &Op)` (and every other legacy `lower_*` control-flow
+helper) reads straight from `&Op` — `op.operands`/`op.regions` — same as
+every value-op helper. The typed match arm never has to touch `then_body`/
+`else_body` at all:
+
+```rust
+clang_ir::model::Instruction::If { .. } => {
+    self.lower_if(op);
+    return;
+}
+```
+
+This is the exact same one-line interception pattern as every family
+above. `CirOpKind::If` had exactly one repo-wide reference (the dead
+`lower_op` arm) and was deleted outright (enum variant + parse arm + match
+arm). Verified: `cargo build --release` clean, `lowering` 7/7 and
+`rewrites` 105/105 green, `cargo fmt`/`cargo clippy` clean.
+
+**Implication**: the *entire* control-flow family (`While`/`DoWhile`/`For`/
+`Switch`/`Case`/`Ternary`/`Try`/`Scope`/`CleanupScope`/`Return`/`Yield`/
+`Condition`/`Break`/`Continue`/`Br`/`BrCond`/`Goto`/`Label`/`IndirectGoto`/
+`Unreachable`/`Trap`) is likely just as mechanical as everything already
+done — each already has an existing `lower_*(op: &Op)` helper that ignores
+the typed `Body`, so the same one-arm-per-variant pattern should apply
+uniformly. Don't assume any given family needs special handling just
+because its typed variant has region/body fields — check whether the
+*existing* slate helper actually consumes those fields (it almost never
+does; slate re-derives everything from `&Op` itself). The only real
+per-family risk is whatever `try_lower`'s `?`-chain can fail on (e.g. `If`
+requires both `region(op,0)` and `region(op,1)` to be present — CIR always
+emits both regions structurally, even for an empty else, so this hasn't
+been observed to matter, but note it before deleting a variant on a family
+where that isn't already guaranteed).
+
+Still untouched: vtables (`VtableGetVptr`/`VtableGetVirtualFnAddr`/
 `BaseClassAddr`/`DerivedClassAddr`) and C++ exception-handling ops
 (`EhLongjmp`/`BeginCatch`/`EndCatch`/`InitCatchParam`/`Resume`) — these
 have zero `CirOpKind` variants today (slate doesn't support C++), so
 there's nothing to migrate; wiring them up would be adding new op support,
 out of scope for this ticket.
+
+**Blocked on the clang-ir crate itself** (confirmed by grepping
+`instruction.rs`, not just assumed): `DivOverflow`/`RemOverflow` (the
+`add.overflow`/`sub.overflow`/`mul.overflow` mnemonic match in `try_lower`
+literally doesn't include `div`/`rem` — this is unrelated to `Binary`'s
+`no_signed_wrap`/`no_unsigned_wrap`/`saturated` flags, which only cover
+plain wraparound UB tracking on add/sub/mul, not the two-result
+overflow-checked-division builtin shape slate's `cir.div.overflow`/
+`cir.rem.overflow` ops use), `ComplexMul`/`ComplexDiv`/`ComplexConj` (no
+`complex.mul`/`complex.div`/`complex.conj` mnemonic arm or type variant
+exists in this crate version at all — only `Create`/`Real`/`Imag`/
+`RealPtr`/`ImagPtr`/`Add`/`Sub` are modeled), and `SwitchFlat` (no
+`switch.flat` arm). `IndirectBr`/`IndirectGoto` is ambiguous: clang-ir does
+have `Instruction::IndirectGoto` on mnemonic `"indirect_goto"`, but per the
+user (session 5) it may no longer be supported/emitted correctly on the
+crate side — left alone for now rather than risk it. All of these are
+being addressed upstream in the clang-ir crate in parallel; re-check when
+that lands rather than re-deriving this from scratch.
+
+Session 5: migrated the control-transfer op family — `Return`, `Yield`,
+`Condition`, `Break`, `Continue`, `Br`, `BrCond`, `Goto`, `Label`,
+`Unreachable`, `Trap` — same one-arm-per-variant pattern as `If`. All 11
+keep their `CirOpKind` variant/parse-arm/legacy-match-arm alive (each has
+2+ other classification call sites in `control_flow.rs`'s loop/switch/
+dispatch state-machine building — grep confirmed none of them are down to
+a single reference), so this slice was purely additive: the typed match
+now dispatches these directly, the legacy match still exists as the
+fallback + external-classification path. `Yield`/`Condition`/`Label` were
+already no-ops in the legacy arm (values consumed elsewhere, e.g. by the
+parent `Switch`/`Ternary`/`Case`/label-dispatch machinery, not at
+top-level `lower_op`); the typed intercepts preserve that by also
+returning without calling anything.
+
+Verified: `cargo build --release` clean, `lowering` 7/7 and `rewrites`
+105/105 green, `cargo fmt`/`cargo clippy --release --all-targets` clean.
+
+Still not attempted (need their own slice — these are the ones with real
+`Body`/`InstBlock` trees the `lower_*` helpers *do* consume through
+`op.regions` + `self.lower_region_ops`, same call-through pattern as `If`,
+just untested yet): `While`, `Do`/`DoWhile`, `For`, `Switch`, `Ternary`,
+`Scope`, `CleanupScope`. Expect these to work with the identical
+one-arm-per-variant pattern — `If` already proved the `Body` fields don't
+need to be touched — but `Switch` in particular carries a `Vec<SwitchCase>`
+with more attribute-decoding surface than `If`'s two plain regions, so
+verify it against the full fixture suite (not just a clean build) before
+deleting `CirOpKind::Switch`.
 
 ## Why this is safe to do incrementally
 

@@ -4393,6 +4393,51 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 self.lower_atomic_clear(op);
                 return;
             }
+            clang_ir::model::Instruction::If { .. } => {
+                self.lower_if(op);
+                return;
+            }
+            clang_ir::model::Instruction::Return { .. } => {
+                self.lower_return(op);
+                return;
+            }
+            clang_ir::model::Instruction::Yield { .. } => {
+                return;
+            }
+            clang_ir::model::Instruction::Condition { .. } => {
+                return;
+            }
+            clang_ir::model::Instruction::Break => {
+                self.lower_break();
+                return;
+            }
+            clang_ir::model::Instruction::Continue => {
+                self.lower_continue();
+                return;
+            }
+            clang_ir::model::Instruction::Br { .. } => {
+                self.lower_br(op);
+                return;
+            }
+            clang_ir::model::Instruction::BrCond { .. } => {
+                self.lower_brcond(op);
+                return;
+            }
+            clang_ir::model::Instruction::Goto { .. } => {
+                self.lower_goto(op);
+                return;
+            }
+            clang_ir::model::Instruction::Label { .. } => {
+                return;
+            }
+            clang_ir::model::Instruction::Unreachable => {
+                self.lower_unreachable();
+                return;
+            }
+            clang_ir::model::Instruction::Trap => {
+                self.lower_trap();
+                return;
+            }
             _ => {}
         }
         match op.kind() {
@@ -4447,7 +4492,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::Return => self.lower_return(op),
             CirOpKind::Scope => self.lower_scope(op),
             CirOpKind::CleanupScope => self.lower_cleanup_scope(op),
-            CirOpKind::If => self.lower_if(op),
             CirOpKind::Switch => self.lower_switch(op),
             CirOpKind::SwitchFlat => self.lower_switch_flat(op),
             CirOpKind::For => self.lower_for(op),
