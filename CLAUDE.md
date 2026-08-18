@@ -57,14 +57,10 @@ git status
 ## Slate
 
 Slate translates C to Rust by lowering **ClangIR (CIR)** Clang's MLIR-based IR
-rather than LLVM IR, so it keeps structured control flow, integer signedness,
-and named locals. Correctness is the only
-bar and is checked by **differential testing**: compile and run both the C and
+so it keeps structured control flow, integer signedness,
+and named locals. Correctness is the only bar
+and is checked by **differential testing**: compile and run both the C and
 the generated Rust, then require identical stdout and exit code.
-
-For the current supported C subset (and what is _not_ handled yet), see
-[docs/README.md](docs/README.md); `c.bnf` is a one-screen reference grammar of
-that subset.
 
 ## Toolchain (prerequisite)
 
@@ -118,17 +114,12 @@ During feature development, isolate the new differential fixture:
 SLATE_DIFF_FIXTURE=<name> cargo nextest r --release --profile lowering --test differential -E 'test(generated_differential)' --nocapture
 ```
 
-Generated fixture trees are ignored inspection artifacts. Do not run
-`emit-fixtures` or `emit-lowered-fixtures` as part of implementation or session
-completion. The user regenerates them manually when desired.
-
 ## Architecture Overview
 
 ```
-C ──emit -> CIR -> parse -> Op-tree -> lower -> Rust source ->
-│  clang|cir-opt                      ▲
-└──ast-dump=json──────► Clang AST ────┘
-verified:  run(C).{stdout,exit} == run(Rust).{stdout,exit}
+C -> CIR -> parse -> lower -> Rust source -> Fixup Rust
+│                                 ▲
+└──ast-dump────► Clang AST ───────┘
 ```
 
 CIR is the primary lowering input; the Clang AST is the source-fact oracle, and
@@ -138,23 +129,23 @@ parses the generic-form CIR op-tree.
 
 **Read before making changes**
 
-- [docs/writing-a-fixup.md](docs/writing-a-fixup.md) — start here for any new
+- [agents/writing-a-fixup.md](agents/writing-a-fixup.md) — start here for any new
   or migrated rewrite: how to pick a rewrite shape and wire a new pass into
   the pipeline end to end.
-- [docs/fixups.md](docs/fixups.md) — the
+- [agents/fixups.md](agents/fixups.md) — the
   preferred query-driven interface for supported expression and definition
   rewrites: matcher/`EditSet` mechanics in depth.
-- [docs/facts.md](docs/facts.md) — the read-only analysis layer fixups
+- [agents/facts.md](agents/facts.md) — the read-only analysis layer fixups
   consume instead of re-deriving facts by hand.
-- [docs/architecture.md](docs/architecture.md) — sources, the two IRs, the
+- [agents/architecture.md](agents/architecture.md) — sources, the two IRs, the
   pipeline, and why CIR over LLVM IR.
-- [docs/lowerer.md](docs/lowerer.md) — the lowerer's internal module split:
+- [agents/lowerer.md](agents/lowerer.md) — the lowerer's internal module split:
   `Lowerer` vs `FunctionLowerer`, the `src/frontend/lowerer/*.rs` submodule
   map, op dispatch, and how to wire in a new `cir.*` handler. Read this before
   touching anything under `src/frontend/lowerer.rs` or `src/frontend/lowerer/`.
-- [docs/passes.md](docs/passes.md) — the pass catalog: what runs, in what order.
-- [docs/README.md](docs/README.md) — the supported-subset surface.
-- [docs/gcc-torture-triage.md](docs/gcc-torture-triage.md) — working the
+- [agents/passes.md](agents/passes.md) — the pass catalog: what runs, in what order.
+- [agents/README.md](agents/README.md) — the supported-subset surface.
+- [agents/gcc-torture-triage.md](agents/gcc-torture-triage.md) — working the
   gcc-torture/c-testsuite/chibicc/libc-test unsupported-corpus triage epics
   (`slate-os0h.3.1` and children): the three-test pattern, which nextest
   profile to use, how to dig into one failing case, where the compiled batch
@@ -169,7 +160,4 @@ parses the generic-form CIR op-tree.
 - **Transliterate first, idiomatize later.** Baseline Rust may be ugly:
   `#[repr(C)]`, raw pointers, explicit temps, `libc`, and `unsafe` are all
   acceptable. Make it correct first; recover idiom in separate, verified fixups.
-- **Keep the reference grammar current.** When you extend the supported subset,
-  update `c.bnf`. The diagnostic structured generator does not need to grow with
-  new features.
 - Run `cargo fmt`, `cargo clippy`, and the relevant release nextest profile before finishing.
