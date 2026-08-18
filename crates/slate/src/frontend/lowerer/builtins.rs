@@ -1,4 +1,6 @@
 use super::*;
+use clang_ir::model::CmpOpKind;
+use clang_ir::model::Instruction;
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
     pub(super) fn lower_ffs(&mut self, op: &Op) {
@@ -410,10 +412,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
-    pub(super) fn lower_cmp(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
+    pub(super) fn lower_cmp(&mut self, op: &Op, instr: Instruction) {
+        let Instruction::Cmp { result, kind, .. } = instr else {
+            unreachable!()
         };
+        let result = &result;
         if op.operands.len() < 2 {
             return;
         }
@@ -447,14 +450,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 |ty| self.call_arg_expr(&op.operands[1], ty),
             )
         };
-        let cmp = match attr_int(op, "kind") {
-            Some(0) => BinOp::Lt,
-            Some(1) => BinOp::Le,
-            Some(2) => BinOp::Gt,
-            Some(3) => BinOp::Ge,
-            Some(4) => BinOp::Eq,
-            Some(5) => BinOp::Ne,
-            Some(6) => {
+        let cmp = match kind {
+            CmpOpKind::Lt => BinOp::Lt,
+            CmpOpKind::Le => BinOp::Le,
+            CmpOpKind::Gt => BinOp::Gt,
+            CmpOpKind::Ge => BinOp::Ge,
+            CmpOpKind::Eq => BinOp::Eq,
+            CmpOpKind::Ne => BinOp::Ne,
+            CmpOpKind::One => {
                 let expr = Expr::Binary {
                     op: BinOp::Or,
                     lhs: Box::new(Expr::Binary {
@@ -471,7 +474,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 self.materialize_expr(result, expr, Some(&CirType::Bool));
                 return;
             }
-            Some(7) => {
+            CmpOpKind::Uno => {
                 let expr = Expr::Binary {
                     op: BinOp::Or,
                     lhs: Box::new(Expr::Binary {
@@ -488,7 +491,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 self.materialize_expr(result, expr, Some(&CirType::Bool));
                 return;
             }
-            _ => BinOp::Le,
         };
         self.materialize_expr(
             result,

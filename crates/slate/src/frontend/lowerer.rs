@@ -4134,8 +4134,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 self.lower_rotate(instr);
                 return;
             }
-            Instruction::Cmp { .. } => {
-                self.lower_cmp(op);
+            instr @ Instruction::Cmp { .. } => {
+                self.lower_cmp(op, instr);
                 return;
             }
             instr @ Instruction::Select { .. } => {
@@ -4162,8 +4162,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 self.lower_get_global(op);
                 return;
             }
-            Instruction::Cast { .. } => {
-                self.lower_cast(op);
+            instr @ Instruction::Cast { .. } => {
+                self.lower_cast(op, instr);
                 return;
             }
             Instruction::GetBitfield { .. } => {
@@ -4178,12 +4178,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 self.lower_get_element(op);
                 return;
             }
-            Instruction::PtrStride { .. } => {
-                self.lower_ptr_stride(op);
+            instr @ Instruction::PtrStride { .. } => {
+                self.lower_ptr_stride(op, instr);
                 return;
             }
-            Instruction::PtrDiff { .. } => {
-                self.lower_ptr_diff(op);
+            instr @ Instruction::PtrDiff { .. } => {
+                self.lower_ptr_diff(op, instr);
                 return;
             }
             Instruction::AddOverflow { .. } => {
@@ -4396,6 +4396,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             }
             Instruction::If { .. } => {
                 self.lower_if(op);
+                return;
+            }
+            Instruction::While { .. } => {
+                self.lower_while(op);
+                return;
+            }
+            Instruction::DoWhile { .. } => {
+                self.lower_do(op);
                 return;
             }
             Instruction::Return { .. } => {

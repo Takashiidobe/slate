@@ -348,4 +348,104 @@ UnaryOp`, `kind: MathUnaryKind`) rather than a loose value list, because
 they immediately re-dispatch to a *different* per-case helper rather than
 doing the op's own lowering — that's a different shape (a second-level
 dispatch, not a leaf lowering), so it doesn't need this treatment, only
-the leaf `lower_*` functions those call into.
+the leaf `lower_*` functions those call into. Same reasoning applies to
+`lower_overflow_arith` (shared by `AddOverflow`/`SubOverflow`/
+`MulOverflow`, called with a hardcoded `rust_method` string per variant) —
+skipped for the instruction-passing conversion for the same reason, not
+overlooked.
+
+## Session 7: more Phase 2.5 conversions + first new control-flow family (`While`/`DoWhile`)
+
+**Important correction to the session 6 "next up" list**: `Load`, `Store`,
+`Const`, `GetGlobal` (and by the same logic `GetBitfield`/`SetBitfield`/
+`GetElement`) are **not** safe to convert to the instruction-passing shape.
+These are the families that kept their `CirOpKind` variant + legacy
+`match op.kind()` fallback arm (session 2/3 note: "malformed-op fallback").
+That legacy arm exists specifically for the case where
+`instruction::lower_op(op)` did *not* produce the typed variant (missing
+operand/result) — `op.kind()` still says e.g. `CirOpKind::Load` (it's
+parsed independently from the mnemonic), but there is no valid
+`Instruction::Load` to hand to a `lower_load(op, instr: Instruction)`
+signature; the whole point of the fallback is to run without one. Forcing
+the signature to require `Instruction` and unwrapping with `unreachable!()`
+would turn the documented "malformed op silently no-ops" behavior into a
+panic on that path. Converting these needs a different approach (e.g. keep
+the `op`-only signature, or thread `Option<Instruction>`) — left alone this
+session, don't repeat the mistake of converting them blind.
+
+Actually converted this session (all confirmed via
+`rg -n 'CirOpKind::TheVariant\b'` returning **zero** hits, i.e. the
+`CirOpKind` variant is already fully deleted for these, so there's no
+fallback-arm hazard):
+
+- `Cmp` (`builtins.rs::lower_cmp`) — also folded in the attr-enum cleanup:
+  replaced the hand-rolled `attr_int(op, "kind")` → `0..=7` int match with
+  the crate's `CmpOpKind` enum (`Lt`/`Le`/`Gt`/`Ge`/`Eq`/`Ne`/`One`/`Uno`),
+  deleting the `_ => BinOp::Le` silent-fallback arm since the typed match
+  is now exhaustive over `CmpOpKind`'s real variants.
+- `Cast` (`memory.rs::lower_cast`) — signature-only conversion (`result`/
+  `operand` now come from the typed fields); note for whoever converts the
+  next cast-adjacent thing: `lower_cast` doesn't consume `CastKind` at all
+  today, it's 100% type-shape-driven off `op_result_type`/
+  `op_operand_types`, so there was no attr-decode to fold in here despite
+  `Instruction::Cast` carrying a `kind: CastKind` field.
+- `PtrStride` (`memory.rs::lower_ptr_stride`) — `addr`/`stride` from typed
+  fields instead of `op.operands[0]`/`[1]`.
+- `PtrDiff` (`memory.rs::lower_ptr_diff`) — `lhs`/`rhs` from typed fields
+  instead of `op.operands[0]`/`[1]`.
+
+Also started the "genuinely new family" backlog from session 6
+(`While`/`Do`/`For`/`Switch`/`Ternary`/`Scope`/`CleanupScope`), following
+the `If` precedent exactly (session 4's one-line-intercept pattern, not the
+instruction-passing shape — these existing `lower_while`/`lower_do` helpers
+read straight from `op.regions`, same as `lower_if`):
+
+```rust
+Instruction::While { .. } => {
+    self.lower_while(op);
+    return;
+}
+Instruction::DoWhile { .. } => {
+    self.lower_do(op);
+    return;
+}
+```
+
+Both `While` and `DoWhile` keep their `CirOpKind` variant — `rg` found
+`types.rs`'s loop-classification match (`CirOpKind::For | CirOpKind::While
+| CirOpKind::Do => false`) and, for `Do` specifically, `cir_ops.rs`'s
+switch-desugaring lookup (`transparent_single_op(outer_case.region,
+CirOpKind::Do)`), both independent of `lower_op`'s dispatch — so this
+slice is purely additive, same shape as session 5's control-transfer
+family. `clang_ir::model::Instruction::While`/`DoWhile`'s `try_lower` both
+require *both* regions to be present (no partial-construction path), so
+there's no new malformed-op edge case to worry about here, unlike the
+`If`-adjacent gotcha noted for other regioned ops.
+
+Verified: `cargo build --release` clean, `lowering` 7/7 green (both before
+and after `cargo fmt`, which reformatted unrelated pre-existing code in
+`memory.rs`'s `lower_get_global`/`lower_get_member`/etc. — not touched by
+this session's edits, just picked up by the formatter), `cargo clippy
+--release --all-targets` clean. `rewrites`/`libc` not run — this session's
+changes are entirely within `src/frontend/lowerer.rs` and
+`src/frontend/lowerer/{builtins,memory}.rs`, frontend/lowering surface
+only.
+
+Not committed — conservative git policy.
+
+**Still remaining for the next session**: `For`, `Switch`, `Ternary`,
+`Scope`, `CleanupScope` (new-family, `If`/`While` pattern, `Switch` needs
+the full fixture suite per session 6's note on its `Vec<SwitchCase>`
+surface) — plus continuing the Phase 2.5 instruction-passing conversion
+through `Select` question marks already done, `AtomicFetch`/
+`AtomicXchg`/`AtomicCmpXchg`/etc (good candidates for the attr-enum
+cleanup: `AtomicFetchKind`/`MemOrder`/`SyncScopeKind` are all typed on
+`Instruction`'s atomic variants and slate's `atomic.rs` currently
+re-derives equivalents by hand from raw ordinals per the session 6 note),
+`VecCmp` (same `CmpOpKind` field this session already proved out on
+`Cmp`), and the vector/complex/math families from session 3
+(`VecSplat`/`VecExtract`/.../`ComplexAdd`/`ComplexSub`/`Copysign`/
+`FMaxNum`/`FMinNum`/`Fmuladd`/`Fma`/`Modf`) — none of these have the
+legacy-fallback hazard (`rg` confirmed all fully deleted `CirOpKind`
+variants), so they're all safe blind spots to pick up next, just not yet
+attempted.
