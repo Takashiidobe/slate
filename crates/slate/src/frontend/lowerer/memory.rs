@@ -2,11 +2,11 @@ use super::*;
 use clang_ir::model::Instruction;
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
-    pub(super) fn lower_get_global(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
+    pub(super) fn lower_get_global(&mut self, op: &Op, instr: Instruction) {
+        let Instruction::GetGlobal { result, name, .. } = instr else {
+            unreachable!()
         };
-        let name = attr_symbol_ref(op, "name").unwrap_or("").to_string();
+        let result = &result;
         let name = self.parent.weak_refs.get(&name).cloned().unwrap_or(name);
         let name = if self.parent.strings.contains_key(&name)
             || self.parent.const_arrays.contains_key(&name)

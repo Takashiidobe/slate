@@ -4142,24 +4142,24 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 self.lower_select(instr);
                 return;
             }
-            Instruction::Load { .. } => {
-                self.lower_load(op);
+            instr @ Instruction::Load { .. } => {
+                self.lower_load(op, instr);
                 return;
             }
-            Instruction::Store { .. } => {
-                self.lower_store(op);
+            instr @ Instruction::Store { .. } => {
+                self.lower_store(op, instr);
                 return;
             }
             instr @ Instruction::Copy { .. } => {
                 self.lower_copy(instr);
                 return;
             }
-            Instruction::Const { .. } => {
-                self.lower_const(op);
+            instr @ Instruction::Const { .. } => {
+                self.lower_const(op, instr);
                 return;
             }
-            Instruction::GetGlobal { .. } => {
-                self.lower_get_global(op);
+            instr @ Instruction::GetGlobal { .. } => {
+                self.lower_get_global(op, instr);
                 return;
             }
             instr @ Instruction::Cast { .. } => {
@@ -4451,9 +4451,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         match op.kind() {
             CirOpKind::Alloca => self.lower_alloca(op),
-            CirOpKind::Store => self.lower_store(op),
-            CirOpKind::Load => self.lower_load(op),
-            CirOpKind::Const => self.lower_const(op),
             CirOpKind::Asm => self.lower_asm(op),
             CirOpKind::Acos => self.lower_unary_method(op, "acos"),
             CirOpKind::Asin => self.lower_unary_method(op, "asin"),
@@ -4485,7 +4482,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::ComplexDiv => self.lower_complex_div(op),
             CirOpKind::ComplexConj => self.lower_complex_conj(op),
             CirOpKind::Ternary => self.lower_ternary(op),
-            CirOpKind::GetGlobal => self.lower_get_global(op),
             CirOpKind::GetMember => self.lower_get_member(op),
             CirOpKind::InsertMember => self.lower_insert_member(op),
             CirOpKind::GetBitfield => self.lower_get_bitfield(op),
