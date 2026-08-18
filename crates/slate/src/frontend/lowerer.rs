@@ -4110,59 +4110,121 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn lower_op(&mut self, op: &Op) {
-        if let clang_ir::model::Instruction::Binary {
-            op: bop, saturated, ..
-        } = clang_ir::model::instruction::lower_op(op)
-        {
-            self.lower_binary_family(op, bop, saturated);
-            return;
+        match clang_ir::model::instruction::lower_op(op) {
+            clang_ir::model::Instruction::Binary {
+                op: bop, saturated, ..
+            } => {
+                self.lower_binary_family(op, bop, saturated);
+                return;
+            }
+            clang_ir::model::Instruction::Unary { op: uop, .. } => {
+                self.lower_unary_family(op, uop);
+                return;
+            }
+            clang_ir::model::Instruction::MathUnary { kind, .. } => {
+                self.lower_math_unary_family(op, kind);
+                return;
+            }
+            clang_ir::model::Instruction::Shift { .. } => {
+                self.lower_shift(op);
+                return;
+            }
+            clang_ir::model::Instruction::Rotate { .. } => {
+                self.lower_rotate(op);
+                return;
+            }
+            clang_ir::model::Instruction::Cmp { .. } => {
+                self.lower_cmp(op);
+                return;
+            }
+            clang_ir::model::Instruction::Select { .. } => {
+                self.lower_select(op);
+                return;
+            }
+            clang_ir::model::Instruction::Load { .. } => {
+                self.lower_load(op);
+                return;
+            }
+            clang_ir::model::Instruction::Store { .. } => {
+                self.lower_store(op);
+                return;
+            }
+            clang_ir::model::Instruction::Copy { .. } => {
+                self.lower_copy(op);
+                return;
+            }
+            clang_ir::model::Instruction::Const { .. } => {
+                self.lower_const(op);
+                return;
+            }
+            clang_ir::model::Instruction::GetGlobal { .. } => {
+                self.lower_get_global(op);
+                return;
+            }
+            clang_ir::model::Instruction::Cast { .. } => {
+                self.lower_cast(op);
+                return;
+            }
+            clang_ir::model::Instruction::GetBitfield { .. } => {
+                self.lower_get_bitfield(op);
+                return;
+            }
+            clang_ir::model::Instruction::SetBitfield { .. } => {
+                self.lower_set_bitfield(op);
+                return;
+            }
+            clang_ir::model::Instruction::GetElement { .. } => {
+                self.lower_get_element(op);
+                return;
+            }
+            clang_ir::model::Instruction::PtrStride { .. } => {
+                self.lower_ptr_stride(op);
+                return;
+            }
+            clang_ir::model::Instruction::PtrDiff { .. } => {
+                self.lower_ptr_diff(op);
+                return;
+            }
+            clang_ir::model::Instruction::AddOverflow { .. } => {
+                self.lower_overflow_arith(op, "overflowing_add");
+                return;
+            }
+            clang_ir::model::Instruction::SubOverflow { .. } => {
+                self.lower_overflow_arith(op, "overflowing_sub");
+                return;
+            }
+            clang_ir::model::Instruction::MulOverflow { .. } => {
+                self.lower_overflow_arith(op, "overflowing_mul");
+                return;
+            }
+            _ => {}
         }
         match op.kind() {
             CirOpKind::Alloca => self.lower_alloca(op),
             CirOpKind::Store => self.lower_store(op),
-            CirOpKind::Copy => self.lower_copy(op),
             CirOpKind::Load => self.lower_load(op),
             CirOpKind::Const => self.lower_const(op),
-            CirOpKind::AddOverflow => self.lower_overflow_arith(op, "overflowing_add"),
-            CirOpKind::SubOverflow => self.lower_overflow_arith(op, "overflowing_sub"),
-            CirOpKind::MulOverflow => self.lower_overflow_arith(op, "overflowing_mul"),
             CirOpKind::DivOverflow => self.lower_overflow_arith(op, "overflowing_div"),
             CirOpKind::RemOverflow => self.lower_overflow_arith(op, "overflowing_rem"),
             CirOpKind::Asm => self.lower_asm(op),
-            CirOpKind::Bitreverse => self.lower_unary_method(op, "reverse_bits"),
             CirOpKind::BlockAddress => self.lower_opaque_pointer(op, true),
-            CirOpKind::ByteSwap => self.lower_unary_method(op, "swap_bytes"),
-            CirOpKind::Clrsb => self.lower_clrsb(op),
-            CirOpKind::Clz => self.lower_unary_method(op, "leading_zeros"),
-            CirOpKind::Ctz => self.lower_unary_method(op, "trailing_zeros"),
-            CirOpKind::Ffs => self.lower_ffs(op),
             CirOpKind::IsConstant => self.lower_is_constant(op),
             CirOpKind::Objsize => self.lower_objsize(op),
-            CirOpKind::Parity => self.lower_parity(op),
-            CirOpKind::Popcount => self.lower_unary_method(op, "count_ones"),
-            CirOpKind::Rotate => self.lower_rotate(op),
-            CirOpKind::Shift => self.lower_shift(op),
-            CirOpKind::Not => self.lower_not(op),
-            CirOpKind::Minus | CirOpKind::Fneg => self.lower_neg(op),
-            CirOpKind::Abs => self.lower_abs(op),
             CirOpKind::Acos => self.lower_unary_method(op, "acos"),
             CirOpKind::Asin => self.lower_unary_method(op, "asin"),
             CirOpKind::Atan => self.lower_unary_method(op, "atan"),
             CirOpKind::Atan2 => self.lower_binary_method(op, "atan2"),
             CirOpKind::Assume => self.lower_assume(op),
-            CirOpKind::Ceil => self.lower_unary_method(op, "ceil"),
             CirOpKind::ClearCache => {}
             CirOpKind::Copysign => self.lower_binary_method(op, "copysign"),
             CirOpKind::Cos => self.lower_known_unary_method(op, Known::Cos, "cos"),
             CirOpKind::Exp => self.lower_known_unary_method(op, Known::Exp, "exp"),
             CirOpKind::Exp2 => self.lower_known_unary_method(op, Known::Exp2, "exp2"),
             CirOpKind::Expect => self.lower_expect(op),
-            CirOpKind::Fabs => self.lower_unary_method(op, "abs"),
             CirOpKind::Fma => self.lower_ternary_method(op, "mul_add"),
             CirOpKind::Fmaximum => self.lower_binary_method(op, "max"),
             CirOpKind::Fminimum => self.lower_binary_method(op, "min"),
             CirOpKind::Fmod => self.lower_known_binary(op, Known::Fmod, BinOp::Rem),
-            CirOpKind::Floor => self.lower_unary_method(op, "floor"),
             CirOpKind::Fmaxnum => self.lower_binary_method(op, "max"),
             CirOpKind::Fminnum => self.lower_binary_method(op, "min"),
             CirOpKind::IsFpClass => self.lower_is_fp_class(op),
@@ -4174,13 +4236,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::Lrint => self.lower_unary_cast_method(op, "round_ties_even"),
             CirOpKind::Lround => self.lower_known_unary_cast_method(op, Known::Lround, "round"),
             CirOpKind::Modf => self.lower_modf(op),
-            CirOpKind::Nearbyint => self.lower_unary_method(op, "round_ties_even"),
             CirOpKind::Pow => self.lower_known_binary_method(op, Known::Pow, "powf"),
             CirOpKind::Prefetch => {}
-            CirOpKind::Rint => self.lower_unary_method(op, "round_ties_even"),
-            CirOpKind::Round => self.lower_unary_method(op, "round"),
             CirOpKind::Roundeven => self.lower_unary_method(op, "round_ties_even"),
-            CirOpKind::Signbit => self.lower_signbit(op),
             CirOpKind::Sin => self.lower_known_unary_method(op, Known::Sin, "sin"),
             CirOpKind::Sqrt => self.lower_known_unary_method(op, Known::Sqrt, "sqrt"),
             CirOpKind::FrameAddress => self.lower_opaque_pointer(op, true),
@@ -4189,7 +4247,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::Stackrestore => {}
             CirOpKind::Tan => self.lower_known_unary_method(op, Known::Tan, "tan"),
             CirOpKind::Trap => self.lower_trap(),
-            CirOpKind::Trunc => self.lower_unary_method(op, "trunc"),
             CirOpKind::Unreachable => self.lower_unreachable(),
             CirOpKind::ComplexAdd => self.lower_complex_add(op),
             CirOpKind::ComplexSub => self.lower_complex_sub(op),
@@ -4201,10 +4258,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::ComplexImag => self.lower_complex_part(op, "im"),
             CirOpKind::ComplexRealPtr => self.lower_complex_part_ptr(op, "re"),
             CirOpKind::ComplexImagPtr => self.lower_complex_part_ptr(op, "im"),
-            CirOpKind::Inc => self.lower_step(op, BinOp::Add),
-            CirOpKind::Dec => self.lower_step(op, BinOp::Sub),
-            CirOpKind::Cmp => self.lower_cmp(op),
-            CirOpKind::Select => self.lower_select(op),
             CirOpKind::Ternary => self.lower_ternary(op),
             CirOpKind::GetGlobal => self.lower_get_global(op),
             CirOpKind::GetMember => self.lower_get_member(op),
@@ -4213,9 +4266,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::GetBitfield => self.lower_get_bitfield(op),
             CirOpKind::SetBitfield => self.lower_set_bitfield(op),
             CirOpKind::GetElement => self.lower_get_element(op),
-            CirOpKind::Cast => self.lower_cast(op),
-            CirOpKind::PtrStride => self.lower_ptr_stride(op),
-            CirOpKind::PtrDiff => self.lower_ptr_diff(op),
             CirOpKind::Call => self.lower_call(op),
             CirOpKind::LibcMemcpy => self.lower_mem_copy(op, false),
             CirOpKind::LibcMemmove => self.lower_mem_copy(op, true),
