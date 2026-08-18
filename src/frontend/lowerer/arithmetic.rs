@@ -1,6 +1,8 @@
 use super::*;
 use crate::function_identity;
 use clang_ir::model::BinaryOp;
+use clang_ir::model::UnaryOp as CirUnaryOp;
+use clang_ir::model::instruction::MathUnaryKind;
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
     pub(super) fn lower_binary_family(&mut self, op: &Op, bop: BinaryOp, saturated: bool) {
@@ -19,6 +21,37 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             BinaryOp::FSub => self.lower_binary(op, BinOp::Sub),
             BinaryOp::FMul => self.lower_binary(op, BinOp::Mul),
             BinaryOp::FDiv => self.lower_binary(op, BinOp::Div),
+        }
+    }
+
+    pub(super) fn lower_unary_family(&mut self, op: &Op, uop: CirUnaryOp) {
+        match uop {
+            CirUnaryOp::Inc => self.lower_step(op, BinOp::Add),
+            CirUnaryOp::Dec => self.lower_step(op, BinOp::Sub),
+            CirUnaryOp::Minus | CirUnaryOp::FNeg => self.lower_neg(op),
+            CirUnaryOp::Not => self.lower_not(op),
+        }
+    }
+
+    pub(super) fn lower_math_unary_family(&mut self, op: &Op, kind: MathUnaryKind) {
+        match kind {
+            MathUnaryKind::BitReverse => self.lower_unary_method(op, "reverse_bits"),
+            MathUnaryKind::ByteSwap => self.lower_unary_method(op, "swap_bytes"),
+            MathUnaryKind::Clrsb => self.lower_clrsb(op),
+            MathUnaryKind::Clz => self.lower_unary_method(op, "leading_zeros"),
+            MathUnaryKind::Ctz => self.lower_unary_method(op, "trailing_zeros"),
+            MathUnaryKind::Ffs => self.lower_ffs(op),
+            MathUnaryKind::Parity => self.lower_parity(op),
+            MathUnaryKind::Popcount => self.lower_unary_method(op, "count_ones"),
+            MathUnaryKind::Abs => self.lower_abs(op),
+            MathUnaryKind::Ceil => self.lower_unary_method(op, "ceil"),
+            MathUnaryKind::Fabs => self.lower_unary_method(op, "abs"),
+            MathUnaryKind::Floor => self.lower_unary_method(op, "floor"),
+            MathUnaryKind::Nearbyint => self.lower_unary_method(op, "round_ties_even"),
+            MathUnaryKind::Rint => self.lower_unary_method(op, "round_ties_even"),
+            MathUnaryKind::Round => self.lower_unary_method(op, "round"),
+            MathUnaryKind::Signbit => self.lower_signbit(op),
+            MathUnaryKind::Trunc => self.lower_unary_method(op, "trunc"),
         }
     }
 }
