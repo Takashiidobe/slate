@@ -180,7 +180,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         Some(_)
                             if arg_types
                                 .get(i)
-                                .is_some_and(|t| is_cir_function_pointer_type(t)) =>
+                                .is_some_and(is_cir_function_pointer_type) =>
                         {
                             arg
                         }

@@ -16,10 +16,10 @@ pub(super) fn call_arg_byval_type(op: &Op, operand_index: usize) -> Option<&str>
     let Attr::Array(entries) = op.attr("arg_attrs")? else {
         return None;
     };
-    entries
-        .get(operand_index)?
-        .dict_get("llvm.byval")
-        .and_then(Attr::as_str)
+    let value = entries.get(operand_index)?.dict_get("llvm.byval")?;
+    value
+        .as_str()
+        .or_else(|| value.as_type().and_then(cir_record_name))
 }
 
 pub(super) fn successor_operand_groups(op: &Op) -> Vec<Vec<String>> {
@@ -66,8 +66,32 @@ pub(super) fn successor_operand_groups(op: &Op) -> Vec<Vec<String>> {
     }
 }
 
+fn builtin_dense_array_ints(attr: &Attr) -> Option<Vec<i64>> {
+    let Attr::Dialect {
+        dialect,
+        mnemonic,
+        raw: Some(raw),
+        ..
+    } = attr
+    else {
+        return None;
+    };
+    if dialect != "builtin" || mnemonic != "array" {
+        return None;
+    }
+    let digits = raw.split_once(':').map_or(raw.as_str(), |(_, rest)| rest);
+    digits
+        .split(',')
+        .map(|part| part.trim().parse::<i64>().ok())
+        .collect()
+}
+
 pub(super) fn attr_i64_array(op: &Op, key: &str) -> Option<Vec<i64>> {
-    let Attr::Array(values) = op.attr(key)? else {
+    let attr = op.attr(key)?;
+    if let Some(values) = builtin_dense_array_ints(attr) {
+        return Some(values);
+    }
+    let Attr::Array(values) = attr else {
         return None;
     };
     Some(
@@ -79,7 +103,11 @@ pub(super) fn attr_i64_array(op: &Op, key: &str) -> Option<Vec<i64>> {
 }
 
 pub(super) fn attr_int_array(op: &Op, key: &str) -> Option<Vec<u64>> {
-    let Attr::Array(values) = op.attr(key)? else {
+    let attr = op.attr(key)?;
+    if let Some(values) = builtin_dense_array_ints(attr) {
+        return values.into_iter().map(|n| u64::try_from(n).ok()).collect();
+    }
+    let Attr::Array(values) = attr else {
         return None;
     };
     values

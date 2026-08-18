@@ -485,19 +485,12 @@ pub(super) fn long_double_shim_type_tag(ty: &Type) -> String {
     }
 }
 
-// clang lowers complex `*`/`/` to the libgcc runtime (__mul?c3/__div?c3), reached
-// directly for `/` and via a NaN-recovery branch for `*`. We call the same symbols
-// so results are bit-identical; #[repr(C)] {re, im} matches the return ABI.
 pub(super) fn is_complex_runtime_call(name: &str) -> bool {
     matches!(name, "__muldc3" | "__divdc3" | "__mulsc3" | "__divsc3")
 }
 
 pub(super) fn complex_ty(inner: Type) -> Type {
     Type::Complex(Box::new(inner))
-}
-
-pub(super) fn cir_complex_inner(ty: &str) -> Option<&str> {
-    ty.strip_prefix("!cir.complex<")?.strip_suffix('>')
 }
 
 pub(super) fn complex_runtime_decl(name: &str, prim: Prim) -> ExternDecl {

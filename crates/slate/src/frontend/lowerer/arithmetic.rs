@@ -393,7 +393,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .first()
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or(Type::Prim(Prim::I32));
-        let operand_int_ty = operand_types.first().and_then(|ty| parse_cir_int_type(ty));
+        let operand_int_ty = operand_types.first().and_then(parse_cir_int_type);
 
         if bitint_generic_parts(&operand_rust_ty).is_some()
             && operand_int_ty.is_some_and(|(_, bits)| bits <= 128)
@@ -503,7 +503,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         };
         if let Some((elem_ty, len)) = op_result_type(op).and_then(parse_cir_vector_type) {
             let value = self.operand_expr(value);
-            let elem_rust_ty = self.parent.rust_type(&elem_ty);
+            let elem_rust_ty = self.parent.rust_type(elem_ty);
             let elem_is_wrapping_int = matches!(
                 &elem_rust_ty,
                 Type::Prim(

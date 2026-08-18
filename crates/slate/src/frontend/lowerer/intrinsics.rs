@@ -605,7 +605,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         };
         let lhs = self.operand_expr(&op.operands[0]);
         let rhs = self.operand_expr(&op.operands[1]);
-        let elem_rust_ty = self.parent.rust_type(&elem_ty);
+        let elem_rust_ty = self.parent.rust_type(elem_ty);
         self.materialize_expr(
             result,
             Expr::ArrayLit(
