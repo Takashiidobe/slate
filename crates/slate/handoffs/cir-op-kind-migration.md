@@ -19,24 +19,20 @@ fixtures before any `CirOpKind` variant is deleted.
   Prefetch, InlineAsm, StackSave/StackRestore, MemChr, CallLlvmIntrinsic,
   BlockAddress, Assume, MemCpy/MemMove/MemSet, ClearCache, the 6 atomic
   ops, If, Return, Yield, Condition, Break, Continue, Br, BrCond, Goto,
-  Label, Unreachable, Trap, While, DoWhile.
+  Label, Unreachable, Trap, While, DoWhile, For, Switch, Ternary, Scope,
+  CleanupScope.
 - Of those, most had their `CirOpKind` variant/parse-arm/legacy-match-arm
   deleted outright (single reference = the dead `lower_op` arm). Kept
-  alive (real classification call sites elsewhere in the codebase —
-  `analysis.rs`, `types.rs`, `bitfields.rs`, `asm.rs`, `control_flow.rs`,
-  `cir_ops.rs`): `Call`, `GetMember`, `VaStart`, `VaCopy`, `VaArg`, `Asm`,
-  `Stackrestore`, `CallLlvmIntrinsic`, `Const`, `GetGlobal`,
-  `GetBitfield`, `SetBitfield`, `GetElement`, all control-transfer ops,
-  `While`, `Do`.
+  alive (real classification call sites elsewhere in the codebase, or a
+  fallback arm that's load-bearing — see gotchas): `Call`, `GetMember`,
+  `VaStart`, `VaCopy`, `VaArg`, `Asm`, `Stackrestore`, `CallLlvmIntrinsic`,
+  `Const`, `GetGlobal`, all control-transfer ops, `While`, `Do`, `For`,
+  `Switch`, `Ternary`, `CleanupScope`.
 - Converted to the "pass the whole `Instruction`, not just discriminant
   fields" shape (Phase 2.5, see below): `Rotate`, `Shift`, `Select`,
   `Copy`, `Cmp`, `Cast`, `PtrStride`, `PtrDiff`, `Load`, `Store`, `Const`,
-  `GetGlobal`. Everything else migrated is still call-through
-  (`self.lower_x(op)`), not yet converted.
-- Not attempted: `For`, `Switch`, `Ternary`, `Scope`, `CleanupScope` (new
-  families — expect the `If`/`While` one-line-intercept pattern to work
-  unchanged, `Switch` has more attr-decoding surface so verify against the
-  full fixture suite, not just a clean build).
+  `GetGlobal`, `GetElement`, `GetBitfield`, `SetBitfield`. Everything else
+  migrated is still call-through (`self.lower_x(op)`), not yet converted.
 - Blocked on the `clang-ir` crate (being fixed upstream, re-check before
   re-deriving): `DivOverflow`/`RemOverflow` deleted outright (dead — no
   div/rem overflow builtin exists in C). `ComplexMul`/`ComplexDiv`/
@@ -102,8 +98,11 @@ attr → fabricated zero value / empty-string global name), tighten the
 helper's own guard to match `try_lower` first, *then* convert — moving the
 precondition from a runtime check to "only reachable once dispatch already
 validated it" is a deliberate behavior tightening, not just a refactor.
-`GetBitfield`/`SetBitfield`/`GetElement` still need this audit before
-converting.
+
+`GetBitfield`/`SetBitfield` looked provably-dead by this same guard-parity
+check but weren't — a *third* failure mode, distinct from missing-attr:
+`try_lower` can fail to decode an attr that's fully *present* (see the
+alias gotcha below). Fixed at the crate level, then converted safely.
 
 ## Other gotchas
 
@@ -118,6 +117,30 @@ converting.
   parse-arm *spelling* (e.g. `"cir.indirect_br"` alias, superseded by
   `"cir.indirect_goto"`) changes real parse output, so that needs the
   `lowering` profile, same bar as any other behavior change.
+- **Attribute alias gotcha**: MLIR's generic printer hoists large/repeated
+  attributes (e.g. `#cir.bitfield_info<...>`) into a module-level `#name =
+  ...` alias, referenced elsewhere as bare `#name`. `Instruction::try_lower`
+  only sees a bare `&Operation`, not the owning `Module`, so it can't
+  resolve that alias — a structural `TryFrom<&Attribute>` decode (like
+  `BitfieldInfo::try_from`) fails on the *unresolved* alias even though the
+  op is well-formed and the attr is genuinely present. This silently
+  degraded `GetBitfield`/`SetBitfield` to the `Other(_)`/`todo!` path for
+  any bitfield op whose attr got aliased — caught by a full `lowering`
+  profile run, not by `cargo check`, since it's real ops failing to lower,
+  not a compile error. **Fixed in the crate** (`~/Projects/clang-ir`, local
+  path dep — see session 9): `Module::resolve_named_attrs`, called at the
+  end of `parse_module`, eagerly resolves every `Attribute::Named`
+  reachable from the parsed ops against the module's alias table right
+  after parsing, so `op.attr(...)` never returns an unresolved alias again.
+  Lesson: guard-parity between a hand-written helper and `try_lower` isn't
+  enough on its own — also sanity-check against real emitted CIR (not just
+  a synthetic minimal fixture) before trusting "provably dead."
+- `Attr`/`CirType` (`src/cir/ir.rs`) are `pub use clang_ir::ast::{Attribute
+  as Attr, ..., Type as CirType}` — literally the same types `Instruction`'s
+  typed fields use, not a separate representation. An earlier version of
+  this doc (session 8) wrongly said they needed reconciling; they don't.
+  See `slate-cevu.6` for the actual remaining gap (per-operand types and
+  the untyped block/region traversal engine).
 
 ## Session log
 
@@ -143,3 +166,17 @@ converting.
    tightened them to require the typed `Instruction` (making the missing-
    attr fallback structurally unreachable) before converting. Deleted all
    four now-dead legacy match arms.
+9. Migrated `For`/`Switch`/`Ternary`/`Scope`/`CleanupScope` (additive,
+   op-only — their fallback arms do real work on malformed input, not
+   provably dead). Converted `GetElement` (provably dead) directly. Tried
+   the same for `GetBitfield`/`SetBitfield`, which regressed a real gcc
+   torture fixture (`20040709-1.c`, bitfields + long double) —
+   `BitfieldInfo::try_from` was failing on a real, well-formed op because
+   its attr had been hoisted into an MLIR attribute alias `try_lower`
+   couldn't resolve (see the alias gotcha above). Root-caused and fixed in
+   the `clang-ir` crate itself rather than working around it in slate, then
+   re-converted `GetBitfield`/`SetBitfield` on top of the fix. Scoped a
+   follow-up epic child (`slate-cevu.6`) for making `Instruction` fully
+   self-sufficient (per-operand types, typed block/region traversal) so
+   `lower_*` helpers can eventually drop `op` entirely — out of scope for
+   this ticket, doesn't block continuing per-family migration.

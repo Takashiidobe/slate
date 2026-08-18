@@ -366,15 +366,20 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .is_some_and(|last| sanitize_ident(&last.name).as_str() == field)
     }
 
-    pub(super) fn lower_set_bitfield(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
+    pub(super) fn lower_set_bitfield(&mut self, op: &Op, instr: Instruction) {
+        let Instruction::SetBitfield {
+            result,
+            addr: base_ptr,
+            value,
+            ..
+        } = instr
+        else {
+            unreachable!()
         };
-        if op.operands.len() < 2 {
-            return;
-        }
+        let result = &result;
+        let base_ptr = &base_ptr;
         let ty = op_result_type(op);
-        let value = self.operand_expr(&op.operands[1]);
+        let value = self.operand_expr(&value);
         let value = ty.map_or(value.clone(), |ty| Expr::Cast {
             expr: Box::new(value),
             ty: self.parent.rust_type(ty),
@@ -382,10 +387,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let trunc = self.truncate_bitfield_expr(op, value, ty);
         self.materialize_expr(result, trunc, ty);
         let stored = self.operand_expr(result);
-        let (place, needs_unsafe) = self.bitfield_place(&op.operands[0]);
+        let (place, needs_unsafe) = self.bitfield_place(base_ptr);
         if let Some(field) = self
             .member_ptrs
-            .get(&op.operands[0])
+            .get(base_ptr)
             .and_then(|member| member.bitfield_name.as_ref())
             .cloned()
         {
@@ -403,7 +408,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 let temp = self.next_temp();
                 let temp_ty = self
                     .member_ptrs
-                    .get(&op.operands[0])
+                    .get(base_ptr)
                     .and_then(|member| member.field_ty.clone());
                 self.push_stmt(Stmt::Let {
                     name: temp.clone(),
@@ -442,13 +447,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    pub(super) fn lower_get_bitfield(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
+    pub(super) fn lower_get_bitfield(&mut self, op: &Op, instr: Instruction) {
+        let Instruction::GetBitfield {
+            result, addr: ptr, ..
+        } = instr
+        else {
+            unreachable!()
         };
-        let Some(ptr) = op.operands.first() else {
-            return;
-        };
+        let result = &result;
+        let ptr = &ptr;
         let ty = op_result_type(op);
         let (place, needs_unsafe) = self.bitfield_place(ptr);
         let read = if let Some(field) = self
@@ -537,15 +544,19 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         Some((*size, *offset))
     }
 
-    pub(super) fn lower_get_element(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
+    pub(super) fn lower_get_element(&mut self, op: &Op, instr: Instruction) {
+        let Instruction::GetElement {
+            result,
+            addr: base_ptr,
+            index,
+            ..
+        } = instr
+        else {
+            unreachable!()
         };
-        if op.operands.len() < 2 {
-            return;
-        }
-        let base_ptr = &op.operands[0];
-        let index = self.operand_expr(&op.operands[1]);
+        let result = &result;
+        let base_ptr = &base_ptr;
+        let index = self.operand_expr(&index);
         let unbounded = self.member_ptrs.get(base_ptr).is_some_and(|member| {
             member.field_is_trailing
                 && matches!(&member.field_ty, Some(Type::Array { len: 0 | 1, .. }))

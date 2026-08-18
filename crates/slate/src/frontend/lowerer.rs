@@ -4166,16 +4166,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 self.lower_cast(op, instr);
                 return;
             }
-            Instruction::GetBitfield { .. } => {
-                self.lower_get_bitfield(op);
+            instr @ Instruction::GetBitfield { .. } => {
+                self.lower_get_bitfield(op, instr);
                 return;
             }
-            Instruction::SetBitfield { .. } => {
-                self.lower_set_bitfield(op);
+            instr @ Instruction::SetBitfield { .. } => {
+                self.lower_set_bitfield(op, instr);
                 return;
             }
-            Instruction::GetElement { .. } => {
-                self.lower_get_element(op);
+            instr @ Instruction::GetElement { .. } => {
+                self.lower_get_element(op, instr);
                 return;
             }
             instr @ Instruction::PtrStride { .. } => {
@@ -4406,6 +4406,26 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 self.lower_do(op);
                 return;
             }
+            Instruction::For { .. } => {
+                self.lower_for(op);
+                return;
+            }
+            Instruction::Switch { .. } => {
+                self.lower_switch(op);
+                return;
+            }
+            Instruction::Ternary { .. } => {
+                self.lower_ternary(op);
+                return;
+            }
+            Instruction::Scope { .. } => {
+                self.lower_scope(op);
+                return;
+            }
+            Instruction::CleanupScope { .. } => {
+                self.lower_cleanup_scope(op);
+                return;
+            }
             Instruction::Return { .. } => {
                 self.lower_return(op);
                 return;
@@ -4484,9 +4504,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::Ternary => self.lower_ternary(op),
             CirOpKind::GetMember => self.lower_get_member(op),
             CirOpKind::InsertMember => self.lower_insert_member(op),
-            CirOpKind::GetBitfield => self.lower_get_bitfield(op),
-            CirOpKind::SetBitfield => self.lower_set_bitfield(op),
-            CirOpKind::GetElement => self.lower_get_element(op),
             CirOpKind::Call => self.lower_call(op),
             CirOpKind::VaStart => self.lower_va_start(op),
             CirOpKind::VaArg => self.lower_va_arg(op),
