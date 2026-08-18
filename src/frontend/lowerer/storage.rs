@@ -262,23 +262,30 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         });
     }
 
-    pub(super) fn lower_store(&mut self, op: &Op) {
-        if op.operands.len() < 2 {
-            return;
-        }
-        if let Some(outputs) = self.asm_outputs.get(&op.operands[0]).cloned() {
-            self.asm_outputs.insert(op.operands[1].clone(), outputs);
+    pub(super) fn lower_store(&mut self, op: &Op, instr: Instruction) {
+        let Instruction::Store {
+            value: src,
+            addr: ptr,
+            is_volatile,
+            ..
+        } = instr
+        else {
+            unreachable!()
+        };
+        let src = &src;
+        let ptr = &ptr;
+        if let Some(outputs) = self.asm_outputs.get(src).cloned() {
+            self.asm_outputs.insert(ptr.clone(), outputs);
             return;
         }
         let operand_types = op_operand_types(op);
         let value_ty = operand_types.first();
-        let ptr = &op.operands[1];
         let mut value = if value_ty.is_some_and(is_cir_function_pointer_type) {
-            self.store_function_pointer_value(&op.operands[0], ptr, value_ty.unwrap())
+            self.store_function_pointer_value(src, ptr, value_ty.unwrap())
         } else if value_ty.is_some_and(|ty| matches!(ty, CirType::Ptr(_))) {
-            self.pointer_operand_expr(&op.operands[0])
+            self.pointer_operand_expr(src)
         } else {
-            self.operand_expr(&op.operands[0])
+            self.operand_expr(src)
         };
         if value_ty.is_some_and(|ty| is_cir_va_list_value_type(ty, &self.parent.aliases)) {
             value = Expr::MethodCall {
@@ -287,17 +294,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 args: vec![],
             };
         }
-        value = self.coerce_store_value(ptr, value, &op.operands[0]);
+        value = self.coerce_store_value(ptr, value, src);
         if self.forward_allocas.contains(ptr) {
             let value = self.forward_safe_value(value, value_ty);
             self.forward_values.insert(ptr.clone(), value);
             return;
         }
-        if !attr_bool(op, "is_volatile") && self.try_atomic_store(op, ptr, value_ty, value.clone())
-        {
+        if !is_volatile && self.try_atomic_store(op, ptr, value_ty, value.clone()) {
             return;
         }
-        if attr_bool(op, "is_volatile") {
+        if is_volatile {
             self.push_stmt(Stmt::Expr(Self::unsafe_expr(Expr::Call {
                 binding: crate::function_identity::CallBinding::Generated,
                 func: Box::new(Expr::Path(Path::new(
@@ -405,13 +411,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    pub(super) fn lower_load(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
+    pub(super) fn lower_load(&mut self, op: &Op, instr: Instruction) {
+        let Instruction::Load {
+            result,
+            addr: ptr,
+            is_volatile,
+            ..
+        } = instr
+        else {
+            unreachable!()
         };
-        let Some(ptr) = op.operands.first() else {
-            return;
-        };
+        let result = &result;
+        let ptr = &ptr;
         self.load_ptr_operand.insert(result.clone(), ptr.clone());
         if let Some(value) = self.forward_values.get(ptr) {
             self.values.insert(result.clone(), Val::Expr(value.clone()));
@@ -429,7 +440,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.values.insert(result.clone(), Val::Expr(place));
             return;
         }
-        let mut value = if attr_bool(op, "is_volatile") {
+        let mut value = if is_volatile {
             Self::unsafe_expr(Expr::Call {
                 binding: crate::function_identity::CallBinding::Generated,
                 func: Box::new(Expr::Path(Path::new(
@@ -622,10 +633,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         })
     }
 
-    pub(super) fn lower_const(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
+    pub(super) fn lower_const(&mut self, op: &Op, instr: Instruction) {
+        let Instruction::Const { result, .. } = instr else {
+            unreachable!()
         };
+        let result = &result;
         // MLIR may print a const as an attribute alias (e.g. `#false`); expand it.
         let attr = op
             .attr("value")
