@@ -1,4 +1,5 @@
 use super::*;
+use clang_ir::model::Instruction;
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
     pub(super) fn lower_get_global(&mut self, op: &Op) {
@@ -656,13 +657,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .is_some_and(|ty| self.parent.cir_type_is_union(ty))
     }
 
-    pub(super) fn lower_cast(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
+    pub(super) fn lower_cast(&mut self, op: &Op, instr: Instruction) {
+        let Instruction::Cast {
+            result,
+            operand: src,
+            ..
+        } = instr
+        else {
+            unreachable!()
         };
-        let Some(src) = op.operands.first() else {
-            return;
-        };
+        let result = &result;
+        let src = &src;
         let Some(result_ty) = op_result_type(op) else {
             return;
         };
@@ -1040,22 +1045,26 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.values.insert(result.clone(), value);
     }
 
-    pub(super) fn lower_ptr_diff(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
+    pub(super) fn lower_ptr_diff(&mut self, op: &Op, instr: Instruction) {
+        let Instruction::PtrDiff {
+            result, lhs, rhs, ..
+        } = instr
+        else {
+            unreachable!()
         };
+        let result = &result;
         if op.operands.len() < 2 {
             return;
         }
         let operand_types = op_operand_types(op);
         let lhs = self.fn_ptr_aware_operand_expr(
-            &op.operands[0],
+            &lhs,
             operand_types.first(),
             Self::function_pointer_byte_operand_expr,
             Self::pointer_operand_expr,
         );
         let rhs = self.fn_ptr_aware_operand_expr(
-            &op.operands[1],
+            &rhs,
             operand_types.get(1),
             Self::function_pointer_byte_operand_expr,
             Self::pointer_operand_expr,
@@ -1077,10 +1086,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
-    pub(super) fn lower_ptr_stride(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
+    pub(super) fn lower_ptr_stride(&mut self, op: &Op, instr: Instruction) {
+        let Instruction::PtrStride {
+            result,
+            addr,
+            stride,
+            ..
+        } = instr
+        else {
+            unreachable!()
         };
+        let result = &result;
         if op.operands.len() < 2 {
             return;
         }
@@ -1090,14 +1106,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .is_some_and(is_cir_function_pointer_type)
             && op_result_type(op).is_some_and(is_cir_function_pointer_type);
         let base = self.fn_ptr_aware_operand_expr(
-            &op.operands[0],
+            &addr,
             function_pointer_stride
                 .then(|| operand_types.first())
                 .flatten(),
             Self::function_pointer_byte_operand_expr,
             Self::pointer_operand_expr,
         );
-        let index = self.operand_expr(&op.operands[1]);
+        let index = self.operand_expr(&stride);
         let (method, args) = self.ptr_stride_method_and_args(op, index);
         let stride = Self::unsafe_expr(Expr::MethodCall {
             recv: Box::new(base),
