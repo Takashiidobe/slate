@@ -223,3 +223,36 @@ anything else keyed by SSA name. Low risk per family.
 - Don't add comments explaining the migration inline in the dispatch code —
   this repo's convention is zero comments; put rationale here or in commit
   messages/beads notes instead.
+
+## Dead/stale CirOpKind cleanup (session 5, not part of the migration proper)
+
+Two things got deleted outright rather than migrated, both confirmed dead
+by checking the real source (clang's CIR codegen / the user's own
+knowledge of the crate history), not just by "no fixture hits it":
+
+- `DivOverflow`/`RemOverflow` (`cir.div.overflow`/`cir.rem.overflow`):
+  never emitted by real clang. `__builtin_{add,sub,mul}_overflow` are the
+  only overflow-checking builtins C has — no div/rem equivalent exists in
+  the language, and `CIRGenBuiltin.cpp` only instantiates
+  `emitOverflowOp<...>` for `Add`/`Sub`/`MulOverflowOp`. The whole
+  `CirOpKind` enum was added in one shot in `e3685719` from an assumed op
+  vocabulary rather than derived from real output, and this pair never
+  had a fixture, test, or doc reference. Deleted enum variant + parse arm
+  + legacy match arm; `lower_overflow_arith` stayed (still used by
+  `Add`/`Sub`/`MulOverflow`).
+- The `"cir.indirect_br"` parse-arm spelling (not the whole `IndirectBr`
+  `CirOpKind` — that's real, backs GCC computed-goto support via
+  `lower_indirect_br`/`indirect_target_values`/`block_diverges`). CIR
+  renamed this op to `indirect_goto` in an earlier version; slate's
+  `parse()` had `"cir.indirect_br" | "cir.indirect_goto"` as a
+  backwards-compat shim. Removed the `"cir.indirect_br"` alternative,
+  confirmed via `lowering` profile (7/7 still green) that nothing depends
+  on the old spelling.
+
+General pattern for this kind of cleanup: dead-arm removal (like
+`DivOverflow`/`RemOverflow`, or any future one with zero fixture/doc
+references) doesn't need a full verify pass since there's no reachable
+behavior to break — just build clean is enough. But removing a
+*spelling/shim* like `indirect_br` changes what real parse output matches
+against, so that one does need the `lowering` profile to actually confirm
+nothing hits the removed path, same bar as any other behavior change.

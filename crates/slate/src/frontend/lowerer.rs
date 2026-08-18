@@ -4445,8 +4445,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::Store => self.lower_store(op),
             CirOpKind::Load => self.lower_load(op),
             CirOpKind::Const => self.lower_const(op),
-            CirOpKind::DivOverflow => self.lower_overflow_arith(op, "overflowing_div"),
-            CirOpKind::RemOverflow => self.lower_overflow_arith(op, "overflowing_rem"),
             CirOpKind::Asm => self.lower_asm(op),
             CirOpKind::Acos => self.lower_unary_method(op, "acos"),
             CirOpKind::Asin => self.lower_unary_method(op, "asin"),
