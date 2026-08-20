@@ -313,7 +313,9 @@ pub(super) fn complex_component_from_attr(attr: &Attr) -> Option<CirComplexCompo
 pub(super) fn scalar_attr_expr(attr: &Attr) -> Option<Expr> {
     match attr {
         Attr::Int { value, .. } => Some(int_value_expr(*value)),
+        Attr::CirInt { value, .. } => value.parse().ok().map(int_value_expr),
         Attr::Float { text, .. } => fp_text_value(text).map(fp_literal_expr),
+        Attr::CirFloat { value, .. } => fp_text_value(value).map(fp_literal_expr),
         Attr::CirBool { value, .. } | Attr::Bool(value) => {
             Some(Expr::Value(RustValue::Bool(*value)))
         }
