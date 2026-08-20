@@ -289,17 +289,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
-    pub(super) fn lower_known_binary(
-        &mut self,
-        op: &Op,
-        known: function_identity::Known,
-        rust_op: BinOp,
-    ) {
-        if self.lower_known_libc_op(op, known) {
-            self.lower_binary(op, rust_op);
-        }
-    }
-
     pub(super) fn lower_saturating_arith(&mut self, op: &Op, rust_method: &str) {
         let Some((result, _)) = op.results.first() else {
             return;
@@ -573,14 +562,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
-    pub(super) fn lower_neg(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        let Some(value) = op.operands.first() else {
-            return;
-        };
-        if let Some((elem_ty, len)) = op_result_type(op).and_then(parse_cir_vector_type) {
+    pub(super) fn lower_neg_typed(&mut self, result: &str, result_ty: &CirType, value: &str) {
+        if let Some((elem_ty, len)) = parse_cir_vector_type(result_ty) {
             let value = self.operand_expr(value);
             let elem_rust_ty = self.parent.rust_type(elem_ty);
             let elem_is_wrapping_int = matches!(
@@ -621,19 +604,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         })
                         .collect(),
                 ),
-                op_result_type(op),
+                Some(result_ty),
             );
             return;
         }
-        if let Some(folded) = self.fold_unary_arith(&op.operands[0], UnaryOp::Neg) {
-            self.macro_arith_values.insert(result.clone(), folded);
+        if let Some(folded) = self.fold_unary_arith(value, UnaryOp::Neg) {
+            self.macro_arith_values.insert(result.to_string(), folded);
         }
+        let operand_ty = self.value_type(value);
         let value = self.operand_expr(value);
-        let result_ty = op_result_type(op);
-        let operand_ty = self.value_type(&op.operands[0]);
-        let rust_ty = result_ty
-            .map(|ty| self.parent.rust_type(ty))
-            .unwrap_or(Type::Prim(Prim::I32));
+        let rust_ty = self.parent.rust_type(result_ty);
         let is_wrapping_int = matches!(
             &rust_ty,
             Type::Prim(
@@ -680,18 +660,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 expr: Box::new(value),
             }
         };
-        self.materialize_expr(result, expr, result_ty);
+        self.materialize_expr(result, expr, Some(result_ty));
     }
 
-    pub(super) fn lower_abs(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        let Some(value) = op.operands.first() else {
-            return;
-        };
+    pub(super) fn lower_abs_typed(
+        &mut self,
+        result: &str,
+        result_ty: Option<&CirType>,
+        value: &str,
+    ) {
         let value = self.operand_expr(value);
-        let result_ty = op_result_type(op);
         let rust_ty = result_ty
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or(Type::Prim(Prim::I32));
@@ -718,16 +696,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             }
         };
         self.materialize_expr(result, expr, result_ty);
-    }
-
-    pub(super) fn lower_unary_method(&mut self, op: &Op, method: &str) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        let Some(value) = op.operands.first() else {
-            return;
-        };
-        self.lower_unary_method_typed(result, op_result_type(op), value, method);
     }
 
     pub(super) fn lower_unary_method_typed(
@@ -816,13 +784,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    pub(super) fn lower_parity(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        let Some(value) = op.operands.first() else {
-            return;
-        };
+    pub(super) fn lower_parity_typed(
+        &mut self,
+        result: &str,
+        result_ty: Option<&CirType>,
+        value: &str,
+    ) {
         let expr = Expr::Binary {
             op: BinOp::BitAnd,
             lhs: Box::new(Expr::MethodCall {
@@ -832,7 +799,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             }),
             rhs: Box::new(Expr::Value(RustValue::I64(1))),
         };
-        self.materialize_expr(result, expr, op_result_type(op));
+        self.materialize_expr(result, expr, result_ty);
     }
     pub(super) fn lower_expect(&mut self, op: &Op) {
         let Some((result, _)) = op.results.first() else {
