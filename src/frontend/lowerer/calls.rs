@@ -848,9 +848,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }));
     }
 
-    pub(super) fn atomic_load_expr(&self, op: &Op, ptr: &str) -> Option<Expr> {
-        let mem_order = attr_int(op, "mem_order")?;
-        let ty = op_result_type(op).map(|ty| self.parent.rust_type(ty))?;
+    pub(super) fn atomic_load_expr(
+        &self,
+        mem_order: Option<MemOrder>,
+        result_ty: &CirType,
+        ptr: &str,
+    ) -> Option<Expr> {
+        let mem_order = mem_order? as i64;
+        let ty = self.parent.rust_type(result_ty);
         let atomic_ty = atomic_type(&ty)?;
         Some(Self::unsafe_expr(Expr::AtomicLoad {
             ty: atomic_ty,

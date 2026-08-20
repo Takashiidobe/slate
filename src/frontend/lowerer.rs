@@ -21,7 +21,8 @@ use clang_ir::ast::SourceLocation;
 use clang_ir::model::{
     MemOrder, Op as TypedOp,
     instruction::{
-        Const as TypedConst, Copy as TypedCopy, GetGlobal as TypedGetGlobal, Store as TypedStore,
+        Alloca as TypedAlloca, Br as TypedBr, Const as TypedConst, Copy as TypedCopy,
+        GetGlobal as TypedGetGlobal, Load as TypedLoad, Return as TypedReturn, Store as TypedStore,
     },
 };
 use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
@@ -4142,10 +4143,21 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     .take_while(|candidate| candidate.kind() == CirOpKind::Alloca)
                     .count()
                     + index;
-                if end - index > 1 && self.alloca_group_is_lowerable(&block.ops[index..end]) {
-                    self.lower_alloca_group(&block.ops[index..end]);
-                    index = end;
-                    continue;
+                if end - index > 1 {
+                    let allocas: Option<Vec<_>> = block.ops[index..end]
+                        .iter()
+                        .map(|candidate| match TypedOp::from_operation(candidate) {
+                            Some(TypedOp::Alloca(alloca)) => Some(alloca),
+                            _ => None,
+                        })
+                        .collect();
+                    if let Some(allocas) = allocas
+                        && self.alloca_group_is_lowerable(&allocas)
+                    {
+                        self.lower_alloca_group(&allocas);
+                        index = end;
+                        continue;
+                    }
                 }
             }
             self.asm_output_places.clear();
@@ -4259,8 +4271,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 TypedOp::SubOverflow(_) => return self.lower_overflow_arith(op, "overflowing_sub"),
                 TypedOp::MulOverflow(_) => return self.lower_overflow_arith(op, "overflowing_mul"),
                 TypedOp::Const(value) => return self.lower_const(&value),
+                TypedOp::Alloca(value) => return self.lower_alloca(&value),
                 TypedOp::GetGlobal(value) => return self.lower_get_global(&value),
-                TypedOp::Load(_) => return self.lower_load(op),
+                TypedOp::Load(value) => return self.lower_load(&value),
+                TypedOp::Br(value) => return self.lower_br(&value),
                 TypedOp::Store(value) => return self.lower_store(&value),
                 TypedOp::Copy(value) => return self.lower_copy(&value),
                 TypedOp::Cast(_) => return self.lower_cast(op),
@@ -4306,6 +4320,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 TypedOp::VaEnd(_) => return,
                 TypedOp::EhSetjmp(_) => return self.lower_eh_setjmp(op),
                 TypedOp::FrameAddress(_) => return self.lower_opaque_pointer(op, true),
+                TypedOp::Return(value) => return self.lower_return(&value),
                 TypedOp::ReturnAddress(_) => return self.lower_opaque_pointer(op, true),
                 TypedOp::BlockAddress(_) => return self.lower_opaque_pointer(op, true),
                 TypedOp::Stacksave(_) => return self.lower_opaque_pointer(op, false),
@@ -4346,7 +4361,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         self.value_types.extend(op.results.iter().cloned());
         match op.kind() {
-            CirOpKind::Alloca => self.lower_alloca(op),
             CirOpKind::Asm => self.lower_asm(op),
             CirOpKind::Acos => self.lower_unary_method(op, "acos"),
             CirOpKind::Asin => self.lower_unary_method(op, "asin"),
@@ -4385,7 +4399,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::VaArg => self.lower_va_arg(op),
             CirOpKind::VaCopy => self.lower_va_copy(op),
             CirOpKind::CallLlvmIntrinsic => self.lower_llvm_intrinsic(op),
-            CirOpKind::Return => self.lower_return(op),
+            CirOpKind::Return => self.lower_return_raw(op),
             CirOpKind::Scope => self.lower_scope(op),
             CirOpKind::CleanupScope => self.lower_cleanup_scope(op),
             CirOpKind::Switch => self.lower_switch(op),
@@ -4396,7 +4410,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::Break => self.lower_break(),
             CirOpKind::Continue => self.lower_continue(),
             CirOpKind::Goto => self.lower_goto(op),
-            CirOpKind::Br => self.lower_br(op),
+            CirOpKind::Br => self.lower_br_raw(op),
             CirOpKind::Brcond => self.lower_brcond(op),
             CirOpKind::IndirectBr => self.lower_indirect_br(op),
             CirOpKind::Label => {}

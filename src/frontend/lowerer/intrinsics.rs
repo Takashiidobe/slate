@@ -673,6 +673,24 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
+    pub(super) fn lower_opaque_pointer_typed(
+        &mut self,
+        result: &str,
+        result_ty: &CirType,
+        non_null: bool,
+    ) {
+        let ty = self.parent.rust_type(result_ty);
+        let addr = if non_null { 1 } else { 0 };
+        self.materialize_expr(
+            result,
+            Expr::Cast {
+                expr: Box::new(Expr::Value(RustValue::Usize(addr))),
+                ty,
+            },
+            Some(result_ty),
+        );
+    }
+
     pub(super) fn lower_is_constant(&mut self, op: &Op) {
         let Some((result, _)) = op.results.first() else {
             return;
