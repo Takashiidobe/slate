@@ -54,8 +54,6 @@ checksum = "9330f8b2ff13f34540b44e946ef35111825727b38d33286ef986142615121801"
 [[package]]
 name = "clang-ir"
 version = "0.1.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2b6ae2e7ef4f780504d8a7bbe9095c9269555a14217ab00898ae48549f148b66"
 dependencies = [
  "clang-ir-types",
  "thiserror",

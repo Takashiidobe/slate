@@ -31,6 +31,12 @@ pub(super) fn byte_array_elems(bytes: &[u8], ty: &Type) -> Vec<Expr> {
         .collect()
 }
 
+pub(super) fn cir_string_bytes(text: &str) -> Option<Vec<u8>> {
+    text.chars()
+        .map(|ch| u8::try_from(u32::from(ch)).ok())
+        .collect()
+}
+
 fn standard_record_fields(name: &str) -> Option<Vec<RecordField>> {
     let i8_ty = || Type::Prim(Prim::I8);
     let i32_ty = || Type::Prim(Prim::I32);
@@ -300,7 +306,9 @@ pub(super) fn complex_component_expr(ty: Option<&Type>, component: CirComplexCom
 pub(super) fn complex_component_from_attr(attr: &Attr) -> Option<CirComplexComponent> {
     match attr {
         Attr::Int { value, .. } => Some(CirComplexComponent::Int(*value)),
+        Attr::CirInt { value, .. } => value.parse().ok().map(CirComplexComponent::Int),
         Attr::Float { text, .. } => fp_text_value(text).map(CirComplexComponent::Float),
+        Attr::CirFloat { value, .. } => fp_text_value(value).map(CirComplexComponent::Float),
         _ => None,
     }
 }

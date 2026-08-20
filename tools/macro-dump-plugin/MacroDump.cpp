@@ -203,7 +203,8 @@ class ProvenanceVisitor : public RecursiveASTVisitor<ProvenanceVisitor> {
     if (!Node)
       return;
     if (auto *Expression = dyn_cast<Expr>(Node);
-        Expression && Expression->getType()->isSpecificBuiltinType(
+        Expression && !Expression->getType().isNull() &&
+            Expression->getType()->isSpecificBuiltinType(
                           BuiltinType::LongDouble)) {
       Expr::EvalResult Result;
       if (Expression->EvaluateAsRValue(Result, Context) &&
@@ -279,7 +280,7 @@ public:
   }
 
   bool VisitExpr(Expr *Expression) {
-    if (isa<FloatingLiteral>(Expression) ||
+    if (Expression->getType().isNull() || isa<FloatingLiteral>(Expression) ||
         !Expression->getType()->isSpecificBuiltinType(BuiltinType::LongDouble))
       return true;
     Expr::EvalResult Result;

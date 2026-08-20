@@ -2175,7 +2175,9 @@ impl __SlateVaArgs {
         } = init
             && let Attr::Str(text) = &**elts
         {
-            let mut bytes = text.as_bytes().to_vec();
+            let Some(mut bytes) = cir_string_bytes(text) else {
+                return;
+            };
             bytes.extend(std::iter::repeat_n(
                 0,
                 usize::try_from(*trailing_zeros_num).unwrap_or(0),
@@ -3563,7 +3565,7 @@ impl __SlateVaArgs {
                     return None;
                 };
                 if let Attr::Str(text) = &**elts {
-                    let elems = byte_array_elems(text.as_bytes(), ty);
+                    let elems = byte_array_elems(&cir_string_bytes(text)?, ty);
                     return Some(render_array_literal_expr(
                         &elems,
                         *len as usize,
@@ -3589,14 +3591,24 @@ impl __SlateVaArgs {
                     .collect::<Option<Vec<_>>>()?,
             )),
             _ if matches!(ty, Type::LongDouble) => {
-                let fact = facts.pop_front()?;
-                if fact.bit_width == 80 && !fact.bits.is_empty() {
-                    let bits = fact.bits.trim_start_matches("0x").trim_start_matches("0X");
-                    f80_literal_bits_expr(bits)
-                } else if !fact.value.is_empty() {
-                    f80_literal_expr(&fact.value)
+                if let Some(fact) = facts.pop_front() {
+                    if fact.bit_width == 80 && !fact.bits.is_empty() {
+                        let bits = fact.bits.trim_start_matches("0x").trim_start_matches("0X");
+                        f80_literal_bits_expr(bits)
+                    } else if !fact.value.is_empty() {
+                        f80_literal_expr(&fact.value)
+                    } else {
+                        None
+                    }
                 } else {
-                    None
+                    match attr {
+                        Attr::Float { text, .. } | Attr::CirFloat { value: text, .. }
+                            if cir_positive_zero(text) =>
+                        {
+                            Some(self.default_value_expr(ty))
+                        }
+                        _ => None,
+                    }
                 }
             }
             Attr::Zero { .. } => Some(self.default_value_expr(ty)),
@@ -3637,6 +3649,16 @@ impl __SlateVaArgs {
                     Ident::from(name.as_str()),
                     Ident::from(sanitize_ident(&variant.name).as_str()),
                 ])))
+            }
+            Attr::CirInt { value, .. } if matches!(ty, Type::Custom(name) if self.enums.contains_key(name)) => {
+                self.render_const_value_expr(
+                    ty,
+                    &Attr::Int {
+                        value: value.parse().ok()?,
+                        ty: None,
+                    },
+                    facts,
+                )
             }
             Attr::GlobalView {
                 symbol, indices, ..
@@ -4101,6 +4123,11 @@ fn ctype_uses_long_double(ty: &crate::frontend::c_ast::CType) -> bool {
         CType::Enum(_) => false,
         _ => false,
     }
+}
+
+fn cir_positive_zero(text: &str) -> bool {
+    let text = text.trim();
+    !text.starts_with('-') && text.parse::<f64>().is_ok_and(|value| value == 0.0)
 }
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
