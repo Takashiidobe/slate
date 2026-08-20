@@ -24,9 +24,10 @@ use clang_ir::model::{
     instruction::{
         Alloca as TypedAlloca, Assume as TypedAssume, Br as TypedBr, Cast as TypedCast,
         Cmp as TypedCmp, Const as TypedConst, Copy as TypedCopy, GetElement as TypedGetElement,
-        GetGlobal as TypedGetGlobal, LibcMemchr as TypedLibcMemchr, LibcMemset as TypedLibcMemset,
-        Load as TypedLoad, PtrDiff as TypedPtrDiff, PtrStride as TypedPtrStride,
-        Return as TypedReturn, Select as TypedSelect, Store as TypedStore,
+        GetGlobal as TypedGetGlobal, IsFpClass as TypedIsFpClass, LibcMemchr as TypedLibcMemchr,
+        LibcMemset as TypedLibcMemset, Load as TypedLoad, Modf as TypedModf,
+        PtrDiff as TypedPtrDiff, PtrStride as TypedPtrStride, Return as TypedReturn,
+        Select as TypedSelect, Store as TypedStore,
     },
 };
 use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
@@ -4758,13 +4759,86 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         "powf",
                     );
                 }
-                TypedOp::Copysign(_) => return self.lower_binary_method(op, "copysign"),
-                TypedOp::Fmaxnum(_) => return self.lower_binary_method(op, "max"),
-                TypedOp::Fminnum(_) => return self.lower_binary_method(op, "min"),
-                TypedOp::Fma(_) | TypedOp::Fmuladd(_) => {
-                    return self.lower_ternary_method(op, "mul_add");
+                TypedOp::Copysign(value) => {
+                    return self.lower_binary_method_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.lhs,
+                        &value.rhs,
+                        "copysign",
+                    );
                 }
-                TypedOp::Modf(_) => return self.lower_modf(op),
+                TypedOp::Fmaxnum(value) => {
+                    return self.lower_binary_method_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.lhs,
+                        &value.rhs,
+                        "max",
+                    );
+                }
+                TypedOp::Fminnum(value) => {
+                    return self.lower_binary_method_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.lhs,
+                        &value.rhs,
+                        "min",
+                    );
+                }
+                TypedOp::Fma(value) => {
+                    return self.lower_ternary_method_typed(
+                        &value.result,
+                        &value.result_ty,
+                        (&value.a, &value.b, &value.c),
+                        "mul_add",
+                    );
+                }
+                TypedOp::Fmuladd(value) => {
+                    return self.lower_ternary_method_typed(
+                        &value.result,
+                        &value.result_ty,
+                        (&value.a, &value.b, &value.c),
+                        "mul_add",
+                    );
+                }
+                TypedOp::Modf(value) => return self.lower_modf(&value),
+                TypedOp::Llrint(value) => {
+                    return self.lower_unary_cast_method_typed(
+                        &value.result,
+                        &value.result_ty,
+                        &value.src,
+                        "round_ties_even",
+                    );
+                }
+                TypedOp::Llround(value) => {
+                    return self.lower_known_unary_cast_method_typed(
+                        &value.result,
+                        &value.result_ty,
+                        &value.src,
+                        value.loc.as_ref(),
+                        Known::Llround,
+                        "round",
+                    );
+                }
+                TypedOp::Lrint(value) => {
+                    return self.lower_unary_cast_method_typed(
+                        &value.result,
+                        &value.result_ty,
+                        &value.src,
+                        "round_ties_even",
+                    );
+                }
+                TypedOp::Lround(value) => {
+                    return self.lower_known_unary_cast_method_typed(
+                        &value.result,
+                        &value.result_ty,
+                        &value.src,
+                        value.loc.as_ref(),
+                        Known::Lround,
+                        "round",
+                    );
+                }
                 TypedOp::LibcMemcpy(value) => {
                     return self.lower_mem_copy(
                         &value.dst,
@@ -4796,7 +4870,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 TypedOp::BlockAddress(_) => return self.lower_opaque_pointer(op, true),
                 TypedOp::Stacksave(_) => return self.lower_opaque_pointer(op, false),
                 TypedOp::Prefetch(_) => return,
-                TypedOp::IsFpClass(_) => return self.lower_is_fp_class(op),
+                TypedOp::IsFpClass(value) => return self.lower_is_fp_class(&value),
                 TypedOp::ComplexCreate(_) => return self.lower_complex_create(op),
                 TypedOp::ComplexAdd(_) => return self.lower_complex_add(op),
                 TypedOp::ComplexSub(_) => return self.lower_complex_sub(op),
@@ -4834,10 +4908,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         match op.kind() {
             CirOpKind::Asm => self.lower_asm(op),
             CirOpKind::Expect => self.lower_expect(op),
-            CirOpKind::Llrint => self.lower_unary_cast_method(op, "round_ties_even"),
-            CirOpKind::Llround => self.lower_known_unary_cast_method(op, Known::Llround, "round"),
-            CirOpKind::Lrint => self.lower_unary_cast_method(op, "round_ties_even"),
-            CirOpKind::Lround => self.lower_known_unary_cast_method(op, Known::Lround, "round"),
             CirOpKind::Stackrestore => {}
             CirOpKind::Trap => self.lower_trap(),
             CirOpKind::Unreachable => self.lower_unreachable(),

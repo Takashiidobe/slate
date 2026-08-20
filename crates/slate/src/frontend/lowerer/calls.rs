@@ -562,48 +562,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         false
     }
 
-    pub(super) fn lower_known_libc_op(
-        &mut self,
-        op: &Op,
-        known: crate::function_identity::Known,
-    ) -> bool {
-        let binding = self.parent.call_binding(op, true);
-        if binding.known() == Some(known)
-            || matches!(
-                binding,
-                crate::function_identity::CallBinding::Direct {
-                    identity: FunctionIdentity::Unknown,
-                    canonical_type: None,
-                }
-            )
-            || self.parent.known_functions.get(known.symbol())
-                == Some(&FunctionIdentity::Known(known))
-        {
-            return true;
-        }
-        let args = op
-            .operands
-            .iter()
-            .map(|operand| self.operand_expr(operand))
-            .collect();
-        let call = Expr::Call {
-            binding,
-            func: Box::new(Expr::Var(known.symbol().into())),
-            args,
-        };
-        let expr = if self.parent.externs.contains_key(known.symbol()) {
-            Self::unsafe_expr(call)
-        } else {
-            call
-        };
-        if let Some((result, _)) = op.results.first() {
-            self.materialize_expr(result, expr, op_result_type(op));
-        } else {
-            self.push_stmt(Stmt::Expr(expr));
-        }
-        false
-    }
-
     // Atomic ops lower to real `std::sync::atomic` operations viewed through
     // `AtomicN::from_ptr(store_address(ptr))`, so the existing integer slot is
     // accessed atomically without changing its storage. Integer/bool types map
