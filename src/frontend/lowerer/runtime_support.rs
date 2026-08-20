@@ -445,14 +445,11 @@ pub(super) fn f80_shim_decls() -> Vec<ExternFnDecl> {
 }
 
 pub(super) fn is_long_double(ty: &CirType) -> bool {
-    matches!(
-        ty,
-        CirType::LongDouble(_) | CirType::Float(clang_ir::ast::FloatKind::F80)
-    )
+    matches!(ty, CirType::LongDouble { .. } | CirType::Fp80)
 }
 
 pub(super) fn is_quad_long_double(ty: &CirType) -> bool {
-    matches!(ty, CirType::LongDouble(inner) if matches!(**inner, CirType::Float(clang_ir::ast::FloatKind::F128)))
+    matches!(ty, CirType::LongDouble { underlying } if matches!(underlying.as_ref(), CirType::Fp128))
 }
 
 pub(super) fn is_wrapped_long_double(ty: &CirType) -> bool {

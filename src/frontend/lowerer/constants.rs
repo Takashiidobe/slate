@@ -299,12 +299,8 @@ pub(super) fn complex_component_expr(ty: Option<&Type>, component: CirComplexCom
 
 pub(super) fn complex_component_from_attr(attr: &Attr) -> Option<CirComplexComponent> {
     match attr {
-        Attr::CirInt { text, .. } => text
-            .parse::<i128>()
-            .ok()
-            .map(CirComplexComponent::Int)
-            .or_else(|| text.parse::<u128>().ok().map(CirComplexComponent::Uint)),
-        Attr::CirFloat { text, .. } => fp_text_value(text).map(CirComplexComponent::Float),
+        Attr::Int { value, .. } => Some(CirComplexComponent::Int(*value)),
+        Attr::Float { text, .. } => fp_text_value(text).map(CirComplexComponent::Float),
         _ => None,
     }
 }
@@ -316,12 +312,8 @@ pub(super) fn complex_component_from_attr(attr: &Attr) -> Option<CirComplexCompo
 /// and are handled by the caller instead).
 pub(super) fn scalar_attr_expr(attr: &Attr) -> Option<Expr> {
     match attr {
-        Attr::CirInt { text, .. } => text.parse::<i128>().ok().map(int_value_expr).or_else(|| {
-            text.parse::<u128>()
-                .ok()
-                .map(|n| Expr::Value(RustValue::U128(n)))
-        }),
-        Attr::CirFloat { text, .. } => fp_text_value(text).map(fp_literal_expr),
+        Attr::Int { value, .. } => Some(int_value_expr(*value)),
+        Attr::Float { text, .. } => fp_text_value(text).map(fp_literal_expr),
         Attr::CirBool { value, .. } | Attr::Bool(value) => {
             Some(Expr::Value(RustValue::Bool(*value)))
         }

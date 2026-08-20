@@ -312,12 +312,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         f64_name: &str,
     ) -> Option<Expr> {
         let inner = match op_result_type(op) {
-            Some(CirType::Complex(inner)) => inner.as_ref(),
+            Some(CirType::Complex { element_type }) => element_type.as_ref(),
             _ => return None,
         };
         let name = match inner {
-            CirType::Float(clang_ir::ast::FloatKind::F32) => f32_name,
-            CirType::Float(clang_ir::ast::FloatKind::F64) => f64_name,
+            CirType::Single => f32_name,
+            CirType::Double => f64_name,
             _ => return None,
         };
         let lhs = self.operand_expr(&op.operands[0]);

@@ -1,61 +1,7 @@
 use super::*;
 use crate::function_identity;
-use clang_ir::model::BinaryOp;
-use clang_ir::model::Instruction;
-use clang_ir::model::UnaryOp as CirUnaryOp;
-use clang_ir::model::instruction::MathUnaryKind;
 
-impl<'a, 'b> FunctionLowerer<'a, 'b> {
-    pub(super) fn lower_binary_family(&mut self, op: &Op, bop: BinaryOp, saturated: bool) {
-        match bop {
-            BinaryOp::Add if saturated => self.lower_saturating_arith(op, "saturating_add"),
-            BinaryOp::Sub if saturated => self.lower_saturating_arith(op, "saturating_sub"),
-            BinaryOp::Add => self.lower_int_arith(op, BinOp::Add),
-            BinaryOp::Sub => self.lower_int_arith(op, BinOp::Sub),
-            BinaryOp::Mul => self.lower_int_arith(op, BinOp::Mul),
-            BinaryOp::Div => self.lower_int_arith(op, BinOp::Div),
-            BinaryOp::Rem => self.lower_int_arith(op, BinOp::Rem),
-            BinaryOp::And => self.lower_int_arith(op, BinOp::BitAnd),
-            BinaryOp::Or => self.lower_int_arith(op, BinOp::BitOr),
-            BinaryOp::Xor => self.lower_int_arith(op, BinOp::BitXor),
-            BinaryOp::FAdd => self.lower_binary(op, BinOp::Add),
-            BinaryOp::FSub => self.lower_binary(op, BinOp::Sub),
-            BinaryOp::FMul => self.lower_binary(op, BinOp::Mul),
-            BinaryOp::FDiv => self.lower_binary(op, BinOp::Div),
-        }
-    }
-
-    pub(super) fn lower_unary_family(&mut self, op: &Op, uop: CirUnaryOp) {
-        match uop {
-            CirUnaryOp::Inc => self.lower_step(op, BinOp::Add),
-            CirUnaryOp::Dec => self.lower_step(op, BinOp::Sub),
-            CirUnaryOp::Minus | CirUnaryOp::FNeg => self.lower_neg(op),
-            CirUnaryOp::Not => self.lower_not(op),
-        }
-    }
-
-    pub(super) fn lower_math_unary_family(&mut self, op: &Op, kind: MathUnaryKind) {
-        match kind {
-            MathUnaryKind::BitReverse => self.lower_unary_method(op, "reverse_bits"),
-            MathUnaryKind::ByteSwap => self.lower_unary_method(op, "swap_bytes"),
-            MathUnaryKind::Clrsb => self.lower_clrsb(op),
-            MathUnaryKind::Clz => self.lower_unary_method(op, "leading_zeros"),
-            MathUnaryKind::Ctz => self.lower_unary_method(op, "trailing_zeros"),
-            MathUnaryKind::Ffs => self.lower_ffs(op),
-            MathUnaryKind::Parity => self.lower_parity(op),
-            MathUnaryKind::Popcount => self.lower_unary_method(op, "count_ones"),
-            MathUnaryKind::Abs => self.lower_abs(op),
-            MathUnaryKind::Ceil => self.lower_unary_method(op, "ceil"),
-            MathUnaryKind::Fabs => self.lower_unary_method(op, "abs"),
-            MathUnaryKind::Floor => self.lower_unary_method(op, "floor"),
-            MathUnaryKind::Nearbyint => self.lower_unary_method(op, "round_ties_even"),
-            MathUnaryKind::Rint => self.lower_unary_method(op, "round_ties_even"),
-            MathUnaryKind::Round => self.lower_unary_method(op, "round"),
-            MathUnaryKind::Signbit => self.lower_signbit(op),
-            MathUnaryKind::Trunc => self.lower_unary_method(op, "trunc"),
-        }
-    }
-}
+impl<'a, 'b> FunctionLowerer<'a, 'b> {}
 
 fn overflow_for_result_width(
     arithmetic_overflow: Expr,
@@ -144,41 +90,6 @@ fn overflow_for_result_width(
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
     // cir.select(cond, t, f) is a pure value pick; all three operands are already
     // materialized, so it collapses to a Rust `if` expression.
-    pub(super) fn lower_select(&mut self, instr: Instruction) {
-        let Instruction::Select {
-            result,
-            ty,
-            condition,
-            true_value,
-            false_value,
-        } = instr
-        else {
-            unreachable!()
-        };
-        let cond = self.operand_expr(&condition);
-        let t = self.fn_ptr_aware_operand_expr(
-            &true_value,
-            Some(&ty),
-            Self::function_pointer_operand_expr,
-            Self::value_or_place_address_expr,
-        );
-        let f = self.fn_ptr_aware_operand_expr(
-            &false_value,
-            Some(&ty),
-            Self::function_pointer_operand_expr,
-            Self::value_or_place_address_expr,
-        );
-        self.materialize_expr(
-            &result,
-            Expr::If {
-                cond: Box::new(cond),
-                then_expr: Box::new(t),
-                else_expr: Box::new(f),
-            },
-            Some(&ty),
-        );
-    }
-
     // cir.ternary has two value-yielding regions; clang emits it for the NaN-recovery
     // arm of complex `*` (the taken branch calls __muldc3). Lower to an `if` whose
     // block bodies run each region's ops and tail-yield the region result.
@@ -505,14 +416,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     // cir.shift carries the isShiftleft unit attr for `<<`; its absence means `>>`.
     // Rust's `>>` is arithmetic on signed and logical on unsigned, matching C by type.
-    pub(super) fn lower_shift(&mut self, op: &Op, instr: Instruction) {
-        let Instruction::Shift { left, .. } = instr else {
-            unreachable!()
-        };
-        let rust_op = if left { BinOp::Shl } else { BinOp::Shr };
-        self.lower_int_arith(op, rust_op);
-    }
-
     // cir.not is C's unary `~`; Rust spells integer bitwise complement `!`.
     pub(super) fn lower_not(&mut self, op: &Op) {
         let Some((result, _)) = op.results.first() else {
@@ -801,27 +704,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         };
         self.materialize_expr(result, expr, op_result_type(op));
     }
-
-    pub(super) fn lower_rotate(&mut self, instr: Instruction) {
-        let Instruction::Rotate {
-            result,
-            ty,
-            value,
-            amount,
-            left,
-        } = instr
-        else {
-            unreachable!()
-        };
-        let method = if left { "rotate_left" } else { "rotate_right" };
-        let expr = Expr::MethodCall {
-            recv: Box::new(self.operand_expr(&value)),
-            method: method.into(),
-            args: vec![self.operand_expr(&amount)],
-        };
-        self.materialize_expr(&result, expr, Some(&ty));
-    }
-
     pub(super) fn lower_expect(&mut self, op: &Op) {
         let Some((result, _)) = op.results.first() else {
             return;

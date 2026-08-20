@@ -365,7 +365,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             }
         } else if is_cir_function_pointer_type(ty) {
             self.function_pointer_operand_expr(operand)
-        } else if matches!(ty, CirType::Ptr(_)) {
+        } else if matches!(ty, CirType::Pointer { .. }) {
             // A pointer-to-whole-aggregate parameter (e.g. `V*` for a GNU vector
             // typedef, or `int (*)[N]`) must not decay to an element pointer the
             // way a bare array-to-pointer argument would.

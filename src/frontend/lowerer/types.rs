@@ -1,9 +1,6 @@
 use super::*;
-use clang_ir::ast::{
-    FloatKind as CirFloatKind, RecordKind as CirRecordKind,
-    RecordMemberKind as CirRecordMemberKind, StructType,
-};
-
+use crate::frontend::c_ast::RecordKind as CirRecordKind;
+use clang_ir::enums::RecordMemberKind as CirRecordMemberKind;
 pub(super) fn rust_type(cir_ty: &CirType) -> Type {
     rust_type_with_aliases(cir_ty, &BTreeMap::new(), false)
 }
@@ -68,23 +65,23 @@ pub(super) fn rust_type_with_aliases(
                 return ty;
             }
             match aliases.get(name) {
-                Some(CirType::Struct(s)) => record_struct_type(s, name.strip_prefix("rec_")),
+                Some(CirType::Struct {
+                    name: record_name, ..
+                }) => record_struct_type(record_name.as_deref(), name.strip_prefix("rec_")),
                 Some(expanded) => rust_type_with_aliases(expanded, aliases, va_list_boxed),
                 None => Type::Prim(Prim::I32),
             }
         }
         CirType::Bool => Type::Prim(Prim::Bool),
         CirType::Void => Type::CLib(CLibType::VOID),
-        CirType::CirInt {
-            signed,
-            width,
-            bit_precise: _,
-        } => scalar_int_type(*signed, *width),
-        CirType::Float(CirFloatKind::F16) => Type::Prim(Prim::I32),
-        CirType::Float(CirFloatKind::F32) => Type::Prim(Prim::F32),
-        CirType::Float(CirFloatKind::F64) => Type::Prim(Prim::F64),
-        CirType::Float(CirFloatKind::F128) => Type::Prim(Prim::F128),
-        CirType::Float(CirFloatKind::F80) | CirType::LongDouble(_) => {
+        CirType::Int {
+            is_signed, width, ..
+        } => scalar_int_type(*is_signed, *width),
+        CirType::Fp16 => Type::Prim(Prim::I32),
+        CirType::Single => Type::Prim(Prim::F32),
+        CirType::Double => Type::Prim(Prim::F64),
+        CirType::Fp128 => Type::Prim(Prim::F128),
+        CirType::Fp80 | CirType::LongDouble { .. } => {
             if is_quad_long_double(cir_ty) {
                 Type::Prim(Prim::F128)
             } else if crate::cir::emit::uses_f64_long_double_abi() {
@@ -93,40 +90,50 @@ pub(super) fn rust_type_with_aliases(
                 Type::LongDouble
             }
         }
-        CirType::Complex(inner) => Type::Complex(Box::new(rust_type_with_aliases(
-            inner,
+        CirType::Complex { element_type } => Type::Complex(Box::new(rust_type_with_aliases(
+            element_type,
             aliases,
             va_list_boxed,
         ))),
-        CirType::Vector { element, size } => Type::Array {
-            elem: Box::new(rust_type_with_aliases(element, aliases, va_list_boxed)),
+        CirType::Vector {
+            element_type, size, ..
+        } => Type::Array {
+            elem: Box::new(rust_type_with_aliases(element_type, aliases, va_list_boxed)),
             len: *size,
         },
-        CirType::Ptr(inner) => {
-            if let Some(fn_ty) = cir_fn_type_to_type(inner, aliases, va_list_boxed) {
+        CirType::Pointer { pointee, .. } => {
+            if let Some(fn_ty) = cir_fn_type_to_type(pointee, aliases, va_list_boxed) {
                 fn_ty
             } else {
                 Type::Ptr {
                     mutable: true,
-                    inner: Box::new(rust_type_with_aliases(inner, aliases, va_list_boxed)),
+                    inner: Box::new(rust_type_with_aliases(pointee, aliases, va_list_boxed)),
                 }
             }
         }
-        CirType::Array { element, size } => Type::Array {
-            elem: Box::new(rust_type_with_aliases(element, aliases, va_list_boxed)),
+        CirType::Array { element_type, size } => Type::Array {
+            elem: Box::new(rust_type_with_aliases(element_type, aliases, va_list_boxed)),
             len: *size,
         },
-        CirType::Struct(s) => record_struct_type(s, None),
-        CirType::FunctionType { .. }
-        | CirType::CirFunc { .. }
+        CirType::Struct { name, .. } => record_struct_type(name.as_deref(), None),
+        CirType::Func { .. }
+        | CirType::FunctionType { .. }
         | CirType::Integer(_)
         | CirType::Index
-        | CirType::Dialect { .. } => Type::Prim(Prim::I32),
+        | CirType::Dialect { .. }
+        | CirType::Bf16
+        | CirType::CatchToken
+        | CirType::CleanupToken
+        | CirType::DataMember { .. }
+        | CirType::EhToken
+        | CirType::Method { .. }
+        | CirType::VPtr
+        | CirType::Union { .. } => Type::Prim(Prim::I32),
     }
 }
 
-fn record_struct_type(s: &StructType, alias_key: Option<&str>) -> Type {
-    let Some(name) = s.name.as_deref().or(alias_key) else {
+fn record_struct_type(name: Option<&str>, alias_key: Option<&str>) -> Type {
+    let Some(name) = name.or(alias_key) else {
         return Type::Prim(Prim::I32);
     };
     clib_record_type(name)
@@ -254,7 +261,7 @@ pub(super) fn is_cir_va_list_record_type(
     aliases: &BTreeMap<String, CirType>,
 ) -> bool {
     match ty {
-        CirType::Struct(s) => s.name.as_deref().is_some_and(record_name_matches_va_list),
+        CirType::Struct { name, .. } => name.as_deref().is_some_and(record_name_matches_va_list),
         CirType::Named(name) => match aliases.get(name) {
             Some(resolved) => is_cir_va_list_record_type(resolved, aliases),
             None => false,
@@ -298,17 +305,23 @@ pub(super) fn va_list_shaped_type(
     if is_cir_va_list_record_type(ty, aliases) {
         return Some(value_ty());
     }
-    if let CirType::Ptr(inner) = ty
+    if let CirType::Pointer { pointee: inner, .. } = ty
         && is_cir_va_list_record_type(inner, aliases)
     {
         return Some(value_ty());
     }
-    if let CirType::Array { element, size: 1 } = ty
+    if let CirType::Array {
+        element_type: element,
+        size: 1,
+    } = ty
         && is_cir_va_list_record_type(element, aliases)
     {
         return Some(value_ty());
     }
-    if let CirType::Array { element, size } = ty
+    if let CirType::Array {
+        element_type: element,
+        size,
+    } = ty
         && let Some(inner) = va_list_shaped_type(element, aliases, boxed)
     {
         return Some(Type::Array {
@@ -316,7 +329,7 @@ pub(super) fn va_list_shaped_type(
             len: *size,
         });
     }
-    if let CirType::Ptr(inner) = ty
+    if let CirType::Pointer { pointee: inner, .. } = ty
         && let Some(inner_ty) = va_list_shaped_type(inner, aliases, boxed)
     {
         return Some(Type::Ptr {
@@ -330,14 +343,24 @@ pub(super) fn va_list_shaped_type(
 pub(super) fn function_type_contains_va_list(ty: &CirType) -> bool {
     fn walk(ty: &CirType) -> bool {
         match ty {
-            CirType::Struct(s) => s.name.as_deref().is_some_and(record_name_matches_va_list),
+            CirType::Struct { name, .. } => {
+                name.as_deref().is_some_and(record_name_matches_va_list)
+            }
             CirType::Named(name) => record_name_matches_va_list(name),
-            CirType::Ptr(inner) | CirType::Array { element: inner, .. } => walk(inner),
+            CirType::Pointer { pointee: inner, .. }
+            | CirType::Array {
+                element_type: inner,
+                ..
+            } => walk(inner),
             _ => false,
         }
     }
     match ty {
-        CirType::CirFunc { inputs, output, .. } => inputs.iter().any(walk) || walk(output),
+        CirType::Func {
+            inputs,
+            optional_return_type,
+            ..
+        } => inputs.iter().any(walk) || optional_return_type.as_deref().is_some_and(walk),
         _ => false,
     }
 }
@@ -347,10 +370,10 @@ pub(super) fn cir_fn_type_to_type(
     aliases: &BTreeMap<String, CirType>,
     va_list_boxed: bool,
 ) -> Option<Type> {
-    let CirType::CirFunc {
+    let CirType::Func {
         inputs,
-        output,
-        varargs,
+        optional_return_type: output,
+        var_arg,
     } = ty
     else {
         return None;
@@ -359,10 +382,13 @@ pub(super) fn cir_fn_type_to_type(
         .iter()
         .map(|param| rust_type_with_aliases(param, aliases, va_list_boxed))
         .collect();
-    if *varargs {
+    if *var_arg {
         params.push(Type::Variadic);
     }
-    let ret = rust_type_with_aliases(output, aliases, va_list_boxed);
+    let ret = output
+        .as_deref()
+        .map(|output| rust_type_with_aliases(output, aliases, va_list_boxed))
+        .unwrap_or(Type::CLib(CLibType::VOID));
     // a `void`-returning function is `Type::Unit`, not `Type::CLib(VOID)` -
     // the latter is only for `void*` pointee positions, and a mismatch here
     // means function items (which return `()`) don't unify with this fn
@@ -443,23 +469,30 @@ pub(super) fn type_mentions_f128(ty: &Type) -> bool {
 }
 
 pub(super) fn is_cir_function_pointer_type(ty: &CirType) -> bool {
-    matches!(ty, CirType::Ptr(inner) if matches!(**inner, CirType::CirFunc { .. }))
+    matches!(ty, CirType::Pointer { pointee: inner, .. } if matches!(**inner, CirType::Func { .. }))
 }
 
 pub(super) fn is_cir_void_pointer_type(ty: &CirType) -> bool {
-    matches!(ty, CirType::Ptr(inner) if matches!(**inner, CirType::Void))
+    matches!(ty, CirType::Pointer { pointee: inner, .. } if matches!(**inner, CirType::Void))
 }
 
 pub(super) fn parse_cir_array_type(ty: &CirType) -> Option<(&CirType, u64)> {
     match ty {
-        CirType::Array { element, size } => Some((element, *size)),
+        CirType::Array {
+            element_type: element,
+            size,
+        } => Some((element, *size)),
         _ => None,
     }
 }
 
 pub(super) fn parse_cir_vector_type(ty: &CirType) -> Option<(&CirType, u64)> {
     match ty {
-        CirType::Vector { element, size } => Some((element, *size)),
+        CirType::Vector {
+            element_type: element,
+            size,
+            ..
+        } => Some((element, *size)),
         _ => None,
     }
 }
@@ -471,13 +504,14 @@ pub(super) fn is_complex_long_double_coercion_type(
     let CirType::Named(name) = ty else {
         return false;
     };
-    let Some(CirType::Struct(s)) = aliases.get(name) else {
+    let Some(CirType::Struct {
+        members: Some(members),
+        ..
+    }) = aliases.get(name)
+    else {
         return false;
     };
-    s.members.len() == 2
-        && s.members
-            .iter()
-            .all(|(_, field_ty)| is_long_double(field_ty))
+    members.len() == 2 && members.iter().all(|field_ty| is_long_double(field_ty))
 }
 
 pub(super) fn is_abi_coercion_record_name(name: &str) -> bool {
@@ -506,7 +540,7 @@ pub(super) fn cast_void_ptr_call_args(
             if is_cir_function_pointer_type(arg_ty) || is_cir_void_pointer_type(arg_ty) {
                 return arg;
             }
-            if !matches!(arg_ty, CirType::Ptr(_)) {
+            if !matches!(arg_ty, CirType::Pointer { .. }) {
                 return arg;
             }
             Expr::Cast {
@@ -520,14 +554,14 @@ pub(super) fn cast_void_ptr_call_args(
 pub(super) fn cir_record_name(ty: &CirType) -> Option<&str> {
     match ty {
         CirType::Named(name) => name.strip_prefix("rec_"),
-        CirType::Struct(s) => s.name.as_deref(),
+        CirType::Struct { name, .. } => name.as_deref(),
         _ => None,
     }
 }
 
 pub(super) fn cir_ptr_pointee(ty: &CirType) -> Option<&CirType> {
     match ty {
-        CirType::Ptr(inner) => Some(inner),
+        CirType::Pointer { pointee: inner, .. } => Some(inner),
         _ => None,
     }
 }
@@ -559,7 +593,11 @@ pub(super) fn collect_anon_alias_keys(
         let CirType::Named(name) = ty else {
             if let Some(inner) = cir_ptr_pointee(ty) {
                 collect_anon_alias_keys_inner(inner, aliases, out, seen);
-            } else if let CirType::Array { element, .. } = ty {
+            } else if let CirType::Array {
+                element_type: element,
+                ..
+            } = ty
+            {
                 collect_anon_alias_keys_inner(element, aliases, out, seen);
             }
             return;
@@ -573,10 +611,18 @@ pub(super) fn collect_anon_alias_keys(
         if let Some(expanded) = aliases.get(name) {
             if let Some(inner) = cir_ptr_pointee(expanded) {
                 collect_anon_alias_keys_inner(inner, aliases, out, seen);
-            } else if let CirType::Array { element, .. } = expanded {
+            } else if let CirType::Array {
+                element_type: element,
+                ..
+            } = expanded
+            {
                 collect_anon_alias_keys_inner(element, aliases, out, seen);
-            } else if let CirType::Struct(s) = expanded {
-                for (_, field_ty) in &s.members {
+            } else if let CirType::Struct {
+                members: Some(members),
+                ..
+            } = expanded
+            {
+                for field_ty in members {
                     collect_anon_alias_keys_inner(field_ty, aliases, out, seen);
                 }
             }
@@ -586,7 +632,9 @@ pub(super) fn collect_anon_alias_keys(
 
 pub(super) fn parse_cir_int_type(ty: &CirType) -> Option<(bool, u32)> {
     match ty {
-        CirType::CirInt { signed, width, .. } => Some((*signed, *width)),
+        CirType::Int {
+            is_signed, width, ..
+        } => Some((*is_signed, *width)),
         CirType::Named(name) => {
             let (signed, rest) = match name.as_bytes().first()? {
                 b's' => (true, &name[1..]),
@@ -611,9 +659,9 @@ pub(super) fn cir_type_to_ctype(
     match ty {
         CirType::Void => return CType::Void,
         CirType::Bool => return CType::Bool,
-        CirType::Float(CirFloatKind::F32) => return CType::Float { bits: 32 },
-        CirType::Float(CirFloatKind::F64) => return CType::Float { bits: 64 },
-        CirType::Float(CirFloatKind::F128) => return CType::Float { bits: 128 },
+        CirType::Single => return CType::Float { bits: 32 },
+        CirType::Double => return CType::Float { bits: 64 },
+        CirType::Fp128 => return CType::Float { bits: 128 },
         _ => {}
     }
     if is_quad_long_double(ty) {
@@ -625,10 +673,19 @@ pub(super) fn cir_type_to_ctype(
     if let Some((signed, bits)) = parse_cir_int_type(ty) {
         return CType::Int { signed, bits };
     }
-    if let CirType::Array { element, size } = ty {
+    if let CirType::Array {
+        element_type: element,
+        size,
+    } = ty
+    {
         return CType::Array(Box::new(cir_type_to_ctype(element, aliases)), Some(*size));
     }
-    if let CirType::Vector { element, size } = ty {
+    if let CirType::Vector {
+        element_type: element,
+        size,
+        ..
+    } = ty
+    {
         return CType::Array(Box::new(cir_type_to_ctype(element, aliases)), Some(*size));
     }
     // resolve records through the alias table so anon fields keep their dotted name.
@@ -684,21 +741,28 @@ pub(super) fn reconcile_anonymous_member_types(
         let mut additions = BTreeMap::new();
         for record in records.values_mut() {
             let Some(expanded) = module.type_aliases.values().find_map(|expanded| {
-                let CirType::Struct(s) = expanded else {
+                let CirType::Struct { name, .. } = expanded else {
                     return None;
                 };
-                s.name.as_deref().filter(|name| {
+                name.as_deref().filter(|name| {
                     sanitize_ident(name).as_str() == sanitize_ident(&record.name).as_str()
                 })?;
-                Some(s)
+                Some(expanded)
             }) else {
                 continue;
             };
-            if expanded.members.len() != record.fields.len() {
+            let CirType::Struct {
+                members: Some(members),
+                ..
+            } = expanded
+            else {
+                continue;
+            };
+            if members.len() != record.fields.len() {
                 continue;
             }
             for (index, field) in record.fields.iter_mut().enumerate() {
-                let cir_ty = cir_type_to_ctype(&expanded.members[index].1, &module.type_aliases);
+                let cir_ty = cir_type_to_ctype(&members[index], &module.type_aliases);
                 if field.name == format!("__slate_anon_{index}") {
                     field.ty = cir_ty;
                     continue;
@@ -848,17 +912,22 @@ pub(super) fn resolve_local_record_collisions(
     for (base_sanitized, mut candidates) in by_name {
         let mut family: Vec<(String, Vec<String>)> = Vec::new();
         for (alias_key, expanded) in &cir.type_aliases {
-            let CirType::Struct(s) = expanded else {
+            let CirType::Struct {
+                name,
+                members: Some(members),
+                ..
+            } = expanded
+            else {
                 continue;
             };
-            let Some(cir_name) = s.name.as_deref() else {
+            let Some(cir_name) = name.as_deref() else {
                 continue;
             };
             if sanitize_ident(cir_record_base_name(cir_name)).into_string() != base_sanitized {
                 continue;
             }
-            let mut names = Vec::with_capacity(s.members.len());
-            for index in 0..s.members.len() {
+            let mut names = Vec::with_capacity(members.len());
+            for index in 0..members.len() {
                 let Some(name) = field_names.get(&(alias_key.clone(), index as i64)) else {
                     names.clear();
                     break;
@@ -958,10 +1027,13 @@ pub fn anon_local_records(module: &Module) -> Vec<crate::frontend::c_ast::Record
 
     let mut frontier: Vec<String> = needed.iter().cloned().collect();
     while let Some(key) = frontier.pop() {
-        let Some(CirType::Struct(s)) = module.type_aliases.get(&key) else {
-            continue;
+        let members = match module.type_aliases.get(&key) {
+            Some(CirType::Struct { members, .. }) | Some(CirType::Union { members, .. }) => {
+                members.as_deref().unwrap_or_default()
+            }
+            _ => continue,
         };
-        for (_, field_ty) in &s.members {
+        for field_ty in members {
             let mut field_keys = BTreeSet::new();
             collect_anon_alias_keys(field_ty, &module.type_aliases, &mut field_keys);
             for field_key in field_keys {
@@ -974,21 +1046,34 @@ pub fn anon_local_records(module: &Module) -> Vec<crate::frontend::c_ast::Record
 
     let mut records = Vec::new();
     for key in &needed {
-        let Some(CirType::Struct(s)) = module.type_aliases.get(key) else {
+        let (name, members, member_kinds, is_union) = match module.type_aliases.get(key) {
+            Some(CirType::Struct {
+                name,
+                members: Some(members),
+                member_kinds,
+                ..
+            }) => (name, members, member_kinds, false),
+            Some(CirType::Union {
+                name,
+                members: Some(members),
+                member_kinds,
+                ..
+            }) => (name, members, member_kinds, true),
+            _ => continue,
+        };
+        let Some(name) = name.as_deref().or_else(|| key.strip_prefix("rec_")) else {
             continue;
         };
-        let Some(name) = s.name.as_deref().or_else(|| key.strip_prefix("rec_")) else {
-            continue;
-        };
-        let is_union = s.kind == CirRecordKind::Union;
-        let fields = s
-            .members
+        let fields = members
             .iter()
             .enumerate()
-            .filter(|(_, (kind, _))| {
-                matches!(kind, CirRecordMemberKind::Data | CirRecordMemberKind::Pad)
+            .filter(|(i, _)| {
+                matches!(
+                    member_kinds.get(*i),
+                    Some(CirRecordMemberKind::Data | CirRecordMemberKind::Pad)
+                )
             })
-            .map(|(i, (_, field_ty))| crate::frontend::c_ast::Decl {
+            .map(|(i, field_ty)| crate::frontend::c_ast::Decl {
                 name: if bitfield_slots.contains(&(key.clone(), i as i64)) {
                     format!("__bitfield_{i}")
                 } else {

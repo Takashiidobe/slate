@@ -1,5 +1,4 @@
 use super::*;
-use clang_ir::model::Instruction;
 
 fn type_contains_va_list(ty: &Type) -> bool {
     match ty {
@@ -15,6 +14,166 @@ fn type_contains_va_list(ty: &Type) -> bool {
 }
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
+    pub(super) fn lower_const(&mut self, op: &Op) {
+        let Some((result, ty)) = op.results.first() else {
+            return;
+        };
+        let Some(attr) = op.attr("value") else { return };
+        let attr = self.parent.resolve_attr(attr);
+        if let Some(value) = attr.as_int() {
+            self.const_int_values.insert(result.clone(), value);
+        }
+        let rust_ty = self.parent.rust_type(ty);
+        let mut facts = VecDeque::new();
+        let expr = self
+            .parent
+            .render_const_value_expr(&rust_ty, attr, &mut facts)
+            .unwrap_or_else(|| self.parent.default_value_expr(&rust_ty));
+        self.materialize_expr(result, expr, Some(ty));
+    }
+
+    pub(super) fn lower_get_global(&mut self, op: &Op) {
+        let Some((result, _)) = op.results.first() else {
+            return;
+        };
+        let Some(name) = attr_symbol_ref(op, "name").or_else(|| attr_str(op, "name")) else {
+            return;
+        };
+        let name = name.trim_start_matches('@').to_string();
+        if let Some(ty) = op_result_type(op).map(|ty| self.parent.rust_type(ty))
+            && matches!(ty, Type::FnPtr { .. })
+        {
+            self.loaded_field_types.insert(result.clone(), ty);
+        }
+        self.values.insert(result.clone(), Val::Global(name));
+    }
+
+    pub(super) fn lower_load(&mut self, op: &Op) {
+        let Some((result, _)) = op.results.first() else {
+            return;
+        };
+        let Some(ptr) = op.operands.first() else {
+            return;
+        };
+        self.load_ptr_operand.insert(result.clone(), ptr.clone());
+        if let Some(value) = self.forward_values.get(ptr) {
+            self.values.insert(result.clone(), Val::Expr(value.clone()));
+            return;
+        }
+        let volatile = attr_bool(op, "is_volatile") || attr_bool(op, "volatile");
+        let mut value = if volatile {
+            Self::unsafe_expr(Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
+                func: Box::new(Expr::Path(Path::new(
+                    ["std", "ptr", "read_volatile"].map(Ident::from),
+                ))),
+                args: vec![self.load_address_expr(ptr)],
+            })
+        } else if let Some(atomic) = self.atomic_load_expr(op, ptr) {
+            atomic
+        } else if let Some(global) = self.global_place(ptr) {
+            Self::unsafe_expr(global)
+        } else if let Some(place) = self.place_expr(ptr) {
+            if self.ptr_requires_unsafe(ptr) {
+                Self::unsafe_expr(place)
+            } else {
+                place
+            }
+        } else {
+            Self::unsafe_deref_expr(self.operand_expr(ptr))
+        };
+        if let Some(result_ty) = op_result_type(op).map(|ty| self.parent.rust_type(ty))
+            && let Some(field_ty) = self
+                .member_ptrs
+                .get(ptr)
+                .and_then(|member| member.field_ty.as_ref())
+            && self.parent.type_is_enum(field_ty)
+            && matches!(result_ty, Type::Prim(_))
+        {
+            value = Expr::Cast {
+                expr: Box::new(value),
+                ty: result_ty,
+            };
+        }
+        self.materialize_expr(result, value, op_result_type(op));
+    }
+
+    pub(super) fn lower_store(&mut self, op: &Op) {
+        let (Some(src), Some(ptr)) = (op.operands.first(), op.operands.get(1)) else {
+            return;
+        };
+        let value_ty = op_operand_types(op).first();
+        let mut value = if value_ty.is_some_and(|ty| is_cir_function_pointer_type(ty)) {
+            self.store_function_pointer_value(src, ptr, value_ty.unwrap())
+        } else if value_ty.is_some_and(|ty| matches!(ty, CirType::Pointer { .. })) {
+            self.pointer_operand_expr(src)
+        } else {
+            self.operand_expr(src)
+        };
+        value = self.coerce_store_value(ptr, value, src);
+        if self.forward_allocas.contains(ptr) {
+            let value = self.forward_safe_value(value, value_ty);
+            self.forward_values.insert(ptr.clone(), value);
+            return;
+        }
+        if !attr_bool(op, "is_volatile") && self.try_atomic_store(op, ptr, value_ty, value.clone())
+        {
+            return;
+        }
+        if attr_bool(op, "is_volatile") {
+            self.push_stmt(Stmt::Expr(Self::unsafe_expr(Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
+                func: Box::new(Expr::Path(Path::new(
+                    ["std", "ptr", "write_volatile"].map(Ident::from),
+                ))),
+                args: vec![self.store_address_expr(ptr), value],
+            })));
+        } else if let Some(target) = self.place_expr(ptr) {
+            if self.ptr_requires_unsafe(ptr) {
+                self.push_unsafe_assign(target, value);
+            } else {
+                self.push_assign(target, value);
+            }
+        } else {
+            self.push_unsafe_assign(
+                Expr::Unary {
+                    op: UnaryOp::Deref,
+                    expr: Box::new(self.pointer_operand_expr(ptr)),
+                },
+                value,
+            );
+        }
+    }
+
+    pub(super) fn lower_copy(&mut self, op: &Op) {
+        let (Some(dst), Some(src)) = (op.operands.first(), op.operands.get(1)) else {
+            return;
+        };
+        let Some(value) = self.copy_source_value(dst, src) else {
+            self.push_stmt(Stmt::Expr(Self::unsafe_expr(Expr::PtrCopy {
+                src: Box::new(self.pointer_operand_expr(src)),
+                dst: Box::new(self.pointer_operand_expr(dst)),
+                count: Box::new(Expr::Value(RustValue::I64(1))),
+                overlapping: true,
+            })));
+            return;
+        };
+        if let Some(target) = self.place_expr(dst) {
+            if self.ptr_requires_unsafe(dst) {
+                self.push_unsafe_assign(target, value);
+            } else {
+                self.push_assign(target, value);
+            }
+        } else {
+            self.push_unsafe_assign(
+                Expr::Unary {
+                    op: UnaryOp::Deref,
+                    expr: Box::new(self.pointer_operand_expr(dst)),
+                },
+                value,
+            );
+        }
+    }
     pub(super) fn unique_local_name(&mut self, base: String) -> String {
         if !self.parent.globals.contains_key(&base)
             && self.declared_local_names.insert(base.clone())
@@ -261,105 +420,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             init: Some(init),
         });
     }
-
-    pub(super) fn lower_store(&mut self, op: &Op, instr: Instruction) {
-        let Instruction::Store {
-            value: src,
-            addr: ptr,
-            is_volatile,
-            ..
-        } = instr
-        else {
-            unreachable!()
-        };
-        let src = &src;
-        let ptr = &ptr;
-        if let Some(outputs) = self.asm_outputs.get(src).cloned() {
-            self.asm_outputs.insert(ptr.clone(), outputs);
-            return;
-        }
-        let operand_types = op_operand_types(op);
-        let value_ty = operand_types.first();
-        let mut value = if value_ty.is_some_and(is_cir_function_pointer_type) {
-            self.store_function_pointer_value(src, ptr, value_ty.unwrap())
-        } else if value_ty.is_some_and(|ty| matches!(ty, CirType::Ptr(_))) {
-            self.pointer_operand_expr(src)
-        } else {
-            self.operand_expr(src)
-        };
-        if value_ty.is_some_and(|ty| is_cir_va_list_value_type(ty, &self.parent.aliases)) {
-            value = Expr::MethodCall {
-                recv: Box::new(value),
-                method: "clone".into(),
-                args: vec![],
-            };
-        }
-        value = self.coerce_store_value(ptr, value, src);
-        if self.forward_allocas.contains(ptr) {
-            let value = self.forward_safe_value(value, value_ty);
-            self.forward_values.insert(ptr.clone(), value);
-            return;
-        }
-        if !is_volatile && self.try_atomic_store(op, ptr, value_ty, value.clone()) {
-            return;
-        }
-        if is_volatile {
-            self.push_stmt(Stmt::Expr(Self::unsafe_expr(Expr::Call {
-                binding: crate::function_identity::CallBinding::Generated,
-                func: Box::new(Expr::Path(Path::new(
-                    ["std", "ptr", "write_volatile"].map(Ident::from),
-                ))),
-                args: vec![self.store_address_expr(ptr), value],
-            })));
-        } else if let Some(target) = self.place_expr(ptr) {
-            if self.ptr_requires_unsafe(ptr) {
-                self.push_unsafe_assign(target, value);
-            } else {
-                self.push_assign(target, value);
-            }
-        } else {
-            self.push_unsafe_assign(
-                Expr::Unary {
-                    op: UnaryOp::Deref,
-                    expr: Box::new(self.pointer_operand_expr(ptr)),
-                },
-                value,
-            );
-        }
-    }
-
-    pub(super) fn lower_copy(&mut self, instr: Instruction) {
-        let Instruction::Copy { dst, src } = instr else {
-            unreachable!()
-        };
-        let Some(value) = self.copy_source_value(&dst, &src) else {
-            let d = self.pointer_operand_expr(&dst);
-            let s = self.pointer_operand_expr(&src);
-            self.push_stmt(Stmt::Expr(Self::unsafe_expr(Expr::PtrCopy {
-                src: Box::new(s),
-                dst: Box::new(d),
-                count: Box::new(Expr::Value(RustValue::I64(1))),
-                overlapping: true,
-            })));
-            return;
-        };
-        if let Some(target) = self.place_expr(&dst) {
-            if self.ptr_requires_unsafe(&dst) {
-                self.push_unsafe_assign(target, value);
-            } else {
-                self.push_assign(target, value);
-            }
-        } else {
-            self.push_unsafe_assign(
-                Expr::Unary {
-                    op: UnaryOp::Deref,
-                    expr: Box::new(self.pointer_operand_expr(&dst)),
-                },
-                value,
-            );
-        }
-    }
-
     /// Resolve the by-value source of a `cir.copy`: a numeric/char const global
     /// renders to an array literal (padded to the destination length), while an
     /// aggregate local relies on the `Copy` derive of arrays and `#[repr(C)]`
@@ -410,106 +470,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             _ => self.slot_place(src),
         }
     }
-
-    pub(super) fn lower_load(&mut self, op: &Op, instr: Instruction) {
-        let Instruction::Load {
-            result,
-            addr: ptr,
-            is_volatile,
-            ..
-        } = instr
-        else {
-            unreachable!()
-        };
-        let result = &result;
-        let ptr = &ptr;
-        self.load_ptr_operand.insert(result.clone(), ptr.clone());
-        if let Some(value) = self.forward_values.get(ptr) {
-            self.values.insert(result.clone(), Val::Expr(value.clone()));
-            return;
-        }
-        if let Some(expr) = self.block_addr_dispatch_expr(ptr) {
-            self.indirect_target_values.insert(result.clone(), expr);
-            self.lower_opaque_pointer(op, true);
-            return;
-        }
-        if op_result_type(op).is_some_and(|ty| is_cir_va_list_value_type(ty, &self.parent.aliases))
-            && let Some(place) = self.va_target_place(ptr)
-        {
-            self.va_places.insert(result.clone(), place.clone());
-            self.values.insert(result.clone(), Val::Expr(place));
-            return;
-        }
-        let mut value = if is_volatile {
-            Self::unsafe_expr(Expr::Call {
-                binding: crate::function_identity::CallBinding::Generated,
-                func: Box::new(Expr::Path(Path::new(
-                    ["std", "ptr", "read_volatile"].map(Ident::from),
-                ))),
-                args: vec![self.load_address_expr(ptr)],
-            })
-        } else if let Some(atomic) = self.atomic_load_expr(op, ptr) {
-            atomic
-        } else if let Some(global) = self.global_place(ptr) {
-            Self::unsafe_expr(global)
-        } else if let Some(member) = self.member_ptrs.get(ptr) {
-            let place = Expr::Field {
-                base: Box::new(member.base.clone()),
-                field: member.field.clone(),
-            };
-            if member.unsafe_access {
-                Self::unsafe_expr(place)
-            } else {
-                place
-            }
-        } else if let Some(element) = self.element_ptrs.get(ptr) {
-            let place = self.element_place_expr(element);
-            if element.unsafe_access {
-                Self::unsafe_expr(place)
-            } else {
-                place
-            }
-        } else if let Some(slot) = self.slot_place(ptr) {
-            slot
-        } else if op_result_type(op)
-            .map(|ty| self.parent.rust_type(ty))
-            .is_some_and(|ty| bitint_generic_parts(&ty).is_some())
-        {
-            Self::unsafe_expr(Expr::Call {
-                binding: crate::function_identity::CallBinding::Generated,
-                func: Box::new(Expr::Path(Path::new(
-                    ["std", "ptr", "read_unaligned"].map(Ident::from),
-                ))),
-                args: vec![self.operand_expr(ptr)],
-            })
-        } else {
-            Self::unsafe_deref_expr(self.operand_expr(ptr))
-        };
-        let field_ty = self
-            .member_ptrs
-            .get(ptr)
-            .and_then(|member| member.field_ty.as_ref())
-            .or_else(|| self.slot_types.get(ptr));
-        if let Some(field_ty) = field_ty
-            && let Some(result_ty) = op_result_type(op).map(|ty| self.parent.rust_type(ty))
-            && ((self.parent.type_is_enum(field_ty) && matches!(result_ty, Type::Prim(_)))
-                || (self.parent.type_is_enum_ptr(field_ty)
-                    && matches!(result_ty, Type::Ptr { .. })))
-        {
-            value = Expr::Cast {
-                expr: Box::new(value),
-                ty: result_ty,
-            };
-        }
-        if let Some(fn_ptr_ty @ Type::FnPtr { .. }) = field_ty {
-            self.loaded_field_types
-                .insert(result.clone(), fn_ptr_ty.clone());
-            self.materialize_expr_as(result, value, fn_ptr_ty.clone());
-        } else {
-            self.materialize_expr(result, value, op_result_type(op));
-        }
-    }
-
     pub(super) fn block_addr_dispatch_expr(&self, ptr: &str) -> Option<Expr> {
         let element = self.block_addr_element_ptrs.get(ptr)?;
         let dispatch = self.dispatch.as_ref()?;
@@ -632,211 +592,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             args: Vec::new(),
         })
     }
-
-    pub(super) fn lower_const(&mut self, op: &Op, instr: Instruction) {
-        let Instruction::Const { result, .. } = instr else {
-            unreachable!()
-        };
-        let result = &result;
-        // MLIR may print a const as an attribute alias (e.g. `#false`); expand it.
-        let attr = op
-            .attr("value")
-            .map(|attr| self.parent.resolve_attr(attr).clone());
-        let result_ty = op_result_type(op);
-        let const_int = attr.as_ref().and_then(Attr::as_int);
-
-        if let Some(value) = const_int {
-            self.const_int_values.insert(result.clone(), value);
-        }
-        if let Some(value) = const_int
-            && let Some(expr) = self.next_layout_query_expr(value, result_ty)
-        {
-            self.materialize_expr(result, expr, result_ty);
-            return;
-        }
-        if let Some(value) = const_int
-            && let Some(expr) = self.next_macro_const_expr(value, result_ty)
-        {
-            self.materialize_expr(result, expr, result_ty);
-            return;
-        }
-        if let Some(value) = const_int
-            && let Some(expr) = self.next_enum_const_expr(op, value, result_ty)
-        {
-            self.materialize_expr(result, expr, result_ty);
-            return;
-        }
-        if let Some(Attr::ConstVector { elements, .. }) = &attr
-            && let Some(value) = const_vector_expr(elements)
-        {
-            self.materialize_expr(result, value, result_ty);
-            return;
-        }
-        if let Some(Attr::ConstComplex { real, imag, .. }) = &attr
-            && let Some(re) = complex_component_from_attr(real)
-            && let Some(im) = complex_component_from_attr(imag)
-        {
-            let rust_ty = result_ty.map(|ty| self.parent.rust_type(ty));
-            self.materialize_expr(
-                result,
-                complex_const_expr(rust_ty.as_ref(), re, im),
-                result_ty,
-            );
-            return;
-        }
-        if let Some(Attr::GlobalView {
-            symbol, indices, ..
-        }) = &attr
-            && let Some(result_ty) = result_ty
-            && let Some(value) = self.parent.global_view_init_expr(
-                symbol,
-                indices,
-                &self.parent.rust_type(result_ty),
-            )
-        {
-            self.materialize_expr(result, value, Some(result_ty));
-            return;
-        }
-        if let Some(b) = attr.as_ref().and_then(Attr::as_bool) {
-            self.materialize_expr(result, Expr::Value(RustValue::Bool(b)), result_ty);
-            return;
-        }
-        let floating_literal = self.ast_floating_literal(op);
-        if let Some((signed, _)) = result_ty.and_then(parse_cir_int_type)
-            && let Type::Prim(prim) = self.parent.rust_type(result_ty.unwrap())
-        {
-            let value = if signed {
-                const_int
-                    .filter(|value| i32::try_from(*value).is_err())
-                    .map(|value| Expr::Value(RustValue::TypedInt(value, prim)))
-            } else {
-                attr.as_ref()
-                    .and_then(Attr::as_u128)
-                    .filter(|value| i32::try_from(*value).is_err())
-                    .map(|value| Expr::Value(RustValue::TypedUInt(value, prim)))
-            };
-            if let Some(value) = value {
-                self.materialize_expr(result, value, result_ty);
-                return;
-            }
-        }
-        if let Some(Attr::CirInt { text, .. }) = &attr
-            && let Some(rust_ty) = result_ty.map(|ty| self.parent.rust_type(ty))
-            && let Some(expr) = bitint_from_decimal_str_expr(&rust_ty, text)
-        {
-            self.materialize_expr(result, expr, result_ty);
-            return;
-        }
-        let is_ptr_null = matches!(
-            &attr,
-            Some(Attr::Dialect { dialect, mnemonic, raw: Some(raw), .. })
-                if dialect == "cir" && mnemonic == "ptr" && raw.trim() == "null"
-        );
-        if is_ptr_null {
-            let value = if result_ty.is_some_and(is_cir_function_pointer_type) {
-                self.function_pointer_null_values.insert(result.clone());
-                Expr::Value(RustValue::None)
-            } else if result_ty.is_some_and(|ty| {
-                matches!(self.parent.expand_alias(ty), CirType::Ptr(inner) if matches!(**inner, CirType::Void))
-            }) {
-                Expr::Cast {
-                    expr: Box::new(Expr::Value(RustValue::NullPtr)),
-                    ty: self.parent.rust_type(result_ty.unwrap()),
-                }
-            } else {
-                Expr::Value(RustValue::NullPtr)
-            };
-            self.materialize_expr(result, value, result_ty);
-            return;
-        }
-        if let Some(Attr::Dialect {
-            dialect,
-            mnemonic,
-            raw: Some(raw),
-            ..
-        }) = &attr
-            && dialect == "cir"
-            && mnemonic == "ptr"
-        {
-            // `#cir.ptr<N : ty>` embeds its own type suffix inside the body
-            // text, unlike most other `#cir.*` attrs.
-            let digits = raw.split(':').next().unwrap_or(raw).trim();
-            if let Ok(addr) = digits.parse::<i128>() {
-                let value = Expr::Cast {
-                    expr: Box::new(int_value_expr(addr)),
-                    ty: result_ty
-                        .map(|ty| self.parent.rust_type(ty))
-                        .unwrap_or(Type::Prim(Prim::I64)),
-                };
-                self.materialize_expr(result, value, result_ty);
-                return;
-            }
-        }
-        let is_f128 = matches!(
-            result_ty,
-            Some(CirType::Float(clang_ir::ast::FloatKind::F128))
-        );
-        let macro_expr = if is_f128 || result_ty.is_some_and(is_long_double) {
-            self.next_long_double_macro_const_expr(op, result_ty)
-        } else if matches!(
-            result_ty,
-            Some(CirType::Float(
-                clang_ir::ast::FloatKind::F32 | clang_ir::ast::FloatKind::F64
-            ))
-        ) {
-            self.next_float_macro_const_expr(op, result_ty)
-        } else {
-            None
-        };
-        let value = if let Some(expr) = macro_expr {
-            expr
-        } else if is_f128 || result_ty.is_some_and(is_quad_long_double) {
-            attr.as_ref()
-                .and_then(|attr| match attr {
-                    Attr::CirFloat { text, .. } => f128_from_text(text),
-                    _ => None,
-                })
-                .unwrap_or_else(|| Expr::HexFloat("0.0f128".into()))
-        } else if result_ty.is_some_and(is_long_double) {
-            if !crate::cir::emit::uses_f64_long_double_abi()
-                && let Some(expr) = floating_literal.as_ref().and_then(|fact| {
-                    (fact.bit_width == 80)
-                        .then(|| f80_literal_bits_expr(&fact.bits))
-                        .flatten()
-                })
-            {
-                expr
-            } else if let Some(fp) = floating_literal.map(|fact| fact.value) {
-                if crate::cir::emit::uses_f64_long_double_abi() {
-                    fp_literal_expr(fp)
-                } else {
-                    typed_fp_literal_expr(Some(&crate::backend::rust_ast::Type::LongDouble), fp)
-                }
-            } else if let Some(expr) = attr.as_ref().and_then(|attr| match attr {
-                Attr::CirFloat { text, .. } => long_double_from_text(text),
-                _ => None,
-            }) {
-                expr
-            } else if let Some(n) = const_int {
-                Expr::Cast {
-                    expr: Box::new(int_value_expr(n)),
-                    ty: crate::backend::rust_ast::Type::Prim(Prim::F64),
-                }
-            } else {
-                Expr::Value(0.0.into())
-            }
-        } else {
-            attr.as_ref().and_then(scalar_attr_expr).unwrap_or_else(|| {
-                let rust_ty = result_ty.map(|ty| self.parent.rust_type(ty));
-                match rust_ty {
-                    Some(ty @ Type::Custom(_)) => self.parent.default_value_expr(&ty),
-                    _ => Expr::Value(RustValue::I64(0)),
-                }
-            })
-        };
-        self.materialize_expr(result, value, result_ty);
-    }
-
     pub(super) fn next_layout_query_expr(
         &mut self,
         value: i128,
@@ -892,25 +647,19 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let known = crate::frontend::macros::lookup(&macro_const.name)?;
         if op
             .loc
-            .as_deref()
-            .and_then(|raw| self.parent.resolve_loc(raw))
+            .as_ref()
+            .and_then(|raw| self.parent.resolve_source_loc(raw))
             != Some(macro_const.loc)
         {
             return None;
         }
-        let is_f32 = matches!(
-            result_ty,
-            Some(CirType::Float(clang_ir::ast::FloatKind::F32))
-        );
+        let is_f32 = matches!(result_ty, Some(CirType::Single));
         let bits: u64 = match known.value {
             crate::frontend::macros::MacroValue::Float { rust_bits, .. } if is_f32 => {
                 u64::from(rust_bits)
             }
             crate::frontend::macros::MacroValue::Double { rust_bits, .. }
-                if matches!(
-                    result_ty,
-                    Some(CirType::Float(clang_ir::ast::FloatKind::F64))
-                ) =>
+                if matches!(result_ty, Some(CirType::Double)) =>
             {
                 rust_bits
             }
@@ -941,8 +690,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         if op
             .loc
-            .as_deref()
-            .and_then(|raw| self.parent.resolve_loc(raw))
+            .as_ref()
+            .and_then(|raw| self.parent.resolve_source_loc(raw))
             != Some(enum_const.loc)
         {
             return None;
@@ -978,8 +727,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         };
         if op
             .loc
-            .as_deref()
-            .and_then(|raw| self.parent.resolve_loc(raw))
+            .as_ref()
+            .and_then(|raw| self.parent.resolve_source_loc(raw))
             != Some(macro_const.loc)
         {
             return None;
@@ -992,11 +741,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 args: vec![Expr::Value(RustValue::I64(rust_bits as i64))],
             });
         }
-        if matches!(
-            result_ty,
-            Some(CirType::Float(clang_ir::ast::FloatKind::F128))
-        ) || result_ty.is_some_and(is_quad_long_double)
-        {
+        if matches!(result_ty, Some(CirType::Fp128)) || result_ty.is_some_and(is_quad_long_double) {
             return Some(Expr::HexFloat(format!(
                 "f128::from_bits(0x{:032x})",
                 u128::from(rust_bits)

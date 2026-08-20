@@ -1,5 +1,4 @@
 #include <immintrin.h>
-#include <stdint.h>
 #include <stdio.h>
 
 static int gnu_sse2_intrinsics(void) {
