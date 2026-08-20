@@ -1,13 +1,16 @@
 use super::*;
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
-    pub(super) fn lower_asm(&mut self, op: &Op) {
-        if op.results.is_empty()
-            && op.operands.is_empty()
-            && let Some(raw) = attr_str(op, "asm_string")
-            && !asm_template_has_placeholders(raw)
+    pub(super) fn lower_asm(&mut self, op: &inst::Asm) {
+        let operands: Vec<&str> = op
+            .asm_operands
+            .iter()
+            .flatten()
+            .map(String::as_str)
+            .collect();
+        if op.res.is_none() && operands.is_empty() && !asm_template_has_placeholders(&op.asm_string)
         {
-            let Ok(template) = String::from_utf8(decode_cir_string(raw)) else {
+            let Ok(template) = String::from_utf8(decode_cir_string(&op.asm_string)) else {
                 self.parent
                     .ctx
                     .diagnostics
@@ -16,34 +19,31 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             };
             self.push_stmt(Self::unsafe_stmt(Stmt::Expr(asm_macro_expr(
                 template.replace("$$", "$"),
-                cir_asm_dialect(op),
+                cir_asm_dialect(op.asm_flavor),
             ))));
             return;
         }
-        if self.lower_extended_asm(op) {
+        if self.lower_extended_asm(op, &operands) {
             return;
         }
-        let Some((result, _)) = op.results.first() else {
+        let Some(result) = &op.res else {
             return;
         };
-        let expr = op
-            .operands
+        let expr = operands
             .first()
             .map(|operand| self.operand_expr(operand))
             .unwrap_or_else(|| {
-                op_result_type(op)
+                op.res_ty
+                    .as_ref()
                     .map(|ty| self.parent.rust_type(ty))
                     .map(|ty| self.parent.default_value_expr(&ty))
                     .unwrap_or(Expr::Value(RustValue::I64(0)))
             });
-        self.materialize_expr(result, expr, op_result_type(op));
+        self.materialize_expr(result, expr, op.res_ty.as_ref());
     }
 
-    pub(super) fn lower_extended_asm(&mut self, op: &Op) -> bool {
-        let Some(raw_template) = attr_str(op, "asm_string") else {
-            return false;
-        };
-        let Ok(template) = String::from_utf8(decode_cir_string(raw_template)) else {
+    fn lower_extended_asm(&mut self, op: &inst::Asm, input_operands: &[&str]) -> bool {
+        let Ok(template) = String::from_utf8(decode_cir_string(&op.asm_string)) else {
             self.parent
                 .ctx
                 .diagnostics
@@ -73,18 +73,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 .error("lower: asm goto label count differs between CIR and the Clang AST");
             return true;
         }
-        let Some(raw_constraints) = attr_str(op, "constraints") else {
-            return false;
-        };
-        let constraints = raw_constraints
+        let constraints = op
+            .constraints
             .split(',')
             .map(str::trim)
             .take_while(|constraint| !constraint.starts_with("~{"))
             .collect::<Vec<_>>();
-        let Some(output_count) = constraints.len().checked_sub(op.operands.len()) else {
+        let Some(output_count) = constraints.len().checked_sub(input_operands.len()) else {
             return false;
         };
-        if output_count != op.results.len() && !(op.results.len() == 1 && output_count > 1) {
+        let result_count = usize::from(op.res.is_some());
+        if output_count != result_count && !(result_count == 1 && output_count > 1) {
             return false;
         }
         if constraints[..output_count]
@@ -107,21 +106,23 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let result_types: Vec<CirType> = if output_count == 0 {
             Vec::new()
         } else {
-            let Some(result_types) = asm_output_types(op, &self.parent.aliases, output_count)
+            let Some(result_types) =
+                asm_output_types(op.res_ty.as_ref(), &self.parent.aliases, output_count)
             else {
                 return false;
             };
             result_types.into_iter().cloned().collect()
         };
-        let Some(operand_types) = self.operand_types(op) else {
+        let Some(operand_types): Option<Vec<_>> = input_operands
+            .iter()
+            .map(|operand| self.value_type(operand).cloned())
+            .collect()
+        else {
             return false;
         };
-        if operand_types.len() != op.operands.len() {
-            return false;
-        }
         if constraints[output_count..]
             .iter()
-            .zip(&op.operands)
+            .zip(input_operands)
             .any(|(constraint, operand)| {
                 *constraint == "i" && self.known_arith_value(operand).is_none()
             })
@@ -167,11 +168,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let mut output_names = Vec::new();
         if asm_goto.is_some()
             && output_count > 0
-            && (op.results.len() != output_count
+            && (result_count != output_count
                 || op
-                    .results
-                    .iter()
-                    .any(|(result, _)| !self.asm_output_places.contains_key(result)))
+                    .res
+                    .as_ref()
+                    .is_some_and(|result| !self.asm_output_places.contains_key(result)))
         {
             self.parent
                 .ctx
@@ -180,10 +181,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return true;
         }
         for (output_index, constraint) in constraints[..output_count].iter().enumerate() {
-            let direct_output = op
-                .results
-                .get(output_index)
-                .and_then(|(result, _)| self.asm_output_places.get(result))
+            let direct_output = (output_index == 0)
+                .then_some(op.res.as_ref())
+                .flatten()
+                .and_then(|result| self.asm_output_places.get(result))
                 .cloned();
             let (output, output_name) = if let Some(output) = direct_output {
                 (output, None)
@@ -201,7 +202,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 operands.push(AsmOperand::InOut {
                     reg: AsmReg::Class("reg".into()),
                     late: *constraint == "=r",
-                    input: self.operand_expr(&op.operands[operand_index]),
+                    input: self.operand_expr(input_operands[operand_index]),
                     output,
                 });
             } else {
@@ -228,12 +229,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 continue;
             }
             let value = if *constraint == "i" {
-                let value = self.known_arith_value(&op.operands[operand_index]).unwrap();
+                let value = self
+                    .known_arith_value(input_operands[operand_index])
+                    .unwrap();
                 AsmOperand::Const(int_value_expr(value))
             } else {
                 AsmOperand::In {
                     reg: AsmReg::Class("reg".into()),
-                    value: self.operand_expr(&op.operands[operand_index]),
+                    value: self.operand_expr(input_operands[operand_index]),
                 }
             };
             operands.push(value);
@@ -265,14 +268,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         self.push_stmt(Self::unsafe_stmt(Stmt::InlineAsm(InlineAsm {
             template,
-            dialect: cir_asm_dialect(op),
+            dialect: cir_asm_dialect(op.asm_flavor),
             operands,
             raw: false,
         })));
-        if output_count == op.results.len() {
-            for (((result, _), output), name) in
-                op.results.iter().zip(output_exprs).zip(output_names)
-            {
+        if output_count == result_count {
+            for ((result, output), name) in op.res.iter().zip(output_exprs).zip(output_names) {
                 self.values.insert(result.clone(), Val::Expr(output));
                 if let Some(name) = name {
                     self.immutable_temps.insert(name);
@@ -280,36 +281,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             }
         } else {
             self.asm_outputs
-                .insert(op.results[0].0.clone(), output_exprs);
+                .insert(op.res.clone().unwrap(), output_exprs);
             self.immutable_temps
                 .extend(output_names.into_iter().flatten());
         }
         true
     }
 
-    pub(super) fn lower_eh_setjmp(&mut self, op: &TypedEhSetjmp) {
+    pub(super) fn lower_eh_setjmp(&mut self, op: &inst::EhSetjmp) {
         self.materialize_expr(&op.res, Expr::Value(RustValue::I64(0)), Some(&op.res_ty));
     }
 
-    pub(super) fn lower_unsupported_value(&mut self, op: &Op, note: &str) {
-        let Some((result, _)) = op.results.first() else {
-            self.push_stmt(Stmt::Expr(Expr::Macro {
-                name: "panic".into(),
-                args: vec![Expr::Str(format!("unsupported CIR op: {note}"))],
-            }));
-            return;
-        };
-        self.materialize_expr(
-            result,
-            Expr::Macro {
-                name: "panic".into(),
-                args: vec![Expr::Str(format!("unsupported CIR op: {note}"))],
-            },
-            op_result_type(op),
-        );
-    }
-
-    pub(super) fn lower_unsupported_value_typed(
+    pub(super) fn lower_unsupported_value(
         &mut self,
         result: &str,
         result_ty: &CirType,
@@ -323,140 +306,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             },
             Some(result_ty),
         );
-    }
-
-    pub(super) fn lower_llvm_intrinsic(&mut self, op: &Op) {
-        let Some(name) = attr_str(op, "intrinsic_name") else {
-            self.lower_unsupported_value(op, "cir.call_llvm_intrinsic");
-            return;
-        };
-        if name == "debugtrap" {
-            self.parent.uses_breakpoint.set(true);
-            self.push_stmt(Stmt::Expr(Expr::Call {
-                binding: crate::function_identity::CallBinding::Generated,
-                func: Box::new(Expr::Path(Path::new(
-                    ["core", "arch", "breakpoint"].map(Ident::from),
-                ))),
-                args: Vec::new(),
-            }));
-        } else if !self.lower_x86_intrinsic(op, name) {
-            self.lower_unsupported_value(op, "cir.call_llvm_intrinsic");
-        }
-    }
-
-    pub(super) fn lower_x86_intrinsic(&mut self, op: &Op, name: &str) -> bool {
-        let function = match name {
-            "x86.sse2.pause" => "_mm_pause",
-            "x86.sse2.lfence" => "_mm_lfence",
-            "x86.sse2.mfence" => "_mm_mfence",
-            "x86.sse.sfence" => "_mm_sfence",
-            "x86.rdtsc" => "_rdtsc",
-            "x86.sse42.crc32.32.8" => "_mm_crc32_u8",
-            "x86.sse42.crc32.32.16" => "_mm_crc32_u16",
-            "x86.sse42.crc32.32.32" => "_mm_crc32_u32",
-            "x86.sse42.crc32.64.64" => "_mm_crc32_u64",
-            "x86.rdtscp" => return self.lower_x86_rdtscp(op),
-            _ => return false,
-        };
-        let Some(call) = self.x86_intrinsic_op_call(function, op) else {
-            return false;
-        };
-        let call = Self::unsafe_expr(call);
-        if matches!(
-            name,
-            "x86.sse2.pause" | "x86.sse2.lfence" | "x86.sse2.mfence" | "x86.sse.sfence"
-        ) {
-            self.push_stmt(Stmt::Expr(call));
-        } else if let Some((result, _)) = op.results.first() {
-            self.materialize_expr(result, call, op_result_type(op));
-        }
-        true
-    }
-
-    pub(super) fn lower_x86_rdtscp(&mut self, op: &Op) -> bool {
-        let Some((result, _)) = op.results.first() else {
-            return false;
-        };
-        let Some(result_ty) = op_result_type(op) else {
-            return false;
-        };
-        let Type::Custom(record_name) = self.parent.rust_type(result_ty) else {
-            return false;
-        };
-        let Some(record) = self.parent.records.get(&record_name) else {
-            return false;
-        };
-        let [counter_field, auxiliary_field] = record.fields.as_slice() else {
-            return false;
-        };
-        let counter_field = sanitize_ident(&counter_field.name).into_string();
-        let auxiliary_field = sanitize_ident(&auxiliary_field.name).into_string();
-        let auxiliary = self.unique_local_name("__slate_rdtscp_aux".into());
-        let counter = self.unique_local_name("__slate_rdtscp_counter".into());
-        let Some(call) = self.x86_intrinsic_call(
-            "__rdtscp",
-            &[Expr::Ref {
-                mutable: true,
-                expr: Box::new(Expr::Var(auxiliary.clone().into())),
-            }],
-        ) else {
-            return false;
-        };
-        let expr = Expr::Block(Box::new(crate::backend::rust_ast::Block {
-            stmts: vec![
-                IndentStmt {
-                    depth: 1,
-                    stmt: Stmt::Let {
-                        name: auxiliary.clone(),
-                        mutable: true,
-                        ty: Some(Type::Prim(Prim::U32)),
-                        init: Some(Expr::Value(RustValue::I64(0))),
-                    },
-                },
-                IndentStmt {
-                    depth: 1,
-                    stmt: Stmt::Let {
-                        name: counter.clone(),
-                        mutable: false,
-                        ty: Some(Type::Prim(Prim::U64)),
-                        init: Some(Self::unsafe_expr(call)),
-                    },
-                },
-            ],
-            tail: Some(Box::new(Expr::StructLit {
-                name: record_name,
-                fields: vec![
-                    (counter_field, Expr::Var(counter.into())),
-                    (auxiliary_field, Expr::Var(auxiliary.into())),
-                ],
-            })),
-        }));
-        self.materialize_expr(result, expr, Some(result_ty));
-        true
-    }
-
-    pub(super) fn x86_intrinsic_op_call(&self, function: &str, op: &Op) -> Option<Expr> {
-        let args = op
-            .operands
-            .iter()
-            .map(|operand| self.operand_expr(operand))
-            .collect::<Vec<_>>();
-        self.x86_intrinsic_call(function, &args)
-    }
-
-    pub(super) fn x86_intrinsic_call(&self, function: &str, args: &[Expr]) -> Option<Expr> {
-        let arch = match self.parent.target_arch.as_deref()? {
-            "x86" => "x86",
-            "x86_64" => "x86_64",
-            _ => return None,
-        };
-        Some(Expr::Call {
-            binding: CallBinding::Generated,
-            func: Box::new(Expr::Path(Path::new(
-                ["core", "arch", arch, function].map(Ident::from),
-            ))),
-            args: args.to_vec(),
-        })
     }
 
     pub(super) fn vector_binary_expr(&self, lhs: &str, rhs: &str, len: u64, op: BinOp) -> Expr {
@@ -473,7 +322,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         )
     }
 
-    pub(super) fn lower_vec_extract(&mut self, op: &TypedVecExtract) {
+    pub(super) fn lower_vec_extract(&mut self, op: &inst::VecExtract) {
         self.materialize_expr(
             &op.result,
             Expr::Index {
@@ -487,9 +336,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
-    pub(super) fn lower_vec_insert(&mut self, op: &TypedVecInsert) {
+    pub(super) fn lower_vec_insert(&mut self, op: &inst::VecInsert) {
         let Some((_, len)) = parse_cir_vector_type(&op.result_ty) else {
-            self.lower_unsupported_value_typed(&op.result, &op.result_ty, "cir.vec.insert");
+            self.lower_unsupported_value(&op.result, &op.result_ty, "cir.vec.insert");
             return;
         };
         let Some(index) = self
@@ -498,11 +347,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .and_then(|i| u64::try_from(*i).ok())
             .filter(|i| *i < len)
         else {
-            self.lower_unsupported_value_typed(
-                &op.result,
-                &op.result_ty,
-                "cir.vec.insert dynamic index",
-            );
+            self.lower_unsupported_value(&op.result, &op.result_ty, "cir.vec.insert dynamic index");
             return;
         };
         let base = self.operand_expr(&op.vec);
@@ -524,18 +369,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
-    pub(super) fn lower_vec_shuffle(&mut self, op: &TypedVecShuffle) {
+    pub(super) fn lower_vec_shuffle(&mut self, op: &inst::VecShuffle) {
         let Some((_, len)) = parse_cir_vector_type(&op.result_ty) else {
-            self.lower_unsupported_value_typed(&op.result, &op.result_ty, "cir.vec.shuffle");
+            self.lower_unsupported_value(&op.result, &op.result_ty, "cir.vec.shuffle");
             return;
         };
         let indices = int_array_attr(&op.indices).unwrap_or_default();
         if indices.len() != len as usize {
-            self.lower_unsupported_value_typed(
-                &op.result,
-                &op.result_ty,
-                "cir.vec.shuffle indices",
-            );
+            self.lower_unsupported_value(&op.result, &op.result_ty, "cir.vec.shuffle indices");
             return;
         }
         let lhs = self.operand_expr(&op.vec1);
@@ -558,18 +399,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
-    pub(super) fn lower_vec_shuffle_dynamic(&mut self, op: &TypedVecShuffleDynamic) {
-        self.lower_unsupported_value_typed(&op.result, &op.result_ty, "cir.vec.shuffle.dynamic");
+    pub(super) fn lower_vec_shuffle_dynamic(&mut self, op: &inst::VecShuffleDynamic) {
+        self.lower_unsupported_value(&op.result, &op.result_ty, "cir.vec.shuffle.dynamic");
     }
 
-    pub(super) fn lower_vec_create(&mut self, op: &TypedVecCreate) {
+    pub(super) fn lower_vec_create(&mut self, op: &inst::VecCreate) {
         let elems = op.elements.iter().map(|v| self.operand_expr(v)).collect();
         self.materialize_expr(&op.result, Expr::ArrayLit(elems), Some(&op.result_ty));
     }
 
-    pub(super) fn lower_vec_splat(&mut self, op: &TypedVecSplat) {
+    pub(super) fn lower_vec_splat(&mut self, op: &inst::VecSplat) {
         let Some((_, len)) = parse_cir_vector_type(&op.result_ty) else {
-            self.lower_unsupported_value_typed(&op.result, &op.result_ty, "cir.vec.splat");
+            self.lower_unsupported_value(&op.result, &op.result_ty, "cir.vec.splat");
             return;
         };
         let value = self.operand_expr(&op.value);
@@ -580,9 +421,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
-    pub(super) fn lower_vec_cmp(&mut self, op: &TypedVecCmp) {
+    pub(super) fn lower_vec_cmp(&mut self, op: &inst::VecCmp) {
         let Some((elem_ty, len)) = parse_cir_vector_type(&op.result_ty) else {
-            self.lower_unsupported_value_typed(&op.result, &op.result_ty, "cir.vec.cmp");
+            self.lower_unsupported_value(&op.result, &op.result_ty, "cir.vec.cmp");
             return;
         };
         let cmp = match op.kind {
@@ -593,7 +434,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CmpOpKind::Eq => BinOp::Eq,
             CmpOpKind::Ne => BinOp::Ne,
             CmpOpKind::One | CmpOpKind::Uno => {
-                self.lower_unsupported_value_typed(&op.result, &op.result_ty, "cir.vec.cmp kind");
+                self.lower_unsupported_value(&op.result, &op.result_ty, "cir.vec.cmp kind");
                 return;
             }
         };
@@ -643,7 +484,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }));
     }
 
-    pub(super) fn lower_opaque_pointer_typed(
+    pub(super) fn lower_opaque_pointer(
         &mut self,
         result: &str,
         result_ty: &CirType,
@@ -661,7 +502,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
-    pub(super) fn lower_is_constant(&mut self, op: &TypedIsConstant) {
+    pub(super) fn lower_is_constant(&mut self, op: &inst::IsConstant) {
         let is_constant = self.const_int_values.contains_key(&op.val)
             || self.values.get(&op.val).is_some_and(|value| match value {
                 Val::Expr(expr) => matches!(
@@ -679,7 +520,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(&op.result, expr, Some(&op.result_ty));
     }
 
-    pub(super) fn lower_objsize(&mut self, op: &TypedObjsize) {
+    pub(super) fn lower_objsize(&mut self, op: &inst::Objsize) {
         let expr = if op.min {
             self.zero_literal(Some(&op.result_ty))
         } else {

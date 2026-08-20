@@ -7,25 +7,6 @@ pub(super) fn rust_type(cir_ty: &CirType) -> Type {
 // True if the region contains a `cir.continue` that targets the enclosing loop,
 // i.e. one not swallowed by a nested loop. `cir.if`/`cir.scope`/`cir.switch`
 // bodies are transparent, so we recurse through them.
-pub(super) fn region_has_direct_continue(region: &Region) -> bool {
-    region
-        .blocks
-        .iter()
-        .any(|block| ops_have_direct_continue(&block.ops))
-}
-
-pub(super) fn ops_have_direct_continue(ops: &[Op]) -> bool {
-    ops.iter().any(|op| match op.kind() {
-        CirOpKind::Continue => true,
-        CirOpKind::For | CirOpKind::While | CirOpKind::Do => false,
-        _ => op.regions.iter().any(region_has_direct_continue),
-    })
-}
-
-/// Classifies a bare alias name using CIR's own naming convention for scalar
-/// int aliases (`s32i`, `u17i_bitint`, ...) - CIR always defines and refers to
-/// these by name (see [`CirType`]'s `Display` impl), so this is a fast path
-/// that avoids an alias-table lookup for the overwhelmingly common case.
 fn named_scalar_type(name: &str) -> Option<Type> {
     match name {
         "s32i" => return Some(Type::Prim(Prim::I32)),
@@ -820,21 +801,21 @@ pub(super) fn reconcile_anonymous_member_types(
 }
 
 pub(super) fn collect_anon_record_info(
-    ops: &[Op],
+    ops: &[Operation],
     aliases: &BTreeMap<String, CirType>,
     needed: &mut BTreeSet<String>,
     field_names: &mut BTreeMap<(String, i64), String>,
 ) {
     for op in ops {
-        match op.kind() {
-            CirOpKind::Alloca => {
+        match op.mnemonic() {
+            "alloca" => {
                 if let Some((_, ty)) = op.results.first()
                     && let Some(inner) = cir_ptr_pointee(ty)
                 {
                     collect_anon_alias_keys(inner, aliases, needed);
                 }
             }
-            CirOpKind::GetMember => {
+            "get_member" => {
                 if let Some(pointee) = op.operand_types.first().and_then(cir_ptr_pointee)
                     && let Some(key) = anon_alias_key(pointee, aliases)
                 {
@@ -849,13 +830,13 @@ pub(super) fn collect_anon_record_info(
                     }
                 }
             }
-            CirOpKind::Global => {
+            "global" => {
                 if let Some(CirType::Named(name)) = op.attr("sym_type").and_then(Attr::as_type) {
                     let ty = CirType::Named(name.clone());
                     collect_anon_alias_keys(&ty, aliases, needed);
                 }
             }
-            CirOpKind::CallLlvmIntrinsic => {
+            "call_llvm_intrinsic" => {
                 if let Some((_, ty)) = op.results.first() {
                     collect_anon_alias_keys(ty, aliases, needed);
                 }
@@ -871,13 +852,13 @@ pub(super) fn collect_anon_record_info(
 }
 
 pub(super) fn collect_anon_bitfield_slots(
-    ops: &[Op],
+    ops: &[Operation],
     aliases: &BTreeMap<String, CirType>,
     member_slots: &mut BTreeMap<String, (String, i64)>,
     bitfield_slots: &mut BTreeSet<(String, i64)>,
 ) {
     for op in ops {
-        if op.kind() == CirOpKind::GetMember
+        if op.mnemonic() == "get_member"
             && let (Some((result, _)), Some(key), Some(index)) = (
                 op.results.first(),
                 op.operand_types
@@ -889,7 +870,7 @@ pub(super) fn collect_anon_bitfield_slots(
         {
             member_slots.insert(result.clone(), (key.to_string(), index as i64));
         }
-        if matches!(op.kind(), CirOpKind::GetBitfield | CirOpKind::SetBitfield)
+        if matches!(op.mnemonic(), "get_bitfield" | "set_bitfield")
             && let Some(slot) = op
                 .operands
                 .first()
@@ -1001,12 +982,12 @@ pub(super) fn any_alias_key<'a>(
 }
 
 pub(super) fn collect_local_record_field_names(
-    ops: &[Op],
+    ops: &[Operation],
     aliases: &BTreeMap<String, CirType>,
     field_names: &mut BTreeMap<(String, i64), String>,
 ) {
     for op in ops {
-        if op.kind() == CirOpKind::GetMember
+        if op.mnemonic() == "get_member"
             && let (Some(key), Some(index), Some(name)) = (
                 op.operand_types
                     .first()

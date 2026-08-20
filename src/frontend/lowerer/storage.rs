@@ -14,7 +14,7 @@ fn type_contains_va_list(ty: &Type) -> bool {
 }
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
-    pub(super) fn lower_const(&mut self, op: &TypedConst) {
+    pub(super) fn lower_const(&mut self, op: &inst::Const) {
         let result = &op.res;
         let ty = &op.res_ty;
         let attr = self.parent.resolve_attr(&op.value).clone();
@@ -95,7 +95,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(result, expr, result_ty);
     }
 
-    pub(super) fn lower_get_global(&mut self, op: &TypedGetGlobal) {
+    pub(super) fn lower_get_global(&mut self, op: &inst::GetGlobal) {
         let Attr::SymbolRef(name) = &op.name else {
             return;
         };
@@ -122,7 +122,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.values.insert(result.clone(), Val::Global(name));
     }
 
-    pub(super) fn lower_load(&mut self, op: &TypedLoad) {
+    pub(super) fn lower_load(&mut self, op: &inst::Load) {
         let result = &op.result;
         let ptr = &op.addr;
         self.load_ptr_operand.insert(result.clone(), ptr.clone());
@@ -132,7 +132,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         if let Some(expr) = self.block_addr_dispatch_expr(ptr) {
             self.indirect_target_values.insert(result.clone(), expr);
-            self.lower_opaque_pointer_typed(&op.result, &op.result_ty, true);
+            self.lower_opaque_pointer(&op.result, &op.result_ty, true);
             return;
         }
         if is_cir_va_list_value_type(&op.result_ty, &self.parent.aliases)
@@ -181,7 +181,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(result, value, Some(&op.result_ty));
     }
 
-    pub(super) fn lower_store(&mut self, op: &TypedStore) {
+    pub(super) fn lower_store(&mut self, op: &inst::Store) {
         let src = &op.value;
         let ptr = &op.addr;
         if let Some(outputs) = self.asm_outputs.get(src).cloned() {
@@ -245,7 +245,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    pub(super) fn lower_copy(&mut self, op: &TypedCopy) {
+    pub(super) fn lower_copy(&mut self, op: &inst::Copy) {
         let dst = &op.dst;
         let src = &op.src;
         let Some(value) = self.copy_source_value(dst, src) else {
@@ -291,7 +291,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    pub(super) fn alloca_group_is_lowerable(&self, ops: &[TypedAlloca]) -> bool {
+    pub(super) fn alloca_group_is_lowerable(&self, ops: &[inst::Alloca]) -> bool {
         ops.iter().all(|op| {
             !self.forward_allocas.contains(&op.addr)
                 && !self.hoisted.contains(&op.addr)
@@ -306,7 +306,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         })
     }
 
-    pub(super) fn lower_alloca_group(&mut self, ops: &[TypedAlloca]) {
+    pub(super) fn lower_alloca_group(&mut self, ops: &[inst::Alloca]) {
         let frame_index = self.parent.generated_alloca_frames.len();
         let frame_name = format!("__SlateAllocaFrame{frame_index}");
         let frame_var = self.unique_local_name(format!("__slate_alloca_frame{frame_index}"));
@@ -383,7 +383,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    pub(super) fn lower_alloca(&mut self, op: &TypedAlloca) {
+    pub(super) fn lower_alloca(&mut self, op: &inst::Alloca) {
         let result = &op.addr;
         let cir_ty = &op.addr_ty;
         // a forwarded compiler temp carries one SSA value: its single store

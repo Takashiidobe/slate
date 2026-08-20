@@ -188,7 +188,7 @@ pub(super) fn fp_literal_expr(fp: String) -> Expr {
         .unwrap_or_else(|_| Expr::HexFloat(fp))
 }
 
-pub(super) fn typed_fp_literal_expr(ty: Option<&Type>, fp: String) -> Expr {
+pub(super) fn fp_literal_expr_for_type(ty: Option<&Type>, fp: String) -> Expr {
     if matches!(ty, Some(Type::LongDouble)) && !crate::cir::emit::uses_f64_long_double_abi() {
         f80_literal_expr(&fp).unwrap_or_else(|| {
             let value = fp_literal_expr(fp);
@@ -276,7 +276,7 @@ pub(super) fn complex_const_expr(
 pub(super) fn complex_component_expr(ty: Option<&Type>, component: CirComplexComponent) -> Expr {
     match component {
         CirComplexComponent::Int(value) => int_value_expr(value),
-        CirComplexComponent::Float(value) => typed_fp_literal_expr(ty, value),
+        CirComplexComponent::Float(value) => fp_literal_expr_for_type(ty, value),
     }
 }
 

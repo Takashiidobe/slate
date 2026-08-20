@@ -89,14 +89,14 @@ pub fn translate_with_args(path: &Path, extra_args: &[String]) -> Result<String,
     Ok(backend::apply_with(program, &skip_set_from_env()?).emit())
 }
 
-pub fn lowered_program(path: &Path) -> Result<(cir::ir::Module, rust_ast::Program), Error> {
+pub fn lowered_program(path: &Path) -> Result<(cir::Module, rust_ast::Program), Error> {
     lowered_program_with_args(path, &[])
 }
 
 pub fn lowered_program_with_args(
     path: &Path,
     extra_args: &[String],
-) -> Result<(cir::ir::Module, rust_ast::Program), Error> {
+) -> Result<(cir::Module, rust_ast::Program), Error> {
     let (source, raw) = preprocess::read_source(path).map_err(|source| Error::Read {
         path: path.to_path_buf(),
         source,

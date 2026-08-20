@@ -23,10 +23,10 @@ pre-`cir-flatten-cfg` form it keeps exactly what we need:
 
 We consume the **MLIR generic form** (`cir-opt --mlir-print-op-generic`) because
 it is fully regular — `"op"(operands) <{attrs}> ({regions}) : type` — which makes
-a stable, op-agnostic parser possible. `src/cir/ir.rs` parses this into a
-generic `Op` tree (see [Two IRs](#two-irs) below); it never grows a new variant
-for a new lowering feature — only the lowerer's dispatch does. `CirOpKind` is
-the one enum that has to grow when a new op mnemonic needs its own handler.
+a stable, op-agnostic parser possible. clang-ir parses this into a generic
+`Operation` tree and converts function bodies to its generated `Op` model (see
+[Two IRs](#two-irs) below). Slate dispatches directly on that generated enum;
+it has no separate operation-kind taxonomy.
 
 ## The three sources
 
@@ -81,10 +81,11 @@ linker selects, and it does not rule out runtime symbol interposition.
 
 The pipeline flows through two internal representations on the frontend side:
 
-1. **CIR op-tree** (`src/cir/ir.rs`) — a _generic_ model: `Op { results, name,
-   operands, attrs, regions, ty, loc }`. Typed **views** (e.g. `AllocaOp::of(op)`
-   where they exist) give ergonomic, checked access without coupling the parser
-   to the op set.
+1. **clang-ir CIR model** — its parser first builds generic `Operation` nodes,
+   then its generated `Op` model provides checked operation structs with named
+   operands, results, attributes, successors, and regions. Slate lowers the
+   generated model directly while retaining generic operations for module-level
+   collection and analysis.
 2. **Clang source context** (`src/frontend/c_ast.rs`) — a compact AST plus raw
    JSON, keyed by source locations and function names. This is not a
    handwritten C parser; it is Clang's semantic AST reduced to the facts Slate

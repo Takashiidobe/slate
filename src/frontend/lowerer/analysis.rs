@@ -6,14 +6,14 @@ pub(super) struct LifecycleHooks {
 }
 
 pub(super) fn collect_lifecycle_hooks(
-    ops: &[&Op],
+    ops: &[&Operation],
     has_main: bool,
     diagnostics: &mut crate::ctx::Diagnostics,
 ) -> LifecycleHooks {
     let mut ctors: Vec<(i64, String)> = Vec::new();
     let mut dtors: Vec<(i64, String)> = Vec::new();
     for op in ops {
-        if op.kind() != CirOpKind::Func || region_ops(op).is_empty() {
+        if op.mnemonic() != "func" || region_ops(op).is_empty() {
             continue;
         }
         let is_ctor = op.attr("global_ctor_priority").is_some();
@@ -78,7 +78,7 @@ pub(super) fn hook_call_stmt(name: &str, unsafe_functions: &BTreeSet<String>) ->
     Stmt::Expr(call)
 }
 
-pub(super) fn region_ops(op: &Op) -> Vec<&Op> {
+pub(super) fn region_ops(op: &Operation) -> Vec<&Operation> {
     op.regions
         .iter()
         .flat_map(|region| region.blocks.iter())
@@ -86,7 +86,7 @@ pub(super) fn region_ops(op: &Op) -> Vec<&Op> {
         .collect()
 }
 
-pub(super) fn cross_block_live_values(body: &Region) -> BTreeSet<String> {
+pub(super) fn cross_block_live_values(body: &inst::Region) -> BTreeSet<String> {
     fn walk(
         ops: &[Op],
         block_index: usize,
@@ -94,20 +94,20 @@ pub(super) fn cross_block_live_values(body: &Region) -> BTreeSet<String> {
         used_in: &mut BTreeMap<String, BTreeSet<usize>>,
     ) {
         for op in ops {
-            for (result, _) in &op.results {
+            op.for_each_result(|result, _| {
                 def_block.entry(result.clone()).or_insert(block_index);
-            }
-            for operand in &op.operands {
+            });
+            op.for_each_operand(|operand| {
                 used_in
                     .entry(operand.clone())
                     .or_default()
                     .insert(block_index);
-            }
-            for region in &op.regions {
+            });
+            op.for_each_region(|region| {
                 for block in &region.blocks {
                     walk(&block.ops, block_index, def_block, used_in);
                 }
-            }
+            });
         }
     }
     let mut def_block: BTreeMap<String, usize> = BTreeMap::new();
@@ -126,10 +126,10 @@ pub(super) fn cross_block_live_values(body: &Region) -> BTreeSet<String> {
         .collect()
 }
 
-pub(super) fn collect_used_symbols(ops: &[&Op]) -> BTreeMap<String, Vec<UsedKind>> {
+pub(super) fn collect_used_symbols(ops: &[&Operation]) -> BTreeMap<String, Vec<UsedKind>> {
     let mut flags = BTreeMap::<String, (bool, bool)>::new();
     for op in ops {
-        if op.kind() != CirOpKind::Global {
+        if op.mnemonic() != "global" {
             continue;
         }
         let Some(kind) = (match attr_str(op, "sym_name") {
@@ -170,7 +170,7 @@ pub(super) fn collect_used_symbols(ops: &[&Op]) -> BTreeMap<String, Vec<UsedKind
         .collect()
 }
 
-pub(super) fn collect_region_ops_recursive<'a>(op: &'a Op, out: &mut Vec<&'a Op>) {
+pub(super) fn collect_region_ops_recursive<'a>(op: &'a Operation, out: &mut Vec<&'a Operation>) {
     for child in region_ops(op) {
         out.push(child);
         collect_region_ops_recursive(child, out);
@@ -180,7 +180,7 @@ pub(super) fn collect_region_ops_recursive<'a>(op: &'a Op, out: &mut Vec<&'a Op>
 pub(super) fn enum_locals_requiring_integer_storage(
     declarations: &[crate::frontend::c_ast::LocalEnumDecl],
     enums: &BTreeMap<String, crate::frontend::c_ast::Enum>,
-    ops: &[&Op],
+    ops: &[&Operation],
 ) -> BTreeSet<String> {
     let declared: BTreeMap<_, _> = declarations
         .iter()
@@ -188,7 +188,7 @@ pub(super) fn enum_locals_requiring_integer_storage(
         .collect();
     let slots: BTreeMap<_, _> = ops
         .iter()
-        .filter(|op| op.kind() == CirOpKind::Alloca)
+        .filter(|op| op.mnemonic() == "alloca")
         .filter_map(|op| {
             let (result, _) = op.results.first()?;
             let name = attr_str(op, "name")?;
@@ -199,7 +199,7 @@ pub(super) fn enum_locals_requiring_integer_storage(
         .collect();
     let constants: BTreeMap<_, _> = ops
         .iter()
-        .filter(|op| op.kind() == CirOpKind::Const)
+        .filter(|op| op.mnemonic() == "const")
         .filter_map(|op| {
             let (result, _) = op.results.first()?;
             let value = op.attr("value").and_then(Attr::as_int)?;
@@ -207,7 +207,7 @@ pub(super) fn enum_locals_requiring_integer_storage(
         })
         .collect();
     ops.iter()
-        .filter(|op| op.kind() == CirOpKind::Store)
+        .filter(|op| op.mnemonic() == "store")
         .filter_map(|op| {
             let [value, slot, ..] = op.operands.as_slice() else {
                 return None;
@@ -240,18 +240,18 @@ fn collect_global_view_symbols(attr: &Attr, out: &mut Vec<String>) {
     }
 }
 
-pub(super) fn c_abi_function_targets(op: &Op) -> BTreeSet<String> {
+pub(super) fn c_abi_function_targets(op: &Operation) -> BTreeSet<String> {
     let mut ops = Vec::new();
     collect_region_ops_recursive(op, &mut ops);
     let mut targets: BTreeSet<String> = ops
         .iter()
-        .filter(|op| op.kind() == CirOpKind::GetGlobal)
+        .filter(|op| op.mnemonic() == "get_global")
         .filter(|op| op_result_type(op).is_some_and(is_cir_function_pointer_type))
         .filter_map(|op| attr_symbol_ref(op, "name").map(str::to_string))
         .collect();
     for init in ops
         .iter()
-        .filter(|op| op.kind() == CirOpKind::Global)
+        .filter(|op| op.mnemonic() == "global")
         .filter_map(|op| op.attr("initial_value"))
     {
         let mut symbols = Vec::new();
@@ -262,7 +262,7 @@ pub(super) fn c_abi_function_targets(op: &Op) -> BTreeSet<String> {
 }
 
 pub(super) fn module_requires_native_va_list(
-    module_op: &Op,
+    module_op: &Operation,
     c_abi_functions: &BTreeSet<String>,
     emit_pub: bool,
     aliases: &BTreeMap<String, CirType>,
@@ -271,11 +271,11 @@ pub(super) fn module_requires_native_va_list(
     collect_region_ops_recursive(module_op, &mut ops);
     let defined_functions: BTreeSet<&str> = ops
         .iter()
-        .filter(|op| op.kind() == CirOpKind::Func && !region_ops(op).is_empty())
+        .filter(|op| op.mnemonic() == "func" && !region_ops(op).is_empty())
         .filter_map(|op| attr_str(op, "sym_name"))
         .collect();
-    ops.iter().any(|op| match op.kind() {
-        CirOpKind::Func if !region_ops(op).is_empty() => {
+    ops.iter().any(|op| match op.mnemonic() {
+        "func" if !region_ops(op).is_empty() => {
             let name = attr_str(op, "sym_name").unwrap_or_default();
             let has_va_list = attr_type(op, "function_type").is_some_and(|function_type| {
                 function_type_is_variadic(function_type)
@@ -286,7 +286,7 @@ pub(super) fn module_requires_native_va_list(
             });
             has_va_list && (c_abi_functions.contains(name) || (emit_pub && externally_exported(op)))
         }
-        CirOpKind::Call => {
+        "call" => {
             attr_symbol_ref(op, "callee").is_some_and(|callee| !defined_functions.contains(callee))
                 && op_operand_types(op)
                     .iter()
@@ -297,14 +297,14 @@ pub(super) fn module_requires_native_va_list(
 }
 
 pub(super) fn declared_function_param_types(
-    op: &Op,
+    op: &Operation,
     aliases: &BTreeMap<String, CirType>,
     va_list_boxed: bool,
 ) -> BTreeMap<String, Vec<Type>> {
     let mut ops = Vec::new();
     collect_region_ops_recursive(op, &mut ops);
     ops.iter()
-        .filter(|op| op.kind() == CirOpKind::Func)
+        .filter(|op| op.mnemonic() == "func")
         .filter_map(|op| {
             let name = attr_str(op, "sym_name")?;
             let function_type = attr_type(op, "function_type")?;
@@ -319,14 +319,14 @@ pub(super) fn declared_function_param_types(
 }
 
 pub(super) fn declared_function_return_types(
-    op: &Op,
+    op: &Operation,
     aliases: &BTreeMap<String, CirType>,
     va_list_boxed: bool,
 ) -> BTreeMap<String, Type> {
     let mut ops = Vec::new();
     collect_region_ops_recursive(op, &mut ops);
     ops.iter()
-        .filter(|op| op.kind() == CirOpKind::Func)
+        .filter(|op| op.mnemonic() == "func")
         .filter_map(|op| {
             let name = attr_str(op, "sym_name")?;
             let function_type = attr_type(op, "function_type")?;
@@ -340,6 +340,6 @@ pub(super) fn declared_function_return_types(
         .collect()
 }
 
-pub(super) fn attr_str<'a>(op: &'a Op, key: &str) -> Option<&'a str> {
+pub(super) fn attr_str<'a>(op: &'a Operation, key: &str) -> Option<&'a str> {
     op.attr(key).and_then(Attr::as_str)
 }

@@ -1,12 +1,7 @@
 use super::*;
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
-    pub(super) fn lower_ffs_typed(
-        &mut self,
-        result: &str,
-        result_ty: Option<&CirType>,
-        value: &str,
-    ) {
+    pub(super) fn lower_ffs(&mut self, result: &str, result_ty: Option<&CirType>, value: &str) {
         let ty = result_ty
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or(Type::Prim(Prim::I32));
@@ -34,12 +29,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(result, expr, result_ty);
     }
 
-    pub(super) fn lower_clrsb_typed(
-        &mut self,
-        result: &str,
-        result_ty: Option<&CirType>,
-        value: &str,
-    ) {
+    pub(super) fn lower_clrsb(&mut self, result: &str, result_ty: Option<&CirType>, value: &str) {
         let ty = result_ty
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or(Type::Prim(Prim::I32));
@@ -71,7 +61,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(result, expr, result_ty);
     }
 
-    pub(super) fn lower_binary_method_typed(
+    pub(super) fn lower_binary_method(
         &mut self,
         result: &str,
         result_ty: Option<&CirType>,
@@ -109,7 +99,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(result, expr, result_ty);
     }
 
-    pub(super) fn lower_known_binary_method_typed(
+    pub(super) fn lower_known_binary_method(
         &mut self,
         result: &str,
         result_ty: &CirType,
@@ -118,13 +108,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         known: crate::function_identity::Known,
         method: &str,
     ) {
-        if self.lower_known_libc_binary_typed(result, result_ty, operands.0, operands.1, loc, known)
-        {
-            self.lower_binary_method_typed(result, Some(result_ty), operands.0, operands.1, method);
+        if self.lower_known_libc_binary(result, result_ty, operands.0, operands.1, loc, known) {
+            self.lower_binary_method(result, Some(result_ty), operands.0, operands.1, method);
         }
     }
 
-    pub(super) fn lower_ternary_method_typed(
+    pub(super) fn lower_ternary_method(
         &mut self,
         result: &str,
         result_ty: &CirType,
@@ -158,7 +147,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(result, expr, Some(result_ty));
     }
 
-    pub(super) fn lower_signbit_typed(&mut self, result: &str, result_ty: &CirType, value: &str) {
+    pub(super) fn lower_signbit(&mut self, result: &str, result_ty: &CirType, value: &str) {
         let operand_ty = self.value_type(value);
         if operand_ty.is_some_and(is_wrapped_long_double) {
             self.materialize_expr(
@@ -184,7 +173,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
-    pub(super) fn lower_is_fp_class(&mut self, op: &TypedIsFpClass) {
+    pub(super) fn lower_is_fp_class(&mut self, op: &inst::IsFpClass) {
         let result = &op.result;
         let result_ty = &op.result_ty;
         let value = &op.src;
@@ -343,7 +332,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    pub(super) fn lower_modf(&mut self, op: &TypedModf) {
+    pub(super) fn lower_modf(&mut self, op: &inst::Modf) {
         let value = self.operand_expr(&op.src);
         if is_wrapped_long_double(&op.fractional_ty) {
             self.materialize_expr(

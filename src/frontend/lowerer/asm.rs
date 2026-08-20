@@ -1,7 +1,7 @@
 use super::*;
 
-pub(super) fn collect_assembly_strings<'a>(op: &'a Op, out: &mut Vec<&'a str>) {
-    if op.kind() == CirOpKind::Asm
+pub(super) fn collect_assembly_strings<'a>(op: &'a Operation, out: &mut Vec<&'a str>) {
+    if op.mnemonic() == "asm"
         && let Some(template) = attr_str(op, "asm_string")
     {
         out.push(template);
@@ -31,7 +31,7 @@ pub(super) fn is_asm_symbol_char(ch: char) -> bool {
 }
 
 pub(super) fn lower_module_asm(
-    module_op: &Op,
+    module_op: &Operation,
     diagnostics: &mut crate::ctx::Diagnostics,
 ) -> Vec<Item> {
     let Some(Attr::Array(values)) = module_op.attr("cir.module_asm") else {
@@ -75,7 +75,7 @@ pub(super) fn lower_module_asm(
 }
 
 pub(super) fn lower_weak_alias_asm(
-    module_op: &Op,
+    module_op: &Operation,
     aliases: &BTreeMap<String, String>,
     diagnostics: &mut crate::ctx::Diagnostics,
 ) -> Vec<Item> {
@@ -133,11 +133,18 @@ pub(super) fn rust_target_arch(triple: &str) -> Option<&'static str> {
     }
 }
 
-pub(super) fn cir_asm_dialect(op: &Op) -> Option<AsmDialect> {
+pub(super) fn op_asm_dialect(op: &Operation) -> Option<AsmDialect> {
     match attr_int(op, "asm_flavor") {
         Some(0) => Some(AsmDialect::Att),
         Some(1) => Some(AsmDialect::Intel),
         _ => None,
+    }
+}
+
+pub(super) fn cir_asm_dialect(flavor: clang_ir::enums::AsmFlavor) -> Option<AsmDialect> {
+    match flavor {
+        clang_ir::enums::AsmFlavor::X86Att => Some(AsmDialect::Att),
+        clang_ir::enums::AsmFlavor::X86Intel => Some(AsmDialect::Intel),
     }
 }
 
