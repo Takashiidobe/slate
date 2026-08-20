@@ -1209,6 +1209,7 @@ struct Lowerer<'a> {
 struct FunctionLowerer<'a, 'b> {
     parent: &'a mut Lowerer<'b>,
     values: BTreeMap<String, Val>,
+    value_types: BTreeMap<String, CirType>,
     const_int_values: BTreeMap<String, i128>,
     function_pointer_null_values: BTreeSet<String>,
     slots: BTreeMap<String, String>,
@@ -2778,6 +2779,7 @@ impl __SlateVaArgs {
         let mut f = FunctionLowerer {
             parent: self,
             values: BTreeMap::new(),
+            value_types: BTreeMap::new(),
             const_int_values: BTreeMap::new(),
             function_pointer_null_values: BTreeSet::new(),
             slots: BTreeMap::new(),
@@ -2829,6 +2831,7 @@ impl __SlateVaArgs {
             f.immutable_temps.insert(rust_name.clone());
             f.values
                 .insert(arg.clone(), Val::Expr(Expr::Var(rust_name.into())));
+            f.value_types.insert(arg.clone(), arg_ty.clone());
             if let fn_ptr_ty @ Type::FnPtr { .. } = f.parent.rust_type(arg_ty) {
                 f.loaded_field_types.insert(arg.clone(), fn_ptr_ty);
             }
@@ -4128,6 +4131,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn lower_block(&mut self, block: &Block) {
+        self.value_types.extend(block.args.iter().cloned());
         let mut index = 0;
         while index < block.ops.len() {
             let op = &block.ops[index];
@@ -4217,6 +4221,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     fn lower_op(&mut self, op: &Op) {
         if let Some(typed) = TypedOp::from_operation(op) {
+            self.record_typed_result_types(&typed);
             match typed {
                 TypedOp::Add(value) if value.saturated => {
                     return self.lower_saturating_arith(op, "saturating_add");
@@ -4338,6 +4343,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 _ => {}
             }
         }
+        self.value_types.extend(op.results.iter().cloned());
         match op.kind() {
             CirOpKind::Alloca => self.lower_alloca(op),
             CirOpKind::Asm => self.lower_asm(op),
@@ -4403,5 +4409,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 self.emit_todo(name);
             }
         }
+    }
+
+    fn record_typed_result_types(&mut self, op: &TypedOp) {
+        op.for_each_result(|id, ty| {
+            self.value_types.insert(id.clone(), ty.clone());
+        });
+    }
+
+    fn value_type(&self, value: &str) -> Option<&CirType> {
+        self.value_types.get(value)
     }
 }

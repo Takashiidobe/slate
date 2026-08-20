@@ -202,15 +202,21 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.asm_outputs.insert(ptr.clone(), outputs);
             return;
         }
-        let value_ty = op_operand_types(op).first();
-        let mut value = if value_ty.is_some_and(is_cir_function_pointer_type) {
-            self.store_function_pointer_value(src, ptr, value_ty.unwrap())
-        } else if value_ty.is_some_and(|ty| matches!(ty, CirType::Pointer { .. })) {
+        let value_ty = self.value_type(src).cloned();
+        let mut value = if value_ty.as_ref().is_some_and(is_cir_function_pointer_type) {
+            self.store_function_pointer_value(src, ptr, value_ty.as_ref().unwrap())
+        } else if value_ty
+            .as_ref()
+            .is_some_and(|ty| matches!(ty, CirType::Pointer { .. }))
+        {
             self.pointer_operand_expr(src)
         } else {
             self.operand_expr(src)
         };
-        if value_ty.is_some_and(|ty| is_cir_va_list_value_type(ty, &self.parent.aliases)) {
+        if value_ty
+            .as_ref()
+            .is_some_and(|ty| is_cir_va_list_value_type(ty, &self.parent.aliases))
+        {
             value = Expr::MethodCall {
                 recv: Box::new(value),
                 method: "clone".into(),
@@ -219,11 +225,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         value = self.coerce_store_value(ptr, value, src);
         if self.forward_allocas.contains(ptr) {
-            let value = self.forward_safe_value(value, value_ty);
+            let value = self.forward_safe_value(value, value_ty.as_ref());
             self.forward_values.insert(ptr.clone(), value);
             return;
         }
-        if !attr_bool(op, "is_volatile") && self.try_atomic_store(op, ptr, value_ty, value.clone())
+        if !attr_bool(op, "is_volatile")
+            && self.try_atomic_store(op, ptr, value_ty.as_ref(), value.clone())
         {
             return;
         }
