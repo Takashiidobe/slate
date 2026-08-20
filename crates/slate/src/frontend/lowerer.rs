@@ -20,7 +20,9 @@ use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 use clang_ir::ast::SourceLocation;
 use clang_ir::model::{
     MemOrder, Op as TypedOp,
-    instruction::{GetGlobal as TypedGetGlobal, Store as TypedStore},
+    instruction::{
+        Const as TypedConst, Copy as TypedCopy, GetGlobal as TypedGetGlobal, Store as TypedStore,
+    },
 };
 use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
 
@@ -1359,10 +1361,6 @@ impl<'a> Lowerer<'a> {
             .get(name)
             .cloned()
             .unwrap_or_else(|| sanitize_ident(name).into_string())
-    }
-
-    fn ast_floating_literal(&self, op: &Op) -> Option<FloatingLiteralFact> {
-        self.floating_literal_at_source_location(op.loc.as_ref()?)
     }
 
     fn floating_literal_at_source_location(
@@ -4129,8 +4127,8 @@ fn cir_positive_zero(text: &str) -> bool {
 }
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
-    fn ast_floating_literal(&self, op: &Op) -> Option<FloatingLiteralFact> {
-        self.parent.ast_floating_literal(op)
+    fn ast_floating_literal(&self, loc: Option<&SourceLocation>) -> Option<FloatingLiteralFact> {
+        self.parent.floating_literal_at_source_location(loc?)
     }
 
     fn lower_block(&mut self, block: &Block) {
@@ -4260,11 +4258,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 TypedOp::AddOverflow(_) => return self.lower_overflow_arith(op, "overflowing_add"),
                 TypedOp::SubOverflow(_) => return self.lower_overflow_arith(op, "overflowing_sub"),
                 TypedOp::MulOverflow(_) => return self.lower_overflow_arith(op, "overflowing_mul"),
-                TypedOp::Const(_) => return self.lower_const(op),
+                TypedOp::Const(value) => return self.lower_const(&value),
                 TypedOp::GetGlobal(value) => return self.lower_get_global(&value),
                 TypedOp::Load(_) => return self.lower_load(op),
                 TypedOp::Store(value) => return self.lower_store(&value),
-                TypedOp::Copy(_) => return self.lower_copy(op),
+                TypedOp::Copy(value) => return self.lower_copy(&value),
                 TypedOp::Cast(_) => return self.lower_cast(op),
                 TypedOp::GetElement(_) => return self.lower_get_element(op),
                 TypedOp::PtrStride(_) => return self.lower_ptr_stride(op),
