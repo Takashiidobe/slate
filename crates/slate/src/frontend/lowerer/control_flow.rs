@@ -267,8 +267,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.emit_todo("cir.switch");
             return;
         };
-        let selector_rust_ty = op_operand_types(op)
+        let selector_rust_ty = op
+            .operands
             .first()
+            .and_then(|value| self.value_type(value))
             .map(|ty| self.parent.rust_type(ty));
         let bitint_ty = selector_rust_ty.filter(|ty| bitint_generic_parts(ty).is_some());
         if self.lower_duff_switch(selector, region, bitint_ty.as_ref()) {
@@ -840,8 +842,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.emit_todo("cir.switch.flat: unknown default successor");
             return;
         };
-        let selector_rust_ty = op_operand_types(op)
+        let selector_rust_ty = op
+            .operands
             .first()
+            .and_then(|value| self.value_type(value))
             .map(|ty| self.parent.rust_type(ty));
         let bitint_ty = selector_rust_ty.filter(|ty| bitint_generic_parts(ty).is_some());
         let Some(case_patterns) = switch_flat_case_patterns(op, bitint_ty.as_ref()) else {

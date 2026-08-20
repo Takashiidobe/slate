@@ -100,7 +100,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         let kind = attr_int(op, "kind");
-        let operand_types = op_operand_types(op);
+        let Some(operand_types) = self.operand_types(op) else {
+            return;
+        };
         let concrete_function_symbols = operand_types
             .first()
             .zip(operand_types.get(1))
@@ -472,7 +474,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         let result_types = op_result_types(op);
-        let operand_types = op_operand_types(op);
+        let Some(operand_types) = self.operand_types(op) else {
+            return;
+        };
         let operand_rust_ty = operand_types
             .first()
             .map(|ty| self.parent.rust_type(ty))
@@ -626,7 +630,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         let value = self.operand_expr(value);
         let result_ty = op_result_type(op);
-        let operand_ty = op_operand_types(op).first();
+        let operand_ty = self.value_type(&op.operands[0]);
         let rust_ty = result_ty
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or(Type::Prim(Prim::I32));

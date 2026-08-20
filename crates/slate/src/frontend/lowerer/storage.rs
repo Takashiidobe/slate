@@ -101,13 +101,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(result, expr, result_ty);
     }
 
-    pub(super) fn lower_get_global(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
+    pub(super) fn lower_get_global(&mut self, op: &TypedGetGlobal) {
+        let Attr::SymbolRef(name) = &op.name else {
             return;
         };
-        let Some(name) = attr_symbol_ref(op, "name").or_else(|| attr_str(op, "name")) else {
-            return;
-        };
+        let result = &op.addr;
         let name = name.trim_start_matches('@').trim_matches('"').to_string();
         let name = self.parent.weak_refs.get(&name).cloned().unwrap_or(name);
         let string_name = self.parent.strings.keys().find_map(|candidate| {
@@ -123,10 +121,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else {
             self.parent.rust_global_name(&name)
         };
-        if let Some(ty) = op_result_type(op).map(|ty| self.parent.rust_type(ty))
-            && matches!(ty, Type::FnPtr { .. })
-        {
-            self.loaded_field_types.insert(result.clone(), ty);
+        if matches!(self.parent.rust_type(&op.addr_ty), Type::FnPtr { .. }) {
+            self.loaded_field_types
+                .insert(result.clone(), self.parent.rust_type(&op.addr_ty));
         }
         self.values.insert(result.clone(), Val::Global(name));
     }
@@ -194,10 +191,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(result, value, op_result_type(op));
     }
 
-    pub(super) fn lower_store(&mut self, op: &Op) {
-        let (Some(src), Some(ptr)) = (op.operands.first(), op.operands.get(1)) else {
-            return;
-        };
+    pub(super) fn lower_store(&mut self, op: &TypedStore) {
+        let src = &op.value;
+        let ptr = &op.addr;
         if let Some(outputs) = self.asm_outputs.get(src).cloned() {
             self.asm_outputs.insert(ptr.clone(), outputs);
             return;
@@ -229,12 +225,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.forward_values.insert(ptr.clone(), value);
             return;
         }
-        if !attr_bool(op, "is_volatile")
-            && self.try_atomic_store(op, ptr, value_ty.as_ref(), value.clone())
+        if !op.is_volatile
+            && self.try_atomic_store(op.mem_order, ptr, value_ty.as_ref(), value.clone())
         {
             return;
         }
-        if attr_bool(op, "is_volatile") {
+        if op.is_volatile {
             self.push_stmt(Stmt::Expr(Self::unsafe_expr(Expr::Call {
                 binding: crate::function_identity::CallBinding::Generated,
                 func: Box::new(Expr::Path(Path::new(

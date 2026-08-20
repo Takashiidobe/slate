@@ -72,8 +72,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             member.field_is_trailing
                 && matches!(&member.field_ty, Some(Type::Array { len: 0 | 1, .. }))
         });
-        let array_len = op_operand_types(op)
-            .first()
+        let array_len = self
+            .value_type(base)
             .and_then(cir_ptr_inner)
             .and_then(parse_cir_array_type)
             .map(|(_, len)| len);
@@ -133,7 +133,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let (Some(base), Some(stride)) = (op.operands.first(), op.operands.get(1)) else {
             return;
         };
-        let operand_types = op_operand_types(op);
+        let Some(operand_types) = self.operand_types(op) else {
+            return;
+        };
         let function_pointer_stride = operand_types
             .first()
             .is_some_and(is_cir_function_pointer_type)
@@ -174,7 +176,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let (Some(lhs), Some(rhs)) = (op.operands.first(), op.operands.get(1)) else {
             return;
         };
-        let operand_types = op_operand_types(op);
+        let Some(operand_types) = self.operand_types(op) else {
+            return;
+        };
         let lhs = self.fn_ptr_aware_operand_expr(
             lhs,
             operand_types.first(),
@@ -543,8 +547,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn bitfield_storage_member(&self, op: &Op) -> Option<(String, Type, bool)> {
-        let record_name = op_operand_types(op)
+        let record_name = op
+            .operands
             .first()
+            .and_then(|value| self.value_type(value))
             .and_then(cir_ptr_pointee)
             .map(|ty| self.parent.expand_alias(ty))
             .and_then(cir_record_name)?;
@@ -658,7 +664,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     pub(super) fn value_member_field(&self, op: &Op, operand_index: usize) -> Option<String> {
         let index = aggregate_member_index(op)?;
-        let record_ty = op_operand_types(op).get(operand_index)?;
+        let record_ty = op
+            .operands
+            .get(operand_index)
+            .and_then(|value| self.value_type(value))?;
         let Type::Custom(record_name) = self.parent.rust_type(record_ty) else {
             return None;
         };
@@ -752,7 +761,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn record_name_from_op(&self, op: &Op) -> Option<String> {
-        let base_ty = op_operand_types(op).first()?;
+        let base_ty = op
+            .operands
+            .first()
+            .and_then(|value| self.value_type(value))?;
         let record_name = cir_ptr_pointee(base_ty)
             .map(|ty| self.parent.expand_alias(ty))
             .and_then(cir_record_name)?;
@@ -958,8 +970,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn op_base_is_union(&self, op: &Op) -> bool {
-        op_operand_types(op)
+        op.operands
             .first()
+            .and_then(|value| self.value_type(value))
             .and_then(cir_ptr_inner)
             .is_some_and(|ty| self.parent.cir_type_is_union(ty))
     }
@@ -970,8 +983,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             {
                 return ("add".into(), vec![int_value_expr(*value)]);
             }
-            if op_operand_types(op)
+            if op
+                .operands
                 .get(1)
+                .and_then(|value| self.value_type(value))
                 .is_some_and(|ty| self.cir_int_is_unsigned(ty))
             {
                 return (
