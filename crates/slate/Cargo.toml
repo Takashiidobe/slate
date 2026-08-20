@@ -17,6 +17,9 @@ mimalloc = "0.1.52"
 rustc_apfloat = "0.2.3"
 clang-ir = { path = "../clang-ir/clang-ir" }
 
+[patch.crates-io]
+clang-ir-types = { path = "../clang-ir/clang-ir-types" }
+
 
 [profile.test]
 opt-level = 3

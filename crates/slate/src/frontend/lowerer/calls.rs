@@ -9,11 +9,21 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         Some((base.as_str(), address.as_str(), real_type.as_str()))
     }
 
-    pub(super) fn lower_call(&mut self, op: &Op) {
-        let Some(operand_types) = self.operand_types(op) else {
+    pub(super) fn lower_call(&mut self, op: &TypedCall) {
+        let Some(arg_types): Option<Vec<_>> = op
+            .args
+            .iter()
+            .map(|operand| self.value_type(operand).cloned())
+            .collect()
+        else {
             return;
         };
-        let direct_callee = attr_symbol_ref(op, "callee").map(str::to_string);
+        let direct_callee = match op.callee.as_ref() {
+            Some(Attr::SymbolRef(value)) => {
+                Some(value.trim_start_matches('@').trim_matches('"').to_string())
+            }
+            _ => None,
+        };
         let weak_ref_target = direct_callee
             .as_ref()
             .and_then(|callee| self.parent.weak_refs.get(callee))
@@ -25,7 +35,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let mut binding = if weak_ref_target.is_some() {
             CallBinding::Generated
         } else {
-            self.parent.call_binding(op, direct_callee.is_some())
+            self.parent
+                .call_binding_at(op.loc.as_ref(), direct_callee.is_some())
         };
         if binding.known().is_none()
             && let Some(callee) = direct_callee.as_deref()
@@ -40,7 +51,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 },
             };
         }
-        let (callee_name, callee_expr, arg_operands, arg_types, indirect_callee_operand) =
+        let (callee_name, callee_expr, indirect_callee_operand) =
             if let Some(callee) = direct_callee {
                 let callee_expr = if external_weak_call {
                     Expr::MethodCall {
@@ -51,15 +62,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 } else {
                     Expr::Var(sanitize_ident(&callee))
                 };
-                (
-                    callee.clone(),
-                    callee_expr,
-                    op.operands.as_slice(),
-                    operand_types.as_slice(),
-                    None,
-                )
+                (callee.clone(), callee_expr, None)
             } else {
-                let Some((callee_operand, arg_operands)) = op.operands.split_first() else {
+                let Some(callee_operand) = op.indirect_callee.as_ref() else {
                     return;
                 };
                 (
@@ -69,20 +74,30 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         method: "unwrap".into(),
                         args: vec![],
                     },
-                    arg_operands,
-                    operand_types.get(1..).unwrap_or(&[]),
                     Some(callee_operand.clone()),
                 )
             };
-        let arg_attrs_offset = op.operands.len() - arg_operands.len();
+        let arg_operands = op.args.as_slice();
+        let arg_types = arg_types.as_slice();
+        let arg_attrs_offset = usize::from(indirect_callee_operand.is_some());
         let mut args = arg_operands
             .iter()
             .zip(arg_types.iter())
             .map(|(operand, ty)| self.call_arg_expr(operand, ty))
             .collect::<Vec<_>>();
-        if self.try_long_double_call_shim(op, &callee_name, &args, arg_types)
-            || self.try_format_call_shims(op, &callee_name, &args, arg_types)
-        {
+        if self.try_long_double_call_shim(
+            op.result.as_deref(),
+            op.result_ty.as_ref(),
+            &callee_name,
+            &args,
+            arg_types,
+        ) || self.try_format_call_shims(
+            op.result.as_deref(),
+            op.result_ty.as_ref(),
+            &callee_name,
+            &args,
+            arg_types,
+        ) {
             return;
         }
         let indirect_param_types = indirect_callee_operand
@@ -93,7 +108,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 _ => None,
             });
         let indirect_call = indirect_callee_operand.is_some();
-        let cast_runtime_result = op_result_type(op).is_some_and(|result_ty| {
+        let cast_runtime_result = op.result_ty.as_ref().is_some_and(|result_ty| {
             let result_ty = self.parent.rust_type(result_ty);
             self.parent
                 .extern_returns
@@ -144,7 +159,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     i = j;
                     read
                 } else {
-                    let byval = call_arg_byval_type(op, arg_attrs_offset + fixed + i).is_some();
+                    let byval = call_arg_byval_type_attr(
+                        op.arg_attrs.as_ref(),
+                        arg_attrs_offset + fixed + i,
+                    )
+                    .is_some();
                     let arg = variadic[i].clone();
                     let arg = if byval {
                         Self::unsafe_expr(Expr::Call {
@@ -217,7 +236,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             call
         };
         let expr = if cast_runtime_result {
-            op_result_type(op).map_or(expr.clone(), |ty| Expr::Cast {
+            op.result_ty.as_ref().map_or(expr.clone(), |ty| Expr::Cast {
                 expr: Box::new(expr),
                 ty: self.parent.rust_type(ty),
             })
@@ -225,7 +244,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             expr
         };
 
-        if let Some((result, _)) = op.results.first() {
+        if let Some(result) = op.result.as_ref() {
             let indirect_ret_ty = indirect_callee_operand
                 .and_then(|operand| self.loaded_field_types.get(&operand))
                 .and_then(|ty| match ty {
@@ -234,7 +253,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 });
             match indirect_ret_ty {
                 Some(ty) => self.materialize_expr_as(result, expr, ty),
-                None => self.materialize_expr(result, expr, op_result_type(op)),
+                None => self.materialize_expr(result, expr, op.result_ty.as_ref()),
             }
         } else {
             self.push_stmt(Stmt::Expr(expr));
@@ -243,17 +262,19 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     pub(super) fn try_format_call_shims(
         &mut self,
-        op: &Op,
+        result: Option<&str>,
+        result_ty: Option<&CirType>,
         callee_name: &str,
         args: &[Expr],
         arg_types: &[CirType],
     ) -> bool {
-        self.try_long_double_call_shim(op, callee_name, args, arg_types)
+        self.try_long_double_call_shim(result, result_ty, callee_name, args, arg_types)
     }
 
     pub(super) fn try_long_double_call_shim(
         &mut self,
-        op: &Op,
+        result: Option<&str>,
+        result_ty: Option<&CirType>,
         callee_name: &str,
         args: &[Expr],
         arg_types: &[CirType],
@@ -267,7 +288,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             _ => None,
         };
         if let Some(shim) = cf80_shim {
-            let Some((result, _)) = op.results.first() else {
+            let Some(result) = result else {
                 return true;
             };
             if args.len() != 4 {
@@ -293,13 +314,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 func: Box::new(Expr::Var(shim.into())),
                 args: vec![lhs, rhs],
             };
-            self.materialize_expr(result, call, op_result_type(op));
+            self.materialize_expr(result, call, result_ty);
             return true;
         }
         if !self.parent.externs.contains_key(callee_name) {
             return false;
         }
-        let ret_cir_ty = op_result_type(op);
+        let ret_cir_ty = result_ty;
         let has_long_double_arg = arg_types.iter().any(|ty| {
             self.parent
                 .rust_type_has_long_double(&self.parent.rust_type(ty))
@@ -416,8 +437,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             func: Box::new(Expr::Var(shim_name.into())),
             args: call_args,
         });
-        if let Some((result, _)) = op.results.first() {
-            self.materialize_expr(result, expr, op_result_type(op));
+        if let Some(result) = result {
+            self.materialize_expr(result, expr, result_ty);
         } else {
             self.push_stmt(Stmt::Expr(expr));
         }

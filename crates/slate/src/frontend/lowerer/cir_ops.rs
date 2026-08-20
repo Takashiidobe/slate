@@ -23,6 +23,32 @@ pub(super) fn switch_case<'a>(op: &'a Op, bitint_ty: Option<&Type>) -> Option<Sw
     })
 }
 
+pub(super) fn typed_switch_case<'a>(
+    op: &'a TypedOp,
+    bitint_ty: Option<&Type>,
+) -> Option<TypedSwitchCase<'a>> {
+    let TypedOp::Case(case) = op else {
+        return None;
+    };
+    let raw_values: &[Attr] = match &case.value {
+        Attr::Array(values) => values,
+        _ => &[],
+    };
+    let patterns = if case.kind == clang_ir::enums::CaseOpKind::Range {
+        let [start, end] = raw_values else {
+            return None;
+        };
+        vec![case_range_pattern(start, end, bitint_ty)?]
+    } else {
+        case_values_to_patterns(raw_values, bitint_ty)?
+    };
+    Some(TypedSwitchCase {
+        patterns,
+        is_default: case.kind == clang_ir::enums::CaseOpKind::Default,
+        region: &case.case_region,
+    })
+}
+
 pub(super) fn switch_flat_case_patterns(op: &Op, bitint_ty: Option<&Type>) -> Option<Vec<Pattern>> {
     let raw_values: &[Attr] = match op.attr("caseValues") {
         Some(Attr::Array(values)) => values,
@@ -137,6 +163,52 @@ pub(super) fn duff_switch<'a>(
     })
 }
 
+pub(super) fn typed_duff_switch<'a>(
+    region: &'a TypedRegion,
+    bitint_ty: Option<&Type>,
+) -> Option<TypedDuffSwitch<'a>> {
+    let ops = typed_transparent_region_ops(region)?;
+    let [outer] = ops.as_slice() else {
+        return None;
+    };
+    let outer_case = typed_switch_case(outer, bitint_ty)?;
+    let do_op = typed_transparent_region_ops(outer_case.region)?;
+    let [TypedOp::Do(do_op)] = do_op.as_slice() else {
+        return None;
+    };
+    let body_ops = typed_transparent_region_ops(&do_op.body)?;
+    let first_case = body_ops
+        .iter()
+        .position(|op| matches!(op, TypedOp::Case(_)))?;
+    let prefix = body_ops[..first_case].to_vec();
+    let nested: Option<Vec<_>> = body_ops[first_case..]
+        .iter()
+        .map(|op| typed_switch_case(op, bitint_ty))
+        .collect();
+    let mut cases = vec![outer_case];
+    cases.extend(nested?);
+    Some(TypedDuffSwitch {
+        cases,
+        prefix,
+        condition: &do_op.cond,
+    })
+}
+
+fn typed_transparent_region_ops(region: &TypedRegion) -> Option<Vec<&TypedOp>> {
+    let [block] = region.blocks.as_slice() else {
+        return None;
+    };
+    let ops: Vec<_> = block
+        .ops
+        .iter()
+        .filter(|op| !matches!(op, TypedOp::Yield(_)))
+        .collect();
+    if let [TypedOp::Scope(scope)] = ops.as_slice() {
+        return typed_transparent_region_ops(&scope.scope_region);
+    }
+    Some(ops)
+}
+
 pub(super) fn transparent_single_op(region: &Region, kind: CirOpKind) -> Option<&Op> {
     let ops = transparent_region_ops(region)?;
     let [op] = ops.as_slice() else {
@@ -196,6 +268,26 @@ pub(super) fn region_ends_control_flow(region: &Region) -> bool {
                     | CirOpKind::Goto
                     | CirOpKind::Trap
                     | CirOpKind::Unreachable
+            )
+        })
+}
+
+pub(super) fn typed_region_ends_control_flow(region: &TypedRegion) -> bool {
+    region
+        .blocks
+        .iter()
+        .rev()
+        .flat_map(|block| block.ops.iter().rev())
+        .find(|op| !matches!(op, TypedOp::Yield(_)))
+        .is_some_and(|op| {
+            matches!(
+                op,
+                TypedOp::Break(_)
+                    | TypedOp::Continue(_)
+                    | TypedOp::Return(_)
+                    | TypedOp::Goto(_)
+                    | TypedOp::Trap(_)
+                    | TypedOp::Unreachable(_)
             )
         })
 }

@@ -61,9 +61,7 @@ dependencies = [
 
 [[package]]
 name = "clang-ir-types"
-version = "0.1.4-0-84542052ebd4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d45d89c58f7d328c7db355be28000339c232e97a5758aed4d14d7641841f88b3"
+version = "0.1.4-5-7678fad242ce"
 
 [[package]]
 name = "crossbeam-deque"
