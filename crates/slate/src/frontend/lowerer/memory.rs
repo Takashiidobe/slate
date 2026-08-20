@@ -205,9 +205,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(src) = op.operands.first() else {
             return;
         };
-        let Some(src_ty) = op_operand_types(op).first() else {
+        let Some(src_ty) = self.value_type(src).cloned() else {
             return;
         };
+        let src_ty = &src_ty;
         if (is_cir_va_list_value_type(result_ty, &self.parent.aliases)
             || is_cir_va_list_value_type(src_ty, &self.parent.aliases))
             && let Some(place) = self.va_target_place(src)
