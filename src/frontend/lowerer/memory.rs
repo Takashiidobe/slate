@@ -1,6 +1,62 @@
 use super::*;
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
+    pub(super) fn lower_get_element(&mut self, op: &Op) {
+        let Some((result, result_ty)) = op.results.first() else {
+            return;
+        };
+        let (Some(base), Some(index)) = (op.operands.first(), op.operands.get(1)) else {
+            return;
+        };
+        let base_expr = self.place_or_deref_expr(base);
+        let elem_ty = cir_ptr_inner(result_ty).map(|ty| self.parent.rust_type(ty));
+        self.element_ptrs.insert(
+            result.clone(),
+            ElementPtr {
+                base: base_expr,
+                index: self.operand_expr(index),
+                unsafe_access: self.place_expr(base).is_none() || self.ptr_requires_unsafe(base),
+                unbounded: false,
+                out_of_bounds: false,
+                elem_ty,
+            },
+        );
+    }
+
+    pub(super) fn lower_ptr_stride(&mut self, op: &Op) {
+        let Some((result, result_ty)) = op.results.first() else {
+            return;
+        };
+        let (Some(base), Some(stride)) = (op.operands.first(), op.operands.get(1)) else {
+            return;
+        };
+        let (method, args) = self.ptr_stride_method_and_args(op, self.operand_expr(stride));
+        let value = Self::unsafe_expr(Expr::MethodCall {
+            recv: Box::new(self.pointer_operand_expr(base)),
+            method,
+            args,
+        });
+        self.materialize_expr(result, value, Some(result_ty));
+    }
+
+    pub(super) fn lower_ptr_diff(&mut self, op: &Op) {
+        let Some((result, result_ty)) = op.results.first() else {
+            return;
+        };
+        let (Some(lhs), Some(rhs)) = (op.operands.first(), op.operands.get(1)) else {
+            return;
+        };
+        let value = Self::unsafe_expr(Expr::Cast {
+            expr: Box::new(Expr::MethodCall {
+                recv: Box::new(self.pointer_operand_expr(lhs)),
+                method: "offset_from".into(),
+                args: vec![self.pointer_operand_expr(rhs)],
+            }),
+            ty: self.parent.rust_type(result_ty),
+        });
+        self.materialize_expr(result, value, Some(result_ty));
+    }
+
     pub(super) fn lower_cast(&mut self, op: &Op) {
         let Some((result, result_ty)) = op.results.first() else {
             return;

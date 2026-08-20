@@ -4220,6 +4220,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 TypedOp::Store(_) => return self.lower_store(op),
                 TypedOp::Copy(_) => return self.lower_copy(op),
                 TypedOp::Cast(_) => return self.lower_cast(op),
+                TypedOp::GetElement(_) => return self.lower_get_element(op),
+                TypedOp::PtrStride(_) => return self.lower_ptr_stride(op),
+                TypedOp::PtrDiff(_) => return self.lower_ptr_diff(op),
+                TypedOp::Cmp(_) => return self.lower_cmp(op),
+                TypedOp::Select(_) => return self.lower_select(op),
                 _ => {}
             }
         }

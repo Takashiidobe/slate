@@ -88,6 +88,39 @@ fn overflow_for_result_width(
 }
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
+    pub(super) fn lower_cmp(&mut self, op: &Op) {
+        let kind = match attr_int(op, "kind") {
+            Some(0) => BinOp::Lt,
+            Some(1) => BinOp::Le,
+            Some(2) => BinOp::Gt,
+            Some(3) => BinOp::Ge,
+            Some(4) => BinOp::Eq,
+            Some(5) => BinOp::Ne,
+            _ => return,
+        };
+        self.lower_binary(op, kind);
+    }
+
+    pub(super) fn lower_select(&mut self, op: &Op) {
+        let Some((result, result_ty)) = op.results.first() else {
+            return;
+        };
+        let (Some(condition), Some(true_value), Some(false_value)) =
+            (op.operands.first(), op.operands.get(1), op.operands.get(2))
+        else {
+            return;
+        };
+        self.materialize_expr(
+            result,
+            Expr::If {
+                cond: Box::new(self.operand_expr(condition)),
+                then_expr: Box::new(self.operand_expr(true_value)),
+                else_expr: Box::new(self.operand_expr(false_value)),
+            },
+            Some(result_ty),
+        );
+    }
+
     // cir.select(cond, t, f) is a pure value pick; all three operands are already
     // materialized, so it collapses to a Rust `if` expression.
     // cir.ternary has two value-yielding regions; clang emits it for the NaN-recovery
