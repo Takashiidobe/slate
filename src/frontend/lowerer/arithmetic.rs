@@ -261,23 +261,24 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         (body, yielded)
     }
 
-    pub(super) fn lower_binary(&mut self, op: &Op, rust_op: BinOp) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        if op.operands.len() < 2 {
-            return;
-        }
-        if let Some((_, len)) = op_result_type(op).and_then(parse_cir_vector_type) {
+    pub(super) fn lower_binary_typed(
+        &mut self,
+        result: &str,
+        result_ty: Option<&CirType>,
+        lhs: &str,
+        rhs: &str,
+        rust_op: BinOp,
+    ) {
+        if let Some((_, len)) = result_ty.and_then(parse_cir_vector_type) {
             self.materialize_expr(
                 result,
-                self.vector_binary_expr(&op.operands[0], &op.operands[1], len, rust_op),
-                op_result_type(op),
+                self.vector_binary_expr(lhs, rhs, len, rust_op),
+                result_ty,
             );
             return;
         }
-        let lhs = self.operand_expr(&op.operands[0]);
-        let rhs = self.operand_expr(&op.operands[1]);
+        let lhs = self.operand_expr(lhs);
+        let rhs = self.operand_expr(rhs);
         self.materialize_expr(
             result,
             Expr::Binary {
@@ -285,20 +286,21 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 lhs: Box::new(lhs),
                 rhs: Box::new(rhs),
             },
-            op_result_type(op),
+            result_ty,
         );
     }
 
-    pub(super) fn lower_saturating_arith(&mut self, op: &Op, rust_method: &str) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        if op.operands.len() < 2 {
-            return;
-        }
-        if let Some((_, len)) = op_result_type(op).and_then(parse_cir_vector_type) {
-            let lhs = self.operand_expr(&op.operands[0]);
-            let rhs = self.operand_expr(&op.operands[1]);
+    pub(super) fn lower_saturating_arith_typed(
+        &mut self,
+        result: &str,
+        result_ty: &CirType,
+        lhs: &str,
+        rhs: &str,
+        rust_method: &str,
+    ) {
+        if let Some((_, len)) = parse_cir_vector_type(result_ty) {
+            let lhs = self.operand_expr(lhs);
+            let rhs = self.operand_expr(rhs);
             let elems = (0..len)
                 .map(|i| Expr::MethodCall {
                     recv: Box::new(vector_index_expr(lhs.clone(), i)),
@@ -306,19 +308,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     args: vec![vector_index_expr(rhs.clone(), i)],
                 })
                 .collect();
-            self.materialize_expr(result, Expr::ArrayLit(elems), op_result_type(op));
+            self.materialize_expr(result, Expr::ArrayLit(elems), Some(result_ty));
             return;
         }
-        let lhs = self.operand_expr(&op.operands[0]);
-        let rhs = self.operand_expr(&op.operands[1]);
         self.materialize_expr(
             result,
             Expr::MethodCall {
-                recv: Box::new(lhs),
+                recv: Box::new(self.operand_expr(lhs)),
                 method: rust_method.to_string(),
-                args: vec![rhs],
+                args: vec![self.operand_expr(rhs)],
             },
-            op_result_type(op),
+            Some(result_ty),
         );
     }
 
@@ -326,31 +326,27 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     // wrap two's-complement just like clang's `-O0` C — no `wrapping_*` needed.
     // `/` and `%` still trap on div-by-zero and INT_MIN/-1 on both sides, so the
     // generator avoids those.
-    pub(super) fn lower_int_arith(&mut self, op: &Op, rust_op: BinOp) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        if op.operands.len() < 2 {
-            return;
-        }
-        if let Some((_, len)) = op_result_type(op).and_then(parse_cir_vector_type) {
-            self.materialize_expr(
-                result,
-                self.vector_binary_expr(&op.operands[0], &op.operands[1], len, rust_op),
-                op_result_type(op),
-            );
+    pub(super) fn lower_int_arith_typed(
+        &mut self,
+        result: &str,
+        ty: Option<&CirType>,
+        lhs: &str,
+        rhs: &str,
+        rust_op: BinOp,
+    ) {
+        if let Some((_, len)) = ty.and_then(parse_cir_vector_type) {
+            self.materialize_expr(result, self.vector_binary_expr(lhs, rhs, len, rust_op), ty);
             return;
         }
-        let ty = op_result_type(op);
-        if let Some(folded) = self.fold_int_arith(&op.operands[0], &op.operands[1], rust_op) {
-            self.macro_arith_values.insert(result.clone(), folded);
+        if let Some(folded) = self.fold_int_arith(lhs, rhs, rust_op) {
+            self.macro_arith_values.insert(result.to_string(), folded);
             if let Some(expr) = self.next_macro_const_expr(folded, ty) {
                 self.materialize_expr(result, expr, ty);
                 return;
             }
         }
-        let lhs = self.operand_expr(&op.operands[0]);
-        let rhs = self.operand_expr(&op.operands[1]);
+        let lhs = self.operand_expr(lhs);
+        let rhs = self.operand_expr(rhs);
         self.materialize_expr(
             result,
             Expr::Binary {
@@ -422,22 +418,21 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     fn finish_checked_arith(
         &mut self,
-        op: &Op,
-        result_types: &[&CirType],
+        results: (&str, &CirType, &str, &CirType),
         wide_result: Expr,
         wide_overflow: Expr,
         wide_signed: bool,
     ) {
-        match result_types.first().copied().and_then(parse_cir_int_type) {
+        match parse_cir_int_type(results.1) {
             Some((result_signed, result_bits)) if result_bits <= 128 => {
-                let result_rust_ty = self.parent.rust_type(result_types[0]);
+                let result_rust_ty = self.parent.rust_type(results.1);
                 let narrowed =
                     bitint_from_int_expr(&result_rust_ty, wide_result.clone(), wide_signed)
                         .unwrap_or_else(|| Expr::Cast {
                             expr: Box::new(wide_result.clone()),
                             ty: result_rust_ty,
                         });
-                self.materialize_expr(&op.results[0].0, narrowed, result_types.first().copied());
+                self.materialize_expr(results.0, narrowed, Some(results.1));
                 let overflow = overflow_for_result_width(
                     wide_overflow,
                     wide_result,
@@ -445,93 +440,79 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     result_signed,
                     result_bits,
                 );
-                self.materialize_expr(&op.results[1].0, overflow, result_types.get(1).copied());
+                self.materialize_expr(results.2, overflow, Some(results.3));
             }
             _ => {
-                self.materialize_expr(&op.results[0].0, wide_result, result_types.first().copied());
-                self.materialize_expr(
-                    &op.results[1].0,
-                    wide_overflow,
-                    result_types.get(1).copied(),
-                );
+                self.materialize_expr(results.0, wide_result, Some(results.1));
+                self.materialize_expr(results.2, wide_overflow, Some(results.3));
             }
         }
     }
 
-    pub(super) fn lower_overflow_arith(&mut self, op: &Op, rust_method: &str) {
-        if op.results.len() < 2 || op.operands.len() < 2 {
-            return;
-        }
-        let result_types = op_result_types(op);
-        let Some(operand_types) = self.operand_types(op) else {
-            return;
-        };
-        let operand_rust_ty = operand_types
-            .first()
+    pub(super) fn lower_overflow_arith_typed(
+        &mut self,
+        results: (&str, &CirType, &str, &CirType),
+        lhs: &str,
+        rhs: &str,
+        rust_method: &str,
+    ) {
+        let operand_ty = self.value_type(lhs);
+        let operand_rust_ty = operand_ty
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or(Type::Prim(Prim::I32));
-        let operand_int_ty = operand_types.first().and_then(parse_cir_int_type);
+        let operand_int_ty = operand_ty.and_then(parse_cir_int_type);
 
         if bitint_generic_parts(&operand_rust_ty).is_some()
             && operand_int_ty.is_some_and(|(_, bits)| bits <= 128)
         {
             let (lhs, wide_signed) =
-                bitint_to_int_expr(&operand_rust_ty, self.operand_expr(&op.operands[0])).unwrap();
-            let (rhs, _) =
-                bitint_to_int_expr(&operand_rust_ty, self.operand_expr(&op.operands[1])).unwrap();
+                bitint_to_int_expr(&operand_rust_ty, self.operand_expr(lhs)).unwrap();
+            let (rhs, _) = bitint_to_int_expr(&operand_rust_ty, self.operand_expr(rhs)).unwrap();
             let (wide_result, wide_overflow) = self.checked_arith_pair(lhs, rhs, rust_method);
-            self.finish_checked_arith(op, &result_types, wide_result, wide_overflow, wide_signed);
+            self.finish_checked_arith(results, wide_result, wide_overflow, wide_signed);
             return;
         }
 
         if bitint_generic_parts(&operand_rust_ty).is_some() {
-            let lhs = self.operand_expr(&op.operands[0]);
-            let rhs = self.operand_expr(&op.operands[1]);
+            let lhs = self.operand_expr(lhs);
+            let rhs = self.operand_expr(rhs);
             let (pair_result, wide_overflow) = self.checked_arith_pair(lhs, rhs, rust_method);
             let (wide_result, wide_signed) =
                 bitint_to_int_expr(&operand_rust_ty, pair_result).unwrap();
-            self.finish_checked_arith(op, &result_types, wide_result, wide_overflow, wide_signed);
+            self.finish_checked_arith(results, wide_result, wide_overflow, wide_signed);
             return;
         }
 
-        let lhs = self.operand_expr(&op.operands[0]);
-        let rhs = self.operand_expr(&op.operands[1]);
+        let lhs = self.operand_expr(lhs);
+        let rhs = self.operand_expr(rhs);
         let wide_signed = operand_int_ty.is_none_or(|(signed, _)| signed);
         let (wide_result, wide_overflow) = self.checked_arith_pair(lhs, rhs, rust_method);
-        self.finish_checked_arith(op, &result_types, wide_result, wide_overflow, wide_signed);
+        self.finish_checked_arith(results, wide_result, wide_overflow, wide_signed);
     }
 
-    pub(super) fn lower_step(&mut self, op: &Op, rust_op: BinOp) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        let Some(value) = op.operands.first() else {
-            return;
-        };
-        let value = self.operand_expr(value);
-        let ty = op_result_type(op);
+    pub(super) fn lower_step_typed(
+        &mut self,
+        result: &str,
+        result_ty: &CirType,
+        value: &str,
+        rust_op: BinOp,
+    ) {
         self.materialize_expr(
             result,
             Expr::Binary {
                 op: rust_op,
-                lhs: Box::new(value),
+                lhs: Box::new(self.operand_expr(value)),
                 rhs: Box::new(Expr::Value(RustValue::I64(1))),
             },
-            ty,
+            Some(result_ty),
         );
     }
 
     // cir.shift carries the isShiftleft unit attr for `<<`; its absence means `>>`.
     // Rust's `>>` is arithmetic on signed and logical on unsigned, matching C by type.
     // cir.not is C's unary `~`; Rust spells integer bitwise complement `!`.
-    pub(super) fn lower_not(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        let Some(value) = op.operands.first() else {
-            return;
-        };
-        if let Some((_, len)) = op_result_type(op).and_then(parse_cir_vector_type) {
+    pub(super) fn lower_not_typed(&mut self, result: &str, result_ty: &CirType, value: &str) {
+        if let Some((_, len)) = parse_cir_vector_type(result_ty) {
             let value = self.operand_expr(value);
             self.materialize_expr(
                 result,
@@ -543,22 +524,20 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         })
                         .collect(),
                 ),
-                op_result_type(op),
+                Some(result_ty),
             );
             return;
         }
-        if let Some(folded) = self.fold_unary_arith(&op.operands[0], UnaryOp::Not) {
-            self.macro_arith_values.insert(result.clone(), folded);
+        if let Some(folded) = self.fold_unary_arith(value, UnaryOp::Not) {
+            self.macro_arith_values.insert(result.to_string(), folded);
         }
-        let value = self.operand_expr(value);
-        let ty = op_result_type(op);
         self.materialize_expr(
             result,
             Expr::Unary {
                 op: UnaryOp::Not,
-                expr: Box::new(value),
+                expr: Box::new(self.operand_expr(value)),
             },
-            ty,
+            Some(result_ty),
         );
     }
 
