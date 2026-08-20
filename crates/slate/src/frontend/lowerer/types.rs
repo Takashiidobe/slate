@@ -519,7 +519,7 @@ pub(super) fn is_complex_long_double_coercion_type(
     else {
         return false;
     };
-    members.len() == 2 && members.iter().all(|field_ty| is_long_double(field_ty))
+    members.len() == 2 && members.iter().all(is_long_double)
 }
 
 pub(super) fn is_abi_coercion_record_name(name: &str) -> bool {

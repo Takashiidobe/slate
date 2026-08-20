@@ -1429,28 +1429,9 @@ impl<'a> Lowerer<'a> {
             .unwrap_or_else(|| CallBinding::direct_unknown(None))
     }
 
-    fn resolve_loc(&self, raw: &str) -> Option<Loc> {
-        let point = self.resolve_expansion_source_point(raw, 0)?;
-        Some(Loc {
-            line: point.line,
-            col: point.col,
-        })
-    }
-
     fn resolve_source_loc(&self, raw: &SourceLocation) -> Option<Loc> {
         match raw {
             SourceLocation::File { line, column, .. } => Some(Loc {
-                line: *line,
-                col: *column,
-            }),
-            _ => None,
-        }
-    }
-
-    fn resolve_source_point_value(&self, raw: &SourceLocation) -> Option<SourcePoint> {
-        match raw {
-            SourceLocation::File { file, line, column } => Some(SourcePoint {
-                file: file.clone(),
                 line: *line,
                 col: *column,
             }),
@@ -1491,79 +1472,6 @@ impl<'a> Lowerer<'a> {
             spelling: point.clone(),
             expansion: point,
         })
-    }
-
-    fn resolve_expansion_source_point(&self, raw: &str, depth: usize) -> Option<SourcePoint> {
-        if depth == 8 {
-            return None;
-        }
-        let raw = raw.trim();
-        if raw.starts_with('#') {
-            return self.resolve_expansion_source_point(
-                self.loc_aliases.get(raw.strip_prefix('#').unwrap_or(raw))?,
-                depth + 1,
-            );
-        }
-        let inner = raw
-            .strip_prefix("loc(")
-            .and_then(|raw| raw.strip_suffix(')'))
-            .unwrap_or(raw)
-            .trim();
-        if inner.starts_with('#') {
-            return self.resolve_expansion_source_point(
-                self.loc_aliases
-                    .get(inner.strip_prefix('#').unwrap_or(inner))?,
-                depth + 1,
-            );
-        }
-        if let Some(callsite) = inner
-            .strip_prefix("callsite(")
-            .and_then(|raw| raw.strip_suffix(')'))
-            && let Some((_, expansion)) = callsite.split_once(" at ")
-        {
-            return self.resolve_expansion_source_point(expansion, depth + 1);
-        }
-        self.resolve_source_point(inner, depth + 1)
-    }
-
-    fn resolve_macro_group_loc(&self, raw: &str, depth: usize) -> Option<SourcePoint> {
-        if depth == 8 {
-            return None;
-        }
-        let raw = raw.trim();
-        if raw.starts_with('#') {
-            return self.resolve_macro_group_loc(
-                self.loc_aliases.get(raw.strip_prefix('#').unwrap_or(raw))?,
-                depth + 1,
-            );
-        }
-        let inner = raw
-            .strip_prefix("loc(")
-            .and_then(|raw| raw.strip_suffix(')'))
-            .unwrap_or(raw)
-            .trim();
-        if inner.starts_with('#') {
-            return self.resolve_macro_group_loc(
-                self.loc_aliases
-                    .get(inner.strip_prefix('#').unwrap_or(inner))?,
-                depth + 1,
-            );
-        }
-        if let Some(fused) = inner
-            .strip_prefix("fused[")
-            .and_then(|raw| raw.strip_suffix(']'))
-            && let Some(first) = fused.split(',').next()
-        {
-            return self.resolve_macro_group_loc(first, depth + 1);
-        }
-        if let Some(callsite) = inner
-            .strip_prefix("callsite(")
-            .and_then(|raw| raw.strip_suffix(')'))
-            && let Some((_, expansion)) = callsite.split_once(" at ")
-        {
-            return self.resolve_source_point(expansion, depth + 1);
-        }
-        self.resolve_source_point(inner, depth + 1)
     }
 
     fn resolve_source_point(&self, raw: &str, depth: usize) -> Option<SourcePoint> {

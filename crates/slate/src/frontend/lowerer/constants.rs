@@ -168,15 +168,6 @@ pub(super) fn vector_index_expr(base: Expr, index: u64) -> Expr {
     }
 }
 
-pub(super) fn const_vector_expr(elements: &[Attr]) -> Option<Expr> {
-    Some(Expr::ArrayLit(
-        elements
-            .iter()
-            .map(scalar_attr_expr)
-            .collect::<Option<Vec<_>>>()?,
-    ))
-}
-
 pub(super) fn int_value_expr(n: i128) -> Expr {
     Expr::Value(match i64::try_from(n) {
         Ok(n) => RustValue::I64(n),
@@ -188,18 +179,6 @@ pub(super) fn int_pattern(n: i128) -> Pattern {
     match i64::try_from(n) {
         Ok(n) => Pattern::I64(n),
         Err(_) => Pattern::I128(n),
-    }
-}
-
-/// Like [`long_double_from_text`], but for a `!cir.f128` literal's
-/// already-extracted `#cir.fp<...>` text.
-pub(super) fn f128_from_text(text: &str) -> Option<Expr> {
-    let text = text.trim();
-    if let Some(hex) = text.strip_prefix("0x").or_else(|| text.strip_prefix("0X")) {
-        let bits = u128::from_str_radix(hex, 16).ok()?;
-        Some(Expr::HexFloat(format!("f128::from_bits(0x{bits:032x})")))
-    } else {
-        Some(Expr::HexFloat(format!("{text}f128")))
     }
 }
 
@@ -273,7 +252,6 @@ fn f80_bytes_expr(bytes: &[u8; 10]) -> Expr {
 
 pub(super) enum CirComplexComponent {
     Int(i128),
-    Uint(u128),
     Float(String),
 }
 
@@ -298,7 +276,6 @@ pub(super) fn complex_const_expr(
 pub(super) fn complex_component_expr(ty: Option<&Type>, component: CirComplexComponent) -> Expr {
     match component {
         CirComplexComponent::Int(value) => int_value_expr(value),
-        CirComplexComponent::Uint(value) => Expr::Value(RustValue::U128(value)),
         CirComplexComponent::Float(value) => typed_fp_literal_expr(ty, value),
     }
 }
@@ -352,18 +329,6 @@ pub(super) fn fp_text_value(text: &str) -> Option<String> {
         };
     }
     Some(text.to_string())
-}
-
-/// Long-double literal from a `#cir.fp<...>` literal's already-extracted text
-/// (e.g. `Attribute::CirFloat::text`).
-pub(super) fn long_double_from_text(text: &str) -> Option<Expr> {
-    let text = text.trim();
-    if let Some(bits) = text.strip_prefix("0x").or_else(|| text.strip_prefix("0X"))
-        && bits.len() == 20
-    {
-        return f80_literal_bits_expr(bits);
-    }
-    fp_text_value(text).map(|fp| typed_fp_literal_expr(Some(&Type::LongDouble), fp))
 }
 
 pub(super) fn decode_cir_string(s: &str) -> Vec<u8> {
