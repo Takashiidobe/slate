@@ -122,13 +122,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.values.insert(result.clone(), Val::Global(name));
     }
 
-    pub(super) fn lower_load(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        let Some(ptr) = op.operands.first() else {
-            return;
-        };
+    pub(super) fn lower_load(&mut self, op: &TypedLoad) {
+        let result = &op.result;
+        let ptr = &op.addr;
         self.load_ptr_operand.insert(result.clone(), ptr.clone());
         if let Some(value) = self.forward_values.get(ptr) {
             self.values.insert(result.clone(), Val::Expr(value.clone()));
@@ -136,17 +132,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         if let Some(expr) = self.block_addr_dispatch_expr(ptr) {
             self.indirect_target_values.insert(result.clone(), expr);
-            self.lower_opaque_pointer(op, true);
+            self.lower_opaque_pointer_typed(&op.result, &op.result_ty, true);
             return;
         }
-        if op_result_type(op).is_some_and(|ty| is_cir_va_list_value_type(ty, &self.parent.aliases))
+        if is_cir_va_list_value_type(&op.result_ty, &self.parent.aliases)
             && let Some(place) = self.va_target_place(ptr)
         {
             self.va_places.insert(result.clone(), place.clone());
             self.values.insert(result.clone(), Val::Expr(place));
             return;
         }
-        let volatile = attr_bool(op, "is_volatile") || attr_bool(op, "volatile");
+        let volatile = op.is_volatile;
         let mut value = if volatile {
             Self::unsafe_expr(Expr::Call {
                 binding: crate::function_identity::CallBinding::Generated,
@@ -155,7 +151,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 ))),
                 args: vec![self.load_address_expr(ptr)],
             })
-        } else if let Some(atomic) = self.atomic_load_expr(op, ptr) {
+        } else if let Some(atomic) = self.atomic_load_expr(op.mem_order, &op.result_ty, ptr) {
             atomic
         } else if let Some(global) = self.global_place(ptr) {
             Self::unsafe_expr(global)
@@ -168,12 +164,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else {
             Self::unsafe_deref_expr(self.operand_expr(ptr))
         };
-        if let Some(result_ty) = op_result_type(op).map(|ty| self.parent.rust_type(ty))
-            && let Some(value_ty) = self
-                .member_ptrs
-                .get(ptr)
-                .and_then(|member| member.field_ty.as_ref())
-                .or_else(|| self.slot_types.get(ptr))
+        let result_ty = self.parent.rust_type(&op.result_ty);
+        if let Some(value_ty) = self
+            .member_ptrs
+            .get(ptr)
+            .and_then(|member| member.field_ty.as_ref())
+            .or_else(|| self.slot_types.get(ptr))
             && self.parent.type_is_enum(value_ty)
             && matches!(result_ty, Type::Prim(_))
         {
@@ -182,7 +178,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 ty: result_ty,
             };
         }
-        self.materialize_expr(result, value, op_result_type(op));
+        self.materialize_expr(result, value, Some(&op.result_ty));
     }
 
     pub(super) fn lower_store(&mut self, op: &TypedStore) {
@@ -295,25 +291,22 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    pub(super) fn alloca_group_is_lowerable(&self, ops: &[Op]) -> bool {
+    pub(super) fn alloca_group_is_lowerable(&self, ops: &[TypedAlloca]) -> bool {
         ops.iter().all(|op| {
-            let Some((result, cir_ty)) = op.results.first() else {
-                return false;
-            };
-            op.operands.is_empty()
-                && !self.forward_allocas.contains(result)
-                && !self.hoisted.contains(result)
-                && !cir_ptr_pointee(cir_ty).is_some_and(|pointee| {
+            !self.forward_allocas.contains(&op.addr)
+                && !self.hoisted.contains(&op.addr)
+                && op.dyn_alloc_size.is_none()
+                && !cir_ptr_pointee(&op.addr_ty).is_some_and(|pointee| {
                     is_cir_va_list_record_type(pointee, &self.parent.aliases)
                 })
                 && !self
-                    .pointee_type(cir_ty)
+                    .pointee_type(&op.addr_ty)
                     .is_some_and(|ty| type_contains_va_list(&ty))
-                && !matches!(self.pointee_type(cir_ty), Some(Type::Custom(_)))
+                && !matches!(self.pointee_type(&op.addr_ty), Some(Type::Custom(_)))
         })
     }
 
-    pub(super) fn lower_alloca_group(&mut self, ops: &[Op]) {
+    pub(super) fn lower_alloca_group(&mut self, ops: &[TypedAlloca]) {
         let frame_index = self.parent.generated_alloca_frames.len();
         let frame_name = format!("__SlateAllocaFrame{frame_index}");
         let frame_var = self.unique_local_name(format!("__slate_alloca_frame{frame_index}"));
@@ -322,12 +315,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let mut places = Vec::with_capacity(ops.len());
 
         for (field_index, op) in ops.iter().rev().enumerate() {
-            let Some((result, cir_ty)) = op.results.first() else {
-                return;
-            };
-            let ty = self.pointee_type(cir_ty).unwrap_or(Type::Prim(Prim::I32));
-            let alignment = attr_int(op, "alignment")
-                .and_then(|alignment| u32::try_from(alignment).ok())
+            self.value_types.insert(op.addr.clone(), op.addr_ty.clone());
+            let ty = self
+                .pointee_type(&op.addr_ty)
+                .unwrap_or(Type::Prim(Prim::I32));
+            let alignment = u32::try_from(op.alignment)
+                .ok()
                 .unwrap_or_else(|| type_alignment(&ty));
             let over_aligned = alignment > type_alignment(&ty) && !matches!(ty, Type::Custom(_));
             if over_aligned {
@@ -345,7 +338,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 index: field_index,
             };
             places.push((
-                result.clone(),
+                op.addr.clone(),
                 ty,
                 if over_aligned {
                     Expr::Unary {
@@ -357,7 +350,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 },
             ));
             if over_aligned {
-                self.aligned_slots.insert(result.clone());
+                self.aligned_slots.insert(op.addr.clone());
             }
         }
 
@@ -390,10 +383,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    pub(super) fn lower_alloca(&mut self, op: &Op) {
-        let Some((result, cir_ty)) = op.results.first() else {
-            return;
-        };
+    pub(super) fn lower_alloca(&mut self, op: &TypedAlloca) {
+        let result = &op.addr;
+        let cir_ty = &op.addr_ty;
         // a forwarded compiler temp carries one SSA value: its single store
         // records the value and its single load reads it back, so no local.
         if self.forward_allocas.contains(result) {
@@ -405,7 +397,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         // hoisted allocas were already declared above the dispatch loop
         // (or above a goto-target closure, in structured lowering).
         if self.hoisted.contains(result) {
-            if let Some(count) = op.operands.first()
+            if let Some(count) = &op.dyn_alloc_size
                 && let Some(name) = self.values.get(result).and_then(|value| match value {
                     Val::Expr(Expr::MethodCall { recv, method, .. }) if method == "as_mut_ptr" => {
                         match &**recv {
@@ -432,9 +424,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         let name = self.unique_local_name(
-            sanitize_ident(attr_str(op, "name").unwrap_or(result.as_str())).into_string(),
+            sanitize_ident(if op.name.is_empty() { result } else { &op.name }).into_string(),
         );
-        if let Some(count) = op.operands.first() {
+        if let Some(count) = &op.dyn_alloc_size {
             let ty = self.pointee_type(cir_ty).unwrap_or(Type::Prim(Prim::I32));
             self.values.insert(
                 result.clone(),
@@ -488,13 +480,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         let mut ty = self.pointee_type(cir_ty).unwrap_or(Type::Prim(Prim::I32));
         if matches!(ty, Type::Prim(_))
-            && let Some(enum_name) =
-                attr_str(op, "name").and_then(|c_name| self.local_enum_types.get(c_name))
+            && let Some(enum_name) = (!op.name.is_empty())
+                .then(|| self.local_enum_types.get(op.name.as_str()))
+                .flatten()
         {
             ty = Type::Custom(enum_name.clone());
         }
-        let alignment = attr_int(op, "alignment")
-            .and_then(|alignment| u32::try_from(alignment).ok())
+        let alignment = u32::try_from(op.alignment)
+            .ok()
             .filter(|alignment| *alignment > effective_type_alignment(&ty, &self.parent.records));
         self.slots.insert(result.clone(), name.clone());
         self.slot_types.insert(result.clone(), ty.clone());
@@ -523,6 +516,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             init: Some(init),
         });
     }
+
     /// Resolve the by-value source of a `cir.copy`: a numeric/char const global
     /// renders to an array literal (padded to the destination length), while an
     /// aggregate local relies on the `Copy` derive of arrays and `#[repr(C)]`

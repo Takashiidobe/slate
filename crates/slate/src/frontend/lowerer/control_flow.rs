@@ -1,11 +1,16 @@
 use super::*;
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
-    pub(super) fn lower_return(&mut self, op: &Op) {
-        let value = op
-            .operands
-            .first()
-            .map(|operand| self.operand_expr(operand));
+    pub(super) fn lower_return(&mut self, op: &TypedReturn) {
+        self.lower_return_value(op.input.first());
+    }
+
+    pub(super) fn lower_return_raw(&mut self, op: &Op) {
+        self.lower_return_value(op.operands.first());
+    }
+
+    fn lower_return_value(&mut self, operand: Option<&String>) {
+        let value = operand.map(|operand| self.operand_expr(operand));
         if self.is_main {
             let code = value.unwrap_or(Expr::Value(RustValue::I64(0)));
             let dtor_stmts: Vec<Stmt> = self
@@ -574,11 +579,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.hoisting_allocas = true;
         for block in &body.blocks {
             for op in &block.ops {
-                if op.kind() == CirOpKind::Alloca {
-                    self.lower_alloca(op);
-                    if let Some((result, _)) = op.results.first() {
-                        self.hoisted.insert(result.clone());
-                    }
+                if op.kind() == CirOpKind::Alloca
+                    && let Some(TypedOp::Alloca(alloca)) = TypedOp::from_operation(op)
+                {
+                    self.lower_alloca(&alloca);
+                    self.hoisted.insert(alloca.addr);
                 }
             }
         }
@@ -694,12 +699,19 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    pub(super) fn lower_br(&mut self, op: &Op) {
+    pub(super) fn lower_br(&mut self, op: &TypedBr) {
+        self.lower_br_impl(&op.dest_operands, &op.successors);
+    }
+
+    pub(super) fn lower_br_raw(&mut self, op: &Op) {
+        self.lower_br_impl(&op.operands, &op.successors);
+    }
+
+    fn lower_br_impl(&mut self, operands: &[String], successors: &[String]) {
         let Some(dispatch) = &self.dispatch else {
             return;
         };
-        if let Some(target) = op
-            .operands
+        if let Some(target) = operands
             .first()
             .and_then(|operand| self.indirect_target_values.get(operand))
         {
@@ -710,8 +722,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.push_stmt(Stmt::Continue(Some(loop_label)));
             return;
         }
-        let target = op
-            .successors
+        let target = successors
             .first()
             .and_then(|bb| dispatch.block_to_state.get(bb))
             .map(|state| {
@@ -725,7 +736,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         match target {
             Some((state, state_var, loop_label, arg_names)) => {
                 if let Some(names) = arg_names {
-                    for (name, operand) in names.iter().zip(op.operands.iter()) {
+                    for (name, operand) in names.iter().zip(operands.iter()) {
                         let value = self.operand_expr(operand);
                         self.push_stmt(Self::assign_stmt(Expr::Var(name.clone().into()), value));
                     }
