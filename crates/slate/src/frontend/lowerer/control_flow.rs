@@ -703,10 +703,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.lower_br_impl(&op.dest_operands, &op.successors);
     }
 
-    pub(super) fn lower_br_raw(&mut self, op: &Op) {
-        self.lower_br_impl(&op.operands, &op.successors);
-    }
-
     fn lower_br_impl(&mut self, operands: &[String], successors: &[String]) {
         let Some(dispatch) = &self.dispatch else {
             return;

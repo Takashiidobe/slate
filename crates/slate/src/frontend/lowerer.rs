@@ -1422,12 +1422,14 @@ impl<'a> Lowerer<'a> {
     }
 
     fn call_binding(&self, op: &Op, direct: bool) -> CallBinding {
+        self.call_binding_at(op.loc.as_ref(), direct)
+    }
+
+    fn call_binding_at(&self, loc: Option<&SourceLocation>, direct: bool) -> CallBinding {
         if !direct {
             return CallBinding::Indirect;
         }
-        op.loc
-            .as_ref()
-            .and_then(|raw| self.resolve_source_loc(raw))
+        loc.and_then(|raw| self.resolve_source_loc(raw))
             .and_then(|loc| self.call_bindings.get(&loc).cloned())
             .unwrap_or_else(|| CallBinding::direct_unknown(None))
     }
@@ -4270,6 +4272,120 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 TypedOp::AddOverflow(_) => return self.lower_overflow_arith(op, "overflowing_add"),
                 TypedOp::SubOverflow(_) => return self.lower_overflow_arith(op, "overflowing_sub"),
                 TypedOp::MulOverflow(_) => return self.lower_overflow_arith(op, "overflowing_mul"),
+                TypedOp::Acos(value) => {
+                    return self.lower_unary_method_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.src,
+                        "acos",
+                    );
+                }
+                TypedOp::Asin(value) => {
+                    return self.lower_unary_method_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.src,
+                        "asin",
+                    );
+                }
+                TypedOp::Atan(value) => {
+                    return self.lower_unary_method_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.src,
+                        "atan",
+                    );
+                }
+                TypedOp::Cos(value) => {
+                    return self.lower_known_unary_method_typed(
+                        &value.result,
+                        &value.result_ty,
+                        &value.src,
+                        value.loc.as_ref(),
+                        Known::Cos,
+                        "cos",
+                    );
+                }
+                TypedOp::Exp(value) => {
+                    return self.lower_known_unary_method_typed(
+                        &value.result,
+                        &value.result_ty,
+                        &value.src,
+                        value.loc.as_ref(),
+                        Known::Exp,
+                        "exp",
+                    );
+                }
+                TypedOp::Exp2(value) => {
+                    return self.lower_known_unary_method_typed(
+                        &value.result,
+                        &value.result_ty,
+                        &value.src,
+                        value.loc.as_ref(),
+                        Known::Exp2,
+                        "exp2",
+                    );
+                }
+                TypedOp::Log(value) => {
+                    return self.lower_known_unary_method_typed(
+                        &value.result,
+                        &value.result_ty,
+                        &value.src,
+                        value.loc.as_ref(),
+                        Known::Log,
+                        "ln",
+                    );
+                }
+                TypedOp::Log10(value) => {
+                    return self.lower_known_unary_method_typed(
+                        &value.result,
+                        &value.result_ty,
+                        &value.src,
+                        value.loc.as_ref(),
+                        Known::Log10,
+                        "log10",
+                    );
+                }
+                TypedOp::Log2(value) => {
+                    return self.lower_known_unary_method_typed(
+                        &value.result,
+                        &value.result_ty,
+                        &value.src,
+                        value.loc.as_ref(),
+                        Known::Log2,
+                        "log2",
+                    );
+                }
+                TypedOp::Sin(value) => {
+                    return self.lower_known_unary_method_typed(
+                        &value.result,
+                        &value.result_ty,
+                        &value.src,
+                        value.loc.as_ref(),
+                        Known::Sin,
+                        "sin",
+                    );
+                }
+                TypedOp::Sqrt(value) => {
+                    return self.lower_known_unary_method_typed(
+                        &value.result,
+                        &value.result_ty,
+                        &value.src,
+                        value.loc.as_ref(),
+                        Known::Sqrt,
+                        "sqrt",
+                    );
+                }
+                TypedOp::Tan(value) => {
+                    return self.lower_known_unary_method_typed(
+                        &value.result,
+                        &value.result_ty,
+                        &value.src,
+                        value.loc.as_ref(),
+                        Known::Tan,
+                        "tan",
+                    );
+                }
                 TypedOp::Const(value) => return self.lower_const(&value),
                 TypedOp::Alloca(value) => return self.lower_alloca(&value),
                 TypedOp::GetGlobal(value) => return self.lower_get_global(&value),
@@ -4362,30 +4478,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.value_types.extend(op.results.iter().cloned());
         match op.kind() {
             CirOpKind::Asm => self.lower_asm(op),
-            CirOpKind::Acos => self.lower_unary_method(op, "acos"),
-            CirOpKind::Asin => self.lower_unary_method(op, "asin"),
-            CirOpKind::Atan => self.lower_unary_method(op, "atan"),
             CirOpKind::Atan2 => self.lower_binary_method(op, "atan2"),
-            CirOpKind::Cos => self.lower_known_unary_method(op, Known::Cos, "cos"),
-            CirOpKind::Exp => self.lower_known_unary_method(op, Known::Exp, "exp"),
-            CirOpKind::Exp2 => self.lower_known_unary_method(op, Known::Exp2, "exp2"),
             CirOpKind::Expect => self.lower_expect(op),
             CirOpKind::Fmaximum => self.lower_binary_method(op, "max"),
             CirOpKind::Fminimum => self.lower_binary_method(op, "min"),
             CirOpKind::Fmod => self.lower_known_binary(op, Known::Fmod, BinOp::Rem),
             CirOpKind::Llrint => self.lower_unary_cast_method(op, "round_ties_even"),
             CirOpKind::Llround => self.lower_known_unary_cast_method(op, Known::Llround, "round"),
-            CirOpKind::Log => self.lower_known_unary_method(op, Known::Log, "ln"),
-            CirOpKind::Log10 => self.lower_known_unary_method(op, Known::Log10, "log10"),
-            CirOpKind::Log2 => self.lower_known_unary_method(op, Known::Log2, "log2"),
             CirOpKind::Lrint => self.lower_unary_cast_method(op, "round_ties_even"),
             CirOpKind::Lround => self.lower_known_unary_cast_method(op, Known::Lround, "round"),
             CirOpKind::Pow => self.lower_known_binary_method(op, Known::Pow, "powf"),
             CirOpKind::Roundeven => self.lower_unary_method(op, "round_ties_even"),
-            CirOpKind::Sin => self.lower_known_unary_method(op, Known::Sin, "sin"),
-            CirOpKind::Sqrt => self.lower_known_unary_method(op, Known::Sqrt, "sqrt"),
             CirOpKind::Stackrestore => {}
-            CirOpKind::Tan => self.lower_known_unary_method(op, Known::Tan, "tan"),
             CirOpKind::Trap => self.lower_trap(),
             CirOpKind::Unreachable => self.lower_unreachable(),
             CirOpKind::ComplexMul => self.lower_complex_mul(op),
@@ -4410,7 +4514,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::Break => self.lower_break(),
             CirOpKind::Continue => self.lower_continue(),
             CirOpKind::Goto => self.lower_goto(op),
-            CirOpKind::Br => self.lower_br_raw(op),
             CirOpKind::Brcond => self.lower_brcond(op),
             CirOpKind::IndirectBr => self.lower_indirect_br(op),
             CirOpKind::Label => {}
