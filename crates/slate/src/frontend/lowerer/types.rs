@@ -733,7 +733,7 @@ pub(super) fn reconcile_anonymous_member_types(
             .collect();
         let mut additions = BTreeMap::new();
         for record in records.values_mut() {
-            let Some(expanded) = module.type_aliases.values().find_map(|expanded| {
+            let Some(expanded) = module.generic.type_aliases.values().find_map(|expanded| {
                 let (CirType::Struct { name, .. } | CirType::Union { name, .. }) = expanded else {
                     return None;
                 };
@@ -759,7 +759,7 @@ pub(super) fn reconcile_anonymous_member_types(
                 continue;
             }
             for (index, field) in record.fields.iter_mut().enumerate() {
-                let cir_ty = cir_type_to_ctype(&members[index], &module.type_aliases);
+                let cir_ty = cir_type_to_ctype(&members[index], &module.generic.type_aliases);
                 if field.name == format!("__slate_anon_{index}") {
                     field.ty = cir_ty;
                     continue;
@@ -903,12 +903,16 @@ pub(super) fn resolve_local_record_collisions(
     }
 
     let mut field_names: BTreeMap<(String, i64), String> = BTreeMap::new();
-    collect_local_record_field_names(&cir.ops, &cir.type_aliases, &mut field_names);
+    collect_local_record_field_names(
+        &cir.generic.ops,
+        &cir.generic.type_aliases,
+        &mut field_names,
+    );
 
     let mut resolved = BTreeMap::new();
     for (base_sanitized, mut candidates) in by_name {
         let mut family: Vec<(String, Vec<String>)> = Vec::new();
-        for (alias_key, expanded) in &cir.type_aliases {
+        for (alias_key, expanded) in &cir.generic.type_aliases {
             let (CirType::Struct {
                 name,
                 members: Some(members),
@@ -1015,21 +1019,21 @@ pub fn anon_local_records(module: &Module) -> Vec<crate::frontend::c_ast::Record
     let mut bitfield_slots = BTreeSet::new();
     let mut member_slots = BTreeMap::new();
     collect_anon_bitfield_slots(
-        &module.ops,
-        &module.type_aliases,
+        &module.generic.ops,
+        &module.generic.type_aliases,
         &mut member_slots,
         &mut bitfield_slots,
     );
     collect_anon_record_info(
-        &module.ops,
-        &module.type_aliases,
+        &module.generic.ops,
+        &module.generic.type_aliases,
         &mut needed,
         &mut field_names,
     );
 
     let mut frontier: Vec<String> = needed.iter().cloned().collect();
     while let Some(key) = frontier.pop() {
-        let members = match module.type_aliases.get(&key) {
+        let members = match module.generic.type_aliases.get(&key) {
             Some(CirType::Struct { members, .. }) | Some(CirType::Union { members, .. }) => {
                 members.as_deref().unwrap_or_default()
             }
@@ -1037,7 +1041,7 @@ pub fn anon_local_records(module: &Module) -> Vec<crate::frontend::c_ast::Record
         };
         for field_ty in members {
             let mut field_keys = BTreeSet::new();
-            collect_anon_alias_keys(field_ty, &module.type_aliases, &mut field_keys);
+            collect_anon_alias_keys(field_ty, &module.generic.type_aliases, &mut field_keys);
             for field_key in field_keys {
                 if needed.insert(field_key.clone()) {
                     frontier.push(field_key);
@@ -1048,7 +1052,7 @@ pub fn anon_local_records(module: &Module) -> Vec<crate::frontend::c_ast::Record
 
     let mut records = Vec::new();
     for key in &needed {
-        let (name, members, member_kinds, is_union) = match module.type_aliases.get(key) {
+        let (name, members, member_kinds, is_union) = match module.generic.type_aliases.get(key) {
             Some(CirType::Struct {
                 name,
                 members: Some(members),
@@ -1085,7 +1089,7 @@ pub fn anon_local_records(module: &Module) -> Vec<crate::frontend::c_ast::Record
                         .unwrap_or_else(|| format!("__slate_anon_{i}"))
                 },
                 comments: Vec::new(),
-                ty: cir_type_to_ctype(field_ty, &module.type_aliases),
+                ty: cir_type_to_ctype(field_ty, &module.generic.type_aliases),
                 bit_width: bitfield_slots
                     .contains(&(key.clone(), i as i64))
                     .then_some(0),

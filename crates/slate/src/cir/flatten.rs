@@ -4,7 +4,7 @@ use std::path::Path;
 use super::emit::{
     EmitError, Tool, ToolOperation, emit_generic_with_args, emit_generic_with_args_flattened,
 };
-use super::{Module, Op};
+use super::{GenericModule, Module, Op};
 use clang_ir::Error as ParseError;
 use thiserror::Error;
 
@@ -16,7 +16,7 @@ pub enum ModuleError {
     Parse(#[from] ParseError),
 }
 
-fn parse_module(text: &str) -> Result<Module, ParseError> {
+fn parse_module(text: &str) -> Result<GenericModule, ParseError> {
     clang_ir::parse_generic_str(text)
 }
 
@@ -69,11 +69,11 @@ fn needs_flattening(op: &Op) -> bool {
         && contains_goto(op)
 }
 
-fn module_op(module: &Module) -> Option<&Op> {
+fn module_op(module: &GenericModule) -> Option<&Op> {
     module.ops.iter().find(|op| op.name == "builtin.module")
 }
 
-fn module_needs_flattening(module: &Module) -> bool {
+fn module_needs_flattening(module: &GenericModule) -> bool {
     let Some(module_op) = module_op(module) else {
         return false;
     };
@@ -85,7 +85,7 @@ fn module_needs_flattening(module: &Module) -> bool {
         .any(needs_flattening)
 }
 
-fn merge_flattened_functions(module: &mut Module, flat_module: &Module) {
+fn merge_flattened_functions(module: &mut GenericModule, flat_module: &GenericModule) {
     let Some(flat_module_op) = module_op(flat_module) else {
         return;
     };
@@ -134,9 +134,9 @@ pub fn emit_module(src: &Path, extra_args: &[String]) -> Result<Module, ModuleEr
             stderr,
             ..
         }) if stderr.contains("does not dominate this use") => {
-            return Ok(parse_module(&emit_generic_with_args_flattened(
-                src, extra_args,
-            )?)?);
+            return Ok(Module::from_generic(parse_module(
+                &emit_generic_with_args_flattened(src, extra_args)?,
+            )?));
         }
         Err(error) => return Err(error.into()),
     };
@@ -145,5 +145,5 @@ pub fn emit_module(src: &Path, extra_args: &[String]) -> Result<Module, ModuleEr
         let flat_module = parse_module(&emit_generic_with_args_flattened(src, extra_args)?)?;
         merge_flattened_functions(&mut module, &flat_module);
     }
-    Ok(module)
+    Ok(Module::from_generic(module))
 }

@@ -249,10 +249,6 @@ pub(super) fn parse_function_type(ty: &CirType) -> (Vec<CirType>, Option<CirType
     }
 }
 
-pub(super) fn function_type_has_params(ty: &CirType) -> bool {
-    matches!(ty, CirType::Func { inputs, .. } if !inputs.is_empty())
-}
-
 /// Whether a `!cir.func<..>` type ends its parameter list with `...`.
 pub(super) fn function_type_is_variadic(ty: &CirType) -> bool {
     matches!(ty, CirType::Func { var_arg: true, .. })

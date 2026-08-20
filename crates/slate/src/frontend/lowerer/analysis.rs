@@ -6,25 +6,26 @@ pub(super) struct LifecycleHooks {
 }
 
 pub(super) fn collect_lifecycle_hooks(
-    ops: &[&Operation],
+    functions: &[clang_ir::model::Function],
     has_main: bool,
     diagnostics: &mut crate::ctx::Diagnostics,
 ) -> LifecycleHooks {
     let mut ctors: Vec<(i64, String)> = Vec::new();
     let mut dtors: Vec<(i64, String)> = Vec::new();
-    for op in ops {
-        if op.mnemonic() != "func" || region_ops(op).is_empty() {
+    for function in functions {
+        if function.is_declaration() {
             continue;
         }
+        let Some(op) = function.raw.as_ref() else {
+            continue;
+        };
         let is_ctor = op.attr("global_ctor_priority").is_some();
         let is_dtor = op.attr("global_dtor_priority").is_some();
         if !is_ctor && !is_dtor {
             continue;
         }
-        let Some(name) = attr_str(op, "sym_name") else {
-            continue;
-        };
-        if attr_type(op, "function_type").is_some_and(function_type_has_params) {
+        let name = &function.name;
+        if !function.params.is_empty() {
             diagnostics.warn(
                 format!(
                     "lower: __attribute__((constructor/destructor)) on `{name}` with a non-void(void) signature is not supported; hook dropped"
@@ -126,20 +127,19 @@ pub(super) fn cross_block_live_values(body: &inst::Region) -> BTreeSet<String> {
         .collect()
 }
 
-pub(super) fn collect_used_symbols(ops: &[&Operation]) -> BTreeMap<String, Vec<UsedKind>> {
+pub(super) fn collect_used_symbols(
+    globals: &[clang_ir::model::Global],
+) -> BTreeMap<String, Vec<UsedKind>> {
     let mut flags = BTreeMap::<String, (bool, bool)>::new();
-    for op in ops {
-        if op.mnemonic() != "global" {
-            continue;
-        }
-        let Some(kind) = (match attr_str(op, "sym_name") {
-            Some("llvm.compiler.used") => Some(UsedKind::Compiler),
-            Some("llvm.used") => Some(UsedKind::Linker),
+    for global in globals {
+        let Some(kind) = (match global.name.as_str() {
+            "llvm.compiler.used" => Some(UsedKind::Compiler),
+            "llvm.used" => Some(UsedKind::Linker),
             _ => None,
         }) else {
             continue;
         };
-        let Some(init) = op.attr("initial_value") else {
+        let Some(init) = global.initial_value.as_ref() else {
             continue;
         };
         let mut symbols = Vec::new();
@@ -240,19 +240,23 @@ fn collect_global_view_symbols(attr: &Attr, out: &mut Vec<String>) {
     }
 }
 
-pub(super) fn c_abi_function_targets(op: &Operation) -> BTreeSet<String> {
+pub(super) fn c_abi_function_targets(module: &Module) -> BTreeSet<String> {
     let mut ops = Vec::new();
-    collect_region_ops_recursive(op, &mut ops);
+    for function in &module.functions {
+        if let Some(op) = function.raw.as_ref() {
+            collect_region_ops_recursive(op, &mut ops);
+        }
+    }
     let mut targets: BTreeSet<String> = ops
         .iter()
         .filter(|op| op.mnemonic() == "get_global")
         .filter(|op| op_result_type(op).is_some_and(is_cir_function_pointer_type))
         .filter_map(|op| attr_symbol_ref(op, "name").map(str::to_string))
         .collect();
-    for init in ops
+    for init in module
+        .globals
         .iter()
-        .filter(|op| op.mnemonic() == "global")
-        .filter_map(|op| op.attr("initial_value"))
+        .filter_map(|global| global.initial_value.as_ref())
     {
         let mut symbols = Vec::new();
         collect_global_view_symbols(init, &mut symbols);
@@ -262,82 +266,48 @@ pub(super) fn c_abi_function_targets(op: &Operation) -> BTreeSet<String> {
 }
 
 pub(super) fn module_requires_native_va_list(
-    module_op: &Operation,
+    module: &Module,
     c_abi_functions: &BTreeSet<String>,
     emit_pub: bool,
     aliases: &BTreeMap<String, CirType>,
 ) -> bool {
     let mut ops = Vec::new();
-    collect_region_ops_recursive(module_op, &mut ops);
-    let defined_functions: BTreeSet<&str> = ops
+    for function in &module.functions {
+        if let Some(op) = function.raw.as_ref() {
+            collect_region_ops_recursive(op, &mut ops);
+        }
+    }
+    let defined_functions: BTreeSet<&str> = module
+        .functions
         .iter()
-        .filter(|op| op.mnemonic() == "func" && !region_ops(op).is_empty())
-        .filter_map(|op| attr_str(op, "sym_name"))
+        .filter(|function| !function.is_declaration())
+        .map(|function| function.name.as_str())
         .collect();
-    ops.iter().any(|op| match op.mnemonic() {
-        "func" if !region_ops(op).is_empty() => {
-            let name = attr_str(op, "sym_name").unwrap_or_default();
-            let has_va_list = attr_type(op, "function_type").is_some_and(|function_type| {
-                function_type_is_variadic(function_type)
-                    || parse_function_type(function_type)
-                        .0
+    module
+        .functions
+        .iter()
+        .filter(|function| !function.is_declaration())
+        .any(|function| {
+            let has_va_list = function.varargs
+                || function
+                    .params
+                    .iter()
+                    .any(|(_, ty)| is_cir_va_list_type(ty, aliases));
+            has_va_list
+                && (c_abi_functions.contains(&function.name)
+                    || (emit_pub && function.raw.as_ref().is_some_and(externally_exported)))
+        })
+        || ops.iter().any(|op| {
+            if op.mnemonic() == "call" {
+                attr_symbol_ref(op, "callee")
+                    .is_some_and(|callee| !defined_functions.contains(callee))
+                    && op_operand_types(op)
                         .iter()
                         .any(|ty| is_cir_va_list_type(ty, aliases))
-            });
-            has_va_list && (c_abi_functions.contains(name) || (emit_pub && externally_exported(op)))
-        }
-        "call" => {
-            attr_symbol_ref(op, "callee").is_some_and(|callee| !defined_functions.contains(callee))
-                && op_operand_types(op)
-                    .iter()
-                    .any(|ty| is_cir_va_list_type(ty, aliases))
-        }
-        _ => false,
-    })
-}
-
-pub(super) fn declared_function_param_types(
-    op: &Operation,
-    aliases: &BTreeMap<String, CirType>,
-    va_list_boxed: bool,
-) -> BTreeMap<String, Vec<Type>> {
-    let mut ops = Vec::new();
-    collect_region_ops_recursive(op, &mut ops);
-    ops.iter()
-        .filter(|op| op.mnemonic() == "func")
-        .filter_map(|op| {
-            let name = attr_str(op, "sym_name")?;
-            let function_type = attr_type(op, "function_type")?;
-            let (param_tys, _) = parse_function_type(function_type);
-            let params = param_tys
-                .iter()
-                .map(|ty| rust_type_with_aliases(ty, aliases, va_list_boxed))
-                .collect();
-            Some((name.to_string(), params))
+            } else {
+                false
+            }
         })
-        .collect()
-}
-
-pub(super) fn declared_function_return_types(
-    op: &Operation,
-    aliases: &BTreeMap<String, CirType>,
-    va_list_boxed: bool,
-) -> BTreeMap<String, Type> {
-    let mut ops = Vec::new();
-    collect_region_ops_recursive(op, &mut ops);
-    ops.iter()
-        .filter(|op| op.mnemonic() == "func")
-        .filter_map(|op| {
-            let name = attr_str(op, "sym_name")?;
-            let function_type = attr_type(op, "function_type")?;
-            let (_, ret_ty) = parse_function_type(function_type);
-            let ty = ret_ty
-                .as_ref()
-                .map(|ty| rust_type_with_aliases(ty, aliases, va_list_boxed))
-                .unwrap_or(Type::Unit);
-            Some((name.to_string(), ty))
-        })
-        .collect()
 }
 
 pub(super) fn attr_str<'a>(op: &'a Operation, key: &str) -> Option<&'a str> {
