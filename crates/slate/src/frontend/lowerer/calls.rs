@@ -567,36 +567,27 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     // accessed atomically without changing its storage. Integer/bool types map
     // to an atomic wrapper; float/pointer atomics fall back to a non-atomic RMW
     // (std has no atomic float, and atomic pointers need a different shape).
-    pub(super) fn atomic_rust_type(&self, op: &Op) -> Type {
-        op_result_type(op)
-            .map(|ty| self.parent.rust_type(ty))
-            .unwrap_or(Type::Prim(Prim::I32))
+    pub(super) fn atomic_rust_type(&self, result_ty: &CirType) -> Type {
+        self.parent.rust_type(result_ty)
     }
 
-    pub(super) fn lower_atomic_fetch(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first().cloned() else {
-            return;
-        };
-        if op.operands.len() < 2 {
-            return;
-        }
-        let val = self.operand_expr(&op.operands[1]);
-        let ty = self.atomic_rust_type(op);
-        let binop = attr_int(op, "binop").unwrap_or(0);
+    pub(super) fn lower_atomic_fetch(&mut self, op: &TypedAtomicFetch) {
+        let val = self.operand_expr(&op.val);
+        let ty = self.atomic_rust_type(&op.result_ty);
+        let binop = op.binop as i64;
         let Some(atomic_ty) = atomic_type(&ty) else {
-            // float/pointer atomic: non-atomic read-modify-write fallback.
-            self.lower_atomic_fetch_nonatomic(op, &result, val, ty, binop);
+            self.lower_atomic_fetch_nonatomic(&op.result, &op.ptr, val, ty, binop, op.fetch_first);
             return;
         };
         let fetched = Self::unsafe_expr(Expr::AtomicFetch {
             ty: atomic_ty,
             op: atomic_rmw_op(binop),
-            place: AtomicPlace::Ptr(Box::new(self.store_address_expr(&op.operands[0]))),
+            place: AtomicPlace::Ptr(Box::new(self.store_address_expr(&op.ptr))),
             value: Box::new(val.clone()),
-            ordering: rust_ordering(attr_int(op, "mem_order").unwrap_or(5)),
+            ordering: rust_ordering(op.mem_order as i64),
         });
-        if attr_bool(op, "fetch_first") {
-            self.materialize_expr(&result, fetched, op_result_type(op));
+        if op.fetch_first {
+            self.materialize_expr(&op.result, fetched, Some(&op.result_ty));
         } else {
             let old = self.next_temp();
             self.push_stmt(Stmt::Let {
@@ -606,19 +597,20 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 init: Some(fetched),
             });
             let new = atomic_combine(binop, Expr::Var(old.into()), val);
-            self.materialize_expr(&result, new, op_result_type(op));
+            self.materialize_expr(&op.result, new, Some(&op.result_ty));
         }
     }
 
     pub(super) fn lower_atomic_fetch_nonatomic(
         &mut self,
-        op: &Op,
         result: &str,
+        ptr: &str,
         val: Expr,
         ty: Type,
         binop: i64,
+        fetch_first: bool,
     ) {
-        let addr = self.store_address_expr(&op.operands[0]);
+        let addr = self.store_address_expr(ptr);
         let old = self.next_temp();
         self.push_stmt(Stmt::Let {
             name: old.clone(),
@@ -643,36 +635,26 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             },
             Expr::Var(new.clone().into()),
         );
-        let bound = if attr_bool(op, "fetch_first") {
-            old
-        } else {
-            new
-        };
+        let bound = if fetch_first { old } else { new };
         self.immutable_temps.insert(bound.clone());
         self.values
             .insert(result.to_string(), Val::Expr(Expr::Var(bound.into())));
     }
 
-    pub(super) fn lower_atomic_xchg(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first().cloned() else {
-            return;
-        };
-        if op.operands.len() < 2 {
-            return;
-        }
-        let val = self.operand_expr(&op.operands[1]);
-        let ty = self.atomic_rust_type(op);
+    pub(super) fn lower_atomic_xchg(&mut self, op: &TypedAtomicXchg) {
+        let val = self.operand_expr(&op.val);
+        let ty = self.atomic_rust_type(&op.result_ty);
         if let Some(atomic_ty) = atomic_type(&ty) {
             let expr = Self::unsafe_expr(Expr::AtomicSwap {
                 ty: atomic_ty,
-                place: AtomicPlace::Ptr(Box::new(self.store_address_expr(&op.operands[0]))),
+                place: AtomicPlace::Ptr(Box::new(self.store_address_expr(&op.ptr))),
                 value: Box::new(val),
-                ordering: rust_ordering(attr_int(op, "mem_order").unwrap_or(5)),
+                ordering: rust_ordering(op.mem_order as i64),
             });
-            self.materialize_expr(&result, expr, op_result_type(op));
+            self.materialize_expr(&op.result, expr, Some(&op.result_ty));
             return;
         }
-        let addr = self.store_address_expr(&op.operands[0]);
+        let addr = self.store_address_expr(&op.ptr);
         let old = self.next_temp();
         self.push_stmt(Stmt::Let {
             name: old.clone(),
@@ -691,55 +673,41 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             val,
         );
         self.immutable_temps.insert(old.clone());
-        self.values.insert(result, Val::Expr(Expr::Var(old.into())));
+        self.values
+            .insert(op.result.clone(), Val::Expr(Expr::Var(old.into())));
     }
 
-    pub(super) fn lower_atomic_test_and_set(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        let Some(ptr) = op.operands.first() else {
-            return;
-        };
+    pub(super) fn lower_atomic_test_and_set(&mut self, op: &TypedAtomicTestAndSet) {
         let old = Self::unsafe_expr(Expr::AtomicSwap {
             ty: AtomicType::I8,
-            place: AtomicPlace::Ptr(Box::new(self.store_address_expr(ptr))),
+            place: AtomicPlace::Ptr(Box::new(self.store_address_expr(&op.ptr))),
             value: Box::new(Expr::Value(RustValue::I64(1))),
-            ordering: rust_ordering(attr_int(op, "mem_order").unwrap_or(5)),
+            ordering: rust_ordering(op.mem_order as i64),
         });
         self.materialize_expr(
-            result,
+            &op.result,
             Expr::Binary {
                 op: BinOp::Ne,
                 lhs: Box::new(old),
                 rhs: Box::new(Expr::Value(RustValue::I64(0))),
             },
-            op_result_type(op),
+            Some(&op.result_ty),
         );
     }
 
-    pub(super) fn lower_atomic_clear(&mut self, op: &Op) {
-        let Some(ptr) = op.operands.first() else {
-            return;
-        };
+    pub(super) fn lower_atomic_clear(&mut self, op: &TypedAtomicClear) {
         self.push_stmt(Stmt::Expr(Self::unsafe_expr(Expr::AtomicStore {
             ty: AtomicType::I8,
-            place: AtomicPlace::Ptr(Box::new(self.store_address_expr(ptr))),
+            place: AtomicPlace::Ptr(Box::new(self.store_address_expr(&op.ptr))),
             value: Box::new(Expr::Value(RustValue::I64(0))),
-            ordering: store_ordering(attr_int(op, "mem_order").unwrap_or(5)),
+            ordering: store_ordering(op.mem_order as i64),
         })));
     }
 
-    pub(super) fn lower_atomic_cmpxchg(&mut self, op: &Op) {
-        if op.operands.len() < 3 || op.results.len() < 2 {
-            return;
-        }
-        let expected = self.operand_expr(&op.operands[1]);
-        let desired = self.operand_expr(&op.operands[2]);
-        let ty = op_result_types(op)
-            .first()
-            .map(|ty| self.parent.rust_type(ty))
-            .unwrap_or(Type::Prim(Prim::I32));
+    pub(super) fn lower_atomic_cmpxchg(&mut self, op: &TypedAtomicCmpxchg) {
+        let expected = self.operand_expr(&op.expected);
+        let desired = self.operand_expr(&op.desired);
+        let ty = self.parent.rust_type(&op.old_ty);
         if let Some(atomic_ty) = atomic_type(&ty) {
             let res = self.next_temp();
             self.push_stmt(Stmt::Let {
@@ -751,11 +719,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 }),
                 init: Some(Self::unsafe_expr(Expr::AtomicCompareExchange {
                     ty: atomic_ty,
-                    place: AtomicPlace::Ptr(Box::new(self.store_address_expr(&op.operands[0]))),
+                    place: AtomicPlace::Ptr(Box::new(self.store_address_expr(&op.ptr))),
                     expected: Box::new(expected),
                     desired: Box::new(desired),
-                    success: rust_ordering(attr_int(op, "succ_order").unwrap_or(5)),
-                    failure: load_ordering(attr_int(op, "fail_order").unwrap_or(5)),
+                    success: rust_ordering(op.succ_order as i64),
+                    failure: load_ordering(op.fail_order as i64),
                 })),
             });
             let old = self.next_temp();
@@ -797,12 +765,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.immutable_temps.insert(old.clone());
             self.immutable_temps.insert(ok.clone());
             self.values
-                .insert(op.results[0].0.clone(), Val::Expr(Expr::Var(old.into())));
+                .insert(op.old.clone(), Val::Expr(Expr::Var(old.into())));
             self.values
-                .insert(op.results[1].0.clone(), Val::Expr(Expr::Var(ok.into())));
+                .insert(op.success.clone(), Val::Expr(Expr::Var(ok.into())));
             return;
         }
-        let addr = self.store_address_expr(&op.operands[0]);
+        let addr = self.store_address_expr(&op.ptr);
         let old = self.next_temp();
         let ok = self.next_temp();
         self.push_stmt(Stmt::Let {
@@ -838,13 +806,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.immutable_temps.insert(old.clone());
         self.immutable_temps.insert(ok.clone());
         self.values
-            .insert(op.results[0].0.clone(), Val::Expr(Expr::Var(old.into())));
+            .insert(op.old.clone(), Val::Expr(Expr::Var(old.into())));
         self.values
-            .insert(op.results[1].0.clone(), Val::Expr(Expr::Var(ok.into())));
+            .insert(op.success.clone(), Val::Expr(Expr::Var(ok.into())));
     }
 
-    pub(super) fn lower_atomic_fence(&mut self, op: &Op) {
-        let ordering = attr_int(op, "ordering").unwrap_or(5);
+    pub(super) fn lower_atomic_fence(&mut self, op: &TypedAtomicFence) {
+        let ordering = op.ordering as i64;
         if ordering == 0 {
             return;
         }
@@ -968,11 +936,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         false
     }
 
-    pub(super) fn lower_va_start(&mut self, op: &Op) {
-        let Some(ptr) = op.operands.first() else {
-            return;
-        };
-        let Some(place) = self.va_target_place(ptr) else {
+    pub(super) fn lower_va_start(&mut self, op: &TypedVaStart) {
+        let Some(place) = self.va_target_place(&op.arg_list) else {
             return;
         };
         let args = self
@@ -989,38 +954,28 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
-    pub(super) fn lower_va_arg(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
+    pub(super) fn lower_va_arg(&mut self, op: &TypedVaArg) {
+        let Some(place) = self.va_target_place(&op.arg_list) else {
             return;
         };
-        let Some(ptr) = op.operands.first() else {
-            return;
-        };
-        let Some(place) = self.va_target_place(ptr) else {
-            return;
-        };
-        let ty = op_result_type(op)
-            .map(|ty| self.parent.rust_type(ty))
-            .unwrap_or(Type::Prim(Prim::I32));
+        let ty = self.parent.rust_type(&op.result_ty);
         self.materialize_expr(
-            result,
+            &op.result,
             Self::unsafe_expr(Expr::MethodCallGeneric {
                 recv: Box::new(place),
                 method: "next_arg".into(),
                 type_args: vec![ty],
                 args: vec![],
             }),
-            op_result_type(op),
+            Some(&op.result_ty),
         );
     }
 
-    pub(super) fn lower_va_copy(&mut self, op: &Op) {
-        let [dst, src] = op.operands.as_slice() else {
-            return;
-        };
-        let (Some(dst_place), Some(src_place)) =
-            (self.va_target_place(dst), self.va_target_place(src))
-        else {
+    pub(super) fn lower_va_copy(&mut self, op: &TypedVaCopy) {
+        let (Some(dst_place), Some(src_place)) = (
+            self.va_target_place(&op.dst_list),
+            self.va_target_place(&op.src_list),
+        ) else {
             return;
         };
         self.push_unsafe_assign(
