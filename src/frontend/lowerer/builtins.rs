@@ -419,17 +419,21 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             result_types.get(1).copied(),
         );
     }
-    pub(super) fn lower_function_pointer_null_cmp(&self, op: &Op) -> Option<Expr> {
-        let kind = attr_int(op, "kind")?;
+    pub(super) fn lower_function_pointer_null_cmp(
+        &self,
+        lhs: &str,
+        rhs: &str,
+        kind: CmpOpKind,
+    ) -> Option<Expr> {
         let (nonnull_operand, method) = match (
-            self.is_function_pointer_null_operand(&op.operands[0]),
-            self.is_function_pointer_null_operand(&op.operands[1]),
+            self.is_function_pointer_null_operand(lhs),
+            self.is_function_pointer_null_operand(rhs),
             kind,
         ) {
-            (false, true, 4) => (&op.operands[0], "is_none"),
-            (false, true, 5) => (&op.operands[0], "is_some"),
-            (true, false, 4) => (&op.operands[1], "is_none"),
-            (true, false, 5) => (&op.operands[1], "is_some"),
+            (false, true, CmpOpKind::Eq) => (lhs, "is_none"),
+            (false, true, CmpOpKind::Ne) => (lhs, "is_some"),
+            (true, false, CmpOpKind::Eq) => (rhs, "is_none"),
+            (true, false, CmpOpKind::Ne) => (rhs, "is_some"),
             _ => return None,
         };
         Some(Expr::MethodCall {

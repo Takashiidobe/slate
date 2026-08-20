@@ -18,11 +18,15 @@ use crate::frontend::c_ast::{
 use crate::frontend::function_abi::repair_function_signature;
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 use clang_ir::ast::SourceLocation;
+use clang_ir::enums::CmpOpKind;
 use clang_ir::model::{
     MemOrder, Op as TypedOp,
     instruction::{
-        Alloca as TypedAlloca, Br as TypedBr, Const as TypedConst, Copy as TypedCopy,
-        GetGlobal as TypedGetGlobal, Load as TypedLoad, Return as TypedReturn, Store as TypedStore,
+        Alloca as TypedAlloca, Assume as TypedAssume, Br as TypedBr, Cast as TypedCast,
+        Cmp as TypedCmp, Const as TypedConst, Copy as TypedCopy, GetElement as TypedGetElement,
+        GetGlobal as TypedGetGlobal, LibcMemchr as TypedLibcMemchr, LibcMemset as TypedLibcMemset,
+        Load as TypedLoad, PtrDiff as TypedPtrDiff, PtrStride as TypedPtrStride,
+        Return as TypedReturn, Select as TypedSelect, Store as TypedStore,
     },
 };
 use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
@@ -4556,12 +4560,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 TypedOp::Br(value) => return self.lower_br(&value),
                 TypedOp::Store(value) => return self.lower_store(&value),
                 TypedOp::Copy(value) => return self.lower_copy(&value),
-                TypedOp::Cast(_) => return self.lower_cast(op),
-                TypedOp::GetElement(_) => return self.lower_get_element(op),
-                TypedOp::PtrStride(_) => return self.lower_ptr_stride(op),
-                TypedOp::PtrDiff(_) => return self.lower_ptr_diff(op),
-                TypedOp::Cmp(_) => return self.lower_cmp(op),
-                TypedOp::Select(_) => return self.lower_select(op),
+                TypedOp::Cast(value) => return self.lower_cast(&value),
+                TypedOp::GetElement(value) => return self.lower_get_element(&value),
+                TypedOp::PtrStride(value) => return self.lower_ptr_stride(&value),
+                TypedOp::PtrDiff(value) => return self.lower_ptr_diff(&value),
+                TypedOp::Cmp(value) => return self.lower_cmp(&value),
+                TypedOp::Select(value) => return self.lower_select(&value),
                 TypedOp::Abs(value) => {
                     return self.lower_abs_typed(&value.result, Some(&value.result_ty), &value.src);
                 }
@@ -4677,7 +4681,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         &value.input,
                     );
                 }
-                TypedOp::Assume(_) => return self.lower_assume(op),
+                TypedOp::Assume(value) => return self.lower_assume(&value),
                 TypedOp::If(_) => return self.lower_if(op),
                 TypedOp::Ffs(value) => {
                     return self.lower_ffs_typed(
@@ -4761,10 +4765,26 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     return self.lower_ternary_method(op, "mul_add");
                 }
                 TypedOp::Modf(_) => return self.lower_modf(op),
-                TypedOp::LibcMemcpy(_) => return self.lower_mem_copy(op, false),
-                TypedOp::LibcMemmove(_) => return self.lower_mem_copy(op, true),
-                TypedOp::LibcMemset(_) => return self.lower_mem_set(op),
-                TypedOp::LibcMemchr(_) => return self.lower_mem_chr(op),
+                TypedOp::LibcMemcpy(value) => {
+                    return self.lower_mem_copy(
+                        &value.dst,
+                        &value.src,
+                        &value.len,
+                        value.loc.as_ref(),
+                        false,
+                    );
+                }
+                TypedOp::LibcMemmove(value) => {
+                    return self.lower_mem_copy(
+                        &value.dst,
+                        &value.src,
+                        &value.len,
+                        value.loc.as_ref(),
+                        true,
+                    );
+                }
+                TypedOp::LibcMemset(value) => return self.lower_mem_set(&value),
+                TypedOp::LibcMemchr(value) => return self.lower_mem_chr(&value),
                 TypedOp::VaStart(_) => return self.lower_va_start(op),
                 TypedOp::VaCopy(_) => return self.lower_va_copy(op),
                 TypedOp::VaArg(_) => return self.lower_va_arg(op),

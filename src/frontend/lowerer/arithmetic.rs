@@ -88,44 +88,33 @@ fn overflow_for_result_width(
 }
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
-    pub(super) fn lower_cmp(&mut self, op: &Op) {
-        let Some((result, result_ty)) = op.results.first() else {
-            return;
-        };
-        if op.operands.len() < 2 {
+    pub(super) fn lower_cmp(&mut self, op: &TypedCmp) {
+        if let Some(expr) = self.lower_function_pointer_null_cmp(&op.lhs, &op.rhs, op.kind) {
+            self.materialize_expr(&op.result, expr, Some(&op.result_ty));
             return;
         }
-        if let Some(expr) = self.lower_function_pointer_null_cmp(op) {
-            self.materialize_expr(result, expr, Some(result_ty));
-            return;
-        }
-        let kind = attr_int(op, "kind");
-        let Some(operand_types) = self.operand_types(op) else {
-            return;
-        };
-        let concrete_function_symbols = operand_types
-            .first()
-            .zip(operand_types.get(1))
-            .is_some_and(|(lhs, rhs)| {
-                is_cir_function_pointer_type(lhs)
-                    && is_cir_function_pointer_type(rhs)
-                    && matches!(self.values.get(&op.operands[0]), Some(Val::Global(_)))
-                    && matches!(self.values.get(&op.operands[1]), Some(Val::Global(_)))
-            });
-        let operand = |this: &Self, index: usize| {
+        let lhs_ty = self.value_type(&op.lhs);
+        let rhs_ty = self.value_type(&op.rhs);
+        let concrete_function_symbols = lhs_ty.zip(rhs_ty).is_some_and(|(lhs, rhs)| {
+            is_cir_function_pointer_type(lhs)
+                && is_cir_function_pointer_type(rhs)
+                && matches!(self.values.get(&op.lhs), Some(Val::Global(_)))
+                && matches!(self.values.get(&op.rhs), Some(Val::Global(_)))
+        });
+        let operand = |this: &Self, value: &str, ty: Option<&CirType>| {
             if concrete_function_symbols {
-                this.function_pointer_byte_operand_expr(&op.operands[index])
+                this.function_pointer_byte_operand_expr(value)
             } else {
-                operand_types.get(index).map_or_else(
-                    || this.operand_expr(&op.operands[index]),
-                    |ty| this.call_arg_expr(&op.operands[index], ty),
+                ty.map_or_else(
+                    || this.operand_expr(value),
+                    |ty| this.call_arg_expr(value, ty),
                 )
             }
         };
-        let lhs = operand(self, 0);
-        let rhs = operand(self, 1);
-        let expr = match kind {
-            Some(6) => Expr::Binary {
+        let lhs = operand(self, &op.lhs, lhs_ty);
+        let rhs = operand(self, &op.rhs, rhs_ty);
+        let expr = match op.kind {
+            CmpOpKind::One => Expr::Binary {
                 op: BinOp::Or,
                 lhs: Box::new(Expr::Binary {
                     op: BinOp::Lt,
@@ -138,7 +127,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     rhs: Box::new(rhs),
                 }),
             },
-            Some(7) => Expr::Binary {
+            CmpOpKind::Uno => Expr::Binary {
                 op: BinOp::Or,
                 lhs: Box::new(Expr::Binary {
                     op: BinOp::Ne,
@@ -151,15 +140,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     rhs: Box::new(rhs),
                 }),
             },
-            Some(kind) => {
+            kind => {
                 let op = match kind {
-                    0 => BinOp::Lt,
-                    1 => BinOp::Le,
-                    2 => BinOp::Gt,
-                    3 => BinOp::Ge,
-                    4 => BinOp::Eq,
-                    5 => BinOp::Ne,
-                    _ => return,
+                    CmpOpKind::Lt => BinOp::Lt,
+                    CmpOpKind::Le => BinOp::Le,
+                    CmpOpKind::Gt => BinOp::Gt,
+                    CmpOpKind::Ge => BinOp::Ge,
+                    CmpOpKind::Eq => BinOp::Eq,
+                    CmpOpKind::Ne => BinOp::Ne,
+                    CmpOpKind::One | CmpOpKind::Uno => unreachable!(),
                 };
                 Expr::Binary {
                     op,
@@ -167,40 +156,31 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     rhs: Box::new(rhs),
                 }
             }
-            None => return,
         };
-        self.materialize_expr(result, expr, Some(result_ty));
+        self.materialize_expr(&op.result, expr, Some(&op.result_ty));
     }
 
-    pub(super) fn lower_select(&mut self, op: &Op) {
-        let Some((result, result_ty)) = op.results.first() else {
-            return;
-        };
-        let (Some(condition), Some(true_value), Some(false_value)) =
-            (op.operands.first(), op.operands.get(1), op.operands.get(2))
-        else {
-            return;
-        };
+    pub(super) fn lower_select(&mut self, op: &TypedSelect) {
         let true_expr = self.fn_ptr_aware_operand_expr(
-            true_value,
-            Some(result_ty),
+            &op.true_value,
+            Some(&op.result_ty),
             Self::function_pointer_operand_expr,
             Self::value_or_place_address_expr,
         );
         let false_expr = self.fn_ptr_aware_operand_expr(
-            false_value,
-            Some(result_ty),
+            &op.false_value,
+            Some(&op.result_ty),
             Self::function_pointer_operand_expr,
             Self::value_or_place_address_expr,
         );
         self.materialize_expr(
-            result,
+            &op.result,
             Expr::If {
-                cond: Box::new(self.operand_expr(condition)),
+                cond: Box::new(self.operand_expr(&op.condition)),
                 then_expr: Box::new(true_expr),
                 else_expr: Box::new(false_expr),
             },
-            Some(result_ty),
+            Some(&op.result_ty),
         );
     }
 
@@ -790,16 +770,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(result, self.operand_expr(value), op_result_type(op));
     }
 
-    pub(super) fn lower_assume(&mut self, op: &Op) {
-        let Some(cond) = op.operands.first() else {
-            return;
-        };
+    pub(super) fn lower_assume(&mut self, op: &TypedAssume) {
         self.push_stmt(Stmt::Expr(Self::unsafe_expr(Expr::Call {
             binding: function_identity::CallBinding::Generated,
             func: Box::new(Expr::Path(Path::new(
                 ["core", "hint", "assert_unchecked"].map(Ident::from),
             ))),
-            args: vec![self.operand_expr(cond)],
+            args: vec![self.operand_expr(&op.predicate)],
         })));
     }
 }

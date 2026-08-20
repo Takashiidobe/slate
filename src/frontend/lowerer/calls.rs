@@ -443,21 +443,25 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     // cir.libc.memcpy/memmove: (dst, src, len). memmove keeps overlapping copy
     // semantics; both operate byte-wise via *u8 pointers.
-    pub(super) fn lower_mem_copy(&mut self, op: &Op, overlapping: bool) {
+    pub(super) fn lower_mem_copy(
+        &mut self,
+        dst: &str,
+        src: &str,
+        len: &str,
+        loc: Option<&SourceLocation>,
+        overlapping: bool,
+    ) {
         let known = if overlapping {
             crate::function_identity::Known::MemMove
         } else {
             crate::function_identity::Known::MemCpy
         };
-        if !self.lower_known_libc_op(op, known) {
+        if !self.lower_known_libc_typed(loc, [dst, src, len], None, known) {
             return;
         }
-        if op.operands.len() < 3 {
-            return;
-        }
-        let dst = Self::without_empty_unsafe(self.byte_ptr_operand(&op.operands[0], true));
-        let src = Self::without_empty_unsafe(self.byte_ptr_operand(&op.operands[1], false));
-        let count = self.usize_operand(&op.operands[2]);
+        let dst = Self::without_empty_unsafe(self.byte_ptr_operand(dst, true));
+        let src = Self::without_empty_unsafe(self.byte_ptr_operand(src, false));
+        let count = self.usize_operand(len);
         self.push_stmt(Stmt::Expr(Self::unsafe_expr(Expr::PtrCopy {
             src: Box::new(src),
             dst: Box::new(dst),
@@ -468,19 +472,21 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     // cir.libc.memset: (dst, val:u8, len); the alignment attr carries no runtime
     // meaning here.
-    pub(super) fn lower_mem_set(&mut self, op: &Op) {
-        if !self.lower_known_libc_op(op, crate::function_identity::Known::MemSet) {
+    pub(super) fn lower_mem_set(&mut self, op: &TypedLibcMemset) {
+        if !self.lower_known_libc_typed(
+            op.loc.as_ref(),
+            [&op.dst, &op.val, &op.len],
+            None,
+            crate::function_identity::Known::MemSet,
+        ) {
             return;
         }
-        if op.operands.len() < 3 {
-            return;
-        }
-        let dst = Self::without_empty_unsafe(self.byte_ptr_operand(&op.operands[0], true));
+        let dst = Self::without_empty_unsafe(self.byte_ptr_operand(&op.dst, true));
         let val = Expr::Cast {
-            expr: Box::new(self.operand_expr(&op.operands[1])),
+            expr: Box::new(self.operand_expr(&op.val)),
             ty: Type::Prim(Prim::U8),
         };
-        let count = self.usize_operand(&op.operands[2]);
+        let count = self.usize_operand(&op.len);
         self.push_stmt(Stmt::Expr(Self::unsafe_expr(Expr::WriteBytes {
             dst: Box::new(dst),
             val: Box::new(val),
@@ -490,29 +496,70 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     // cir.libc.memchr: (src, pattern:i32, len:u64) -> void*. Backed by a prelude
     // helper so the byte scan stays a single structured call site.
-    pub(super) fn lower_mem_chr(&mut self, op: &Op) {
-        if !self.lower_known_libc_op(op, crate::function_identity::Known::MemChr) {
-            return;
-        }
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        if op.operands.len() < 3 {
+    pub(super) fn lower_mem_chr(&mut self, op: &TypedLibcMemchr) {
+        if !self.lower_known_libc_typed(
+            op.loc.as_ref(),
+            [&op.src, &op.pattern, &op.len],
+            Some((&op.result, &op.result_ty)),
+            crate::function_identity::Known::MemChr,
+        ) {
             return;
         }
         self.parent.uses_memchr.set(true);
-        let src = self.pointer_operand_expr(&op.operands[0]);
+        let src = self.pointer_operand_expr(&op.src);
         let pattern = Expr::Cast {
-            expr: Box::new(self.operand_expr(&op.operands[1])),
+            expr: Box::new(self.operand_expr(&op.pattern)),
             ty: Type::Prim(Prim::I32),
         };
-        let len = self.usize_operand(&op.operands[2]);
+        let len = self.usize_operand(&op.len);
         let call = Expr::Call {
             binding: CallBinding::Generated,
             func: Box::new(Expr::Var("__slate_memchr".into())),
             args: vec![src, pattern, len],
         };
-        self.materialize_expr(result, call, op_result_type(op));
+        self.materialize_expr(&op.result, call, Some(&op.result_ty));
+    }
+
+    pub(super) fn lower_known_libc_typed(
+        &mut self,
+        loc: Option<&SourceLocation>,
+        operands: [&str; 3],
+        result: Option<(&str, &CirType)>,
+        known: crate::function_identity::Known,
+    ) -> bool {
+        let binding = self.parent.call_binding_at(loc, true);
+        if binding.known() == Some(known)
+            || matches!(
+                binding,
+                crate::function_identity::CallBinding::Direct {
+                    identity: FunctionIdentity::Unknown,
+                    canonical_type: None,
+                }
+            )
+            || self.parent.known_functions.get(known.symbol())
+                == Some(&FunctionIdentity::Known(known))
+        {
+            return true;
+        }
+        let call = Expr::Call {
+            binding,
+            func: Box::new(Expr::Var(known.symbol().into())),
+            args: operands
+                .into_iter()
+                .map(|operand| self.operand_expr(operand))
+                .collect(),
+        };
+        let expr = if self.parent.externs.contains_key(known.symbol()) {
+            Self::unsafe_expr(call)
+        } else {
+            call
+        };
+        if let Some((result, result_ty)) = result {
+            self.materialize_expr(result, expr, Some(result_ty));
+        } else {
+            self.push_stmt(Stmt::Expr(expr));
+        }
+        false
     }
 
     pub(super) fn lower_known_libc_op(
