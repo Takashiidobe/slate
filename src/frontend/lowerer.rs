@@ -18,7 +18,10 @@ use crate::frontend::c_ast::{
 use crate::frontend::function_abi::repair_function_signature;
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 use clang_ir::ast::SourceLocation;
-use clang_ir::model::Op as TypedOp;
+use clang_ir::model::{
+    MemOrder, Op as TypedOp,
+    instruction::{GetGlobal as TypedGetGlobal, Store as TypedStore},
+};
 use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
 
 mod analysis;
@@ -4258,9 +4261,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 TypedOp::SubOverflow(_) => return self.lower_overflow_arith(op, "overflowing_sub"),
                 TypedOp::MulOverflow(_) => return self.lower_overflow_arith(op, "overflowing_mul"),
                 TypedOp::Const(_) => return self.lower_const(op),
-                TypedOp::GetGlobal(_) => return self.lower_get_global(op),
+                TypedOp::GetGlobal(value) => return self.lower_get_global(&value),
                 TypedOp::Load(_) => return self.lower_load(op),
-                TypedOp::Store(_) => return self.lower_store(op),
+                TypedOp::Store(value) => return self.lower_store(&value),
                 TypedOp::Copy(_) => return self.lower_copy(op),
                 TypedOp::Cast(_) => return self.lower_cast(op),
                 TypedOp::GetElement(_) => return self.lower_get_element(op),
@@ -4419,5 +4422,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     fn value_type(&self, value: &str) -> Option<&CirType> {
         self.value_types.get(value)
+    }
+
+    fn operand_types(&self, op: &Op) -> Option<Vec<CirType>> {
+        op.operands
+            .iter()
+            .map(|value| self.value_type(value).cloned())
+            .collect()
     }
 }

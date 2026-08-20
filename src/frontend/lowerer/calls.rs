@@ -10,7 +10,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_call(&mut self, op: &Op) {
-        let operand_types = op_operand_types(op);
+        let Some(operand_types) = self.operand_types(op) else {
+            return;
+        };
         let direct_callee = attr_symbol_ref(op, "callee").map(str::to_string);
         let weak_ref_target = direct_callee
             .as_ref()
@@ -53,7 +55,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     callee.clone(),
                     callee_expr,
                     op.operands.as_slice(),
-                    operand_types,
+                    operand_types.as_slice(),
                     None,
                 )
             } else {
@@ -859,12 +861,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     pub(super) fn try_atomic_store(
         &mut self,
-        op: &Op,
+        mem_order: Option<MemOrder>,
         ptr: &str,
         value_ty: Option<&CirType>,
         value: Expr,
     ) -> bool {
-        let Some(mem_order) = attr_int(op, "mem_order") else {
+        let Some(mem_order) = mem_order else {
             return false;
         };
         let Some(wrapper) = value_ty
@@ -878,7 +880,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             ty: wrapper,
             place: AtomicPlace::Ptr(Box::new(self.store_address_expr(ptr))),
             value: Box::new(value),
-            ordering: store_ordering(mem_order),
+            ordering: store_ordering(mem_order as i64),
         })));
         true
     }

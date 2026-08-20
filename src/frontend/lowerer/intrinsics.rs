@@ -113,7 +113,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             };
             result_types.into_iter().cloned().collect()
         };
-        let operand_types = op_operand_types(op);
+        let Some(operand_types) = self.operand_types(op) else {
+            return false;
+        };
         if operand_types.len() != op.operands.len() {
             return false;
         }

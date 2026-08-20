@@ -168,7 +168,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(value) = op.operands.first() else {
             return;
         };
-        let operand_ty = op_operand_types(op).first();
+        let operand_ty = self.value_type(value);
         if operand_ty.is_some_and(is_wrapped_long_double) {
             self.materialize_expr(
                 result,
@@ -203,7 +203,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(flags) = attr_int(op, "flags") else {
             return;
         };
-        let operand_ty = op_operand_types(op).first();
+        let operand_ty = self.value_type(value);
         if operand_ty.is_some_and(is_wrapped_long_double) {
             self.materialize_expr(
                 result,
