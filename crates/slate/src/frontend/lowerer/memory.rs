@@ -1,15 +1,9 @@
 use super::*;
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
-    pub(super) fn lower_get_bitfield(&mut self, op: &Op) {
-        let Some((result, result_ty)) = op.results.first() else {
-            return;
-        };
-        let Some(ptr) = op.operands.first() else {
-            return;
-        };
+    pub(super) fn lower_get_bitfield(&mut self, op: &TypedGetBitfield) {
         let (place, needs_unsafe) =
-            if let Some((storage, field, needs_unsafe)) = self.bitfield_accessor(ptr, false) {
+            if let Some((storage, field, needs_unsafe)) = self.bitfield_accessor(&op.addr, false) {
                 (
                     Expr::MethodCall {
                         recv: Box::new(storage),
@@ -19,27 +13,25 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     needs_unsafe,
                 )
             } else {
-                self.bitfield_place(ptr)
+                self.bitfield_place(&op.addr)
             };
         let value = if needs_unsafe {
             Self::unsafe_expr(place)
         } else {
             place
         };
-        let value = self.truncate_bitfield_expr(op, value, Some(result_ty));
-        self.materialize_expr(result, value, Some(result_ty));
+        let value = self.truncate_bitfield_expr(&op.bitfield_info, value, Some(&op.result_ty));
+        self.materialize_expr(&op.result, value, Some(&op.result_ty));
     }
 
-    pub(super) fn lower_set_bitfield(&mut self, op: &Op) {
-        let Some((result, result_ty)) = op.results.first() else {
-            return;
-        };
-        let (Some(ptr), Some(src)) = (op.operands.first(), op.operands.get(1)) else {
-            return;
-        };
-        let value = self.truncate_bitfield_expr(op, self.operand_expr(src), Some(result_ty));
-        self.materialize_expr(result, value.clone(), Some(result_ty));
-        if let Some((storage, field, needs_unsafe)) = self.bitfield_accessor(ptr, true) {
+    pub(super) fn lower_set_bitfield(&mut self, op: &TypedSetBitfield) {
+        let value = self.truncate_bitfield_expr(
+            &op.bitfield_info,
+            self.operand_expr(&op.src),
+            Some(&op.result_ty),
+        );
+        self.materialize_expr(&op.result, value.clone(), Some(&op.result_ty));
+        if let Some((storage, field, needs_unsafe)) = self.bitfield_accessor(&op.addr, true) {
             let setter = Expr::MethodCall {
                 recv: Box::new(storage),
                 method: format!("set_{field}"),
@@ -51,7 +43,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 self.push_stmt(Stmt::Expr(setter));
             }
         } else {
-            let (place, needs_unsafe) = self.bitfield_place(ptr);
+            let (place, needs_unsafe) = self.bitfield_place(&op.addr);
             if needs_unsafe {
                 self.push_unsafe_assign(place, value);
             } else {
@@ -547,41 +539,40 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         ))
     }
 
-    pub(super) fn lower_extract_member(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
+    pub(super) fn lower_extract_member(&mut self, op: &TypedExtractMember) {
+        let Some(index) = op
+            .index
+            .as_int()
+            .and_then(|index| usize::try_from(index).ok())
+        else {
+            self.emit_todo("cir.extract_member");
             return;
         };
-        let Some(base) = op.operands.first() else {
-            return;
-        };
-        let Some(field) = self.value_member_field(op, 0) else {
+        let Some(field) = self.value_member_field(&op.record, index) else {
             self.emit_todo("cir.extract_member");
             return;
         };
         self.materialize_expr(
-            result,
+            &op.result,
             Expr::Field {
-                base: Box::new(self.operand_expr(base)),
+                base: Box::new(self.operand_expr(&op.record)),
                 field,
             },
-            op_result_type(op),
+            Some(&op.result_ty),
         );
     }
 
-    pub(super) fn lower_insert_member(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        if op.operands.len() < 2 {
-            return;
-        }
-        let Some(index) = aggregate_member_index(op) else {
+    pub(super) fn lower_insert_member(&mut self, op: &TypedInsertMember) {
+        let Some(index) = op
+            .index
+            .as_int()
+            .and_then(|index| usize::try_from(index).ok())
+        else {
             self.emit_todo("cir.insert_member");
             return;
         };
-        let Some(record_name) = op_result_type(op)
-            .map(|ty| self.parent.rust_type(ty))
-            .and_then(|ty| match ty {
+        let Some(record_name) =
+            Some(self.parent.rust_type(&op.result_ty)).and_then(|ty| match ty {
                 Type::Custom(name) => Some(name),
                 _ => None,
             })
@@ -601,8 +592,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.emit_todo("cir.insert_member");
             return;
         }
-        let base = self.operand_expr(&op.operands[0]);
-        let value = self.operand_expr(&op.operands[1]);
+        let base = self.operand_expr(&op.record);
+        let value = self.operand_expr(&op.value);
         let fields = record
             .fields
             .iter()
@@ -621,7 +612,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             })
             .collect();
         self.materialize_expr(
-            result,
+            &op.result,
             wrap_record_lit(
                 record,
                 Expr::StructLit {
@@ -629,16 +620,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     fields,
                 },
             ),
-            op_result_type(op),
+            Some(&op.result_ty),
         );
     }
 
-    pub(super) fn value_member_field(&self, op: &Op, operand_index: usize) -> Option<String> {
-        let index = aggregate_member_index(op)?;
-        let record_ty = op
-            .operands
-            .get(operand_index)
-            .and_then(|value| self.value_type(value))?;
+    pub(super) fn value_member_field(&self, record: &str, index: usize) -> Option<String> {
+        let record_ty = self.value_type(record)?;
         let Type::Custom(record_name) = self.parent.rust_type(record_ty) else {
             return None;
         };
@@ -842,10 +829,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     // shift up then arithmetic-shift down masks to `size` bits, sign-extending signed types.
-    pub(super) fn truncate_bitfield_expr(&self, op: &Op, expr: Expr, ty: Option<&CirType>) -> Expr {
+    pub(super) fn truncate_bitfield_expr(
+        &self,
+        bitfield_info: &Attr,
+        expr: Expr,
+        ty: Option<&CirType>,
+    ) -> Expr {
         let rust_ty = ty.map(|ty| self.parent.rust_type(ty));
         let bits = rust_ty.as_ref().and_then(|t| int_bits(&t.render()));
-        match (self.bitfield_size(op), bits) {
+        match (self.bitfield_size(bitfield_info), bits) {
             (Some(size), Some(bits)) if size < bits => {
                 // the storage field's own type may have different signedness (or, for a
                 // shared multi-field storage unit, no fixed signedness at all) than this
@@ -870,12 +862,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    pub(super) fn bitfield_size(&self, op: &Op) -> Option<u32> {
-        self.bitfield_size_offset(op).map(|(size, _)| size)
+    pub(super) fn bitfield_size(&self, bitfield_info: &Attr) -> Option<u32> {
+        self.bitfield_size_offset(bitfield_info)
+            .map(|(size, _)| size)
     }
 
-    pub(super) fn bitfield_size_offset(&self, op: &Op) -> Option<(u32, u32)> {
-        let attr = self.parent.resolve_attr(op.attr("bitfield_info")?);
+    pub(super) fn bitfield_size_offset(&self, bitfield_info: &Attr) -> Option<(u32, u32)> {
+        let attr = self.parent.resolve_attr(bitfield_info);
         let Attr::BitfieldInfo { size, offset, .. } = attr else {
             return None;
         };
