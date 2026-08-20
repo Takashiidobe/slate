@@ -14,16 +14,10 @@ fn type_contains_va_list(ty: &Type) -> bool {
 }
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
-    pub(super) fn lower_const(&mut self, op: &Op) {
-        let Some((result, ty)) = op.results.first() else {
-            return;
-        };
-        let Some(attr) = op
-            .attr("value")
-            .map(|attr| self.parent.resolve_attr(attr).clone())
-        else {
-            return;
-        };
+    pub(super) fn lower_const(&mut self, op: &TypedConst) {
+        let result = &op.res;
+        let ty = &op.res_ty;
+        let attr = self.parent.resolve_attr(&op.value).clone();
         let result_ty = Some(ty);
         let const_int = attr.as_int();
         if let Some(value) = const_int {
@@ -42,7 +36,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         if let Some(value) = const_int
-            && let Some(expr) = self.next_enum_const_expr(op, value, result_ty)
+            && let Some(expr) = self.next_enum_const_expr(op.loc.as_ref(), value, result_ty)
         {
             self.materialize_expr(result, expr, result_ty);
             return;
@@ -75,9 +69,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         let macro_expr = if matches!(ty, CirType::Fp128) || is_long_double(ty) {
-            self.next_long_double_macro_const_expr(op, result_ty)
+            self.next_long_double_macro_const_expr(op.loc.as_ref(), result_ty)
         } else if matches!(ty, CirType::Single | CirType::Double) {
-            self.next_float_macro_const_expr(op, result_ty)
+            self.next_float_macro_const_expr(op.loc.as_ref(), result_ty)
         } else {
             None
         };
@@ -85,7 +79,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.materialize_expr(result, expr, result_ty);
             return;
         }
-        let fact = self.ast_floating_literal(op);
+        let fact = self.ast_floating_literal(op.loc.as_ref());
         let mut facts = fact.into_iter().collect();
         let expr = match self
             .parent
@@ -255,10 +249,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    pub(super) fn lower_copy(&mut self, op: &Op) {
-        let (Some(dst), Some(src)) = (op.operands.first(), op.operands.get(1)) else {
-            return;
-        };
+    pub(super) fn lower_copy(&mut self, op: &TypedCopy) {
+        let dst = &op.dst;
+        let src = &op.src;
         let Some(value) = self.copy_source_value(dst, src) else {
             self.push_stmt(Stmt::Expr(Self::unsafe_expr(Expr::PtrCopy {
                 src: Box::new(self.pointer_operand_expr(src)),
@@ -750,17 +743,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     pub(super) fn next_float_macro_const_expr(
         &mut self,
-        op: &Op,
+        loc: Option<&SourceLocation>,
         result_ty: Option<&CirType>,
     ) -> Option<Expr> {
         let macro_const = self.macro_consts.front()?;
         let known = crate::frontend::macros::lookup(&macro_const.name)?;
-        if op
-            .loc
-            .as_ref()
-            .and_then(|raw| self.parent.resolve_source_loc(raw))
-            != Some(macro_const.loc)
-        {
+        if loc.and_then(|raw| self.parent.resolve_source_loc(raw)) != Some(macro_const.loc) {
             return None;
         }
         let is_f32 = matches!(result_ty, Some(CirType::Single));
@@ -790,7 +778,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     pub(super) fn next_enum_const_expr(
         &mut self,
-        op: &Op,
+        loc: Option<&SourceLocation>,
         value: i128,
         result_ty: Option<&CirType>,
     ) -> Option<Expr> {
@@ -798,12 +786,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if enum_const.value as i128 != value {
             return None;
         }
-        if op
-            .loc
-            .as_ref()
-            .and_then(|raw| self.parent.resolve_source_loc(raw))
-            != Some(enum_const.loc)
-        {
+        if loc.and_then(|raw| self.parent.resolve_source_loc(raw)) != Some(enum_const.loc) {
             return None;
         }
         let enum_const = self.enum_consts.pop_front()?;
@@ -822,7 +805,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     pub(super) fn next_long_double_macro_const_expr(
         &mut self,
-        op: &Op,
+        loc: Option<&SourceLocation>,
         result_ty: Option<&CirType>,
     ) -> Option<Expr> {
         let macro_const = self.macro_consts.front()?;
@@ -835,12 +818,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         else {
             return None;
         };
-        if op
-            .loc
-            .as_ref()
-            .and_then(|raw| self.parent.resolve_source_loc(raw))
-            != Some(macro_const.loc)
-        {
+        if loc.and_then(|raw| self.parent.resolve_source_loc(raw)) != Some(macro_const.loc) {
             return None;
         }
         self.macro_consts.pop_front();
