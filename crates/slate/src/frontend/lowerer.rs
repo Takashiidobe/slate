@@ -4239,29 +4239,156 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.record_typed_result_types(&typed);
             match typed {
                 TypedOp::Add(value) if value.saturated => {
-                    return self.lower_saturating_arith(op, "saturating_add");
+                    return self.lower_saturating_arith_typed(
+                        &value.result,
+                        &value.result_ty,
+                        &value.lhs,
+                        &value.rhs,
+                        "saturating_add",
+                    );
                 }
-                TypedOp::Add(_) => return self.lower_int_arith(op, BinOp::Add),
+                TypedOp::Add(value) => {
+                    return self.lower_int_arith_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.lhs,
+                        &value.rhs,
+                        BinOp::Add,
+                    );
+                }
                 TypedOp::Sub(value) if value.saturated => {
-                    return self.lower_saturating_arith(op, "saturating_sub");
+                    return self.lower_saturating_arith_typed(
+                        &value.result,
+                        &value.result_ty,
+                        &value.lhs,
+                        &value.rhs,
+                        "saturating_sub",
+                    );
                 }
-                TypedOp::Sub(_) => return self.lower_int_arith(op, BinOp::Sub),
-                TypedOp::Mul(_) => return self.lower_int_arith(op, BinOp::Mul),
-                TypedOp::Div(_) => return self.lower_int_arith(op, BinOp::Div),
-                TypedOp::Rem(_) => return self.lower_int_arith(op, BinOp::Rem),
-                TypedOp::And(_) => return self.lower_int_arith(op, BinOp::BitAnd),
-                TypedOp::Or(_) => return self.lower_int_arith(op, BinOp::BitOr),
-                TypedOp::Xor(_) => return self.lower_int_arith(op, BinOp::BitXor),
-                TypedOp::Fadd(_) => return self.lower_binary(op, BinOp::Add),
-                TypedOp::Fsub(_) => return self.lower_binary(op, BinOp::Sub),
-                TypedOp::Fmul(_) => return self.lower_binary(op, BinOp::Mul),
-                TypedOp::Fdiv(_) => return self.lower_binary(op, BinOp::Div),
-                TypedOp::Inc(_) => return self.lower_step(op, BinOp::Add),
-                TypedOp::Dec(_) => return self.lower_step(op, BinOp::Sub),
-                TypedOp::Not(_) => return self.lower_not(op),
+                TypedOp::Sub(value) => {
+                    return self.lower_int_arith_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.lhs,
+                        &value.rhs,
+                        BinOp::Sub,
+                    );
+                }
+                TypedOp::Mul(value) => {
+                    return self.lower_int_arith_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.lhs,
+                        &value.rhs,
+                        BinOp::Mul,
+                    );
+                }
+                TypedOp::Div(value) => {
+                    return self.lower_int_arith_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.lhs,
+                        &value.rhs,
+                        BinOp::Div,
+                    );
+                }
+                TypedOp::Rem(value) => {
+                    return self.lower_int_arith_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.lhs,
+                        &value.rhs,
+                        BinOp::Rem,
+                    );
+                }
+                TypedOp::And(value) => {
+                    return self.lower_int_arith_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.lhs,
+                        &value.rhs,
+                        BinOp::BitAnd,
+                    );
+                }
+                TypedOp::Or(value) => {
+                    return self.lower_int_arith_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.lhs,
+                        &value.rhs,
+                        BinOp::BitOr,
+                    );
+                }
+                TypedOp::Xor(value) => {
+                    return self.lower_int_arith_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.lhs,
+                        &value.rhs,
+                        BinOp::BitXor,
+                    );
+                }
+                TypedOp::Fadd(value) => {
+                    return self.lower_binary_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.lhs,
+                        &value.rhs,
+                        BinOp::Add,
+                    );
+                }
+                TypedOp::Fsub(value) => {
+                    return self.lower_binary_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.lhs,
+                        &value.rhs,
+                        BinOp::Sub,
+                    );
+                }
+                TypedOp::Fmul(value) => {
+                    return self.lower_binary_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.lhs,
+                        &value.rhs,
+                        BinOp::Mul,
+                    );
+                }
+                TypedOp::Fdiv(value) => {
+                    return self.lower_binary_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.lhs,
+                        &value.rhs,
+                        BinOp::Div,
+                    );
+                }
+                TypedOp::Inc(value) => {
+                    return self.lower_step_typed(
+                        &value.result,
+                        &value.result_ty,
+                        &value.input,
+                        BinOp::Add,
+                    );
+                }
+                TypedOp::Dec(value) => {
+                    return self.lower_step_typed(
+                        &value.result,
+                        &value.result_ty,
+                        &value.input,
+                        BinOp::Sub,
+                    );
+                }
+                TypedOp::Not(value) => {
+                    return self.lower_not_typed(&value.result, &value.result_ty, &value.input);
+                }
                 TypedOp::Shift(value) => {
-                    return self.lower_int_arith(
-                        op,
+                    return self.lower_int_arith_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.value,
+                        &value.amount,
                         if value.is_shiftleft {
                             BinOp::Shl
                         } else {
@@ -4269,9 +4396,45 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         },
                     );
                 }
-                TypedOp::AddOverflow(_) => return self.lower_overflow_arith(op, "overflowing_add"),
-                TypedOp::SubOverflow(_) => return self.lower_overflow_arith(op, "overflowing_sub"),
-                TypedOp::MulOverflow(_) => return self.lower_overflow_arith(op, "overflowing_mul"),
+                TypedOp::AddOverflow(value) => {
+                    return self.lower_overflow_arith_typed(
+                        (
+                            &value.result,
+                            &value.result_ty,
+                            &value.overflow,
+                            &value.overflow_ty,
+                        ),
+                        &value.lhs,
+                        &value.rhs,
+                        "overflowing_add",
+                    );
+                }
+                TypedOp::SubOverflow(value) => {
+                    return self.lower_overflow_arith_typed(
+                        (
+                            &value.result,
+                            &value.result_ty,
+                            &value.overflow,
+                            &value.overflow_ty,
+                        ),
+                        &value.lhs,
+                        &value.rhs,
+                        "overflowing_sub",
+                    );
+                }
+                TypedOp::MulOverflow(value) => {
+                    return self.lower_overflow_arith_typed(
+                        (
+                            &value.result,
+                            &value.result_ty,
+                            &value.overflow,
+                            &value.overflow_ty,
+                        ),
+                        &value.lhs,
+                        &value.rhs,
+                        "overflowing_mul",
+                    );
+                }
                 TypedOp::Acos(value) => {
                     return self.lower_unary_method_typed(
                         &value.result,
