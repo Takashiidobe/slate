@@ -926,6 +926,43 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         false
     }
 
+    pub(super) fn lower_known_libc_binary_typed(
+        &mut self,
+        result: &str,
+        result_ty: &CirType,
+        lhs: &str,
+        rhs: &str,
+        loc: Option<&SourceLocation>,
+        known: crate::function_identity::Known,
+    ) -> bool {
+        let binding = self.parent.call_binding_at(loc, true);
+        if binding.known() == Some(known)
+            || matches!(
+                binding,
+                crate::function_identity::CallBinding::Direct {
+                    identity: FunctionIdentity::Unknown,
+                    canonical_type: None,
+                }
+            )
+            || self.parent.known_functions.get(known.symbol())
+                == Some(&FunctionIdentity::Known(known))
+        {
+            return true;
+        }
+        let call = Expr::Call {
+            binding,
+            func: Box::new(Expr::Var(known.symbol().into())),
+            args: vec![self.operand_expr(lhs), self.operand_expr(rhs)],
+        };
+        let expr = if self.parent.externs.contains_key(known.symbol()) {
+            Self::unsafe_expr(call)
+        } else {
+            call
+        };
+        self.materialize_expr(result, expr, Some(result_ty));
+        false
+    }
+
     pub(super) fn lower_va_start(&mut self, op: &Op) {
         let Some(ptr) = op.operands.first() else {
             return;

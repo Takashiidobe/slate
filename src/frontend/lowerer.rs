@@ -4399,26 +4399,198 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 TypedOp::PtrDiff(_) => return self.lower_ptr_diff(op),
                 TypedOp::Cmp(_) => return self.lower_cmp(op),
                 TypedOp::Select(_) => return self.lower_select(op),
-                TypedOp::Abs(_) | TypedOp::Fabs(_) => return self.lower_abs(op),
-                TypedOp::Bitreverse(_) => return self.lower_unary_method(op, "reverse_bits"),
-                TypedOp::ByteSwap(_) => return self.lower_unary_method(op, "swap_bytes"),
-                TypedOp::Ceil(_) => return self.lower_unary_method(op, "ceil"),
-                TypedOp::Clz(_) => return self.lower_unary_method(op, "leading_zeros"),
-                TypedOp::Ctz(_) => return self.lower_unary_method(op, "trailing_zeros"),
-                TypedOp::Floor(_) => return self.lower_unary_method(op, "floor"),
-                TypedOp::Nearbyint(_) | TypedOp::Rint(_) => {
-                    return self.lower_unary_method(op, "round_ties_even");
+                TypedOp::Abs(value) => {
+                    return self.lower_abs_typed(&value.result, Some(&value.result_ty), &value.src);
                 }
-                TypedOp::Popcount(_) => return self.lower_unary_method(op, "count_ones"),
-                TypedOp::Round(_) => return self.lower_unary_method(op, "round"),
-                TypedOp::Trunc(_) => return self.lower_unary_method(op, "trunc"),
-                TypedOp::Minus(_) | TypedOp::Fneg(_) => return self.lower_neg(op),
-                TypedOp::Parity(_) => return self.lower_parity(op),
+                TypedOp::Fabs(value) => {
+                    return self.lower_abs_typed(&value.result, Some(&value.result_ty), &value.src);
+                }
+                TypedOp::Bitreverse(value) => {
+                    return self.lower_unary_method_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.input,
+                        "reverse_bits",
+                    );
+                }
+                TypedOp::ByteSwap(value) => {
+                    return self.lower_unary_method_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.input,
+                        "swap_bytes",
+                    );
+                }
+                TypedOp::Ceil(value) => {
+                    return self.lower_unary_method_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.src,
+                        "ceil",
+                    );
+                }
+                TypedOp::Clz(value) => {
+                    return self.lower_unary_method_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.input,
+                        "leading_zeros",
+                    );
+                }
+                TypedOp::Ctz(value) => {
+                    return self.lower_unary_method_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.input,
+                        "trailing_zeros",
+                    );
+                }
+                TypedOp::Floor(value) => {
+                    return self.lower_unary_method_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.src,
+                        "floor",
+                    );
+                }
+                TypedOp::Nearbyint(value) => {
+                    return self.lower_unary_method_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.src,
+                        "round_ties_even",
+                    );
+                }
+                TypedOp::Rint(value) => {
+                    return self.lower_unary_method_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.src,
+                        "round_ties_even",
+                    );
+                }
+                TypedOp::Popcount(value) => {
+                    return self.lower_unary_method_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.input,
+                        "count_ones",
+                    );
+                }
+                TypedOp::Round(value) => {
+                    return self.lower_unary_method_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.src,
+                        "round",
+                    );
+                }
+                TypedOp::Roundeven(value) => {
+                    return self.lower_unary_method_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.src,
+                        "round_ties_even",
+                    );
+                }
+                TypedOp::Trunc(value) => {
+                    return self.lower_unary_method_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.src,
+                        "trunc",
+                    );
+                }
+                TypedOp::Minus(value) => {
+                    return self.lower_neg_typed(&value.result, &value.result_ty, &value.input);
+                }
+                TypedOp::Fneg(value) => {
+                    return self.lower_neg_typed(&value.result, &value.result_ty, &value.input);
+                }
+                TypedOp::Parity(value) => {
+                    return self.lower_parity_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.input,
+                    );
+                }
                 TypedOp::Assume(_) => return self.lower_assume(op),
                 TypedOp::If(_) => return self.lower_if(op),
-                TypedOp::Ffs(_) => return self.lower_ffs(op),
-                TypedOp::Clrsb(_) => return self.lower_clrsb(op),
-                TypedOp::Signbit(_) => return self.lower_signbit(op),
+                TypedOp::Ffs(value) => {
+                    return self.lower_ffs_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.input,
+                    );
+                }
+                TypedOp::Clrsb(value) => {
+                    return self.lower_clrsb_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.input,
+                    );
+                }
+                TypedOp::Signbit(value) => {
+                    return self.lower_signbit_typed(&value.res, &value.res_ty, &value.input);
+                }
+                TypedOp::Atan2(value) => {
+                    return self.lower_binary_method_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.lhs,
+                        &value.rhs,
+                        "atan2",
+                    );
+                }
+                TypedOp::Fmaximum(value) => {
+                    return self.lower_binary_method_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.lhs,
+                        &value.rhs,
+                        "max",
+                    );
+                }
+                TypedOp::Fminimum(value) => {
+                    return self.lower_binary_method_typed(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.lhs,
+                        &value.rhs,
+                        "min",
+                    );
+                }
+                TypedOp::Fmod(value) => {
+                    if self.lower_known_libc_binary_typed(
+                        &value.result,
+                        &value.result_ty,
+                        &value.lhs,
+                        &value.rhs,
+                        value.loc.as_ref(),
+                        Known::Fmod,
+                    ) {
+                        self.materialize_expr(
+                            &value.result,
+                            Expr::Binary {
+                                op: BinOp::Rem,
+                                lhs: Box::new(self.operand_expr(&value.lhs)),
+                                rhs: Box::new(self.operand_expr(&value.rhs)),
+                            },
+                            Some(&value.result_ty),
+                        );
+                    }
+                    return;
+                }
+                TypedOp::Pow(value) => {
+                    return self.lower_known_binary_method_typed(
+                        &value.result,
+                        &value.result_ty,
+                        (&value.lhs, &value.rhs),
+                        value.loc.as_ref(),
+                        Known::Pow,
+                        "powf",
+                    );
+                }
                 TypedOp::Copysign(_) => return self.lower_binary_method(op, "copysign"),
                 TypedOp::Fmaxnum(_) => return self.lower_binary_method(op, "max"),
                 TypedOp::Fminnum(_) => return self.lower_binary_method(op, "min"),
@@ -4478,17 +4650,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.value_types.extend(op.results.iter().cloned());
         match op.kind() {
             CirOpKind::Asm => self.lower_asm(op),
-            CirOpKind::Atan2 => self.lower_binary_method(op, "atan2"),
             CirOpKind::Expect => self.lower_expect(op),
-            CirOpKind::Fmaximum => self.lower_binary_method(op, "max"),
-            CirOpKind::Fminimum => self.lower_binary_method(op, "min"),
-            CirOpKind::Fmod => self.lower_known_binary(op, Known::Fmod, BinOp::Rem),
             CirOpKind::Llrint => self.lower_unary_cast_method(op, "round_ties_even"),
             CirOpKind::Llround => self.lower_known_unary_cast_method(op, Known::Llround, "round"),
             CirOpKind::Lrint => self.lower_unary_cast_method(op, "round_ties_even"),
             CirOpKind::Lround => self.lower_known_unary_cast_method(op, Known::Lround, "round"),
-            CirOpKind::Pow => self.lower_known_binary_method(op, Known::Pow, "powf"),
-            CirOpKind::Roundeven => self.lower_unary_method(op, "round_ties_even"),
             CirOpKind::Stackrestore => {}
             CirOpKind::Trap => self.lower_trap(),
             CirOpKind::Unreachable => self.lower_unreachable(),

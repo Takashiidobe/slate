@@ -1,14 +1,12 @@
 use super::*;
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
-    pub(super) fn lower_ffs(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        let Some(value) = op.operands.first() else {
-            return;
-        };
-        let result_ty = op_result_type(op);
+    pub(super) fn lower_ffs_typed(
+        &mut self,
+        result: &str,
+        result_ty: Option<&CirType>,
+        value: &str,
+    ) {
         let ty = result_ty
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or(Type::Prim(Prim::I32));
@@ -36,14 +34,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(result, expr, result_ty);
     }
 
-    pub(super) fn lower_clrsb(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        let Some(value) = op.operands.first() else {
-            return;
-        };
-        let result_ty = op_result_type(op);
+    pub(super) fn lower_clrsb_typed(
+        &mut self,
+        result: &str,
+        result_ty: Option<&CirType>,
+        value: &str,
+    ) {
         let ty = result_ty
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or(Type::Prim(Prim::I32));
@@ -82,9 +78,25 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if op.operands.len() < 2 {
             return;
         }
-        let lhs = self.operand_expr(&op.operands[0]);
-        let rhs = self.operand_expr(&op.operands[1]);
-        let result_ty = op_result_type(op);
+        self.lower_binary_method_typed(
+            result,
+            op_result_type(op),
+            &op.operands[0],
+            &op.operands[1],
+            method,
+        );
+    }
+
+    pub(super) fn lower_binary_method_typed(
+        &mut self,
+        result: &str,
+        result_ty: Option<&CirType>,
+        lhs: &str,
+        rhs: &str,
+        method: &str,
+    ) {
+        let lhs = self.operand_expr(lhs);
+        let rhs = self.operand_expr(rhs);
         let rust_ty = result_ty
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or(Type::Prim(Prim::F64));
@@ -113,14 +125,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(result, expr, result_ty);
     }
 
-    pub(super) fn lower_known_binary_method(
+    pub(super) fn lower_known_binary_method_typed(
         &mut self,
-        op: &Op,
+        result: &str,
+        result_ty: &CirType,
+        operands: (&str, &str),
+        loc: Option<&SourceLocation>,
         known: crate::function_identity::Known,
         method: &str,
     ) {
-        if self.lower_known_libc_op(op, known) {
-            self.lower_binary_method(op, method);
+        if self.lower_known_libc_binary_typed(result, result_ty, operands.0, operands.1, loc, known)
+        {
+            self.lower_binary_method_typed(result, Some(result_ty), operands.0, operands.1, method);
         }
     }
 
@@ -161,13 +177,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(result, expr, result_ty);
     }
 
-    pub(super) fn lower_signbit(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        let Some(value) = op.operands.first() else {
-            return;
-        };
+    pub(super) fn lower_signbit_typed(&mut self, result: &str, result_ty: &CirType, value: &str) {
         let operand_ty = self.value_type(value);
         if operand_ty.is_some_and(is_wrapped_long_double) {
             self.materialize_expr(
@@ -177,7 +187,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     func: Box::new(Expr::Var("__slate_f80_signbit".into())),
                     args: vec![self.operand_expr(value)],
                 },
-                op_result_type(op),
+                Some(result_ty),
             );
             return;
         }
@@ -189,7 +199,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 method: "is_sign_negative".into(),
                 args: vec![],
             },
-            op_result_type(op),
+            Some(result_ty),
         );
     }
 
