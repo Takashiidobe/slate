@@ -309,6 +309,22 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
+    pub(super) fn lower_unsupported_value_typed(
+        &mut self,
+        result: &str,
+        result_ty: &CirType,
+        note: &str,
+    ) {
+        self.materialize_expr(
+            result,
+            Expr::Macro {
+                name: "panic".into(),
+                args: vec![Expr::Str(format!("unsupported CIR op: {note}"))],
+            },
+            Some(result_ty),
+        );
+    }
+
     pub(super) fn lower_llvm_intrinsic(&mut self, op: &Op) {
         let Some(name) = attr_str(op, "intrinsic_name") else {
             self.lower_unsupported_value(op, "cir.call_llvm_intrinsic");
@@ -457,50 +473,42 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         )
     }
 
-    pub(super) fn lower_vec_extract(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        if op.operands.len() < 2 {
-            return;
-        }
+    pub(super) fn lower_vec_extract(&mut self, op: &TypedVecExtract) {
         self.materialize_expr(
-            result,
+            &op.result,
             Expr::Index {
-                base: Box::new(self.operand_expr(&op.operands[0])),
+                base: Box::new(self.operand_expr(&op.vec)),
                 index: Box::new(Expr::Cast {
-                    expr: Box::new(self.operand_expr(&op.operands[1])),
+                    expr: Box::new(self.operand_expr(&op.index)),
                     ty: Type::Prim(Prim::Usize),
                 }),
             },
-            op_result_type(op),
+            Some(&op.result_ty),
         );
     }
 
-    pub(super) fn lower_vec_insert(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        if op.operands.len() < 3 {
-            return;
-        }
-        let Some((_, len)) = op_result_type(op).and_then(parse_cir_vector_type) else {
-            self.lower_unsupported_value(op, "cir.vec.insert");
+    pub(super) fn lower_vec_insert(&mut self, op: &TypedVecInsert) {
+        let Some((_, len)) = parse_cir_vector_type(&op.result_ty) else {
+            self.lower_unsupported_value_typed(&op.result, &op.result_ty, "cir.vec.insert");
             return;
         };
         let Some(index) = self
             .const_int_values
-            .get(&op.operands[2])
+            .get(&op.index)
             .and_then(|i| u64::try_from(*i).ok())
             .filter(|i| *i < len)
         else {
-            self.lower_unsupported_value(op, "cir.vec.insert dynamic index");
+            self.lower_unsupported_value_typed(
+                &op.result,
+                &op.result_ty,
+                "cir.vec.insert dynamic index",
+            );
             return;
         };
-        let base = self.operand_expr(&op.operands[0]);
-        let value = self.operand_expr(&op.operands[1]);
+        let base = self.operand_expr(&op.vec);
+        let value = self.operand_expr(&op.value);
         self.materialize_expr(
-            result,
+            &op.result,
             Expr::ArrayLit(
                 (0..len)
                     .map(|i| {
@@ -512,30 +520,28 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     })
                     .collect(),
             ),
-            op_result_type(op),
+            Some(&op.result_ty),
         );
     }
 
-    pub(super) fn lower_vec_shuffle(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
+    pub(super) fn lower_vec_shuffle(&mut self, op: &TypedVecShuffle) {
+        let Some((_, len)) = parse_cir_vector_type(&op.result_ty) else {
+            self.lower_unsupported_value_typed(&op.result, &op.result_ty, "cir.vec.shuffle");
             return;
         };
-        if op.operands.len() < 2 {
-            return;
-        }
-        let Some((_, len)) = op_result_type(op).and_then(parse_cir_vector_type) else {
-            self.lower_unsupported_value(op, "cir.vec.shuffle");
-            return;
-        };
-        let indices = attr_int_array(op, "indices").unwrap_or_default();
+        let indices = int_array_attr(&op.indices).unwrap_or_default();
         if indices.len() != len as usize {
-            self.lower_unsupported_value(op, "cir.vec.shuffle indices");
+            self.lower_unsupported_value_typed(
+                &op.result,
+                &op.result_ty,
+                "cir.vec.shuffle indices",
+            );
             return;
         }
-        let lhs = self.operand_expr(&op.operands[0]);
-        let rhs = self.operand_expr(&op.operands[1]);
+        let lhs = self.operand_expr(&op.vec1);
+        let rhs = self.operand_expr(&op.vec2);
         self.materialize_expr(
-            result,
+            &op.result,
             Expr::ArrayLit(
                 indices
                     .into_iter()
@@ -548,65 +554,54 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     })
                     .collect(),
             ),
-            op_result_type(op),
+            Some(&op.result_ty),
         );
     }
 
-    pub(super) fn lower_vec_create(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        let elems = op.operands.iter().map(|v| self.operand_expr(v)).collect();
-        self.materialize_expr(result, Expr::ArrayLit(elems), op_result_type(op));
+    pub(super) fn lower_vec_shuffle_dynamic(&mut self, op: &TypedVecShuffleDynamic) {
+        self.lower_unsupported_value_typed(&op.result, &op.result_ty, "cir.vec.shuffle.dynamic");
     }
 
-    pub(super) fn lower_vec_splat(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
+    pub(super) fn lower_vec_create(&mut self, op: &TypedVecCreate) {
+        let elems = op.elements.iter().map(|v| self.operand_expr(v)).collect();
+        self.materialize_expr(&op.result, Expr::ArrayLit(elems), Some(&op.result_ty));
+    }
+
+    pub(super) fn lower_vec_splat(&mut self, op: &TypedVecSplat) {
+        let Some((_, len)) = parse_cir_vector_type(&op.result_ty) else {
+            self.lower_unsupported_value_typed(&op.result, &op.result_ty, "cir.vec.splat");
             return;
         };
-        let Some(value) = op.operands.first() else {
-            return;
-        };
-        let Some((_, len)) = op_result_type(op).and_then(parse_cir_vector_type) else {
-            self.lower_unsupported_value(op, "cir.vec.splat");
-            return;
-        };
-        let value = self.operand_expr(value);
+        let value = self.operand_expr(&op.value);
         self.materialize_expr(
-            result,
+            &op.result,
             Expr::ArrayLit((0..len).map(|_| value.clone()).collect()),
-            op_result_type(op),
+            Some(&op.result_ty),
         );
     }
 
-    pub(super) fn lower_vec_cmp(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
+    pub(super) fn lower_vec_cmp(&mut self, op: &TypedVecCmp) {
+        let Some((elem_ty, len)) = parse_cir_vector_type(&op.result_ty) else {
+            self.lower_unsupported_value_typed(&op.result, &op.result_ty, "cir.vec.cmp");
             return;
         };
-        if op.operands.len() < 2 {
-            return;
-        }
-        let Some((elem_ty, len)) = op_result_type(op).and_then(parse_cir_vector_type) else {
-            self.lower_unsupported_value(op, "cir.vec.cmp");
-            return;
+        let cmp = match op.kind {
+            CmpOpKind::Lt => BinOp::Lt,
+            CmpOpKind::Le => BinOp::Le,
+            CmpOpKind::Gt => BinOp::Gt,
+            CmpOpKind::Ge => BinOp::Ge,
+            CmpOpKind::Eq => BinOp::Eq,
+            CmpOpKind::Ne => BinOp::Ne,
+            CmpOpKind::One | CmpOpKind::Uno => {
+                self.lower_unsupported_value_typed(&op.result, &op.result_ty, "cir.vec.cmp kind");
+                return;
+            }
         };
-        let Some(cmp) = (match attr_int(op, "kind") {
-            Some(0) => Some(BinOp::Lt),
-            Some(1) => Some(BinOp::Le),
-            Some(2) => Some(BinOp::Gt),
-            Some(3) => Some(BinOp::Ge),
-            Some(4) => Some(BinOp::Eq),
-            Some(5) => Some(BinOp::Ne),
-            _ => None,
-        }) else {
-            self.lower_unsupported_value(op, "cir.vec.cmp kind");
-            return;
-        };
-        let lhs = self.operand_expr(&op.operands[0]);
-        let rhs = self.operand_expr(&op.operands[1]);
+        let lhs = self.operand_expr(&op.lhs);
+        let rhs = self.operand_expr(&op.rhs);
         let elem_rust_ty = self.parent.rust_type(elem_ty);
         self.materialize_expr(
-            result,
+            &op.result,
             Expr::ArrayLit(
                 (0..len)
                     .map(|i| {
@@ -627,7 +622,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     })
                     .collect(),
             ),
-            op_result_type(op),
+            Some(&op.result_ty),
         );
     }
 

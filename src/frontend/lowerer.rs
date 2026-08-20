@@ -27,11 +27,17 @@ use clang_ir::model::{
         AtomicFetch as TypedAtomicFetch, AtomicTestAndSet as TypedAtomicTestAndSet,
         AtomicXchg as TypedAtomicXchg, Br as TypedBr, Cast as TypedCast, Cmp as TypedCmp,
         Const as TypedConst, Copy as TypedCopy, EhSetjmp as TypedEhSetjmp,
-        GetElement as TypedGetElement, GetGlobal as TypedGetGlobal, IsConstant as TypedIsConstant,
+        ExtractMember as TypedExtractMember, GetBitfield as TypedGetBitfield,
+        GetElement as TypedGetElement, GetGlobal as TypedGetGlobal,
+        InsertMember as TypedInsertMember, IsConstant as TypedIsConstant,
         IsFpClass as TypedIsFpClass, LibcMemchr as TypedLibcMemchr, LibcMemset as TypedLibcMemset,
         Load as TypedLoad, Modf as TypedModf, Objsize as TypedObjsize, PtrDiff as TypedPtrDiff,
         PtrStride as TypedPtrStride, Return as TypedReturn, Select as TypedSelect,
-        Store as TypedStore, VaArg as TypedVaArg, VaCopy as TypedVaCopy, VaStart as TypedVaStart,
+        SetBitfield as TypedSetBitfield, Store as TypedStore, VaArg as TypedVaArg,
+        VaCopy as TypedVaCopy, VaStart as TypedVaStart, VecCmp as TypedVecCmp,
+        VecCreate as TypedVecCreate, VecExtract as TypedVecExtract, VecInsert as TypedVecInsert,
+        VecShuffle as TypedVecShuffle, VecShuffleDynamic as TypedVecShuffleDynamic,
+        VecSplat as TypedVecSplat,
     },
 };
 use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
@@ -4964,16 +4970,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         "im",
                     );
                 }
-                TypedOp::ExtractMember(_) => return self.lower_extract_member(op),
-                TypedOp::InsertMember(_) => return self.lower_insert_member(op),
-                TypedOp::VecCreate(_) => return self.lower_vec_create(op),
-                TypedOp::VecExtract(_) => return self.lower_vec_extract(op),
-                TypedOp::VecInsert(_) => return self.lower_vec_insert(op),
-                TypedOp::VecShuffle(_) | TypedOp::VecShuffleDynamic(_) => {
-                    return self.lower_vec_shuffle(op);
-                }
-                TypedOp::VecSplat(_) => return self.lower_vec_splat(op),
-                TypedOp::VecCmp(_) => return self.lower_vec_cmp(op),
+                TypedOp::ExtractMember(value) => return self.lower_extract_member(&value),
+                TypedOp::InsertMember(value) => return self.lower_insert_member(&value),
+                TypedOp::VecCreate(value) => return self.lower_vec_create(&value),
+                TypedOp::VecExtract(value) => return self.lower_vec_extract(&value),
+                TypedOp::VecInsert(value) => return self.lower_vec_insert(&value),
+                TypedOp::VecShuffle(value) => return self.lower_vec_shuffle(&value),
+                TypedOp::VecShuffleDynamic(value) => return self.lower_vec_shuffle_dynamic(&value),
+                TypedOp::VecSplat(value) => return self.lower_vec_splat(&value),
+                TypedOp::VecCmp(value) => return self.lower_vec_cmp(&value),
                 TypedOp::IsConstant(value) => return self.lower_is_constant(&value),
                 TypedOp::Objsize(value) => return self.lower_objsize(&value),
                 TypedOp::AtomicFetch(value) => return self.lower_atomic_fetch(&value),
@@ -4982,8 +4987,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 TypedOp::AtomicFence(value) => return self.lower_atomic_fence(&value),
                 TypedOp::AtomicTestAndSet(value) => return self.lower_atomic_test_and_set(&value),
                 TypedOp::AtomicClear(value) => return self.lower_atomic_clear(&value),
-                TypedOp::GetBitfield(_) => return self.lower_get_bitfield(op),
-                TypedOp::SetBitfield(_) => return self.lower_set_bitfield(op),
+                TypedOp::GetBitfield(value) => return self.lower_get_bitfield(&value),
+                TypedOp::SetBitfield(value) => return self.lower_set_bitfield(&value),
                 _ => {}
             }
         }
@@ -4996,7 +5001,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::Unreachable => self.lower_unreachable(),
             CirOpKind::Ternary => self.lower_ternary(op),
             CirOpKind::GetMember => self.lower_get_member(op),
-            CirOpKind::InsertMember => self.lower_insert_member(op),
             CirOpKind::Call => self.lower_call(op),
             CirOpKind::CallLlvmIntrinsic => self.lower_llvm_intrinsic(op),
             CirOpKind::Return => self.lower_return_raw(op),

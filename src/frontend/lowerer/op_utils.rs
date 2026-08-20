@@ -110,8 +110,7 @@ pub(super) fn attr_i64_array(op: &Op, key: &str) -> Option<Vec<i64>> {
     )
 }
 
-pub(super) fn attr_int_array(op: &Op, key: &str) -> Option<Vec<u64>> {
-    let attr = op.attr(key)?;
+pub(super) fn int_array_attr(attr: &Attr) -> Option<Vec<u64>> {
     if let Some(values) = builtin_dense_array_ints(attr) {
         return values.into_iter().map(|n| u64::try_from(n).ok()).collect();
     }
