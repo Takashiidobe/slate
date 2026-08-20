@@ -60,32 +60,26 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    pub(super) fn lower_get_element(&mut self, op: &Op) {
-        let Some((result, result_ty)) = op.results.first() else {
-            return;
-        };
-        let (Some(base), Some(index)) = (op.operands.first(), op.operands.get(1)) else {
-            return;
-        };
-        let index_expr = self.operand_expr(index);
-        let unbounded = self.member_ptrs.get(base).is_some_and(|member| {
+    pub(super) fn lower_get_element(&mut self, op: &TypedGetElement) {
+        let index_expr = self.operand_expr(&op.index);
+        let unbounded = self.member_ptrs.get(&op.base).is_some_and(|member| {
             member.field_is_trailing
                 && matches!(&member.field_ty, Some(Type::Array { len: 0 | 1, .. }))
         });
         let array_len = self
-            .value_type(base)
+            .value_type(&op.base)
             .and_then(cir_ptr_inner)
             .and_then(parse_cir_array_type)
             .map(|(_, len)| len);
         let out_of_bounds = array_len.is_some_and(|len| {
-            self.known_arith_value(index)
+            self.known_arith_value(&op.index)
                 .is_some_and(|value| value >= i128::from(len))
         });
-        let elem_ty = cir_ptr_inner(result_ty).map(|ty| self.parent.rust_type(ty));
-        if let Some(Val::Global(name)) = self.values.get(base).cloned() {
+        let elem_ty = cir_ptr_inner(&op.result_ty).map(|ty| self.parent.rust_type(ty));
+        if let Some(Val::Global(name)) = self.values.get(&op.base).cloned() {
             if let Some(labels) = self.parent.block_addr_globals.get(&name) {
                 self.block_addr_element_ptrs.insert(
-                    result.clone(),
+                    op.result.clone(),
                     BlockAddrElementPtr {
                         labels: labels.clone(),
                         index: index_expr.clone(),
@@ -97,7 +91,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 self.global_array_literal_expr(&name, elem_ty.clone(), declared_len)
             {
                 self.element_ptrs.insert(
-                    result.clone(),
+                    op.result.clone(),
                     ElementPtr {
                         base: base_expr,
                         index: index_expr,
@@ -110,11 +104,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 return;
             }
         }
-        let base_expr = self.place_or_deref_expr(base);
+        let base_expr = self.place_or_deref_expr(&op.base);
         let unsafe_access =
-            unbounded || self.place_expr(base).is_none() || self.ptr_requires_unsafe(base);
+            unbounded || self.place_expr(&op.base).is_none() || self.ptr_requires_unsafe(&op.base);
         self.element_ptrs.insert(
-            result.clone(),
+            op.result.clone(),
             ElementPtr {
                 base: base_expr,
                 index: index_expr,
@@ -126,29 +120,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
-    pub(super) fn lower_ptr_stride(&mut self, op: &Op) {
-        let Some((result, result_ty)) = op.results.first() else {
-            return;
-        };
-        let (Some(base), Some(stride)) = (op.operands.first(), op.operands.get(1)) else {
-            return;
-        };
-        let Some(operand_types) = self.operand_types(op) else {
-            return;
-        };
-        let function_pointer_stride = operand_types
-            .first()
-            .is_some_and(is_cir_function_pointer_type)
-            && is_cir_function_pointer_type(result_ty);
+    pub(super) fn lower_ptr_stride(&mut self, op: &TypedPtrStride) {
+        let base_ty = self.value_type(&op.base);
+        let function_pointer_stride = base_ty.is_some_and(is_cir_function_pointer_type)
+            && is_cir_function_pointer_type(&op.result_ty);
         let base_expr = self.fn_ptr_aware_operand_expr(
-            base,
-            function_pointer_stride
-                .then(|| operand_types.first())
-                .flatten(),
+            &op.base,
+            function_pointer_stride.then_some(base_ty).flatten(),
             Self::function_pointer_byte_operand_expr,
             Self::pointer_operand_expr,
         );
-        let (method, args) = self.ptr_stride_method_and_args(op, self.operand_expr(stride));
+        let (method, args) =
+            self.ptr_stride_method_and_args(&op.stride, self.operand_expr(&op.stride));
         let stride_expr = Self::unsafe_expr(Expr::MethodCall {
             recv: Box::new(base_expr),
             method,
@@ -160,34 +143,25 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     mutable: false,
                     inner: Box::new(Type::Unit),
                 },
-                to: self.parent.rust_type(result_ty),
+                to: self.parent.rust_type(&op.result_ty),
                 expr: Box::new(stride_expr),
             }
         } else {
             stride_expr
         };
-        self.materialize_expr(result, value, Some(result_ty));
+        self.materialize_expr(&op.result, value, Some(&op.result_ty));
     }
 
-    pub(super) fn lower_ptr_diff(&mut self, op: &Op) {
-        let Some((result, result_ty)) = op.results.first() else {
-            return;
-        };
-        let (Some(lhs), Some(rhs)) = (op.operands.first(), op.operands.get(1)) else {
-            return;
-        };
-        let Some(operand_types) = self.operand_types(op) else {
-            return;
-        };
+    pub(super) fn lower_ptr_diff(&mut self, op: &TypedPtrDiff) {
         let lhs = self.fn_ptr_aware_operand_expr(
-            lhs,
-            operand_types.first(),
+            &op.lhs,
+            self.value_type(&op.lhs),
             Self::function_pointer_byte_operand_expr,
             Self::pointer_operand_expr,
         );
         let rhs = self.fn_ptr_aware_operand_expr(
-            rhs,
-            operand_types.get(1),
+            &op.rhs,
+            self.value_type(&op.rhs),
             Self::function_pointer_byte_operand_expr,
             Self::pointer_operand_expr,
         );
@@ -197,18 +171,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 method: "offset_from".into(),
                 args: vec![rhs],
             }),
-            ty: self.parent.rust_type(result_ty),
+            ty: self.parent.rust_type(&op.result_ty),
         });
-        self.materialize_expr(result, value, Some(result_ty));
+        self.materialize_expr(&op.result, value, Some(&op.result_ty));
     }
 
-    pub(super) fn lower_cast(&mut self, op: &Op) {
-        let Some((result, result_ty)) = op.results.first() else {
-            return;
-        };
-        let Some(src) = op.operands.first() else {
-            return;
-        };
+    pub(super) fn lower_cast(&mut self, op: &TypedCast) {
+        let result = &op.result;
+        let result_ty = &op.result_ty;
+        let src = &op.src;
         let Some(src_ty) = self.value_type(src).cloned() else {
             return;
         };
@@ -976,27 +947,27 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .and_then(cir_ptr_inner)
             .is_some_and(|ty| self.parent.cir_type_is_union(ty))
     }
-    pub(super) fn ptr_stride_method_and_args(&self, op: &Op, index: Expr) -> (String, Vec<Expr>) {
-        if let Some(index_operand) = op.operands.get(1) {
-            if let Some(value) = self.const_int_values.get(index_operand)
-                && *value >= 0
-            {
-                return ("add".into(), vec![int_value_expr(*value)]);
-            }
-            if op
-                .operands
-                .get(1)
-                .and_then(|value| self.value_type(value))
-                .is_some_and(|ty| self.cir_int_is_unsigned(ty))
-            {
-                return (
-                    "add".into(),
-                    vec![Expr::Cast {
-                        expr: Box::new(index),
-                        ty: Type::Prim(Prim::Usize),
-                    }],
-                );
-            }
+    pub(super) fn ptr_stride_method_and_args(
+        &self,
+        stride: &str,
+        index: Expr,
+    ) -> (String, Vec<Expr>) {
+        if let Some(value) = self.const_int_values.get(stride)
+            && *value >= 0
+        {
+            return ("add".into(), vec![int_value_expr(*value)]);
+        }
+        if self
+            .value_type(stride)
+            .is_some_and(|ty| self.cir_int_is_unsigned(ty))
+        {
+            return (
+                "add".into(),
+                vec![Expr::Cast {
+                    expr: Box::new(index),
+                    ty: Type::Prim(Prim::Usize),
+                }],
+            );
         }
         (
             "offset".into(),
