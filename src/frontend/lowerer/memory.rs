@@ -770,11 +770,20 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     pub(super) fn record_field_type_by_name(&self, record_name: &str, field: &str) -> Option<Type> {
         let record = self.parent.records.get(record_name)?;
-        record
+        let index = record
             .fields
             .iter()
-            .find(|candidate| sanitize_ident(&candidate.name).as_str() == field)
-            .map(|candidate| self.parent.record_field_type(&candidate.ty))
+            .position(|candidate| sanitize_ident(&candidate.name).as_str() == field)?;
+        let candidate = record.fields.get(index)?;
+        if matches!(candidate.ty, CType::FuncPtr { .. })
+            && let Some(field_ty) = self
+                .parent
+                .cir_record_field_types(record)
+                .and_then(|types| types.get(index).cloned())
+        {
+            return Some(field_ty);
+        }
+        Some(self.parent.record_field_type(&candidate.ty))
     }
 
     pub(super) fn member_field_is_trailing(&self, base_ptr: &str, op: &Op, field: &str) -> bool {

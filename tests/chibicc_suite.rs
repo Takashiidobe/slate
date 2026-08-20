@@ -17,6 +17,7 @@ fn discover_cases(bucket: &str) -> Vec<(String, PathBuf)> {
             let name = p.file_name().unwrap().to_string_lossy().into_owned();
             (name, p)
         })
+        .filter(|(name, path)| path.join(format!("{name}.c")).is_file())
         .collect();
     cases.sort();
     cases

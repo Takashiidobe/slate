@@ -879,7 +879,7 @@ pub fn lower_shared_types(
             .filter_map(|enm| lower_enum_def(enm, Visibility::Pub).map(Item::Enum)),
     );
     items.extend(records.iter().flat_map(|record| {
-        lower_record_def(record, Visibility::Pub, Visibility::Pub, true, false)
+        lower_record_def(record, Visibility::Pub, Visibility::Pub, true, false, None)
     }));
     Program { items }
 }
@@ -985,6 +985,7 @@ fn lower_record_def(
     field_vis: Visibility,
     allow_empty: bool,
     va_list_boxed: bool,
+    cir_field_types: Option<&[Type]>,
 ) -> Vec<Item> {
     if record.fields.is_empty() && !allow_empty {
         return Vec::new();
@@ -993,10 +994,15 @@ fn lower_record_def(
     let fields: Vec<RecordField> = record
         .fields
         .iter()
-        .map(|field| RecordField {
+        .enumerate()
+        .map(|(index, field)| RecordField {
             comments: comments(&field.comments),
             name: sanitize_ident(&field.name),
-            ty: c_record_field_type(&field.ty, va_list_boxed),
+            ty: cir_field_types
+                .and_then(|types| types.get(index))
+                .filter(|_| matches!(field.ty, CType::FuncPtr { .. }))
+                .cloned()
+                .unwrap_or_else(|| c_record_field_type(&field.ty, va_list_boxed)),
         })
         .collect();
     let name = sanitize_ident(&record.name).into_string();
@@ -2275,7 +2281,23 @@ impl __SlateVaArgs {
                     .map(|value| Expr::Value(RustValue::I64(value as i64)))
                     .collect();
                 elems.resize(total_len, Expr::Value(RustValue::I64(0)));
-                self.const_arrays.insert(name.to_string(), elems);
+                if let Some(ty) = ty.clone() {
+                    self.globals.insert(
+                        rust_name.clone(),
+                        GlobalVar {
+                            source_name: name.to_string(),
+                            name: rust_name,
+                            ty,
+                            init: Expr::ArrayLit(elems),
+                            alignment,
+                            thread_local,
+                            external: false,
+                            weak,
+                            section: section.clone(),
+                            used: used.clone(),
+                        },
+                    );
+                }
                 return;
             }
         }
@@ -2307,6 +2329,25 @@ impl __SlateVaArgs {
                 );
             } else if matches!(elem, CirType::Named(n) if n == "s8i") && name.starts_with(".str") {
                 self.strings.insert(name.to_string(), vec![0; len as usize]);
+            } else if name.starts_with(".str")
+                && parse_cir_int_type(elem).is_some()
+                && let Some(ty) = ty
+            {
+                self.globals.insert(
+                    rust_name.clone(),
+                    GlobalVar {
+                        source_name: name.to_string(),
+                        name: rust_name,
+                        init: self.default_value_expr(&ty),
+                        ty,
+                        alignment,
+                        thread_local,
+                        external: false,
+                        weak,
+                        section: section.clone(),
+                        used: used.clone(),
+                    },
+                );
             } else if parse_cir_int_type(elem).is_some() {
                 self.const_arrays.insert(name.to_string(), Vec::new());
             } else {
@@ -2508,7 +2549,48 @@ impl __SlateVaArgs {
             Visibility::Private,
             true,
             self.va_list_boxed,
+            self.cir_record_field_types(record).as_deref(),
         )
+    }
+
+    fn cir_record_field_types(&self, record: &crate::frontend::c_ast::Record) -> Option<Vec<Type>> {
+        let members = self.aliases.values().find_map(|ty| match ty {
+            CirType::Struct {
+                name: Some(name),
+                members: Some(members),
+                ..
+            }
+            | CirType::Union {
+                name: Some(name),
+                members: Some(members),
+                ..
+            } if sanitize_ident(name).as_str() == sanitize_ident(&record.name).as_str() => {
+                Some(members)
+            }
+            _ => None,
+        })?;
+        (members.len() == record.fields.len()).then(|| {
+            members
+                .iter()
+                .map(|member| self.rust_type(member))
+                .collect()
+        })
+    }
+
+    fn record_field_type_at(
+        &self,
+        record: &crate::frontend::c_ast::Record,
+        index: usize,
+    ) -> Option<Type> {
+        let field = record.fields.get(index)?;
+        if matches!(field.ty, CType::FuncPtr { .. })
+            && let Some(field_ty) = self
+                .cir_record_field_types(record)
+                .and_then(|types| types.get(index).cloned())
+        {
+            return Some(field_ty);
+        }
+        Some(self.c_record_field_type(&field.ty))
     }
 
     fn bitfield_storage_fields(
@@ -3523,7 +3605,9 @@ impl __SlateVaArgs {
                             .iter()
                             .enumerate()
                             .map(|(i, field)| {
-                                let field_ty = self.c_record_field_type(&field.ty);
+                                let field_ty = self
+                                    .record_field_type_at(record, i)
+                                    .unwrap_or_else(|| self.c_record_field_type(&field.ty));
                                 let value = elements
                                     .get(i)
                                     .and_then(|e| self.render_const_value_expr(&field_ty, e, facts))
@@ -4140,25 +4224,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         while index < block.ops.len() {
             let op = &block.ops[index];
             if op.kind() == CirOpKind::Alloca {
-                let group_loc = op
-                    .loc
-                    .as_ref()
-                    .and_then(|raw| self.parent.resolve_source_point_value(raw));
                 let end = block.ops[index..]
                     .iter()
-                    .take_while(|candidate| {
-                        let candidate_group_loc = candidate
-                            .loc
-                            .as_ref()
-                            .and_then(|raw| self.parent.resolve_source_point_value(raw));
-                        candidate.kind() == CirOpKind::Alloca
-                            && (candidate.loc == op.loc
-                                || matches!(
-                                    (&group_loc, candidate_group_loc),
-                                    (Some(group_loc), Some(candidate_group_loc))
-                                        if &candidate_group_loc == group_loc
-                                ))
-                    })
+                    .take_while(|candidate| candidate.kind() == CirOpKind::Alloca)
                     .count()
                     + index;
                 if end - index > 1 && self.alloca_group_is_lowerable(&block.ops[index..end]) {

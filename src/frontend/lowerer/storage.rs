@@ -86,15 +86,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         let fact = self.ast_floating_literal(op);
-        if is_long_double(ty) && fact.is_none() {
-            self.emit_todo("long double constant without Clang AST value");
-            return;
-        }
         let mut facts = fact.into_iter().collect();
-        let expr = self
+        let expr = match self
             .parent
             .render_const_value_expr(&rust_ty, &attr, &mut facts)
-            .unwrap_or_else(|| self.parent.default_value_expr(&rust_ty));
+        {
+            Some(expr) => expr,
+            None if is_long_double(ty) => {
+                self.emit_todo("long double constant without Clang AST value");
+                return;
+            }
+            None => self.parent.default_value_expr(&rust_ty),
+        };
         self.materialize_expr(result, expr, result_ty);
     }
 
@@ -175,11 +178,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             Self::unsafe_deref_expr(self.operand_expr(ptr))
         };
         if let Some(result_ty) = op_result_type(op).map(|ty| self.parent.rust_type(ty))
-            && let Some(field_ty) = self
+            && let Some(value_ty) = self
                 .member_ptrs
                 .get(ptr)
                 .and_then(|member| member.field_ty.as_ref())
-            && self.parent.type_is_enum(field_ty)
+                .or_else(|| self.slot_types.get(ptr))
+            && self.parent.type_is_enum(value_ty)
             && matches!(result_ty, Type::Prim(_))
         {
             value = Expr::Cast {
