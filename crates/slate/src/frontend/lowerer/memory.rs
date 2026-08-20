@@ -811,14 +811,22 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     fn bitfield_accessor(&self, ptr: &str, mutable: bool) -> Option<(Expr, String, bool)> {
         let member = self.member_ptrs.get(ptr)?;
         let field = member.bitfield_name.clone()?;
-        let base_is_global = match &member.base {
-            Expr::Var(name) => {
-                self.parent.globals.contains_key(name.as_str())
-                    || self.parent.extern_globals.contains_key(name.as_str())
+        let base_is_global = self.ptr_has_global_origin(ptr);
+        let base = if base_is_global && !mutable {
+            Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
+                func: Box::new(Expr::Path(Path::new(
+                    ["std", "ptr", "read_volatile"].map(Ident::from),
+                ))),
+                args: vec![Expr::Macro {
+                    name: "std::ptr::addr_of".into(),
+                    args: vec![Expr::Field {
+                        base: Box::new(member.base.clone()),
+                        field: member.field.clone(),
+                    }],
+                }],
             }
-            _ => false,
-        };
-        let base = if base_is_global {
+        } else if base_is_global {
             Expr::Unary {
                 op: UnaryOp::Deref,
                 expr: Box::new(Expr::Unary {
@@ -829,14 +837,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else {
             member.base.clone()
         };
-        Some((
+        let storage = if base_is_global && !mutable {
+            base
+        } else {
             Expr::Field {
                 base: Box::new(base),
                 field: member.field.clone(),
-            },
-            field,
-            self.ptr_requires_unsafe(ptr),
-        ))
+            }
+        };
+        Some((storage, field, self.ptr_requires_unsafe(ptr)))
     }
 
     // shift up then arithmetic-shift down masks to `size` bits, sign-extending signed types.
@@ -922,6 +931,20 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 .element_ptrs
                 .get(ptr)
                 .is_some_and(|element| element.unsafe_access)
+    }
+
+    fn ptr_has_global_origin(&self, ptr: &str) -> bool {
+        let mut ptr = ptr;
+        for _ in 0..64 {
+            if self.global_name(ptr).is_some() {
+                return true;
+            }
+            let Some(base) = self.member_base_operand.get(ptr) else {
+                return false;
+            };
+            ptr = base;
+        }
+        false
     }
 
     pub(super) fn op_base_is_union(&self, op: &Op) -> bool {
