@@ -22,12 +22,16 @@ use clang_ir::enums::CmpOpKind;
 use clang_ir::model::{
     MemOrder, Op as TypedOp,
     instruction::{
-        Alloca as TypedAlloca, Assume as TypedAssume, Br as TypedBr, Cast as TypedCast,
-        Cmp as TypedCmp, Const as TypedConst, Copy as TypedCopy, GetElement as TypedGetElement,
-        GetGlobal as TypedGetGlobal, IsFpClass as TypedIsFpClass, LibcMemchr as TypedLibcMemchr,
-        LibcMemset as TypedLibcMemset, Load as TypedLoad, Modf as TypedModf,
-        PtrDiff as TypedPtrDiff, PtrStride as TypedPtrStride, Return as TypedReturn,
-        Select as TypedSelect, Store as TypedStore,
+        Alloca as TypedAlloca, Assume as TypedAssume, AtomicClear as TypedAtomicClear,
+        AtomicCmpxchg as TypedAtomicCmpxchg, AtomicFence as TypedAtomicFence,
+        AtomicFetch as TypedAtomicFetch, AtomicTestAndSet as TypedAtomicTestAndSet,
+        AtomicXchg as TypedAtomicXchg, Br as TypedBr, Cast as TypedCast, Cmp as TypedCmp,
+        Const as TypedConst, Copy as TypedCopy, EhSetjmp as TypedEhSetjmp,
+        GetElement as TypedGetElement, GetGlobal as TypedGetGlobal, IsConstant as TypedIsConstant,
+        IsFpClass as TypedIsFpClass, LibcMemchr as TypedLibcMemchr, LibcMemset as TypedLibcMemset,
+        Load as TypedLoad, Modf as TypedModf, Objsize as TypedObjsize, PtrDiff as TypedPtrDiff,
+        PtrStride as TypedPtrStride, Return as TypedReturn, Select as TypedSelect,
+        Store as TypedStore, VaArg as TypedVaArg, VaCopy as TypedVaCopy, VaStart as TypedVaStart,
     },
 };
 use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
@@ -4859,16 +4863,24 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 }
                 TypedOp::LibcMemset(value) => return self.lower_mem_set(&value),
                 TypedOp::LibcMemchr(value) => return self.lower_mem_chr(&value),
-                TypedOp::VaStart(_) => return self.lower_va_start(op),
-                TypedOp::VaCopy(_) => return self.lower_va_copy(op),
-                TypedOp::VaArg(_) => return self.lower_va_arg(op),
+                TypedOp::VaStart(value) => return self.lower_va_start(&value),
+                TypedOp::VaCopy(value) => return self.lower_va_copy(&value),
+                TypedOp::VaArg(value) => return self.lower_va_arg(&value),
                 TypedOp::VaEnd(_) => return,
-                TypedOp::EhSetjmp(_) => return self.lower_eh_setjmp(op),
-                TypedOp::FrameAddress(_) => return self.lower_opaque_pointer(op, true),
+                TypedOp::EhSetjmp(value) => return self.lower_eh_setjmp(&value),
+                TypedOp::FrameAddress(value) => {
+                    return self.lower_opaque_pointer_typed(&value.result, &value.result_ty, true);
+                }
                 TypedOp::Return(value) => return self.lower_return(&value),
-                TypedOp::ReturnAddress(_) => return self.lower_opaque_pointer(op, true),
-                TypedOp::BlockAddress(_) => return self.lower_opaque_pointer(op, true),
-                TypedOp::Stacksave(_) => return self.lower_opaque_pointer(op, false),
+                TypedOp::ReturnAddress(value) => {
+                    return self.lower_opaque_pointer_typed(&value.result, &value.result_ty, true);
+                }
+                TypedOp::BlockAddress(value) => {
+                    return self.lower_opaque_pointer_typed(&value.addr, &value.addr_ty, true);
+                }
+                TypedOp::Stacksave(value) => {
+                    return self.lower_opaque_pointer_typed(&value.result, &value.result_ty, false);
+                }
                 TypedOp::Prefetch(_) => return,
                 TypedOp::IsFpClass(value) => return self.lower_is_fp_class(&value),
                 TypedOp::ComplexCreate(_) => return self.lower_complex_create(op),
@@ -4891,14 +4903,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 }
                 TypedOp::VecSplat(_) => return self.lower_vec_splat(op),
                 TypedOp::VecCmp(_) => return self.lower_vec_cmp(op),
-                TypedOp::IsConstant(_) => return self.lower_is_constant(op),
-                TypedOp::Objsize(_) => return self.lower_objsize(op),
-                TypedOp::AtomicFetch(_) => return self.lower_atomic_fetch(op),
-                TypedOp::AtomicXchg(_) => return self.lower_atomic_xchg(op),
-                TypedOp::AtomicCmpxchg(_) => return self.lower_atomic_cmpxchg(op),
-                TypedOp::AtomicFence(_) => return self.lower_atomic_fence(op),
-                TypedOp::AtomicTestAndSet(_) => return self.lower_atomic_test_and_set(op),
-                TypedOp::AtomicClear(_) => return self.lower_atomic_clear(op),
+                TypedOp::IsConstant(value) => return self.lower_is_constant(&value),
+                TypedOp::Objsize(value) => return self.lower_objsize(&value),
+                TypedOp::AtomicFetch(value) => return self.lower_atomic_fetch(&value),
+                TypedOp::AtomicXchg(value) => return self.lower_atomic_xchg(&value),
+                TypedOp::AtomicCmpxchg(value) => return self.lower_atomic_cmpxchg(&value),
+                TypedOp::AtomicFence(value) => return self.lower_atomic_fence(&value),
+                TypedOp::AtomicTestAndSet(value) => return self.lower_atomic_test_and_set(&value),
+                TypedOp::AtomicClear(value) => return self.lower_atomic_clear(&value),
                 TypedOp::GetBitfield(_) => return self.lower_get_bitfield(op),
                 TypedOp::SetBitfield(_) => return self.lower_set_bitfield(op),
                 _ => {}
@@ -4918,9 +4930,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::GetMember => self.lower_get_member(op),
             CirOpKind::InsertMember => self.lower_insert_member(op),
             CirOpKind::Call => self.lower_call(op),
-            CirOpKind::VaStart => self.lower_va_start(op),
-            CirOpKind::VaArg => self.lower_va_arg(op),
-            CirOpKind::VaCopy => self.lower_va_copy(op),
             CirOpKind::CallLlvmIntrinsic => self.lower_llvm_intrinsic(op),
             CirOpKind::Return => self.lower_return_raw(op),
             CirOpKind::Scope => self.lower_scope(op),

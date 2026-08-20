@@ -287,11 +287,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         true
     }
 
-    pub(super) fn lower_eh_setjmp(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        self.materialize_expr(result, Expr::Value(RustValue::I64(0)), op_result_type(op));
+    pub(super) fn lower_eh_setjmp(&mut self, op: &TypedEhSetjmp) {
+        self.materialize_expr(&op.res, Expr::Value(RustValue::I64(0)), Some(&op.res_ty));
     }
 
     pub(super) fn lower_unsupported_value(&mut self, op: &Op, note: &str) {
@@ -651,28 +648,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }));
     }
 
-    pub(super) fn lower_opaque_pointer(&mut self, op: &Op, non_null: bool) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        let result_ty = op_result_type(op);
-        let ty = result_ty
-            .map(|ty| self.parent.rust_type(ty))
-            .unwrap_or(Type::Ptr {
-                mutable: true,
-                inner: Box::new(Type::CLib(CLibType::VOID)),
-            });
-        let addr = if non_null { 1 } else { 0 };
-        self.materialize_expr(
-            result,
-            Expr::Cast {
-                expr: Box::new(Expr::Value(RustValue::Usize(addr))),
-                ty,
-            },
-            result_ty,
-        );
-    }
-
     pub(super) fn lower_opaque_pointer_typed(
         &mut self,
         result: &str,
@@ -691,15 +666,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
-    pub(super) fn lower_is_constant(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        let Some(value) = op.operands.first() else {
-            return;
-        };
-        let is_constant = self.const_int_values.contains_key(value)
-            || self.values.get(value).is_some_and(|value| match value {
+    pub(super) fn lower_is_constant(&mut self, op: &TypedIsConstant) {
+        let is_constant = self.const_int_values.contains_key(&op.val)
+            || self.values.get(&op.val).is_some_and(|value| match value {
                 Val::Expr(expr) => matches!(
                     expr,
                     Expr::Value(_)
@@ -711,22 +680,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 ),
                 Val::Global(_) => true,
             });
-        let result_ty = op_result_type(op);
-        let expr = self.bool_or_int_literal(is_constant, result_ty);
-        self.materialize_expr(result, expr, result_ty);
+        let expr = self.bool_or_int_literal(is_constant, Some(&op.result_ty));
+        self.materialize_expr(&op.result, expr, Some(&op.result_ty));
     }
 
-    pub(super) fn lower_objsize(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        let result_ty = op_result_type(op);
-        let expr = if attr_bool(op, "min") {
-            self.zero_literal(result_ty)
+    pub(super) fn lower_objsize(&mut self, op: &TypedObjsize) {
+        let expr = if op.min {
+            self.zero_literal(Some(&op.result_ty))
         } else {
-            self.max_literal(result_ty)
+            self.max_literal(Some(&op.result_ty))
         };
-        self.materialize_expr(result, expr, result_ty);
+        self.materialize_expr(&op.result, expr, Some(&op.result_ty));
     }
 
     pub(super) fn bool_or_int_literal(&self, value: bool, cir_ty: Option<&CirType>) -> Expr {
