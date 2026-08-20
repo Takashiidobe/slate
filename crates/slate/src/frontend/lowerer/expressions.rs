@@ -1,43 +1,36 @@
 use super::*;
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
-    pub(super) fn lower_complex_create(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        if op.operands.len() < 2 {
-            return;
-        }
+    pub(super) fn lower_complex_create(
+        &mut self,
+        result: &str,
+        result_ty: &CirType,
+        real: &str,
+        imag: &str,
+    ) {
         self.materialize_expr(
             result,
             Expr::StructLit {
                 name: COMPLEX_TY.into(),
                 fields: vec![
-                    ("re".into(), self.operand_expr(&op.operands[0])),
-                    ("im".into(), self.operand_expr(&op.operands[1])),
+                    ("re".into(), self.operand_expr(real)),
+                    ("im".into(), self.operand_expr(imag)),
                 ],
             },
-            op_result_type(op),
+            Some(result_ty),
         );
     }
 
-    pub(super) fn lower_complex_add(&mut self, op: &Op) {
-        self.lower_complex_addsub(op, BinOp::Add);
-    }
-
-    pub(super) fn lower_complex_sub(&mut self, op: &Op) {
-        self.lower_complex_addsub(op, BinOp::Sub);
-    }
-
-    fn lower_complex_addsub(&mut self, op: &Op, component_op: BinOp) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        if op.operands.len() < 2 {
-            return;
-        }
-        let lhs = self.operand_expr(&op.operands[0]);
-        let rhs = self.operand_expr(&op.operands[1]);
+    pub(super) fn lower_complex_addsub(
+        &mut self,
+        result: &str,
+        result_ty: &CirType,
+        lhs: &str,
+        rhs: &str,
+        component_op: BinOp,
+    ) {
+        let lhs = self.operand_expr(lhs);
+        let rhs = self.operand_expr(rhs);
         let field = |base: Expr, name: &str| Expr::Field {
             base: Box::new(base),
             field: name.into(),
@@ -65,45 +58,43 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     ),
                 ],
             },
-            op_result_type(op),
+            Some(result_ty),
         );
     }
 
-    pub(super) fn lower_complex_part(&mut self, op: &Op, field: &str) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        let Some(src) = op.operands.first() else {
-            return;
-        };
+    pub(super) fn lower_complex_part(
+        &mut self,
+        result: &str,
+        result_ty: &CirType,
+        src: &str,
+        field: &str,
+    ) {
         self.materialize_expr(
             result,
             Expr::Field {
                 base: Box::new(self.operand_expr(src)),
                 field: field.into(),
             },
-            op_result_type(op),
+            Some(result_ty),
         );
     }
 
-    pub(super) fn lower_complex_part_ptr(&mut self, op: &Op, field: &str) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        let Some(base_ptr) = op.operands.first() else {
-            return;
-        };
+    pub(super) fn lower_complex_part_ptr(
+        &mut self,
+        result: &str,
+        result_ty: &CirType,
+        base_ptr: &str,
+        field: &str,
+    ) {
         let base = self.place_or_deref_expr(base_ptr);
         let unsafe_access =
             self.place_expr(base_ptr).is_none() || self.ptr_requires_unsafe(base_ptr);
         self.member_ptrs.insert(
-            result.clone(),
+            result.to_string(),
             MemberPtr {
                 base,
                 field: field.into(),
-                field_ty: op_result_type(op)
-                    .and_then(cir_ptr_pointee)
-                    .map(|ty| self.parent.rust_type(ty)),
+                field_ty: cir_ptr_pointee(result_ty).map(|ty| self.parent.rust_type(ty)),
                 unsafe_access,
                 bitfield_name: None,
                 field_is_trailing: false,
@@ -111,19 +102,20 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
-    pub(super) fn lower_complex_mul(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        if op.operands.len() < 2 {
+    pub(super) fn lower_complex_mul(
+        &mut self,
+        result: &str,
+        result_ty: &CirType,
+        lhs: &str,
+        rhs: &str,
+    ) {
+        if let Some(call) = self.complex_runtime_binop(result_ty, lhs, rhs, "__mulsc3", "__muldc3")
+        {
+            self.materialize_expr(result, call, Some(result_ty));
             return;
         }
-        if let Some(call) = self.complex_runtime_binop(op, "__mulsc3", "__muldc3") {
-            self.materialize_expr(result, call, op_result_type(op));
-            return;
-        }
-        let lhs = self.operand_expr(&op.operands[0]);
-        let rhs = self.operand_expr(&op.operands[1]);
+        let lhs = self.operand_expr(lhs);
+        let rhs = self.operand_expr(rhs);
         let field = |base: Expr, name: &str| Expr::Field {
             base: Box::new(base),
             field: name.into(),
@@ -171,23 +163,24 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     ),
                 ],
             },
-            op_result_type(op),
+            Some(result_ty),
         );
     }
 
-    pub(super) fn lower_complex_div(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        if op.operands.len() < 2 {
+    pub(super) fn lower_complex_div(
+        &mut self,
+        result: &str,
+        result_ty: &CirType,
+        lhs: &str,
+        rhs: &str,
+    ) {
+        if let Some(call) = self.complex_runtime_binop(result_ty, lhs, rhs, "__divsc3", "__divdc3")
+        {
+            self.materialize_expr(result, call, Some(result_ty));
             return;
         }
-        if let Some(call) = self.complex_runtime_binop(op, "__divsc3", "__divdc3") {
-            self.materialize_expr(result, call, op_result_type(op));
-            return;
-        }
-        let lhs = self.operand_expr(&op.operands[0]);
-        let rhs = self.operand_expr(&op.operands[1]);
+        let lhs = self.operand_expr(lhs);
+        let rhs = self.operand_expr(rhs);
         let field = |base: Expr, name: &str| Expr::Field {
             base: Box::new(base),
             field: name.into(),
@@ -265,17 +258,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     ),
                 ],
             },
-            op_result_type(op),
+            Some(result_ty),
         );
     }
 
-    pub(super) fn lower_complex_conj(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        let Some(src) = op.operands.first() else {
-            return;
-        };
+    pub(super) fn lower_complex_conj(&mut self, result: &str, result_ty: &CirType, src: &str) {
         let src = self.operand_expr(src);
         self.materialize_expr(
             result,
@@ -301,18 +288,20 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     ),
                 ],
             },
-            op_result_type(op),
+            Some(result_ty),
         );
     }
 
     pub(super) fn complex_runtime_binop(
         &mut self,
-        op: &Op,
+        result_ty: &CirType,
+        lhs: &str,
+        rhs: &str,
         f32_name: &str,
         f64_name: &str,
     ) -> Option<Expr> {
-        let inner = match op_result_type(op) {
-            Some(CirType::Complex { element_type }) => element_type.as_ref(),
+        let inner = match result_ty {
+            CirType::Complex { element_type } => element_type.as_ref(),
             _ => return None,
         };
         let name = match inner {
@@ -320,8 +309,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirType::Double => f64_name,
             _ => return None,
         };
-        let lhs = self.operand_expr(&op.operands[0]);
-        let rhs = self.operand_expr(&op.operands[1]);
+        let lhs = self.operand_expr(lhs);
+        let rhs = self.operand_expr(rhs);
         let part = |base: Expr, field: &str| Expr::Field {
             base: Box::new(base),
             field: field.into(),

@@ -4883,16 +4883,87 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 }
                 TypedOp::Prefetch(_) => return,
                 TypedOp::IsFpClass(value) => return self.lower_is_fp_class(&value),
-                TypedOp::ComplexCreate(_) => return self.lower_complex_create(op),
-                TypedOp::ComplexAdd(_) => return self.lower_complex_add(op),
-                TypedOp::ComplexSub(_) => return self.lower_complex_sub(op),
-                TypedOp::ComplexMul(_) => return self.lower_complex_mul(op),
-                TypedOp::ComplexDiv(_) => return self.lower_complex_div(op),
-                TypedOp::ComplexConj(_) => return self.lower_complex_conj(op),
-                TypedOp::ComplexReal(_) => return self.lower_complex_part(op, "re"),
-                TypedOp::ComplexImag(_) => return self.lower_complex_part(op, "im"),
-                TypedOp::ComplexRealPtr(_) => return self.lower_complex_part_ptr(op, "re"),
-                TypedOp::ComplexImagPtr(_) => return self.lower_complex_part_ptr(op, "im"),
+                TypedOp::ComplexCreate(value) => {
+                    return self.lower_complex_create(
+                        &value.result,
+                        &value.result_ty,
+                        &value.real,
+                        &value.imag,
+                    );
+                }
+                TypedOp::ComplexAdd(value) => {
+                    return self.lower_complex_addsub(
+                        &value.result,
+                        &value.result_ty,
+                        &value.lhs,
+                        &value.rhs,
+                        BinOp::Add,
+                    );
+                }
+                TypedOp::ComplexSub(value) => {
+                    return self.lower_complex_addsub(
+                        &value.result,
+                        &value.result_ty,
+                        &value.lhs,
+                        &value.rhs,
+                        BinOp::Sub,
+                    );
+                }
+                TypedOp::ComplexMul(value) => {
+                    return self.lower_complex_mul(
+                        &value.result,
+                        &value.result_ty,
+                        &value.lhs,
+                        &value.rhs,
+                    );
+                }
+                TypedOp::ComplexDiv(value) => {
+                    return self.lower_complex_div(
+                        &value.result,
+                        &value.result_ty,
+                        &value.lhs,
+                        &value.rhs,
+                    );
+                }
+                TypedOp::ComplexConj(value) => {
+                    return self.lower_complex_conj(
+                        &value.result,
+                        &value.result_ty,
+                        &value.operand,
+                    );
+                }
+                TypedOp::ComplexReal(value) => {
+                    return self.lower_complex_part(
+                        &value.result,
+                        &value.result_ty,
+                        &value.operand,
+                        "re",
+                    );
+                }
+                TypedOp::ComplexImag(value) => {
+                    return self.lower_complex_part(
+                        &value.result,
+                        &value.result_ty,
+                        &value.operand,
+                        "im",
+                    );
+                }
+                TypedOp::ComplexRealPtr(value) => {
+                    return self.lower_complex_part_ptr(
+                        &value.result,
+                        &value.result_ty,
+                        &value.operand,
+                        "re",
+                    );
+                }
+                TypedOp::ComplexImagPtr(value) => {
+                    return self.lower_complex_part_ptr(
+                        &value.result,
+                        &value.result_ty,
+                        &value.operand,
+                        "im",
+                    );
+                }
                 TypedOp::ExtractMember(_) => return self.lower_extract_member(op),
                 TypedOp::InsertMember(_) => return self.lower_insert_member(op),
                 TypedOp::VecCreate(_) => return self.lower_vec_create(op),
@@ -4923,9 +4994,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::Stackrestore => {}
             CirOpKind::Trap => self.lower_trap(),
             CirOpKind::Unreachable => self.lower_unreachable(),
-            CirOpKind::ComplexMul => self.lower_complex_mul(op),
-            CirOpKind::ComplexDiv => self.lower_complex_div(op),
-            CirOpKind::ComplexConj => self.lower_complex_conj(op),
             CirOpKind::Ternary => self.lower_ternary(op),
             CirOpKind::GetMember => self.lower_get_member(op),
             CirOpKind::InsertMember => self.lower_insert_member(op),
