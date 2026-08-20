@@ -1,6 +1,40 @@
 use super::*;
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
+    pub(super) fn lower_get_bitfield(&mut self, op: &Op) {
+        let Some((result, result_ty)) = op.results.first() else {
+            return;
+        };
+        let Some(ptr) = op.operands.first() else {
+            return;
+        };
+        let (place, needs_unsafe) = self.bitfield_place(ptr);
+        let value = if needs_unsafe {
+            Self::unsafe_expr(place)
+        } else {
+            place
+        };
+        let value = self.truncate_bitfield_expr(op, value, Some(result_ty));
+        self.materialize_expr(result, value, Some(result_ty));
+    }
+
+    pub(super) fn lower_set_bitfield(&mut self, op: &Op) {
+        let Some((result, result_ty)) = op.results.first() else {
+            return;
+        };
+        let (Some(ptr), Some(src)) = (op.operands.first(), op.operands.get(1)) else {
+            return;
+        };
+        let value = self.truncate_bitfield_expr(op, self.operand_expr(src), Some(result_ty));
+        self.materialize_expr(result, value.clone(), Some(result_ty));
+        let (place, needs_unsafe) = self.bitfield_place(ptr);
+        if needs_unsafe {
+            self.push_unsafe_assign(place, value);
+        } else {
+            self.push_assign(place, value);
+        }
+    }
+
     pub(super) fn lower_get_element(&mut self, op: &Op) {
         let Some((result, result_ty)) = op.results.first() else {
             return;
