@@ -727,8 +727,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(value) = op.operands.first() else {
             return;
         };
+        self.lower_unary_method_typed(result, op_result_type(op), value, method);
+    }
+
+    pub(super) fn lower_unary_method_typed(
+        &mut self,
+        result: &str,
+        result_ty: Option<&CirType>,
+        value: &str,
+        method: &str,
+    ) {
         let value = self.operand_expr(value);
-        let result_ty = op_result_type(op);
         let rust_ty = result_ty
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or(Type::Prim(Prim::F64));
@@ -760,14 +769,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(result, expr, result_ty);
     }
 
-    pub(super) fn lower_known_unary_method(
+    pub(super) fn lower_known_unary_method_typed(
         &mut self,
-        op: &Op,
+        result: &str,
+        result_ty: &CirType,
+        value: &str,
+        loc: Option<&SourceLocation>,
         known: function_identity::Known,
         method: &str,
     ) {
-        if self.lower_known_libc_op(op, known) {
-            self.lower_unary_method(op, method);
+        if self.lower_known_libc_unary_typed(result, result_ty, value, loc, known) {
+            self.lower_unary_method_typed(result, Some(result_ty), value, method);
         }
     }
 
