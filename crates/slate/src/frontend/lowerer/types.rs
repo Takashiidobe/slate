@@ -1,5 +1,4 @@
 use super::*;
-use crate::frontend::c_ast::RecordKind as CirRecordKind;
 use clang_ir::enums::RecordMemberKind as CirRecordMemberKind;
 pub(super) fn rust_type(cir_ty: &CirType) -> Type {
     rust_type_with_aliases(cir_ty, &BTreeMap::new(), false)
@@ -64,11 +63,20 @@ pub(super) fn rust_type_with_aliases(
             if let Some(ty) = named_scalar_type(name) {
                 return ty;
             }
-            match aliases.get(name) {
-                Some(CirType::Struct {
-                    name: record_name, ..
-                }) => record_struct_type(record_name.as_deref(), name.strip_prefix("rec_")),
+            let alias_name = name.trim_start_matches('!');
+            match aliases.get(name).or_else(|| aliases.get(alias_name)) {
+                Some(
+                    CirType::Struct {
+                        name: record_name, ..
+                    }
+                    | CirType::Union {
+                        name: record_name, ..
+                    },
+                ) => record_struct_type(record_name.as_deref(), name.strip_prefix("rec_")),
                 Some(expanded) => rust_type_with_aliases(expanded, aliases, va_list_boxed),
+                None if alias_name.starts_with("rec_") => {
+                    record_struct_type(None, alias_name.strip_prefix("rec_"))
+                }
                 None => Type::Prim(Prim::I32),
             }
         }
@@ -116,6 +124,7 @@ pub(super) fn rust_type_with_aliases(
             len: *size,
         },
         CirType::Struct { name, .. } => record_struct_type(name.as_deref(), None),
+        CirType::Union { name, .. } => record_struct_type(name.as_deref(), None),
         CirType::Func { .. }
         | CirType::FunctionType { .. }
         | CirType::Integer(_)
@@ -127,8 +136,7 @@ pub(super) fn rust_type_with_aliases(
         | CirType::DataMember { .. }
         | CirType::EhToken
         | CirType::Method { .. }
-        | CirType::VPtr
-        | CirType::Union { .. } => Type::Prim(Prim::I32),
+        | CirType::VPtr => Type::Prim(Prim::I32),
     }
 }
 
@@ -554,7 +562,7 @@ pub(super) fn cast_void_ptr_call_args(
 pub(super) fn cir_record_name(ty: &CirType) -> Option<&str> {
     match ty {
         CirType::Named(name) => name.strip_prefix("rec_"),
-        CirType::Struct { name, .. } => name.as_deref(),
+        CirType::Struct { name, .. } | CirType::Union { name, .. } => name.as_deref(),
         _ => None,
     }
 }
@@ -618,6 +626,10 @@ pub(super) fn collect_anon_alias_keys(
             {
                 collect_anon_alias_keys_inner(element, aliases, out, seen);
             } else if let CirType::Struct {
+                members: Some(members),
+                ..
+            }
+            | CirType::Union {
                 members: Some(members),
                 ..
             } = expanded
@@ -741,7 +753,7 @@ pub(super) fn reconcile_anonymous_member_types(
         let mut additions = BTreeMap::new();
         for record in records.values_mut() {
             let Some(expanded) = module.type_aliases.values().find_map(|expanded| {
-                let CirType::Struct { name, .. } = expanded else {
+                let (CirType::Struct { name, .. } | CirType::Union { name, .. }) = expanded else {
                     return None;
                 };
                 name.as_deref().filter(|name| {
@@ -751,10 +763,14 @@ pub(super) fn reconcile_anonymous_member_types(
             }) else {
                 continue;
             };
-            let CirType::Struct {
+            let (CirType::Struct {
                 members: Some(members),
                 ..
-            } = expanded
+            }
+            | CirType::Union {
+                members: Some(members),
+                ..
+            }) = expanded
             else {
                 continue;
             };
@@ -912,11 +928,16 @@ pub(super) fn resolve_local_record_collisions(
     for (base_sanitized, mut candidates) in by_name {
         let mut family: Vec<(String, Vec<String>)> = Vec::new();
         for (alias_key, expanded) in &cir.type_aliases {
-            let CirType::Struct {
+            let (CirType::Struct {
                 name,
                 members: Some(members),
                 ..
-            } = expanded
+            }
+            | CirType::Union {
+                name,
+                members: Some(members),
+                ..
+            }) = expanded
             else {
                 continue;
             };

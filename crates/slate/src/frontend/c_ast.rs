@@ -340,6 +340,7 @@ struct PluginEvents {
     calls: HashMap<usize, CallFact>,
     pack_attributes: Vec<PackAttribute>,
     floating_literals: HashMap<FloatingLiteralLoc, FloatingLiteralFact>,
+    global_long_doubles: HashMap<String, Vec<FloatingLiteralFact>>,
 }
 
 #[derive(Debug)]
@@ -393,6 +394,8 @@ fn parse_plugin_events(stderr: &str) -> PluginEvents {
             ("record", json)
         } else if let Some(json) = line.strip_prefix("FLOATING_LITERAL ") {
             ("floating_literal", json)
+        } else if let Some(json) = line.strip_prefix("GLOBAL_LONG_DOUBLE ") {
+            ("global_long_double", json)
         } else {
             continue;
         };
@@ -420,6 +423,26 @@ fn parse_plugin_events(stderr: &str) -> PluginEvents {
                     bit_width: bit_width as u32,
                 },
             );
+            continue;
+        }
+        if kind == "global_long_double" {
+            let (Some(name), Some(values)) = (
+                event.get("name").and_then(Value::as_str),
+                event.get("values").and_then(Value::as_array),
+            ) else {
+                continue;
+            };
+            let values = values
+                .iter()
+                .filter_map(|value| {
+                    Some(FloatingLiteralFact {
+                        value: value.get("value")?.as_str()?.to_string(),
+                        bits: value.get("bits")?.as_str()?.to_string(),
+                        bit_width: value.get("bit_width")?.as_u64()? as u32,
+                    })
+                })
+                .collect();
+            out.global_long_doubles.insert(name.to_string(), values);
             continue;
         }
         let Some(offset) = event.get("offset").and_then(Value::as_u64) else {
@@ -703,6 +726,7 @@ fn parse_json_with_record_roots(
         &floating_literals,
         &mut global_floating_literals,
     );
+    global_floating_literals.extend(plugin_events.global_long_doubles);
     let mut function_types = HashMap::new();
     collect_function_types(&root, &mut function_types);
     Ok(Unit {

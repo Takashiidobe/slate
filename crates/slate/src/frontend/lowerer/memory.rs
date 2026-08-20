@@ -8,7 +8,19 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(ptr) = op.operands.first() else {
             return;
         };
-        let (place, needs_unsafe) = self.bitfield_place(ptr);
+        let (place, needs_unsafe) =
+            if let Some((storage, field, needs_unsafe)) = self.bitfield_accessor(ptr, false) {
+                (
+                    Expr::MethodCall {
+                        recv: Box::new(storage),
+                        method: field,
+                        args: Vec::new(),
+                    },
+                    needs_unsafe,
+                )
+            } else {
+                self.bitfield_place(ptr)
+            };
         let value = if needs_unsafe {
             Self::unsafe_expr(place)
         } else {
@@ -27,11 +39,24 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         };
         let value = self.truncate_bitfield_expr(op, self.operand_expr(src), Some(result_ty));
         self.materialize_expr(result, value.clone(), Some(result_ty));
-        let (place, needs_unsafe) = self.bitfield_place(ptr);
-        if needs_unsafe {
-            self.push_unsafe_assign(place, value);
+        if let Some((storage, field, needs_unsafe)) = self.bitfield_accessor(ptr, true) {
+            let setter = Expr::MethodCall {
+                recv: Box::new(storage),
+                method: format!("set_{field}"),
+                args: vec![value],
+            };
+            if needs_unsafe {
+                self.push_stmt(Self::unsafe_stmt(Stmt::Expr(setter)));
+            } else {
+                self.push_stmt(Stmt::Expr(setter));
+            }
         } else {
-            self.push_assign(place, value);
+            let (place, needs_unsafe) = self.bitfield_place(ptr);
+            if needs_unsafe {
+                self.push_unsafe_assign(place, value);
+            } else {
+                self.push_assign(place, value);
+            }
         }
     }
 
@@ -42,16 +67,60 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let (Some(base), Some(index)) = (op.operands.first(), op.operands.get(1)) else {
             return;
         };
-        let base_expr = self.place_or_deref_expr(base);
+        let index_expr = self.operand_expr(index);
+        let unbounded = self.member_ptrs.get(base).is_some_and(|member| {
+            member.field_is_trailing
+                && matches!(&member.field_ty, Some(Type::Array { len: 0 | 1, .. }))
+        });
+        let array_len = op_operand_types(op)
+            .first()
+            .and_then(cir_ptr_inner)
+            .and_then(parse_cir_array_type)
+            .map(|(_, len)| len);
+        let out_of_bounds = array_len.is_some_and(|len| {
+            self.known_arith_value(index)
+                .is_some_and(|value| value >= i128::from(len))
+        });
         let elem_ty = cir_ptr_inner(result_ty).map(|ty| self.parent.rust_type(ty));
+        if let Some(Val::Global(name)) = self.values.get(base).cloned() {
+            if let Some(labels) = self.parent.block_addr_globals.get(&name) {
+                self.block_addr_element_ptrs.insert(
+                    result.clone(),
+                    BlockAddrElementPtr {
+                        labels: labels.clone(),
+                        index: index_expr.clone(),
+                    },
+                );
+            }
+            let declared_len = array_len.map(|len| len as usize);
+            if let Some(base_expr) =
+                self.global_array_literal_expr(&name, elem_ty.clone(), declared_len)
+            {
+                self.element_ptrs.insert(
+                    result.clone(),
+                    ElementPtr {
+                        base: base_expr,
+                        index: index_expr,
+                        unsafe_access: false,
+                        unbounded: false,
+                        out_of_bounds: false,
+                        elem_ty,
+                    },
+                );
+                return;
+            }
+        }
+        let base_expr = self.place_or_deref_expr(base);
+        let unsafe_access =
+            unbounded || self.place_expr(base).is_none() || self.ptr_requires_unsafe(base);
         self.element_ptrs.insert(
             result.clone(),
             ElementPtr {
                 base: base_expr,
-                index: self.operand_expr(index),
-                unsafe_access: self.place_expr(base).is_none() || self.ptr_requires_unsafe(base),
-                unbounded: false,
-                out_of_bounds: false,
+                index: index_expr,
+                unsafe_access,
+                unbounded,
+                out_of_bounds,
                 elem_ty,
             },
         );
@@ -64,12 +133,37 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let (Some(base), Some(stride)) = (op.operands.first(), op.operands.get(1)) else {
             return;
         };
+        let operand_types = op_operand_types(op);
+        let function_pointer_stride = operand_types
+            .first()
+            .is_some_and(is_cir_function_pointer_type)
+            && is_cir_function_pointer_type(result_ty);
+        let base_expr = self.fn_ptr_aware_operand_expr(
+            base,
+            function_pointer_stride
+                .then(|| operand_types.first())
+                .flatten(),
+            Self::function_pointer_byte_operand_expr,
+            Self::pointer_operand_expr,
+        );
         let (method, args) = self.ptr_stride_method_and_args(op, self.operand_expr(stride));
-        let value = Self::unsafe_expr(Expr::MethodCall {
-            recv: Box::new(self.pointer_operand_expr(base)),
+        let stride_expr = Self::unsafe_expr(Expr::MethodCall {
+            recv: Box::new(base_expr),
             method,
             args,
         });
+        let value = if function_pointer_stride {
+            Expr::Transmute {
+                from: Type::Ptr {
+                    mutable: false,
+                    inner: Box::new(Type::Unit),
+                },
+                to: self.parent.rust_type(result_ty),
+                expr: Box::new(stride_expr),
+            }
+        } else {
+            stride_expr
+        };
         self.materialize_expr(result, value, Some(result_ty));
     }
 
@@ -80,11 +174,24 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let (Some(lhs), Some(rhs)) = (op.operands.first(), op.operands.get(1)) else {
             return;
         };
+        let operand_types = op_operand_types(op);
+        let lhs = self.fn_ptr_aware_operand_expr(
+            lhs,
+            operand_types.first(),
+            Self::function_pointer_byte_operand_expr,
+            Self::pointer_operand_expr,
+        );
+        let rhs = self.fn_ptr_aware_operand_expr(
+            rhs,
+            operand_types.get(1),
+            Self::function_pointer_byte_operand_expr,
+            Self::pointer_operand_expr,
+        );
         let value = Self::unsafe_expr(Expr::Cast {
             expr: Box::new(Expr::MethodCall {
-                recv: Box::new(self.pointer_operand_expr(lhs)),
+                recv: Box::new(lhs),
                 method: "offset_from".into(),
-                args: vec![self.pointer_operand_expr(rhs)],
+                args: vec![rhs],
             }),
             ty: self.parent.rust_type(result_ty),
         });
@@ -101,18 +208,244 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(src_ty) = op_operand_types(op).first() else {
             return;
         };
-        if let Some(value) = self.values.get(src).cloned()
-            && let Val::Global(name) = value
-            && let Some(expr) = self.global_array_decay_expr(&name, result_ty)
+        if (is_cir_va_list_value_type(result_ty, &self.parent.aliases)
+            || is_cir_va_list_value_type(src_ty, &self.parent.aliases))
+            && let Some(place) = self.va_target_place(src)
         {
+            self.va_places.insert(result.clone(), place.clone());
+            self.values.insert(result.clone(), Val::Expr(place));
+            return;
+        }
+        if let Some(operand_record) = cir_ptr_inner(src_ty).and_then(cir_record_name)
+            && is_abi_coercion_record_name(operand_record)
+            && let Some(real_record) = cir_ptr_inner(result_ty).and_then(cir_record_name)
+            && !is_abi_coercion_record_name(real_record)
+        {
+            self.coerce_alloca_real_type
+                .insert(src.clone(), (src.clone(), real_record.to_string()));
+        } else if let Some(result_record) = cir_ptr_inner(result_ty).and_then(cir_record_name)
+            && is_abi_coercion_record_name(result_record)
+            && let Some(real_record) = cir_ptr_inner(src_ty).and_then(cir_record_name)
+            && !is_abi_coercion_record_name(real_record)
+        {
+            self.coerce_alloca_real_type
+                .insert(result.clone(), (src.clone(), real_record.to_string()));
+        }
+        let result_rust_ty = self.parent.rust_type(result_ty);
+        let src_rust_ty = self.parent.rust_type(src_ty);
+        if matches!(result_ty, CirType::Bool) && is_cir_function_pointer_type(src_ty) {
+            self.materialize_expr(
+                result,
+                Expr::MethodCall {
+                    recv: Box::new(self.function_pointer_operand_expr(src)),
+                    method: "is_some".into(),
+                    args: Vec::new(),
+                },
+                Some(result_ty),
+            );
+            return;
+        }
+        if matches!(result_ty, CirType::Bool) && !matches!(src_ty, CirType::Bool) {
+            let value = if matches!(src_ty, CirType::Pointer { .. }) {
+                self.pointer_operand_expr(src)
+            } else {
+                self.operand_expr(src)
+            };
+            self.materialize_expr(
+                result,
+                Expr::Binary {
+                    op: BinOp::Ne,
+                    lhs: Box::new(value),
+                    rhs: Box::new(zero_for_cir_type(src_ty)),
+                },
+                Some(result_ty),
+            );
+            return;
+        }
+        if is_cir_function_pointer_type(result_ty) && is_cir_function_pointer_type(src_ty) {
+            let from = self
+                .loaded_field_types
+                .get(src)
+                .cloned()
+                .unwrap_or_else(|| src_rust_ty.clone());
+            let value = self.function_pointer_operand_expr(src);
+            let expr = if from == result_rust_ty {
+                value
+            } else {
+                Expr::Transmute {
+                    from,
+                    to: result_rust_ty.clone(),
+                    expr: Box::new(value),
+                }
+            };
             self.materialize_expr(result, expr, Some(result_ty));
             return;
         }
-        let value = self.operand_expr(src);
+        if matches!(result_ty, CirType::Pointer { .. }) && is_cir_function_pointer_type(src_ty) {
+            self.materialize_expr(
+                result,
+                Expr::Transmute {
+                    from: src_rust_ty.clone(),
+                    to: result_rust_ty.clone(),
+                    expr: Box::new(self.function_pointer_operand_expr(src)),
+                },
+                Some(result_ty),
+            );
+            return;
+        }
+        if is_cir_function_pointer_type(src_ty) && !matches!(result_ty, CirType::Pointer { .. }) {
+            self.materialize_expr(
+                result,
+                Expr::Cast {
+                    expr: Box::new(Expr::Transmute {
+                        from: src_rust_ty.clone(),
+                        to: Type::Prim(Prim::Usize),
+                        expr: Box::new(self.function_pointer_operand_expr(src)),
+                    }),
+                    ty: result_rust_ty.clone(),
+                },
+                Some(result_ty),
+            );
+            return;
+        }
+        if is_cir_function_pointer_type(result_ty) {
+            let value = if matches!(src_ty, CirType::Pointer { .. }) {
+                self.pointer_operand_expr(src)
+            } else {
+                self.operand_expr(src)
+            };
+            self.materialize_expr(
+                result,
+                Expr::Transmute {
+                    from: Type::Prim(Prim::Usize),
+                    to: result_rust_ty.clone(),
+                    expr: Box::new(Expr::Cast {
+                        expr: Box::new(value),
+                        ty: Type::Prim(Prim::Usize),
+                    }),
+                },
+                Some(result_ty),
+            );
+            return;
+        }
+        if bitint_generic_parts(&result_rust_ty).is_some()
+            && bitint_generic_parts(&src_rust_ty).is_none()
+            && parse_cir_int_type(src_ty).is_some()
+        {
+            let (signed, _) = parse_cir_int_type(src_ty).unwrap();
+            let value = bitint_from_int_expr(&result_rust_ty, self.operand_expr(src), signed)
+                .expect("checked bitint result type");
+            self.materialize_expr(result, value, Some(result_ty));
+            return;
+        }
+        if bitint_generic_parts(&src_rust_ty).is_some()
+            && bitint_generic_parts(&result_rust_ty).is_none()
+            && parse_cir_int_type(result_ty).is_some()
+        {
+            let (wide, _) = bitint_to_int_expr(&src_rust_ty, self.operand_expr(src))
+                .expect("checked bitint source type");
+            self.materialize_expr(
+                result,
+                Expr::Cast {
+                    expr: Box::new(wide),
+                    ty: result_rust_ty.clone(),
+                },
+                Some(result_ty),
+            );
+            return;
+        }
+        if is_wrapped_long_double(result_ty) && !is_long_double(src_ty) {
+            let Some(shim) = f80_cast_from_name(&src_rust_ty) else {
+                self.emit_todo("long double cast");
+                return;
+            };
+            self.materialize_expr(
+                result,
+                Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
+                    func: Box::new(Expr::Var(shim.into())),
+                    args: vec![self.operand_expr(src)],
+                },
+                Some(result_ty),
+            );
+            return;
+        }
+        if is_wrapped_long_double(src_ty) && !is_long_double(result_ty) {
+            let Some(shim) = f80_cast_to_name(&result_rust_ty) else {
+                self.emit_todo("long double cast");
+                return;
+            };
+            self.materialize_expr(
+                result,
+                Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
+                    func: Box::new(Expr::Var(shim.into())),
+                    args: vec![self.operand_expr(src)],
+                },
+                Some(result_ty),
+            );
+            return;
+        }
+        if let Some(Val::Global(name)) = self.values.get(src).cloned() {
+            let string_bytes = self.parent.strings.get(&name).cloned().or_else(|| {
+                let rust_name = sanitize_ident(&name);
+                self.parent.strings.iter().find_map(|(candidate, bytes)| {
+                    (sanitize_ident(candidate) == rust_name).then(|| bytes.clone())
+                })
+            });
+            if matches!(result_ty, CirType::Pointer { .. })
+                && let Some(bytes) = string_bytes
+            {
+                self.materialize_expr(
+                    result,
+                    Expr::Cast {
+                        expr: Box::new(Expr::MethodCall {
+                            recv: Box::new(Expr::ByteStr(bytes)),
+                            method: "as_ptr".into(),
+                            args: Vec::new(),
+                        }),
+                        ty: result_rust_ty.clone(),
+                    },
+                    Some(result_ty),
+                );
+                return;
+            }
+            if let Some(expr) = self.global_array_decay_expr(&name, result_ty) {
+                self.materialize_expr(result, expr, Some(result_ty));
+                return;
+            }
+            if matches!(result_ty, CirType::Pointer { .. })
+                && !is_cir_function_pointer_type(result_ty)
+            {
+                self.materialize_expr(
+                    result,
+                    Expr::Cast {
+                        expr: Box::new(Expr::AddrOf {
+                            mutable: true,
+                            expr: Box::new(Expr::Var(sanitize_ident(&name))),
+                        }),
+                        ty: result_rust_ty.clone(),
+                    },
+                    Some(result_ty),
+                );
+                return;
+            }
+        }
+        let value = if matches!(src_ty, CirType::Pointer { .. }) {
+            self.pointer_operand_expr(src)
+        } else {
+            self.operand_expr(src)
+        };
         let from = self.parent.rust_type(src_ty);
         let to = self.parent.rust_type(result_ty);
         let expr = if from == to {
             value
+        } else if matches!(to, Type::Array { .. }) || matches!(from, Type::Array { .. }) {
+            Expr::Transmute {
+                from,
+                to,
+                expr: Box::new(value),
+            }
         } else {
             Expr::Cast {
                 expr: Box::new(value),
@@ -473,6 +806,37 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 true,
             ),
         }
+    }
+
+    fn bitfield_accessor(&self, ptr: &str, mutable: bool) -> Option<(Expr, String, bool)> {
+        let member = self.member_ptrs.get(ptr)?;
+        let field = member.bitfield_name.clone()?;
+        let base_is_global = match &member.base {
+            Expr::Var(name) => {
+                self.parent.globals.contains_key(name.as_str())
+                    || self.parent.extern_globals.contains_key(name.as_str())
+            }
+            _ => false,
+        };
+        let base = if base_is_global {
+            Expr::Unary {
+                op: UnaryOp::Deref,
+                expr: Box::new(Expr::Unary {
+                    op: UnaryOp::Raw(if mutable { Raw::Mut } else { Raw::Const }),
+                    expr: Box::new(member.base.clone()),
+                }),
+            }
+        } else {
+            member.base.clone()
+        };
+        Some((
+            Expr::Field {
+                base: Box::new(base),
+                field: member.field.clone(),
+            },
+            field,
+            self.ptr_requires_unsafe(ptr),
+        ))
     }
 
     // shift up then arithmetic-shift down masks to `size` bits, sign-extending signed types.

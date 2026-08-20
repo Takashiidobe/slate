@@ -692,6 +692,10 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
             .fields
             .iter()
             .any(|field| field.name.starts_with("__bitfield_"))
+            || (records
+                .get(&name)
+                .is_some_and(|existing| existing.fields.is_empty())
+                && !record.fields.is_empty())
         {
             records.insert(name, record.clone());
         } else {
@@ -746,6 +750,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
             .iter()
             .filter_map(|(name, loc)| Some((name.clone(), source_location_text(loc)?)))
             .collect(),
+        source_locations: cir.loc_aliases.clone(),
         attr_aliases: cir.attr_aliases.clone(),
         call_bindings: c.call_bindings(),
         known_functions: c
@@ -1133,6 +1138,7 @@ struct Lowerer<'a> {
     ctx: &'a mut Ctx,
     aliases: BTreeMap<String, CirType>,
     loc_aliases: BTreeMap<String, String>,
+    source_locations: BTreeMap<String, SourceLocation>,
     attr_aliases: BTreeMap<String, Attr>,
     call_bindings: HashMap<Loc, CallBinding>,
     known_functions: BTreeMap<String, FunctionIdentity>,
@@ -1346,11 +1352,41 @@ impl<'a> Lowerer<'a> {
     }
 
     fn ast_floating_literal(&self, op: &Op) -> Option<FloatingLiteralFact> {
-        let loc = op
-            .loc
-            .as_ref()
-            .and_then(|raw| self.resolve_source_floating_literal_loc(raw))?;
-        self.floating_literals.get(&loc).cloned()
+        self.floating_literal_at_source_location(op.loc.as_ref()?)
+    }
+
+    fn floating_literal_at_source_location(
+        &self,
+        loc: &SourceLocation,
+    ) -> Option<FloatingLiteralFact> {
+        match loc {
+            SourceLocation::File { file, line, column } => {
+                let point = SourcePoint {
+                    file: file.clone(),
+                    line: *line,
+                    col: *column,
+                };
+                self.floating_literals
+                    .get(&FloatingLiteralLoc {
+                        spelling: point.clone(),
+                        expansion: point,
+                    })
+                    .cloned()
+            }
+            SourceLocation::Fused(locations) => locations
+                .iter()
+                .find_map(|loc| self.floating_literal_at_source_location(loc)),
+            SourceLocation::Loc(raw) => {
+                if let Some(alias) = raw.strip_prefix('#')
+                    && let Some(loc) = self.source_locations.get(alias)
+                {
+                    return self.floating_literal_at_source_location(loc);
+                }
+                self.resolve_floating_literal_loc(raw)
+                    .and_then(|loc| self.floating_literals.get(&loc).cloned())
+            }
+            SourceLocation::Unknown => None,
+        }
     }
 
     fn declaration_comment_items(&self, kind: &str, name: &str) -> Vec<Item> {
@@ -1414,17 +1450,6 @@ impl<'a> Lowerer<'a> {
             }),
             _ => None,
         }
-    }
-
-    fn resolve_source_floating_literal_loc(
-        &self,
-        raw: &SourceLocation,
-    ) -> Option<FloatingLiteralLoc> {
-        let point = self.resolve_source_point_value(raw)?;
-        Some(FloatingLiteralLoc {
-            spelling: point.clone(),
-            expansion: point,
-        })
     }
 
     fn resolve_floating_literal_loc(&self, raw: &str) -> Option<FloatingLiteralLoc> {
@@ -2143,6 +2168,48 @@ impl __SlateVaArgs {
             );
             return;
         };
+        if let Attr::ConstArray {
+            elts,
+            trailing_zeros_num,
+            ..
+        } = init
+            && let Attr::Str(text) = &**elts
+        {
+            let mut bytes = text.as_bytes().to_vec();
+            bytes.extend(std::iter::repeat_n(
+                0,
+                usize::try_from(*trailing_zeros_num).unwrap_or(0),
+            ));
+            if is_c_global && let Some(ty) = ty {
+                let len = type_array_len(&ty)
+                    .and_then(|len| usize::try_from(len).ok())
+                    .unwrap_or(bytes.len());
+                let elems = byte_array_elems(&bytes, &ty);
+                self.globals.insert(
+                    rust_name.clone(),
+                    GlobalVar {
+                        source_name: name.to_string(),
+                        name: rust_name,
+                        ty,
+                        init: render_array_literal_expr(
+                            &elems,
+                            len,
+                            Expr::Value(RustValue::I64(0)),
+                        ),
+                        alignment,
+                        thread_local,
+                        external: externally_exported(op)
+                            || self.project.cross_referenced_globals.contains(name),
+                        weak,
+                        section: section.clone(),
+                        used: used.clone(),
+                    },
+                );
+            } else {
+                self.strings.insert(name.to_string(), bytes);
+            }
+            return;
+        }
         if let Attr::ConstArray { elts, .. } = init
             && let Some(items) = attr_array_values(elts)
         {
@@ -2210,48 +2277,6 @@ impl __SlateVaArgs {
                 return;
             }
         }
-        if let Attr::ConstArray { elts, .. } = init
-            && let Some(bytes) = attr_array_values(elts)
-        {
-            let Some(bytes) = bytes
-                .iter()
-                .map(|value| value.as_int().and_then(|value| u8::try_from(value).ok()))
-                .collect::<Option<Vec<u8>>>()
-            else {
-                return;
-            };
-            if is_c_global && let Some(ty) = ty {
-                let len = type_array_len(&ty)
-                    .and_then(|len| usize::try_from(len).ok())
-                    .unwrap_or(bytes.len());
-                let elems = byte_array_elems(&bytes, &ty);
-                self.globals.insert(
-                    rust_name.clone(),
-                    GlobalVar {
-                        source_name: name.to_string(),
-                        name: rust_name,
-                        ty,
-                        init: render_array_literal_expr(
-                            &elems,
-                            len,
-                            Expr::Value(RustValue::I64(0)),
-                        ),
-                        alignment,
-                        thread_local,
-                        external: externally_exported(op)
-                            || self.project.cross_referenced_globals.contains(name),
-                        weak,
-                        section: section.clone(),
-                        used: used.clone(),
-                    },
-                );
-            } else {
-                let mut bytes = bytes.clone();
-                bytes.push(0);
-                self.strings.insert(name.to_string(), bytes);
-            }
-            return;
-        }
         if let Attr::Zero { .. } = init
             && !ty
                 .as_ref()
@@ -2317,25 +2342,31 @@ impl __SlateVaArgs {
                 .cloned()
                 .unwrap_or_default()
                 .into();
-            if let Some(init) = self.render_const_value_expr(&ty, init, &mut facts) {
-                let external =
-                    externally_exported(op) || self.project.cross_referenced_globals.contains(name);
-                self.globals.insert(
-                    rust_name.clone(),
-                    GlobalVar {
-                        source_name: name.to_string(),
-                        name: rust_name,
-                        ty,
-                        init,
-                        alignment,
-                        thread_local,
-                        external,
-                        weak,
-                        section,
-                        used,
-                    },
-                );
-            }
+            let Some(init) = self.render_const_value_expr(&ty, init, &mut facts) else {
+                if type_mentions_long_double(&ty) {
+                    self.ctx.diagnostics.error(format!(
+                        "lower: global `{name}` has a long double constant without a matching Clang AST value"
+                    ));
+                }
+                return;
+            };
+            let external =
+                externally_exported(op) || self.project.cross_referenced_globals.contains(name);
+            self.globals.insert(
+                rust_name.clone(),
+                GlobalVar {
+                    source_name: name.to_string(),
+                    name: rust_name,
+                    ty,
+                    init,
+                    alignment,
+                    thread_local,
+                    external,
+                    weak,
+                    section,
+                    used,
+                },
+            );
         } else if !is_c_global {
             self.const_aggregates.insert(name.to_string(), init.clone());
         }
@@ -3528,20 +3559,28 @@ impl __SlateVaArgs {
                 }
             }
             Attr::ConstArray { elts, .. } => {
-                let bytes = attr_array_values(elts)?;
                 let Type::Array { elem, len } = ty else {
                     return None;
                 };
-                let bytes = bytes
+                if let Attr::Str(text) = &**elts {
+                    let elems = byte_array_elems(text.as_bytes(), ty);
+                    return Some(render_array_literal_expr(
+                        &elems,
+                        *len as usize,
+                        self.default_value_expr(elem),
+                    ));
+                }
+                let len = *len as usize;
+                let mut out: Vec<Expr> = attr_array_values(elts)?
                     .iter()
-                    .map(|value| value.as_int().and_then(|value| u8::try_from(value).ok()))
-                    .collect::<Option<Vec<u8>>>()?;
-                let elems = byte_array_elems(&bytes, ty);
-                Some(render_array_literal_expr(
-                    &elems,
-                    *len as usize,
-                    self.default_value_expr(elem),
-                ))
+                    .take(len)
+                    .map(|value| {
+                        self.render_const_value_expr(elem, value, facts)
+                            .unwrap_or_else(|| self.default_value_expr(elem))
+                    })
+                    .collect();
+                out.resize(len, self.default_value_expr(elem));
+                Some(Expr::ArrayLit(out))
             }
             Attr::ConstVector { elts, .. } => Some(Expr::ArrayLit(
                 attr_array_values(elts)?
@@ -3549,6 +3588,17 @@ impl __SlateVaArgs {
                     .map(scalar_attr_expr)
                     .collect::<Option<Vec<_>>>()?,
             )),
+            _ if matches!(ty, Type::LongDouble) => {
+                let fact = facts.pop_front()?;
+                if fact.bit_width == 80 && !fact.bits.is_empty() {
+                    let bits = fact.bits.trim_start_matches("0x").trim_start_matches("0X");
+                    f80_literal_bits_expr(bits)
+                } else if !fact.value.is_empty() {
+                    f80_literal_expr(&fact.value)
+                } else {
+                    None
+                }
+            }
             Attr::Zero { .. } => Some(self.default_value_expr(ty)),
             Attr::Dialect {
                 dialect,
@@ -3599,27 +3649,6 @@ impl __SlateVaArgs {
                     _ => Vec::new(),
                 };
                 self.global_view_init_expr(symbol, &indices, ty)
-            }
-            _ if matches!(ty, Type::LongDouble) => {
-                let fp_text = match attr {
-                    Attr::Float { text, .. } => Some(text.as_str()),
-                    _ => None,
-                };
-                let fact = facts.pop_front();
-                if let Some(fact) = fact {
-                    if fact.bit_width == 80 && !fact.bits.is_empty() {
-                        let bits = fact.bits.trim_start_matches("0x").trim_start_matches("0X");
-                        f80_literal_bits_expr(bits)
-                            .or_else(|| fp_text.and_then(long_double_from_text))
-                    } else if !fact.value.is_empty() {
-                        f80_literal_expr(&fact.value)
-                            .or_else(|| fp_text.and_then(long_double_from_text))
-                    } else {
-                        fp_text.and_then(long_double_from_text)
-                    }
-                } else {
-                    fp_text.and_then(long_double_from_text)
-                }
             }
             Attr::Float { text, .. } => Some(typed_fp_literal_expr(Some(ty), fp_text_value(text)?)),
             _ => scalar_attr_expr(attr),
@@ -4186,7 +4215,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     fn lower_op(&mut self, op: &Op) {
         if let Some(typed) = TypedOp::from_operation(op) {
             match typed {
+                TypedOp::Add(value) if value.saturated => {
+                    return self.lower_saturating_arith(op, "saturating_add");
+                }
                 TypedOp::Add(_) => return self.lower_int_arith(op, BinOp::Add),
+                TypedOp::Sub(value) if value.saturated => {
+                    return self.lower_saturating_arith(op, "saturating_sub");
+                }
                 TypedOp::Sub(_) => return self.lower_int_arith(op, BinOp::Sub),
                 TypedOp::Mul(_) => return self.lower_int_arith(op, BinOp::Mul),
                 TypedOp::Div(_) => return self.lower_int_arith(op, BinOp::Div),
@@ -4226,6 +4261,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 TypedOp::Cmp(_) => return self.lower_cmp(op),
                 TypedOp::Select(_) => return self.lower_select(op),
                 TypedOp::Abs(_) | TypedOp::Fabs(_) => return self.lower_abs(op),
+                TypedOp::Bitreverse(_) => return self.lower_unary_method(op, "reverse_bits"),
+                TypedOp::ByteSwap(_) => return self.lower_unary_method(op, "swap_bytes"),
+                TypedOp::Ceil(_) => return self.lower_unary_method(op, "ceil"),
+                TypedOp::Clz(_) => return self.lower_unary_method(op, "leading_zeros"),
+                TypedOp::Ctz(_) => return self.lower_unary_method(op, "trailing_zeros"),
+                TypedOp::Floor(_) => return self.lower_unary_method(op, "floor"),
+                TypedOp::Nearbyint(_) | TypedOp::Rint(_) => {
+                    return self.lower_unary_method(op, "round_ties_even");
+                }
+                TypedOp::Popcount(_) => return self.lower_unary_method(op, "count_ones"),
+                TypedOp::Round(_) => return self.lower_unary_method(op, "round"),
+                TypedOp::Trunc(_) => return self.lower_unary_method(op, "trunc"),
                 TypedOp::Minus(_) | TypedOp::Fneg(_) => return self.lower_neg(op),
                 TypedOp::Parity(_) => return self.lower_parity(op),
                 TypedOp::Assume(_) => return self.lower_assume(op),
@@ -4233,6 +4280,27 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 TypedOp::Ffs(_) => return self.lower_ffs(op),
                 TypedOp::Clrsb(_) => return self.lower_clrsb(op),
                 TypedOp::Signbit(_) => return self.lower_signbit(op),
+                TypedOp::Copysign(_) => return self.lower_binary_method(op, "copysign"),
+                TypedOp::Fmaxnum(_) => return self.lower_binary_method(op, "max"),
+                TypedOp::Fminnum(_) => return self.lower_binary_method(op, "min"),
+                TypedOp::Fma(_) | TypedOp::Fmuladd(_) => {
+                    return self.lower_ternary_method(op, "mul_add");
+                }
+                TypedOp::Modf(_) => return self.lower_modf(op),
+                TypedOp::LibcMemcpy(_) => return self.lower_mem_copy(op, false),
+                TypedOp::LibcMemmove(_) => return self.lower_mem_copy(op, true),
+                TypedOp::LibcMemset(_) => return self.lower_mem_set(op),
+                TypedOp::LibcMemchr(_) => return self.lower_mem_chr(op),
+                TypedOp::VaStart(_) => return self.lower_va_start(op),
+                TypedOp::VaCopy(_) => return self.lower_va_copy(op),
+                TypedOp::VaArg(_) => return self.lower_va_arg(op),
+                TypedOp::VaEnd(_) => return,
+                TypedOp::EhSetjmp(_) => return self.lower_eh_setjmp(op),
+                TypedOp::FrameAddress(_) => return self.lower_opaque_pointer(op, true),
+                TypedOp::ReturnAddress(_) => return self.lower_opaque_pointer(op, true),
+                TypedOp::BlockAddress(_) => return self.lower_opaque_pointer(op, true),
+                TypedOp::Stacksave(_) => return self.lower_opaque_pointer(op, false),
+                TypedOp::Prefetch(_) => return,
                 TypedOp::IsFpClass(_) => return self.lower_is_fp_class(op),
                 TypedOp::ComplexCreate(_) => return self.lower_complex_create(op),
                 TypedOp::ComplexAdd(_) => return self.lower_complex_add(op),
