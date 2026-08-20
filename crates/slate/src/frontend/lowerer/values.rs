@@ -289,6 +289,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         match self.values.get(operand) {
             Some(Val::Global(name)) if !self.parent.strings.contains_key(name) => {
+                if name == "main" {
+                    return Expr::Value(RustValue::None);
+                }
                 let target = self
                     .parent
                     .long_double_callback_trampolines
