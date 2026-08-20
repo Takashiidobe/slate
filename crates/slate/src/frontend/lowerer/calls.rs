@@ -9,7 +9,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         Some((base.as_str(), address.as_str(), real_type.as_str()))
     }
 
-    pub(super) fn lower_call(&mut self, op: &TypedCall) {
+    pub(super) fn lower_call(&mut self, op: &inst::Call) {
         let Some(arg_types): Option<Vec<_>> = op
             .args
             .iter()
@@ -477,7 +477,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else {
             crate::function_identity::Known::MemCpy
         };
-        if !self.lower_known_libc_typed(loc, [dst, src, len], None, known) {
+        if !self.lower_known_libc(loc, [dst, src, len], None, known) {
             return;
         }
         let dst = Self::without_empty_unsafe(self.byte_ptr_operand(dst, true));
@@ -493,8 +493,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     // cir.libc.memset: (dst, val:u8, len); the alignment attr carries no runtime
     // meaning here.
-    pub(super) fn lower_mem_set(&mut self, op: &TypedLibcMemset) {
-        if !self.lower_known_libc_typed(
+    pub(super) fn lower_mem_set(&mut self, op: &inst::LibcMemset) {
+        if !self.lower_known_libc(
             op.loc.as_ref(),
             [&op.dst, &op.val, &op.len],
             None,
@@ -517,8 +517,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     // cir.libc.memchr: (src, pattern:i32, len:u64) -> void*. Backed by a prelude
     // helper so the byte scan stays a single structured call site.
-    pub(super) fn lower_mem_chr(&mut self, op: &TypedLibcMemchr) {
-        if !self.lower_known_libc_typed(
+    pub(super) fn lower_mem_chr(&mut self, op: &inst::LibcMemchr) {
+        if !self.lower_known_libc(
             op.loc.as_ref(),
             [&op.src, &op.pattern, &op.len],
             Some((&op.result, &op.result_ty)),
@@ -541,7 +541,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(&op.result, call, Some(&op.result_ty));
     }
 
-    pub(super) fn lower_known_libc_typed(
+    pub(super) fn lower_known_libc(
         &mut self,
         loc: Option<&SourceLocation>,
         operands: [&str; 3],
@@ -592,7 +592,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.parent.rust_type(result_ty)
     }
 
-    pub(super) fn lower_atomic_fetch(&mut self, op: &TypedAtomicFetch) {
+    pub(super) fn lower_atomic_fetch(&mut self, op: &inst::AtomicFetch) {
         let val = self.operand_expr(&op.val);
         let ty = self.atomic_rust_type(&op.result_ty);
         let binop = op.binop as i64;
@@ -662,7 +662,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .insert(result.to_string(), Val::Expr(Expr::Var(bound.into())));
     }
 
-    pub(super) fn lower_atomic_xchg(&mut self, op: &TypedAtomicXchg) {
+    pub(super) fn lower_atomic_xchg(&mut self, op: &inst::AtomicXchg) {
         let val = self.operand_expr(&op.val);
         let ty = self.atomic_rust_type(&op.result_ty);
         if let Some(atomic_ty) = atomic_type(&ty) {
@@ -698,7 +698,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .insert(op.result.clone(), Val::Expr(Expr::Var(old.into())));
     }
 
-    pub(super) fn lower_atomic_test_and_set(&mut self, op: &TypedAtomicTestAndSet) {
+    pub(super) fn lower_atomic_test_and_set(&mut self, op: &inst::AtomicTestAndSet) {
         let old = Self::unsafe_expr(Expr::AtomicSwap {
             ty: AtomicType::I8,
             place: AtomicPlace::Ptr(Box::new(self.store_address_expr(&op.ptr))),
@@ -716,7 +716,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
-    pub(super) fn lower_atomic_clear(&mut self, op: &TypedAtomicClear) {
+    pub(super) fn lower_atomic_clear(&mut self, op: &inst::AtomicClear) {
         self.push_stmt(Stmt::Expr(Self::unsafe_expr(Expr::AtomicStore {
             ty: AtomicType::I8,
             place: AtomicPlace::Ptr(Box::new(self.store_address_expr(&op.ptr))),
@@ -725,7 +725,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         })));
     }
 
-    pub(super) fn lower_atomic_cmpxchg(&mut self, op: &TypedAtomicCmpxchg) {
+    pub(super) fn lower_atomic_cmpxchg(&mut self, op: &inst::AtomicCmpxchg) {
         let expected = self.operand_expr(&op.expected);
         let desired = self.operand_expr(&op.desired);
         let ty = self.parent.rust_type(&op.old_ty);
@@ -832,7 +832,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .insert(op.success.clone(), Val::Expr(Expr::Var(ok.into())));
     }
 
-    pub(super) fn lower_atomic_fence(&mut self, op: &TypedAtomicFence) {
+    pub(super) fn lower_atomic_fence(&mut self, op: &inst::AtomicFence) {
         let ordering = op.ordering as i64;
         if ordering == 0 {
             return;
@@ -884,7 +884,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         true
     }
 
-    pub(super) fn lower_known_libc_unary_typed(
+    pub(super) fn lower_known_libc_unary(
         &mut self,
         result: &str,
         result_ty: &CirType,
@@ -920,7 +920,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         false
     }
 
-    pub(super) fn lower_known_libc_binary_typed(
+    pub(super) fn lower_known_libc_binary(
         &mut self,
         result: &str,
         result_ty: &CirType,
@@ -957,7 +957,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         false
     }
 
-    pub(super) fn lower_va_start(&mut self, op: &TypedVaStart) {
+    pub(super) fn lower_va_start(&mut self, op: &inst::VaStart) {
         let Some(place) = self.va_target_place(&op.arg_list) else {
             return;
         };
@@ -975,7 +975,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
-    pub(super) fn lower_va_arg(&mut self, op: &TypedVaArg) {
+    pub(super) fn lower_va_arg(&mut self, op: &inst::VaArg) {
         let Some(place) = self.va_target_place(&op.arg_list) else {
             return;
         };
@@ -992,7 +992,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
-    pub(super) fn lower_va_copy(&mut self, op: &TypedVaCopy) {
+    pub(super) fn lower_va_copy(&mut self, op: &inst::VaCopy) {
         let (Some(dst_place), Some(src_place)) = (
             self.va_target_place(&op.dst_list),
             self.va_target_place(&op.src_list),

@@ -1,7 +1,7 @@
 use super::*;
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
-    pub(super) fn lower_get_bitfield(&mut self, op: &TypedGetBitfield) {
+    pub(super) fn lower_get_bitfield(&mut self, op: &inst::GetBitfield) {
         let (place, needs_unsafe) =
             if let Some((storage, field, needs_unsafe)) = self.bitfield_accessor(&op.addr, false) {
                 (
@@ -24,7 +24,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(&op.result, value, Some(&op.result_ty));
     }
 
-    pub(super) fn lower_set_bitfield(&mut self, op: &TypedSetBitfield) {
+    pub(super) fn lower_set_bitfield(&mut self, op: &inst::SetBitfield) {
         let value = self.truncate_bitfield_expr(
             &op.bitfield_info,
             self.operand_expr(&op.src),
@@ -52,7 +52,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    pub(super) fn lower_get_element(&mut self, op: &TypedGetElement) {
+    pub(super) fn lower_get_element(&mut self, op: &inst::GetElement) {
         let index_expr = self.operand_expr(&op.index);
         let unbounded = self.member_ptrs.get(&op.base).is_some_and(|member| {
             member.field_is_trailing
@@ -112,7 +112,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
-    pub(super) fn lower_ptr_stride(&mut self, op: &TypedPtrStride) {
+    pub(super) fn lower_ptr_stride(&mut self, op: &inst::PtrStride) {
         let base_ty = self.value_type(&op.base);
         let function_pointer_stride = base_ty.is_some_and(is_cir_function_pointer_type)
             && is_cir_function_pointer_type(&op.result_ty);
@@ -144,7 +144,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(&op.result, value, Some(&op.result_ty));
     }
 
-    pub(super) fn lower_ptr_diff(&mut self, op: &TypedPtrDiff) {
+    pub(super) fn lower_ptr_diff(&mut self, op: &inst::PtrDiff) {
         let lhs = self.fn_ptr_aware_operand_expr(
             &op.lhs,
             self.value_type(&op.lhs),
@@ -168,7 +168,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(&op.result, value, Some(&op.result_ty));
     }
 
-    pub(super) fn lower_cast(&mut self, op: &TypedCast) {
+    pub(super) fn lower_cast(&mut self, op: &inst::Cast) {
         let result = &op.result;
         let result_ty = &op.result_ty;
         let src = &op.src;
@@ -457,59 +457,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         })
     }
 
-    pub(super) fn lower_get_member(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        let Some(base_ptr) = op.operands.first() else {
-            return;
-        };
-        self.member_base_operand
-            .insert(result.clone(), base_ptr.clone());
-        if let Some(outputs) = self.asm_outputs.get(base_ptr)
-            && let Some(output) = aggregate_member_index(op).and_then(|index| outputs.get(index))
-        {
-            self.forward_values.insert(result.clone(), output.clone());
-            return;
-        }
-        let base = self.place_or_deref_expr(base_ptr);
-        let raw_field = attr_str(op, "name").unwrap_or(result.as_str());
-        let logical_field = if raw_field.is_empty() {
-            aggregate_member_index(op)
-                .map(|index| format!("__slate_anon_{index}"))
-                .unwrap_or_else(|| sanitize_ident(result.as_str()).into_string())
-        } else {
-            sanitize_ident(raw_field).into_string()
-        };
-        let storage = self.bitfield_storage_member(op);
-        let field = storage
-            .as_ref()
-            .map(|(field, _, _)| field.clone())
-            .unwrap_or_else(|| logical_field.clone());
-        let field_ty = storage.as_ref().map(|(_, ty, _)| ty.clone()).or_else(|| {
-            self.member_field_type(base_ptr, &logical_field)
-                .or_else(|| self.member_field_type_from_op(op, &logical_field))
-        });
-        let unsafe_access = self.place_expr(base_ptr).is_none()
-            || self.ptr_requires_unsafe(base_ptr)
-            || self.op_base_is_union(op);
-        let field_is_trailing = self.member_field_is_trailing(base_ptr, op, &field);
-        self.member_ptrs.insert(
-            result.clone(),
-            MemberPtr {
-                base,
-                field,
-                field_ty,
-                unsafe_access,
-                bitfield_name: storage
-                    .as_ref()
-                    .and_then(|(_, _, wrapped)| wrapped.then_some(logical_field)),
-                field_is_trailing,
-            },
-        );
-    }
-
-    pub(super) fn lower_get_member_typed(&mut self, op: &TypedGetMember) {
+    pub(super) fn lower_get_member(&mut self, op: &inst::GetMember) {
         let index = op
             .index_attr
             .as_int()
@@ -531,7 +479,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else {
             sanitize_ident(&op.name).into_string()
         };
-        let storage = self.bitfield_storage_member_typed(&op.addr, &op.result_ty, index);
+        let storage = self.bitfield_storage_member(&op.addr, &op.result_ty, index);
         let field = storage
             .as_ref()
             .map(|(field, _, _)| field.clone())
@@ -550,7 +498,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 .value_type(&op.addr)
                 .and_then(cir_ptr_inner)
                 .is_some_and(|ty| self.parent.cir_type_is_union(ty));
-        let field_is_trailing = self.member_field_is_trailing_typed(&op.addr, &field);
+        let field_is_trailing = self.member_field_is_trailing(&op.addr, &field);
         self.member_ptrs.insert(
             op.result.clone(),
             MemberPtr {
@@ -566,7 +514,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
-    fn bitfield_storage_member_typed(
+    fn bitfield_storage_member(
         &self,
         base_ptr: &str,
         result_ty: &CirType,
@@ -597,7 +545,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         ))
     }
 
-    fn member_field_is_trailing_typed(&self, base_ptr: &str, field: &str) -> bool {
+    fn member_field_is_trailing(&self, base_ptr: &str, field: &str) -> bool {
         let Some(record_name) = self
             .member_record_name(base_ptr)
             .or_else(|| self.record_name_from_base_type(base_ptr))
@@ -616,37 +564,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .is_some_and(|last| sanitize_ident(&last.name).as_str() == field)
     }
 
-    pub(super) fn bitfield_storage_member(&self, op: &Op) -> Option<(String, Type, bool)> {
-        let record_name = op
-            .operands
-            .first()
-            .and_then(|value| self.value_type(value))
-            .and_then(cir_ptr_pointee)
-            .map(|ty| self.parent.expand_alias(ty))
-            .and_then(cir_record_name)?;
-        let record_name = sanitize_ident(record_name).into_string();
-        let record = self.parent.records.get(&record_name)?;
-        let fields = self.parent.bitfield_storage_fields(record)?;
-        let index = aggregate_member_index(op)?;
-        let field = fields.get(index)?;
-        let wrapper = self
-            .parent
-            .bitfield_storages
-            .get(&(record_name, index))
-            .map(|storage| Type::Custom(storage.wrapper.clone()));
-        let ty = wrapper.clone().or_else(|| {
-            op_result_type(op)
-                .and_then(cir_ptr_pointee)
-                .map(|ty| self.parent.rust_type(ty))
-        })?;
-        Some((
-            sanitize_ident(&field.name).into_string(),
-            ty,
-            wrapper.is_some(),
-        ))
-    }
-
-    pub(super) fn lower_extract_member(&mut self, op: &TypedExtractMember) {
+    pub(super) fn lower_extract_member(&mut self, op: &inst::ExtractMember) {
         let Some(index) = op
             .index
             .as_int()
@@ -669,7 +587,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
-    pub(super) fn lower_insert_member(&mut self, op: &TypedInsertMember) {
+    pub(super) fn lower_insert_member(&mut self, op: &inst::InsertMember) {
         let Some(index) = op
             .index
             .as_int()
@@ -825,17 +743,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         None
     }
 
-    pub(super) fn record_name_from_op(&self, op: &Op) -> Option<String> {
-        let base_ty = op
-            .operands
-            .first()
-            .and_then(|value| self.value_type(value))?;
-        let record_name = cir_ptr_pointee(base_ty)
-            .map(|ty| self.parent.expand_alias(ty))
-            .and_then(cir_record_name)?;
-        Some(sanitize_ident(record_name).into_string())
-    }
-
     fn record_name_from_base_type(&self, base_ptr: &str) -> Option<String> {
         let record_name = self
             .value_type(base_ptr)
@@ -847,11 +754,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     pub(super) fn member_field_type(&self, base_ptr: &str, field: &str) -> Option<Type> {
         let record_name = self.member_record_name(base_ptr)?;
-        self.record_field_type_by_name(&record_name, field)
-    }
-
-    pub(super) fn member_field_type_from_op(&self, op: &Op, field: &str) -> Option<Type> {
-        let record_name = self.record_name_from_op(op)?;
         self.record_field_type_by_name(&record_name, field)
     }
 
@@ -873,24 +775,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         Some(self.parent.record_field_type(&candidate.ty))
     }
 
-    pub(super) fn member_field_is_trailing(&self, base_ptr: &str, op: &Op, field: &str) -> bool {
-        let Some(record_name) = self
-            .member_record_name(base_ptr)
-            .or_else(|| self.record_name_from_op(op))
-        else {
-            return false;
-        };
-        let Some(record) = self.parent.records.get(&record_name) else {
-            return false;
-        };
-        if record.kind == crate::frontend::c_ast::RecordKind::Union {
-            return true;
-        }
-        record
-            .fields
-            .last()
-            .is_some_and(|last| sanitize_ident(&last.name).as_str() == field)
-    }
     pub(super) fn bitfield_place(&self, ptr: &str) -> (Expr, bool) {
         match self.place_expr(ptr) {
             Some(place) => (place, self.ptr_requires_unsafe(ptr)),
@@ -1049,13 +933,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         false
     }
 
-    pub(super) fn op_base_is_union(&self, op: &Op) -> bool {
-        op.operands
-            .first()
-            .and_then(|value| self.value_type(value))
-            .and_then(cir_ptr_inner)
-            .is_some_and(|ty| self.parent.cir_type_is_union(ty))
-    }
     pub(super) fn ptr_stride_method_and_args(
         &self,
         stride: &str,

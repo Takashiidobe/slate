@@ -88,7 +88,7 @@ fn overflow_for_result_width(
 }
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
-    pub(super) fn lower_cmp(&mut self, op: &TypedCmp) {
+    pub(super) fn lower_cmp(&mut self, op: &inst::Cmp) {
         if let Some(expr) = self.lower_function_pointer_null_cmp(&op.lhs, &op.rhs, op.kind) {
             self.materialize_expr(&op.result, expr, Some(&op.result_ty));
             return;
@@ -160,7 +160,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(&op.result, expr, Some(&op.result_ty));
     }
 
-    pub(super) fn lower_select(&mut self, op: &TypedSelect) {
+    pub(super) fn lower_select(&mut self, op: &inst::Select) {
         let true_expr = self.fn_ptr_aware_operand_expr(
             &op.true_value,
             Some(&op.result_ty),
@@ -189,47 +189,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     // cir.ternary has two value-yielding regions; clang emits it for the NaN-recovery
     // arm of complex `*` (the taken branch calls __muldc3). Lower to an `if` whose
     // block bodies run each region's ops and tail-yield the region result.
-    pub(super) fn lower_ternary(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        let Some(cond) = op.operands.first() else {
-            return;
-        };
-        if op.regions.len() < 2 {
-            self.emit_todo("cir.ternary");
-            return;
-        }
-        let cond = self.operand_expr(cond);
-        let name = self.next_temp();
-        let ty = op_result_type(op)
-            .map(|ty| self.parent.rust_type(ty))
-            .unwrap_or(Type::Prim(Prim::I32));
-        let (then_body, then_value) = self.lower_yield_region(&op.regions[0]);
-        let (else_body, else_value) = self.lower_yield_region(&op.regions[1]);
-        self.push_stmt(Stmt::LetIf {
-            name: name.clone(),
-            mutable: false,
-            ty: Some(ty),
-            cond,
-            then_body,
-            then_value,
-            else_body,
-            else_value,
-        });
-        self.values
-            .insert(result.to_string(), Val::Expr(Expr::Var(name.into())));
-    }
-
-    pub(super) fn lower_ternary_typed(&mut self, op: &TypedTernary) {
+    pub(super) fn lower_ternary(&mut self, op: &inst::Ternary) {
         let (Some(result), Some(result_ty)) = (&op.result, &op.result_ty) else {
             return;
         };
         let cond = self.operand_expr(&op.cond);
         let name = self.next_temp();
         let ty = self.parent.rust_type(result_ty);
-        let (then_body, then_value) = self.lower_typed_yield_region(&op.true_region);
-        let (else_body, else_value) = self.lower_typed_yield_region(&op.false_region);
+        let (then_body, then_value) = self.lower_yield_region(&op.true_region);
+        let (else_body, else_value) = self.lower_yield_region(&op.false_region);
         self.push_stmt(Stmt::LetIf {
             name: name.clone(),
             mutable: false,
@@ -246,38 +214,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     // Lower every op in a region, capturing the terminating cir.yield's operand as
     // the region's tail value instead of lowering the yield itself.
-    pub(super) fn lower_yield_region(&mut self, region: &Region) -> (Vec<IndentStmt>, Expr) {
+    pub(super) fn lower_yield_region(&mut self, region: &inst::Region) -> (Vec<IndentStmt>, Expr) {
         let mut yielded = Expr::Todo("cir.yield".into());
         let body = self.capture_body(|this| {
             for block in &region.blocks {
                 for op in &block.ops {
-                    if op.kind() == CirOpKind::Yield {
-                        if let Some(operand) = op.operands.first() {
-                            yielded = this.value_or_place_address_expr(operand);
-                        }
-                    } else {
-                        this.lower_op(op);
-                    }
-                }
-            }
-        });
-        (body, yielded)
-    }
-
-    pub(super) fn lower_typed_yield_region(
-        &mut self,
-        region: &TypedRegion,
-    ) -> (Vec<IndentStmt>, Expr) {
-        let mut yielded = Expr::Todo("cir.yield".into());
-        let body = self.capture_body(|this| {
-            for block in &region.blocks {
-                for op in &block.ops {
-                    if let TypedOp::Yield(yield_op) = op {
+                    if let Op::Yield(yield_op) = op {
                         if let Some(operand) = yield_op.args.first() {
                             yielded = this.value_or_place_address_expr(operand);
                         }
                     } else {
-                        this.lower_typed_op(op.clone(), None);
+                        this.lower_op(op.clone());
                     }
                 }
             }
@@ -285,7 +232,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         (body, yielded)
     }
 
-    pub(super) fn lower_binary_typed(
+    pub(super) fn lower_binary(
         &mut self,
         result: &str,
         result_ty: Option<&CirType>,
@@ -314,7 +261,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
-    pub(super) fn lower_saturating_arith_typed(
+    pub(super) fn lower_saturating_arith(
         &mut self,
         result: &str,
         result_ty: &CirType,
@@ -350,7 +297,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     // wrap two's-complement just like clang's `-O0` C — no `wrapping_*` needed.
     // `/` and `%` still trap on div-by-zero and INT_MIN/-1 on both sides, so the
     // generator avoids those.
-    pub(super) fn lower_int_arith_typed(
+    pub(super) fn lower_int_arith(
         &mut self,
         result: &str,
         ty: Option<&CirType>,
@@ -473,7 +420,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    pub(super) fn lower_overflow_arith_typed(
+    pub(super) fn lower_overflow_arith(
         &mut self,
         results: (&str, &CirType, &str, &CirType),
         lhs: &str,
@@ -514,7 +461,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.finish_checked_arith(results, wide_result, wide_overflow, wide_signed);
     }
 
-    pub(super) fn lower_step_typed(
+    pub(super) fn lower_step(
         &mut self,
         result: &str,
         result_ty: &CirType,
@@ -535,7 +482,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     // cir.shift carries the isShiftleft unit attr for `<<`; its absence means `>>`.
     // Rust's `>>` is arithmetic on signed and logical on unsigned, matching C by type.
     // cir.not is C's unary `~`; Rust spells integer bitwise complement `!`.
-    pub(super) fn lower_not_typed(&mut self, result: &str, result_ty: &CirType, value: &str) {
+    pub(super) fn lower_not(&mut self, result: &str, result_ty: &CirType, value: &str) {
         if let Some((_, len)) = parse_cir_vector_type(result_ty) {
             let value = self.operand_expr(value);
             self.materialize_expr(
@@ -565,7 +512,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
-    pub(super) fn lower_neg_typed(&mut self, result: &str, result_ty: &CirType, value: &str) {
+    pub(super) fn lower_neg(&mut self, result: &str, result_ty: &CirType, value: &str) {
         if let Some((elem_ty, len)) = parse_cir_vector_type(result_ty) {
             let value = self.operand_expr(value);
             let elem_rust_ty = self.parent.rust_type(elem_ty);
@@ -666,12 +613,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(result, expr, Some(result_ty));
     }
 
-    pub(super) fn lower_abs_typed(
-        &mut self,
-        result: &str,
-        result_ty: Option<&CirType>,
-        value: &str,
-    ) {
+    pub(super) fn lower_abs(&mut self, result: &str, result_ty: Option<&CirType>, value: &str) {
         let value = self.operand_expr(value);
         let rust_ty = result_ty
             .map(|ty| self.parent.rust_type(ty))
@@ -701,7 +643,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(result, expr, result_ty);
     }
 
-    pub(super) fn lower_unary_method_typed(
+    pub(super) fn lower_unary_method(
         &mut self,
         result: &str,
         result_ty: Option<&CirType>,
@@ -740,7 +682,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(result, expr, result_ty);
     }
 
-    pub(super) fn lower_known_unary_method_typed(
+    pub(super) fn lower_known_unary_method(
         &mut self,
         result: &str,
         result_ty: &CirType,
@@ -749,12 +691,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         known: function_identity::Known,
         method: &str,
     ) {
-        if self.lower_known_libc_unary_typed(result, result_ty, value, loc, known) {
-            self.lower_unary_method_typed(result, Some(result_ty), value, method);
+        if self.lower_known_libc_unary(result, result_ty, value, loc, known) {
+            self.lower_unary_method(result, Some(result_ty), value, method);
         }
     }
 
-    pub(super) fn lower_unary_cast_method_typed(
+    pub(super) fn lower_unary_cast_method(
         &mut self,
         result: &str,
         result_ty: &CirType,
@@ -773,7 +715,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(result, expr, Some(result_ty));
     }
 
-    pub(super) fn lower_known_unary_cast_method_typed(
+    pub(super) fn lower_known_unary_cast_method(
         &mut self,
         result: &str,
         result_ty: &CirType,
@@ -782,17 +724,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         known: function_identity::Known,
         method: &str,
     ) {
-        if self.lower_known_libc_unary_typed(result, result_ty, value, loc, known) {
-            self.lower_unary_cast_method_typed(result, result_ty, value, method);
+        if self.lower_known_libc_unary(result, result_ty, value, loc, known) {
+            self.lower_unary_cast_method(result, result_ty, value, method);
         }
     }
 
-    pub(super) fn lower_parity_typed(
-        &mut self,
-        result: &str,
-        result_ty: Option<&CirType>,
-        value: &str,
-    ) {
+    pub(super) fn lower_parity(&mut self, result: &str, result_ty: Option<&CirType>, value: &str) {
         let expr = Expr::Binary {
             op: BinOp::BitAnd,
             lhs: Box::new(Expr::MethodCall {
@@ -804,21 +741,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         };
         self.materialize_expr(result, expr, result_ty);
     }
-    pub(super) fn lower_expect(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        let Some(value) = op.operands.first() else {
-            return;
-        };
-        self.materialize_expr(result, self.operand_expr(value), op_result_type(op));
-    }
-
-    pub(super) fn lower_expect_typed(&mut self, op: &TypedExpect) {
+    pub(super) fn lower_expect(&mut self, op: &inst::Expect) {
         self.materialize_expr(&op.result, self.operand_expr(&op.val), Some(&op.result_ty));
     }
 
-    pub(super) fn lower_assume(&mut self, op: &TypedAssume) {
+    pub(super) fn lower_assume(&mut self, op: &inst::Assume) {
         self.push_stmt(Stmt::Expr(Self::unsafe_expr(Expr::Call {
             binding: function_identity::CallBinding::Generated,
             func: Box::new(Expr::Path(Path::new(

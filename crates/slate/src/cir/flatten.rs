@@ -4,7 +4,7 @@ use std::path::Path;
 use super::emit::{
     EmitError, Tool, ToolOperation, emit_generic_with_args, emit_generic_with_args_flattened,
 };
-use super::ir::{CirOpKind, Module, Op, OpKindExt};
+use super::{Module, Op};
 use clang_ir::Error as ParseError;
 use thiserror::Error;
 
@@ -30,13 +30,13 @@ fn contains_goto(op: &Op) -> bool {
             block
                 .ops
                 .iter()
-                .any(|child| child.kind() == CirOpKind::Goto || contains_goto(child))
+                .any(|child| child.mnemonic() == "goto" || contains_goto(child))
         })
     })
 }
 
 fn contains_label(op: &Op) -> bool {
-    op.kind() == CirOpKind::Label
+    op.mnemonic() == "label"
         || op.regions.iter().any(|region| {
             region
                 .blocks
@@ -61,7 +61,7 @@ fn contains_nested_label(op: &Op) -> bool {
 }
 
 fn needs_flattening(op: &Op) -> bool {
-    op.kind() == CirOpKind::Func
+    op.mnemonic() == "func"
         && op
             .regions
             .first()
@@ -94,7 +94,7 @@ fn merge_flattened_functions(module: &mut Module, flat_module: &Module) {
         .iter()
         .flat_map(|region| region.blocks.iter())
         .flat_map(|block| block.ops.iter())
-        .filter(|op| op.kind() == CirOpKind::Func)
+        .filter(|op| op.mnemonic() == "func")
         .filter_map(|op| Some((sym_name(op)?.to_string(), op.clone())))
         .collect();
     let Some(module_op) = module.ops.iter_mut().find(|op| op.name == "builtin.module") else {

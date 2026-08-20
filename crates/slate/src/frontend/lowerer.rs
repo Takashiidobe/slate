@@ -1,4 +1,4 @@
-//! lower: combine the CIR Op-tree with the C AST oracle into Rust output.
+//! lower: combine the CIR Operation-tree with the C AST oracle into Rust output.
 
 use crate::backend::rust_ast::{
     Abi, AsmDialect, AsmOperand, AsmReg, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType,
@@ -9,7 +9,7 @@ use crate::backend::rust_ast::{
     StdTrait, Stmt, StructDef, StructField, StructFields, SupportModule, TraitRef, Type, UnaryOp,
     UsedKind, Visibility,
 };
-use crate::cir::ir::{Attr, Block, CirOpKind, CirType, Module, Op, OpKindExt, Region};
+use crate::cir::{Attr, Block, CirType, Module, Region};
 use crate::ctx::Ctx;
 use crate::frontend::c_ast::{
     CType, EnumConstRef, FloatingLiteralFact, FloatingLiteralLoc, LayoutQuery, Loc, MacroConst,
@@ -17,33 +17,9 @@ use crate::frontend::c_ast::{
 };
 use crate::frontend::function_abi::repair_function_signature;
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
-use clang_ir::ast::SourceLocation;
+use clang_ir::ast::{Operation, SourceLocation};
 use clang_ir::enums::CmpOpKind;
-use clang_ir::model::{
-    MemOrder, Op as TypedOp,
-    instruction::{
-        Alloca as TypedAlloca, Assume as TypedAssume, AtomicClear as TypedAtomicClear,
-        AtomicCmpxchg as TypedAtomicCmpxchg, AtomicFence as TypedAtomicFence,
-        AtomicFetch as TypedAtomicFetch, AtomicTestAndSet as TypedAtomicTestAndSet,
-        AtomicXchg as TypedAtomicXchg, Block as TypedBlock, Br as TypedBr, Brcond as TypedBrcond,
-        Call as TypedCall, Cast as TypedCast, CleanupScope as TypedCleanupScope, Cmp as TypedCmp,
-        Const as TypedConst, Copy as TypedCopy, Do as TypedDo, EhSetjmp as TypedEhSetjmp,
-        Expect as TypedExpect, ExtractMember as TypedExtractMember, For as TypedFor,
-        GetBitfield as TypedGetBitfield, GetElement as TypedGetElement,
-        GetGlobal as TypedGetGlobal, GetMember as TypedGetMember, Goto as TypedGoto, If as TypedIf,
-        IndirectBr as TypedIndirectBr, IndirectGoto as TypedIndirectGoto,
-        InsertMember as TypedInsertMember, IsConstant as TypedIsConstant,
-        IsFpClass as TypedIsFpClass, LibcMemchr as TypedLibcMemchr, LibcMemset as TypedLibcMemset,
-        Load as TypedLoad, Modf as TypedModf, Objsize as TypedObjsize, PtrDiff as TypedPtrDiff,
-        PtrStride as TypedPtrStride, Region as TypedRegion, Return as TypedReturn,
-        Scope as TypedScope, Select as TypedSelect, SetBitfield as TypedSetBitfield,
-        Store as TypedStore, Switch as TypedSwitch, Ternary as TypedTernary, VaArg as TypedVaArg,
-        VaCopy as TypedVaCopy, VaStart as TypedVaStart, VecCmp as TypedVecCmp,
-        VecCreate as TypedVecCreate, VecExtract as TypedVecExtract, VecInsert as TypedVecInsert,
-        VecShuffle as TypedVecShuffle, VecShuffleDynamic as TypedVecShuffleDynamic,
-        VecSplat as TypedVecSplat, While as TypedWhile,
-    },
-};
+use clang_ir::model::{MemOrder, Op, instruction as inst};
 use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
 
 mod analysis;
@@ -153,7 +129,7 @@ fn widen_flexible_array_members(
     records: &mut BTreeMap<String, crate::frontend::c_ast::Record>,
 ) {
     for op in module_ops(cir) {
-        if op.kind() != CirOpKind::Global {
+        if op.mnemonic() != "global" {
             continue;
         }
         let Some(sym_type) = attr_type(op, "sym_type") else {
@@ -297,23 +273,23 @@ pub fn shim_records_for_module(cir: &Module, c: &Unit) -> Vec<crate::frontend::c
         .collect()
 }
 
-fn linkage_is_external(op: &Op) -> bool {
+fn linkage_is_external(op: &Operation) -> bool {
     matches!(attr_int(op, "linkage").unwrap_or(0), 0 | WEAK_ANY_LINKAGE)
 }
 
-fn visibility_allows_export(op: &Op) -> bool {
+fn visibility_allows_export(op: &Operation) -> bool {
     attr_int(op, "global_visibility").unwrap_or(0) != HIDDEN_VISIBILITY
 }
 
-fn externally_exported(op: &Op) -> bool {
+fn externally_exported(op: &Operation) -> bool {
     linkage_is_external(op) && visibility_allows_export(op)
 }
 
-fn visibility_is_protected(op: &Op) -> bool {
+fn visibility_is_protected(op: &Operation) -> bool {
     attr_int(op, "global_visibility") == Some(PROTECTED_VISIBILITY)
 }
 
-fn linkage_is_weak(op: &Op) -> bool {
+fn linkage_is_weak(op: &Operation) -> bool {
     attr_int(op, "linkage") == Some(WEAK_ANY_LINKAGE)
 }
 
@@ -356,22 +332,22 @@ fn region_ends_in_noreturn_call(region: &Region) -> bool {
     let Some(block) = region.blocks.first() else {
         return false;
     };
-    let ops: &[Op] = match block.ops.last() {
-        Some(last) if matches!(last.kind(), CirOpKind::Return | CirOpKind::Yield) => {
+    let ops: &[Operation] = match block.ops.last() {
+        Some(last) if matches!(last.mnemonic(), "return" | "yield") => {
             &block.ops[..block.ops.len() - 1]
         }
         _ => &block.ops,
     };
     match ops.last() {
-        Some(op) if op.kind() == CirOpKind::Call => attr_bool(op, "noreturn"),
-        Some(op) if op.kind() == CirOpKind::Scope => {
+        Some(op) if op.mnemonic() == "call" => attr_bool(op, "noreturn"),
+        Some(op) if op.mnemonic() == "scope" => {
             op.regions.first().is_some_and(region_ends_in_noreturn_call)
         }
         _ => false,
     }
 }
 
-fn function_requires_unsafe_contract(op: &Op) -> bool {
+fn function_requires_unsafe_contract(op: &Operation) -> bool {
     let Some(function_type) = attr_type(op, "function_type") else {
         return false;
     };
@@ -387,15 +363,15 @@ fn function_requires_unsafe_contract(op: &Op) -> bool {
     collect_region_ops_recursive(op, &mut ops);
     let mut local_ptrs = BTreeSet::new();
     for op in ops {
-        if op.kind() == CirOpKind::Alloca
-            || (matches!(op.kind(), CirOpKind::GetMember | CirOpKind::GetElement)
+        if op.mnemonic() == "alloca"
+            || (matches!(op.mnemonic(), "get_member" | "get_element")
                 && op
                     .operands
                     .first()
                     .is_some_and(|base| local_ptrs.contains(base)))
         {
             local_ptrs.extend(op.results.iter().map(|(id, _)| id.clone()));
-        } else if matches!(op.kind(), CirOpKind::Load | CirOpKind::Store)
+        } else if matches!(op.mnemonic(), "load" | "store")
             && op
                 .operands
                 .last()
@@ -407,11 +383,11 @@ fn function_requires_unsafe_contract(op: &Op) -> bool {
     false
 }
 
-fn builtin_module(module: &Module) -> Option<&Op> {
+fn builtin_module(module: &Module) -> Option<&Operation> {
     module.ops.iter().find(|op| op.name == "builtin.module")
 }
 
-fn module_ops(module: &Module) -> Vec<&Op> {
+fn module_ops(module: &Module) -> Vec<&Operation> {
     builtin_module(module).map(region_ops).unwrap_or_default()
 }
 
@@ -447,7 +423,7 @@ pub fn defined_functions(module: &Module) -> Vec<String> {
     module_ops(module)
         .iter()
         .filter(|op| {
-            op.kind() == CirOpKind::Func
+            op.mnemonic() == "func"
                 && linkage_is_external(op)
                 && (!region_ops(op).is_empty()
                     || attr_symbol_ref(op, "aliasee").is_some() && !linkage_is_weak(op))
@@ -465,7 +441,7 @@ pub fn address_taken_functions(module: &Module) -> BTreeSet<String> {
 pub fn declared_functions(module: &Module) -> Vec<String> {
     module_ops(module)
         .iter()
-        .filter(|op| op.kind() == CirOpKind::Func && region_ops(op).is_empty())
+        .filter(|op| op.mnemonic() == "func" && region_ops(op).is_empty())
         .filter_map(|op| attr_str(op, "sym_name").map(str::to_string))
         .collect()
 }
@@ -474,7 +450,7 @@ pub fn defined_globals(module: &Module) -> Vec<String> {
     module_ops(module)
         .iter()
         .filter(|op| {
-            op.kind() == CirOpKind::Global
+            op.mnemonic() == "global"
                 && op.attr("initial_value").is_some()
                 && linkage_is_external(op)
         })
@@ -485,7 +461,7 @@ pub fn defined_globals(module: &Module) -> Vec<String> {
 pub fn declared_globals(module: &Module) -> Vec<String> {
     module_ops(module)
         .iter()
-        .filter(|op| op.kind() == CirOpKind::Global && op.attr("initial_value").is_none())
+        .filter(|op| op.mnemonic() == "global" && op.attr("initial_value").is_none())
         .filter_map(|op| attr_str(op, "sym_name").map(|name| sanitize_ident(name).into_string()))
         .collect()
 }
@@ -509,7 +485,7 @@ fn allocate_global_rust_names(
     used.extend(type_names.iter().cloned());
     let globals: BTreeSet<String> = ops
         .iter()
-        .filter(|op| op.kind() == CirOpKind::Global)
+        .filter(|op| op.mnemonic() == "global")
         .filter_map(|op| attr_str(op, "sym_name").map(str::to_string))
         .collect();
     let mut names = BTreeMap::new();
@@ -540,7 +516,7 @@ pub fn unsafe_defined_functions(module: &Module) -> BTreeSet<String> {
     let mut unsafe_functions: BTreeSet<String> = ops
         .iter()
         .filter(|op| {
-            op.kind() == CirOpKind::Func && !region_ops(op).is_empty() && linkage_is_external(op)
+            op.mnemonic() == "func" && !region_ops(op).is_empty() && linkage_is_external(op)
         })
         .filter(|op| {
             function_requires_unsafe_contract(op)
@@ -550,7 +526,7 @@ pub fn unsafe_defined_functions(module: &Module) -> BTreeSet<String> {
         .filter(|name| name != "main")
         .collect();
     for op in ops {
-        if op.kind() != CirOpKind::Func || !region_ops(op).is_empty() {
+        if op.mnemonic() != "func" || !region_ops(op).is_empty() {
             continue;
         }
         let Some(name) = attr_str(op, "sym_name") else {
@@ -645,21 +621,20 @@ pub fn required_features(module: &Module) -> BTreeSet<Feature> {
         if linkage_is_weak(op) && attr_symbol_ref(op, "aliasee").is_none() {
             features.insert(Feature::Linkage);
         }
-        if op.kind() == CirOpKind::Asm
+        if op.mnemonic() == "asm"
             && !op.results.is_empty()
             && attr_str(op, "asm_string").is_some_and(asm_template_has_labels)
         {
             features.insert(Feature::AsmGotoWithOutputs);
         }
-        if op.kind() == CirOpKind::Func {
+        if op.mnemonic() == "func" {
             if let Some(function_type) = attr_type(op, "function_type")
                 && (function_type_is_variadic(function_type)
                     || function_type_contains_va_list(function_type))
             {
                 features.insert(Feature::CVariadic);
             }
-        } else if op.kind() == CirOpKind::Global
-            && matches!(attr_str(op, "sym_name"), Some("llvm.used"))
+        } else if op.mnemonic() == "global" && matches!(attr_str(op, "sym_name"), Some("llvm.used"))
         {
             features.insert(Feature::UsedWithArg);
         }
@@ -821,14 +796,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         uses_thread_local: std::cell::Cell::new(false),
         uses_used_with_arg: std::cell::Cell::new(false),
         uses_asm_goto_outputs: std::cell::Cell::new(false),
-        uses_breakpoint: std::cell::Cell::new(false),
         uses_memchr: std::cell::Cell::new(false),
-        target_arch: cir
-            .ops
-            .iter()
-            .find_map(|op| attr_str(op, "cir.triple"))
-            .and_then(rust_target_arch)
-            .map(str::to_string),
         variadic_defs: BTreeSet::new(),
         boxed_variadic_defs: BTreeSet::new(),
         va_list_boxed: false,
@@ -1202,9 +1170,7 @@ struct Lowerer<'a> {
     uses_thread_local: std::cell::Cell<bool>,
     uses_used_with_arg: std::cell::Cell<bool>,
     uses_asm_goto_outputs: std::cell::Cell<bool>,
-    uses_breakpoint: std::cell::Cell<bool>,
     uses_memchr: std::cell::Cell<bool>,
-    target_arch: Option<String>,
     variadic_defs: BTreeSet<String>,
     boxed_variadic_defs: BTreeSet<String>,
     va_list_boxed: bool,
@@ -1294,25 +1260,13 @@ struct LoopFrame {
 struct SwitchCase<'a> {
     patterns: Vec<Pattern>,
     is_default: bool,
-    region: &'a Region,
+    region: &'a inst::Region,
 }
 
 struct DuffSwitch<'a> {
     cases: Vec<SwitchCase<'a>>,
     prefix: Vec<&'a Op>,
-    condition: &'a Region,
-}
-
-struct TypedSwitchCase<'a> {
-    patterns: Vec<Pattern>,
-    is_default: bool,
-    region: &'a TypedRegion,
-}
-
-struct TypedDuffSwitch<'a> {
-    cases: Vec<TypedSwitchCase<'a>>,
-    prefix: Vec<&'a TypedOp>,
-    condition: &'a TypedRegion,
+    condition: &'a inst::Region,
 }
 
 #[derive(Debug, Clone)]
@@ -1632,7 +1586,7 @@ impl<'a> Lowerer<'a> {
         let ops = region_ops(module_op);
         self.weak_aliases = ops
             .iter()
-            .filter(|op| op.kind() == CirOpKind::Func && linkage_is_weak(op))
+            .filter(|op| op.mnemonic() == "func" && linkage_is_weak(op))
             .filter_map(|op| {
                 Some((
                     attr_str(op, "sym_name")?.to_string(),
@@ -1645,8 +1599,7 @@ impl<'a> Lowerer<'a> {
             .values()
             .filter(|target| {
                 !ops.iter().any(|op| {
-                    op.kind() == CirOpKind::Func
-                        && attr_str(op, "sym_name") == Some(target.as_str())
+                    op.mnemonic() == "func" && attr_str(op, "sym_name") == Some(target.as_str())
                 })
             })
             .cloned()
@@ -1659,7 +1612,7 @@ impl<'a> Lowerer<'a> {
         collect_assembly_strings(module_op, &mut assembly_strings);
         let asm_referenced_globals: BTreeSet<String> = ops
             .iter()
-            .filter(|op| op.kind() == CirOpKind::Global)
+            .filter(|op| op.mnemonic() == "global")
             .filter_map(|op| attr_str(op, "sym_name"))
             .filter(|name| {
                 assembly_strings
@@ -1675,7 +1628,7 @@ impl<'a> Lowerer<'a> {
             &mut self.ctx.diagnostics,
         ));
         let has_main = ops.iter().any(|op| {
-            op.kind() == CirOpKind::Func
+            op.mnemonic() == "func"
                 && attr_str(op, "sym_name") == Some("main")
                 && !region_ops(op).is_empty()
         });
@@ -1685,7 +1638,7 @@ impl<'a> Lowerer<'a> {
         self.used_symbols = collect_used_symbols(&ops);
         self.global_sym_types = ops
             .iter()
-            .filter(|op| op.kind() == CirOpKind::Global)
+            .filter(|op| op.mnemonic() == "global")
             .filter_map(|op| {
                 Some((
                     attr_str(op, "sym_name")?.to_string(),
@@ -1694,13 +1647,13 @@ impl<'a> Lowerer<'a> {
             })
             .collect();
         for op in ops.iter().filter(|op| {
-            op.kind() == CirOpKind::Global
+            op.mnemonic() == "global"
                 && attr_str(op, "sym_name").is_some_and(|name| name.starts_with(".str"))
         }) {
             self.collect_global(op);
         }
         for op in ops.iter().filter(|op| {
-            op.kind() == CirOpKind::Global
+            op.mnemonic() == "global"
                 && !attr_str(op, "sym_name").is_some_and(|name| name.starts_with(".str"))
         }) {
             self.collect_global(op);
@@ -1783,7 +1736,7 @@ impl<'a> Lowerer<'a> {
         }
         let mut emitted_weak_targets = BTreeSet::new();
         for op in &ops {
-            if op.kind() != CirOpKind::Func || !region_ops(op).is_empty() {
+            if op.mnemonic() != "func" || !region_ops(op).is_empty() {
                 continue;
             }
             if attr_symbol_ref(op, "aliasee").is_some() {
@@ -1859,7 +1812,7 @@ impl<'a> Lowerer<'a> {
         }
 
         for op in &ops {
-            if op.kind() == CirOpKind::Func
+            if op.mnemonic() == "func"
                 && !region_ops(op).is_empty()
                 && attr_str(op, "sym_name").is_some_and(|name| name != "main")
                 && attr_type(op, "function_type").is_some_and(function_type_is_variadic)
@@ -1930,7 +1883,7 @@ impl __SlateVaArgs {
             .extend(unsafe_defined_functions(module));
 
         for op in &ops {
-            if op.kind() != CirOpKind::Func {
+            if op.mnemonic() != "func" {
                 continue;
             }
             let name = attr_str(op, "sym_name").unwrap_or_default();
@@ -2056,9 +2009,6 @@ impl __SlateVaArgs {
         if self.uses_asm_goto_outputs.get() {
             insert_crate_feature(&mut items, Feature::AsmGotoWithOutputs);
         }
-        if self.uses_breakpoint.get() {
-            insert_crate_feature(&mut items, Feature::Breakpoint);
-        }
         for feature in &self.project.crate_features {
             insert_crate_feature(&mut items, *feature);
         }
@@ -2066,7 +2016,7 @@ impl __SlateVaArgs {
         Program { items }
     }
 
-    fn collect_global(&mut self, op: &Op) {
+    fn collect_global(&mut self, op: &Operation) {
         let Some(name) = attr_str(op, "sym_name") else {
             return;
         };
@@ -2355,14 +2305,14 @@ impl __SlateVaArgs {
         }
     }
 
-    fn lower_func_alias(&mut self, op: &Op, ops: &[&Op]) -> Option<Item> {
+    fn lower_func_alias(&mut self, op: &Operation, ops: &[&Operation]) -> Option<Item> {
         let name = attr_str(op, "sym_name")?;
         let target = attr_symbol_ref(op, "aliasee")?;
         if linkage_is_weak(op) {
             return None;
         }
         let target_op = ops.iter().find(|candidate| {
-            candidate.kind() == CirOpKind::Func
+            candidate.mnemonic() == "func"
                 && attr_str(candidate, "sym_name") == Some(target)
                 && !region_ops(candidate).is_empty()
         });
@@ -2439,7 +2389,7 @@ impl __SlateVaArgs {
         lower_enum_def(enm, Visibility::Private).map(Item::Enum)
     }
 
-    fn warn_protected_visibility(&mut self, op: &Op, name: &str) {
+    fn warn_protected_visibility(&mut self, op: &Operation, name: &str) {
         if visibility_is_protected(op) {
             self.ctx.diagnostics.warn(
                 format!(
@@ -2602,7 +2552,7 @@ impl __SlateVaArgs {
         out
     }
 
-    fn lower_func(&mut self, op: &Op) -> Option<Item> {
+    fn lower_func(&mut self, op: &Operation) -> Option<Item> {
         let name = attr_str(op, "sym_name")?;
         let weak_alias_target = self.weak_aliases.values().any(|target| target == name);
         let function_type = attr_type(op, "function_type");
@@ -2799,12 +2749,7 @@ impl __SlateVaArgs {
             .collect();
         let va_allocas = function_ops
             .iter()
-            .filter(|op| {
-                matches!(
-                    op.kind(),
-                    CirOpKind::VaStart | CirOpKind::VaArg | CirOpKind::VaCopy
-                )
-            })
+            .filter(|op| matches!(op.mnemonic(), "va_start" | "va_arg" | "va_copy"))
             .flat_map(|op| op.operands.iter().cloned())
             .collect();
         let mut f = FunctionLowerer {
@@ -2867,10 +2812,11 @@ impl __SlateVaArgs {
                 f.loaded_field_types.insert(arg.clone(), fn_ptr_ty);
             }
         }
-        let body = op.regions.first().unwrap();
+        let body = clang_ir::ops::lower_region(op.regions.first().unwrap());
+        let entry = body.blocks.first().unwrap();
         if body.blocks.len() > 1 {
             let returns_value = !matches!(ret, None | Some(Type::Unit));
-            f.lower_dispatch(body, returns_value);
+            f.lower_dispatch(&body, returns_value);
         } else {
             f.lower_block(entry);
         }
@@ -2892,18 +2838,18 @@ impl __SlateVaArgs {
     fn lower_naked_func(
         &mut self,
         name: &str,
-        function_ops: &[&Op],
+        function_ops: &[&Operation],
         mut attrs: Vec<RustAttr>,
         vis: Visibility,
         params: Vec<FnParam>,
         ret: Option<Type>,
     ) -> Option<Item> {
-        let asm_ops: Vec<&Op> = function_ops
+        let asm_ops: Vec<&Operation> = function_ops
             .iter()
-            .filter(|op| op.kind() == CirOpKind::Asm)
+            .filter(|op| op.mnemonic() == "asm")
             .copied()
             .collect();
-        let Some(dialect) = asm_ops.first().map(|op| cir_asm_dialect(op)) else {
+        let Some(dialect) = asm_ops.first().map(|op| op_asm_dialect(op)) else {
             self.ctx.diagnostics.error(format!(
                 "lower: __attribute__((naked)) function `{name}` has no inline assembly body"
             ));
@@ -3698,7 +3644,9 @@ impl __SlateVaArgs {
                 };
                 self.global_view_init_expr(symbol, &indices, ty)
             }
-            Attr::Float { text, .. } => Some(typed_fp_literal_expr(Some(ty), fp_text_value(text)?)),
+            Attr::Float { text, .. } => {
+                Some(fp_literal_expr_for_type(Some(ty), fp_text_value(text)?))
+            }
             _ => scalar_attr_expr(attr),
         }
     }
@@ -4161,121 +4109,21 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.parent.floating_literal_at_source_location(loc?)
     }
 
-    fn lower_block(&mut self, block: &Block) {
+    fn lower_block(&mut self, block: &inst::Block) {
         self.value_types.extend(block.args.iter().cloned());
         let mut index = 0;
         while index < block.ops.len() {
-            let op = &block.ops[index];
-            if op.kind() == CirOpKind::Alloca {
+            if matches!(block.ops[index], Op::Alloca(_)) {
                 let end = block.ops[index..]
                     .iter()
-                    .take_while(|candidate| candidate.kind() == CirOpKind::Alloca)
-                    .count()
-                    + index;
-                if end - index > 1 {
-                    let allocas: Option<Vec<_>> = block.ops[index..end]
-                        .iter()
-                        .map(|candidate| match TypedOp::from_operation(candidate) {
-                            Some(TypedOp::Alloca(alloca)) => Some(alloca),
-                            _ => None,
-                        })
-                        .collect();
-                    if let Some(allocas) = allocas
-                        && self.alloca_group_is_lowerable(&allocas)
-                    {
-                        self.lower_alloca_group(&allocas);
-                        index = end;
-                        continue;
-                    }
-                }
-            }
-            self.asm_output_places.clear();
-            if op.kind() == CirOpKind::Asm
-                && attr_str(op, "asm_string").is_some_and(asm_template_has_labels)
-            {
-                for (result, _) in &op.results {
-                    if let Some(store) = block.ops[index + 1..].iter().find(|candidate| {
-                        candidate.kind() == CirOpKind::Store
-                            && candidate.operands.first() == Some(result)
-                    }) && let Some(pointer) = store.operands.get(1)
-                        && let Some(place) = self.place_expr(pointer)
-                    {
-                        self.asm_output_places.insert(result.clone(), place);
-                    }
-                }
-            }
-            self.lower_op(op);
-            self.force_cross_block_materialization(op);
-            index += 1;
-        }
-    }
-
-    fn force_cross_block_materialization(&mut self, op: &Op) {
-        if self.dispatch.is_none() {
-            return;
-        }
-        for (result, _) in &op.results {
-            let Some(name) = self
-                .dispatch
-                .as_ref()
-                .unwrap()
-                .cross_block_names
-                .get(result)
-                .cloned()
-            else {
-                continue;
-            };
-            let already_materialized = matches!(
-                self.values.get(result),
-                Some(Val::Expr(Expr::Var(v))) if v.as_str() == name
-            );
-            if already_materialized {
-                continue;
-            }
-            let Some(Val::Expr(current)) = self.values.get(result).cloned() else {
-                continue;
-            };
-            let ty = op_result_type(op)
-                .map(|ty| self.parent.rust_type(ty))
-                .unwrap_or(Type::Prim(Prim::I32));
-            let default = self.parent.default_value_expr(&ty);
-            self.dispatch
-                .as_mut()
-                .unwrap()
-                .pending_hoists
-                .push(Self::indent_stmt(Stmt::Let {
-                    name: name.clone(),
-                    mutable: true,
-                    ty: Some(ty),
-                    init: Some(default),
-                }));
-            self.push_stmt(Self::assign_stmt(Expr::Var(name.clone().into()), current));
-            self.values
-                .insert(result.clone(), Val::Expr(Expr::Var(name.into())));
-        }
-    }
-
-    fn lower_region_ops(&mut self, region: &Region) {
-        for block in &region.blocks {
-            self.lower_block(block);
-        }
-    }
-
-    fn lower_typed_block(&mut self, block: &TypedBlock) {
-        self.value_types.extend(block.args.iter().cloned());
-        let mut index = 0;
-        while index < block.ops.len() {
-            if matches!(block.ops[index], TypedOp::Alloca(_)) {
-                let end = block.ops[index..]
-                    .iter()
-                    .take_while(|candidate| matches!(candidate, TypedOp::Alloca(_)))
+                    .take_while(|candidate| matches!(candidate, Op::Alloca(_)))
                     .count()
                     + index;
                 if end - index > 1 {
                     let allocas: Vec<_> = block.ops[index..end]
                         .iter()
                         .filter_map(|candidate| match candidate {
-                            TypedOp::Alloca(alloca) => Some(alloca.clone()),
+                            Op::Alloca(alloca) => Some(alloca.clone()),
                             _ => None,
                         })
                         .collect();
@@ -4287,14 +4135,27 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 }
             }
             self.asm_output_places.clear();
-            let typed = block.ops[index].clone();
-            self.lower_typed_op(typed.clone(), None);
-            self.force_typed_cross_block_materialization(&typed);
+            if let Op::Asm(asm) = &block.ops[index]
+                && asm_template_has_labels(&asm.asm_string)
+                && let Some(result) = &asm.res
+                && let Some(store) = block.ops[index + 1..].iter().find_map(|candidate| {
+                    let Op::Store(store) = candidate else {
+                        return None;
+                    };
+                    (store.value == *result).then_some(store)
+                })
+                && let Some(place) = self.place_expr(&store.addr)
+            {
+                self.asm_output_places.insert(result.clone(), place);
+            }
+            let op = block.ops[index].clone();
+            self.lower_op(op.clone());
+            self.force_cross_block_materialization(&op);
             index += 1;
         }
     }
 
-    fn force_typed_cross_block_materialization(&mut self, op: &TypedOp) {
+    fn force_cross_block_materialization(&mut self, op: &Op) {
         if self.dispatch.is_none() {
             return;
         }
@@ -4339,26 +4200,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    fn lower_typed_region_ops(&mut self, region: &TypedRegion) {
+    fn lower_region_ops(&mut self, region: &inst::Region) {
         for block in &region.blocks {
-            self.lower_typed_block(block);
+            self.lower_block(block);
         }
     }
 
-    fn lower_op(&mut self, op: &Op) {
-        if let Some(typed) = TypedOp::from_operation(op) {
-            self.lower_typed_op(typed, Some(op));
-        } else {
-            self.lower_raw_op(op);
-        }
-    }
-
-    fn lower_typed_op(&mut self, typed: TypedOp, raw: Option<&Op>) {
-        self.record_typed_result_types(&typed);
+    fn lower_op(&mut self, op: Op) {
+        self.record_result_types(&op);
         let () = {
-            match typed {
-                TypedOp::Add(value) if value.saturated => {
-                    return self.lower_saturating_arith_typed(
+            match op {
+                Op::Add(value) if value.saturated => {
+                    return self.lower_saturating_arith(
                         &value.result,
                         &value.result_ty,
                         &value.lhs,
@@ -4366,8 +4219,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         "saturating_add",
                     );
                 }
-                TypedOp::Add(value) => {
-                    return self.lower_int_arith_typed(
+                Op::Add(value) => {
+                    return self.lower_int_arith(
                         &value.result,
                         Some(&value.result_ty),
                         &value.lhs,
@@ -4375,8 +4228,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         BinOp::Add,
                     );
                 }
-                TypedOp::Sub(value) if value.saturated => {
-                    return self.lower_saturating_arith_typed(
+                Op::Sub(value) if value.saturated => {
+                    return self.lower_saturating_arith(
                         &value.result,
                         &value.result_ty,
                         &value.lhs,
@@ -4384,8 +4237,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         "saturating_sub",
                     );
                 }
-                TypedOp::Sub(value) => {
-                    return self.lower_int_arith_typed(
+                Op::Sub(value) => {
+                    return self.lower_int_arith(
                         &value.result,
                         Some(&value.result_ty),
                         &value.lhs,
@@ -4393,8 +4246,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         BinOp::Sub,
                     );
                 }
-                TypedOp::Mul(value) => {
-                    return self.lower_int_arith_typed(
+                Op::Mul(value) => {
+                    return self.lower_int_arith(
                         &value.result,
                         Some(&value.result_ty),
                         &value.lhs,
@@ -4402,8 +4255,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         BinOp::Mul,
                     );
                 }
-                TypedOp::Div(value) => {
-                    return self.lower_int_arith_typed(
+                Op::Div(value) => {
+                    return self.lower_int_arith(
                         &value.result,
                         Some(&value.result_ty),
                         &value.lhs,
@@ -4411,8 +4264,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         BinOp::Div,
                     );
                 }
-                TypedOp::Rem(value) => {
-                    return self.lower_int_arith_typed(
+                Op::Rem(value) => {
+                    return self.lower_int_arith(
                         &value.result,
                         Some(&value.result_ty),
                         &value.lhs,
@@ -4420,8 +4273,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         BinOp::Rem,
                     );
                 }
-                TypedOp::And(value) => {
-                    return self.lower_int_arith_typed(
+                Op::And(value) => {
+                    return self.lower_int_arith(
                         &value.result,
                         Some(&value.result_ty),
                         &value.lhs,
@@ -4429,8 +4282,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         BinOp::BitAnd,
                     );
                 }
-                TypedOp::Or(value) => {
-                    return self.lower_int_arith_typed(
+                Op::Or(value) => {
+                    return self.lower_int_arith(
                         &value.result,
                         Some(&value.result_ty),
                         &value.lhs,
@@ -4438,8 +4291,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         BinOp::BitOr,
                     );
                 }
-                TypedOp::Xor(value) => {
-                    return self.lower_int_arith_typed(
+                Op::Xor(value) => {
+                    return self.lower_int_arith(
                         &value.result,
                         Some(&value.result_ty),
                         &value.lhs,
@@ -4447,8 +4300,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         BinOp::BitXor,
                     );
                 }
-                TypedOp::Fadd(value) => {
-                    return self.lower_binary_typed(
+                Op::Fadd(value) => {
+                    return self.lower_binary(
                         &value.result,
                         Some(&value.result_ty),
                         &value.lhs,
@@ -4456,8 +4309,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         BinOp::Add,
                     );
                 }
-                TypedOp::Fsub(value) => {
-                    return self.lower_binary_typed(
+                Op::Fsub(value) => {
+                    return self.lower_binary(
                         &value.result,
                         Some(&value.result_ty),
                         &value.lhs,
@@ -4465,8 +4318,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         BinOp::Sub,
                     );
                 }
-                TypedOp::Fmul(value) => {
-                    return self.lower_binary_typed(
+                Op::Fmul(value) => {
+                    return self.lower_binary(
                         &value.result,
                         Some(&value.result_ty),
                         &value.lhs,
@@ -4474,8 +4327,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         BinOp::Mul,
                     );
                 }
-                TypedOp::Fdiv(value) => {
-                    return self.lower_binary_typed(
+                Op::Fdiv(value) => {
+                    return self.lower_binary(
                         &value.result,
                         Some(&value.result_ty),
                         &value.lhs,
@@ -4483,27 +4336,27 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         BinOp::Div,
                     );
                 }
-                TypedOp::Inc(value) => {
-                    return self.lower_step_typed(
+                Op::Inc(value) => {
+                    return self.lower_step(
                         &value.result,
                         &value.result_ty,
                         &value.input,
                         BinOp::Add,
                     );
                 }
-                TypedOp::Dec(value) => {
-                    return self.lower_step_typed(
+                Op::Dec(value) => {
+                    return self.lower_step(
                         &value.result,
                         &value.result_ty,
                         &value.input,
                         BinOp::Sub,
                     );
                 }
-                TypedOp::Not(value) => {
-                    return self.lower_not_typed(&value.result, &value.result_ty, &value.input);
+                Op::Not(value) => {
+                    return self.lower_not(&value.result, &value.result_ty, &value.input);
                 }
-                TypedOp::Shift(value) => {
-                    return self.lower_int_arith_typed(
+                Op::Shift(value) => {
+                    return self.lower_int_arith(
                         &value.result,
                         Some(&value.result_ty),
                         &value.value,
@@ -4515,8 +4368,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         },
                     );
                 }
-                TypedOp::AddOverflow(value) => {
-                    return self.lower_overflow_arith_typed(
+                Op::AddOverflow(value) => {
+                    return self.lower_overflow_arith(
                         (
                             &value.result,
                             &value.result_ty,
@@ -4528,8 +4381,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         "overflowing_add",
                     );
                 }
-                TypedOp::SubOverflow(value) => {
-                    return self.lower_overflow_arith_typed(
+                Op::SubOverflow(value) => {
+                    return self.lower_overflow_arith(
                         (
                             &value.result,
                             &value.result_ty,
@@ -4541,8 +4394,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         "overflowing_sub",
                     );
                 }
-                TypedOp::MulOverflow(value) => {
-                    return self.lower_overflow_arith_typed(
+                Op::MulOverflow(value) => {
+                    return self.lower_overflow_arith(
                         (
                             &value.result,
                             &value.result_ty,
@@ -4554,32 +4407,32 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         "overflowing_mul",
                     );
                 }
-                TypedOp::Acos(value) => {
-                    return self.lower_unary_method_typed(
+                Op::Acos(value) => {
+                    return self.lower_unary_method(
                         &value.result,
                         Some(&value.result_ty),
                         &value.src,
                         "acos",
                     );
                 }
-                TypedOp::Asin(value) => {
-                    return self.lower_unary_method_typed(
+                Op::Asin(value) => {
+                    return self.lower_unary_method(
                         &value.result,
                         Some(&value.result_ty),
                         &value.src,
                         "asin",
                     );
                 }
-                TypedOp::Atan(value) => {
-                    return self.lower_unary_method_typed(
+                Op::Atan(value) => {
+                    return self.lower_unary_method(
                         &value.result,
                         Some(&value.result_ty),
                         &value.src,
                         "atan",
                     );
                 }
-                TypedOp::Cos(value) => {
-                    return self.lower_known_unary_method_typed(
+                Op::Cos(value) => {
+                    return self.lower_known_unary_method(
                         &value.result,
                         &value.result_ty,
                         &value.src,
@@ -4588,8 +4441,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         "cos",
                     );
                 }
-                TypedOp::Exp(value) => {
-                    return self.lower_known_unary_method_typed(
+                Op::Exp(value) => {
+                    return self.lower_known_unary_method(
                         &value.result,
                         &value.result_ty,
                         &value.src,
@@ -4598,8 +4451,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         "exp",
                     );
                 }
-                TypedOp::Exp2(value) => {
-                    return self.lower_known_unary_method_typed(
+                Op::Exp2(value) => {
+                    return self.lower_known_unary_method(
                         &value.result,
                         &value.result_ty,
                         &value.src,
@@ -4608,8 +4461,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         "exp2",
                     );
                 }
-                TypedOp::Log(value) => {
-                    return self.lower_known_unary_method_typed(
+                Op::Log(value) => {
+                    return self.lower_known_unary_method(
                         &value.result,
                         &value.result_ty,
                         &value.src,
@@ -4618,8 +4471,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         "ln",
                     );
                 }
-                TypedOp::Log10(value) => {
-                    return self.lower_known_unary_method_typed(
+                Op::Log10(value) => {
+                    return self.lower_known_unary_method(
                         &value.result,
                         &value.result_ty,
                         &value.src,
@@ -4628,8 +4481,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         "log10",
                     );
                 }
-                TypedOp::Log2(value) => {
-                    return self.lower_known_unary_method_typed(
+                Op::Log2(value) => {
+                    return self.lower_known_unary_method(
                         &value.result,
                         &value.result_ty,
                         &value.src,
@@ -4638,8 +4491,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         "log2",
                     );
                 }
-                TypedOp::Sin(value) => {
-                    return self.lower_known_unary_method_typed(
+                Op::Sin(value) => {
+                    return self.lower_known_unary_method(
                         &value.result,
                         &value.result_ty,
                         &value.src,
@@ -4648,8 +4501,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         "sin",
                     );
                 }
-                TypedOp::Sqrt(value) => {
-                    return self.lower_known_unary_method_typed(
+                Op::Sqrt(value) => {
+                    return self.lower_known_unary_method(
                         &value.result,
                         &value.result_ty,
                         &value.src,
@@ -4658,8 +4511,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         "sqrt",
                     );
                 }
-                TypedOp::Tan(value) => {
-                    return self.lower_known_unary_method_typed(
+                Op::Tan(value) => {
+                    return self.lower_known_unary_method(
                         &value.result,
                         &value.result_ty,
                         &value.src,
@@ -4668,175 +4521,165 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         "tan",
                     );
                 }
-                TypedOp::Const(value) => return self.lower_const(&value),
-                TypedOp::Alloca(value) => return self.lower_alloca(&value),
-                TypedOp::GetGlobal(value) => return self.lower_get_global(&value),
-                TypedOp::GetMember(value) => return self.lower_get_member_typed(&value),
-                TypedOp::Goto(value) => return self.lower_goto_typed(&value),
-                TypedOp::IndirectBr(value) => return self.lower_indirect_br_typed(&value),
-                TypedOp::IndirectGoto(value) => return self.lower_indirect_goto_typed(&value),
-                TypedOp::Label(_) | TypedOp::Condition(_) => return,
-                TypedOp::Load(value) => return self.lower_load(&value),
-                TypedOp::Br(value) => return self.lower_br(&value),
-                TypedOp::Call(value) => return self.lower_call(&value),
-                TypedOp::Brcond(value) => return self.lower_brcond_typed(&value),
-                TypedOp::Expect(value) => return self.lower_expect_typed(&value),
-                TypedOp::Trap(_) => return self.lower_trap(),
-                TypedOp::Unreachable(_) => return self.lower_unreachable(),
-                TypedOp::Scope(value) => return self.lower_scope_typed(&value),
-                TypedOp::Switch(value) => return self.lower_switch_typed(&value),
-                TypedOp::CleanupScope(value) => return self.lower_cleanup_scope_typed(&value),
-                TypedOp::Stackrestore(_) => return,
-                TypedOp::Ternary(value) => return self.lower_ternary_typed(&value),
-                TypedOp::For(value) => return self.lower_for_typed(&value),
-                TypedOp::While(value) => return self.lower_while_typed(&value),
-                TypedOp::Do(value) => return self.lower_do_typed(&value),
-                TypedOp::Break(_) => return self.lower_break(),
-                TypedOp::Continue(_) => return self.lower_continue(),
-                TypedOp::Store(value) => return self.lower_store(&value),
-                TypedOp::Copy(value) => return self.lower_copy(&value),
-                TypedOp::Cast(value) => return self.lower_cast(&value),
-                TypedOp::GetElement(value) => return self.lower_get_element(&value),
-                TypedOp::PtrStride(value) => return self.lower_ptr_stride(&value),
-                TypedOp::PtrDiff(value) => return self.lower_ptr_diff(&value),
-                TypedOp::Cmp(value) => return self.lower_cmp(&value),
-                TypedOp::Select(value) => return self.lower_select(&value),
-                TypedOp::Abs(value) => {
-                    return self.lower_abs_typed(&value.result, Some(&value.result_ty), &value.src);
+                Op::Const(value) => return self.lower_const(&value),
+                Op::Alloca(value) => return self.lower_alloca(&value),
+                Op::GetGlobal(value) => return self.lower_get_global(&value),
+                Op::GetMember(value) => return self.lower_get_member(&value),
+                Op::Asm(value) => return self.lower_asm(&value),
+                Op::Goto(value) => return self.lower_goto(&value),
+                Op::IndirectBr(value) => return self.lower_indirect_br(&value),
+                Op::IndirectGoto(value) => return self.lower_indirect_goto(&value),
+                Op::Label(_) | Op::Condition(_) => return,
+                Op::Load(value) => return self.lower_load(&value),
+                Op::Br(value) => return self.lower_br(&value),
+                Op::Call(value) => return self.lower_call(&value),
+                Op::Brcond(value) => return self.lower_brcond(&value),
+                Op::Expect(value) => return self.lower_expect(&value),
+                Op::Trap(_) => return self.lower_trap(),
+                Op::Unreachable(_) => return self.lower_unreachable(),
+                Op::Scope(value) => return self.lower_scope(&value),
+                Op::Switch(value) => return self.lower_switch(&value),
+                Op::SwitchFlat(value) => return self.lower_switch_flat(&value),
+                Op::CleanupScope(value) => return self.lower_cleanup_scope(&value),
+                Op::Stackrestore(_) => return,
+                Op::Ternary(value) => return self.lower_ternary(&value),
+                Op::For(value) => return self.lower_for(&value),
+                Op::While(value) => return self.lower_while(&value),
+                Op::Do(value) => return self.lower_do(&value),
+                Op::Break(_) => return self.lower_break(),
+                Op::Continue(_) => return self.lower_continue(),
+                Op::Store(value) => return self.lower_store(&value),
+                Op::Copy(value) => return self.lower_copy(&value),
+                Op::Cast(value) => return self.lower_cast(&value),
+                Op::GetElement(value) => return self.lower_get_element(&value),
+                Op::PtrStride(value) => return self.lower_ptr_stride(&value),
+                Op::PtrDiff(value) => return self.lower_ptr_diff(&value),
+                Op::Cmp(value) => return self.lower_cmp(&value),
+                Op::Select(value) => return self.lower_select(&value),
+                Op::Abs(value) => {
+                    return self.lower_abs(&value.result, Some(&value.result_ty), &value.src);
                 }
-                TypedOp::Fabs(value) => {
-                    return self.lower_abs_typed(&value.result, Some(&value.result_ty), &value.src);
+                Op::Fabs(value) => {
+                    return self.lower_abs(&value.result, Some(&value.result_ty), &value.src);
                 }
-                TypedOp::Bitreverse(value) => {
-                    return self.lower_unary_method_typed(
+                Op::Bitreverse(value) => {
+                    return self.lower_unary_method(
                         &value.result,
                         Some(&value.result_ty),
                         &value.input,
                         "reverse_bits",
                     );
                 }
-                TypedOp::ByteSwap(value) => {
-                    return self.lower_unary_method_typed(
+                Op::ByteSwap(value) => {
+                    return self.lower_unary_method(
                         &value.result,
                         Some(&value.result_ty),
                         &value.input,
                         "swap_bytes",
                     );
                 }
-                TypedOp::Ceil(value) => {
-                    return self.lower_unary_method_typed(
+                Op::Ceil(value) => {
+                    return self.lower_unary_method(
                         &value.result,
                         Some(&value.result_ty),
                         &value.src,
                         "ceil",
                     );
                 }
-                TypedOp::Clz(value) => {
-                    return self.lower_unary_method_typed(
+                Op::Clz(value) => {
+                    return self.lower_unary_method(
                         &value.result,
                         Some(&value.result_ty),
                         &value.input,
                         "leading_zeros",
                     );
                 }
-                TypedOp::Ctz(value) => {
-                    return self.lower_unary_method_typed(
+                Op::Ctz(value) => {
+                    return self.lower_unary_method(
                         &value.result,
                         Some(&value.result_ty),
                         &value.input,
                         "trailing_zeros",
                     );
                 }
-                TypedOp::Floor(value) => {
-                    return self.lower_unary_method_typed(
+                Op::Floor(value) => {
+                    return self.lower_unary_method(
                         &value.result,
                         Some(&value.result_ty),
                         &value.src,
                         "floor",
                     );
                 }
-                TypedOp::Nearbyint(value) => {
-                    return self.lower_unary_method_typed(
+                Op::Nearbyint(value) => {
+                    return self.lower_unary_method(
                         &value.result,
                         Some(&value.result_ty),
                         &value.src,
                         "round_ties_even",
                     );
                 }
-                TypedOp::Rint(value) => {
-                    return self.lower_unary_method_typed(
+                Op::Rint(value) => {
+                    return self.lower_unary_method(
                         &value.result,
                         Some(&value.result_ty),
                         &value.src,
                         "round_ties_even",
                     );
                 }
-                TypedOp::Popcount(value) => {
-                    return self.lower_unary_method_typed(
+                Op::Popcount(value) => {
+                    return self.lower_unary_method(
                         &value.result,
                         Some(&value.result_ty),
                         &value.input,
                         "count_ones",
                     );
                 }
-                TypedOp::Round(value) => {
-                    return self.lower_unary_method_typed(
+                Op::Round(value) => {
+                    return self.lower_unary_method(
                         &value.result,
                         Some(&value.result_ty),
                         &value.src,
                         "round",
                     );
                 }
-                TypedOp::Roundeven(value) => {
-                    return self.lower_unary_method_typed(
+                Op::Roundeven(value) => {
+                    return self.lower_unary_method(
                         &value.result,
                         Some(&value.result_ty),
                         &value.src,
                         "round_ties_even",
                     );
                 }
-                TypedOp::Trunc(value) => {
-                    return self.lower_unary_method_typed(
+                Op::Trunc(value) => {
+                    return self.lower_unary_method(
                         &value.result,
                         Some(&value.result_ty),
                         &value.src,
                         "trunc",
                     );
                 }
-                TypedOp::Minus(value) => {
-                    return self.lower_neg_typed(&value.result, &value.result_ty, &value.input);
+                Op::Minus(value) => {
+                    return self.lower_neg(&value.result, &value.result_ty, &value.input);
                 }
-                TypedOp::Fneg(value) => {
-                    return self.lower_neg_typed(&value.result, &value.result_ty, &value.input);
+                Op::Fneg(value) => {
+                    return self.lower_neg(&value.result, &value.result_ty, &value.input);
                 }
-                TypedOp::Parity(value) => {
-                    return self.lower_parity_typed(
-                        &value.result,
-                        Some(&value.result_ty),
-                        &value.input,
-                    );
+                Op::Parity(value) => {
+                    return self.lower_parity(&value.result, Some(&value.result_ty), &value.input);
                 }
-                TypedOp::Assume(value) => return self.lower_assume(&value),
-                TypedOp::If(value) => return self.lower_if_typed(&value),
-                TypedOp::Ffs(value) => {
-                    return self.lower_ffs_typed(
-                        &value.result,
-                        Some(&value.result_ty),
-                        &value.input,
-                    );
+                Op::Assume(value) => return self.lower_assume(&value),
+                Op::If(value) => return self.lower_if(&value),
+                Op::Ffs(value) => {
+                    return self.lower_ffs(&value.result, Some(&value.result_ty), &value.input);
                 }
-                TypedOp::Clrsb(value) => {
-                    return self.lower_clrsb_typed(
-                        &value.result,
-                        Some(&value.result_ty),
-                        &value.input,
-                    );
+                Op::Clrsb(value) => {
+                    return self.lower_clrsb(&value.result, Some(&value.result_ty), &value.input);
                 }
-                TypedOp::Signbit(value) => {
-                    return self.lower_signbit_typed(&value.res, &value.res_ty, &value.input);
+                Op::Signbit(value) => {
+                    return self.lower_signbit(&value.res, &value.res_ty, &value.input);
                 }
-                TypedOp::Atan2(value) => {
-                    return self.lower_binary_method_typed(
+                Op::Atan2(value) => {
+                    return self.lower_binary_method(
                         &value.result,
                         Some(&value.result_ty),
                         &value.lhs,
@@ -4844,8 +4687,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         "atan2",
                     );
                 }
-                TypedOp::Fmaximum(value) => {
-                    return self.lower_binary_method_typed(
+                Op::Fmaximum(value) => {
+                    return self.lower_binary_method(
                         &value.result,
                         Some(&value.result_ty),
                         &value.lhs,
@@ -4853,8 +4696,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         "max",
                     );
                 }
-                TypedOp::Fminimum(value) => {
-                    return self.lower_binary_method_typed(
+                Op::Fminimum(value) => {
+                    return self.lower_binary_method(
                         &value.result,
                         Some(&value.result_ty),
                         &value.lhs,
@@ -4862,8 +4705,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         "min",
                     );
                 }
-                TypedOp::Fmod(value) => {
-                    if self.lower_known_libc_binary_typed(
+                Op::Fmod(value) => {
+                    if self.lower_known_libc_binary(
                         &value.result,
                         &value.result_ty,
                         &value.lhs,
@@ -4883,8 +4726,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     }
                     return;
                 }
-                TypedOp::Pow(value) => {
-                    return self.lower_known_binary_method_typed(
+                Op::Pow(value) => {
+                    return self.lower_known_binary_method(
                         &value.result,
                         &value.result_ty,
                         (&value.lhs, &value.rhs),
@@ -4893,8 +4736,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         "powf",
                     );
                 }
-                TypedOp::Copysign(value) => {
-                    return self.lower_binary_method_typed(
+                Op::Copysign(value) => {
+                    return self.lower_binary_method(
                         &value.result,
                         Some(&value.result_ty),
                         &value.lhs,
@@ -4902,8 +4745,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         "copysign",
                     );
                 }
-                TypedOp::Fmaxnum(value) => {
-                    return self.lower_binary_method_typed(
+                Op::Fmaxnum(value) => {
+                    return self.lower_binary_method(
                         &value.result,
                         Some(&value.result_ty),
                         &value.lhs,
@@ -4911,8 +4754,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         "max",
                     );
                 }
-                TypedOp::Fminnum(value) => {
-                    return self.lower_binary_method_typed(
+                Op::Fminnum(value) => {
+                    return self.lower_binary_method(
                         &value.result,
                         Some(&value.result_ty),
                         &value.lhs,
@@ -4920,33 +4763,33 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         "min",
                     );
                 }
-                TypedOp::Fma(value) => {
-                    return self.lower_ternary_method_typed(
+                Op::Fma(value) => {
+                    return self.lower_ternary_method(
                         &value.result,
                         &value.result_ty,
                         (&value.a, &value.b, &value.c),
                         "mul_add",
                     );
                 }
-                TypedOp::Fmuladd(value) => {
-                    return self.lower_ternary_method_typed(
+                Op::Fmuladd(value) => {
+                    return self.lower_ternary_method(
                         &value.result,
                         &value.result_ty,
                         (&value.a, &value.b, &value.c),
                         "mul_add",
                     );
                 }
-                TypedOp::Modf(value) => return self.lower_modf(&value),
-                TypedOp::Llrint(value) => {
-                    return self.lower_unary_cast_method_typed(
+                Op::Modf(value) => return self.lower_modf(&value),
+                Op::Llrint(value) => {
+                    return self.lower_unary_cast_method(
                         &value.result,
                         &value.result_ty,
                         &value.src,
                         "round_ties_even",
                     );
                 }
-                TypedOp::Llround(value) => {
-                    return self.lower_known_unary_cast_method_typed(
+                Op::Llround(value) => {
+                    return self.lower_known_unary_cast_method(
                         &value.result,
                         &value.result_ty,
                         &value.src,
@@ -4955,16 +4798,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         "round",
                     );
                 }
-                TypedOp::Lrint(value) => {
-                    return self.lower_unary_cast_method_typed(
+                Op::Lrint(value) => {
+                    return self.lower_unary_cast_method(
                         &value.result,
                         &value.result_ty,
                         &value.src,
                         "round_ties_even",
                     );
                 }
-                TypedOp::Lround(value) => {
-                    return self.lower_known_unary_cast_method_typed(
+                Op::Lround(value) => {
+                    return self.lower_known_unary_cast_method(
                         &value.result,
                         &value.result_ty,
                         &value.src,
@@ -4973,7 +4816,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         "round",
                     );
                 }
-                TypedOp::LibcMemcpy(value) => {
+                Op::LibcMemcpy(value) => {
                     return self.lower_mem_copy(
                         &value.dst,
                         &value.src,
@@ -4982,7 +4825,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         false,
                     );
                 }
-                TypedOp::LibcMemmove(value) => {
+                Op::LibcMemmove(value) => {
                     return self.lower_mem_copy(
                         &value.dst,
                         &value.src,
@@ -4991,30 +4834,30 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         true,
                     );
                 }
-                TypedOp::LibcMemset(value) => return self.lower_mem_set(&value),
-                TypedOp::LibcMemchr(value) => return self.lower_mem_chr(&value),
-                TypedOp::VaStart(value) => return self.lower_va_start(&value),
-                TypedOp::VaCopy(value) => return self.lower_va_copy(&value),
-                TypedOp::VaArg(value) => return self.lower_va_arg(&value),
-                TypedOp::VaEnd(_) => return,
-                TypedOp::EhSetjmp(value) => return self.lower_eh_setjmp(&value),
-                TypedOp::FrameAddress(value) => {
-                    return self.lower_opaque_pointer_typed(&value.result, &value.result_ty, true);
+                Op::LibcMemset(value) => return self.lower_mem_set(&value),
+                Op::LibcMemchr(value) => return self.lower_mem_chr(&value),
+                Op::VaStart(value) => return self.lower_va_start(&value),
+                Op::VaCopy(value) => return self.lower_va_copy(&value),
+                Op::VaArg(value) => return self.lower_va_arg(&value),
+                Op::VaEnd(_) => return,
+                Op::EhSetjmp(value) => return self.lower_eh_setjmp(&value),
+                Op::FrameAddress(value) => {
+                    return self.lower_opaque_pointer(&value.result, &value.result_ty, true);
                 }
-                TypedOp::Return(value) => return self.lower_return(&value),
-                TypedOp::Yield(_) => return,
-                TypedOp::ReturnAddress(value) => {
-                    return self.lower_opaque_pointer_typed(&value.result, &value.result_ty, true);
+                Op::Return(value) => return self.lower_return(&value),
+                Op::Yield(_) => return,
+                Op::ReturnAddress(value) => {
+                    return self.lower_opaque_pointer(&value.result, &value.result_ty, true);
                 }
-                TypedOp::BlockAddress(value) => {
-                    return self.lower_opaque_pointer_typed(&value.addr, &value.addr_ty, true);
+                Op::BlockAddress(value) => {
+                    return self.lower_opaque_pointer(&value.addr, &value.addr_ty, true);
                 }
-                TypedOp::Stacksave(value) => {
-                    return self.lower_opaque_pointer_typed(&value.result, &value.result_ty, false);
+                Op::Stacksave(value) => {
+                    return self.lower_opaque_pointer(&value.result, &value.result_ty, false);
                 }
-                TypedOp::Prefetch(_) => return,
-                TypedOp::IsFpClass(value) => return self.lower_is_fp_class(&value),
-                TypedOp::ComplexCreate(value) => {
+                Op::Prefetch(_) => return,
+                Op::IsFpClass(value) => return self.lower_is_fp_class(&value),
+                Op::ComplexCreate(value) => {
                     return self.lower_complex_create(
                         &value.result,
                         &value.result_ty,
@@ -5022,7 +4865,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         &value.imag,
                     );
                 }
-                TypedOp::ComplexAdd(value) => {
+                Op::ComplexAdd(value) => {
                     return self.lower_complex_addsub(
                         &value.result,
                         &value.result_ty,
@@ -5031,7 +4874,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         BinOp::Add,
                     );
                 }
-                TypedOp::ComplexSub(value) => {
+                Op::ComplexSub(value) => {
                     return self.lower_complex_addsub(
                         &value.result,
                         &value.result_ty,
@@ -5040,7 +4883,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         BinOp::Sub,
                     );
                 }
-                TypedOp::ComplexMul(value) => {
+                Op::ComplexMul(value) => {
                     return self.lower_complex_mul(
                         &value.result,
                         &value.result_ty,
@@ -5048,7 +4891,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         &value.rhs,
                     );
                 }
-                TypedOp::ComplexDiv(value) => {
+                Op::ComplexDiv(value) => {
                     return self.lower_complex_div(
                         &value.result,
                         &value.result_ty,
@@ -5056,14 +4899,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         &value.rhs,
                     );
                 }
-                TypedOp::ComplexConj(value) => {
+                Op::ComplexConj(value) => {
                     return self.lower_complex_conj(
                         &value.result,
                         &value.result_ty,
                         &value.operand,
                     );
                 }
-                TypedOp::ComplexReal(value) => {
+                Op::ComplexReal(value) => {
                     return self.lower_complex_part(
                         &value.result,
                         &value.result_ty,
@@ -5071,7 +4914,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         "re",
                     );
                 }
-                TypedOp::ComplexImag(value) => {
+                Op::ComplexImag(value) => {
                     return self.lower_complex_part(
                         &value.result,
                         &value.result_ty,
@@ -5079,7 +4922,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         "im",
                     );
                 }
-                TypedOp::ComplexRealPtr(value) => {
+                Op::ComplexRealPtr(value) => {
                     return self.lower_complex_part_ptr(
                         &value.result,
                         &value.result_ty,
@@ -5087,7 +4930,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         "re",
                     );
                 }
-                TypedOp::ComplexImagPtr(value) => {
+                Op::ComplexImagPtr(value) => {
                     return self.lower_complex_part_ptr(
                         &value.result,
                         &value.result_ty,
@@ -5095,73 +4938,32 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         "im",
                     );
                 }
-                TypedOp::ExtractMember(value) => return self.lower_extract_member(&value),
-                TypedOp::InsertMember(value) => return self.lower_insert_member(&value),
-                TypedOp::VecCreate(value) => return self.lower_vec_create(&value),
-                TypedOp::VecExtract(value) => return self.lower_vec_extract(&value),
-                TypedOp::VecInsert(value) => return self.lower_vec_insert(&value),
-                TypedOp::VecShuffle(value) => return self.lower_vec_shuffle(&value),
-                TypedOp::VecShuffleDynamic(value) => return self.lower_vec_shuffle_dynamic(&value),
-                TypedOp::VecSplat(value) => return self.lower_vec_splat(&value),
-                TypedOp::VecCmp(value) => return self.lower_vec_cmp(&value),
-                TypedOp::IsConstant(value) => return self.lower_is_constant(&value),
-                TypedOp::Objsize(value) => return self.lower_objsize(&value),
-                TypedOp::AtomicFetch(value) => return self.lower_atomic_fetch(&value),
-                TypedOp::AtomicXchg(value) => return self.lower_atomic_xchg(&value),
-                TypedOp::AtomicCmpxchg(value) => return self.lower_atomic_cmpxchg(&value),
-                TypedOp::AtomicFence(value) => return self.lower_atomic_fence(&value),
-                TypedOp::AtomicTestAndSet(value) => return self.lower_atomic_test_and_set(&value),
-                TypedOp::AtomicClear(value) => return self.lower_atomic_clear(&value),
-                TypedOp::GetBitfield(value) => return self.lower_get_bitfield(&value),
-                TypedOp::SetBitfield(value) => return self.lower_set_bitfield(&value),
+                Op::ExtractMember(value) => return self.lower_extract_member(&value),
+                Op::InsertMember(value) => return self.lower_insert_member(&value),
+                Op::VecCreate(value) => return self.lower_vec_create(&value),
+                Op::VecExtract(value) => return self.lower_vec_extract(&value),
+                Op::VecInsert(value) => return self.lower_vec_insert(&value),
+                Op::VecShuffle(value) => return self.lower_vec_shuffle(&value),
+                Op::VecShuffleDynamic(value) => return self.lower_vec_shuffle_dynamic(&value),
+                Op::VecSplat(value) => return self.lower_vec_splat(&value),
+                Op::VecCmp(value) => return self.lower_vec_cmp(&value),
+                Op::IsConstant(value) => return self.lower_is_constant(&value),
+                Op::Objsize(value) => return self.lower_objsize(&value),
+                Op::AtomicFetch(value) => return self.lower_atomic_fetch(&value),
+                Op::AtomicXchg(value) => return self.lower_atomic_xchg(&value),
+                Op::AtomicCmpxchg(value) => return self.lower_atomic_cmpxchg(&value),
+                Op::AtomicFence(value) => return self.lower_atomic_fence(&value),
+                Op::AtomicTestAndSet(value) => return self.lower_atomic_test_and_set(&value),
+                Op::AtomicClear(value) => return self.lower_atomic_clear(&value),
+                Op::GetBitfield(value) => return self.lower_get_bitfield(&value),
+                Op::SetBitfield(value) => return self.lower_set_bitfield(&value),
                 _ => {}
             }
         };
-        if let Some(raw) = raw {
-            self.lower_raw_op(raw);
-        } else {
-            self.emit_todo("typed instruction without lowering");
-        }
+        self.emit_todo("instruction without lowering");
     }
 
-    fn lower_raw_op(&mut self, op: &Op) {
-        self.value_types.extend(op.results.iter().cloned());
-        match op.kind() {
-            CirOpKind::Asm => self.lower_asm(op),
-            CirOpKind::Expect => self.lower_expect(op),
-            CirOpKind::Stackrestore => {}
-            CirOpKind::Trap => self.lower_trap(),
-            CirOpKind::Unreachable => self.lower_unreachable(),
-            CirOpKind::Ternary => self.lower_ternary(op),
-            CirOpKind::GetMember => self.lower_get_member(op),
-            CirOpKind::CallLlvmIntrinsic => self.lower_llvm_intrinsic(op),
-            CirOpKind::Return => self.lower_return_raw(op),
-            CirOpKind::Scope => self.lower_scope(op),
-            CirOpKind::CleanupScope => self.lower_cleanup_scope(op),
-            CirOpKind::Switch => self.lower_switch(op),
-            CirOpKind::SwitchFlat => self.lower_switch_flat(op),
-            CirOpKind::For => self.lower_for(op),
-            CirOpKind::While => self.lower_while(op),
-            CirOpKind::Do => self.lower_do(op),
-            CirOpKind::Break => self.lower_break(),
-            CirOpKind::Continue => self.lower_continue(),
-            CirOpKind::Goto => self.lower_goto(op),
-            CirOpKind::Brcond => self.lower_brcond(op),
-            CirOpKind::IndirectBr => self.lower_indirect_br(op),
-            CirOpKind::Label => {}
-            CirOpKind::Yield | CirOpKind::Condition => {}
-            _ => {
-                let name = op.name.as_str();
-                self.parent
-                    .ctx
-                    .diagnostics
-                    .warn(format!("lower: unsupported CIR op {name}"));
-                self.emit_todo(name);
-            }
-        }
-    }
-
-    fn record_typed_result_types(&mut self, op: &TypedOp) {
+    fn record_result_types(&mut self, op: &Op) {
         op.for_each_result(|id, ty| {
             self.value_types.insert(id.clone(), ty.clone());
         });
@@ -5169,12 +4971,5 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     fn value_type(&self, value: &str) -> Option<&CirType> {
         self.value_types.get(value)
-    }
-
-    fn operand_types(&self, op: &Op) -> Option<Vec<CirType>> {
-        op.operands
-            .iter()
-            .map(|value| self.value_type(value).cloned())
-            .collect()
     }
 }

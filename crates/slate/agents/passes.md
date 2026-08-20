@@ -7,9 +7,9 @@ Readability is recovered later by Rust fixups, not during baseline lowering.
 | Stage              | In -> Out                               | How                                                                    |
 | ------------------ | --------------------------------------- | ---------------------------------------------------------------------- |
 | **emit-cir**       | C -> CIR text                           | `clang -fclangir -emit-cir` piped to `cir-opt --mlir-print-op-generic` |
-| **parse-cir**      | CIR text -> generic Op-tree + locs      | recursive-descent parser over MLIR generic form                        |
+| **parse-cir**      | CIR text -> clang-ir operation model    | clang-ir parser and generated operation conversion                     |
 | **load-ast**       | C -> compact source context + raw JSON  | `clang -Xclang -ast-dump=json -fsyntax-only`                           |
-| **lower**          | CIR + AST context -> Rust source        | match `op.name`; materialize temps; use `libc` / `unsafe`              |
+| **lower**          | CIR + AST context -> Rust source        | match generated `Op`; materialize temps; use `libc` / `unsafe`         |
 | **fixups**         | baseline Rust AST -> cleaner Rust AST   | fixed cleanup pipeline, `backend::apply`                                |
 | **generated-diff** | C + generated Rust -> output comparison | build generated Rust with Cargo + `libc`, compare stdout + exit code   |
 

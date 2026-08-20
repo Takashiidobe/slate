@@ -39,21 +39,21 @@ Lowering runs in two nested passes over one `Lowerer<'a>`:
 
 Free functions outside both structs (`attr_str`, `region_ops`, `parse_cir_*`,
 type-string parsing, etc.) are stateless CIR/text parsing helpers — they take
-whatever `Op`/`&str`/`&Module` they need as arguments instead of reading
+whatever `Operation`/`&str`/`&Module` they need as arguments instead of reading
 `self`, so they're reusable from both `Lowerer` and `FunctionLowerer` methods
 and from the collection pass.
 
 ## Op dispatch
 
 Every op inside a function body funnels through `FunctionLowerer::lower_op`
-(`lowerer.rs`, ~3780), a single `match op.kind()` that fans out to one
+(`lowerer.rs`), a single match on clang-ir's generated `Op` that fans out to one
 `self.lower_xxx(op)` (or a handful of ops sharing one handler, e.g. every
 libm unary op routes through `lower_unary_method`/`lower_known_unary_method`).
-The parser (`src/cir/ir.rs`) never grows a new variant for a new lowering
-feature — `CirOpKind` is a fixed enum keyed off the CIR op mnemonic, and
-`lower_op` is the _only_ place that has to change to route a newly-recognized
-op name to its handler. The handler itself almost always lives in a submodule,
-picked by category (see the table below).
+Generic clang-ir `Operation` nodes are converted to the generated `Op` tree at
+the function boundary. Runtime handlers consume generated structs from the
+`inst` namespace and do not fall back to the generic operation. The handler
+itself almost always lives in a submodule, picked by category (see the table
+below).
 
 Global-scope constructs (globals, struct/union/enum definitions, function
 signatures) don't go through `lower_op` at all — they're collected directly in
@@ -127,10 +127,12 @@ initializers reject.
 3. Find the op's CIR name with `cargo run -- emit-cir <file.c>` (or `SLATE_CLANG`'s
    `cir-opt --mlir-print-op-generic` directly for the exact generic-form text
    the parser sees).
-4. If `CirOpKind` doesn't have a variant for it yet, add one in `src/cir/ir.rs`.
-5. Add the `CirOpKind::X => self.lower_x(op)` arm in `FunctionLowerer::lower_op`
-   (`lowerer.rs`).
-6. Implement `lower_x` in whichever submodule matches the table above (new
+4. Confirm clang-ir's generated `Op` contains the operation and carries every
+   operand, result, attribute, successor, and region the handler needs. Fix and
+   regenerate clang-ir-types first if it does not.
+5. Add the `Op::X(value) => self.lower_x(&value)` arm in
+   `FunctionLowerer::lower_op` (`lowerer.rs`).
+6. Implement `lower_x(&inst::X)` in whichever submodule matches the table above (new
    arithmetic-shaped op -> `arithmetic.rs`; new place/pointer op -> `memory.rs`;
    new control-flow op -> `control_flow.rs`; etc). Reuse `place_expr`/
    `materialize_expr`/`push_stmt` from `memory.rs`/`values.rs` rather than

@@ -105,7 +105,7 @@ fn translate_with_clang_args(path: &Path, clang_args: &[String]) -> Result<Strin
     cli_result(api::translate_with_args(path, clang_args))
 }
 
-fn lowered_program(path: &Path) -> Result<(cir::ir::Module, rust_ast::Program), String> {
+fn lowered_program(path: &Path) -> Result<(cir::Module, rust_ast::Program), String> {
     cli_result(api::lowered_program(path))
 }
 
@@ -1171,7 +1171,7 @@ struct LoadedLibraryVariant {
     cfg: rust_ast::Cfg,
     stem: String,
     path: PathBuf,
-    module: cir::ir::Module,
+    module: cir::Module,
     unit: c_ast::Unit,
     warning_items: Vec<rust_ast::Item>,
 }

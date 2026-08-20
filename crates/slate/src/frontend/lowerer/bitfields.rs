@@ -32,7 +32,7 @@ pub(super) fn collect_bitfield_storages(module: &Module) -> BitfieldStorages {
     let mut storages = BTreeMap::new();
     for function in region_ops(module_op)
         .into_iter()
-        .filter(|op| op.kind() == CirOpKind::Func)
+        .filter(|op| op.mnemonic() == "func")
     {
         let mut members = BTreeMap::new();
         collect_function_bitfields(&function.regions, module, &mut members, &mut storages);
@@ -50,14 +50,14 @@ fn collect_function_bitfields(
     for region in regions {
         for block in &region.blocks {
             for op in &block.ops {
-                if op.kind() == CirOpKind::GetMember
+                if op.mnemonic() == "get_member"
                     && let Some(member) = member_storage(op, aliases)
                 {
                     for (result, _) in &op.results {
                         members.insert(result.clone(), member.clone());
                     }
                 }
-                if matches!(op.kind(), CirOpKind::GetBitfield | CirOpKind::SetBitfield)
+                if matches!(op.mnemonic(), "get_bitfield" | "set_bitfield")
                     && let Some(ptr) = op.operands.first()
                     && let Some(member) = members.get(ptr)
                     && let Some((size, offset)) = bitfield_info(op, module)
@@ -104,7 +104,7 @@ fn resolve_type_alias<'a>(ty: &'a CirType, aliases: &'a BTreeMap<String, CirType
     ty
 }
 
-fn member_storage(op: &Op, aliases: &BTreeMap<String, CirType>) -> Option<MemberStorage> {
+fn member_storage(op: &Operation, aliases: &BTreeMap<String, CirType>) -> Option<MemberStorage> {
     let record = op_operand_types(op)
         .first()
         .and_then(cir_ptr_pointee)
@@ -124,7 +124,7 @@ fn member_storage(op: &Op, aliases: &BTreeMap<String, CirType>) -> Option<Member
     })
 }
 
-fn bitfield_info(op: &Op, module: &Module) -> Option<(u32, u32)> {
+fn bitfield_info(op: &Operation, module: &Module) -> Option<(u32, u32)> {
     match module.resolve_attr(op.attr("bitfield_info")?) {
         Attr::BitfieldInfo { size, offset, .. } => {
             Some((u32::try_from(*size).ok()?, u32::try_from(*offset).ok()?))
