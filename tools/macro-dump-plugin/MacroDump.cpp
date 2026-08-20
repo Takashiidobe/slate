@@ -180,7 +180,41 @@ llvm::json::Object sourcePoint(SourceManager &SM, SourceLocation Loc) {
 
 class ProvenanceVisitor : public RecursiveASTVisitor<ProvenanceVisitor> {
   SourceManager &SM;
+  ASTContext &Context;
   const ProvenanceState &State;
+
+  static llvm::json::Object floatingValue(const llvm::APFloat &Value) {
+    llvm::SmallString<32> Text;
+    Value.toString(Text);
+    llvm::APInt Bits = Value.bitcastToAPInt();
+    llvm::SmallString<32> UnpaddedBits;
+    Bits.toStringUnsigned(UnpaddedBits, 16);
+    std::string BitString((Bits.getBitWidth() + 3) / 4 - UnpaddedBits.size(),
+                          '0');
+    BitString.append(UnpaddedBits.data(), UnpaddedBits.size());
+    return llvm::json::Object{
+        {"value", Text.str().str()},
+        {"bit_width", static_cast<int64_t>(Bits.getBitWidth())},
+        {"bits", std::move(BitString)},
+    };
+  }
+
+  void collectLongDoubleValues(Stmt *Node, llvm::json::Array &Values) {
+    if (!Node)
+      return;
+    if (auto *Expression = dyn_cast<Expr>(Node);
+        Expression && Expression->getType()->isSpecificBuiltinType(
+                          BuiltinType::LongDouble)) {
+      Expr::EvalResult Result;
+      if (Expression->EvaluateAsRValue(Result, Context) &&
+          Result.Val.isFloat()) {
+        Values.push_back(floatingValue(Result.Val.getFloat()));
+        return;
+      }
+    }
+    for (Stmt *Child : Node->children())
+      collectLongDoubleValues(Child, Values);
+  }
 
   std::set<HeaderEvidence> headersFor(SourceLocation Loc) const {
     std::set<HeaderEvidence> Headers;
@@ -224,8 +258,9 @@ class ProvenanceVisitor : public RecursiveASTVisitor<ProvenanceVisitor> {
   }
 
 public:
-  ProvenanceVisitor(SourceManager &SM, const ProvenanceState &State)
-      : SM(SM), State(State) {}
+  ProvenanceVisitor(SourceManager &SM, ASTContext &Context,
+                    const ProvenanceState &State)
+      : SM(SM), Context(Context), State(State) {}
 
   bool VisitFloatingLiteral(FloatingLiteral *Literal) {
     SourceLocation Expansion = SM.getExpansionLoc(Literal->getExprLoc());
@@ -234,24 +269,53 @@ public:
         !SM.isWrittenInMainFile(Expansion))
       return true;
 
-    llvm::SmallString<32> Value;
-    Literal->getValue().toString(Value);
-    llvm::APInt Bits = Literal->getValue().bitcastToAPInt();
-    llvm::SmallString<32> UnpaddedBits;
-    Bits.toStringUnsigned(UnpaddedBits, 16);
-    std::string BitString((Bits.getBitWidth() + 3) / 4 - UnpaddedBits.size(),
-                          '0');
-    BitString.append(UnpaddedBits.data(), UnpaddedBits.size());
-
-    llvm::json::Object Event{
-        {"spelling", sourcePoint(SM, Spelling)},
-        {"expansion", sourcePoint(SM, Expansion)},
-        {"type", Literal->getType().getAsString()},
-        {"value", Value.str().str()},
-        {"bit_width", static_cast<int64_t>(Bits.getBitWidth())},
-        {"bits", std::move(BitString)},
-    };
+    llvm::json::Object Event = floatingValue(Literal->getValue());
+    Event["spelling"] = sourcePoint(SM, Spelling);
+    Event["expansion"] = sourcePoint(SM, Expansion);
+    Event["type"] = Literal->getType().getAsString();
     llvm::errs() << "FLOATING_LITERAL "
+                 << llvm::json::Value(std::move(Event)) << "\n";
+    return true;
+  }
+
+  bool VisitExpr(Expr *Expression) {
+    if (isa<FloatingLiteral>(Expression) ||
+        !Expression->getType()->isSpecificBuiltinType(BuiltinType::LongDouble))
+      return true;
+    Expr::EvalResult Result;
+    if (!Expression->EvaluateAsRValue(Result, Context) || !Result.Val.isFloat())
+      return true;
+    for (SourceLocation Location : {Expression->getExprLoc(),
+                                    Expression->getBeginLoc(),
+                                    Expression->getEndLoc()}) {
+      SourceLocation Expansion = SM.getExpansionLoc(Location);
+      SourceLocation Spelling = SM.getSpellingLoc(Location);
+      if (Expansion.isInvalid() || Spelling.isInvalid() ||
+          !SM.isWrittenInMainFile(Expansion))
+        continue;
+      llvm::json::Object Event = floatingValue(Result.Val.getFloat());
+      Event["spelling"] = sourcePoint(SM, Spelling);
+      Event["expansion"] = sourcePoint(SM, Expansion);
+      Event["type"] = Expression->getType().getAsString();
+      llvm::errs() << "FLOATING_LITERAL "
+                   << llvm::json::Value(std::move(Event)) << "\n";
+    }
+    return true;
+  }
+
+  bool VisitVarDecl(VarDecl *Decl) {
+    if (!Decl->hasGlobalStorage() || !Decl->hasInit())
+      return true;
+    SourceLocation Loc = SM.getExpansionLoc(Decl->getLocation());
+    if (Loc.isInvalid() || !SM.isWrittenInMainFile(Loc))
+      return true;
+    llvm::json::Array Values;
+    collectLongDoubleValues(Decl->getInit(), Values);
+    if (Values.empty())
+      return true;
+    llvm::json::Object Event{{"name", Decl->getNameAsString()},
+                             {"values", std::move(Values)}};
+    llvm::errs() << "GLOBAL_LONG_DOUBLE "
                  << llvm::json::Value(std::move(Event)) << "\n";
     return true;
   }
@@ -345,7 +409,7 @@ public:
       : SM(SM), State(std::move(State)) {}
 
   void HandleTranslationUnit(ASTContext &Context) override {
-    ProvenanceVisitor Visitor(SM, *State);
+    ProvenanceVisitor Visitor(SM, Context, *State);
     Visitor.TraverseDecl(Context.getTranslationUnitDecl());
   }
 };

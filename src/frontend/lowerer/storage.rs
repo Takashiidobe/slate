@@ -18,18 +18,84 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some((result, ty)) = op.results.first() else {
             return;
         };
-        let Some(attr) = op.attr("value") else { return };
-        let attr = self.parent.resolve_attr(attr);
-        if let Some(value) = attr.as_int() {
+        let Some(attr) = op
+            .attr("value")
+            .map(|attr| self.parent.resolve_attr(attr).clone())
+        else {
+            return;
+        };
+        let result_ty = Some(ty);
+        let const_int = attr.as_int();
+        if let Some(value) = const_int {
             self.const_int_values.insert(result.clone(), value);
         }
+        if let Some(value) = const_int
+            && let Some(expr) = self.next_layout_query_expr(value, result_ty)
+        {
+            self.materialize_expr(result, expr, result_ty);
+            return;
+        }
+        if let Some(value) = const_int
+            && let Some(expr) = self.next_macro_const_expr(value, result_ty)
+        {
+            self.materialize_expr(result, expr, result_ty);
+            return;
+        }
+        if let Some(value) = const_int
+            && let Some(expr) = self.next_enum_const_expr(op, value, result_ty)
+        {
+            self.materialize_expr(result, expr, result_ty);
+            return;
+        }
         let rust_ty = self.parent.rust_type(ty);
-        let mut facts = VecDeque::new();
+        if let Some((signed, _)) = parse_cir_int_type(ty)
+            && let Type::Prim(prim) = &rust_ty
+        {
+            let value = if signed {
+                const_int
+                    .filter(|value| i32::try_from(*value).is_err())
+                    .map(|value| Expr::Value(RustValue::TypedInt(value, prim.clone())))
+            } else {
+                match &attr {
+                    Attr::CirInt { value, .. } => value.parse::<u128>().ok(),
+                    _ => const_int.and_then(|value| u128::try_from(value).ok()),
+                }
+                .filter(|value| i32::try_from(*value).is_err())
+                .map(|value| Expr::Value(RustValue::TypedUInt(value, prim.clone())))
+            };
+            if let Some(value) = value {
+                self.materialize_expr(result, value, result_ty);
+                return;
+            }
+        }
+        if let Attr::CirInt { value, .. } = &attr
+            && let Some(expr) = bitint_from_decimal_str_expr(&rust_ty, value)
+        {
+            self.materialize_expr(result, expr, result_ty);
+            return;
+        }
+        let macro_expr = if matches!(ty, CirType::Fp128) || is_long_double(ty) {
+            self.next_long_double_macro_const_expr(op, result_ty)
+        } else if matches!(ty, CirType::Single | CirType::Double) {
+            self.next_float_macro_const_expr(op, result_ty)
+        } else {
+            None
+        };
+        if let Some(expr) = macro_expr {
+            self.materialize_expr(result, expr, result_ty);
+            return;
+        }
+        let fact = self.ast_floating_literal(op);
+        if is_long_double(ty) && fact.is_none() {
+            self.emit_todo("long double constant without Clang AST value");
+            return;
+        }
+        let mut facts = fact.into_iter().collect();
         let expr = self
             .parent
-            .render_const_value_expr(&rust_ty, attr, &mut facts)
+            .render_const_value_expr(&rust_ty, &attr, &mut facts)
             .unwrap_or_else(|| self.parent.default_value_expr(&rust_ty));
-        self.materialize_expr(result, expr, Some(ty));
+        self.materialize_expr(result, expr, result_ty);
     }
 
     pub(super) fn lower_get_global(&mut self, op: &Op) {
@@ -39,7 +105,21 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let Some(name) = attr_symbol_ref(op, "name").or_else(|| attr_str(op, "name")) else {
             return;
         };
-        let name = name.trim_start_matches('@').to_string();
+        let name = name.trim_start_matches('@').trim_matches('"').to_string();
+        let name = self.parent.weak_refs.get(&name).cloned().unwrap_or(name);
+        let string_name = self.parent.strings.keys().find_map(|candidate| {
+            (sanitize_ident(candidate) == sanitize_ident(&name)).then(|| candidate.clone())
+        });
+        let name = if let Some(string_name) = string_name {
+            string_name
+        } else if self.parent.const_arrays.contains_key(&name)
+            || self.parent.const_aggregates.contains_key(&name)
+            || self.parent.const_zero_globals.contains(&name)
+        {
+            name
+        } else {
+            self.parent.rust_global_name(&name)
+        };
         if let Some(ty) = op_result_type(op).map(|ty| self.parent.rust_type(ty))
             && matches!(ty, Type::FnPtr { .. })
         {
@@ -58,6 +138,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.load_ptr_operand.insert(result.clone(), ptr.clone());
         if let Some(value) = self.forward_values.get(ptr) {
             self.values.insert(result.clone(), Val::Expr(value.clone()));
+            return;
+        }
+        if let Some(expr) = self.block_addr_dispatch_expr(ptr) {
+            self.indirect_target_values.insert(result.clone(), expr);
+            self.lower_opaque_pointer(op, true);
+            return;
+        }
+        if op_result_type(op).is_some_and(|ty| is_cir_va_list_value_type(ty, &self.parent.aliases))
+            && let Some(place) = self.va_target_place(ptr)
+        {
+            self.va_places.insert(result.clone(), place.clone());
+            self.values.insert(result.clone(), Val::Expr(place));
             return;
         }
         let volatile = attr_bool(op, "is_volatile") || attr_bool(op, "volatile");
@@ -102,6 +194,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let (Some(src), Some(ptr)) = (op.operands.first(), op.operands.get(1)) else {
             return;
         };
+        if let Some(outputs) = self.asm_outputs.get(src).cloned() {
+            self.asm_outputs.insert(ptr.clone(), outputs);
+            return;
+        }
         let value_ty = op_operand_types(op).first();
         let mut value = if value_ty.is_some_and(|ty| is_cir_function_pointer_type(ty)) {
             self.store_function_pointer_value(src, ptr, value_ty.unwrap())
@@ -110,6 +206,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else {
             self.operand_expr(src)
         };
+        if value_ty.is_some_and(|ty| is_cir_va_list_value_type(ty, &self.parent.aliases)) {
+            value = Expr::MethodCall {
+                recv: Box::new(value),
+                method: "clone".into(),
+                args: Vec::new(),
+            };
+        }
         value = self.coerce_store_value(ptr, value, src);
         if self.forward_allocas.contains(ptr) {
             let value = self.forward_safe_value(value, value_ty);

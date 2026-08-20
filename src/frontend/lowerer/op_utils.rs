@@ -2,7 +2,7 @@ use super::*;
 
 pub(super) fn attr_symbol_ref<'a>(op: &'a Op, key: &str) -> Option<&'a str> {
     match op.attr(key)? {
-        Attr::SymbolRef(value) => Some(value),
+        Attr::SymbolRef(value) => Some(value.trim_start_matches('@').trim_matches('"')),
         _ => None,
     }
 }

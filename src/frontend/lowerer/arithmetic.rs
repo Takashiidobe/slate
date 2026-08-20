@@ -89,16 +89,85 @@ fn overflow_for_result_width(
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
     pub(super) fn lower_cmp(&mut self, op: &Op) {
-        let kind = match attr_int(op, "kind") {
-            Some(0) => BinOp::Lt,
-            Some(1) => BinOp::Le,
-            Some(2) => BinOp::Gt,
-            Some(3) => BinOp::Ge,
-            Some(4) => BinOp::Eq,
-            Some(5) => BinOp::Ne,
-            _ => return,
+        let Some((result, result_ty)) = op.results.first() else {
+            return;
         };
-        self.lower_binary(op, kind);
+        if op.operands.len() < 2 {
+            return;
+        }
+        if let Some(expr) = self.lower_function_pointer_null_cmp(op) {
+            self.materialize_expr(result, expr, Some(result_ty));
+            return;
+        }
+        let kind = attr_int(op, "kind");
+        let operand_types = op_operand_types(op);
+        let concrete_function_symbols = operand_types
+            .first()
+            .zip(operand_types.get(1))
+            .is_some_and(|(lhs, rhs)| {
+                is_cir_function_pointer_type(lhs)
+                    && is_cir_function_pointer_type(rhs)
+                    && matches!(self.values.get(&op.operands[0]), Some(Val::Global(_)))
+                    && matches!(self.values.get(&op.operands[1]), Some(Val::Global(_)))
+            });
+        let operand = |this: &Self, index: usize| {
+            if concrete_function_symbols {
+                this.function_pointer_byte_operand_expr(&op.operands[index])
+            } else {
+                operand_types.get(index).map_or_else(
+                    || this.operand_expr(&op.operands[index]),
+                    |ty| this.call_arg_expr(&op.operands[index], ty),
+                )
+            }
+        };
+        let lhs = operand(self, 0);
+        let rhs = operand(self, 1);
+        let expr = match kind {
+            Some(6) => Expr::Binary {
+                op: BinOp::Or,
+                lhs: Box::new(Expr::Binary {
+                    op: BinOp::Lt,
+                    lhs: Box::new(lhs.clone()),
+                    rhs: Box::new(rhs.clone()),
+                }),
+                rhs: Box::new(Expr::Binary {
+                    op: BinOp::Gt,
+                    lhs: Box::new(lhs),
+                    rhs: Box::new(rhs),
+                }),
+            },
+            Some(7) => Expr::Binary {
+                op: BinOp::Or,
+                lhs: Box::new(Expr::Binary {
+                    op: BinOp::Ne,
+                    lhs: Box::new(lhs.clone()),
+                    rhs: Box::new(lhs),
+                }),
+                rhs: Box::new(Expr::Binary {
+                    op: BinOp::Ne,
+                    lhs: Box::new(rhs.clone()),
+                    rhs: Box::new(rhs),
+                }),
+            },
+            Some(kind) => {
+                let op = match kind {
+                    0 => BinOp::Lt,
+                    1 => BinOp::Le,
+                    2 => BinOp::Gt,
+                    3 => BinOp::Ge,
+                    4 => BinOp::Eq,
+                    5 => BinOp::Ne,
+                    _ => return,
+                };
+                Expr::Binary {
+                    op,
+                    lhs: Box::new(lhs),
+                    rhs: Box::new(rhs),
+                }
+            }
+            None => return,
+        };
+        self.materialize_expr(result, expr, Some(result_ty));
     }
 
     pub(super) fn lower_select(&mut self, op: &Op) {
@@ -110,12 +179,24 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         else {
             return;
         };
+        let true_expr = self.fn_ptr_aware_operand_expr(
+            true_value,
+            Some(result_ty),
+            Self::function_pointer_operand_expr,
+            Self::value_or_place_address_expr,
+        );
+        let false_expr = self.fn_ptr_aware_operand_expr(
+            false_value,
+            Some(result_ty),
+            Self::function_pointer_operand_expr,
+            Self::value_or_place_address_expr,
+        );
         self.materialize_expr(
             result,
             Expr::If {
                 cond: Box::new(self.operand_expr(condition)),
-                then_expr: Box::new(self.operand_expr(true_value)),
-                else_expr: Box::new(self.operand_expr(false_value)),
+                then_expr: Box::new(true_expr),
+                else_expr: Box::new(false_expr),
             },
             Some(result_ty),
         );
