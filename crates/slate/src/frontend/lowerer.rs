@@ -17,7 +17,8 @@ use crate::frontend::c_ast::{
 };
 use crate::frontend::function_abi::repair_function_signature;
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
-use clang_ir::ast::ConstArrayData;
+use clang_ir::ast::SourceLocation;
+use clang_ir::model::Op as TypedOp;
 use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
 
 mod analysis;
@@ -44,7 +45,6 @@ use asm::*;
 use atomic::*;
 use bitfields::*;
 use cir_ops::*;
-use clang_ir::model::{Instruction, instruction};
 use constants::*;
 use op_utils::*;
 use runtime_support::*;
@@ -73,6 +73,23 @@ pub struct ProjectInfo {
 const WEAK_ANY_LINKAGE: i64 = 4;
 const HIDDEN_VISIBILITY: i64 = 1;
 const PROTECTED_VISIBILITY: i64 = 2;
+
+fn attr_array_values(attr: &Attr) -> Option<&[Attr]> {
+    match attr {
+        Attr::Array(values) => Some(values),
+        _ => None,
+    }
+}
+
+fn source_location_text(loc: &SourceLocation) -> Option<String> {
+    match loc {
+        SourceLocation::File { file, line, column } => {
+            Some(format!("loc(\"{file}\":{line}:{column})"))
+        }
+        SourceLocation::Loc(raw) => Some(raw.clone()),
+        _ => None,
+    }
+}
 
 fn rust_record_name(name: &str) -> String {
     sanitize_ident(name).into_string()
@@ -134,12 +151,16 @@ fn widen_flexible_array_members(
             continue;
         }
         let Some(len) = op.attr("initial_value").and_then(|attr| match attr {
-            Attr::ConstRecord { elements, .. } => elements.last().and_then(|elem| match elem {
-                Attr::ConstArray { ty, .. } | Attr::Zero { ty } => {
-                    parse_cir_array_type(ty).map(|(_, len)| len)
-                }
-                _ => None,
-            }),
+            Attr::ConstRecord { members, .. } => {
+                attr_array_values(members)?
+                    .last()
+                    .and_then(|elem| match elem {
+                        Attr::ConstArray { ty, .. } | Attr::Zero { ty } => {
+                            parse_cir_array_type(ty).map(|(_, len)| len)
+                        }
+                        _ => None,
+                    })
+            }
             _ => None,
         }) else {
             continue;
@@ -178,10 +199,8 @@ fn required_record_defs(
             let name =
                 lowered_record_name(cir_record_name(ty).or_else(|| alias.strip_prefix("rec_"))?)?;
             let kind = match ty {
-                CirType::Struct(s) => match s.kind {
-                    clang_ir::ast::RecordKind::Union => RecordKind::Union,
-                    clang_ir::ast::RecordKind::Struct => RecordKind::Struct,
-                },
+                CirType::Struct { .. } => RecordKind::Struct,
+                CirType::Union { .. } => RecordKind::Union,
                 _ => return None,
             };
             Some((name, kind))
@@ -332,7 +351,10 @@ fn function_requires_unsafe_contract(op: &Op) -> bool {
         return false;
     };
     let (params, _) = parse_function_type(function_type);
-    if !params.iter().any(|ty| matches!(ty, CirType::Ptr(_))) {
+    if !params
+        .iter()
+        .any(|ty| matches!(ty, CirType::Pointer { .. }))
+    {
         return false;
     }
 
@@ -521,20 +543,41 @@ pub fn unsafe_defined_functions(module: &Module) -> BTreeSet<String> {
 
 fn cir_type_mentions_f128(ty: &CirType) -> bool {
     match ty {
-        CirType::Float(clang_ir::ast::FloatKind::F128) => true,
-        CirType::LongDouble(inner) | CirType::Ptr(inner) | CirType::Complex(inner) => {
-            cir_type_mentions_f128(inner)
+        CirType::Fp128 => true,
+        CirType::LongDouble { underlying: inner }
+        | CirType::Pointer { pointee: inner, .. }
+        | CirType::Complex {
+            element_type: inner,
+        } => cir_type_mentions_f128(inner),
+        CirType::Array {
+            element_type: element,
+            ..
         }
-        CirType::Array { element, .. } | CirType::Vector { element, .. } => {
-            cir_type_mentions_f128(element)
-        }
-        CirType::CirFunc { inputs, output, .. } => {
-            inputs.iter().any(cir_type_mentions_f128) || cir_type_mentions_f128(output)
+        | CirType::Vector {
+            element_type: element,
+            ..
+        } => cir_type_mentions_f128(element),
+        CirType::Func {
+            inputs,
+            optional_return_type,
+            ..
+        } => {
+            inputs.iter().any(cir_type_mentions_f128)
+                || optional_return_type
+                    .as_deref()
+                    .is_some_and(cir_type_mentions_f128)
         }
         CirType::FunctionType { inputs, results } => {
             inputs.iter().any(cir_type_mentions_f128) || results.iter().any(cir_type_mentions_f128)
         }
-        CirType::Struct(s) => s.members.iter().any(|(_, ty)| cir_type_mentions_f128(ty)),
+        CirType::Struct {
+            members: Some(members),
+            ..
+        }
+        | CirType::Union {
+            members: Some(members),
+            ..
+        } => members.iter().any(cir_type_mentions_f128),
         _ => false,
     }
 }
@@ -542,8 +585,8 @@ fn cir_type_mentions_f128(ty: &CirType) -> bool {
 fn attr_mentions_f128(attr: &Attr) -> bool {
     match attr {
         Attr::Type(ty)
-        | Attr::CirFloat { ty, .. }
-        | Attr::CirInt { ty, .. }
+        | Attr::Float { ty: Some(ty), .. }
+        | Attr::Int { ty: Some(ty), .. }
         | Attr::CirBool { ty, .. }
         | Attr::ConstArray { ty, .. }
         | Attr::ConstVector { ty, .. }
@@ -551,9 +594,7 @@ fn attr_mentions_f128(attr: &Attr) -> bool {
         | Attr::GlobalView { ty, .. }
         | Attr::Zero { ty }
         | Attr::Poison { ty } => cir_type_mentions_f128(ty),
-        Attr::Int { ty: Some(ty), .. }
-        | Attr::Float { ty: Some(ty), .. }
-        | Attr::Dialect { ty: Some(ty), .. } => cir_type_mentions_f128(ty),
+        Attr::Dialect { ty: Some(ty), .. } => cir_type_mentions_f128(ty),
         Attr::BitfieldInfo { storage_type, .. } => cir_type_mentions_f128(storage_type),
         Attr::ConstComplex { real, imag, .. } => {
             attr_mentions_f128(real) || attr_mentions_f128(imag)
@@ -700,7 +741,11 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
     let mut lowerer = Lowerer {
         ctx,
         aliases: cir.type_aliases.clone(),
-        loc_aliases: cir.loc_aliases.clone(),
+        loc_aliases: cir
+            .loc_aliases
+            .iter()
+            .filter_map(|(name, loc)| Some((name.clone(), source_location_text(loc)?)))
+            .collect(),
         attr_aliases: cir.attr_aliases.clone(),
         call_bindings: c.call_bindings(),
         known_functions: c
@@ -1303,8 +1348,8 @@ impl<'a> Lowerer<'a> {
     fn ast_floating_literal(&self, op: &Op) -> Option<FloatingLiteralFact> {
         let loc = op
             .loc
-            .as_deref()
-            .and_then(|raw| self.resolve_floating_literal_loc(raw))?;
+            .as_ref()
+            .and_then(|raw| self.resolve_source_floating_literal_loc(raw))?;
         self.floating_literals.get(&loc).cloned()
     }
 
@@ -1336,8 +1381,8 @@ impl<'a> Lowerer<'a> {
             return CallBinding::Indirect;
         }
         op.loc
-            .as_deref()
-            .and_then(|raw| self.resolve_loc(raw))
+            .as_ref()
+            .and_then(|raw| self.resolve_source_loc(raw))
             .and_then(|loc| self.call_bindings.get(&loc).cloned())
             .unwrap_or_else(|| CallBinding::direct_unknown(None))
     }
@@ -1347,6 +1392,38 @@ impl<'a> Lowerer<'a> {
         Some(Loc {
             line: point.line,
             col: point.col,
+        })
+    }
+
+    fn resolve_source_loc(&self, raw: &SourceLocation) -> Option<Loc> {
+        match raw {
+            SourceLocation::File { line, column, .. } => Some(Loc {
+                line: *line,
+                col: *column,
+            }),
+            _ => None,
+        }
+    }
+
+    fn resolve_source_point_value(&self, raw: &SourceLocation) -> Option<SourcePoint> {
+        match raw {
+            SourceLocation::File { file, line, column } => Some(SourcePoint {
+                file: file.clone(),
+                line: *line,
+                col: *column,
+            }),
+            _ => None,
+        }
+    }
+
+    fn resolve_source_floating_literal_loc(
+        &self,
+        raw: &SourceLocation,
+    ) -> Option<FloatingLiteralLoc> {
+        let point = self.resolve_source_point_value(raw)?;
+        Some(FloatingLiteralLoc {
+            spelling: point.clone(),
+            expansion: point,
         })
     }
 
@@ -2066,10 +2143,8 @@ impl __SlateVaArgs {
             );
             return;
         };
-        if let Attr::ConstArray {
-            data: ConstArrayData::Elements(items),
-            ..
-        } = init
+        if let Attr::ConstArray { elts, .. } = init
+            && let Some(items) = attr_array_values(elts)
         {
             if let Some(labels) = block_addr_labels(items) {
                 self.block_addr_globals.insert(rust_name.clone(), labels);
@@ -2135,16 +2210,21 @@ impl __SlateVaArgs {
                 return;
             }
         }
-        if let Attr::ConstArray {
-            data: ConstArrayData::Str(bytes),
-            ..
-        } = init
+        if let Attr::ConstArray { elts, .. } = init
+            && let Some(bytes) = attr_array_values(elts)
         {
+            let Some(bytes) = bytes
+                .iter()
+                .map(|value| value.as_int().and_then(|value| u8::try_from(value).ok()))
+                .collect::<Option<Vec<u8>>>()
+            else {
+                return;
+            };
             if is_c_global && let Some(ty) = ty {
                 let len = type_array_len(&ty)
                     .and_then(|len| usize::try_from(len).ok())
                     .unwrap_or(bytes.len());
-                let elems = byte_array_elems(bytes, &ty);
+                let elems = byte_array_elems(&bytes, &ty);
                 self.globals.insert(
                     rust_name.clone(),
                     GlobalVar {
@@ -2410,7 +2490,11 @@ impl __SlateVaArgs {
                 sanitize_ident(name).as_str() == sanitize_ident(&record.name).as_str()
             })
         })?;
-        let CirType::Struct(s) = expanded else {
+        let CirType::Struct {
+            members: Some(members),
+            ..
+        } = expanded
+        else {
             return None;
         };
         let preserve_field_names = record
@@ -2419,9 +2503,8 @@ impl __SlateVaArgs {
             .any(|field| field.name.starts_with("__bitfield_"));
         let record_name = sanitize_ident(&record.name).into_string();
         Some(
-            s.members
+            members
                 .iter()
-                .map(|(_, ty)| ty)
                 .enumerate()
                 .map(|(index, ty)| crate::frontend::c_ast::Decl {
                     name: if preserve_field_names {
@@ -2992,7 +3075,7 @@ impl __SlateVaArgs {
 
     fn cir_type_is_union(&self, ty: &CirType) -> bool {
         let ty = self.expand_alias(ty);
-        if matches!(ty, CirType::Struct(s) if s.kind == clang_ir::ast::RecordKind::Union) {
+        if matches!(ty, CirType::Union { .. }) {
             return true;
         }
         cir_record_name(ty)
@@ -3374,7 +3457,8 @@ impl __SlateVaArgs {
                 let im = complex_component_from_attr(imag)?;
                 Some(complex_const_expr(Some(ty), re, im))
             }
-            Attr::ConstRecord { elements, .. } => {
+            Attr::ConstRecord { members, .. } => {
+                let elements = attr_array_values(members)?;
                 let Type::Custom(name) = ty else {
                     return None;
                 };
@@ -3443,41 +3527,24 @@ impl __SlateVaArgs {
                     }
                 }
             }
-            Attr::ConstArray {
-                data: ConstArrayData::Str(bytes),
-                ..
-            } => {
+            Attr::ConstArray { elts, .. } => {
+                let bytes = attr_array_values(elts)?;
                 let Type::Array { elem, len } = ty else {
                     return None;
                 };
-                let elems = byte_array_elems(bytes, ty);
+                let bytes = bytes
+                    .iter()
+                    .map(|value| value.as_int().and_then(|value| u8::try_from(value).ok()))
+                    .collect::<Option<Vec<u8>>>()?;
+                let elems = byte_array_elems(&bytes, ty);
                 Some(render_array_literal_expr(
                     &elems,
                     *len as usize,
                     self.default_value_expr(elem),
                 ))
             }
-            Attr::ConstArray {
-                data: ConstArrayData::Elements(elements),
-                ..
-            } => {
-                let Type::Array { elem, len } = ty else {
-                    return None;
-                };
-                let len = *len as usize;
-                let mut out: Vec<Expr> = elements
-                    .iter()
-                    .take(len)
-                    .map(|e| {
-                        self.render_const_value_expr(elem, e, facts)
-                            .unwrap_or_else(|| self.default_value_expr(elem))
-                    })
-                    .collect();
-                out.resize(len, self.default_value_expr(elem));
-                Some(Expr::ArrayLit(out))
-            }
-            Attr::ConstVector { elements, .. } => Some(Expr::ArrayLit(
-                elements
+            Attr::ConstVector { elts, .. } => Some(Expr::ArrayLit(
+                attr_array_values(elts)?
                     .iter()
                     .map(scalar_attr_expr)
                     .collect::<Option<Vec<_>>>()?,
@@ -3506,17 +3573,16 @@ impl __SlateVaArgs {
                     })
                 }
             }
-            Attr::CirInt { text, .. } if matches!(ty, Type::Custom(name) if self.enums.contains_key(name)) =>
+            Attr::Int { value, .. } if matches!(ty, Type::Custom(name) if self.enums.contains_key(name)) =>
             {
                 let Type::Custom(name) = ty else {
                     unreachable!()
                 };
-                let value: i128 = text.parse().ok()?;
                 let enm = self.enums.get(name)?;
                 let variant = enm
                     .variants
                     .iter()
-                    .find(|variant| i128::from(variant.value) == value)?;
+                    .find(|variant| i128::from(variant.value) == *value)?;
                 Some(Expr::Path(Path::new([
                     Ident::from(name.as_str()),
                     Ident::from(sanitize_ident(&variant.name).as_str()),
@@ -3524,10 +3590,19 @@ impl __SlateVaArgs {
             }
             Attr::GlobalView {
                 symbol, indices, ..
-            } => self.global_view_init_expr(symbol, indices, ty),
+            } => {
+                let indices = match indices.as_deref() {
+                    Some(Attr::Array(values)) => values
+                        .iter()
+                        .map(Attr::as_int)
+                        .collect::<Option<Vec<_>>>()?,
+                    _ => Vec::new(),
+                };
+                self.global_view_init_expr(symbol, &indices, ty)
+            }
             _ if matches!(ty, Type::LongDouble) => {
                 let fp_text = match attr {
-                    Attr::CirFloat { text, .. } => Some(text.as_str()),
+                    Attr::Float { text, .. } => Some(text.as_str()),
                     _ => None,
                 };
                 let fact = facts.pop_front();
@@ -3546,9 +3621,7 @@ impl __SlateVaArgs {
                     fp_text.and_then(long_double_from_text)
                 }
             }
-            Attr::CirFloat { text, .. } => {
-                Some(typed_fp_literal_expr(Some(ty), fp_text_value(text)?))
-            }
+            Attr::Float { text, .. } => Some(typed_fp_literal_expr(Some(ty), fp_text_value(text)?)),
             _ => scalar_attr_expr(attr),
         }
     }
@@ -4013,15 +4086,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             if op.kind() == CirOpKind::Alloca {
                 let group_loc = op
                     .loc
-                    .as_deref()
-                    .and_then(|raw| self.parent.resolve_macro_group_loc(raw, 0));
+                    .as_ref()
+                    .and_then(|raw| self.parent.resolve_source_point_value(raw));
                 let end = block.ops[index..]
                     .iter()
                     .take_while(|candidate| {
                         let candidate_group_loc = candidate
                             .loc
-                            .as_deref()
-                            .and_then(|raw| self.parent.resolve_macro_group_loc(raw, 0));
+                            .as_ref()
+                            .and_then(|raw| self.parent.resolve_source_point_value(raw));
                         candidate.kind() == CirOpKind::Alloca
                             && (candidate.loc == op.loc
                                 || matches!(
@@ -4111,363 +4184,44 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn lower_op(&mut self, op: &Op) {
-        match instruction::lower_op(op) {
-            Instruction::Binary {
-                op: bop, saturated, ..
-            } => {
-                self.lower_binary_family(op, bop, saturated);
-                return;
+        if let Some(typed) = TypedOp::from_operation(op) {
+            match typed {
+                TypedOp::Add(_) => return self.lower_int_arith(op, BinOp::Add),
+                TypedOp::Sub(_) => return self.lower_int_arith(op, BinOp::Sub),
+                TypedOp::Mul(_) => return self.lower_int_arith(op, BinOp::Mul),
+                TypedOp::Div(_) => return self.lower_int_arith(op, BinOp::Div),
+                TypedOp::Rem(_) => return self.lower_int_arith(op, BinOp::Rem),
+                TypedOp::And(_) => return self.lower_int_arith(op, BinOp::BitAnd),
+                TypedOp::Or(_) => return self.lower_int_arith(op, BinOp::BitOr),
+                TypedOp::Xor(_) => return self.lower_int_arith(op, BinOp::BitXor),
+                TypedOp::Fadd(_) => return self.lower_binary(op, BinOp::Add),
+                TypedOp::Fsub(_) => return self.lower_binary(op, BinOp::Sub),
+                TypedOp::Fmul(_) => return self.lower_binary(op, BinOp::Mul),
+                TypedOp::Fdiv(_) => return self.lower_binary(op, BinOp::Div),
+                TypedOp::Inc(_) => return self.lower_step(op, BinOp::Add),
+                TypedOp::Dec(_) => return self.lower_step(op, BinOp::Sub),
+                TypedOp::Not(_) => return self.lower_not(op),
+                TypedOp::Shift(value) => {
+                    return self.lower_int_arith(
+                        op,
+                        if value.is_shiftleft {
+                            BinOp::Shl
+                        } else {
+                            BinOp::Shr
+                        },
+                    );
+                }
+                TypedOp::AddOverflow(_) => return self.lower_overflow_arith(op, "overflowing_add"),
+                TypedOp::SubOverflow(_) => return self.lower_overflow_arith(op, "overflowing_sub"),
+                TypedOp::MulOverflow(_) => return self.lower_overflow_arith(op, "overflowing_mul"),
+                TypedOp::Const(_) => return self.lower_const(op),
+                TypedOp::GetGlobal(_) => return self.lower_get_global(op),
+                TypedOp::Load(_) => return self.lower_load(op),
+                TypedOp::Store(_) => return self.lower_store(op),
+                TypedOp::Copy(_) => return self.lower_copy(op),
+                TypedOp::Cast(_) => return self.lower_cast(op),
+                _ => {}
             }
-            Instruction::Unary { op: uop, .. } => {
-                self.lower_unary_family(op, uop);
-                return;
-            }
-            Instruction::MathUnary { kind, .. } => {
-                self.lower_math_unary_family(op, kind);
-                return;
-            }
-            instr @ Instruction::Shift { .. } => {
-                self.lower_shift(op, instr);
-                return;
-            }
-            instr @ Instruction::Rotate { .. } => {
-                self.lower_rotate(instr);
-                return;
-            }
-            instr @ Instruction::Cmp { .. } => {
-                self.lower_cmp(op, instr);
-                return;
-            }
-            instr @ Instruction::Select { .. } => {
-                self.lower_select(instr);
-                return;
-            }
-            instr @ Instruction::Load { .. } => {
-                self.lower_load(op, instr);
-                return;
-            }
-            instr @ Instruction::Store { .. } => {
-                self.lower_store(op, instr);
-                return;
-            }
-            instr @ Instruction::Copy { .. } => {
-                self.lower_copy(instr);
-                return;
-            }
-            instr @ Instruction::Const { .. } => {
-                self.lower_const(op, instr);
-                return;
-            }
-            instr @ Instruction::GetGlobal { .. } => {
-                self.lower_get_global(op, instr);
-                return;
-            }
-            instr @ Instruction::Cast { .. } => {
-                self.lower_cast(op, instr);
-                return;
-            }
-            instr @ Instruction::GetBitfield { .. } => {
-                self.lower_get_bitfield(op, instr);
-                return;
-            }
-            instr @ Instruction::SetBitfield { .. } => {
-                self.lower_set_bitfield(op, instr);
-                return;
-            }
-            instr @ Instruction::GetElement { .. } => {
-                self.lower_get_element(op, instr);
-                return;
-            }
-            instr @ Instruction::PtrStride { .. } => {
-                self.lower_ptr_stride(op, instr);
-                return;
-            }
-            instr @ Instruction::PtrDiff { .. } => {
-                self.lower_ptr_diff(op, instr);
-                return;
-            }
-            Instruction::AddOverflow { .. } => {
-                self.lower_overflow_arith(op, "overflowing_add");
-                return;
-            }
-            Instruction::SubOverflow { .. } => {
-                self.lower_overflow_arith(op, "overflowing_sub");
-                return;
-            }
-            Instruction::MulOverflow { .. } => {
-                self.lower_overflow_arith(op, "overflowing_mul");
-                return;
-            }
-            Instruction::Call { .. } => {
-                self.lower_call(op);
-                return;
-            }
-            Instruction::GetMember { .. } => {
-                self.lower_get_member(op);
-                return;
-            }
-            Instruction::ExtractMember { .. } => {
-                self.lower_extract_member(op);
-                return;
-            }
-            Instruction::VecSplat { .. } => {
-                self.lower_vec_splat(op);
-                return;
-            }
-            Instruction::VecExtract { .. } => {
-                self.lower_vec_extract(op);
-                return;
-            }
-            Instruction::VecCreate { .. } => {
-                self.lower_vec_create(op);
-                return;
-            }
-            Instruction::VecCmp { .. } => {
-                self.lower_vec_cmp(op);
-                return;
-            }
-            Instruction::VecInsert { .. } => {
-                self.lower_vec_insert(op);
-                return;
-            }
-            Instruction::VecShuffle { .. } => {
-                self.lower_vec_shuffle(op);
-                return;
-            }
-            Instruction::IsFpClass { .. } => {
-                self.lower_is_fp_class(op);
-                return;
-            }
-            Instruction::ObjSize { .. } => {
-                self.lower_objsize(op);
-                return;
-            }
-            Instruction::IsConstant { .. } => {
-                self.lower_is_constant(op);
-                return;
-            }
-            Instruction::Copysign { .. } => {
-                self.lower_binary_method(op, "copysign");
-                return;
-            }
-            Instruction::FMaxNum { .. } => {
-                self.lower_binary_method(op, "max");
-                return;
-            }
-            Instruction::FMinNum { .. } => {
-                self.lower_binary_method(op, "min");
-                return;
-            }
-            Instruction::Fmuladd { .. } => {
-                self.lower_ternary_method(op, "mul_add");
-                return;
-            }
-            Instruction::Fma { .. } => {
-                self.lower_ternary_method(op, "mul_add");
-                return;
-            }
-            Instruction::Modf { .. } => {
-                self.lower_modf(op);
-                return;
-            }
-            Instruction::ComplexCreate { .. } => {
-                self.lower_complex_create(op);
-                return;
-            }
-            Instruction::ComplexReal { .. } => {
-                self.lower_complex_part(op, "re");
-                return;
-            }
-            Instruction::ComplexImag { .. } => {
-                self.lower_complex_part(op, "im");
-                return;
-            }
-            Instruction::ComplexRealPtr { .. } => {
-                self.lower_complex_part_ptr(op, "re");
-                return;
-            }
-            Instruction::ComplexImagPtr { .. } => {
-                self.lower_complex_part_ptr(op, "im");
-                return;
-            }
-            Instruction::ComplexAdd { .. } => {
-                self.lower_complex_add(op);
-                return;
-            }
-            Instruction::ComplexSub { .. } => {
-                self.lower_complex_sub(op);
-                return;
-            }
-            Instruction::VaStart { .. } => {
-                self.lower_va_start(op);
-                return;
-            }
-            Instruction::VaEnd { .. } => {
-                return;
-            }
-            Instruction::VaCopy { .. } => {
-                self.lower_va_copy(op);
-                return;
-            }
-            Instruction::VaArg { .. } => {
-                self.lower_va_arg(op);
-                return;
-            }
-            Instruction::EhSetjmp { .. } => {
-                self.lower_eh_setjmp(op);
-                return;
-            }
-            Instruction::FrameAddress { .. } => {
-                self.lower_opaque_pointer(op, true);
-                return;
-            }
-            Instruction::ReturnAddress { .. } => {
-                self.lower_opaque_pointer(op, true);
-                return;
-            }
-            Instruction::Prefetch { .. } => {
-                return;
-            }
-            Instruction::InlineAsm { .. } => {
-                self.lower_asm(op);
-                return;
-            }
-            Instruction::StackSave { .. } => {
-                self.lower_opaque_pointer(op, false);
-                return;
-            }
-            Instruction::StackRestore { .. } => {
-                return;
-            }
-            Instruction::MemChr { .. } => {
-                self.lower_mem_chr(op);
-                return;
-            }
-            Instruction::CallLlvmIntrinsic { .. } => {
-                self.lower_llvm_intrinsic(op);
-                return;
-            }
-            Instruction::BlockAddress { .. } => {
-                self.lower_opaque_pointer(op, true);
-                return;
-            }
-            Instruction::Assume { .. } => {
-                self.lower_assume(op);
-                return;
-            }
-            Instruction::MemCpy { .. } => {
-                self.lower_mem_copy(op, false);
-                return;
-            }
-            Instruction::MemMove { .. } => {
-                self.lower_mem_copy(op, true);
-                return;
-            }
-            Instruction::MemSet { .. } => {
-                self.lower_mem_set(op);
-                return;
-            }
-            Instruction::ClearCache { .. } => {
-                return;
-            }
-            Instruction::AtomicFetch { .. } => {
-                self.lower_atomic_fetch(op);
-                return;
-            }
-            Instruction::AtomicXchg { .. } => {
-                self.lower_atomic_xchg(op);
-                return;
-            }
-            Instruction::AtomicFence { .. } => {
-                self.lower_atomic_fence(op);
-                return;
-            }
-            Instruction::AtomicCmpXchg { .. } => {
-                self.lower_atomic_cmpxchg(op);
-                return;
-            }
-            Instruction::AtomicTestAndSet { .. } => {
-                self.lower_atomic_test_and_set(op);
-                return;
-            }
-            Instruction::AtomicClear { .. } => {
-                self.lower_atomic_clear(op);
-                return;
-            }
-            Instruction::If { .. } => {
-                self.lower_if(op);
-                return;
-            }
-            Instruction::While { .. } => {
-                self.lower_while(op);
-                return;
-            }
-            Instruction::DoWhile { .. } => {
-                self.lower_do(op);
-                return;
-            }
-            Instruction::For { .. } => {
-                self.lower_for(op);
-                return;
-            }
-            Instruction::Switch { .. } => {
-                self.lower_switch(op);
-                return;
-            }
-            Instruction::Ternary { .. } => {
-                self.lower_ternary(op);
-                return;
-            }
-            Instruction::Scope { .. } => {
-                self.lower_scope(op);
-                return;
-            }
-            Instruction::CleanupScope { .. } => {
-                self.lower_cleanup_scope(op);
-                return;
-            }
-            Instruction::Return { .. } => {
-                self.lower_return(op);
-                return;
-            }
-            Instruction::Yield { .. } => {
-                return;
-            }
-            Instruction::Condition { .. } => {
-                return;
-            }
-            Instruction::Break => {
-                self.lower_break();
-                return;
-            }
-            Instruction::Continue => {
-                self.lower_continue();
-                return;
-            }
-            Instruction::Br { .. } => {
-                self.lower_br(op);
-                return;
-            }
-            Instruction::BrCond { .. } => {
-                self.lower_brcond(op);
-                return;
-            }
-            Instruction::Goto { .. } => {
-                self.lower_goto(op);
-                return;
-            }
-            Instruction::Label { .. } => {
-                return;
-            }
-            Instruction::Unreachable => {
-                self.lower_unreachable();
-                return;
-            }
-            Instruction::Trap => {
-                self.lower_trap();
-                return;
-            }
-            _ => {}
         }
         match op.kind() {
             CirOpKind::Alloca => self.lower_alloca(op),

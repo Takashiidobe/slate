@@ -1,7 +1,10 @@
 use super::*;
 
 pub(super) fn attr_symbol_ref<'a>(op: &'a Op, key: &str) -> Option<&'a str> {
-    op.attr(key).and_then(Attr::as_symbol_ref)
+    match op.attr(key)? {
+        Attr::SymbolRef(value) => Some(value),
+        _ => None,
+    }
 }
 
 pub(super) fn attr_int(op: &Op, key: &str) -> Option<i64> {
@@ -16,7 +19,12 @@ pub(super) fn call_arg_byval_type(op: &Op, operand_index: usize) -> Option<&str>
     let Attr::Array(entries) = op.attr("arg_attrs")? else {
         return None;
     };
-    let value = entries.get(operand_index)?.dict_get("llvm.byval")?;
+    let Attr::Dict(entries) = entries.get(operand_index)? else {
+        return None;
+    };
+    let value = entries
+        .iter()
+        .find_map(|(key, value)| (key == "llvm.byval").then_some(value))?;
     value
         .as_str()
         .or_else(|| value.as_type().and_then(cir_record_name))

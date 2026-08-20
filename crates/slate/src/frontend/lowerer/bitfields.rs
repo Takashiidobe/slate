@@ -126,7 +126,9 @@ fn member_storage(op: &Op, aliases: &BTreeMap<String, CirType>) -> Option<Member
 
 fn bitfield_info(op: &Op, module: &Module) -> Option<(u32, u32)> {
     match module.resolve_attr(op.attr("bitfield_info")?) {
-        Attr::BitfieldInfo { size, offset, .. } => Some((*size, *offset)),
+        Attr::BitfieldInfo { size, offset, .. } => {
+            Some((u32::try_from(*size).ok()?, u32::try_from(*offset).ok()?))
+        }
         _ => None,
     }
 }

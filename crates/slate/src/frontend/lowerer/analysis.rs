@@ -228,15 +228,10 @@ pub(super) fn enum_locals_requiring_integer_storage(
 fn collect_global_view_symbols(attr: &Attr, out: &mut Vec<String>) {
     match attr {
         Attr::GlobalView { symbol, .. } => out.push(symbol.clone()),
-        Attr::ConstArray {
-            data: clang_ir::ast::ConstArrayData::Elements(elements),
-            ..
-        } => {
-            for element in elements {
-                collect_global_view_symbols(element, out);
-            }
-        }
-        Attr::ConstRecord { elements, .. } | Attr::Array(elements) => {
+        Attr::ConstArray { elts, .. }
+        | Attr::ConstRecord { members: elts, .. }
+        | Attr::ConstVector { elts, .. } => collect_global_view_symbols(elts, out),
+        Attr::Array(elements) => {
             for element in elements {
                 collect_global_view_symbols(element, out);
             }

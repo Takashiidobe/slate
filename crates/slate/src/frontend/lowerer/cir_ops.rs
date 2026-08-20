@@ -47,10 +47,12 @@ fn case_value_i128(value: &Attr) -> Option<i128> {
 }
 
 fn case_value_pattern(value: &Attr) -> Option<Pattern> {
-    value
-        .as_int()
-        .map(int_pattern)
-        .or_else(|| value.as_u128().map(Pattern::U128))
+    value.as_int().map(int_pattern).or_else(|| {
+        value
+            .as_int()
+            .and_then(|value| u128::try_from(value).ok())
+            .map(Pattern::U128)
+    })
 }
 
 fn case_range_pattern(start: &Attr, end: &Attr, bitint_ty: Option<&Type>) -> Option<Pattern> {
@@ -66,7 +68,6 @@ fn case_range_pattern(start: &Attr, end: &Attr, bitint_ty: Option<&Type>) -> Opt
 fn case_value_digits(value: &Attr) -> Option<String> {
     match value {
         Attr::Int { value, .. } => Some(value.to_string()),
-        Attr::CirInt { text, .. } => Some(text.clone()),
         _ => None,
     }
 }
@@ -228,10 +229,17 @@ pub(super) fn asm_output_types<'a>(
     let CirType::Named(name) = op_result_type(op)? else {
         return None;
     };
-    let CirType::Struct(s) = aliases.get(name)? else {
-        return None;
+    let fields: Vec<&CirType> = match aliases.get(name)? {
+        CirType::Struct {
+            members: Some(members),
+            ..
+        }
+        | CirType::Union {
+            members: Some(members),
+            ..
+        } => members.iter().collect(),
+        _ => return None,
     };
-    let fields: Vec<&CirType> = s.members.iter().map(|(_, ty)| ty).collect();
     (fields.len() == output_count).then_some(fields)
 }
 
@@ -241,23 +249,27 @@ pub(super) fn op_operand_types(op: &Op) -> &[CirType] {
 
 pub(super) fn cir_ptr_inner(ty: &CirType) -> Option<&CirType> {
     match ty {
-        CirType::Ptr(inner) => Some(inner),
+        CirType::Pointer { pointee: inner, .. } => Some(inner),
         _ => None,
     }
 }
 
 pub(super) fn parse_function_type(ty: &CirType) -> (Vec<CirType>, Option<CirType>) {
     match ty {
-        CirType::CirFunc { inputs, output, .. } => (inputs.clone(), Some((**output).clone())),
+        CirType::Func {
+            inputs,
+            optional_return_type,
+            ..
+        } => (inputs.clone(), optional_return_type.as_deref().cloned()),
         _ => (Vec::new(), None),
     }
 }
 
 pub(super) fn function_type_has_params(ty: &CirType) -> bool {
-    matches!(ty, CirType::CirFunc { inputs, .. } if !inputs.is_empty())
+    matches!(ty, CirType::Func { inputs, .. } if !inputs.is_empty())
 }
 
 /// Whether a `!cir.func<..>` type ends its parameter list with `...`.
 pub(super) fn function_type_is_variadic(ty: &CirType) -> bool {
-    matches!(ty, CirType::CirFunc { varargs: true, .. })
+    matches!(ty, CirType::Func { var_arg: true, .. })
 }
