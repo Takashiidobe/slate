@@ -26,16 +26,13 @@ struct MemberStorage {
 }
 
 pub(super) fn collect_bitfield_storages(module: &Module) -> BitfieldStorages {
-    let Some(module_op) = builtin_module(module) else {
-        return BTreeMap::new();
-    };
     let mut storages = BTreeMap::new();
-    for function in region_ops(module_op)
-        .into_iter()
-        .filter(|op| op.mnemonic() == "func")
-    {
+    for function in &module.functions {
+        let Some(raw) = function.raw.as_ref() else {
+            continue;
+        };
         let mut members = BTreeMap::new();
-        collect_function_bitfields(&function.regions, module, &mut members, &mut storages);
+        collect_function_bitfields(&raw.regions, module, &mut members, &mut storages);
     }
     storages
 }
@@ -46,7 +43,7 @@ fn collect_function_bitfields(
     members: &mut BTreeMap<String, MemberStorage>,
     storages: &mut BitfieldStorages,
 ) {
-    let aliases = &module.type_aliases;
+    let aliases = &module.generic.type_aliases;
     for region in regions {
         for block in &region.blocks {
             for op in &block.ops {
@@ -125,7 +122,7 @@ fn member_storage(op: &Operation, aliases: &BTreeMap<String, CirType>) -> Option
 }
 
 fn bitfield_info(op: &Operation, module: &Module) -> Option<(u32, u32)> {
-    match module.resolve_attr(op.attr("bitfield_info")?) {
+    match module.generic.resolve_attr(op.attr("bitfield_info")?) {
         Attr::BitfieldInfo { size, offset, .. } => {
             Some((u32::try_from(*size).ok()?, u32::try_from(*offset).ok()?))
         }
