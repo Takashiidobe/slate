@@ -48,6 +48,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.push_stmt(Stmt::Scope { body });
     }
 
+    pub(super) fn lower_scope_typed(&mut self, op: &TypedScope) {
+        let body = self.capture_body(|this| this.lower_typed_region_ops(&op.scope_region));
+        self.push_stmt(Stmt::Scope { body });
+    }
+
     pub(super) fn lower_cleanup_scope(&mut self, op: &Op) {
         let Some(cleanup) = op.regions.get(1) else {
             self.emit_todo("cir.cleanup.scope");
@@ -78,23 +83,39 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.push_stmt(Stmt::Scope { body });
     }
 
-    pub(super) fn lower_if(&mut self, op: &Op) {
-        let Some(cond) = op.operands.first() else {
-            self.emit_todo("cir.if");
-            return;
-        };
-        let cond = self.operand_expr(cond);
-        let then_body = self.capture_body(|this| {
-            if let Some(region) = op.regions.first() {
-                this.lower_region_ops(region);
-            }
+    pub(super) fn lower_cleanup_scope_typed(&mut self, op: &TypedCleanupScope) {
+        let saw_stackrestore = op.cleanup_region.blocks.iter().any(|block| {
+            block
+                .ops
+                .iter()
+                .any(|cleanup_op| matches!(cleanup_op, TypedOp::Stackrestore(_)))
         });
+        let cleanup_supported = op.cleanup_region.blocks.iter().all(|block| {
+            block.ops.iter().all(|cleanup_op| {
+                matches!(
+                    cleanup_op,
+                    TypedOp::Load(_) | TypedOp::Yield(_) | TypedOp::Stackrestore(_)
+                )
+            })
+        });
+        if !cleanup_supported || !saw_stackrestore {
+            self.emit_todo("cir.cleanup.scope");
+            return;
+        }
+        let body = self.capture_body(|this| this.lower_typed_region_ops(&op.body_region));
+        self.push_stmt(Stmt::Scope { body });
+    }
+
+    pub(super) fn lower_if_typed(&mut self, op: &TypedIf) {
+        let cond = self.operand_expr(&op.condition);
+        let then_body = self.capture_body(|this| this.lower_typed_region_ops(&op.then_region));
         let has_else = op
-            .regions
-            .get(1)
-            .is_some_and(|region| region.blocks.iter().any(|block| !block.ops.is_empty()));
+            .else_region
+            .blocks
+            .iter()
+            .any(|block| !block.ops.is_empty());
         let else_body = if has_else {
-            self.capture_body(|this| this.lower_region_ops(&op.regions[1]))
+            self.capture_body(|this| this.lower_typed_region_ops(&op.else_region))
         } else {
             Vec::new()
         };
@@ -376,6 +397,198 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.push_stmt(Stmt::Scope { body });
     }
 
+    pub(super) fn lower_switch_typed(&mut self, op: &TypedSwitch) {
+        let selector_rust_ty = self
+            .value_type(&op.condition)
+            .map(|ty| self.parent.rust_type(ty));
+        let bitint_ty = selector_rust_ty.filter(|ty| bitint_generic_parts(ty).is_some());
+        if self.lower_typed_duff_switch(&op.condition, &op.body, bitint_ty.as_ref()) {
+            return;
+        }
+        let Some(cases): Option<Vec<_>> = op
+            .body
+            .blocks
+            .iter()
+            .flat_map(|block| &block.ops)
+            .filter(|op| matches!(op, TypedOp::Case(_)))
+            .map(|op| typed_switch_case(op, bitint_ty.as_ref()))
+            .collect()
+        else {
+            self.emit_todo("cir.switch: unrepresentable case value");
+            return;
+        };
+        if cases.is_empty() {
+            return;
+        }
+
+        let n = self.label_counter;
+        self.label_counter += 1;
+        let label = Label::new(format!("__switch{n}"));
+        let selector_name = format!("__switch_value{n}");
+        let case_name = format!("__switch_case{n}");
+        let default_index = cases.iter().position(|case| case.is_default);
+        let fallback = default_index.map(|index| index as i64).unwrap_or(-1);
+        let selector = self.operand_expr(&op.condition);
+
+        let mut selector_arms = Vec::new();
+        for (index, case) in cases.iter().enumerate() {
+            for pattern in &case.patterns {
+                selector_arms.push(ExprMatchArm {
+                    pattern: pattern.clone(),
+                    value: Expr::Value(RustValue::I64(index as i64)),
+                });
+            }
+        }
+        selector_arms.push(ExprMatchArm {
+            pattern: Pattern::Wildcard,
+            value: Expr::Value(RustValue::I64(fallback)),
+        });
+
+        let mut case_arms = Vec::new();
+        self.loop_stack.push(LoopFrame {
+            break_label: Some(label.clone()),
+            continue_label: None,
+            is_loop: false,
+        });
+        for (index, case) in cases.iter().enumerate() {
+            let mut body = self.capture_body(|this| this.lower_typed_region_ops(case.region));
+            if !typed_region_ends_control_flow(case.region) {
+                if index + 1 < cases.len() {
+                    body.push(Self::indent_stmt(Self::assign_stmt(
+                        Expr::Var(case_name.clone().into()),
+                        Expr::Value(RustValue::I64((index + 1) as i64)),
+                    )));
+                    body.push(Self::indent_stmt(Stmt::Continue(Some(label.clone()))));
+                } else {
+                    body.push(Self::indent_stmt(Stmt::Break(Some(label.clone()))));
+                }
+            }
+            case_arms.push(MatchArm {
+                pattern: int_pattern(index as i128),
+                body,
+            });
+        }
+        self.loop_stack.pop();
+        case_arms.push(MatchArm {
+            pattern: Pattern::Wildcard,
+            body: vec![Self::indent_stmt(Stmt::Break(Some(label.clone())))],
+        });
+
+        let body = vec![
+            Self::indent_stmt(Stmt::Let {
+                name: selector_name.clone(),
+                mutable: false,
+                ty: None,
+                init: Some(selector),
+            }),
+            Self::indent_stmt(Stmt::Let {
+                name: case_name.clone(),
+                mutable: true,
+                ty: Some(Type::Prim(Prim::I32)),
+                init: Some(Expr::Match {
+                    expr: Box::new(Expr::Var(selector_name.into())),
+                    arms: selector_arms,
+                }),
+            }),
+            Self::indent_stmt(Stmt::Loop {
+                label: Some(label),
+                body: vec![Self::indent_stmt(Stmt::Match {
+                    expr: Expr::Var(case_name.into()),
+                    arms: case_arms,
+                })],
+            }),
+        ];
+        self.push_stmt(Stmt::Scope { body });
+    }
+
+    fn lower_typed_duff_switch(
+        &mut self,
+        selector: &str,
+        region: &TypedRegion,
+        bitint_ty: Option<&Type>,
+    ) -> bool {
+        let Some(duff) = typed_duff_switch(region, bitint_ty) else {
+            return false;
+        };
+        let n = self.label_counter;
+        self.label_counter += 1;
+        let case_name = format!("__switch_case{n}");
+        let mut selector_arms = Vec::new();
+        for (index, case) in duff.cases.iter().enumerate() {
+            for pattern in &case.patterns {
+                selector_arms.push(ExprMatchArm {
+                    pattern: pattern.clone(),
+                    value: Expr::Value(RustValue::I64(index as i64)),
+                });
+            }
+        }
+        selector_arms.push(ExprMatchArm {
+            pattern: Pattern::Wildcard,
+            value: Expr::Value(RustValue::I64(-1)),
+        });
+        let loop_body = self.capture_body(|this| {
+            this.loop_stack.push(LoopFrame {
+                break_label: None,
+                continue_label: None,
+                is_loop: true,
+            });
+            for index in 0..duff.cases.len() {
+                let then_body = this.capture_body(|this| {
+                    if index == 0 {
+                        for op in &duff.prefix {
+                            this.lower_typed_op((*op).clone(), None);
+                            this.force_typed_cross_block_materialization(op);
+                        }
+                    } else {
+                        this.lower_typed_region_ops(duff.cases[index].region);
+                    }
+                });
+                this.push_stmt(Stmt::If {
+                    cond: Expr::Binary {
+                        op: BinOp::Le,
+                        lhs: Box::new(Expr::Var(case_name.clone().into())),
+                        rhs: Box::new(Expr::Value(RustValue::I64(index as i64))),
+                    },
+                    then_body,
+                    else_body: Vec::new(),
+                });
+            }
+            this.loop_stack.pop();
+            this.push_assign(
+                Expr::Var(case_name.clone().into()),
+                Expr::Value(RustValue::I64(0)),
+            );
+            let condition = this.lower_typed_condition_region_expr(duff.condition);
+            this.push_stmt(Self::guard_break(condition, None));
+        });
+        self.push_stmt(Stmt::Scope {
+            body: vec![
+                Self::indent_stmt(Stmt::Let {
+                    name: case_name.clone(),
+                    mutable: true,
+                    ty: Some(Type::Prim(Prim::I32)),
+                    init: Some(Expr::Match {
+                        expr: Box::new(self.operand_expr(selector)),
+                        arms: selector_arms,
+                    }),
+                }),
+                Self::indent_stmt(Stmt::If {
+                    cond: Expr::Binary {
+                        op: BinOp::Ge,
+                        lhs: Box::new(Expr::Var(case_name.into())),
+                        rhs: Box::new(Expr::Value(RustValue::I64(0))),
+                    },
+                    then_body: vec![Self::indent_stmt(Stmt::Loop {
+                        label: None,
+                        body: loop_body,
+                    })],
+                    else_body: Vec::new(),
+                }),
+            ],
+        });
+        true
+    }
+
     pub(super) fn lower_duff_switch(
         &mut self,
         selector: &str,
@@ -524,6 +737,170 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             (None, None)
         };
         let body = self.lower_do_loop_body(op, break_label.clone(), continue_label);
+        self.push_stmt(Stmt::Loop {
+            label: break_label,
+            body,
+        });
+    }
+
+    fn lower_typed_condition_region_expr(&mut self, region: &TypedRegion) -> Expr {
+        let mut condition = Expr::Value(RustValue::Bool(true));
+        for block in &region.blocks {
+            for op in &block.ops {
+                if let TypedOp::Condition(condition_op) = op {
+                    condition = self.operand_expr(&condition_op.condition);
+                } else {
+                    self.lower_typed_op(op.clone(), None);
+                }
+            }
+        }
+        condition
+    }
+
+    fn typed_region_has_direct_continue(region: &TypedRegion) -> bool {
+        region
+            .blocks
+            .iter()
+            .any(|block| Self::typed_ops_have_direct_continue(&block.ops))
+    }
+
+    fn typed_ops_have_direct_continue(ops: &[TypedOp]) -> bool {
+        ops.iter().any(|op| match op {
+            TypedOp::Continue(_) => true,
+            TypedOp::For(_) | TypedOp::While(_) | TypedOp::Do(_) => false,
+            _ => {
+                let mut found = false;
+                op.for_each_region(|region| {
+                    found |= Self::typed_region_has_direct_continue(region);
+                });
+                found
+            }
+        })
+    }
+
+    pub(super) fn lower_for_typed(&mut self, op: &TypedFor) {
+        let (break_label, continue_label) = if Self::typed_region_has_direct_continue(&op.body) {
+            let n = self.label_counter;
+            self.label_counter += 1;
+            (
+                Some(Label::new(format!("__loop{n}"))),
+                Some(Label::new(format!("__continue{n}"))),
+            )
+        } else {
+            (None, None)
+        };
+        let body = self.capture_body(|this| {
+            let cond = this.lower_typed_condition_region_expr(&op.cond);
+            this.push_stmt(Self::guard_break(cond, None));
+            if let Some(label) = &continue_label {
+                this.loop_stack.push(LoopFrame {
+                    break_label: break_label.clone(),
+                    continue_label: continue_label.clone(),
+                    is_loop: true,
+                });
+                let loop_body = this.capture_body(|this| this.lower_typed_region_ops(&op.body));
+                this.loop_stack.pop();
+                this.push_stmt(Stmt::LabeledBlock {
+                    label: label.clone(),
+                    body: loop_body,
+                });
+            } else {
+                this.loop_stack.push(LoopFrame {
+                    break_label: break_label.clone(),
+                    continue_label: None,
+                    is_loop: true,
+                });
+                this.lower_typed_region_ops(&op.body);
+                this.loop_stack.pop();
+            }
+            this.lower_typed_region_ops(&op.step);
+        });
+        self.push_stmt(Stmt::Loop {
+            label: break_label,
+            body,
+        });
+    }
+
+    pub(super) fn lower_while_typed(&mut self, op: &TypedWhile) {
+        let (break_label, continue_label) = if Self::typed_region_has_direct_continue(&op.body) {
+            let n = self.label_counter;
+            self.label_counter += 1;
+            (
+                Some(Label::new(format!("__loop{n}"))),
+                Some(Label::new(format!("__continue{n}"))),
+            )
+        } else {
+            (None, None)
+        };
+        let body = self.capture_body(|this| {
+            let cond = this.lower_typed_condition_region_expr(&op.cond);
+            this.push_stmt(Self::guard_break(cond, None));
+            if let Some(label) = &continue_label {
+                this.loop_stack.push(LoopFrame {
+                    break_label: break_label.clone(),
+                    continue_label: continue_label.clone(),
+                    is_loop: true,
+                });
+                let loop_body = this.capture_body(|this| this.lower_typed_region_ops(&op.body));
+                this.loop_stack.pop();
+                this.push_stmt(Stmt::LabeledBlock {
+                    label: label.clone(),
+                    body: loop_body,
+                });
+            } else {
+                this.loop_stack.push(LoopFrame {
+                    break_label: break_label.clone(),
+                    continue_label: None,
+                    is_loop: true,
+                });
+                this.lower_typed_region_ops(&op.body);
+                this.loop_stack.pop();
+            }
+        });
+        self.push_stmt(Stmt::Loop {
+            label: break_label,
+            body,
+        });
+    }
+
+    pub(super) fn lower_do_typed(&mut self, op: &TypedDo) {
+        let (break_label, continue_label) = if Self::typed_region_has_direct_continue(&op.body) {
+            let n = self.label_counter;
+            self.label_counter += 1;
+            (
+                Some(Label::new(format!("__loop{n}"))),
+                Some(Label::new(format!("__continue{n}"))),
+            )
+        } else {
+            (None, None)
+        };
+        let body = self.capture_body(|this| {
+            if let Some(label) = &continue_label {
+                let loop_body = this.capture_body(|this| {
+                    this.loop_stack.push(LoopFrame {
+                        break_label: break_label.clone(),
+                        continue_label: continue_label.clone(),
+                        is_loop: true,
+                    });
+                    this.lower_typed_region_ops(&op.body);
+                    this.loop_stack.pop();
+                });
+                this.push_stmt(Stmt::LabeledBlock {
+                    label: label.clone(),
+                    body: loop_body,
+                });
+            } else {
+                this.loop_stack.push(LoopFrame {
+                    break_label: break_label.clone(),
+                    continue_label: None,
+                    is_loop: true,
+                });
+                this.lower_typed_region_ops(&op.body);
+                this.loop_stack.pop();
+            }
+            let cond = this.lower_typed_condition_region_expr(&op.cond);
+            this.push_stmt(Self::guard_break(cond, break_label.clone()));
+        });
         self.push_stmt(Stmt::Loop {
             label: break_label,
             body,
@@ -699,6 +1076,29 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
+    pub(super) fn lower_goto_typed(&mut self, op: &TypedGoto) {
+        let Some(dispatch) = &self.dispatch else {
+            return;
+        };
+        let target = dispatch.label_to_state.get(&op.label).map(|state| {
+            (
+                *state,
+                dispatch.state_var.clone(),
+                dispatch.loop_label.clone(),
+            )
+        });
+        match target {
+            Some((state, state_var, loop_label)) => {
+                self.push_assign(
+                    Expr::Var(state_var.into()),
+                    Expr::Value(RustValue::I64(state as i64)),
+                );
+                self.push_stmt(Stmt::Continue(Some(loop_label)));
+            }
+            None => self.emit_todo("cir.goto: unknown label"),
+        }
+    }
+
     pub(super) fn lower_br(&mut self, op: &TypedBr) {
         self.lower_br_impl(&op.dest_operands, &op.successors);
     }
@@ -756,6 +1156,29 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .first()
             .and_then(|operand| self.indirect_target_values.get(operand))
         {
+            let state_var = dispatch.state_var.clone();
+            let loop_label = dispatch.loop_label.clone();
+            let target = target.clone();
+            self.push_assign(Expr::Var(state_var.into()), target);
+            self.push_stmt(Stmt::Continue(Some(loop_label)));
+        } else {
+            self.lower_unreachable();
+        }
+    }
+
+    pub(super) fn lower_indirect_br_typed(&mut self, op: &TypedIndirectBr) {
+        self.lower_indirect_target(&op.addr);
+    }
+
+    pub(super) fn lower_indirect_goto_typed(&mut self, op: &TypedIndirectGoto) {
+        self.lower_indirect_target(&op.addr);
+    }
+
+    fn lower_indirect_target(&mut self, addr: &str) {
+        let Some(dispatch) = &self.dispatch else {
+            return;
+        };
+        if let Some(target) = self.indirect_target_values.get(addr) {
             let state_var = dispatch.state_var.clone();
             let loop_label = dispatch.loop_label.clone();
             let target = target.clone();
@@ -825,6 +1248,61 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         )));
         self.push_stmt(Stmt::If {
             cond: cond_expr,
+            then_body,
+            else_body,
+        });
+        self.push_stmt(Stmt::Continue(Some(loop_label)));
+    }
+
+    pub(super) fn lower_brcond_typed(&mut self, op: &TypedBrcond) {
+        let Some(dispatch) = &self.dispatch else {
+            self.emit_todo("cir.brcond: not in dispatch context");
+            return;
+        };
+        let [true_bb, false_bb] = op.successors.as_slice() else {
+            self.emit_todo("cir.brcond: expected two successors");
+            return;
+        };
+        let (Some(true_state), Some(false_state)) = (
+            dispatch.block_to_state.get(true_bb).copied(),
+            dispatch.block_to_state.get(false_bb).copied(),
+        ) else {
+            self.emit_todo("cir.brcond: unknown successor");
+            return;
+        };
+        let state_var = dispatch.state_var.clone();
+        let loop_label = dispatch.loop_label.clone();
+        let true_args = dispatch.block_args.get(&true_state).cloned();
+        let false_args = dispatch.block_args.get(&false_state).cloned();
+
+        let mut then_body = Vec::new();
+        if let Some(names) = &true_args {
+            for (name, operand) in names.iter().zip(op.dest_operands_true.iter()) {
+                then_body.push(Self::indent_stmt(Self::assign_stmt(
+                    Expr::Var(name.clone().into()),
+                    self.operand_expr(operand),
+                )));
+            }
+        }
+        then_body.push(Self::indent_stmt(Self::assign_stmt(
+            Expr::Var(state_var.clone().into()),
+            Expr::Value(RustValue::I64(true_state as i64)),
+        )));
+        let mut else_body = Vec::new();
+        if let Some(names) = &false_args {
+            for (name, operand) in names.iter().zip(op.dest_operands_false.iter()) {
+                else_body.push(Self::indent_stmt(Self::assign_stmt(
+                    Expr::Var(name.clone().into()),
+                    self.operand_expr(operand),
+                )));
+            }
+        }
+        else_body.push(Self::indent_stmt(Self::assign_stmt(
+            Expr::Var(state_var.into()),
+            Expr::Value(RustValue::I64(false_state as i64)),
+        )));
+        self.push_stmt(Stmt::If {
+            cond: self.operand_expr(&op.cond),
             then_body,
             else_body,
         });

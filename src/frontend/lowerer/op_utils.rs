@@ -15,8 +15,8 @@ pub(super) fn attr_type<'a>(op: &'a Op, key: &str) -> Option<&'a CirType> {
     op.attr(key).and_then(Attr::as_type)
 }
 
-pub(super) fn call_arg_byval_type(op: &Op, operand_index: usize) -> Option<&str> {
-    let Attr::Array(entries) = op.attr("arg_attrs")? else {
+pub(super) fn call_arg_byval_type_attr(attr: Option<&Attr>, operand_index: usize) -> Option<&str> {
+    let Attr::Array(entries) = attr? else {
         return None;
     };
     let Attr::Dict(entries) = entries.get(operand_index)? else {

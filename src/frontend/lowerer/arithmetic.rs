@@ -221,6 +221,29 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .insert(result.to_string(), Val::Expr(Expr::Var(name.into())));
     }
 
+    pub(super) fn lower_ternary_typed(&mut self, op: &TypedTernary) {
+        let (Some(result), Some(result_ty)) = (&op.result, &op.result_ty) else {
+            return;
+        };
+        let cond = self.operand_expr(&op.cond);
+        let name = self.next_temp();
+        let ty = self.parent.rust_type(result_ty);
+        let (then_body, then_value) = self.lower_typed_yield_region(&op.true_region);
+        let (else_body, else_value) = self.lower_typed_yield_region(&op.false_region);
+        self.push_stmt(Stmt::LetIf {
+            name: name.clone(),
+            mutable: false,
+            ty: Some(ty),
+            cond,
+            then_body,
+            then_value,
+            else_body,
+            else_value,
+        });
+        self.values
+            .insert(result.to_string(), Val::Expr(Expr::Var(name.into())));
+    }
+
     // Lower every op in a region, capturing the terminating cir.yield's operand as
     // the region's tail value instead of lowering the yield itself.
     pub(super) fn lower_yield_region(&mut self, region: &Region) -> (Vec<IndentStmt>, Expr) {
@@ -234,6 +257,27 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         }
                     } else {
                         this.lower_op(op);
+                    }
+                }
+            }
+        });
+        (body, yielded)
+    }
+
+    pub(super) fn lower_typed_yield_region(
+        &mut self,
+        region: &TypedRegion,
+    ) -> (Vec<IndentStmt>, Expr) {
+        let mut yielded = Expr::Todo("cir.yield".into());
+        let body = self.capture_body(|this| {
+            for block in &region.blocks {
+                for op in &block.ops {
+                    if let TypedOp::Yield(yield_op) = op {
+                        if let Some(operand) = yield_op.args.first() {
+                            yielded = this.value_or_place_address_expr(operand);
+                        }
+                    } else {
+                        this.lower_typed_op(op.clone(), None);
                     }
                 }
             }
@@ -768,6 +812,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         };
         self.materialize_expr(result, self.operand_expr(value), op_result_type(op));
+    }
+
+    pub(super) fn lower_expect_typed(&mut self, op: &TypedExpect) {
+        self.materialize_expr(&op.result, self.operand_expr(&op.val), Some(&op.result_ty));
     }
 
     pub(super) fn lower_assume(&mut self, op: &TypedAssume) {

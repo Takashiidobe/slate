@@ -509,6 +509,113 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
+    pub(super) fn lower_get_member_typed(&mut self, op: &TypedGetMember) {
+        let index = op
+            .index_attr
+            .as_int()
+            .and_then(|index| usize::try_from(index).ok());
+        self.member_base_operand
+            .insert(op.result.clone(), op.addr.clone());
+        if let Some(outputs) = self.asm_outputs.get(&op.addr)
+            && let Some(output) = index.and_then(|index| outputs.get(index))
+        {
+            self.forward_values
+                .insert(op.result.clone(), output.clone());
+            return;
+        }
+        let base = self.place_or_deref_expr(&op.addr);
+        let logical_field = if op.name.is_empty() {
+            index
+                .map(|index| format!("__slate_anon_{index}"))
+                .unwrap_or_else(|| sanitize_ident(&op.result).into_string())
+        } else {
+            sanitize_ident(&op.name).into_string()
+        };
+        let storage = self.bitfield_storage_member_typed(&op.addr, &op.result_ty, index);
+        let field = storage
+            .as_ref()
+            .map(|(field, _, _)| field.clone())
+            .unwrap_or_else(|| logical_field.clone());
+        let field_ty = storage
+            .as_ref()
+            .map(|(_, ty, _)| ty.clone())
+            .or_else(|| self.member_field_type(&op.addr, &logical_field))
+            .or_else(|| {
+                self.record_name_from_base_type(&op.addr)
+                    .and_then(|record| self.record_field_type_by_name(&record, &logical_field))
+            });
+        let unsafe_access = self.place_expr(&op.addr).is_none()
+            || self.ptr_requires_unsafe(&op.addr)
+            || self
+                .value_type(&op.addr)
+                .and_then(cir_ptr_inner)
+                .is_some_and(|ty| self.parent.cir_type_is_union(ty));
+        let field_is_trailing = self.member_field_is_trailing_typed(&op.addr, &field);
+        self.member_ptrs.insert(
+            op.result.clone(),
+            MemberPtr {
+                base,
+                field,
+                field_ty,
+                unsafe_access,
+                bitfield_name: storage
+                    .as_ref()
+                    .and_then(|(_, _, wrapped)| wrapped.then_some(logical_field)),
+                field_is_trailing,
+            },
+        );
+    }
+
+    fn bitfield_storage_member_typed(
+        &self,
+        base_ptr: &str,
+        result_ty: &CirType,
+        index: Option<usize>,
+    ) -> Option<(String, Type, bool)> {
+        let record_name = self
+            .value_type(base_ptr)
+            .and_then(cir_ptr_pointee)
+            .map(|ty| self.parent.expand_alias(ty))
+            .and_then(cir_record_name)?;
+        let record_name = sanitize_ident(record_name).into_string();
+        let record = self.parent.records.get(&record_name)?;
+        let fields = self.parent.bitfield_storage_fields(record)?;
+        let index = index?;
+        let field = fields.get(index)?;
+        let wrapper = self
+            .parent
+            .bitfield_storages
+            .get(&(record_name, index))
+            .map(|storage| Type::Custom(storage.wrapper.clone()));
+        let ty = wrapper
+            .clone()
+            .or_else(|| cir_ptr_pointee(result_ty).map(|ty| self.parent.rust_type(ty)))?;
+        Some((
+            sanitize_ident(&field.name).into_string(),
+            ty,
+            wrapper.is_some(),
+        ))
+    }
+
+    fn member_field_is_trailing_typed(&self, base_ptr: &str, field: &str) -> bool {
+        let Some(record_name) = self
+            .member_record_name(base_ptr)
+            .or_else(|| self.record_name_from_base_type(base_ptr))
+        else {
+            return false;
+        };
+        let Some(record) = self.parent.records.get(&record_name) else {
+            return false;
+        };
+        if record.kind == crate::frontend::c_ast::RecordKind::Union {
+            return true;
+        }
+        record
+            .fields
+            .last()
+            .is_some_and(|last| sanitize_ident(&last.name).as_str() == field)
+    }
+
     pub(super) fn bitfield_storage_member(&self, op: &Op) -> Option<(String, Type, bool)> {
         let record_name = op
             .operands
@@ -724,6 +831,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .first()
             .and_then(|value| self.value_type(value))?;
         let record_name = cir_ptr_pointee(base_ty)
+            .map(|ty| self.parent.expand_alias(ty))
+            .and_then(cir_record_name)?;
+        Some(sanitize_ident(record_name).into_string())
+    }
+
+    fn record_name_from_base_type(&self, base_ptr: &str) -> Option<String> {
+        let record_name = self
+            .value_type(base_ptr)
+            .and_then(cir_ptr_pointee)
             .map(|ty| self.parent.expand_alias(ty))
             .and_then(cir_record_name)?;
         Some(sanitize_ident(record_name).into_string())

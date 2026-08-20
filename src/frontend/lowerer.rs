@@ -25,19 +25,23 @@ use clang_ir::model::{
         Alloca as TypedAlloca, Assume as TypedAssume, AtomicClear as TypedAtomicClear,
         AtomicCmpxchg as TypedAtomicCmpxchg, AtomicFence as TypedAtomicFence,
         AtomicFetch as TypedAtomicFetch, AtomicTestAndSet as TypedAtomicTestAndSet,
-        AtomicXchg as TypedAtomicXchg, Br as TypedBr, Cast as TypedCast, Cmp as TypedCmp,
-        Const as TypedConst, Copy as TypedCopy, EhSetjmp as TypedEhSetjmp,
-        ExtractMember as TypedExtractMember, GetBitfield as TypedGetBitfield,
-        GetElement as TypedGetElement, GetGlobal as TypedGetGlobal,
+        AtomicXchg as TypedAtomicXchg, Block as TypedBlock, Br as TypedBr, Brcond as TypedBrcond,
+        Call as TypedCall, Cast as TypedCast, CleanupScope as TypedCleanupScope, Cmp as TypedCmp,
+        Const as TypedConst, Copy as TypedCopy, Do as TypedDo, EhSetjmp as TypedEhSetjmp,
+        Expect as TypedExpect, ExtractMember as TypedExtractMember, For as TypedFor,
+        GetBitfield as TypedGetBitfield, GetElement as TypedGetElement,
+        GetGlobal as TypedGetGlobal, GetMember as TypedGetMember, Goto as TypedGoto, If as TypedIf,
+        IndirectBr as TypedIndirectBr, IndirectGoto as TypedIndirectGoto,
         InsertMember as TypedInsertMember, IsConstant as TypedIsConstant,
         IsFpClass as TypedIsFpClass, LibcMemchr as TypedLibcMemchr, LibcMemset as TypedLibcMemset,
         Load as TypedLoad, Modf as TypedModf, Objsize as TypedObjsize, PtrDiff as TypedPtrDiff,
-        PtrStride as TypedPtrStride, Return as TypedReturn, Select as TypedSelect,
-        SetBitfield as TypedSetBitfield, Store as TypedStore, VaArg as TypedVaArg,
+        PtrStride as TypedPtrStride, Region as TypedRegion, Return as TypedReturn,
+        Scope as TypedScope, Select as TypedSelect, SetBitfield as TypedSetBitfield,
+        Store as TypedStore, Switch as TypedSwitch, Ternary as TypedTernary, VaArg as TypedVaArg,
         VaCopy as TypedVaCopy, VaStart as TypedVaStart, VecCmp as TypedVecCmp,
         VecCreate as TypedVecCreate, VecExtract as TypedVecExtract, VecInsert as TypedVecInsert,
         VecShuffle as TypedVecShuffle, VecShuffleDynamic as TypedVecShuffleDynamic,
-        VecSplat as TypedVecSplat,
+        VecSplat as TypedVecSplat, While as TypedWhile,
     },
 };
 use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
@@ -1299,6 +1303,18 @@ struct DuffSwitch<'a> {
     condition: &'a Region,
 }
 
+struct TypedSwitchCase<'a> {
+    patterns: Vec<Pattern>,
+    is_default: bool,
+    region: &'a TypedRegion,
+}
+
+struct TypedDuffSwitch<'a> {
+    cases: Vec<TypedSwitchCase<'a>>,
+    prefix: Vec<&'a TypedOp>,
+    condition: &'a TypedRegion,
+}
+
 #[derive(Debug, Clone)]
 struct MemberPtr {
     base: Expr,
@@ -1434,10 +1450,6 @@ impl<'a> Lowerer<'a> {
         } else {
             Path::new([Ident::from(root), Ident::from(module), Ident::from(name)])
         }
-    }
-
-    fn call_binding(&self, op: &Op, direct: bool) -> CallBinding {
-        self.call_binding_at(op.loc.as_ref(), direct)
     }
 
     fn call_binding_at(&self, loc: Option<&SourceLocation>, direct: bool) -> CallBinding {
@@ -4249,9 +4261,101 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
+    fn lower_typed_block(&mut self, block: &TypedBlock) {
+        self.value_types.extend(block.args.iter().cloned());
+        let mut index = 0;
+        while index < block.ops.len() {
+            if matches!(block.ops[index], TypedOp::Alloca(_)) {
+                let end = block.ops[index..]
+                    .iter()
+                    .take_while(|candidate| matches!(candidate, TypedOp::Alloca(_)))
+                    .count()
+                    + index;
+                if end - index > 1 {
+                    let allocas: Vec<_> = block.ops[index..end]
+                        .iter()
+                        .filter_map(|candidate| match candidate {
+                            TypedOp::Alloca(alloca) => Some(alloca.clone()),
+                            _ => None,
+                        })
+                        .collect();
+                    if self.alloca_group_is_lowerable(&allocas) {
+                        self.lower_alloca_group(&allocas);
+                        index = end;
+                        continue;
+                    }
+                }
+            }
+            self.asm_output_places.clear();
+            let typed = block.ops[index].clone();
+            self.lower_typed_op(typed.clone(), None);
+            self.force_typed_cross_block_materialization(&typed);
+            index += 1;
+        }
+    }
+
+    fn force_typed_cross_block_materialization(&mut self, op: &TypedOp) {
+        if self.dispatch.is_none() {
+            return;
+        }
+        let mut results = Vec::new();
+        op.for_each_result(|id, ty| results.push((id.clone(), ty.clone())));
+        for (result, result_ty) in results {
+            let Some(name) = self
+                .dispatch
+                .as_ref()
+                .unwrap()
+                .cross_block_names
+                .get(&result)
+                .cloned()
+            else {
+                continue;
+            };
+            let already_materialized = matches!(
+                self.values.get(&result),
+                Some(Val::Expr(Expr::Var(v))) if v.as_str() == name
+            );
+            if already_materialized {
+                continue;
+            }
+            let Some(Val::Expr(current)) = self.values.get(&result).cloned() else {
+                continue;
+            };
+            let ty = self.parent.rust_type(&result_ty);
+            let default = self.parent.default_value_expr(&ty);
+            self.dispatch
+                .as_mut()
+                .unwrap()
+                .pending_hoists
+                .push(Self::indent_stmt(Stmt::Let {
+                    name: name.clone(),
+                    mutable: true,
+                    ty: Some(ty),
+                    init: Some(default),
+                }));
+            self.push_stmt(Self::assign_stmt(Expr::Var(name.clone().into()), current));
+            self.values
+                .insert(result, Val::Expr(Expr::Var(name.into())));
+        }
+    }
+
+    fn lower_typed_region_ops(&mut self, region: &TypedRegion) {
+        for block in &region.blocks {
+            self.lower_typed_block(block);
+        }
+    }
+
     fn lower_op(&mut self, op: &Op) {
         if let Some(typed) = TypedOp::from_operation(op) {
-            self.record_typed_result_types(&typed);
+            self.lower_typed_op(typed, Some(op));
+        } else {
+            self.lower_raw_op(op);
+        }
+    }
+
+    fn lower_typed_op(&mut self, typed: TypedOp, raw: Option<&Op>) {
+        self.record_typed_result_types(&typed);
+        let () = {
             match typed {
                 TypedOp::Add(value) if value.saturated => {
                     return self.lower_saturating_arith_typed(
@@ -4567,8 +4671,28 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 TypedOp::Const(value) => return self.lower_const(&value),
                 TypedOp::Alloca(value) => return self.lower_alloca(&value),
                 TypedOp::GetGlobal(value) => return self.lower_get_global(&value),
+                TypedOp::GetMember(value) => return self.lower_get_member_typed(&value),
+                TypedOp::Goto(value) => return self.lower_goto_typed(&value),
+                TypedOp::IndirectBr(value) => return self.lower_indirect_br_typed(&value),
+                TypedOp::IndirectGoto(value) => return self.lower_indirect_goto_typed(&value),
+                TypedOp::Label(_) | TypedOp::Condition(_) => return,
                 TypedOp::Load(value) => return self.lower_load(&value),
                 TypedOp::Br(value) => return self.lower_br(&value),
+                TypedOp::Call(value) => return self.lower_call(&value),
+                TypedOp::Brcond(value) => return self.lower_brcond_typed(&value),
+                TypedOp::Expect(value) => return self.lower_expect_typed(&value),
+                TypedOp::Trap(_) => return self.lower_trap(),
+                TypedOp::Unreachable(_) => return self.lower_unreachable(),
+                TypedOp::Scope(value) => return self.lower_scope_typed(&value),
+                TypedOp::Switch(value) => return self.lower_switch_typed(&value),
+                TypedOp::CleanupScope(value) => return self.lower_cleanup_scope_typed(&value),
+                TypedOp::Stackrestore(_) => return,
+                TypedOp::Ternary(value) => return self.lower_ternary_typed(&value),
+                TypedOp::For(value) => return self.lower_for_typed(&value),
+                TypedOp::While(value) => return self.lower_while_typed(&value),
+                TypedOp::Do(value) => return self.lower_do_typed(&value),
+                TypedOp::Break(_) => return self.lower_break(),
+                TypedOp::Continue(_) => return self.lower_continue(),
                 TypedOp::Store(value) => return self.lower_store(&value),
                 TypedOp::Copy(value) => return self.lower_copy(&value),
                 TypedOp::Cast(value) => return self.lower_cast(&value),
@@ -4693,7 +4817,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     );
                 }
                 TypedOp::Assume(value) => return self.lower_assume(&value),
-                TypedOp::If(_) => return self.lower_if(op),
+                TypedOp::If(value) => return self.lower_if_typed(&value),
                 TypedOp::Ffs(value) => {
                     return self.lower_ffs_typed(
                         &value.result,
@@ -4878,6 +5002,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     return self.lower_opaque_pointer_typed(&value.result, &value.result_ty, true);
                 }
                 TypedOp::Return(value) => return self.lower_return(&value),
+                TypedOp::Yield(_) => return,
                 TypedOp::ReturnAddress(value) => {
                     return self.lower_opaque_pointer_typed(&value.result, &value.result_ty, true);
                 }
@@ -4991,7 +5116,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 TypedOp::SetBitfield(value) => return self.lower_set_bitfield(&value),
                 _ => {}
             }
+        };
+        if let Some(raw) = raw {
+            self.lower_raw_op(raw);
+        } else {
+            self.emit_todo("typed instruction without lowering");
         }
+    }
+
+    fn lower_raw_op(&mut self, op: &Op) {
         self.value_types.extend(op.results.iter().cloned());
         match op.kind() {
             CirOpKind::Asm => self.lower_asm(op),
@@ -5001,7 +5134,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             CirOpKind::Unreachable => self.lower_unreachable(),
             CirOpKind::Ternary => self.lower_ternary(op),
             CirOpKind::GetMember => self.lower_get_member(op),
-            CirOpKind::Call => self.lower_call(op),
             CirOpKind::CallLlvmIntrinsic => self.lower_llvm_intrinsic(op),
             CirOpKind::Return => self.lower_return_raw(op),
             CirOpKind::Scope => self.lower_scope(op),
