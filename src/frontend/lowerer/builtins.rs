@@ -71,22 +71,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(result, expr, result_ty);
     }
 
-    pub(super) fn lower_binary_method(&mut self, op: &Op, method: &str) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        if op.operands.len() < 2 {
-            return;
-        }
-        self.lower_binary_method_typed(
-            result,
-            op_result_type(op),
-            &op.operands[0],
-            &op.operands[1],
-            method,
-        );
-    }
-
     pub(super) fn lower_binary_method_typed(
         &mut self,
         result: &str,
@@ -140,20 +124,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    pub(super) fn lower_ternary_method(&mut self, op: &Op, method: &str) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        if op.operands.len() < 3 {
-            return;
-        }
-        let a = self.operand_expr(&op.operands[0]);
-        let b = self.operand_expr(&op.operands[1]);
-        let c = self.operand_expr(&op.operands[2]);
-        let result_ty = op_result_type(op);
-        let rust_ty = result_ty
-            .map(|ty| self.parent.rust_type(ty))
-            .unwrap_or(Type::Prim(Prim::F64));
+    pub(super) fn lower_ternary_method_typed(
+        &mut self,
+        result: &str,
+        result_ty: &CirType,
+        operands: (&str, &str, &str),
+        method: &str,
+    ) {
+        let a = self.operand_expr(operands.0);
+        let b = self.operand_expr(operands.1);
+        let c = self.operand_expr(operands.2);
+        let rust_ty = self.parent.rust_type(result_ty);
         let expr = if type_mentions_long_double(&rust_ty) {
             let shim = match method {
                 "mul_add" => "__slate_f80_fma",
@@ -174,7 +155,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 args: vec![b, c],
             }
         };
-        self.materialize_expr(result, expr, result_ty);
+        self.materialize_expr(result, expr, Some(result_ty));
     }
 
     pub(super) fn lower_signbit_typed(&mut self, result: &str, result_ty: &CirType, value: &str) {
@@ -203,16 +184,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
-    pub(super) fn lower_is_fp_class(&mut self, op: &Op) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        let Some(value) = op.operands.first() else {
-            return;
-        };
-        let Some(flags) = attr_int(op, "flags") else {
-            return;
-        };
+    pub(super) fn lower_is_fp_class(&mut self, op: &TypedIsFpClass) {
+        let result = &op.result;
+        let result_ty = &op.result_ty;
+        let value = &op.src;
+        let flags = op.flags.0 as i64;
         let operand_ty = self.value_type(value);
         if operand_ty.is_some_and(is_wrapped_long_double) {
             self.materialize_expr(
@@ -222,7 +198,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     func: Box::new(Expr::Var("__slate_f80_is_fp_class".into())),
                     args: vec![self.operand_expr(value), Expr::Value(RustValue::I64(flags))],
                 },
-                op_result_type(op),
+                Some(result_ty),
             );
             return;
         }
@@ -349,7 +325,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else {
             Self::or_exprs(parts)
         };
-        self.materialize_expr(result, expr, op_result_type(op));
+        self.materialize_expr(result, expr, Some(result_ty));
     }
 
     pub(super) fn float_predicate_operand_expr(&self, operand: &str, ty: Option<&CirType>) -> Expr {
@@ -367,56 +343,46 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    pub(super) fn lower_modf(&mut self, op: &Op) {
-        if op.results.len() < 2 {
-            return;
-        }
-        let Some(value) = op.operands.first() else {
-            return;
-        };
-        let value = self.operand_expr(value);
-        let result_types = op_result_types(op);
-        if result_types
-            .first()
-            .is_some_and(|ty| is_wrapped_long_double(ty))
-        {
+    pub(super) fn lower_modf(&mut self, op: &TypedModf) {
+        let value = self.operand_expr(&op.src);
+        if is_wrapped_long_double(&op.fractional_ty) {
             self.materialize_expr(
-                &op.results[0].0,
+                &op.fractional,
                 Expr::Call {
                     binding: crate::function_identity::CallBinding::Generated,
                     func: Box::new(Expr::Var("__slate_f80_fract".into())),
                     args: vec![value.clone()],
                 },
-                result_types.first().copied(),
+                Some(&op.fractional_ty),
             );
             self.materialize_expr(
-                &op.results[1].0,
+                &op.integral,
                 Expr::Call {
                     binding: crate::function_identity::CallBinding::Generated,
                     func: Box::new(Expr::Var("__slate_f80_trunc".into())),
                     args: vec![value],
                 },
-                result_types.get(1).copied(),
+                Some(&op.integral_ty),
             );
             return;
         }
         self.materialize_expr(
-            &op.results[0].0,
+            &op.fractional,
             Expr::MethodCall {
                 recv: Box::new(value.clone()),
                 method: "fract".into(),
                 args: vec![],
             },
-            result_types.first().copied(),
+            Some(&op.fractional_ty),
         );
         self.materialize_expr(
-            &op.results[1].0,
+            &op.integral,
             Expr::MethodCall {
                 recv: Box::new(value),
                 method: "trunc".into(),
                 args: vec![],
             },
-            result_types.get(1).copied(),
+            Some(&op.integral_ty),
         );
     }
     pub(super) fn lower_function_pointer_null_cmp(

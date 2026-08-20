@@ -710,17 +710,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    pub(super) fn lower_unary_cast_method(&mut self, op: &Op, method: &str) {
-        let Some((result, _)) = op.results.first() else {
-            return;
-        };
-        let Some(value) = op.operands.first() else {
-            return;
-        };
-        let result_ty = op_result_type(op);
-        let ty = result_ty
-            .map(|ty| self.parent.rust_type(ty))
-            .unwrap_or(Type::Prim(Prim::I64));
+    pub(super) fn lower_unary_cast_method_typed(
+        &mut self,
+        result: &str,
+        result_ty: &CirType,
+        value: &str,
+        method: &str,
+    ) {
+        let ty = self.parent.rust_type(result_ty);
         let expr = Expr::Cast {
             expr: Box::new(Expr::MethodCall {
                 recv: Box::new(self.operand_expr(value)),
@@ -729,17 +726,20 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             }),
             ty,
         };
-        self.materialize_expr(result, expr, result_ty);
+        self.materialize_expr(result, expr, Some(result_ty));
     }
 
-    pub(super) fn lower_known_unary_cast_method(
+    pub(super) fn lower_known_unary_cast_method_typed(
         &mut self,
-        op: &Op,
+        result: &str,
+        result_ty: &CirType,
+        value: &str,
+        loc: Option<&SourceLocation>,
         known: function_identity::Known,
         method: &str,
     ) {
-        if self.lower_known_libc_op(op, known) {
-            self.lower_unary_cast_method(op, method);
+        if self.lower_known_libc_unary_typed(result, result_ty, value, loc, known) {
+            self.lower_unary_cast_method_typed(result, result_ty, value, method);
         }
     }
 
