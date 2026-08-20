@@ -404,7 +404,7 @@ fn parse_args() -> Result<FuzzConfig, String> {
         failures_dir,
         seeds_file,
         export_fixture,
-        clang_args: vec!["-std=c23".into()],
+        clang_args: vec!["-std=gnu23".into()],
         single_seed,
         start_seed,
         count,
