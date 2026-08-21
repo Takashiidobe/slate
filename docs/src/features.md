@@ -31,11 +31,11 @@ fixed.
 - [ ] #line
 - [ ] #error
 - [ ] #pragma
-- [ ] Predefined macros: **LINE**
-- [ ] **FILE**
-- [ ] **DATE**
-- [ ] **TIME**
-- [ ] **STDC**
+- [ ] Predefined macros: `__LINE__`
+- [ ] `__FILE__`
+- [ ] `__DATE__`
+- [ ] `__TIME__`
+- [ ] `__STDC__`
 - [ ] Types
 - [ ] char
 - [ ] signed char
@@ -152,8 +152,8 @@ fixed.
 - [ ] Digraph %> -> }
 - [ ] Digraph %: -> #
 - [ ] Digraph %:%: -> ##
-- [ ] **STDC_VERSION**
-- [ ] **STDC_VERSION** == 199409L
+- [ ] `__STDC_VERSION__`
+- [ ] `__STDC_VERSION__` == 199409L
 
 ### Library
 
@@ -222,7 +222,7 @@ fixed.
 - [ ] Enumerations
 - [ ] Trailing comma in enumerator list
 - [ ] Functions
-- [ ] **func**
+- [ ] `__func__`
 - [ ] Implicit return 0 from main
 - [ ] C99 inline linkage semantics
 - [ ] Removed C89 behavior
@@ -232,7 +232,7 @@ fixed.
 ### Preprocessor
 
 - [ ] Variadic macros ...
-- [ ] **VA_ARGS**
+- [ ] `__VA_ARGS__`
 - [ ] Empty arguments to function-like macros
 - [ ] \_Pragma
 - [ ] #pragma STDC FENV_ACCESS
@@ -241,11 +241,11 @@ fixed.
 
 ### C99 version / feature macros
 
-- [ ] **STDC_VERSION** == 199901L
-- [ ] **STDC_HOSTED**
-- [ ] **STDC_IEC_559** when applicable
-- [ ] **STDC_IEC_559_COMPLEX** when applicable
-- [ ] **STDC_ISO_10646** when applicable
+- [ ] `__STDC_VERSION__`== 199901L
+- [ ] `__STDC_HOSTED__`
+- [ ] `__STDC_IEC_559__`
+- [ ] `__STDC_IEC_559_COMPLEX__`
+- [ ] `__STDC_ISO_10646__`
 
 ### C99 library
 
@@ -361,14 +361,10 @@ fixed.
 - [ ] Updated effective-type / memory-model interactions
 - [ ] Analyzability
 - [ ] Analyzability specification
-- [ ] **STDC_ANALYZABLE** when supported
+- [ ] `__STDC_ANALYZABLE`\_\_ when supported
 - [ ] Conditional feature macros
-- [ ] **STDC_NO_ATOMICS**
-- [ ] **STDC_NO_THREADS**
-- [ ] **STDC_NO_VLA**
-- [ ] **STDC_NO_COMPLEX**
-- [ ] Version
-- [ ] **STDC_VERSION** == 201112L
+- [ ] `__STDC_NO_ATOMICS__`- [ ] `__STDC_NO_THREADS__`- [ ] `__STDC_NO_VLA__`- [ ] `__STDC_NO_COMPLEX__`- [ ] Version
+- [ ] `__STDC_VERSION`\_\_ == 201112L
 - [ ] C11 library
 - [ ] New headers
 - [ ] <stdalign.h>
@@ -429,21 +425,17 @@ fixed.
 - [ ] LDBL_DECIMAL_DIG
 - [ ] \*\_TRUE_MIN
 - [ ] \*\_HAS_SUBNORM
-- [ ] Annex K — optional
-- [ ]
-- [ ] Annex K is not required for ordinary conformance.
-- [ ]
-- [ ] **STDC_LIB_EXT1**, if implemented
+- [ ] Annex K Support
+- [ ] `__STDC_LIB_EXT1`\_\_, if implemented
 - [ ] Bounds-checking interfaces
 - [ ] \_s functions
 - [ ] runtime-constraint handlers
 - [ ] Removed
 - [ ] gets() removed
-- [ ] C17 / C18
-- [ ]
-- [ ] ISO/IEC 9899:2018 is usually called C17 or C18. It introduced no major new language or library facility; its purpose was primarily to roll C11 defect resolutions into the standard. cppreference counts 54 defect reports incorporated into C17.
-- [ ]
-- [ ] **STDC_VERSION** == 201710L
+
+## C17
+
+- [ ] `__STDC_VERSION`\_\_ == 201710L
 - [ ] All C11 features
 - [ ] All applicable C11 defect-report corrections
 - [ ] Updated atomic semantics
@@ -452,9 +444,6 @@ fixed.
 - [ ] Updated threading wording from C11 defect reports
 - [ ] Updated complex/floating-point wording from C11 defect reports
 - [ ] Updated generic-selection wording from C11 defect reports
-- [ ]
-- [ ] For a real C17 conformance suite, the DRs need individual regression tests. Simply accepting C11 syntax is not sufficient.
-- [ ]
 
 ## C23
 
@@ -473,7 +462,7 @@ fixed.
 
 ### Decimal types
 
-- only when the implementation advertises decimal IEC 60559 support through **STDC_IEC_60559_DFP**.
+- only when the implementation advertises decimal IEC 60559 support through `__STDC_IEC_60559_DFP`\_\_.
 - [ ] \_Decimal32
 - [ ] \_Decimal64
 - [ ] \_Decimal128
@@ -600,33 +589,40 @@ fixed.
 - [ ] Variably-modified types are mandatory
 - [ ] Allocated-storage VLA types are supported
 - [ ] Automatic VLA objects may remain optional
-- [ ] **STDC_NO_VLA** now indicates absence of automatic VLA objects rather than all VM types
+- [ ] `__STDC_NO_VLA`\_\_ now indicates absence of automatic VLA objects rather than all VM types
 - [ ] WG14 explicitly made VM types mandatory while leaving automatic-storage VLAs conditional.
-- [ ] C23 enumerations
+
+## C23 enumerations
+
 - [ ] Fixed underlying enum type
 - [ ] enum E : unsigned char
 - [ ] Forward declaration where permitted with fixed type
 - [ ] Enumerator values larger than int
 - [ ] Improved selection of enumerator types
 - [ ] Improved ordinary enumeration semantics
-- [ ] C23 tagged types
+
+## C23 tagged types
+
 - [ ] Revised struct compatibility rules
 - [ ] Revised union compatibility rules
 - [ ] Revised enum compatibility rules
 - [ ] Compatible same-tag redeclarations in permitted cases
-- [ ] C23 identifiers / Unicode
+
+## C23 identifiers / Unicode
+
 - [ ] Identifier rules based on Unicode Standard Annex #31
 - [ ] Updated permitted Unicode identifier characters
 - [ ] Correct normalization/identifier handling required by the standard
-- [ ] C23 preprocessor
+
+## C23 preprocessor
+
 - [ ] #elifdef
 - [ ] #elifndef
 - [ ] #warning
 - [ ] #embed
 - [ ] \_\_has_include
 - [ ] \_\_has_c_attribute
-- [ ] **VA_OPT**
-- [ ] Empty variadic macro argument handling
+- [ ] `__VA_OPT__`- [ ] Empty variadic macro argument handling
 - [ ] Updated variadic macro replacement rules
 - [ ] #embed
 - [ ] Basic #embed "file"
@@ -641,11 +637,8 @@ fixed.
 - [ ] #pragma STDC FENV_ROUND
 - [ ] #pragma STDC FENV_DEC_ROUND
 - [ ] Updated IEC 60559 feature detection
-- [ ] **STDC_IEC_60559_BFP**
-- [ ] **STDC_IEC_60559_DFP**
-- [ ] **STDC_IEC_60559_COMPLEX**
-- [ ] C23 version
-- [ ] **STDC_VERSION** == 202311L
+- [ ] `__STDC_IEC_60559_BFP__`- [ ] `__STDC_IEC_60559_DFP__`- [ ] `__STDC_IEC_60559_COMPLEX__`- [ ] C23 version
+- [ ] `__STDC_VERSION`\_\_ == 202311L
 
 ## C23 library
 
@@ -752,14 +745,14 @@ fixed.
 - [ ] exact-width integer rules updated
 - [ ] [u]intN_t consistency with [u]int_leastN_t
 - [ ] Library version macros
-- [ ] **STDC_VERSION_FENV_H**
-- [ ] **STDC_VERSION_MATH_H**
-- [ ] **STDC_VERSION_STDINT_H**
-- [ ] **STDC_VERSION_STDLIB_H**
-- [ ] **STDC_VERSION_TGMATH_H**
-- [ ] **STDC_VERSION_TIME_H**
-- [ ] **STDC_VERSION_STDCKDINT_H**
-- [ ] **STDC_VERSION_STDBIT_H**
+- [ ] `__STDC_VERSION_FENV_H__`
+- [ ] `__STDC_VERSION_MATH_H__`
+- [ ] `__STDC_VERSION_STDINT_H__`
+- [ ] `__STDC_VERSION_STDLIB_H__`
+- [ ] `__STDC_VERSION_TGMATH_H__`
+- [ ] `__STDC_VERSION_TIME_H__`
+- [ ] `__STDC_VERSION_STDCKDINT_H__`
+- [ ] `__STDC_VERSION_STDBIT_H__`
 
 # GNU extensions
 
