@@ -85,13 +85,16 @@ fn attr_array_values(attr: &Attr) -> Option<&[Attr]> {
     }
 }
 
-fn source_location_text(loc: &SourceLocation) -> Option<String> {
+fn source_point(loc: &SourceLocation) -> Option<SourcePoint> {
     match loc {
-        SourceLocation::File { file, line, column } => {
-            Some(format!("loc(\"{file}\":{line}:{column})"))
-        }
-        SourceLocation::Loc(raw) => Some(raw.clone()),
-        _ => None,
+        SourceLocation::File { file, line, column } => Some(SourcePoint {
+            file: file.clone(),
+            line: *line,
+            col: *column,
+        }),
+        SourceLocation::Fused(locations) => locations.iter().find_map(source_point),
+        SourceLocation::Callsite { expansion, .. } => source_point(expansion),
+        SourceLocation::Loc(_) | SourceLocation::Unknown => None,
     }
 }
 
@@ -766,13 +769,6 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
     let mut lowerer = Lowerer {
         ctx,
         aliases: cir.generic.type_aliases.clone(),
-        loc_aliases: cir
-            .generic
-            .loc_aliases
-            .iter()
-            .filter_map(|(name, loc)| Some((name.clone(), source_location_text(loc)?)))
-            .collect(),
-        source_locations: cir.generic.loc_aliases.clone(),
         attr_aliases: cir.generic.attr_aliases.clone(),
         call_bindings: c.call_bindings(),
         known_functions: c
@@ -1158,8 +1154,6 @@ fn comments(lines: &[String]) -> Vec<crate::backend::rust_ast::Comment> {
 struct Lowerer<'a> {
     ctx: &'a mut Ctx,
     aliases: BTreeMap<String, CirType>,
-    loc_aliases: BTreeMap<String, String>,
-    source_locations: BTreeMap<String, SourceLocation>,
     attr_aliases: BTreeMap<String, Attr>,
     call_bindings: HashMap<Loc, CallBinding>,
     known_functions: BTreeMap<String, FunctionIdentity>,
@@ -1392,16 +1386,20 @@ impl<'a> Lowerer<'a> {
             SourceLocation::Fused(locations) => locations
                 .iter()
                 .find_map(|loc| self.floating_literal_at_source_location(loc)),
-            SourceLocation::Loc(raw) => {
-                if let Some(alias) = raw.strip_prefix('#')
-                    && let Some(loc) = self.source_locations.get(alias)
-                {
-                    return self.floating_literal_at_source_location(loc);
-                }
-                self.resolve_floating_literal_loc(raw)
-                    .and_then(|loc| self.floating_literals.get(&loc).cloned())
+            SourceLocation::Callsite {
+                spelling,
+                expansion,
+            } => {
+                let spelling = source_point(spelling)?;
+                let expansion = source_point(expansion)?;
+                self.floating_literals
+                    .get(&FloatingLiteralLoc {
+                        spelling,
+                        expansion,
+                    })
+                    .cloned()
             }
-            SourceLocation::Unknown => None,
+            SourceLocation::Loc(_) | SourceLocation::Unknown => None,
         }
     }
 
@@ -1445,73 +1443,6 @@ impl<'a> Lowerer<'a> {
             }),
             _ => None,
         }
-    }
-
-    fn resolve_floating_literal_loc(&self, raw: &str) -> Option<FloatingLiteralLoc> {
-        let raw = raw.trim();
-        if raw.starts_with('#') {
-            return self.resolve_floating_literal_loc(
-                self.loc_aliases.get(raw.strip_prefix('#').unwrap_or(raw))?,
-            );
-        }
-        let inner = raw
-            .strip_prefix("loc(")
-            .and_then(|raw| raw.strip_suffix(')'))
-            .unwrap_or(raw)
-            .trim();
-        if inner.starts_with('#') {
-            return self.resolve_floating_literal_loc(
-                self.loc_aliases
-                    .get(inner.strip_prefix('#').unwrap_or(inner))?,
-            );
-        }
-        if let Some(callsite) = inner
-            .strip_prefix("callsite(")
-            .and_then(|raw| raw.strip_suffix(')'))
-            && let Some((spelling, expansion)) = callsite.split_once(" at ")
-        {
-            return Some(FloatingLiteralLoc {
-                spelling: self.resolve_source_point(spelling, 0)?,
-                expansion: self.resolve_source_point(expansion, 0)?,
-            });
-        }
-        let point = self.resolve_source_point(inner, 0)?;
-        Some(FloatingLiteralLoc {
-            spelling: point.clone(),
-            expansion: point,
-        })
-    }
-
-    fn resolve_source_point(&self, raw: &str, depth: usize) -> Option<SourcePoint> {
-        if depth == 8 {
-            return None;
-        }
-        let raw = raw.trim();
-        if raw.starts_with('#') {
-            return self.resolve_source_point(
-                self.loc_aliases.get(raw.strip_prefix('#').unwrap_or(raw))?,
-                depth + 1,
-            );
-        }
-        let inner = raw
-            .strip_prefix("loc(")
-            .and_then(|raw| raw.strip_suffix(')'))
-            .unwrap_or(raw)
-            .trim();
-        if inner.starts_with('#') {
-            return self.resolve_source_point(
-                self.loc_aliases
-                    .get(inner.strip_prefix('#').unwrap_or(inner))?,
-                depth + 1,
-            );
-        }
-        let (file, line_col) = inner.rsplit_once("\":")?;
-        let (line, col) = line_col.split_once(':')?;
-        Some(SourcePoint {
-            file: file.strip_prefix('"')?.to_string(),
-            line: line.parse().ok()?,
-            col: col.parse().ok()?,
-        })
     }
 
     fn long_double_extern_pointer_shim(&mut self, name: &str, ty: &Type) -> Option<String> {

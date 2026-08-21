@@ -44,28 +44,8 @@ pub(super) fn call_arg_byval_type_attr(attr: Option<&Attr>, operand_index: usize
         .or_else(|| value.as_type().and_then(cir_record_name))
 }
 
-fn builtin_dense_array_ints(attr: &Attr) -> Option<Vec<i64>> {
-    let Attr::Dialect {
-        dialect,
-        mnemonic,
-        raw: Some(raw),
-        ..
-    } = attr
-    else {
-        return None;
-    };
-    if dialect != "builtin" || mnemonic != "array" {
-        return None;
-    }
-    let digits = raw.split_once(':').map_or(raw.as_str(), |(_, rest)| rest);
-    digits
-        .split(',')
-        .map(|part| part.trim().parse::<i64>().ok())
-        .collect()
-}
-
 pub(super) fn int_array_attr(attr: &Attr) -> Option<Vec<u64>> {
-    if let Some(values) = builtin_dense_array_ints(attr) {
+    if let Some(values) = attr.as_dense_array_ints() {
         return values.into_iter().map(|n| u64::try_from(n).ok()).collect();
     }
     let Attr::Array(values) = attr else {
