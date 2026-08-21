@@ -138,14 +138,14 @@ slate translate add.c # translates add.c, prints to stdout
 
 ### In Progress
 
-- [] Passing the GCC Torture Test Suite
+- [ ] Passing the GCC Torture Test Suite
   - ~50 tests left
-- [] Re-enabling rewriting to generate better code
-- [] Generating target specific headers for intrinsics
-- [] Support for other architectures
+- [ ] Re-enabling rewriting to generate better code
+- [ ] Generating target specific headers for intrinsics
+- [ ] Support for other architectures
   - Currently only x86_64, no testing done for x86_32, arm32, arm64,
     riscv, risc32
-- [] Support for other targets
+- [ ] Support for other targets
   - Only linux w/ musl or glibc is supported for now, need to add libc
     support for windows, mac, android, and the BSDs
 
