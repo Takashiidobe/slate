@@ -1,5 +1,19 @@
 use super::*;
 
+pub(super) fn walk_region_ops(region: &inst::Region, visit: &mut dyn FnMut(&Op) -> bool) {
+    for block in &region.blocks {
+        walk_block_ops(&block.ops, visit);
+    }
+}
+
+pub(super) fn walk_block_ops(ops: &[Op], visit: &mut dyn FnMut(&Op) -> bool) {
+    for op in ops {
+        if visit(op) {
+            op.for_each_region(|region| walk_region_ops(region, visit));
+        }
+    }
+}
+
 pub(super) fn attr_symbol_ref<'a>(op: &'a Operation, key: &str) -> Option<&'a str> {
     match op.attr(key)? {
         Attr::SymbolRef(value) => Some(value.trim_start_matches('@').trim_matches('"')),

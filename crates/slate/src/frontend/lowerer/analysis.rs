@@ -88,13 +88,10 @@ pub(super) fn region_ops(op: &Operation) -> Vec<&Operation> {
 }
 
 pub(super) fn cross_block_live_values(body: &inst::Region) -> BTreeSet<String> {
-    fn walk(
-        ops: &[Op],
-        block_index: usize,
-        def_block: &mut BTreeMap<String, usize>,
-        used_in: &mut BTreeMap<String, BTreeSet<usize>>,
-    ) {
-        for op in ops {
+    let mut def_block: BTreeMap<String, usize> = BTreeMap::new();
+    let mut used_in: BTreeMap<String, BTreeSet<usize>> = BTreeMap::new();
+    for (block_index, block) in body.blocks.iter().enumerate() {
+        walk_block_ops(&block.ops, &mut |op| {
             op.for_each_result(|result, _| {
                 def_block.entry(result.clone()).or_insert(block_index);
             });
@@ -104,17 +101,8 @@ pub(super) fn cross_block_live_values(body: &inst::Region) -> BTreeSet<String> {
                     .or_default()
                     .insert(block_index);
             });
-            op.for_each_region(|region| {
-                for block in &region.blocks {
-                    walk(&block.ops, block_index, def_block, used_in);
-                }
-            });
-        }
-    }
-    let mut def_block: BTreeMap<String, usize> = BTreeMap::new();
-    let mut used_in: BTreeMap<String, BTreeSet<usize>> = BTreeMap::new();
-    for (i, block) in body.blocks.iter().enumerate() {
-        walk(&block.ops, i, &mut def_block, &mut used_in);
+            true
+        });
     }
     def_block
         .into_iter()
