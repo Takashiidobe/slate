@@ -327,24 +327,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn region_has_direct_continue(region: &inst::Region) -> bool {
-        region
-            .blocks
-            .iter()
-            .any(|block| Self::ops_have_direct_continue(&block.ops))
-    }
-
-    fn ops_have_direct_continue(ops: &[Op]) -> bool {
-        ops.iter().any(|op| match op {
-            Op::Continue(_) => true,
-            Op::For(_) | Op::While(_) | Op::Do(_) => false,
-            _ => {
-                let mut found = false;
-                op.for_each_region(|region| {
-                    found |= Self::region_has_direct_continue(region);
-                });
-                found
+        let mut found = false;
+        walk_region_ops(region, &mut |op| match op {
+            Op::Continue(_) => {
+                found = true;
+                false
             }
-        })
+            Op::For(_) | Op::While(_) | Op::Do(_) => false,
+            _ => true,
+        });
+        found
     }
 
     pub(super) fn lower_for(&mut self, op: &inst::For) {
