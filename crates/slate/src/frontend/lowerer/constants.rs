@@ -291,10 +291,9 @@ pub(super) fn complex_component_from_attr(attr: &Attr) -> Option<CirComplexCompo
 }
 
 /// Renders a scalar (non-aggregate) attribute directly: `#cir.int<>`,
-/// `#cir.fp<>`, `#cir.bool<>`/`#true`/`#false`, and `#cir.ptr<null>` (the
-/// only unmodeled-but-relevant `Attribute::Dialect` case here - other
-/// `!cir.ptr` forms, e.g. int-to-pointer casts, need the destination type
-/// and are handled by the caller instead).
+/// `#cir.fp<>`, `#cir.bool<>`/`#true`/`#false`, and `#cir.ptr<null>` -
+/// other `!cir.ptr` forms, e.g. int-to-pointer casts, need the destination
+/// type and are handled by the caller instead.
 pub(super) fn scalar_attr_expr(attr: &Attr) -> Option<Expr> {
     match attr {
         Attr::Int { value, .. } => Some(int_value_expr(*value)),
@@ -304,16 +303,18 @@ pub(super) fn scalar_attr_expr(attr: &Attr) -> Option<Expr> {
         Attr::CirBool { value, .. } | Attr::Bool(value) => {
             Some(Expr::Value(RustValue::Bool(*value)))
         }
-        Attr::Dialect {
-            dialect,
-            mnemonic,
-            raw: Some(raw),
-            ..
-        } if dialect == "cir" && mnemonic == "ptr" && raw.trim() == "null" => {
+        Attr::ConstPtr { value, .. } if is_null_ptr_value(value) => {
             Some(Expr::Value(RustValue::NullPtr))
         }
         _ => None,
     }
+}
+
+/// `#cir.ptr<null>` parses to a zero `Attribute::Int` with no type suffix,
+/// which is otherwise indistinguishable from a real `#cir.ptr<0 : ty>` -
+/// MLIR's own printer renders both the same way, so this is the only signal.
+pub(super) fn is_null_ptr_value(value: &Attr) -> bool {
+    matches!(value, Attr::Int { value: 0, ty: None })
 }
 
 /// Renders a `#cir.fp<...>` literal's already-extracted text (e.g.
@@ -332,29 +333,7 @@ pub(super) fn fp_text_value(text: &str) -> Option<String> {
 }
 
 pub(super) fn decode_cir_string(s: &str) -> Vec<u8> {
-    let mut bytes = Vec::new();
-    let mut chars = s.chars().peekable();
-    while let Some(c) = chars.next() {
-        if c != '\\' {
-            bytes.push(c as u8);
-            continue;
-        }
-        if chars.peek() == Some(&'\\') {
-            chars.next();
-            bytes.push(b'\\');
-            continue;
-        }
-        let mut hex = String::new();
-        while hex.len() < 2 && chars.peek().is_some_and(|c| c.is_ascii_hexdigit()) {
-            hex.push(chars.next().unwrap());
-        }
-        if hex.is_empty() {
-            bytes.push(b'\\');
-        } else if let Ok(value) = u8::from_str_radix(&hex, 16) {
-            bytes.push(value);
-        }
-    }
-    bytes
+    clang_ir::decode_escaped_bytes(s.as_bytes())
 }
 
 pub(super) fn sanitize_ident(s: &str) -> Ident {
