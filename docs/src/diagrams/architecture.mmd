@@ -1,0 +1,27 @@
+flowchart TD
+    C["C source (project or single file)"]
+    Shim["libc-shim headers\n(-nostdlib, portable per-target)"]
+
+    C --> Clang
+    Shim -.-> Clang
+
+    Clang["SLATE_CLANG (-fclangir)\n+ macro dump plugin"]
+
+    Clang -->|"emit CIR"| CIR["CIR\n"]
+    Clang -->|"-ast-dump=json"| ASTJSON["Clang AST JSON\n+ with/include/call provenance events"]
+
+    CIR --> CIRParse["src/cir\nparse generic-form CIR into an ops"]
+    ASTJSON --> CAst["src/frontend/c_ast.rs\ncomments, macro identity, header provenance,\nbit-fields, packing, etc"]
+
+    CIRParse --> Lowerer["src/frontend/lowerer.rs\njoined CIR + AST facts by source locations"]
+    CAst --> Lowerer
+
+    Lowerer --> Baseline["baseline Rust\nunsafe, #[repr(C)], raw pointers, libc-backed"]
+    Baseline --> Facts["src/backend/facts\nread-only analysis over the lowered Program\n"]
+    Facts --> Rewrite["src/backend/query/rules\nfixup / idiomatization passes,\n"]
+    Rewrite --> Rust["Rust output\n(single file or Cargo crate)"]
+
+    classDef stage fill:#eef2ff,stroke:#4338ca,color:#1e1b4b;
+    classDef io fill:#f1f5f9,stroke:#334155,color:#0f172a;
+    class C,Shim,Rust io;
+    class Clang,CIR,ASTJSON,CIRParse,CAst,Lowerer,Baseline,Facts,Rewrite stage;

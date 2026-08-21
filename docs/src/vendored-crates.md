@@ -67,6 +67,21 @@ extern FILE *const stderr;
 #endif
 ```
 
+Some other `__SLATE*` macros used:
+
+- `__SLATE_OBJ_*` (`ELF`, `COFF`, `MACHO`): object file format, for code
+  that has to emit or parse symbol tables (e.g. `dladdr`-style lookups).
+- `__SLATE_WORDSIZE_*` (`64`, `32`): necessary for certain types that
+  change based on word size.
+- `__SLATE_ENDIAN_*` (`LITTLE`, `BIG`): used for endian independent
+  code.
+- `__SLATE_PLATFORM_ANDROID` / `__SLATE_PLATFORM_MACOS`
+- `__SLATE_ANDROID_API__`: currently required to be greater than 21.
+
+`target_features` in `src/cir/emit.rs` derives and uses `-D__SLATE_*`
+flags from the parsed target triple before invoking Clang, so we have a
+guarantee they're correct.
+
 ## bitint
 
 `_BitInt(N)` is a C23 feature that allows for arbitrarily sized integers
@@ -75,6 +90,21 @@ own implementation. The crate itself implements numerical traits that
 are required by C. There's a mapping in Slate from each operation in C
 to what it is in Rust.
 
+The bitint crate has two types, `BUint` and `BInt` (corresponding
+to `unsigned _BitInt` and `_Bitint`). storing the value as a
+fixed-size `[u8; BYTES]` byte array and reinterpreting it as `[u64; LIMBS]`
+limbs for arithmetic `BITS` is the C-declared width, `LIMBS`/`BYTES`
+are derived from it.
+
+`src/frontend/lowerer/types.rs` (`bitint_type`, `bitint_storage_bytes`,
+`bitint_generic_parts`) picks the concrete `BInt`/`BUint` instantiation for
+a given `_BitInt(N)`, except for the two widths Rust already has native
+integers for: 128-bit signed/unsigned `_BitInt` lowers straight to `i128`/
+`u128` instead of going through the crate. Conversions to/from decimal
+literals and native ints (`bitint_from_decimal_str_expr`,
+`bitint_from_int_expr`, `bitint_to_int_expr`) are also generated per call
+site, since the target width isn't known until lowering sees the C type.
+
 ## num-complex
 
 `Complex` numbers in C also have to be represented. Thankfully, the
@@ -82,8 +112,30 @@ to what it is in Rust.
 Complex numbers have to handle `long double` which, when it's an f80,
 doesn't have an analogue in rust.
 
+For `float`/`double`, C `_Complex` lowers straight to
+`num_complex::Complex<f32>`/`Complex<f64>` (`COMPLEX_TY` in
+`src/frontend/lowerer/runtime_support.rs`), and Slate keeps `*`/`/` on those
+bit-identical to Clang's libgcc lowering by routing them through `extern
+"C"` runtime calls (`__muldc3`, `__divdc3`, `__mulsc3`, `__divsc3`) rather
+than `num-complex`'s own generic multiply/divide.
+
+`Complex<F80>` implements basic ops (`Add`, `Sub`, `Mul`, `Div`, `Neg`,
+`PartialEq`, `PartialOrd`) required by `Complex<T>: Num`, each forwarding to
+a `__slate_f80_*` shim (see [long double](./long-double.md)) for basic
+arithmetic. Everything else C's `<complex.h>` needs for `long double`
+is provided by the long double shim (`src/frontend/shims/long_double.c`).
+
 ## aligned
 
-Because of Sys-V alignment (requiring functions to be 16-byte aligned)
-some functions are wrapped in the `aligned::Aligned` crate in order to
-handle pointer arithmetic properly.
+The `aligned` crate provides `aligned::Aligned<A, T>` with `A`, a marker type like
+`aligned::A16` and `T`, the wrapped value, with `#[repr(align(N))]`
+enforced.
+
+The main reason slate uses this is for arrays: the x86-64 System V ABI aligns
+large arrays (e.g. `char buf[16]`) to 16 bytes even with no
+`_Alignas`/`__attribute__((aligned))` in the source, so the compiler can use
+wider SSE loads/stores on them. Clang honors this and CIR reports the
+resulting alignment on the declaration, but Rust's arrays only get their
+element's natural alignment. There's no way to ask for a stricter array
+alignment except by wrapping it, so we have to wrap arrays in aligned so
+pointer arithmetic works on them.
