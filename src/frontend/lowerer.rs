@@ -401,29 +401,16 @@ fn builtin_module(module: &Module) -> Option<&Operation> {
         .find(|op| op.name == "builtin.module")
 }
 
-/// Extracts `#cir.block_addr_info<"label", ...>` labels from a `#cir.const_array<[...]>`
-/// element list, if every element carries one - anything else (a plain
-/// numeric/aggregate array) isn't a block-address table.
+/// Extracts `#cir.block_addr_info<@func, "label">` labels from a
+/// `#cir.const_array<[...]>` element list, if every element carries one -
+/// anything else (a plain numeric/aggregate array) isn't a block-address
+/// table.
 fn block_addr_labels(items: &[Attr]) -> Option<Vec<String>> {
     let labels: Vec<String> = items
         .iter()
-        .filter_map(|item| {
-            let Attr::Dialect {
-                dialect,
-                mnemonic,
-                raw: Some(raw),
-                ..
-            } = item
-            else {
-                return None;
-            };
-            if dialect != "cir" || mnemonic != "block_addr_info" {
-                return None;
-            }
-            let start = raw.find('"')? + 1;
-            let rest = &raw[start..];
-            let end = rest.find('"')?;
-            Some(rest[..end].to_string())
+        .filter_map(|item| match item {
+            Attr::BlockAddrInfo { label, .. } => Some(label.clone()),
+            _ => None,
         })
         .collect();
     (labels.len() == items.len() && !labels.is_empty()).then_some(labels)
@@ -3646,29 +3633,17 @@ impl __SlateVaArgs {
                 }
             }
             Attr::Zero { .. } => Some(self.default_value_expr(ty)),
-            Attr::Dialect {
-                dialect,
-                mnemonic,
-                raw: Some(raw),
-                ..
-            } if dialect == "cir" && mnemonic == "ptr" => {
-                let raw = raw.trim();
-                if raw == "null" {
-                    Some(if matches!(ty, Type::FnPtr { .. }) {
-                        Expr::Value(RustValue::None)
-                    } else {
-                        Expr::Value(RustValue::NullPtr)
-                    })
+            Attr::ConstPtr { value, .. } if is_null_ptr_value(value) => {
+                Some(if matches!(ty, Type::FnPtr { .. }) {
+                    Expr::Value(RustValue::None)
                 } else {
-                    // `#cir.ptr<N : ty>` embeds its own type suffix inside the
-                    // body text, unlike most other `#cir.*` attrs.
-                    let digits = raw.split(':').next().unwrap_or(raw).trim();
-                    digits.parse::<i128>().ok().map(|addr| Expr::Cast {
-                        expr: Box::new(int_value_expr(addr)),
-                        ty: ty.clone(),
-                    })
-                }
+                    Expr::Value(RustValue::NullPtr)
+                })
             }
+            Attr::ConstPtr { value, .. } => value.as_int().map(|addr| Expr::Cast {
+                expr: Box::new(int_value_expr(addr)),
+                ty: ty.clone(),
+            }),
             Attr::Int { value, .. } if matches!(ty, Type::Custom(name) if self.enums.contains_key(name)) =>
             {
                 let Type::Custom(name) = ty else {
