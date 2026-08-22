@@ -588,14 +588,16 @@ fn rustc_target_feature_name(name: &str) -> &str {
     }
 }
 
-fn cir_type_mentions_f128(ty: &CirType) -> bool {
+fn cir_type_mentions(ty: &CirType, is_target: &impl Fn(&CirType) -> bool) -> bool {
+    if is_target(ty) {
+        return true;
+    }
     match ty {
-        CirType::Fp128 => true,
         CirType::LongDouble { underlying: inner }
         | CirType::Pointer { pointee: inner, .. }
         | CirType::Complex {
             element_type: inner,
-        } => cir_type_mentions_f128(inner),
+        } => cir_type_mentions(inner, is_target),
         CirType::Array {
             element_type: element,
             ..
@@ -603,19 +605,20 @@ fn cir_type_mentions_f128(ty: &CirType) -> bool {
         | CirType::Vector {
             element_type: element,
             ..
-        } => cir_type_mentions_f128(element),
+        } => cir_type_mentions(element, is_target),
         CirType::Func {
             inputs,
             optional_return_type,
             ..
         } => {
-            inputs.iter().any(cir_type_mentions_f128)
+            inputs.iter().any(|ty| cir_type_mentions(ty, is_target))
                 || optional_return_type
                     .as_deref()
-                    .is_some_and(cir_type_mentions_f128)
+                    .is_some_and(|ty| cir_type_mentions(ty, is_target))
         }
         CirType::FunctionType { inputs, results } => {
-            inputs.iter().any(cir_type_mentions_f128) || results.iter().any(cir_type_mentions_f128)
+            inputs.iter().any(|ty| cir_type_mentions(ty, is_target))
+                || results.iter().any(|ty| cir_type_mentions(ty, is_target))
         }
         CirType::Struct {
             members: Some(members),
@@ -624,12 +627,20 @@ fn cir_type_mentions_f128(ty: &CirType) -> bool {
         | CirType::Union {
             members: Some(members),
             ..
-        } => members.iter().any(cir_type_mentions_f128),
+        } => members.iter().any(|ty| cir_type_mentions(ty, is_target)),
         _ => false,
     }
 }
 
-fn attr_mentions_f128(attr: &Attr) -> bool {
+fn cir_type_mentions_f128(ty: &CirType) -> bool {
+    cir_type_mentions(ty, &|ty| matches!(ty, CirType::Fp128))
+}
+
+fn cir_type_mentions_f16(ty: &CirType) -> bool {
+    cir_type_mentions(ty, &|ty| matches!(ty, CirType::Fp16))
+}
+
+fn attr_mentions(attr: &Attr, is_target: &impl Fn(&CirType) -> bool) -> bool {
     match attr {
         Attr::Type(ty)
         | Attr::Float { ty: Some(ty), .. }
@@ -640,16 +651,24 @@ fn attr_mentions_f128(attr: &Attr) -> bool {
         | Attr::ConstRecord { ty, .. }
         | Attr::GlobalView { ty, .. }
         | Attr::Zero { ty }
-        | Attr::Poison { ty } => cir_type_mentions_f128(ty),
-        Attr::Dialect { ty: Some(ty), .. } => cir_type_mentions_f128(ty),
-        Attr::BitfieldInfo { storage_type, .. } => cir_type_mentions_f128(storage_type),
+        | Attr::Poison { ty } => cir_type_mentions(ty, is_target),
+        Attr::Dialect { ty: Some(ty), .. } => cir_type_mentions(ty, is_target),
+        Attr::BitfieldInfo { storage_type, .. } => cir_type_mentions(storage_type, is_target),
         Attr::ConstComplex { real, imag, .. } => {
-            attr_mentions_f128(real) || attr_mentions_f128(imag)
+            attr_mentions(real, is_target) || attr_mentions(imag, is_target)
         }
-        Attr::Array(items) => items.iter().any(attr_mentions_f128),
-        Attr::Dict(entries) => entries.iter().any(|(_, v)| attr_mentions_f128(v)),
+        Attr::Array(items) => items.iter().any(|item| attr_mentions(item, is_target)),
+        Attr::Dict(entries) => entries.iter().any(|(_, v)| attr_mentions(v, is_target)),
         _ => false,
     }
+}
+
+fn attr_mentions_f128(attr: &Attr) -> bool {
+    attr_mentions(attr, &|ty| matches!(ty, CirType::Fp128))
+}
+
+fn attr_mentions_f16(attr: &Attr) -> bool {
+    attr_mentions(attr, &|ty| matches!(ty, CirType::Fp16))
 }
 
 pub fn required_features(module: &Module) -> BTreeSet<Feature> {
@@ -662,6 +681,14 @@ pub fn required_features(module: &Module) -> BTreeSet<Feature> {
                 .any(|(_, ty)| cir_type_mentions_f128(ty))
         {
             features.insert(Feature::F128);
+        }
+        if cir_type_mentions_f16(&function.return_ty)
+            || function
+                .params
+                .iter()
+                .any(|(_, ty)| cir_type_mentions_f16(ty))
+        {
+            features.insert(Feature::F16);
         }
         if function.linkage == GlobalLinkageKind::WeakAny
             && function
@@ -687,6 +714,11 @@ pub fn required_features(module: &Module) -> BTreeSet<Feature> {
                 .is_some_and(attr_mentions_f128)
         {
             features.insert(Feature::F128);
+        }
+        if cir_type_mentions_f16(&global.ty)
+            || global.initial_value.as_ref().is_some_and(attr_mentions_f16)
+        {
+            features.insert(Feature::F16);
         }
         if global.linkage == GlobalLinkageKind::WeakAny {
             features.insert(Feature::Linkage);
@@ -852,6 +884,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         uses_fenv_shims: std::cell::Cell::new(false),
         uses_complex: std::cell::Cell::new(false),
         uses_f128: std::cell::Cell::new(false),
+        uses_f16: std::cell::Cell::new(false),
         uses_c_variadic: std::cell::Cell::new(false),
         uses_linkage: std::cell::Cell::new(false),
         uses_thread_local: std::cell::Cell::new(false),
@@ -1044,7 +1077,7 @@ fn aligned_value(value: Expr, _alignment: u32) -> Expr {
 fn type_alignment(ty: &Type) -> u32 {
     match ty {
         Type::Prim(Prim::Bool | Prim::I8 | Prim::U8) => 1,
-        Type::Prim(Prim::I16 | Prim::U16) => 2,
+        Type::Prim(Prim::I16 | Prim::U16 | Prim::F16) => 2,
         Type::Prim(Prim::I32 | Prim::U32 | Prim::F32) => 4,
         Type::Prim(Prim::I64 | Prim::U64 | Prim::Isize | Prim::Usize | Prim::F64)
         | Type::Ptr { .. }
@@ -1269,6 +1302,7 @@ struct Lowerer<'a> {
     uses_fenv_shims: std::cell::Cell<bool>,
     uses_complex: std::cell::Cell<bool>,
     uses_f128: std::cell::Cell<bool>,
+    uses_f16: std::cell::Cell<bool>,
     uses_c_variadic: std::cell::Cell<bool>,
     uses_linkage: std::cell::Cell<bool>,
     uses_thread_local: std::cell::Cell<bool>,
@@ -2090,6 +2124,9 @@ impl __SlateVaArgs {
         }
         if self.uses_f128.get() {
             insert_crate_feature(&mut items, Feature::F128);
+        }
+        if self.uses_f16.get() {
+            insert_crate_feature(&mut items, Feature::F16);
         }
         if self.uses_linkage.get() {
             insert_crate_feature(&mut items, Feature::Linkage);
@@ -3159,6 +3196,9 @@ impl __SlateVaArgs {
         if type_mentions_f128(&ty) {
             self.uses_f128.set(true);
         }
+        if type_mentions_f16(&ty) {
+            self.uses_f16.set(true);
+        }
         ty
     }
 
@@ -3987,6 +4027,7 @@ fn c_type_to_type(ty: &crate::frontend::c_ast::CType, va_list_boxed: bool) -> Ty
             (false, 128) => Type::Prim(Prim::U128),
             (signed, bits) => bitint_type(*signed, *bits),
         },
+        CType::Float { bits: 16 } => Type::Prim(Prim::F16),
         CType::Float { bits: 32 } => Type::Prim(Prim::F32),
         CType::Float { bits: 80 } if crate::cir::emit::uses_f64_long_double_abi() => {
             Type::Prim(Prim::F64)
