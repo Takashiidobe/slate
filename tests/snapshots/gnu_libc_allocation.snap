@@ -1,5 +1,6 @@
 ---
 source: tests/snapshot.rs
+assertion_line: 38
 expression: rust
 ---
 #![feature(c_variadic)]
@@ -55,8 +56,8 @@ struct obstack {
     __bitfield_4: *mut i8,
     __bitfield_5: anon_0,
     __bitfield_6: i32,
-    __bitfield_7: *mut i32,
-    __bitfield_8: *mut i32,
+    __bitfield_7: Option<unsafe extern "C" fn(*mut core::ffi::c_void, i64) -> *mut _obstack_chunk>,
+    __bitfield_8: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut _obstack_chunk)>,
     __bitfield_9: *mut core::ffi::c_void,
     __bitfield_10: __slate_bitfields::__SlateBitfield_obstack_10,
 }
@@ -264,7 +265,7 @@ fn gnu_allocation_extensions() -> i32 {
 
 fn gnu_obstack_extensions() -> i32 {
     let mut __retval: i32 = 0;
-    let mut storage: obstack = obstack { __bitfield_0: 0, __bitfield_1: std::ptr::null_mut(), __bitfield_2: std::ptr::null_mut(), __bitfield_3: std::ptr::null_mut(), __bitfield_4: std::ptr::null_mut(), __bitfield_5: anon_0 { tempint: 0 }, __bitfield_6: 0, __bitfield_7: std::ptr::null_mut(), __bitfield_8: std::ptr::null_mut(), __bitfield_9: std::ptr::null_mut(), __bitfield_10: unsafe { std::mem::transmute::<u8, __slate_bitfields::__SlateBitfield_obstack_10>(0) } };
+    let mut storage: obstack = obstack { __bitfield_0: 0, __bitfield_1: std::ptr::null_mut(), __bitfield_2: std::ptr::null_mut(), __bitfield_3: std::ptr::null_mut(), __bitfield_4: std::ptr::null_mut(), __bitfield_5: anon_0 { tempint: 0 }, __bitfield_6: 0, __bitfield_7: None, __bitfield_8: None, __bitfield_9: std::ptr::null_mut(), __bitfield_10: unsafe { std::mem::transmute::<u8, __slate_bitfields::__SlateBitfield_obstack_10>(0) } };
     let mut __slate_alloca_frame0: __SlateAllocaFrame0 = __SlateAllocaFrame0(0, std::ptr::null_mut(), std::ptr::null_mut());
     let _v0: i32 = 0;
     __slate_alloca_frame0.0 = _v0;

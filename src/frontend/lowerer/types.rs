@@ -703,6 +703,25 @@ pub(super) fn cir_type_to_ctype(
 ) -> crate::frontend::c_ast::CType {
     use crate::frontend::c_ast::CType;
     if let Some(inner) = cir_ptr_pointee(ty) {
+        if let CirType::Func {
+            inputs,
+            optional_return_type,
+            ..
+        } = inner
+        {
+            let params = inputs
+                .iter()
+                .map(|param| cir_type_to_ctype(param, aliases))
+                .collect();
+            let ret = optional_return_type
+                .as_deref()
+                .map(|output| cir_type_to_ctype(output, aliases))
+                .unwrap_or(CType::Void);
+            return CType::FuncPtr {
+                ret: Box::new(ret),
+                params,
+            };
+        }
         return CType::Ptr(Box::new(cir_type_to_ctype(inner, aliases)));
     }
     match ty {
