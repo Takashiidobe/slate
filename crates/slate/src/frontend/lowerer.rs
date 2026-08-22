@@ -37,6 +37,7 @@ mod constants;
 mod control_flow;
 mod expressions;
 mod intrinsics;
+mod intrinsics_table;
 mod memory;
 mod op_utils;
 mod runtime_support;
