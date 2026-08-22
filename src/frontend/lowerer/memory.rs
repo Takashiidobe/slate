@@ -176,7 +176,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         };
         let src_ty = &src_ty;
-        if op.fenv.is_some() && self.try_lower_fenv_cast(result, result_ty, src, src_ty) {
+        if fenv_is_constrained(&op.fenv) && self.try_lower_fenv_cast(result, result_ty, src, src_ty)
+        {
             return;
         }
         if (is_cir_va_list_value_type(result_ty, &self.parent.aliases)

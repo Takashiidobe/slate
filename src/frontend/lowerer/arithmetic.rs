@@ -89,7 +89,7 @@ fn overflow_for_result_width(
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
     pub(super) fn lower_cmp(&mut self, op: &inst::Cmp) {
-        if op.fenv.is_some()
+        if fenv_is_constrained(&op.fenv)
             && let Some(bits) = self.value_type(&op.lhs).and_then(fenv_scalar_bits)
             && let Some(name) = fenv_cmp_name(op.kind)
         {

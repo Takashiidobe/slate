@@ -653,6 +653,18 @@ pub(super) fn parse_cir_int_type(ty: &CirType) -> Option<(bool, u32)> {
     }
 }
 
+pub(super) fn fenv_is_constrained(fenv: &Option<Attr>) -> bool {
+    let Some(Attr::Fenv {
+        dynamic_rounding_mode,
+        strict_except,
+        ..
+    }) = fenv
+    else {
+        return false;
+    };
+    strict_except.as_deref() == Some("true") || dynamic_rounding_mode.as_deref() == Some("unknown")
+}
+
 pub(super) fn fenv_scalar_bits(ty: &CirType) -> Option<u32> {
     match ty {
         CirType::Single => Some(32),

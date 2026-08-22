@@ -4449,7 +4449,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         &value.lhs,
                         &value.rhs,
                         BinOp::Add,
-                        value.fenv.is_some(),
+                        fenv_is_constrained(&value.fenv),
                     );
                 }
                 Op::Fsub(value) => {
@@ -4459,7 +4459,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         &value.lhs,
                         &value.rhs,
                         BinOp::Sub,
-                        value.fenv.is_some(),
+                        fenv_is_constrained(&value.fenv),
                     );
                 }
                 Op::Fmul(value) => {
@@ -4469,7 +4469,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         &value.lhs,
                         &value.rhs,
                         BinOp::Mul,
-                        value.fenv.is_some(),
+                        fenv_is_constrained(&value.fenv),
                     );
                 }
                 Op::Fdiv(value) => {
@@ -4479,7 +4479,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         &value.lhs,
                         &value.rhs,
                         BinOp::Div,
-                        value.fenv.is_some(),
+                        fenv_is_constrained(&value.fenv),
                     );
                 }
                 Op::Inc(value) => {
@@ -4578,7 +4578,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     );
                 }
                 Op::Cos(value) => {
-                    let fenv = value.fenv.is_some();
+                    let fenv = fenv_is_constrained(&value.fenv);
                     return self.lower_fenv_unary(
                         &value.result,
                         &value.result_ty,
@@ -4598,7 +4598,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     );
                 }
                 Op::Exp(value) => {
-                    let fenv = value.fenv.is_some();
+                    let fenv = fenv_is_constrained(&value.fenv);
                     return self.lower_fenv_unary(
                         &value.result,
                         &value.result_ty,
@@ -4618,7 +4618,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     );
                 }
                 Op::Exp2(value) => {
-                    let fenv = value.fenv.is_some();
+                    let fenv = fenv_is_constrained(&value.fenv);
                     return self.lower_fenv_unary(
                         &value.result,
                         &value.result_ty,
@@ -4638,7 +4638,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     );
                 }
                 Op::Log(value) => {
-                    let fenv = value.fenv.is_some();
+                    let fenv = fenv_is_constrained(&value.fenv);
                     return self.lower_fenv_unary(
                         &value.result,
                         &value.result_ty,
@@ -4658,7 +4658,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     );
                 }
                 Op::Log10(value) => {
-                    let fenv = value.fenv.is_some();
+                    let fenv = fenv_is_constrained(&value.fenv);
                     return self.lower_fenv_unary(
                         &value.result,
                         &value.result_ty,
@@ -4678,7 +4678,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     );
                 }
                 Op::Log2(value) => {
-                    let fenv = value.fenv.is_some();
+                    let fenv = fenv_is_constrained(&value.fenv);
                     return self.lower_fenv_unary(
                         &value.result,
                         &value.result_ty,
@@ -4698,7 +4698,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     );
                 }
                 Op::Sin(value) => {
-                    let fenv = value.fenv.is_some();
+                    let fenv = fenv_is_constrained(&value.fenv);
                     return self.lower_fenv_unary(
                         &value.result,
                         &value.result_ty,
@@ -4718,7 +4718,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     );
                 }
                 Op::Sqrt(value) => {
-                    let fenv = value.fenv.is_some();
+                    let fenv = fenv_is_constrained(&value.fenv);
                     return self.lower_fenv_unary(
                         &value.result,
                         &value.result_ty,
@@ -4786,7 +4786,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     return self.lower_abs(&value.result, Some(&value.result_ty), &value.src);
                 }
                 Op::Fabs(value) => {
-                    let fenv = value.fenv.is_some();
+                    let fenv = fenv_is_constrained(&value.fenv);
                     return self.lower_fenv_unary(
                         &value.result,
                         &value.result_ty,
@@ -4815,7 +4815,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     );
                 }
                 Op::Ceil(value) => {
-                    let fenv = value.fenv.is_some();
+                    let fenv = fenv_is_constrained(&value.fenv);
                     return self.lower_fenv_unary(
                         &value.result,
                         &value.result_ty,
@@ -4849,7 +4849,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     );
                 }
                 Op::Floor(value) => {
-                    let fenv = value.fenv.is_some();
+                    let fenv = fenv_is_constrained(&value.fenv);
                     return self.lower_fenv_unary(
                         &value.result,
                         &value.result_ty,
@@ -4867,7 +4867,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     );
                 }
                 Op::Nearbyint(value) => {
-                    let fenv = value.fenv.is_some();
+                    let fenv = fenv_is_constrained(&value.fenv);
                     return self.lower_fenv_unary(
                         &value.result,
                         &value.result_ty,
@@ -4885,7 +4885,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     );
                 }
                 Op::Rint(value) => {
-                    let fenv = value.fenv.is_some();
+                    let fenv = fenv_is_constrained(&value.fenv);
                     return self.lower_fenv_unary(
                         &value.result,
                         &value.result_ty,
@@ -4911,7 +4911,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     );
                 }
                 Op::Round(value) => {
-                    let fenv = value.fenv.is_some();
+                    let fenv = fenv_is_constrained(&value.fenv);
                     return self.lower_fenv_unary(
                         &value.result,
                         &value.result_ty,
@@ -4929,7 +4929,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     );
                 }
                 Op::Roundeven(value) => {
-                    let fenv = value.fenv.is_some();
+                    let fenv = fenv_is_constrained(&value.fenv);
                     return self.lower_fenv_unary(
                         &value.result,
                         &value.result_ty,
@@ -4947,7 +4947,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     );
                 }
                 Op::Trunc(value) => {
-                    let fenv = value.fenv.is_some();
+                    let fenv = fenv_is_constrained(&value.fenv);
                     return self.lower_fenv_unary(
                         &value.result,
                         &value.result_ty,
@@ -5033,7 +5033,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     return;
                 }
                 Op::Pow(value) => {
-                    let fenv = value.fenv.is_some();
+                    let fenv = fenv_is_constrained(&value.fenv);
                     return self.lower_fenv_binary_op(
                         &value.result,
                         &value.result_ty,
@@ -5053,7 +5053,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     );
                 }
                 Op::Copysign(value) => {
-                    let fenv = value.fenv.is_some();
+                    let fenv = fenv_is_constrained(&value.fenv);
                     return self.lower_fenv_binary_op(
                         &value.result,
                         &value.result_ty,
@@ -5072,7 +5072,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     );
                 }
                 Op::Fmaxnum(value) => {
-                    let fenv = value.fenv.is_some();
+                    let fenv = fenv_is_constrained(&value.fenv);
                     return self.lower_fenv_binary_op(
                         &value.result,
                         &value.result_ty,
@@ -5091,7 +5091,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     );
                 }
                 Op::Fminnum(value) => {
-                    let fenv = value.fenv.is_some();
+                    let fenv = fenv_is_constrained(&value.fenv);
                     return self.lower_fenv_binary_op(
                         &value.result,
                         &value.result_ty,
@@ -5110,7 +5110,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     );
                 }
                 Op::Fma(value) => {
-                    if value.fenv.is_some()
+                    if fenv_is_constrained(&value.fenv)
                         && let Some(bits) = fenv_scalar_bits(&value.result_ty)
                     {
                         let shim = format!("__slate_fenv_fma_f{bits}");
