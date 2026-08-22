@@ -65,8 +65,6 @@ char  *strtok_r(char *__restrict, const char *__restrict, char **__restrict);
 char  *stpcpy(char *__restrict, const char *__restrict);
 char  *stpncpy(char *__restrict, const char *__restrict, size_t);
 size_t strnlen(const char *, size_t);
-char  *strdup(const char *);
-char  *strndup(const char *, size_t);
 char  *strsignal(int);
 char  *strerror_l(int, locale_t);
 int    strcoll_l(const char *, const char *, locale_t);
@@ -74,7 +72,15 @@ size_t strxfrm_l(char *__restrict, const char *__restrict, size_t, locale_t);
 void  *memmem(const void *, size_t, const void *, size_t);
 #endif
 
-#if defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+#if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
+    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||  \
+    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L)
+char *strdup(const char *);
+char *strndup(const char *, size_t);
+#endif
+
+#if defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||  \
+    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L)
 void *memccpy(void *__restrict, const void *__restrict, int, size_t);
 #endif
 

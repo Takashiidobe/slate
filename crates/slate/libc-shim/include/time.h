@@ -69,15 +69,20 @@ int        timespec_getres(struct timespec *, int);
 #define TIME_UTC 1
 
 #if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
+    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||  \
+    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L)
+struct tm *gmtime_r(const time_t *__restrict, struct tm *__restrict);
+struct tm *localtime_r(const time_t *__restrict, struct tm *__restrict);
+#endif
+
+#if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
     defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 
 size_t strftime_l(char *__restrict, size_t, const char *__restrict,
                   const struct tm *__restrict, locale_t);
 
-struct tm *gmtime_r(const time_t *__restrict, struct tm *__restrict);
-struct tm *localtime_r(const time_t *__restrict, struct tm *__restrict);
-char      *asctime_r(const struct tm *__restrict, char *__restrict);
-char      *ctime_r(const time_t *, char *);
+char *asctime_r(const struct tm *__restrict, char *__restrict);
+char *ctime_r(const time_t *, char *);
 
 void tzset(void);
 
@@ -135,8 +140,12 @@ struct tm  *getdate(const char *);
 
 #if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 int    stime(const time_t *);
-time_t timegm(struct tm *);
 time_t timelocal(struct tm *);
+#endif
+
+#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||                            \
+    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L)
+time_t timegm(struct tm *);
 #endif
 
 #if _REDIR_TIME64
