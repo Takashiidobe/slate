@@ -1,6 +1,7 @@
 # Summary
 
 - [For Users](./users.md)
+  - [Goals](./goals.md)
   - [Cross Compilation](./compilation.md)
 - [For Developers](./developers.md)
   - [Setup](./setup.md)
