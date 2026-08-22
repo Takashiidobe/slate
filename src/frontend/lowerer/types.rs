@@ -7,7 +7,7 @@ pub(super) fn rust_type(cir_ty: &CirType) -> Type {
 // True if the region contains a `cir.continue` that targets the enclosing loop,
 // i.e. one not swallowed by a nested loop. `cir.if`/`cir.scope`/`cir.switch`
 // bodies are transparent, so we recurse through them.
-fn named_scalar_type(name: &str) -> Option<Type> {
+pub(super) fn named_scalar_type(name: &str) -> Option<Type> {
     match name {
         "s32i" => return Some(Type::Prim(Prim::I32)),
         "u32i" => return Some(Type::Prim(Prim::U32)),

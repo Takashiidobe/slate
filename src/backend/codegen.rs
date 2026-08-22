@@ -531,6 +531,13 @@ impl<W: Write> Codegen<W> {
             Attr::Deprecated(note) => {
                 write!(self.out, "deprecated(note = {})", string_literal(note))
             }
+            Attr::TargetFeature(features) => {
+                write!(
+                    self.out,
+                    "target_feature(enable = {})",
+                    string_literal(features)
+                )
+            }
         }
     }
 

@@ -548,6 +548,46 @@ pub fn unsafe_defined_functions(module: &Module) -> BTreeSet<String> {
     unsafe_functions
 }
 
+pub fn target_feature_functions(module: &Module) -> BTreeMap<String, Vec<String>> {
+    let mut baseline: Option<BTreeSet<&str>> = None;
+    for function in &module.functions {
+        if function.target_features.is_empty() {
+            continue;
+        }
+        let enabled: BTreeSet<&str> = function
+            .target_features
+            .iter()
+            .filter(|feature| feature.enabled)
+            .map(|feature| feature.name.as_str())
+            .collect();
+        baseline = Some(match baseline {
+            Some(existing) => existing.intersection(&enabled).copied().collect(),
+            None => enabled,
+        });
+    }
+    let baseline = baseline.unwrap_or_default();
+    module
+        .functions
+        .iter()
+        .filter_map(|function| {
+            let extra: BTreeSet<String> = function
+                .target_features
+                .iter()
+                .filter(|feature| feature.enabled && !baseline.contains(feature.name.as_str()))
+                .map(|feature| rustc_target_feature_name(&feature.name).to_string())
+                .collect();
+            (!extra.is_empty()).then(|| (function.name.clone(), extra.into_iter().collect()))
+        })
+        .collect()
+}
+
+fn rustc_target_feature_name(name: &str) -> &str {
+    match name {
+        "crc32" => "sse4.2",
+        other => other,
+    }
+}
+
 fn cir_type_mentions_f128(ty: &CirType) -> bool {
     match ty {
         CirType::Fp128 => true,
@@ -826,6 +866,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         c_abi_functions: BTreeSet::new(),
         project: project.clone(),
         unsafe_functions: project.unsafe_functions.clone(),
+        target_feature_functions: target_feature_functions(cir),
         cross_uses: Vec::new(),
         ctor_calls: Vec::new(),
         dtor_calls: Vec::new(),
@@ -1242,6 +1283,7 @@ struct Lowerer<'a> {
     c_abi_functions: BTreeSet<String>,
     project: ProjectInfo,
     unsafe_functions: BTreeSet<String>,
+    target_feature_functions: BTreeMap<String, Vec<String>>,
     cross_uses: Vec<Item>,
     ctor_calls: Vec<String>,
     dtor_calls: Vec<String>,
@@ -1902,6 +1944,12 @@ impl __SlateVaArgs {
         }
         self.unsafe_functions
             .extend(unsafe_defined_functions(module));
+        self.unsafe_functions.extend(
+            self.target_feature_functions
+                .keys()
+                .filter(|name| name.as_str() != "main")
+                .cloned(),
+        );
 
         for function in &module.functions {
             let Some(op) = function.raw.as_ref() else {
@@ -2756,7 +2804,7 @@ impl __SlateVaArgs {
                 .insert(name.to_string(), trampoline);
         }
 
-        let attrs = symbol_attrs(
+        let mut attrs = symbol_attrs(
             !is_main
                 && (self.project.emit_pub
                     && (externally_exported(op)
@@ -2767,6 +2815,9 @@ impl __SlateVaArgs {
             attr_str(op, "section"),
             &[],
         );
+        if let Some(features) = self.target_feature_functions.get(name) {
+            attrs.push(RustAttr::TargetFeature(features.join(",")));
+        }
         self.warn_protected_visibility(op, name);
         if linkage_is_weak(op) {
             self.uses_linkage.set(true);

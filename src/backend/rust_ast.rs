@@ -207,6 +207,7 @@ pub enum Attr {
     LinkSection(String),
     Used(UsedKind),
     Deprecated(String),
+    TargetFeature(String),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
