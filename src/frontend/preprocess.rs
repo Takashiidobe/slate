@@ -342,7 +342,12 @@ impl DirectiveRecord {
                 || is_fp_contract_pragma(&self.raw_payload)
                 || is_fenv_access_pragma(&self.raw_payload)
                 || is_fenv_round_pragma(&self.raw_payload)
-                || is_fenv_dec_round_pragma(&self.raw_payload))
+                || is_fenv_dec_round_pragma(&self.raw_payload)
+                || is_unroll_pragma(&self.raw_payload)
+                || is_clang_optimize_pragma(&self.raw_payload)
+                || is_clang_loop_pragma(&self.raw_payload)
+                || is_clang_attribute_pragma(&self.raw_payload)
+                || is_clang_fp_pragma(&self.raw_payload))
     }
 
     pub fn is_poison_pragma(&self) -> bool {
@@ -506,6 +511,96 @@ fn is_fenv_dec_round_pragma(payload: &str) -> bool {
         return false;
     }
     c_identifier(rest.trim())
+}
+
+fn is_unroll_pragma(payload: &str) -> bool {
+    let payload = payload.trim();
+    if payload == "unroll" || payload == "nounroll" {
+        return true;
+    }
+    let Some(rest) = payload.strip_prefix("unroll") else {
+        return false;
+    };
+    if !rest.starts_with(char::is_whitespace) && !rest.starts_with('(') {
+        return false;
+    }
+    let rest = rest.trim();
+    let arg = rest
+        .strip_prefix('(')
+        .and_then(|rest| rest.strip_suffix(')'))
+        .unwrap_or(rest);
+    !arg.is_empty() && arg.bytes().all(|byte| byte.is_ascii_digit())
+}
+
+fn is_clang_optimize_pragma(payload: &str) -> bool {
+    matches!(payload.trim(), "clang optimize off" | "clang optimize on")
+}
+
+fn is_clang_loop_pragma(payload: &str) -> bool {
+    let Some(rest) = payload.trim().strip_prefix("clang loop") else {
+        return false;
+    };
+    if !rest.starts_with(char::is_whitespace) {
+        return false;
+    }
+    const HINTS: &[&str] = &[
+        "unroll_count",
+        "unroll",
+        "vectorize_width",
+        "vectorize_predicate",
+        "vectorize",
+        "interleave_count",
+        "interleave",
+        "distribute",
+        "pipeline_initiation_interval",
+        "pipeline",
+    ];
+    let mut rest = rest.trim();
+    if rest.is_empty() {
+        return false;
+    }
+    while !rest.is_empty() {
+        let Some(hint) = HINTS.iter().find(|hint| rest.starts_with(**hint)) else {
+            return false;
+        };
+        rest = rest[hint.len()..].trim_start();
+        let Some(args_start) = rest.strip_prefix('(') else {
+            return false;
+        };
+        let Some(close) = args_start.find(')') else {
+            return false;
+        };
+        rest = args_start[close + 1..].trim_start();
+    }
+    true
+}
+
+fn is_clang_attribute_pragma(payload: &str) -> bool {
+    let payload = payload.trim();
+    payload == "clang attribute pop" || payload.starts_with("clang attribute push")
+}
+
+fn is_clang_fp_pragma(payload: &str) -> bool {
+    let Some(rest) = payload.trim().strip_prefix("clang fp") else {
+        return false;
+    };
+    if !rest.starts_with(char::is_whitespace) {
+        return false;
+    }
+    let rest = rest.trim();
+    for keyword in ["contract", "reassociate", "exceptions"] {
+        let Some(value) = rest
+            .strip_prefix(keyword)
+            .map(str::trim_start)
+            .and_then(|rest| rest.strip_prefix('('))
+            .and_then(|rest| rest.strip_suffix(')'))
+            .map(str::trim)
+        else {
+            continue;
+        };
+        return matches!(value, "on" | "off" | "default");
+    }
+    false
 }
 
 fn c_identifier(value: &str) -> bool {
