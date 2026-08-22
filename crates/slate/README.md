@@ -1,10 +1,7 @@
 # Slate
 
-Slate is an idiomatic C to Rust Transpiler inspired by
-[C2Rust](https://c2rust.com/) and
-[TRACTOR](https://www.darpa.mil/research/programs/translating-all-c-to-rust).
-
-How Slate aims to differentiate itself is through breadth and usability.
+Slate is an idiomatic C to Rust transpiler inspired by
+[C2Rust](https://c2rust.com/).
 
 C2Rust has three phases to translate code from C to Rust:
 
@@ -18,7 +15,7 @@ C2Rust has three phases to translate code from C to Rust:
     known as safe into safe code
 
 Slate aims to do the first two, but with a different architecture under
-the hood and with support for modern C (C23 support), cross-compilation,
+the hood and support for modern C (C23 support), cross-compilation,
 and a simpler user experience.
 
 ## Installation
@@ -29,7 +26,7 @@ Clone this repo:
 git clone https://github.com/takashiidobe/slate
 ```
 
-You'll need a fork of LLVM with two patches I added to the project:
+You'll need a fork of LLVM with two patches I added:
 
 ```
 git clone -b takashiidobe/slate-cir-loc-patches https://github.com/Takashiidobe/llvm-project
@@ -108,6 +105,7 @@ slate translate add.c # translates add.c, prints to stdout
 
 - Features up to C23
   - long double (f64, f80, f128) (double-double is unsupported)
+  - floating-point environment
   - Complex numbers
   - Atomics
   - Attribute support
@@ -130,11 +128,9 @@ slate translate add.c # translates add.c, prints to stdout
 - protected visibility. In Rust there's no way to set visibility as
   protected.
 - no support for naked asm. CIR doesn't lower naked asm yet.
-- `#pragma STDC FENV_ACCESS ON` is unsupported. Rust doesn't have a way
-  to change the FP environment.
 - your C and Rust may link to different compiler runtimes, which can
-  cause differences in precise mathematical operations like for complex
-  numbers.
+  cause differences in precise mathematical operations that run in
+  software (like for complex or large numbers)
 
 ### In Progress
 
