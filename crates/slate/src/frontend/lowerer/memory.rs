@@ -235,6 +235,24 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         if is_cir_function_pointer_type(result_ty) && is_cir_function_pointer_type(src_ty) {
+            if let Some(Val::Global(fn_name)) = self.values.get(src).cloned()
+                && !self.parent.strings.contains_key(&fn_name)
+            {
+                let raw_ptr = Type::Ptr {
+                    mutable: false,
+                    inner: Box::new(Type::Unit),
+                };
+                let expr = Expr::Transmute {
+                    from: raw_ptr.clone(),
+                    to: result_rust_ty.clone(),
+                    expr: Box::new(Expr::Cast {
+                        expr: Box::new(Expr::Var(sanitize_ident(&fn_name))),
+                        ty: raw_ptr,
+                    }),
+                };
+                self.materialize_expr(result, expr, Some(result_ty));
+                return;
+            }
             let from = self
                 .loaded_field_types
                 .get(src)

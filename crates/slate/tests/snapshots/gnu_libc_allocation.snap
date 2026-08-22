@@ -1,6 +1,5 @@
 ---
 source: tests/snapshot.rs
-assertion_line: 38
 expression: rust
 ---
 #![feature(c_variadic)]
@@ -271,7 +270,7 @@ fn gnu_obstack_extensions() -> i32 {
     __slate_alloca_frame0.0 = _v0;
     let _v1: i32 = 0;
     let _v2: i32 = 0;
-    let _v3: Option<unsafe extern "C" fn(i64) -> *mut core::ffi::c_void> = unsafe { std::mem::transmute::<Option<unsafe extern "C" fn(u64) -> *mut core::ffi::c_void>, Option<unsafe extern "C" fn(i64) -> *mut core::ffi::c_void>>(Some(malloc)) };
+    let _v3: Option<unsafe extern "C" fn(i64) -> *mut core::ffi::c_void> = unsafe { std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i64) -> *mut core::ffi::c_void>>(malloc as *const ()) };
     let _v4: i32 = unsafe { _obstack_begin(std::ptr::addr_of_mut!(storage) as *mut obstack, _v1 as i32, _v2 as i32, _v3, Some(free)) };
     let _v5: i64 = 3;
     unsafe {
