@@ -58,7 +58,7 @@ int main() {
              char a;
              char b;
            } x[3];
-           char *p = x;
+           char *p = (char *)x;
            p[0]    = 0;
            x[0].a;
          }));
@@ -67,7 +67,7 @@ int main() {
              char a;
              char b;
            } x[3];
-           char *p = x;
+           char *p = (char *)x;
            p[1]    = 1;
            x[0].b;
          }));
@@ -76,7 +76,7 @@ int main() {
              char a;
              char b;
            } x[3];
-           char *p = x;
+           char *p = (char *)x;
            p[2]    = 2;
            x[1].a;
          }));
@@ -85,7 +85,7 @@ int main() {
              char a;
              char b;
            } x[3];
-           char *p = x;
+           char *p = (char *)x;
            p[3]    = 3;
            x[1].b;
          }));
@@ -95,7 +95,7 @@ int main() {
              char a[3];
              char b[5];
            } x;
-           char *p = &x;
+           char *p = (char *)&x;
            x.a[0]  = 6;
            p[0];
          }));
@@ -104,7 +104,7 @@ int main() {
              char a[3];
              char b[5];
            } x;
-           char *p = &x;
+           char *p = (char *)&x;
            x.b[0]  = 7;
            p[3];
          }));

@@ -58,7 +58,7 @@ int main() {
   ASSERT(0, ({
            int  n = 10;
            int  x[n + 1][n + 6];
-           int *p = x;
+           int *p = (int *)x;
            for (int i = 0; i < sizeof(x) / 4; i++)
              p[i] = i;
            x[0][0];
@@ -66,7 +66,7 @@ int main() {
   ASSERT(5, ({
            int  n = 10;
            int  x[n + 1][n + 6];
-           int *p = x;
+           int *p = (int *)x;
            for (int i = 0; i < sizeof(x) / 4; i++)
              p[i] = i;
            x[0][5];
@@ -74,7 +74,7 @@ int main() {
   ASSERT(5 * 16 + 2, ({
            int  n = 10;
            int  x[n + 1][n + 6];
-           int *p = x;
+           int *p = (int *)x;
            for (int i = 0; i < sizeof(x) / 4; i++)
              p[i] = i;
            x[5][2];

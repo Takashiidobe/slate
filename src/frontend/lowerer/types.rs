@@ -962,6 +962,29 @@ pub(super) fn collect_anon_bitfield_slots(
     }
 }
 
+fn normalize_record_shape(ty: &crate::frontend::c_ast::CType) -> crate::frontend::c_ast::CType {
+    use crate::frontend::c_ast::CType;
+    match ty {
+        CType::Record(_) => CType::Record(String::new()),
+        CType::Ptr(inner) => CType::Ptr(Box::new(normalize_record_shape(inner))),
+        CType::Array(inner, len) => CType::Array(Box::new(normalize_record_shape(inner)), *len),
+        CType::FuncPtr { ret, params } => CType::FuncPtr {
+            ret: Box::new(normalize_record_shape(ret)),
+            params: params.iter().map(normalize_record_shape).collect(),
+        },
+        other => other.clone(),
+    }
+}
+
+fn record_field_shape(
+    fields: &[crate::frontend::c_ast::Decl],
+) -> Vec<crate::frontend::c_ast::CType> {
+    fields
+        .iter()
+        .map(|f| normalize_record_shape(&f.ty))
+        .collect()
+}
+
 pub(super) fn resolve_local_record_collisions(
     cir: &Module,
     ast_records: &[crate::frontend::c_ast::Record],
@@ -978,61 +1001,63 @@ pub(super) fn resolve_local_record_collisions(
         return BTreeMap::new();
     }
 
-    let mut field_names: BTreeMap<(String, i64), String> = BTreeMap::new();
-    collect_local_record_field_names(
-        &cir.generic.ops,
-        &cir.generic.type_aliases,
-        &mut field_names,
-    );
+    type CType = crate::frontend::c_ast::CType;
+    type RecordAlias = (usize, String, Vec<CType>, Vec<CType>);
+    let mut aliases_by_base: BTreeMap<String, Vec<RecordAlias>> = BTreeMap::new();
+    for expanded in cir.generic.type_aliases.values() {
+        let (CirType::Struct {
+            name,
+            members: Some(members),
+            ..
+        }
+        | CirType::Union {
+            name,
+            members: Some(members),
+            ..
+        }) = expanded
+        else {
+            continue;
+        };
+        let Some(cir_name) = name.as_deref() else {
+            continue;
+        };
+        let base_sanitized = sanitize_ident(cir_record_base_name(cir_name)).into_string();
+        if !by_name.contains_key(&base_sanitized) {
+            continue;
+        }
+        let raw_types: Vec<CType> = members
+            .iter()
+            .map(|member| cir_type_to_ctype(member, &cir.generic.type_aliases))
+            .collect();
+        let shape: Vec<CType> = raw_types.iter().map(normalize_record_shape).collect();
+        aliases_by_base.entry(base_sanitized).or_default().push((
+            cir_record_occurrence(cir_name),
+            sanitize_ident(cir_name).into_string(),
+            shape,
+            raw_types,
+        ));
+    }
 
     let mut resolved = BTreeMap::new();
-    for (base_sanitized, mut candidates) in by_name {
-        let mut family: Vec<(String, Vec<String>)> = Vec::new();
-        for (alias_key, expanded) in &cir.generic.type_aliases {
-            let (CirType::Struct {
-                name,
-                members: Some(members),
-                ..
-            }
-            | CirType::Union {
-                name,
-                members: Some(members),
-                ..
-            }) = expanded
+    for (base_sanitized, mut aliases) in aliases_by_base {
+        aliases.sort_by_key(|(occurrence, ..)| *occurrence);
+        let candidates = &by_name[&base_sanitized];
+        let mut next_candidate = 0;
+        for (_, rust_name, shape, raw_types) in aliases {
+            let Some(offset) = candidates[next_candidate..]
+                .iter()
+                .position(|record| record_field_shape(&record.fields) == shape)
             else {
                 continue;
             };
-            let Some(cir_name) = name.as_deref() else {
-                continue;
-            };
-            if sanitize_ident(cir_record_base_name(cir_name)).into_string() != base_sanitized {
-                continue;
+            let position = next_candidate + offset;
+            let mut matched = candidates[position].clone();
+            matched.name = rust_name.clone();
+            for (field, ty) in matched.fields.iter_mut().zip(raw_types) {
+                field.ty = ty;
             }
-            let mut names = Vec::with_capacity(members.len());
-            for index in 0..members.len() {
-                let Some(name) = field_names.get(&(alias_key.clone(), index as i64)) else {
-                    names.clear();
-                    break;
-                };
-                names.push(name.clone());
-            }
-            family.push((sanitize_ident(cir_name).into_string(), names));
-        }
-        for (rust_key, wanted_names) in &family {
-            if wanted_names.is_empty() {
-                continue;
-            }
-            if let Some(pos) = candidates.iter().position(|record| {
-                record
-                    .fields
-                    .iter()
-                    .map(|field| field.name.as_str())
-                    .eq(wanted_names.iter().map(String::as_str))
-            }) {
-                let mut matched = candidates.remove(pos).clone();
-                matched.name = rust_key.clone();
-                resolved.insert(rust_key.clone(), matched);
-            }
+            resolved.insert(rust_name, matched);
+            next_candidate = position + 1;
         }
     }
     resolved
@@ -1049,43 +1074,12 @@ pub(super) fn cir_record_base_name(name: &str) -> &str {
     }
 }
 
-pub(super) fn any_alias_key<'a>(
-    ty: &'a CirType,
-    aliases: &BTreeMap<String, CirType>,
-) -> Option<&'a str> {
-    let CirType::Named(name) = ty else {
-        return None;
-    };
-    let expanded = aliases.get(name)?;
-    cir_record_name(expanded).or_else(|| name.strip_prefix("rec_"))?;
-    Some(name.as_str())
-}
-
-pub(super) fn collect_local_record_field_names(
-    ops: &[Operation],
-    aliases: &BTreeMap<String, CirType>,
-    field_names: &mut BTreeMap<(String, i64), String>,
-) {
-    for op in ops {
-        if op.mnemonic() == "get_member"
-            && let (Some(key), Some(index), Some(name)) = (
-                op.operand_types
-                    .first()
-                    .and_then(cir_ptr_pointee)
-                    .and_then(|pointee| any_alias_key(pointee, aliases)),
-                op.attr("index_attr").and_then(Attr::as_int),
-                op.attr("name")
-                    .and_then(Attr::as_str)
-                    .filter(|name| !name.is_empty()),
-            )
-        {
-            field_names.insert((key.to_string(), index as i64), name.to_string());
+pub(super) fn cir_record_occurrence(name: &str) -> usize {
+    match name.rsplit_once('.') {
+        Some((_, suffix)) if !suffix.is_empty() && suffix.bytes().all(|b| b.is_ascii_digit()) => {
+            suffix.parse::<usize>().map_or(0, |n| n + 1)
         }
-        for region in &op.regions {
-            for block in &region.blocks {
-                collect_local_record_field_names(&block.ops, aliases, field_names);
-            }
-        }
+        _ => 0,
     }
 }
 
