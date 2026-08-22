@@ -780,16 +780,16 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 - [ ] `__alignof__`
 - [x] `__int128`
 - [x] `unsigned __int128`
-- [ ] `_Float16` where supported
-- [ ] `_Float32` where supported
-- [ ] `_Float64` where supported
-- [ ] `_Float128` where supported
-- [ ] `_Float32x` where supported
-- [ ] `_Float64x` where supported
-- [ ] `_Float128x` where supported
-- [ ] `_Decimal32` where supported
-- [ ] `_Decimal64` where supported
-- [ ] `_Decimal128` where supported
+- [x] `_Float16`
+- [ ] `_Float32` (unsupported by clang)
+- [ ] `_Float64` (unsupported by clang)
+- [ ] `_Float128` (unsupported by clang)
+- [ ] `_Float32x` (unsupported by clang)
+- [ ] `_Float64x` (unsupported by clang)
+- [ ] `_Float128x` (unsupported by clang)
+- [ ] `_Decimal32` (unsupported by clang)
+- [ ] `_Decimal64` (unsupported by clang)
+- [ ] `_Decimal128` (unsupported by clang)
 - [ ] GNU fixed-point types
 - [ ] GNU saturating fixed-point types
 - [x] `__real__`
