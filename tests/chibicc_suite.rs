@@ -122,10 +122,11 @@ fn run_bucket(bucket: &str) -> Vec<(String, Result<(), String>)> {
                 .executable(&attempt.name)
                 .map_err(|error| format!("Rust build failed:\n{error}"))?;
             let c_bin = work.join(format!("{}_c", attempt.name));
-            support::compile_c_multi_with_std(
+            support::compile_c_multi_with_std_and_include(
                 &c_sources(&attempt.dir),
                 &c_bin,
                 fixture_std(&attempt.dir),
+                Some(&attempt.dir),
             )?;
             let run_dir = work.join("runs").join(&attempt.name);
             let _ = std::fs::remove_dir_all(&run_dir);
