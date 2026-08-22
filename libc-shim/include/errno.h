@@ -154,6 +154,11 @@ enum {
   EHWPOISON       = 133,
 };
 
+#if defined(_GNU_SOURCE)
+extern char *program_invocation_name;
+extern char *program_invocation_short_name;
+#endif
+
 #endif
 
 #endif

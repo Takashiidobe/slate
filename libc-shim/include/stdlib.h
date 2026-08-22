@@ -150,6 +150,7 @@ char *ecvt(double number, int ndigits, int *decpt, int *sign);
 char *fcvt(double number, int ndigits, int *decpt, int *sign);
 char *gcvt(double number, int ndigit, char *buf);
 char *secure_getenv(const char *name);
+char *canonicalize_file_name(const char *name);
 struct __locale_struct;
 float       strtof_l(const char *restrict nptr, char **restrict endptr,
                      struct __locale_struct *locale);

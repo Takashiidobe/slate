@@ -131,6 +131,7 @@ struct tm  *getdate(const char *);
 #if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 int    stime(const time_t *);
 time_t timegm(struct tm *);
+time_t timelocal(struct tm *);
 #endif
 
 #if _REDIR_TIME64
@@ -157,6 +158,7 @@ __REDIR(timer_gettime, __timer_gettime64);
 #if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 __REDIR(stime, __stime64);
 __REDIR(timegm, __timegm_time64);
+__REDIR(timelocal, __timelocal64);
 #endif
 #endif
 

@@ -8,6 +8,7 @@ enum {
   FNM_PERIOD      = 0x4,
   FNM_LEADING_DIR = 0x8,
   FNM_CASEFOLD    = 0x10,
+  FNM_EXTMATCH    = 0x20,
 };
 
 enum {
