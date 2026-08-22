@@ -356,6 +356,7 @@ fn stdout_static_decl() -> ExternDecl {
 
 fn fflush_fn_decl() -> ExternDecl {
     ExternDecl::Fn(ExternFnDecl {
+        attrs: Vec::new(),
         identity: crate::function_identity::FunctionIdentity::Unknown,
         name: "fflush".into(),
         declared_type: None,

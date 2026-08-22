@@ -408,6 +408,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let to = self.parent.rust_type(result_ty);
         let expr = if from == to {
             value
+        } else if let Type::Array { elem, len } = &to
+            && let Some(lane_bits) = bitint_vector_lane_bits(elem)
+            && packed_mask_int_type(lane_bits * *len as u32).is_some_and(|packed| packed == from)
+            && let Type::Prim(int_prim) = from
+        {
+            unpack_bitint_vector_expr(value, elem, *len as usize, lane_bits, int_prim)
+        } else if let Type::Array { elem, len } = &from
+            && let Some(lane_bits) = bitint_vector_lane_bits(elem)
+            && packed_mask_int_type(lane_bits * *len as u32).is_some_and(|packed| packed == to)
+            && let Type::Prim(int_prim) = to
+        {
+            pack_bitint_vector_expr(value, *len as usize, lane_bits, int_prim)
         } else if matches!(to, Type::Array { .. }) || matches!(from, Type::Array { .. }) {
             Expr::Transmute {
                 from,
@@ -968,4 +980,89 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let resolved = self.parent.expand_alias(ty);
         parse_cir_int_type(resolved).is_some_and(|(signed, _)| !signed)
     }
+}
+
+fn bitint_vector_lane_bits(elem_ty: &Type) -> Option<u32> {
+    let (_, bits, _, _) = bitint_generic_parts(elem_ty)?;
+    bits.parse().ok()
+}
+
+fn packed_mask_int_type(bits: u32) -> Option<Type> {
+    Some(match bits {
+        8 => Type::Prim(Prim::U8),
+        16 => Type::Prim(Prim::U16),
+        32 => Type::Prim(Prim::U32),
+        64 => Type::Prim(Prim::U64),
+        128 => Type::Prim(Prim::U128),
+        _ => return None,
+    })
+}
+
+fn pack_bitint_vector_expr(value: Expr, len: usize, lane_bits: u32, int_prim: Prim) -> Expr {
+    (0..len)
+        .map(|i| {
+            let lane = Expr::MethodCall {
+                recv: Box::new(Expr::Index {
+                    base: Box::new(value.clone()),
+                    index: Box::new(Expr::Value(RustValue::Usize(i))),
+                }),
+                method: "to_u128".into(),
+                args: Vec::new(),
+            };
+            Expr::Binary {
+                op: BinOp::Shl,
+                lhs: Box::new(Expr::Cast {
+                    expr: Box::new(lane),
+                    ty: Type::Prim(int_prim),
+                }),
+                rhs: Box::new(Expr::Value(RustValue::TypedUInt(
+                    (i as u32 * lane_bits) as u128,
+                    int_prim,
+                ))),
+            }
+        })
+        .reduce(|acc, bit| Expr::Binary {
+            op: BinOp::BitOr,
+            lhs: Box::new(acc),
+            rhs: Box::new(bit),
+        })
+        .unwrap_or(Expr::Value(RustValue::TypedUInt(0, int_prim)))
+}
+
+fn unpack_bitint_vector_expr(
+    value: Expr,
+    elem_ty: &Type,
+    len: usize,
+    lane_bits: u32,
+    int_prim: Prim,
+) -> Expr {
+    let (name, bits, limbs, bytes) =
+        bitint_generic_parts(elem_ty).expect("checked bitint-vector element type");
+    let ctor_path = format!("{name}::<{bits}, {limbs}, {bytes}>::from_u128");
+    let lane_mask = (1u128 << lane_bits) - 1;
+    let elems = (0..len)
+        .map(|i| {
+            let bit = Expr::Binary {
+                op: BinOp::BitAnd,
+                lhs: Box::new(Expr::Binary {
+                    op: BinOp::Shr,
+                    lhs: Box::new(value.clone()),
+                    rhs: Box::new(Expr::Value(RustValue::TypedUInt(
+                        (i as u32 * lane_bits) as u128,
+                        int_prim,
+                    ))),
+                }),
+                rhs: Box::new(Expr::Value(RustValue::TypedUInt(lane_mask, int_prim))),
+            };
+            Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
+                func: Box::new(Expr::Var(ctor_path.clone().into())),
+                args: vec![Expr::Cast {
+                    expr: Box::new(bit),
+                    ty: Type::Prim(Prim::U128),
+                }],
+            }
+        })
+        .collect();
+    Expr::ArrayLit(elems)
 }

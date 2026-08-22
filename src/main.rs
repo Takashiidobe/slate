@@ -1026,7 +1026,9 @@ fn translate_project_lib_crate_with_manifest(
     let mut written = Vec::new();
     let mut module_paths: Vec<PathBuf> = Vec::new();
     let mut module_progs: Vec<rust_ast::Program> = Vec::new();
+    let mut merged_aliases: BTreeMap<String, cir::CirType> = BTreeMap::new();
     for (stem, path, module, unit, warning_items) in loaded_modules {
+        merged_aliases.extend(module.generic.type_aliases.clone());
         let mut ctx = ctx::Ctx::default();
         let mut program = frontend::lower_with_project(&module, &unit, &mut ctx, &project);
         for d in &ctx.diagnostics.items {
@@ -1050,7 +1052,7 @@ fn translate_project_lib_crate_with_manifest(
     if has_shared_types {
         let records: Vec<_> = shared_records.into_values().collect();
         let enums: Vec<_> = shared_enums.into_values().collect();
-        let shared_program = frontend::lower_shared_types(&records, &enums);
+        let shared_program = frontend::lower_shared_types(&records, &enums, &merged_aliases);
         for shim in collect_program_shims(&shared_program) {
             shims
                 .entry(shim.name.clone())
@@ -1355,6 +1357,7 @@ fn translate_project_lib_crate_with_compile_commands(
     let mut written = Vec::new();
     let mut module_paths: Vec<PathBuf> = Vec::new();
     let mut module_progs: Vec<rust_ast::Program> = Vec::new();
+    let mut merged_aliases: BTreeMap<String, cir::CirType> = BTreeMap::new();
     for (stem, variants) in &loaded_by_stem {
         let mut programs = Vec::new();
         for cfg in &cfgs {
@@ -1362,6 +1365,7 @@ fn translate_project_lib_crate_with_compile_commands(
                 programs.push((cfg.clone(), rust_ast::Program::default()));
                 continue;
             };
+            merged_aliases.extend(variant.module.generic.type_aliases.clone());
             let variant_facts = facts.get(cfg).expect("variant facts");
             let project = frontend::ProjectInfo {
                 cross_module: variant_facts.defined.clone(),
@@ -1414,7 +1418,7 @@ fn translate_project_lib_crate_with_compile_commands(
     if has_shared_types {
         let records: Vec<_> = shared_records.into_values().collect();
         let enums: Vec<_> = shared_enums.into_values().collect();
-        let shared_program = frontend::lower_shared_types(&records, &enums);
+        let shared_program = frontend::lower_shared_types(&records, &enums, &merged_aliases);
         for shim in collect_program_shims(&shared_program) {
             shims
                 .entry(shim.name.clone())
@@ -1677,6 +1681,7 @@ fn translate_project_with_targets(
     let mut shims: BTreeMap<String, rust_ast::ExternFnDecl> = BTreeMap::new();
     let mut module_paths: Vec<PathBuf> = Vec::new();
     let mut module_progs: Vec<rust_ast::Program> = Vec::new();
+    let mut merged_aliases: BTreeMap<String, cir::CirType> = BTreeMap::new();
     for (stem, path) in &modules {
         let is_root = *stem == root;
         let project = frontend::ProjectInfo {
@@ -1717,6 +1722,7 @@ fn translate_project_with_targets(
                     continue;
                 }
             };
+            merged_aliases.extend(module.generic.type_aliases.clone());
             let unit = match c_ast::parse_file_with_args(path, &target.clang_args) {
                 Ok(u) => u,
                 Err(e) => {
@@ -1769,7 +1775,7 @@ fn translate_project_with_targets(
     if has_shared_types {
         let records: Vec<_> = shared_records.into_values().collect();
         let enums: Vec<_> = shared_enums.into_values().collect();
-        let shared_program = frontend::lower_shared_types(&records, &enums);
+        let shared_program = frontend::lower_shared_types(&records, &enums, &merged_aliases);
         for shim in collect_program_shims(&shared_program) {
             shims
                 .entry(shim.name.clone())
@@ -2013,6 +2019,7 @@ fn translate_project_with_compile_commands(
     let mut shims: BTreeMap<String, rust_ast::ExternFnDecl> = BTreeMap::new();
     let mut module_paths: Vec<PathBuf> = Vec::new();
     let mut module_progs: Vec<rust_ast::Program> = Vec::new();
+    let mut merged_aliases: BTreeMap<String, cir::CirType> = BTreeMap::new();
     for (stem, path) in &modules {
         let is_root = *stem == root;
         let project = frontend::ProjectInfo {
@@ -2057,6 +2064,7 @@ fn translate_project_with_compile_commands(
                     continue;
                 }
             };
+            merged_aliases.extend(module.generic.type_aliases.clone());
             let unit = match c_ast::parse_file_with_project_records_and_args(
                 path,
                 project_dir,
@@ -2116,7 +2124,7 @@ fn translate_project_with_compile_commands(
     if has_shared_types {
         let records: Vec<_> = shared_records.into_values().collect();
         let enums: Vec<_> = shared_enums.into_values().collect();
-        let shared_program = frontend::lower_shared_types(&records, &enums);
+        let shared_program = frontend::lower_shared_types(&records, &enums, &merged_aliases);
         for shim in collect_program_shims(&shared_program) {
             shims
                 .entry(shim.name.clone())

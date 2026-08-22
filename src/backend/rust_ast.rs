@@ -442,6 +442,7 @@ pub enum ExternDecl {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct ExternFnDecl {
+    pub attrs: Vec<Attr>,
     pub name: String,
     pub identity: FunctionIdentity,
     pub declared_type: Option<String>,

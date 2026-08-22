@@ -553,4 +553,70 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             _ => Expr::Value(RustValue::I64(-1)),
         }
     }
+
+    // Prototype: declare a per-signature `extern "unadjusted"` shim keyed by
+    // `#[link_name = "llvm.<intrinsic_name>"]` and call it directly, using CIR's
+    // own resolved operand/result types. No LLVM-side type table needed since
+    // CIR already carries the concrete signature at the call site.
+    pub(super) fn lower_call_llvm_intrinsic(&mut self, op: &inst::CallLlvmIntrinsic) {
+        let param_types: Vec<Type> = op
+            .arg_ops
+            .iter()
+            .map(|id| {
+                self.value_type(id)
+                    .map(|ty| self.parent.rust_type(ty))
+                    .unwrap_or(Type::Prim(Prim::I64))
+            })
+            .collect();
+        let ret_type = op
+            .result_ty
+            .as_ref()
+            .map(|ty| self.parent.rust_type(ty))
+            .filter(|ty| !matches!(ty, Type::CLib(c) if *c == CLibType::VOID));
+
+        let sanitized = sanitize_ident(&op.intrinsic_name);
+        let sig_key = format!("{sanitized}__{ret_type:?}__{param_types:?}");
+        let sig_hash = {
+            use std::hash::{Hash, Hasher};
+            let mut hasher = std::collections::hash_map::DefaultHasher::new();
+            sig_key.hash(&mut hasher);
+            hasher.finish()
+        };
+        let shim_name = format!("__slate_intrinsic_{sanitized}_{sig_hash:x}");
+
+        self.parent
+            .llvm_intrinsic_shims
+            .entry(shim_name.clone())
+            .or_insert_with(|| ExternFnDecl {
+                attrs: vec![RustAttr::LinkName(format!("llvm.{}", op.intrinsic_name))],
+                identity: FunctionIdentity::Unknown,
+                name: shim_name.clone(),
+                declared_type: None,
+                params: param_types
+                    .iter()
+                    .enumerate()
+                    .map(|(i, ty)| FnParam {
+                        name: format!("_{i}"),
+                        mutable: false,
+                        ty: ty.clone(),
+                    })
+                    .collect(),
+                variadic: false,
+                ret: ret_type.clone(),
+                safe: false,
+            });
+
+        let args: Vec<Expr> = op.arg_ops.iter().map(|id| self.operand_expr(id)).collect();
+        let call_expr = Self::unsafe_expr(Expr::Call {
+            binding: CallBinding::Generated,
+            func: Box::new(Expr::Var(shim_name.into())),
+            args,
+        });
+        match &op.result {
+            Some(result) if ret_type.is_some() => {
+                self.materialize_expr(result, call_expr, op.result_ty.as_ref())
+            }
+            _ => self.push_stmt(Self::unsafe_stmt(Stmt::Expr(call_expr))),
+        }
+    }
 }
