@@ -1316,9 +1316,6 @@ fn collect_naked_functions(node: &Value, source_file: &str, out: &mut BTreeSet<S
     }
 }
 
-/// Diagnostic/optimization-only GNU attributes that have no faithful Rust
-/// equivalent (see slate-jep.7): tracked so callers can warn instead of
-/// silently dropping them.
 fn collect_function_attribute_facts(
     node: &Value,
     source_file: &str,
@@ -1353,6 +1350,17 @@ fn collect_function_attribute_facts(
                 Some("FormatArgAttr") => unsupported_kinds.push("format_arg"),
                 Some("SentinelAttr") => unsupported_kinds.push("sentinel"),
                 Some("NoSanitizeAttr") => unsupported_kinds.push("no_sanitize"),
+                Some("FlattenAttr") => unsupported_kinds.push("flatten"),
+                Some("NoThrowAttr") => unsupported_kinds.push("nothrow"),
+                Some("LeafAttr") => unsupported_kinds.push("leaf"),
+                Some("NoInstrumentFunctionAttr") => {
+                    unsupported_kinds.push("no_instrument_function");
+                }
+                Some("NoProfileFunctionAttr") => {
+                    unsupported_kinds.push("no_profile_instrument_function");
+                }
+                Some("ErrorAttr") => unsupported_kinds.push("warning_or_error"),
+                Some("IFuncAttr") => unsupported_kinds.push("ifunc"),
                 _ => {}
             }
         }
