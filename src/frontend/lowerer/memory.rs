@@ -982,12 +982,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 }
 
-fn bitint_vector_lane_bits(elem_ty: &Type) -> Option<u32> {
+pub(super) fn bitint_vector_lane_bits(elem_ty: &Type) -> Option<u32> {
     let (_, bits, _, _) = bitint_generic_parts(elem_ty)?;
     bits.parse().ok()
 }
 
-fn packed_mask_int_type(bits: u32) -> Option<Type> {
+pub(super) fn packed_mask_int_type(bits: u32) -> Option<Type> {
     Some(match bits {
         8 => Type::Prim(Prim::U8),
         16 => Type::Prim(Prim::U16),
@@ -998,7 +998,12 @@ fn packed_mask_int_type(bits: u32) -> Option<Type> {
     })
 }
 
-fn pack_bitint_vector_expr(value: Expr, len: usize, lane_bits: u32, int_prim: Prim) -> Expr {
+pub(super) fn pack_bitint_vector_expr(
+    value: Expr,
+    len: usize,
+    lane_bits: u32,
+    int_prim: Prim,
+) -> Expr {
     (0..len)
         .map(|i| {
             let lane = Expr::MethodCall {
