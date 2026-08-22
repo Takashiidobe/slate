@@ -6,154 +6,154 @@ fixed.
 ## C89
 
 - [ ] Trigraphs
-- [ ] Escape sequences
-- [ ] Integer constants: decimal, octal, hexadecimal
-- [ ] Floating constants
-- [ ] Character constants
-- [ ] String literals
-- [ ] Adjacent string-literal concatenation
-- [ ] Comments `/* ... */`
-- [ ] Preprocessor object-like macros
-- [ ] Preprocessor function-like macros
-- [ ] Macro argument substitution
-- [ ] Stringification operator #
-- [ ] Token-pasting operator ##
-- [ ] #include
-- [ ] #define
-- [ ] #undef
-- [ ] #if
-- [ ] #ifdef
-- [ ] #ifndef
-- [ ] #elif
-- [ ] #else
-- [ ] #endif
-- [ ] defined
+- [x] Escape sequences
+- [x] Integer constants: decimal, octal, hexadecimal
+- [x] Floating constants
+- [x] Character constants
+- [x] String literals
+- [x] Adjacent string-literal concatenation
+- [x] Comments `/* ... */`
+- [x] Preprocessor object-like macros
+- [x] Preprocessor function-like macros
+- [x] Macro argument substitution
+- [x] Stringification operator #
+- [x] Token-pasting operator ##
+- [x] #include
+- [x] #define
+- [x] #undef
+- [x] #if
+- [x] #ifdef
+- [x] #ifndef
+- [x] #elif
+- [x] #else
+- [x] #endif
+- [x] defined
 - [ ] #line
 - [ ] #error
-- [ ] #pragma
+- [x] #pragma
 - [ ] Predefined macros: `__LINE__`
 - [ ] `__FILE__`
 - [ ] `__DATE__`
 - [ ] `__TIME__`
-- [ ] `__STDC__`
-- [ ] Types
-- [ ] char
-- [ ] signed char
-- [ ] unsigned char
-- [ ] short
-- [ ] unsigned short
-- [ ] int
-- [ ] unsigned int
-- [ ] long
-- [ ] unsigned long
-- [ ] float
-- [ ] double
-- [ ] long double
-- [ ] void
-- [ ] pointers
-- [ ] arrays
-- [ ] multidimensional arrays
-- [ ] functions
-- [ ] structures
-- [ ] unions
-- [ ] enumerations
-- [ ] bit-fields
-- [ ] typedef
+- [x] `__STDC__`
+- [x] Types
+- [x] char
+- [x] signed char
+- [x] unsigned char
+- [x] short
+- [x] unsigned short
+- [x] int
+- [x] unsigned int
+- [x] long
+- [x] unsigned long
+- [x] float
+- [x] double
+- [x] long double
+- [x] void
+- [x] pointers
+- [x] arrays
+- [x] multidimensional arrays
+- [x] functions
+- [x] structures
+- [x] unions
+- [x] enumerations
+- [x] bit-fields
+- [x] typedef
 - [ ] incomplete types
 - [ ] compatible/composite types
-- [ ] Type qualifiers
-- [ ] const
-- [ ] volatile
-- [ ] qualified pointers
+- [x] Type qualifiers
+- [x] const
+- [x] volatile
+- [x] qualified pointers
 - [ ] qualifier propagation rules
-- [ ] Storage / linkage
-- [ ] auto
-- [ ] register
-- [ ] static
-- [ ] extern
-- [ ] automatic storage duration
-- [ ] static storage duration
-- [ ] external linkage
-- [ ] internal linkage
-- [ ] no linkage
-- [ ] tentative definitions
-- [ ] Declarations / functions
-- [ ] Function prototypes
+- [x] Storage / linkage
+- [x] auto
+- [x] register
+- [x] static
+- [x] extern
+- [x] automatic storage duration
+- [x] static storage duration
+- [x] external linkage
+- [x] internal linkage
+- [x] no linkage
+- [x] tentative definitions
+- [x] Declarations / functions
+- [x] Function prototypes
 - [ ] Prototype parameter type checking
 - [ ] Old-style/K&R function declarations
 - [ ] Old-style/K&R function definitions
-- [ ] Variadic functions via ...
-- [ ] Array declarators
-- [ ] Function-pointer declarators
+- [x] Variadic functions via ...
+- [x] Array declarators
+- [x] Function-pointer declarators
 - [ ] Abstract declarators
-- [ ] Initializers
-- [ ] Aggregate initialization
-- [ ] Expressions
-- [ ] Integer promotions
-- [ ] Usual arithmetic conversions
-- [ ] Lvalue semantics
-- [ ] Array-to-pointer conversion
-- [ ] Function-to-pointer conversion
-- [ ] Pointer arithmetic
-- [ ] Pointer comparison
-- [ ] Structure/union member access
-- [ ] Cast expressions
-- [ ] sizeof
-- [ ] Unary operators
-- [ ] Arithmetic operators
-- [ ] Relational/equality operators
-- [ ] Logical operators
-- [ ] Bitwise operators
-- [ ] Shift operators
-- [ ] Assignment operators
-- [ ] Conditional ?:
-- [ ] Comma operator
-- [ ] Function calls
-- [ ] Increment/decrement
-- [ ] Statements
-- [ ] Compound statements
-- [ ] if
-- [ ] else
-- [ ] switch
-- [ ] case
-- [ ] default
-- [ ] while
-- [ ] do
-- [ ] for
-- [ ] goto
-- [ ] labels
-- [ ] continue
-- [ ] break
-- [ ] return
+- [x] Initializers
+- [x] Aggregate initialization
+- [x] Expressions
+- [x] Integer promotions
+- [x] Usual arithmetic conversions
+- [x] Lvalue semantics
+- [x] Array-to-pointer conversion
+- [x] Function-to-pointer conversion
+- [x] Pointer arithmetic
+- [x] Pointer comparison
+- [x] Structure/union member access
+- [x] Cast expressions
+- [x] sizeof
+- [x] Unary operators
+- [x] Arithmetic operators
+- [x] Relational/equality operators
+- [x] Logical operators
+- [x] Bitwise operators
+- [x] Shift operators
+- [x] Assignment operators
+- [x] Conditional ?:
+- [x] Comma operator
+- [x] Function calls
+- [x] Increment/decrement
+- [x] Statements
+- [x] Compound statements
+- [x] if
+- [x] else
+- [x] switch
+- [x] case
+- [x] default
+- [x] while
+- [x] do
+- [x] for
+- [x] goto
+- [x] labels
+- [x] continue
+- [x] break
+- [x] return
 
 ### C89 library
 
-- [ ] <assert.h>
-- [ ] <ctype.h>
-- [ ] <errno.h>
-- [ ] <float.h>
-- [ ] <limits.h>
-- [ ] <locale.h>
-- [ ] <math.h>
-- [ ] <setjmp.h>
-- [ ] <signal.h>
-- [ ] <stdarg.h>
-- [ ] <stddef.h>
-- [ ] <stdio.h>
-- [ ] <stdlib.h>
-- [ ] <string.h>
-- [ ] <time.h>
+- [x] <assert.h>
+- [x] <ctype.h>
+- [x] <errno.h>
+- [x] <float.h>
+- [x] <limits.h>
+- [x] <locale.h>
+- [x] <math.h>
+- [x] <setjmp.h>
+- [x] <signal.h>
+- [x] <stdarg.h>
+- [x] <stddef.h>
+- [x] <stdio.h>
+- [x] <stdlib.h>
+- [x] <string.h>
+- [x] <time.h>
 
 ## C95
 
-- [ ] Digraph <: -> [
-- [ ] Digraph :> -> ]
-- [ ] Digraph <% -> {
-- [ ] Digraph %> -> }
-- [ ] Digraph %: -> #
-- [ ] Digraph %:%: -> ##
-- [ ] `__STDC_VERSION__`
-- [ ] `__STDC_VERSION__` == 199409L
+- [x] Digraph <: -> [
+- [x] Digraph :> -> ]
+- [x] Digraph <% -> {
+- [x] Digraph %> -> }
+- [x] Digraph %: -> #
+- [x] Digraph %:%: -> ##
+- [x] `__STDC_VERSION__`
+- [x] `__STDC_VERSION__` == 199409L
 
 ### Library
 
@@ -170,74 +170,74 @@ fixed.
 
 ## C99
 
-- [ ] // line comments
-- [ ] Universal character names \uXXXX
+- [x] // line comments
+- [x] Universal character names \uXXXX
 - [ ] Universal character names \UXXXXXXXX
-- [ ] Universal character names in identifiers
-- [ ] Increased minimum translation limits
-- [ ] Integer / arithmetic types
-- [ ] \_Bool
-- [ ] long long
-- [ ] unsigned long long
+- [x] Universal character names in identifiers
+- [x] Increased minimum translation limits
+- [x] Integer / arithmetic types
+- [x] `_Bool`
+- [x] long long
+- [x] unsigned long long
 - [ ] Extended signed integer types
 - [ ] Extended unsigned integer types
 - [ ] Revised integer conversion rules
-- [ ] Signed integer division truncates toward zero
-- [ ] Corresponding remainder semantics
-- [ ] Complex arithmetic
-- [ ] \_Complex
-- [ ] float \_Complex
-- [ ] double \_Complex
-- [ ] long double \_Complex
-- [ ] \_Imaginary where supported by the standard's model
-- [ ] Complex literals through library macros/functions
-- [ ] Complex arithmetic semantics
-- [ ] Floating point
-- [ ] Hexadecimal floating constants, e.g. 0x1.8p+2
+- [x] Signed integer division truncates toward zero
+- [x] Corresponding remainder semantics
+- [x] Complex arithmetic
+- [x] `_Complex`
+- [x] float `_Complex`
+- [x] double `_Complex`
+- [x] long double `_Complex`
+- [ ] `_Imaginary` where supported by the standard's model
+- [x] Complex literals through library macros/functions
+- [x] Complex arithmetic semantics
+- [x] Floating point
+- [x] Hexadecimal floating constants, e.g. 0x1.8p+2
 - [ ] FLT_EVAL_METHOD
-- [ ] Floating-point environment semantics
-- [ ] Floating-point contraction rules
+- [x] Floating-point environment semantics
+- [x] Floating-point contraction rules
 - [ ] IEC 60559/IEEE-754 feature macros where applicable
-- [ ] Qualifiers / declarations
-- [ ] restrict
-- [ ] Idempotent qualifiers, e.g. repeated const
-- [ ] inline
-- [ ] Mixed declarations and statements
-- [ ] Declaration in for initializer
-- [ ] for (int i = 0; ...)
-- [ ] Arrays
-- [ ] Variable-length arrays
-- [ ] Variably-modified types
+- [x] Qualifiers / declarations
+- [x] restrict
+- [x] Idempotent qualifiers, e.g. repeated const
+- [x] inline
+- [x] Mixed declarations and statements
+- [x] Declaration in for initializer
+- [x] for (int i = 0; ...)
+- [x] Arrays
+- [x] Variable-length arrays
+- [x] Variably-modified types
 - [ ] VLA runtime sizeof
 - [ ] Function prototype [*] VLA notation
-- [ ] static inside array function parameters
-- [ ] const/volatile/restrict inside array parameter brackets
-- [ ] Flexible array members
-- [ ] Initialization
-- [ ] Nonconstant initializers for automatic aggregate objects
-- [ ] Array designated initializers [index] = value
-- [ ] Structure designated initializers .member = value
+- [x] static inside array function parameters
+- [x] const/volatile/restrict inside array parameter brackets
+- [x] Flexible array members
+- [x] Initialization
+- [x] Nonconstant initializers for automatic aggregate objects
+- [x] Array designated initializers [index] = value
+- [x] Structure designated initializers .member = value
 - [ ] Nested designated initializers
-- [ ] Compound literals (T){...}
-- [ ] Enumerations
-- [ ] Trailing comma in enumerator list
-- [ ] Functions
-- [ ] `__func__`
-- [ ] Implicit return 0 from main
+- [x] Compound literals (T){...}
+- [x] Enumerations
+- [x] Trailing comma in enumerator list
+- [x] Functions
+- [x] `__func__`
+- [x] Implicit return 0 from main
 - [ ] C99 inline linkage semantics
-- [ ] Removed C89 behavior
-- [ ] Reject implicit int
-- [ ] Reject implicit function declarations
+- [x] Removed C89 behavior
+- [x] Reject implicit int
+- [x] Reject implicit function declarations
 
 ### Preprocessor
 
-- [ ] Variadic macros ...
-- [ ] `__VA_ARGS__`
+- [x] Variadic macros ...
+- [x] `__VA_ARGS__`
 - [ ] Empty arguments to function-like macros
-- [ ] \_Pragma
-- [ ] #pragma STDC FENV_ACCESS
-- [ ] #pragma STDC FP_CONTRACT
-- [ ] #pragma STDC CX_LIMITED_RANGE
+- [ ] `_Pragma`
+- [x] #pragma STDC FENV_ACCESS
+- [x] #pragma STDC FP_CONTRACT
+- [x] #pragma STDC CX_LIMITED_RANGE
 
 ### C99 version / feature macros
 
@@ -251,64 +251,64 @@ fixed.
 
 #### Headers:
 
-- [ ] <stdbool.h>
-- [ ] <stdint.h>
-- [ ] <inttypes.h>
-- [ ] <complex.h>
-- [ ] <fenv.h>
-- [ ] <tgmath.h>
-- [ ] Integer library
-- [ ] int8_t, int16_t, etc. where exact-width types exist
-- [ ] uint8_t, uint16_t, etc.
-- [ ] int_leastN_t / uint_leastN_t
-- [ ] int_fastN_t / uint_fastN_t
-- [ ] intptr_t / uintptr_t where provided
-- [ ] intmax_t
-- [ ] uintmax_t
-- [ ] INTN*\* / UINTN*\* limits
-- [ ] PRI\* format macros
-- [ ] SCN\* format macros
-- [ ] General library additions
-- [ ] llabs
-- [ ] lldiv
-- [ ] strtoll
-- [ ] strtoull
-- [ ] strtoimax
-- [ ] strtoumax
-- [ ] imaxabs
-- [ ] imaxdiv
-- [ ] \_Exit
-- [ ] va_copy
-- [ ] snprintf
-- [ ] vsnprintf
-- [ ] isblank
-- [ ] strtof
-- [ ] strtold
-- [ ] Wide-character integer conversion counterparts
+- [x] <stdbool.h>
+- [x] <stdint.h>
+- [x] <inttypes.h>
+- [x] <complex.h>
+- [x] <fenv.h>
+- [x] <tgmath.h>
+- [x] Integer library
+- [x] int8_t, int16_t, etc. where exact-width types exist
+- [x] uint8_t, uint16_t, etc.
+- [x] int_leastN_t / uint_leastN_t
+- [x] int_fastN_t / uint_fastN_t
+- [x] intptr_t / uintptr_t where provided
+- [x] intmax_t
+- [x] uintmax_t
+- [x] INTN*\* / UINTN*\* limits
+- [x] PRI\* format macros
+- [x] SCN\* format macros
+- [x] General library additions
+- [x] llabs
+- [x] lldiv
+- [x] strtoll
+- [x] strtoull
+- [x] strtoimax
+- [x] strtoumax
+- [x] imaxabs
+- [x] imaxdiv
+- [x] `_Exit`
+- [x] va_copy
+- [x] snprintf
+- [x] vsnprintf
+- [x] isblank
+- [x] strtof
+- [x] strtold
+- [x] Wide-character integer conversion counterparts
 
 #### Formatted I/O
 
-- [ ] %a / %A hexadecimal floating format
-- [ ] hh length modifier
-- [ ] ll length modifier
-- [ ] j length modifier
-- [ ] z length modifier
-- [ ] t length modifier
-- [ ] C99 scanf/printf family extensions
+- [x] %a / %A hexadecimal floating format
+- [x] hh length modifier
+- [x] ll length modifier
+- [x] j length modifier
+- [x] z length modifier
+- [x] t length modifier
+- [x] C99 scanf/printf family extensions
 
 #### Math
 
-- [ ] float variants of math functions
-- [ ] long double variants
-- [ ] New C99 mathematical functions
-- [ ] fma
-- [ ] remainder / remquo
-- [ ] nextafter / nexttoward
-- [ ] classification macros such as isfinite
-- [ ] comparison macros such as isgreater
-- [ ] floating-point environment functions
-- [ ] complex math functions
-- [ ] <tgmath.h> type-generic dispatch
+- [x] float variants of math functions
+- [x] long double variants
+- [x] New C99 mathematical functions
+- [x] fma
+- [x] remainder / remquo
+- [x] nextafter / nexttoward
+- [x] classification macros such as isfinite
+- [x] comparison macros such as isgreater
+- [x] floating-point environment functions
+- [x] complex math functions
+- [x] <tgmath.h> type-generic dispatch
 
 ## C11
 
@@ -319,22 +319,22 @@ fixed.
 - [ ] Sequenced-before relation
 - [ ] Data-race rules
 - [ ] Happens-before rules
-- [ ] Atomic objects
-- [ ] \_Atomic(type)
-- [ ] \_Atomic qualifier/specifier
-- [ ] Atomic initialization semantics
-- [ ] Atomic load/store semantics
-- [ ] Atomic read-modify-write semantics
-- [ ] Memory-order model
-- [ ] Thread-local storage
-- [ ] \_Thread_local
-- [ ] TLS with static
+- [x] Atomic objects
+- [x] \_Atomic(type)
+- [x] \_Atomic qualifier/specifier
+- [x] Atomic initialization semantics
+- [x] Atomic load/store semantics
+- [x] Atomic read-modify-write semantics
+- [x] Memory-order model
+- [x] Thread-local storage
+- [x] \_Thread_local
+- [x] TLS with static
 - [ ] TLS with extern
-- [ ] Thread storage duration
-- [ ] Alignment
-- [ ] \_Alignof
-- [ ] \_Alignas
-- [ ] Extended/over-alignment
+- [x] Thread storage duration
+- [x] Alignment
+- [x] \_Alignof
+- [x] \_Alignas
+- [x] Extended/over-alignment
 - [ ] Fundamental alignment
 - [ ] Valid alignment constraints
 - [ ] Generic programming
@@ -344,15 +344,15 @@ fixed.
 - [ ] Type-based selection semantics
 - [ ] Compile-time assertions
 - [ ] \_Static_assert(expr, "message")
-- [ ] Function properties
-- [ ] \_Noreturn
-- [ ] Structures / unions
-- [ ] Anonymous structure members
-- [ ] Anonymous union members
-- [ ] Unicode literals
-- [ ] u'…'
-- [ ] U'…'
-- [ ] u8"…"
+- [x] Function properties
+- [x] \_Noreturn
+- [x] Structures / unions
+- [x] Anonymous structure members
+- [x] Anonymous union members
+- [x] Unicode literals
+- [x] u'…'
+- [x] U'…'
+- [x] u8"…"
 - [ ] u"…"
 - [ ] U"…"
 - [ ] Expression / object semantic changes
@@ -361,81 +361,82 @@ fixed.
 - [ ] Updated effective-type / memory-model interactions
 - [ ] Analyzability
 - [ ] Analyzability specification
-- [ ] `__STDC_ANALYZABLE`\_\_ when supported
+- [ ] `__STDC_ANALYZABLE__` when supported
 - [ ] Conditional feature macros
 - [ ] `__STDC_NO_ATOMICS__`- [ ] `__STDC_NO_THREADS__`- [ ] `__STDC_NO_VLA__`- [ ] `__STDC_NO_COMPLEX__`- [ ] Version
-- [ ] `__STDC_VERSION`\_\_ == 201112L
-- [ ] C11 library
+- [ ] `__STDC_VERSION__` == 201112L
+
+### C11 library
+
 - [ ] New headers
 - [ ] <stdalign.h>
 - [ ] <stdatomic.h>
-- [ ] <stdnoreturn.h>
-- [ ] <threads.h>
-- [ ] <uchar.h>
-- [ ] Atomics library
-- [ ] atomic\_\* typedefs
+- [x] <stdnoreturn.h>
+- [x] <threads.h>
+- [x] <uchar.h>
+- [x] Atomics library
+- [x] `atomic_*` typedefs
 - [ ] atomic_init
-- [ ] atomic_store
-- [ ] atomic_load
-- [ ] atomic_exchange
-- [ ] atomic*compare_exchange*\*
-- [ ] atomic_fetch_add
-- [ ] atomic_fetch_sub
-- [ ] atomic_fetch_or
-- [ ] atomic_fetch_xor
-- [ ] atomic_fetch_and
-- [ ] atomic_flag
-- [ ] atomic fences
-- [ ] memory*order*\*
+- [x] atomic_store
+- [x] atomic_load
+- [x] atomic_exchange
+- [x] atomic*compare_exchange*\*
+- [x] atomic_fetch_add
+- [x] atomic_fetch_sub
+- [x] atomic_fetch_or
+- [x] atomic_fetch_xor
+- [x] atomic_fetch_and
+- [x] atomic_flag
+- [x] atomic fences
+- [x] memory*order*\*
 - [ ] lock-free query facilities
-- [ ] Threads library
-- [ ] thrd_t
-- [ ] thread creation
-- [ ] thread joining
-- [ ] thread detaching
-- [ ] thrd_current
-- [ ] thrd_equal
-- [ ] thrd_sleep
-- [ ] mutexes mtx\_\*
-- [ ] condition variables cnd\_\*
-- [ ] thread-specific storage tss\_\*
-- [ ] once_flag
-- [ ] call_once
-- [ ] Unicode
-- [ ] char16_t
-- [ ] char32_t
-- [ ] mbrtoc16
-- [ ] mbrtoc32
-- [ ] c16rtomb
-- [ ] c32rtomb
+- [x] Threads library
+- [x] thrd_t
+- [x] thread creation
+- [x] thread joining
+- [x] thread detaching
+- [x] thrd_current
+- [x] thrd_equal
+- [x] thrd_sleep
+- [x] mutexes mtx\_\*
+- [x] condition variables cnd\_\*
+- [x] thread-specific storage tss\_\*
+- [x] once_flag
+- [x] call_once
+- [x] Unicode
+- [x] char16_t
+- [x] char32_t
+- [x] mbrtoc16
+- [x] mbrtoc32
+- [x] c16rtomb
+- [x] c32rtomb
 - [ ] Runtime / allocation
 - [ ] aligned_alloc
 - [ ] quick_exit
-- [ ] at_quick_exit
-- [ ] timespec
-- [ ] timespec_get
+- [x] at_quick_exit
+- [x] timespec
+- [x] timespec_get
 - [ ] Exclusive "x" mode for fopen/freopen
-- [ ] Thread-local errno
-- [ ] Complex / floating support
+- [x] Thread-local errno
+- [x] Complex / floating support
 - [ ] CMPLX
 - [ ] CMPLXF
-- [ ] CMPLXL
+- [x] CMPLXL
 - [ ] FLT_DECIMAL_DIG
 - [ ] DBL_DECIMAL_DIG
 - [ ] LDBL_DECIMAL_DIG
 - [ ] \*\_TRUE_MIN
 - [ ] \*\_HAS_SUBNORM
 - [ ] Annex K Support
-- [ ] `__STDC_LIB_EXT1`\_\_, if implemented
+- [ ] `__STDC_LIB_EXT1__`, if implemented
 - [ ] Bounds-checking interfaces
 - [ ] \_s functions
-- [ ] runtime-constraint handlers
-- [ ] Removed
-- [ ] gets() removed
+- [ ] runtime-constraint handlers removed
+- [x] gets() removed
 
 ## C17
 
-- [ ] `__STDC_VERSION`\_\_ == 201710L
+- [ ] `__STDC_VERSION__` == 201710L
 - [ ] All C11 features
 - [ ] All applicable C11 defect-report corrections
 - [ ] Updated atomic semantics
@@ -449,23 +450,26 @@ fixed.
 
 ### C23 new types
 
-- [ ] \_BitInt(N)
-- [ ] signed \_BitInt(N)
-- [ ] unsigned \_BitInt(N)
-- [ ] Distinct type for each supported width
-- [ ] BITINT_MAXWIDTH
-- [ ] Bit-precise integer promotions/conversions
-- [ ] Bit-precise integer arithmetic
-- [ ] Bit-precise integer constant suffix wb
+- [x] `_BitInt(N)`
+- [x] signed `_BitInt(N)`
+- [x] unsigned `_BitInt(N)`
+- [x] Distinct type for each supported width
+- [x] BITINT_MAXWIDTH
+- [x] Bit-precise integer promotions/conversions
+- [x] Bit-precise integer arithmetic
+- [x] Bit-precise integer constant suffix wb
 - [ ] Bit-precise unsigned constant suffix uwb
 - [ ] Conditional decimal floating point
 
 ### Decimal types
 
-- only when the implementation advertises decimal IEC 60559 support through `__STDC_IEC_60559_DFP`\_\_.
-- [ ] \_Decimal32
-- [ ] \_Decimal64
-- [ ] \_Decimal128
+only when the implementation advertises decimal IEC 60559 support through `__STDC_IEC_60559_DFP__`.
+
+(not supported for clang)?
+
+- [ ] `_Decimal32`
+- [ ] `_Decimal64`
+- [ ] `_Decimal128`
 - [ ] Decimal arithmetic
 - [ ] Decimal constants/suffixes
 - [ ] Decimal conversions
@@ -487,13 +491,13 @@ fixed.
 - [ ] u8"…" has type char8_t[N]
 - [ ] UTF-16 semantics required for u"…"
 - [ ] UTF-32 semantics required for U"…"
-- [ ] char8_t is a typedef of unsigned char in <uchar.h>, and C23 changes UTF-8 string literals from char[N] to char8_t[N].
+- [ ] char8_t is a typedef of unsigned char in <uchar.h>, and changing char[N] to char8_t[N].
 
 ### C23 keywords
 
-- [ ] bool is a keyword
-- [ ] true is a keyword
-- [ ] false is a keyword
+- [x] bool is a keyword
+- [x] true is a keyword
+- [x] false is a keyword
 - [ ] alignas is a keyword
 - [ ] alignof is a keyword
 - [ ] static_assert is a keyword
@@ -501,13 +505,13 @@ fixed.
 - [ ] constexpr is a keyword
 - [ ] typeof
 - [ ] typeof_unqual
-- [ ] nullptr
+- [x] nullptr
 - [ ] The underscore-prefixed historical forms remain relevant for compatibility, although \_Noreturn is deprecated.
-- [ ] C23 nullptr
-- [ ] nullptr null pointer constant
-- [ ] nullptr_t
-- [ ] Correct conversions from nullptr
-- [ ] Correct comparisons involving nullptr
+- [x] C23 nullptr
+- [x] nullptr null pointer constant
+- [x] nullptr_t
+- [x] Correct conversions from nullptr
+- [x] Correct comparisons involving nullptr
 - [ ] \_Generic interaction with nullptr_t
 - [ ] C23 type inference
 - [ ] auto object type inference
@@ -530,12 +534,12 @@ fixed.
 - [ ] Correct linkage/storage restrictions
 - [ ] Use in integer constant expressions where permitted
 - [ ] C23 constexpr
-- [ ] C23 initialization
-- [ ] Empty initializer {}
-- [ ] T x = {};
-- [ ] Zero-initialization semantics for empty initializer
+- [x] C23 initialization
+- [x] Empty initializer {}
+- [x] T x = {};
+- [x] Zero-initialization semantics for empty initializer
 - [ ] Empty initialization of arrays
-- [ ] Empty initialization of structures
+- [x] Empty initialization of structures
 - [ ] Empty initialization of unions
 - [ ] C23 compound literals
 - [ ] Storage-class specifier on compound literal
@@ -589,7 +593,7 @@ fixed.
 - [ ] Variably-modified types are mandatory
 - [ ] Allocated-storage VLA types are supported
 - [ ] Automatic VLA objects may remain optional
-- [ ] `__STDC_NO_VLA`\_\_ now indicates absence of automatic VLA objects rather than all VM types
+- [ ] `__STDC_NO_VLA__` now indicates absence of automatic VLA objects rather than all VM types
 - [ ] WG14 explicitly made VM types mandatory while leaving automatic-storage VLAs conditional.
 
 ## C23 enumerations
@@ -616,12 +620,12 @@ fixed.
 
 ## C23 preprocessor
 
-- [ ] #elifdef
-- [ ] #elifndef
-- [ ] #warning
-- [ ] #embed
-- [ ] \_\_has_include
-- [ ] \_\_has_c_attribute
+- [x] #elifdef
+- [x] #elifndef
+- [x] #warning
+- [x] #embed
+- [ ] `__has_include`
+- [ ] `__has_c_attribute`
 - [ ] `__VA_OPT__`- [ ] Empty variadic macro argument handling
 - [ ] Updated variadic macro replacement rules
 - [ ] #embed
@@ -632,24 +636,27 @@ fixed.
 - [ ] suffix(...)
 - [ ] if_empty(...)
 - [ ] implementation-defined/vendor embed parameters handled correctly
-- [ ] \_\_has_embed support where required by C23's preprocessing facilities
+- [ ] `__has_embed` support where required by C23's preprocessing facilities
 - [ ] C23 floating-point pragmas
-- [ ] #pragma STDC FENV_ROUND
-- [ ] #pragma STDC FENV_DEC_ROUND
+- [x] #pragma STDC FENV_ROUND
+- [x] #pragma STDC FENV_DEC_ROUND
 - [ ] Updated IEC 60559 feature detection
-- [ ] `__STDC_IEC_60559_BFP__`- [ ] `__STDC_IEC_60559_DFP__`- [ ] `__STDC_IEC_60559_COMPLEX__`- [ ] C23 version
-- [ ] `__STDC_VERSION`\_\_ == 202311L
+- [ ] `__STDC_IEC_60559_BFP__`
+- [ ] `__STDC_IEC_60559_DFP__`
+- [ ] `__STDC_IEC_60559_COMPLEX__`
+- [ ] C23 version
+- [ ] `__STDC_VERSION__` == 202311L
 
 ## C23 library
 
 ## Headers
 
-- [ ] <stdbit.h>
-- [ ] <stdckdint.h>
-- [ ] Checked arithmetic
-- [ ] ckd_add
-- [ ] ckd_sub
-- [ ] ckd_mul
+- [x] <stdbit.h>
+- [x] <stdckdint.h>
+- [x] Checked arithmetic
+- [x] ckd_add
+- [x] ckd_sub
+- [x] ckd_mul
 - [ ] Generic integer operand support
 - [ ] Overflow reporting semantics
 - [ ] Bit utilities
@@ -699,8 +706,8 @@ fixed.
 
 #### Time
 
-- [ ] gmtime_r
-- [ ] localtime_r
+- [x] gmtime_r
+- [x] localtime_r
 - [ ] timespec_getres
 - [ ] C23 strftime extensions
 - [ ] C23 wcsftime extensions
@@ -760,19 +767,19 @@ fixed.
 
 - [ ] Statement expressions
 - [ ] Locally declared labels with `__label__`
-- [ ] Label addresses with `&&label`
-- [ ] Computed goto
+- [x] Label addresses with `&&label`
+- [x] Computed goto
 - [ ] Nested functions
 - [ ] Nested-function trampolines / static chains
 - [ ] Omitted middle operand of `?:`
-- [ ] Case ranges
+- [x] Case ranges
 - [ ] `typeof`
 - [ ] `__typeof__`
 - [ ] `__typeof_unqual__`
 - [ ] `__auto_type`
 - [ ] `__alignof__`
-- [ ] `__int128`
-- [ ] `unsigned __int128`
+- [x] `__int128`
+- [x] `unsigned __int128`
 - [ ] `_Float16` where supported
 - [ ] `_Float32` where supported
 - [ ] `_Float64` where supported
@@ -785,9 +792,9 @@ fixed.
 - [ ] `_Decimal128` where supported
 - [ ] GNU fixed-point types
 - [ ] GNU saturating fixed-point types
-- [ ] `__real__`
-- [ ] `__imag__`
-- [ ] Variable-length arrays in GNU90
+- [x] `__real__`
+- [x] `__imag__`
+- [x] Variable-length arrays in GNU90
 - [ ] VLA members in local structures
 - [ ] VLA members in local unions
 - [ ] Parameter forward declarations
@@ -796,34 +803,34 @@ fixed.
 - [ ] Structures containing only a flexible array member
 - [ ] Nested flexible-array extensions
 - [ ] Static initialization of flexible arrays
-- [ ] Empty structures
+- [x] Empty structures
 - [ ] Union casts
-- [ ] Designated initializers in GNU90
+- [x] Designated initializers in GNU90
 - [ ] Range designators
 - [ ] Historical `[index] value` initializer syntax
 - [ ] Historical `field: value` initializer syntax
 - [ ] Incomplete enum forward declarations
 - [ ] Fixed enum underlying types
 - [ ] Enum forward declarations with fixed underlying type
-- [ ] Basic `asm`
-- [ ] `__asm__`
-- [ ] Extended asm
-- [ ] Asm input operands
-- [ ] Asm output operands
-- [ ] Asm constraints
-- [ ] Matching asm constraints
-- [ ] Early-clobber asm operands
-- [ ] Read/write asm operands
-- [ ] Asm clobber lists
+- [x] Basic `asm`
+- [x] `__asm__`
+- [x] Extended asm
+- [x] Asm input operands
+- [x] Asm output operands
+- [x] Asm constraints
+- [x] Matching asm constraints
+- [x] Early-clobber asm operands
+- [x] Read/write asm operands
+- [x] Asm clobber lists
 - [ ] `"memory"` asm clobber
-- [ ] `"cc"` asm clobber
-- [ ] Symbolic asm operand names
-- [ ] Asm operand modifiers
-- [ ] `asm volatile`
+- [x] `"cc"` asm clobber
+- [x] Symbolic asm operand names
+- [x] Asm operand modifiers
+- [x] `asm volatile`
 - [ ] `asm inline`
-- [ ] `asm goto`
-- [ ] Top-level asm
-- [ ] Target-specific asm constraints
+- [x] `asm goto`
+- [x] Top-level asm
+- [x] Target-specific asm constraints
 - [ ] `__thread`
 - [ ] `extern __thread`
 - [ ] `static __thread`
@@ -838,35 +845,35 @@ fixed.
 - [ ] `#pragma GCC diagnostic pop`
 - [ ] `#pragma GCC diagnostic warning`
 - [ ] `#pragma GCC diagnostic error`
-- [ ] `#pragma GCC poison`
+- [x] `#pragma GCC poison`
 - [ ] `#pragma GCC system_header`
 - [ ] `#pragma GCC dependency`
-- [ ] GNU macro push/pop pragmas
+- [x] GNU macro push/pop pragmas
 - [ ] GNU visibility pragmas
-- [ ] GNU weak pragmas
-- [ ] GNU structure-layout pragmas
+- [x] GNU weak pragmas
+- [x] GNU structure-layout pragmas
 - [ ] GNU function-specific optimization pragmas
 - [ ] GNU target-specific pragmas
-- [ ] `__GNUC__`
+- [x] `__GNUC__`
 - [ ] `__GNUC_MINOR__`
 - [ ] `__GNUC_PATCHLEVEL__`
 - [ ] `__VERSION__`
 - [ ] `__BASE_FILE__`
 - [ ] `__INCLUDE_LEVEL__`
-- [ ] `__COUNTER__`
-- [ ] `__TIMESTAMP__`
-- [ ] Target-specific predefined macros
-- [ ] ABI-specific predefined macros
+- [x] `__COUNTER__`
+- [x] `__TIMESTAMP__`
+- [x] Target-specific predefined macros
+- [x] ABI-specific predefined macros
 - [ ] `$` in identifiers where supported
 - [ ] GNU extended escape handling
-- [ ] `__FUNCTION__`
+- [x] `__FUNCTION__`
 - [ ] `__PRETTY_FUNCTION__`
 - [ ] `__inline__`
 - [ ] `__extension__`
 - [ ] `__restrict__`
 - [ ] Arithmetic on `void *`
 - [ ] `sizeof(void)` GNU semantics
-- [ ] Arithmetic on function pointers
+- [x] Arithmetic on function pointers
 - [ ] `sizeof(function-type)` GNU semantics
 - [ ] GNU prototype / old-style definition compatibility rules
 - [ ] GNU array-pointer qualifier extensions
@@ -877,56 +884,56 @@ fixed.
 - [ ] All GNU90 extensions
 - [ ] Statement expressions
 - [ ] Local labels
-- [ ] Computed goto
+- [x] Computed goto
 - [ ] Nested functions
 - [ ] Omitted-middle `?:`
-- [ ] Case ranges
+- [x] Case ranges
 - [ ] `typeof`
 - [ ] `__typeof__`
 - [ ] `__typeof_unqual__`
 - [ ] `__auto_type`
 - [ ] `__alignof__`
-- [ ] `__int128`
+- [x] `__int128`
 - [ ] Additional GNU floating types
 - [ ] Decimal floating types where supported
 - [ ] GNU fixed-point types
-- [ ] `__real__`
-- [ ] `__imag__`
+- [x] `__real__`
+- [x] `__imag__`
 - [ ] VLA structure / union members
 - [ ] Parameter forward declarations
 - [ ] Zero-length arrays
 - [ ] Extended flexible-array semantics
-- [ ] Empty structures
+- [x] Empty structures
 - [ ] Union casts
 - [ ] Range designators
 - [ ] GNU enum extensions
-- [ ] GNU inline assembly
+- [x] GNU inline assembly
 - [ ] `__thread`
 - [ ] Named variadic macro arguments
 - [ ] `, ##__VA_ARGS__`
 - [ ] GNU preprocessor extensions
-- [ ] GNU pragmas
-- [ ] GNU predefined macros
+- [x] GNU pragmas
+- [x] GNU predefined macros
 - [ ] GNU alternate keywords
-- [ ] GNU pointer arithmetic extensions
-- [ ] GNU attributes
-- [ ] GCC builtins
-- [ ] GNU vector extensions
+- [x] GNU pointer arithmetic extensions
+- [x] GNU attributes
+- [x] GCC builtins
+- [x] GNU vector extensions
 
 ## GNU11
 
 - [ ] All GNU99 extensions
 - [ ] `__thread` in addition to standard `_Thread_local`
-- [ ] GNU atomic builtins in addition to C11 atomics
-- [ ] `__atomic_*` builtins
+- [x] GNU atomic builtins in addition to C11 atomics
+- [x] `__atomic_*` builtins
 - [ ] Legacy `__sync_*` atomic builtins
-- [ ] GNU attributes not represented by C11 syntax
-- [ ] GNU vector extensions
-- [ ] GNU inline assembly
+- [x] GNU attributes not represented by C11 syntax
+- [x] GNU vector extensions
+- [x] GNU inline assembly
 - [ ] GNU statement expressions
 - [ ] GNU nested functions
-- [ ] GNU computed goto
-- [ ] GNU case ranges
+- [x] GNU computed goto
+- [x] GNU case ranges
 - [ ] GNU `typeof`
 - [ ] GNU `__auto_type`
 - [ ] GNU enum extensions
@@ -939,90 +946,90 @@ fixed.
 - [ ] All GNU11 extensions
 - [ ] Statement expressions
 - [ ] Local labels
-- [ ] Computed goto
+- [x] Computed goto
 - [ ] Nested functions
 - [ ] Omitted-middle `?:`
-- [ ] Case ranges
+- [x] Case ranges
 - [ ] `typeof`
 - [ ] `__typeof__`
 - [ ] `__typeof_unqual__`
 - [ ] `__auto_type`
 - [ ] GNU numeric types
-- [ ] GNU VLA extensions
+- [x] GNU VLA extensions
 - [ ] Zero-length arrays
 - [ ] Extended flexible-array semantics
-- [ ] Empty structures
+- [x] Empty structures
 - [ ] Union casts
 - [ ] Range designators
 - [ ] GNU enum extensions
-- [ ] GNU inline assembly
+- [x] GNU inline assembly
 - [ ] GNU TLS
 - [ ] GNU variadic macro extensions
 - [ ] GNU preprocessor extensions
-- [ ] GNU attributes
-- [ ] GCC builtins
-- [ ] GNU vector extensions
+- [x] GNU attributes
+- [x] GCC builtins
+- [x] GNU vector extensions
 
 ## GNU23
 
 - [ ] Statement expressions
 - [ ] Locally declared labels
-- [ ] Label addresses
-- [ ] Computed goto
+- [x] Label addresses
+- [x] Computed goto
 - [ ] Nested functions
 - [ ] Nested-function trampolines / static chains
 - [ ] Omitted middle operand of `?:`
-- [ ] Case ranges
+- [x] Case ranges
 - [ ] `__typeof__`
 - [ ] `__typeof_unqual__`
 - [ ] `__auto_type`
 - [ ] `__alignof__`
-- [ ] `__int128`
+- [x] `__int128`
 - [ ] GNU additional floating types
 - [ ] GNU fixed-point types
-- [ ] `__real__`
-- [ ] `__imag__`
+- [x] `__real__`
+- [x] `__imag__`
 - [ ] VLA members in local aggregates
 - [ ] Parameter forward declarations
 - [ ] Zero-length arrays
 - [ ] Extended flexible-array semantics
-- [ ] Empty structures
+- [x] Empty structures
 - [ ] Union casts
 - [ ] Range designators
 - [ ] Incomplete enum forward declarations without fixed type
-- [ ] GNU inline assembly
+- [x] GNU inline assembly
 - [ ] `__thread`
 - [ ] Named variadic macro arguments
 - [ ] `, ##__VA_ARGS__`
 - [ ] GNU preprocessor extensions
-- [ ] GNU pragmas
-- [ ] GNU predefined macros
+- [x] GNU pragmas
+- [x] GNU predefined macros
 - [ ] GNU alternate keywords
-- [ ] GNU pointer arithmetic extensions
-- [ ] GNU attributes
-- [ ] GCC builtins
-- [ ] GNU vector extensions
+- [x] GNU pointer arithmetic extensions
+- [x] GNU attributes
+- [x] GCC builtins
+- [x] GNU vector extensions
 
 # GNU Attributes
 
 ## General Syntax
 
-- [ ] `__attribute__((...))`
+- [x] `__attribute__((...))`
 - [ ] `[[gnu::...]]`
-- [ ] Multiple attributes
-- [ ] Attributes on declarations
-- [ ] Attributes on types
-- [ ] Attributes on functions
-- [ ] Attributes on variables
+- [x] Multiple attributes
+- [x] Attributes on declarations
+- [x] Attributes on types
+- [x] Attributes on functions
+- [x] Attributes on variables
 - [ ] Attributes on labels
 - [ ] Attributes on statements
 
 ## Type and Layout Attributes
 
-- [ ] `aligned`
-- [ ] `packed`
+- [x] `aligned`
+- [x] `packed`
 - [ ] `mode`
-- [ ] `vector_size`
+- [x] `vector_size`
 - [ ] `transparent_union`
 - [ ] `warn_if_not_aligned`
 - [ ] `strict_flex_array`
@@ -1039,13 +1046,13 @@ fixed.
 - [ ] `cold`
 - [ ] `pure`
 - [ ] `const`
-- [ ] `malloc`
-- [ ] `alloc_size`
-- [ ] `alloc_align`
-- [ ] `assume_aligned`
-- [ ] `returns_nonnull`
-- [ ] `nonnull`
-- [ ] `noreturn`
+- [x] `malloc`
+- [x] `alloc_size`
+- [x] `alloc_align`
+- [x] `assume_aligned`
+- [x] `returns_nonnull`
+- [x] `nonnull`
+- [x] `noreturn`
 - [ ] `nothrow`
 - [ ] `warn_unused_result`
 - [ ] `used`
@@ -1064,9 +1071,9 @@ fixed.
 
 ## Linking and Object Attributes
 
-- [ ] `alias`
+- [x] `alias`
 - [ ] `weak`
-- [ ] `weakref`
+- [x] `weakref`
 - [ ] `section`
 - [ ] `visibility`
 - [ ] `externally_visible`
@@ -1074,10 +1081,10 @@ fixed.
 - [ ] `noplt`
 - [ ] `common`
 - [ ] `nocommon`
-- [ ] `constructor`
-- [ ] `destructor`
-- [ ] Constructor priority
-- [ ] Destructor priority
+- [x] `constructor`
+- [x] `destructor`
+- [x] Constructor priority
+- [x] Destructor priority
 - [ ] `copy`
 
 ## Diagnostic and Contract Attributes
@@ -1088,7 +1095,7 @@ fixed.
 - [ ] `format`
 - [ ] `format_arg`
 - [ ] `access`
-- [ ] `nonnull`
+- [x] `nonnull`
 - [ ] `null_terminated_string_arg`
 - [ ] `sentinel`
 
@@ -1207,11 +1214,11 @@ fixed.
 
 ## Variadic ABI Builtins
 
-- [ ] `__builtin_va_list`
-- [ ] `__builtin_va_start`
-- [ ] `__builtin_va_arg`
-- [ ] `__builtin_va_end`
-- [ ] `__builtin_va_copy`
+- [x] `__builtin_va_list`
+- [x] `__builtin_va_start`
+- [x] `__builtin_va_arg`
+- [x] `__builtin_va_end`
+- [x] `__builtin_va_copy`
 
 ## Library Recognition Builtins
 
@@ -1327,7 +1334,7 @@ fixed.
 
 ## Sorting
 
-- [ ] GNU `qsort_r`
+- [x] GNU `qsort_r`
 
 ## Auxiliary Vector
 
