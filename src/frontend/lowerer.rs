@@ -1049,7 +1049,8 @@ fn lower_record_def(
         .map(|(index, field)| {
             let cir_ty = cir_field_types.and_then(|types| types.get(index));
             let trust_cir = matches!(field.ty, CType::FuncPtr { .. })
-                || (matches!(cir_ty, Some(Type::Array { .. }))
+                || (field.bit_width.is_none()
+                    && matches!(cir_ty, Some(Type::Array { .. }))
                     && !matches!(field.ty, CType::Array(..)));
             RecordField {
                 comments: comments(&field.comments),
@@ -2462,7 +2463,9 @@ impl __SlateVaArgs {
             self.uses_long_double.set(true);
         }
         let storage_record;
+        let mut synthesized_storage = false;
         let record = if record.kind == RecordKind::Union && record.fields.is_empty() {
+            synthesized_storage = true;
             storage_record = crate::frontend::c_ast::Record {
                 fields: vec![crate::frontend::c_ast::Decl {
                     name: "__slate_empty".into(),
@@ -2480,6 +2483,7 @@ impl __SlateVaArgs {
             };
             &storage_record
         } else if let Some(fields) = self.bitfield_storage_fields(record) {
+            synthesized_storage = true;
             storage_record = crate::frontend::c_ast::Record {
                 fields,
                 ..record.clone()
@@ -2488,13 +2492,18 @@ impl __SlateVaArgs {
         } else {
             record
         };
+        let cir_field_types = if synthesized_storage {
+            None
+        } else {
+            self.cir_record_field_types(record)
+        };
         lower_record_def(
             record,
             Visibility::Private,
             Visibility::Private,
             true,
             self.va_list_boxed,
-            self.cir_record_field_types(record).as_deref(),
+            cir_field_types.as_deref(),
         )
     }
 
