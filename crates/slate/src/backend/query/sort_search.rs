@@ -659,7 +659,9 @@ fn prim_layout(p: crate::backend::rust_ast::Prim) -> Option<Layout> {
         crate::backend::rust_ast::Prim::Bool
         | crate::backend::rust_ast::Prim::I8
         | crate::backend::rust_ast::Prim::U8 => 1,
-        crate::backend::rust_ast::Prim::I16 | crate::backend::rust_ast::Prim::U16 => 2,
+        crate::backend::rust_ast::Prim::I16
+        | crate::backend::rust_ast::Prim::U16
+        | crate::backend::rust_ast::Prim::F16 => 2,
         crate::backend::rust_ast::Prim::I32
         | crate::backend::rust_ast::Prim::U32
         | crate::backend::rust_ast::Prim::F32 => 4,

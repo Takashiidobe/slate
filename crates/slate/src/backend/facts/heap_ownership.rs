@@ -363,7 +363,7 @@ fn int_value(expr: &Expr) -> Option<i64> {
 fn type_size_bytes(ty: &Type) -> Option<i64> {
     match ty {
         Type::Prim(Prim::Bool | Prim::I8 | Prim::U8) => Some(1),
-        Type::Prim(Prim::I16 | Prim::U16) => Some(2),
+        Type::Prim(Prim::I16 | Prim::U16 | Prim::F16) => Some(2),
         Type::Prim(Prim::I32 | Prim::U32 | Prim::F32) => Some(4),
         Type::Prim(Prim::I64 | Prim::U64 | Prim::F64 | Prim::Isize | Prim::Usize) => Some(8),
         Type::Prim(Prim::I128 | Prim::U128 | Prim::F128) => Some(16),

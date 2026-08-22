@@ -2105,6 +2105,8 @@ fn parse_c_type(s: &str) -> CType {
         CType::Float { bits: 64 }
     } else if s == "long double" {
         CType::Float { bits: 80 }
+    } else if s == "_Float16" {
+        CType::Float { bits: 16 }
     } else if matches!(s, "_Float128" | "__float128") {
         CType::Float { bits: 128 }
     } else if let Some(underlying) = lookup_typedef(s) {

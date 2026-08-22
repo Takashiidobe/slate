@@ -66,7 +66,7 @@ pub(super) fn rust_type_with_aliases(
         CirType::Int {
             is_signed, width, ..
         } => scalar_int_type(*is_signed, *width),
-        CirType::Fp16 => Type::Prim(Prim::I32),
+        CirType::Fp16 => Type::Prim(Prim::F16),
         CirType::Single => Type::Prim(Prim::F32),
         CirType::Double => Type::Prim(Prim::F64),
         CirType::Fp128 => Type::Prim(Prim::F128),
@@ -442,19 +442,31 @@ pub(super) fn type_mentions_complex(ty: &Type) -> bool {
     }
 }
 
-pub(super) fn type_mentions_f128(ty: &Type) -> bool {
+fn type_mentions(ty: &Type, is_target: &impl Fn(&Type) -> bool) -> bool {
+    if is_target(ty) {
+        return true;
+    }
     match ty {
-        Type::Prim(Prim::F128) => true,
         Type::Complex(inner) | Type::Ref { inner, .. } | Type::Slice(inner) => {
-            type_mentions_f128(inner)
+            type_mentions(inner, is_target)
         }
-        Type::Ptr { inner, .. } | Type::Array { elem: inner, .. } => type_mentions_f128(inner),
+        Type::Ptr { inner, .. } | Type::Array { elem: inner, .. } => {
+            type_mentions(inner, is_target)
+        }
         Type::FnPtr { params, ret, .. } => {
-            params.iter().any(type_mentions_f128) || type_mentions_f128(ret)
+            params.iter().any(|ty| type_mentions(ty, is_target)) || type_mentions(ret, is_target)
         }
-        Type::Generic { args, .. } => args.iter().any(type_mentions_f128),
+        Type::Generic { args, .. } => args.iter().any(|ty| type_mentions(ty, is_target)),
         _ => false,
     }
+}
+
+pub(super) fn type_mentions_f128(ty: &Type) -> bool {
+    type_mentions(ty, &|ty| matches!(ty, Type::Prim(Prim::F128)))
+}
+
+pub(super) fn type_mentions_f16(ty: &Type) -> bool {
+    type_mentions(ty, &|ty| matches!(ty, Type::Prim(Prim::F16)))
 }
 
 pub(super) fn is_cir_function_pointer_type(ty: &CirType) -> bool {
@@ -684,6 +696,7 @@ pub(super) fn cir_type_to_ctype(
     match ty {
         CirType::Void => return CType::Void,
         CirType::Bool => return CType::Bool,
+        CirType::Fp16 => return CType::Float { bits: 16 },
         CirType::Single => return CType::Float { bits: 32 },
         CirType::Double => return CType::Float { bits: 64 },
         CirType::Fp128 => return CType::Float { bits: 128 },

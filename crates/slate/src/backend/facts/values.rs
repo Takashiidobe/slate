@@ -694,7 +694,7 @@ fn fold_cast(values: &BTreeSet<ConstValue>, ty: &Type) -> BTreeSet<ConstValue> {
             .find_map(integer_value)
             .map(values_for_integer)
             .unwrap_or_default(),
-        Prim::F32 | Prim::F64 | Prim::F128 => BTreeSet::new(),
+        Prim::F16 | Prim::F32 | Prim::F64 | Prim::F128 => BTreeSet::new(),
     }
 }
 
