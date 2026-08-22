@@ -3,6 +3,8 @@
 
 #include <features.h>
 
+#define BITINT_MAXWIDTH __BITINT_MAXWIDTH__
+
 #if '\xff' > 0
 #define CHAR_MIN 0
 #define CHAR_MAX 255
