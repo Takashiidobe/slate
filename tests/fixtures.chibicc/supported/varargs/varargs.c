@@ -30,7 +30,7 @@ int sum2(int x, ...) {
 
 int sum3(int count, ...) {
   va_list ap;
-  va_start(ap);
+  va_start(ap, count);
 
   int total = 0;
   for (int i = 0; i < count; i++)
@@ -45,7 +45,7 @@ void fmt(char *buf, char *fmt, ...) {
   va_list ap2;
   va_copy(ap2, ap);
   vsprintf(buf, fmt, ap2);
-  va_end(buf);
+  va_end(ap2);
 }
 
 int main() {
