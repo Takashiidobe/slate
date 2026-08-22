@@ -34,6 +34,7 @@ fn fma_like(arg2: f64, arg3: f64, arg4: f64) -> f64 {
     return _v4;
 }
 
+#[inline(never)]
 fn add_noopt(arg0: i32, arg1: i32) -> i32 {
     let mut a: i32 = 0;
     let mut b: i32 = 0;
