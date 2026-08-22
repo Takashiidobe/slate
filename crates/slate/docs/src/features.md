@@ -1028,20 +1028,20 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 
 - [x] `aligned`
 - [x] `packed`
-- [ ] `mode`
+- [ ] `mode` (type/variable attribute; not yet covered by the function-attribute diagnostic pass)
 - [x] `vector_size`
-- [ ] `transparent_union`
-- [ ] `warn_if_not_aligned`
-- [ ] `strict_flex_array`
-- [ ] `counted_by`
-- [ ] `hardbool`
+- [ ] `transparent_union` (type attribute; not yet covered by the function-attribute diagnostic pass)
+- [ ] `warn_if_not_aligned` (type attribute; not yet covered by the function-attribute diagnostic pass)
+- [ ] `strict_flex_array` (field attribute; not yet covered by the function-attribute diagnostic pass)
+- [ ] `counted_by` (field attribute; not yet covered by the function-attribute diagnostic pass)
+- [ ] `hardbool` (type attribute; not yet covered by the function-attribute diagnostic pass)
 
 ## Function and Optimization Attributes
 
 - [x] `always_inline`
 - [x] `noinline`
 - [ ] `gnu_inline` (no Rust equivalent; parsed and diagnosed, not lowered)
-- [ ] `flatten`
+- [ ] `flatten` (no Rust equivalent; parsed and diagnosed, not lowered)
 - [ ] `hot` (no Rust equivalent; parsed and diagnosed, not lowered)
 - [x] `cold`
 - [ ] `pure` (no Rust equivalent; parsed and diagnosed, not lowered)
@@ -1053,18 +1053,18 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 - [x] `returns_nonnull`
 - [x] `nonnull`
 - [x] `noreturn`
-- [ ] `nothrow`
+- [ ] `nothrow` (no Rust equivalent; parsed and diagnosed, not lowered)
 - [x] `warn_unused_result`
-- [ ] `used`
+- [x] `used`
 - [ ] `unused`
-- [ ] `retain`
-- [ ] `leaf`
-- [ ] `noclone`
-- [ ] `no_icf`
-- [ ] `no_instrument_function`
-- [ ] `no_profile_instrument_function`
+- [x] `retain`
+- [ ] `leaf` (no Rust equivalent; parsed and diagnosed, not lowered)
+- [ ] `noclone` (not recognized by our CIR-enabled Clang build; nothing to detect)
+- [ ] `no_icf` (not recognized by our CIR-enabled Clang build; nothing to detect)
+- [ ] `no_instrument_function` (no Rust equivalent; parsed and diagnosed, not lowered)
+- [ ] `no_profile_instrument_function` (no Rust equivalent; parsed and diagnosed, not lowered)
 - [ ] `no_sanitize` (no Rust equivalent; parsed and diagnosed, not lowered)
-- [ ] `optimize`
+- [ ] `optimize` (not recognized by our CIR-enabled Clang build; nothing to detect. Rust's unstable `#[optimize(speed|size)]` is a plausible partial match if a future Clang parses the GCC `-O`-level string form)
 - [x] `target`
 - [ ] `target_clones`
 - [ ] `target_version`
@@ -1072,15 +1072,15 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 ## Linking and Object Attributes
 
 - [x] `alias`
-- [ ] `weak`
+- [x] `weak`
 - [x] `weakref`
-- [ ] `section`
-- [ ] `visibility`
-- [ ] `externally_visible`
-- [ ] `ifunc`
-- [ ] `noplt`
-- [ ] `common`
-- [ ] `nocommon`
+- [x] `section`
+- [x] `visibility`
+- [ ] `externally_visible` (not recognized by our CIR-enabled Clang build; nothing to detect)
+- [ ] `ifunc` (no Rust equivalent; parsed and diagnosed, not lowered)
+- [ ] `noplt` (not recognized by our CIR-enabled Clang build; nothing to detect)
+- [ ] `common` (variable attribute; not yet covered by the function-attribute diagnostic pass)
+- [ ] `nocommon` (variable attribute; not yet covered by the function-attribute diagnostic pass)
 - [x] `constructor`
 - [x] `destructor`
 - [x] Constructor priority
@@ -1090,21 +1090,21 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 ## Diagnostic and Contract Attributes
 
 - [x] `deprecated`
-- [ ] `warning`
-- [ ] `error`
+- [ ] `warning` (no Rust equivalent; parsed and diagnosed, not lowered. Clang's AST does not distinguish `warning` from `error` in its dump, so both are diagnosed under one `warning_or_error` fact)
+- [ ] `error` (no Rust equivalent; parsed and diagnosed, not lowered; see `warning` above)
 - [ ] `format` (no Rust equivalent; parsed and diagnosed, not lowered)
 - [ ] `format_arg` (no Rust equivalent; parsed and diagnosed, not lowered)
-- [ ] `access`
+- [ ] `access` (not recognized by our CIR-enabled Clang build; nothing to detect)
 - [x] `nonnull`
-- [ ] `null_terminated_string_arg`
+- [ ] `null_terminated_string_arg` (not recognized by our CIR-enabled Clang build; nothing to detect)
 - [ ] `sentinel` (no Rust equivalent; parsed and diagnosed, not lowered)
 
 ## Variable and Statement Attributes
 
-- [ ] `cleanup`
-- [ ] `fallthrough`
-- [ ] `assume`
-- [ ] `musttail`
+- [ ] `cleanup` (variable attribute; not yet covered by the function-attribute diagnostic pass)
+- [ ] `fallthrough` (statement attribute; not yet covered by the function-attribute diagnostic pass)
+- [ ] `assume` (statement attribute; not yet covered by the function-attribute diagnostic pass)
+- [ ] `musttail` (statement attribute, no Rust equivalent; not yet covered by the function-attribute diagnostic pass)
 
 # GCC Builtins
 
