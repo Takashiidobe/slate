@@ -5,6 +5,9 @@
 #define _SLATE_STDDEF_H
 #endif
 
+#define PTRDIFF_WIDTH __PTRDIFF_WIDTH__
+#define SIZE_WIDTH __SIZE_WIDTH__
+
 #undef offsetof
 #define offsetof(type, member)                                                 \
   _Pragma("clang diagnostic push")                                             \

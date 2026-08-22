@@ -360,6 +360,8 @@ fn is_diagnostic_pragma(payload: &str) -> bool {
     payload.starts_with("GCC diagnostic ")
         || payload.starts_with("clang diagnostic ")
         || payload.starts_with("warning(")
+        || payload.starts_with("message(")
+        || payload.starts_with("GCC warning")
 }
 
 fn is_pack_pragma(payload: &str) -> bool {

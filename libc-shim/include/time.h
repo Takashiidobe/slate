@@ -3,6 +3,10 @@
 
 #include <features.h>
 
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
+#define __STDC_VERSION_TIME_H__ 202311L
+#endif
+
 #define __NEED_size_t
 #define __NEED_time_t
 #define __NEED_clock_t
@@ -54,6 +58,7 @@ struct tm *localtime(const time_t *);
 char      *asctime(const struct tm *);
 char      *ctime(const time_t *);
 int        timespec_get(struct timespec *, int);
+int        timespec_getres(struct timespec *, int);
 
 #if defined(__SLATE_LIBC_MSVC)
 #include <bits/msvc/time.h>
