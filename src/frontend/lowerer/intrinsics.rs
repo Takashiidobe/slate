@@ -584,11 +584,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         };
         let shim_name = format!("__slate_intrinsic_{sanitized}_{sig_hash:x}");
 
+        let raw_ret_type = op.result_ty.as_ref().map(|ty| self.parent.rust_type(ty));
+        let link_name = mangled_link_name(&op.intrinsic_name, &raw_ret_type, &param_types);
+
         self.parent
             .llvm_intrinsic_shims
             .entry(shim_name.clone())
             .or_insert_with(|| ExternFnDecl {
-                attrs: vec![RustAttr::LinkName(format!("llvm.{}", op.intrinsic_name))],
+                attrs: vec![RustAttr::LinkName(link_name)],
                 identity: FunctionIdentity::Unknown,
                 name: shim_name.clone(),
                 declared_type: None,
@@ -618,5 +621,60 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             }
             _ => self.push_stmt(Self::unsafe_stmt(Stmt::Expr(call_expr))),
         }
+    }
+}
+
+fn find_intrinsic_signature(llvm_name: &str) -> Option<&'static intrinsics_table::IntrinsicSignature> {
+    [
+        intrinsics_table::X86_INTRINSICS,
+        intrinsics_table::AARCH64_INTRINSICS,
+        intrinsics_table::ARM_INTRINSICS,
+        intrinsics_table::RISCV_INTRINSICS,
+    ]
+    .into_iter()
+    .find_map(|table| table.iter().find(|entry| entry.name == llvm_name))
+}
+
+fn mangle_llvm_type(ty: &Type) -> Option<String> {
+    match ty {
+        Type::Prim(Prim::Bool) => Some("i1".into()),
+        Type::Prim(Prim::I8 | Prim::U8) => Some("i8".into()),
+        Type::Prim(Prim::I16 | Prim::U16) => Some("i16".into()),
+        Type::Prim(Prim::I32 | Prim::U32) => Some("i32".into()),
+        Type::Prim(Prim::I64 | Prim::U64) => Some("i64".into()),
+        Type::Prim(Prim::I128 | Prim::U128) => Some("i128".into()),
+        Type::Prim(Prim::F32) => Some("f32".into()),
+        Type::Prim(Prim::F64) => Some("f64".into()),
+        Type::Array { elem, len } => Some(format!("v{len}{}", mangle_llvm_type(elem)?)),
+        Type::Ptr { .. } => Some("p0".into()),
+        _ => bitint_generic_parts(ty).map(|(_, bits, _, _)| format!("i{bits}")),
+    }
+}
+
+fn mangled_link_name(intrinsic_name: &str, ret_type: &Option<Type>, param_types: &[Type]) -> String {
+    let llvm_name = format!("llvm.{intrinsic_name}");
+    let Some(signature) = find_intrinsic_signature(&llvm_name) else {
+        return llvm_name;
+    };
+    let Some(positions) = signature.overloaded_positions else {
+        return llvm_name;
+    };
+    if positions.is_empty() {
+        return llvm_name;
+    }
+    let mangled: Option<Vec<String>> = positions
+        .iter()
+        .map(|&pos| {
+            let ty = if pos == 0 {
+                ret_type.as_ref()?
+            } else {
+                param_types.get(pos as usize - 1)?
+            };
+            mangle_llvm_type(ty)
+        })
+        .collect();
+    match mangled {
+        Some(suffixes) => format!("{llvm_name}.{}", suffixes.join(".")),
+        None => llvm_name,
     }
 }
