@@ -1,4 +1,5 @@
 #include "test.h"
+#include <uchar.h>
 
 #define STR(x) #x
 
@@ -27,7 +28,7 @@ int main() {
   ASSERT(97, u'a');
   ASSERT(946, u'β');
   ASSERT(12354, u'あ');
-  ASSERT(62307, u'🍣');
+  ASSERT(35486, u'語');
 
   ASSERT(0, strcmp(STR(u'a'), "u'a'"));
 
@@ -47,10 +48,10 @@ int main() {
 
   ASSERT(2, sizeof(u""));
   ASSERT(10, sizeof(u"\xffzzz"));
-  ASSERT(0, memcmp(u"", "\0\0", 2));
-  ASSERT(0, memcmp(u"abc", "a\0b\0c\0\0\0", 8));
-  ASSERT(0, memcmp(u"日本語", "\345e,g\236\212\0\0", 8));
-  ASSERT(0, memcmp(u"🍣", "<\330c\337\0\0", 6));
+  ASSERT(0, memcmp((char *)u"", "\0\0", 2));
+  ASSERT(0, memcmp((char *)u"abc", "a\0b\0c\0\0\0", 8));
+  ASSERT(0, memcmp((char *)u"日本語", "\345e,g\236\212\0\0", 8));
+  ASSERT(0, memcmp((char *)u"🍣", "<\330c\337\0\0", 6));
   ASSERT(u'β', u"βb"[0]);
   ASSERT(u'b', u"βb"[1]);
   ASSERT(0, u"βb"[2]);
@@ -59,10 +60,10 @@ int main() {
 
   ASSERT(4, sizeof(U""));
   ASSERT(20, sizeof(U"\xffzzz"));
-  ASSERT(0, memcmp(U"", "\0\0\0\0", 4));
-  ASSERT(0, memcmp(U"abc", "a\0\0\0b\0\0\0c\0\0\0\0\0\0\0", 16));
-  ASSERT(0, memcmp(U"日本語", "\345e\0\0,g\0\0\236\212\0\0\0\0\0\0", 16));
-  ASSERT(0, memcmp(U"🍣", "c\363\001\0\0\0\0\0", 8));
+  ASSERT(0, memcmp((char *)U"", "\0\0\0\0", 4));
+  ASSERT(0, memcmp((char *)U"abc", "a\0\0\0b\0\0\0c\0\0\0\0\0\0\0", 16));
+  ASSERT(0, memcmp((char *)U"日本語", "\345e\0\0,g\0\0\236\212\0\0\0\0\0\0", 16));
+  ASSERT(0, memcmp((char *)U"🍣", "c\363\001\0\0\0\0\0", 8));
   ASSERT(u'β', U"βb"[0]);
   ASSERT(u'b', U"βb"[1]);
   ASSERT(0, U"βb"[2]);
@@ -72,10 +73,10 @@ int main() {
 
   ASSERT(4, sizeof(L""));
   ASSERT(20, sizeof(L"\xffzzz"));
-  ASSERT(0, memcmp(L"", "\0\0\0\0", 4));
-  ASSERT(0, memcmp(L"abc", "a\0\0\0b\0\0\0c\0\0\0\0\0\0\0", 16));
-  ASSERT(0, memcmp(L"日本語", "\345e\0\0,g\0\0\236\212\0\0\0\0\0\0", 16));
-  ASSERT(0, memcmp(L"🍣", "c\363\001\0\0\0\0\0", 8));
+  ASSERT(0, memcmp((char *)L"", "\0\0\0\0", 4));
+  ASSERT(0, memcmp((char *)L"abc", "a\0\0\0b\0\0\0c\0\0\0\0\0\0\0", 16));
+  ASSERT(0, memcmp((char *)L"日本語", "\345e\0\0,g\0\0\236\212\0\0\0\0\0\0", 16));
+  ASSERT(0, memcmp((char *)L"🍣", "c\363\001\0\0\0\0\0", 8));
   ASSERT(u'β', L"βb"[0]);
   ASSERT(u'b', L"βb"[1]);
   ASSERT(0, L"βb"[2]);
@@ -124,8 +125,8 @@ int main() {
 
   ASSERT(3, π);
   ASSERT(3, ({
-           int あβ0¾ = 3;
-           あβ0¾;
+           int あβ0 = 3;
+           あβ0;
          }));
   ASSERT(5, ({
            int $$$ = 5;

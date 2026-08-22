@@ -340,8 +340,8 @@ pub(super) fn decode_cir_string(s: &str) -> Vec<u8> {
 pub(super) fn sanitize_ident(s: &str) -> Ident {
     let mut out = String::new();
     for (i, c) in s.chars().enumerate() {
-        if (i == 0 && (c.is_ascii_alphabetic() || c == '_'))
-            || (i > 0 && (c.is_ascii_alphanumeric() || c == '_'))
+        if (i == 0 && (unicode_ident::is_xid_start(c) || c == '_'))
+            || (i > 0 && (unicode_ident::is_xid_continue(c) || c == '_'))
         {
             out.push(c);
         } else {
@@ -351,8 +351,8 @@ pub(super) fn sanitize_ident(s: &str) -> Ident {
     if out.is_empty() {
         return Ident::from("_tmp");
     }
-    // `crate`/`self`/`Self`/`super` can't be raw identifiers, so mangle them instead.
-    if matches!(out.as_str(), "crate" | "self" | "Self" | "super") {
+    // `crate`/`self`/`Self`/`super`/`_` can't be raw identifiers, so mangle them instead.
+    if matches!(out.as_str(), "crate" | "self" | "Self" | "super" | "_") {
         out.push('_');
     }
     Ident::from(out)

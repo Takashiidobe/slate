@@ -1826,7 +1826,7 @@ impl<'a> Lowerer<'a> {
                 global.section.as_deref(),
                 &global.used,
             );
-            if global.name != global.source_name
+            if (global.name != global.source_name || !global.name.is_ascii())
                 && let Some(no_mangle) = attrs
                     .iter()
                     .position(|attr| matches!(attr, RustAttr::NoMangle))
@@ -2928,6 +2928,14 @@ impl __SlateVaArgs {
             attr_str(op, "section"),
             &[],
         );
+        let rust_fn_name = sanitize_ident(name);
+        if (rust_fn_name.as_str() != name || !rust_fn_name.as_str().is_ascii())
+            && let Some(no_mangle) = attrs
+                .iter()
+                .position(|attr| matches!(attr, RustAttr::NoMangle))
+        {
+            attrs[no_mangle] = RustAttr::ExportName(name.to_string());
+        }
         if let Some(features) = self.target_feature_functions.get(name) {
             attrs.push(RustAttr::TargetFeature(features.join(",")));
         }

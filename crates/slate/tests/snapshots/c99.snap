@@ -355,7 +355,7 @@ fn c99_restrict_sum(arg0: *mut i32, arg1: *mut i32) -> i32 {
 
 fn main() {
     let mut __retval: i32 = 0;
-    let mut _: i32 = 0;
+    let mut α: i32 = 0;
     let mut boolean_value: bool = false;
     let mut signed_long_long: i64 = 0;
     let mut unsigned_long_long: u64 = 0;
@@ -395,7 +395,7 @@ fn main() {
     let _v0: i32 = 0;
     __retval = _v0;
     let _v1: i32 = 7;
-    _ = _v1;
+    α = _v1;
     let _v2: i32 = 4;
     let _v3: bool = _v2 != 0;
     boolean_value = _v3;
@@ -766,7 +766,7 @@ fn main() {
         fenv_flags = _v270;
         let _v271: *mut i8 = b"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
         let _v272: *mut i8 = b"main\0".as_ptr() as *mut i8;
-        let _v273: i32 = _;
+        let _v273: i32 = α;
         let _v274: i32 = unsafe { c99_external_identifier_with_more_than_thirty_one_significant_characters };
         let _v275: i32 = unsafe { slash_comment_value };
         let _v276: i32 = enhanced_arithmetic;
