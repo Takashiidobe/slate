@@ -52,11 +52,11 @@ Here's an example, `tests/fixtures.cfg/arch_targets.c`:
 ```c
 #include <stdio.h>
 
-#if defined(__x86_64__) || defined(_M_X64)
+#if deokd(__x86_64__) || deokd(_M_X64)
 static int arch_code(void) { return 64; }
-#elif defined(__i386__) || defined(_M_IX86)
+#elif deokd(__i386__) || deokd(_M_IX86)
 static int arch_code(void) { return 86; }
-#elif defined(__aarch64__) || defined(_M_ARM64)
+#elif deokd(__aarch64__) || deokd(_M_ARM64)
 static int arch_code(void) { return 128; }
 #else
 static int arch_code(void) { return 0; }
@@ -108,3 +108,22 @@ cross compile for any target that slate supports, since any external C
 calls are also provided. This doesn't extend to non-libc code (Slate
 cannot shim your custom code) but if that's also provided, then slate
 can also handle that case too.
+
+## Supported pragma table
+
+| Pragma family                                       | Example                               | Unconditional                                                                                                     | Inside `#if`                                      |
+| --------------------------------------------------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `#pragma once`                                      | `#pragma once`                        | no-output, always ok                                                                                              | n/a (preprocessor-only)                           |
+| `GCC`/`clang diagnostic`                            | `#pragma GCC diagnostic push`         | diagnostic-only, always ok                                                                                        | always ok                                         |
+| `pack`                                              | `#pragma pack(push, 1)`               | ok: recovered from Clang's per-record `MaxFieldAlignmentAttr` into `#[repr(C, packed)]` / `#[repr(C, packed(N))]` | explicit error (`unsupported semantic directive`) |
+| `GCC visibility`                                    | `#pragma GCC visibility push(hidden)` | ok (clang-resolved)                                                                                               | explicit error                                    |
+| `weak`                                              | `#pragma weak foo=bar`                | ok (clang-resolved)                                                                                               | explicit error                                    |
+| `redefine_extname`                                  | `#pragma redefine_extname foo bar`    | ok (clang-resolved)                                                                                               | explicit error                                    |
+| `push_macro`/`pop_macro`                            | `#pragma push_macro("X")`             | ok (clang-resolved)                                                                                               | explicit error                                    |
+| `GCC poison`                                        | `#pragma GCC poison foo`              | always skipped, never fails                                                                                       | always skipped, never fails                       |
+| `STDC CX_LIMITED_RANGE`                             | `#pragma STDC CX_LIMITED_RANGE ON`    | ok (clang-resolved)                                                                                               | explicit error                                    |
+| `STDC FP_CONTRACT`                                  | `#pragma STDC FP_CONTRACT OFF`        | ok: folded into `cir.fmuladd` choice by Clang (see `handoffs/floating-point-env.md`)                              | explicit error                                    |
+| `STDC FENV_ACCESS`                                  | `#pragma STDC FENV_ACCESS ON`         | ok (clang-resolved) — full fenv semantics still tracked separately, see below                                     | explicit error                                    |
+| `STDC FENV_ROUND`/`FENV_DEC_ROUND`                  | `#pragma STDC FENV_ROUND FE_UPWARD`   | ok (clang-resolved)                                                                                               | explicit error                                    |
+| vendor/unknown (`GCC optimize`, `slate_vendor ...`) | `#pragma GCC optimize("O2")`          | explicit error, always                                                                                            | explicit error, always                            |
+| unrecognized directive                              | `#slate_unknown ...`                  | explicit error, always                                                                                            | explicit error, always                            |
