@@ -78,6 +78,12 @@ impl Alignment for A512 {
 impl Alignment for A1024 {
     const ALIGN: usize = 1024;
 }
+impl Alignment for A2048 {
+    const ALIGN: usize = 2048;
+}
+impl Alignment for A4096 {
+    const ALIGN: usize = 4096;
+}
 
 mod sealed {
     pub trait Sealed {}
@@ -93,6 +99,8 @@ mod sealed {
     impl Sealed for super::A256 {}
     impl Sealed for super::A512 {}
     impl Sealed for super::A1024 {}
+    impl Sealed for super::A2048 {}
+    impl Sealed for super::A4096 {}
 }
 
 /// 1-byte alignment
@@ -149,6 +157,16 @@ pub struct A512;
 #[derive(Clone, Copy)]
 #[repr(align(1024))]
 pub struct A1024;
+
+/// 2048-byte alignment
+#[derive(Clone, Copy)]
+#[repr(align(2048))]
+pub struct A2048;
+
+/// 4096-byte alignment
+#[derive(Clone, Copy)]
+#[repr(align(4096))]
+pub struct A4096;
 
 /// A newtype with alignment of at least `A` bytes
 #[repr(C)]
