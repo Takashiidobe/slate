@@ -147,6 +147,39 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(result, expr, Some(result_ty));
     }
 
+    pub(super) fn lower_fmuladd(
+        &mut self,
+        result: &str,
+        result_ty: &CirType,
+        operands: (&str, &str, &str),
+    ) {
+        let rust_ty = self.parent.rust_type(result_ty);
+        let bits = match result_ty {
+            CirType::Single => Some(32),
+            CirType::Double => Some(64),
+            _ => None,
+        };
+        let fuses = type_mentions_long_double(&rust_ty)
+            || bits.is_none_or(crate::cir::emit::target_has_native_fma);
+        if fuses {
+            self.lower_ternary_method(result, result_ty, operands, "mul_add");
+            return;
+        }
+        let a = self.operand_expr(operands.0);
+        let b = self.operand_expr(operands.1);
+        let c = self.operand_expr(operands.2);
+        let expr = Expr::Binary {
+            op: BinOp::Add,
+            lhs: Box::new(Expr::Binary {
+                op: BinOp::Mul,
+                lhs: Box::new(a),
+                rhs: Box::new(b),
+            }),
+            rhs: Box::new(c),
+        };
+        self.materialize_expr(result, expr, Some(result_ty));
+    }
+
     pub(super) fn lower_signbit(&mut self, result: &str, result_ty: &CirType, value: &str) {
         let operand_ty = self.value_type(value);
         if operand_ty.is_some_and(is_wrapped_long_double) {

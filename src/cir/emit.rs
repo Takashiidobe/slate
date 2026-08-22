@@ -437,6 +437,34 @@ pub fn uses_f64_long_double_abi() -> bool {
     )
 }
 
+pub fn target_has_native_fma(bits: u32) -> bool {
+    static MACROS: std::sync::OnceLock<String> = std::sync::OnceLock::new();
+    let macros = MACROS.get_or_init(|| {
+        let Ok(args) = target_args() else {
+            return String::new();
+        };
+        let Ok(out) = Command::new(clang())
+            .args(&args)
+            .args(["-dM", "-E", "-x", "c", "/dev/null"])
+            .output()
+        else {
+            return String::new();
+        };
+        if !out.status.success() {
+            return String::new();
+        }
+        String::from_utf8_lossy(&out.stdout).into_owned()
+    });
+    if macros.contains("#define __FMA__ ") || macros.contains("#define __ARM_FEATURE_FMA ") {
+        return true;
+    }
+    match bits {
+        64 => macros.contains("#define __riscv_d "),
+        32 => macros.contains("#define __riscv_f "),
+        _ => false,
+    }
+}
+
 pub fn target_override_args(target: &str) -> Result<Vec<String>, TargetError> {
     let mut args = target_features(&active_target())?.undef_args();
     args.extend(target_features(target)?.define_args());

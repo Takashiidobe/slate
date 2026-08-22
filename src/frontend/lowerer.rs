@@ -4814,11 +4814,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     );
                 }
                 Op::Fmuladd(value) => {
-                    return self.lower_ternary_method(
+                    return self.lower_fmuladd(
                         &value.result,
                         &value.result_ty,
                         (&value.a, &value.b, &value.c),
-                        "mul_add",
                     );
                 }
                 Op::Modf(value) => return self.lower_modf(&value),
