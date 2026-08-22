@@ -397,6 +397,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .long_double_shims
             .entry(shim_name.clone())
             .or_insert_with(|| ExternFnDecl {
+                attrs: Vec::new(),
                 identity,
                 name: shim_name.clone(),
                 declared_type: self.parent.function_types.get(callee_name).cloned(),

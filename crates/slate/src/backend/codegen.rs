@@ -656,6 +656,12 @@ impl<W: Write> Codegen<W> {
     fn extern_decl(&mut self, decl: &ExternDecl) -> fmt::Result {
         match decl {
             ExternDecl::Fn(f) => {
+                for attr in &f.attrs {
+                    self.out.write_str("#[")?;
+                    self.attr(attr)?;
+                    self.out.write_str("]\n")?;
+                    self.out.write_str(INDENT)?;
+                }
                 if f.safe {
                     self.out.write_str("safe ")?;
                 }

@@ -806,6 +806,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         externs: BTreeMap::new(),
         extern_returns: BTreeMap::new(),
         long_double_shims: BTreeMap::new(),
+        llvm_intrinsic_shims: BTreeMap::new(),
         uses_long_double: std::cell::Cell::new(false),
         uses_complex: std::cell::Cell::new(false),
         uses_f128: std::cell::Cell::new(false),
@@ -863,9 +864,38 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
     lowerer.lower_module(cir, c)
 }
 
+fn cir_record_field_types_from_aliases(
+    record: &crate::frontend::c_ast::Record,
+    aliases: &BTreeMap<String, CirType>,
+    va_list_boxed: bool,
+) -> Option<Vec<Type>> {
+    let members = aliases.values().find_map(|ty| match ty {
+        CirType::Struct {
+            name: Some(name),
+            members: Some(members),
+            ..
+        }
+        | CirType::Union {
+            name: Some(name),
+            members: Some(members),
+            ..
+        } if sanitize_ident(name).as_str() == sanitize_ident(&record.name).as_str() => {
+            Some(members)
+        }
+        _ => None,
+    })?;
+    (members.len() == record.fields.len()).then(|| {
+        members
+            .iter()
+            .map(|member| rust_type_with_aliases(member, aliases, va_list_boxed))
+            .collect()
+    })
+}
+
 pub fn lower_shared_types(
     records: &[crate::frontend::c_ast::Record],
     enums: &[crate::frontend::c_ast::Enum],
+    aliases: &BTreeMap<String, CirType>,
 ) -> Program {
     let mut items = vec![Item::CrateAttrs(vec![CrateAttr::Allow(vec![
         Lint::DeadCode,
@@ -890,7 +920,14 @@ pub fn lower_shared_types(
             .filter_map(|enm| lower_enum_def(enm, Visibility::Pub).map(Item::Enum)),
     );
     items.extend(records.iter().flat_map(|record| {
-        lower_record_def(record, Visibility::Pub, Visibility::Pub, true, false, None)
+        lower_record_def(
+            record,
+            Visibility::Pub,
+            Visibility::Pub,
+            true,
+            false,
+            cir_record_field_types_from_aliases(record, aliases, false).as_deref(),
+        )
     }));
     Program { items }
 }
@@ -1006,14 +1043,21 @@ fn lower_record_def(
         .fields
         .iter()
         .enumerate()
-        .map(|(index, field)| RecordField {
-            comments: comments(&field.comments),
-            name: sanitize_ident(&field.name),
-            ty: cir_field_types
-                .and_then(|types| types.get(index))
-                .filter(|_| matches!(field.ty, CType::FuncPtr { .. }))
-                .cloned()
+        .map(|(index, field)| {
+            let cir_ty = cir_field_types.and_then(|types| types.get(index));
+            let trust_cir = matches!(field.ty, CType::FuncPtr { .. })
+                || (matches!(cir_ty, Some(Type::Array { .. }))
+                    && !matches!(field.ty, CType::Array(..)));
+            RecordField {
+                comments: comments(&field.comments),
+                name: sanitize_ident(&field.name),
+                ty: if trust_cir {
+                    cir_ty.cloned()
+                } else {
+                    None
+                }
                 .unwrap_or_else(|| c_record_field_type(&field.ty, va_list_boxed)),
+            }
         })
         .collect();
     let name = sanitize_ident(&record.name).into_string();
@@ -1178,6 +1222,7 @@ struct Lowerer<'a> {
     externs: BTreeMap<String, Vec<Type>>,
     extern_returns: BTreeMap<String, Option<String>>,
     long_double_shims: BTreeMap<String, ExternFnDecl>,
+    llvm_intrinsic_shims: BTreeMap<String, ExternFnDecl>,
     uses_long_double: std::cell::Cell<bool>,
     uses_complex: std::cell::Cell<bool>,
     uses_f128: std::cell::Cell<bool>,
@@ -1463,6 +1508,7 @@ impl<'a> Lowerer<'a> {
         self.long_double_shims
             .entry(shim_name.clone())
             .or_insert_with(|| ExternFnDecl {
+                attrs: Vec::new(),
                 identity: self
                     .known_functions
                     .get(name)
@@ -1898,6 +1944,17 @@ impl __SlateVaArgs {
                 abi: "C".into(),
                 decls: self
                     .long_double_shims
+                    .values()
+                    .cloned()
+                    .map(ExternDecl::Fn)
+                    .collect(),
+            });
+        }
+        if !self.llvm_intrinsic_shims.is_empty() {
+            items.push(Item::ExternBlock {
+                abi: "unadjusted".into(),
+                decls: self
+                    .llvm_intrinsic_shims
                     .values()
                     .cloned()
                     .map(ExternDecl::Fn)
@@ -2425,27 +2482,7 @@ impl __SlateVaArgs {
     }
 
     fn cir_record_field_types(&self, record: &crate::frontend::c_ast::Record) -> Option<Vec<Type>> {
-        let members = self.aliases.values().find_map(|ty| match ty {
-            CirType::Struct {
-                name: Some(name),
-                members: Some(members),
-                ..
-            }
-            | CirType::Union {
-                name: Some(name),
-                members: Some(members),
-                ..
-            } if sanitize_ident(name).as_str() == sanitize_ident(&record.name).as_str() => {
-                Some(members)
-            }
-            _ => None,
-        })?;
-        (members.len() == record.fields.len()).then(|| {
-            members
-                .iter()
-                .map(|member| self.rust_type(member))
-                .collect()
-        })
+        cir_record_field_types_from_aliases(record, &self.aliases, self.va_list_boxed)
     }
 
     fn record_field_type_at(
@@ -2664,6 +2701,7 @@ impl __SlateVaArgs {
             self.long_double_shims
                 .entry(trampoline.clone())
                 .or_insert_with(|| ExternFnDecl {
+                    attrs: Vec::new(),
                     identity: FunctionIdentity::Unknown,
                     name: trampoline.clone(),
                     declared_type: None,
@@ -3004,6 +3042,7 @@ impl __SlateVaArgs {
             .get(name)
             .unwrap_or(&FunctionIdentity::Unknown);
         let mut decl = ExternFnDecl {
+            attrs: Vec::new(),
             name: name.into(),
             identity,
             declared_type: self.function_types.get(name).cloned(),
@@ -4934,6 +4973,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 Op::AtomicClear(value) => return self.lower_atomic_clear(&value),
                 Op::GetBitfield(value) => return self.lower_get_bitfield(&value),
                 Op::SetBitfield(value) => return self.lower_set_bitfield(&value),
+                Op::CallLlvmIntrinsic(value) => return self.lower_call_llvm_intrinsic(&value),
                 _ => {}
             }
         };
