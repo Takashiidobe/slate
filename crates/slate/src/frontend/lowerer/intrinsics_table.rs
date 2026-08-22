@@ -2,19 +2,19 @@
 // Source: llvm-project @ 84542052ebd4
 
 pub struct IntrinsicParam {
-    #[allow(unused, reason = "auto generated")]
+    #[expect(unused, reason = "auto generated")]
     pub llvm_type: &'static str,
-    #[allow(unused, reason = "auto generated")]
+    #[expect(unused, reason = "auto generated")]
     pub immarg: bool,
 }
 
 pub struct IntrinsicSignature {
     pub name: &'static str,
-    #[allow(unused, reason = "auto generated")]
+    #[expect(unused, reason = "auto generated")]
     pub overloaded: bool,
-    #[allow(unused, reason = "auto generated")]
+    #[expect(unused, reason = "auto generated")]
     pub ret: Option<&'static str>,
-    #[allow(unused, reason = "auto generated")]
+    #[expect(unused, reason = "auto generated")]
     pub params: Option<&'static [IntrinsicParam]>,
     pub overloaded_positions: Option<&'static [u32]>,
 }

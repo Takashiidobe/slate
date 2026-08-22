@@ -664,6 +664,40 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_abs(&mut self, result: &str, result_ty: Option<&CirType>, value: &str) {
+        if let Some((elem_ty, len)) = result_ty.and_then(parse_cir_vector_type) {
+            let is_int_elem = match elem_ty {
+                CirType::Int { .. } => true,
+                CirType::Named(name) => matches!(
+                    named_scalar_type(name),
+                    Some(Type::Prim(
+                        Prim::I8
+                            | Prim::I16
+                            | Prim::I32
+                            | Prim::I64
+                            | Prim::I128
+                            | Prim::Isize
+                            | Prim::U8
+                            | Prim::U16
+                            | Prim::U32
+                            | Prim::U64
+                            | Prim::U128
+                            | Prim::Usize
+                    ))
+                ),
+                _ => false,
+            };
+            let method = if is_int_elem { "wrapping_abs" } else { "abs" };
+            let value = self.operand_expr(value);
+            let elems = (0..len)
+                .map(|i| Expr::MethodCall {
+                    recv: Box::new(vector_index_expr(value.clone(), i)),
+                    method: method.into(),
+                    args: vec![],
+                })
+                .collect();
+            self.materialize_expr(result, Expr::ArrayLit(elems), result_ty);
+            return;
+        }
         let value = self.operand_expr(value);
         let rust_ty = result_ty
             .map(|ty| self.parent.rust_type(ty))
