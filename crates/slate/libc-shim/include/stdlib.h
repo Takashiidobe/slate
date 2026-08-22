@@ -3,6 +3,10 @@
 
 #include <features.h>
 
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
+#define __STDC_VERSION_STDLIB_H__ 202311L
+#endif
+
 #define __NEED_size_t
 #define __NEED_wchar_t
 #define __NEED_NULL

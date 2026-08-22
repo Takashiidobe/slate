@@ -1,0 +1,919 @@
+---
+source: tests/snapshot.rs
+expression: rust
+---
+#![feature(thread_local)]
+#![feature(c_variadic)]
+#![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+
+unsafe extern "C" {
+    fn __muldc3(a: f64, b: f64, c: f64, d: f64) -> num_complex::Complex<f64>;
+    fn __divdc3(a: f64, b: f64, c: f64, d: f64) -> num_complex::Complex<f64>;
+    fn __mulsc3(a: f32, b: f32, c: f32, d: f32) -> num_complex::Complex<f32>;
+    fn __divsc3(a: f32, b: f32, c: f32, d: f32) -> num_complex::Complex<f32>;
+}
+
+#[repr(C, align(16))]
+#[derive(Clone, Copy)]
+struct LongDouble([u8; 10]);
+
+impl core::ops::Add for LongDouble {
+    type Output = LongDouble;
+    fn add(self, o: LongDouble) -> LongDouble { __slate_f80_add(self, o) }
+}
+
+impl core::ops::Sub for LongDouble {
+    type Output = LongDouble;
+    fn sub(self, o: LongDouble) -> LongDouble { __slate_f80_sub(self, o) }
+}
+
+impl core::ops::Mul for LongDouble {
+    type Output = LongDouble;
+    fn mul(self, o: LongDouble) -> LongDouble { __slate_f80_mul(self, o) }
+}
+
+impl core::ops::Div for LongDouble {
+    type Output = LongDouble;
+    fn div(self, o: LongDouble) -> LongDouble { __slate_f80_div(self, o) }
+}
+
+impl core::ops::AddAssign for LongDouble {
+    fn add_assign(&mut self, o: LongDouble) { {
+    *self = __slate_f80_add(*self, o);
+} }
+}
+
+impl core::ops::SubAssign for LongDouble {
+    fn sub_assign(&mut self, o: LongDouble) { {
+    *self = __slate_f80_sub(*self, o);
+} }
+}
+
+impl core::ops::MulAssign for LongDouble {
+    fn mul_assign(&mut self, o: LongDouble) { {
+    *self = __slate_f80_mul(*self, o);
+} }
+}
+
+impl core::ops::DivAssign for LongDouble {
+    fn div_assign(&mut self, o: LongDouble) { {
+    *self = __slate_f80_div(*self, o);
+} }
+}
+
+impl core::ops::Neg for LongDouble {
+    type Output = LongDouble;
+    fn neg(self) -> LongDouble { __slate_f80_neg(self) }
+}
+
+impl core::cmp::PartialEq for LongDouble {
+    fn eq(&self, other: &LongDouble) -> bool { __slate_f80_eq(*self, *other) }
+}
+
+impl core::cmp::PartialOrd for LongDouble {
+    fn partial_cmp(&self, other: &LongDouble) -> Option<std::cmp::Ordering> { if __slate_f80_lt(*self, *other) { Some(std::cmp::Ordering::Less) } else { if __slate_f80_gt(*self, *other) { Some(std::cmp::Ordering::Greater) } else { if __slate_f80_eq(*self, *other) { Some(std::cmp::Ordering::Equal) } else { None } } } }
+}
+
+#[repr(C)]
+#[allow(non_camel_case_types)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
+enum memory_order {
+    memory_order_relaxed = 0,
+    memory_order_consume = 1,
+    memory_order_acquire = 2,
+    memory_order_release = 3,
+    memory_order_acq_rel = 4,
+    memory_order_seq_cst = 5,
+}
+
+
+#[repr(C)]
+#[derive(Clone, Copy)]
+struct C11Anonymous {
+    __slate_anon_0: anon_0,
+    __slate_anon_1: anon_1,
+}
+
+
+#[repr(C, align(32))]
+#[derive(Clone, Copy)]
+struct C11OverAligned {
+    value: u8,
+}
+
+
+#[repr(C)]
+#[derive(Clone, Copy)]
+struct C11Temporary {
+    values: [i32; 3],
+}
+
+
+#[repr(C)]
+#[derive(Clone, Copy)]
+union anon_0 {
+    integer: i32,
+    __slate_anon_1: f64,
+}
+
+
+#[repr(C)]
+#[derive(Clone, Copy)]
+struct anon_1 {
+    x: i32,
+    y: i32,
+}
+
+
+#[repr(C)]
+#[derive(Clone, Copy)]
+union anon_2 {
+    __slate_anon_0: i32,
+    __slate_anon_1: [i8; 4],
+}
+
+
+#[repr(C)]
+#[derive(Clone, Copy)]
+struct anon_struct {
+    __slate_anon_0: u64,
+    __slate_anon_1: i32,
+}
+
+
+#[repr(C)]
+#[derive(Clone, Copy)]
+union cnd_t {
+    __size: [i8; 48],
+    __align: i64,
+}
+
+
+#[repr(C)]
+#[derive(Clone, Copy)]
+union mtx_t {
+    __size: [i8; 40],
+    __align: i64,
+}
+
+
+static mut c11_aligned_buffer: aligned::Aligned<aligned::A64, [u8; 64]> = aligned::Aligned([0; 64]);
+
+static mut c11_atomic_total: i32 = 0;
+
+static mut c11_evaluation_total: i32 = 0;
+
+static mut c11_never_flag: i32 = 0;
+
+static mut c11_once_total: i32 = 0;
+
+#[thread_local]
+static mut c11_thread_local_value: i32 = 0;
+
+static mut main_utf16_text: [u16; 2] = [937, 0];
+
+static mut main_utf32_text: [u32; 2] = [128578, 0];
+
+static mut main_utf8_text: [i8; 3] = [-50, -87, 0];
+
+unsafe extern "C" {
+    fn __errno_location() -> *mut i32;
+    fn thrd_create(_0: *mut u64, _1: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> i32>, _2: *mut core::ffi::c_void) -> i32;
+    fn thrd_join(_0: u64, _1: *mut i32) -> i32;
+    fn mtx_init(_0: *mut mtx_t, _1: i32) -> i32;
+    fn mtx_lock(_0: *mut mtx_t) -> i32;
+    fn mtx_unlock(_0: *mut mtx_t) -> i32;
+    fn mtx_destroy(_0: *mut mtx_t);
+    fn cnd_init(_0: *mut cnd_t) -> i32;
+    fn cnd_destroy(_0: *mut cnd_t);
+    fn call_once(_0: *mut i32, _1: Option<unsafe extern "C" fn()>);
+    fn tss_create(_0: *mut u32, _1: Option<unsafe extern "C" fn(*mut core::ffi::c_void)>) -> i32;
+    fn tss_set(_0: u32, _1: *mut core::ffi::c_void) -> i32;
+    fn tss_get(_0: u32) -> *mut core::ffi::c_void;
+    fn tss_delete(_0: u32);
+    fn mbrtoc16(_0: *mut u16, _1: *const i8, _2: usize, _3: *mut libc::mbstate_t) -> usize;
+    fn c16rtomb(_0: *mut i8, _1: u16, _2: *mut libc::mbstate_t) -> usize;
+    fn mbrtoc32(_0: *mut u32, _1: *const i8, _2: usize, _3: *mut libc::mbstate_t) -> usize;
+    fn c32rtomb(_0: *mut i8, _1: u32, _2: *mut libc::mbstate_t) -> usize;
+    fn aligned_alloc(_0: usize, _1: usize) -> *mut core::ffi::c_void;
+    fn free(_0: *mut core::ffi::c_void);
+    fn at_quick_exit(_0: Option<unsafe extern "C" fn()>) -> i32;
+    fn remove(_0: *const i8) -> i32;
+    fn fopen(_0: *const i8, _1: *const i8) -> *mut libc::FILE;
+    fn fclose(_0: *mut libc::FILE) -> i32;
+    fn timespec_get(_0: *mut libc::timespec, _1: i32) -> i32;
+    fn quick_exit(_0: i32) -> !;
+    fn printf(_0: *const i8, ...) -> i32;
+    fn putchar(_0: i32) -> i32;
+}
+
+fn c11_evaluation_step(arg4: i32) -> i32 {
+    let mut value: i32 = 0;
+    let mut __retval: i32 = 0;
+    value = arg4;
+    let _v0: i32 = value;
+    let _v1: i32 = unsafe { c11_evaluation_total };
+    let _v2: i32 = _v1 + _v0;
+    unsafe {
+        c11_evaluation_total = _v2;
+    }
+    let _v3: i32 = value;
+    let _v4: i32 = 2;
+    let _v5: i32 = _v3 * _v4;
+    __retval = _v5;
+    let _v6: i32 = __retval;
+    return _v6;
+}
+
+fn c11_make_temporary(arg3: i32) -> anon_struct {
+    let mut coerce: anon_struct = anon_struct { __slate_anon_0: 0, __slate_anon_1: 0 };
+    let mut base: i32 = 0;
+    let mut __retval: C11Temporary = C11Temporary { values: [0; 3] };
+    base = arg3;
+    let _v0: *mut i32 = std::ptr::addr_of_mut!(__retval.values) as *mut i32;
+    let _v1: i32 = base;
+    unsafe {
+        *_v0 = _v1;
+    }
+    let _v2: i64 = 1;
+    let _v3: *mut i32 = unsafe { _v0.add(1) };
+    let _v4: i32 = base;
+    let _v5: i32 = 1;
+    let _v6: i32 = _v4 + _v5;
+    unsafe {
+        *_v3 = _v6;
+    }
+    let _v7: i64 = 2;
+    let _v8: *mut i32 = unsafe { _v0.add(2) };
+    let _v9: i32 = base;
+    let _v10: i32 = 2;
+    let _v11: i32 = _v9 + _v10;
+    unsafe {
+        *_v8 = _v11;
+    }
+    let _v12: C11Temporary = __retval;
+    let _v13: *mut C11Temporary = std::ptr::addr_of_mut!(coerce) as *mut C11Temporary;
+    unsafe {
+        *_v13 = _v12;
+    }
+    let _v14: anon_struct = coerce;
+    return _v14;
+}
+
+extern "C" fn c11_thread_worker(arg2: *mut core::ffi::c_void) -> i32 {
+    let mut argument: *mut core::ffi::c_void = std::ptr::null_mut();
+    let mut __retval: i32 = 0;
+    let mut increment: i32 = 0;
+    argument = arg2;
+    let _v0: *mut core::ffi::c_void = argument;
+    let _v1: *mut i32 = _v0 as *mut i32;
+    let _v2: i32 = unsafe { *_v1 };
+    increment = _v2;
+    let _v3: i32 = 29;
+    unsafe {
+        c11_thread_local_value = _v3;
+    }
+    let _v4: i32 = 34;
+    let _v5: *mut i32 = unsafe { __errno_location() };
+    unsafe {
+        *_v5 = _v4;
+    }
+    let _v6: i32 = increment;
+    let _v7: i32 = unsafe { std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(c11_atomic_total)).fetch_add(_v6, std::sync::atomic::Ordering::SeqCst) };
+    let _v8: i32 = unsafe { c11_thread_local_value };
+    let _v9: *mut i32 = unsafe { __errno_location() };
+    let _v10: i32 = unsafe { *_v9 };
+    let _v11: i32 = 34;
+    let _v12: bool = _v10 == _v11;
+    let _v13: i32 = _v12 as i32;
+    let _v14: i32 = _v8 + _v13;
+    __retval = _v14;
+    let _v15: i32 = __retval;
+    return _v15;
+}
+
+extern "C" fn c11_once_handler() {
+    let _v0: i32 = 1;
+    let _v1: i32 = unsafe { c11_once_total };
+    let _v2: i32 = _v1 + _v0;
+    unsafe {
+        c11_once_total = _v2;
+    }
+    return;
+}
+
+extern "C" fn c11_quick_handler() {
+    let _v0: i32 = 100;
+    let _v1: i32 = unsafe { std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(c11_atomic_total)).fetch_add(_v0, std::sync::atomic::Ordering::Relaxed) };
+    return;
+}
+
+fn c11_open_exclusive(arg1: *mut i8) -> *mut libc::FILE {
+    let mut path: *mut i8 = std::ptr::null_mut();
+    let mut __retval: *mut libc::FILE = std::ptr::null_mut();
+    path = arg1;
+    let _v0: *mut i8 = path;
+    let _v1: *mut i8 = b"wx\0".as_ptr() as *mut i8;
+    let _v2: *mut libc::FILE = unsafe { fopen(_v0 as *const i8, _v1 as *const i8) };
+    __retval = _v2;
+    let _v3: *mut libc::FILE = __retval;
+    return _v3;
+}
+
+fn c11_never_return(arg0: i32) -> ! {
+    let mut status: i32 = 0;
+    status = arg0;
+    let _v0: i32 = status;
+    unsafe { quick_exit(_v0 as i32) }
+}
+
+fn main() {
+    let mut coerce: anon_struct = anon_struct { __slate_anon_0: 0, __slate_anon_1: 0 };
+    let mut __retval: i32 = 0;
+    let mut utf16_character: u16 = 0;
+    let mut utf32_character: u32 = 0;
+    let mut anonymous: C11Anonymous = C11Anonymous { __slate_anon_0: anon_0 { integer: 0 }, __slate_anon_1: anon_1 { x: 0, y: 0 } };
+    let mut aligned_object: aligned::Aligned<aligned::A32, C11OverAligned> = aligned::Aligned(C11OverAligned { value: 0 });
+    let mut utf16_state: libc::mbstate_t = unsafe { std::mem::zeroed::<libc::mbstate_t>() };
+    let mut utf32_state: libc::mbstate_t = unsafe { std::mem::zeroed::<libc::mbstate_t>() };
+    let mut converted16: u16 = 0;
+    let mut converted32: u32 = 0;
+    let mut multibyte16: [i8; 4] = [0; 4];
+    let mut multibyte32: [i8; 4] = [0; 4];
+    let mut current_time: libc::timespec = libc::timespec { tv_sec: 0, tv_nsec: 0 };
+    let mut thread: u64 = 0;
+    let mut mutex: mtx_t = mtx_t { __size: [0; 40] };
+    let mut condition: cnd_t = cnd_t { __size: [0; 48] };
+    let mut once_control: i32 = 0;
+    let mut thread_key: u32 = 0;
+    let mut thread_increment: i32 = 0;
+    let mut thread_result: i32 = 0;
+    let mut thread_created: i32 = 0;
+    let mut thread_joined: i32 = 0;
+    let mut aligned_memory: *mut core::ffi::c_void = std::ptr::null_mut();
+    let mut exclusive_first: *mut libc::FILE = std::ptr::null_mut();
+    let mut exclusive_second: *mut libc::FILE = std::ptr::null_mut();
+    let mut complex_value: num_complex::Complex<f64> = num_complex::Complex { re: 0.0, im: 0.0 };
+    let mut alignment_total: i32 = 0;
+    let mut unicode_total: i32 = 0;
+    let mut generic_total: i32 = 0;
+    let mut anonymous_total: i32 = 0;
+    let mut evaluation_total: i32 = 0;
+    let mut temporary_total: i32 = 0;
+    let mut static_assert_total: i32 = 0;
+    let mut optional_total: i32 = 0;
+    let mut atomic_total: i32 = 0;
+    let mut thread_total: i32 = 0;
+    let mut concurrency_total: i32 = 0;
+    let mut conversion_total: i32 = 0;
+    let mut quick_total: i32 = 0;
+    let mut exclusive_total: i32 = 0;
+    let mut timespec_total: i32 = 0;
+    let mut complex_total: i32 = 0;
+    let mut limits_total: i32 = 0;
+    let mut ref_tmp0: C11Temporary = C11Temporary { values: [0; 3] };
+    let _v0: i32 = 0;
+    __retval = _v0;
+    let _v1: u16 = 937;
+    utf16_character = _v1;
+    let _v2: u32 = 128578;
+    utf32_character = _v2;
+    anonymous = C11Anonymous { __slate_anon_0: anon_0 { integer: 0 }, __slate_anon_1: anon_1 { x: 0, y: 0 } };
+    *aligned_object = C11OverAligned { value: 0 };
+    utf16_state = unsafe { std::mem::zeroed::<libc::mbstate_t>() };
+    utf32_state = unsafe { std::mem::zeroed::<libc::mbstate_t>() };
+    let _v3: u16 = 0;
+    converted16 = _v3;
+    let _v4: u32 = 0;
+    converted32 = _v4;
+    current_time = libc::timespec { tv_sec: 0, tv_nsec: 0 };
+    let _v5: i32 = 0;
+    once_control = _v5;
+    let _v6: i32 = 7;
+    thread_increment = _v6;
+    let _v7: i32 = 0;
+    thread_result = _v7;
+    let _v8: i32 = 4;
+    let _v9: i32 = std::mem::align_of::<C11OverAligned>() as i32;
+    let _v10: i32 = _v8 + _v9;
+    let _v11: *mut u8 = std::ptr::addr_of_mut!(c11_aligned_buffer).cast::<u8>();
+    let _v12: u64 = _v11 as u64;
+    let _v13: u64 = 64;
+    let _v14: u64 = _v12 % _v13;
+    let _v15: u64 = 0;
+    let _v16: bool = _v14 == _v15;
+    let _v17: i32 = _v16 as i32;
+    let _v18: i32 = _v10 + _v17;
+    let _v19: u64 = std::ptr::addr_of_mut!(*aligned_object) as u64;
+    let _v20: u64 = 32;
+    let _v21: u64 = _v19 % _v20;
+    let _v22: u64 = 0;
+    let _v23: bool = _v21 == _v22;
+    let _v24: i32 = _v23 as i32;
+    let _v25: i32 = _v18 + _v24;
+    alignment_total = _v25;
+    let _v26: i64 = 0;
+    let _v27: i8 = unsafe { main_utf8_text[(_v26 as usize)] };
+    let _v28: u8 = _v27 as u8;
+    let _v29: i32 = _v28 as i32;
+    let _v30: i64 = 1;
+    let _v31: i8 = unsafe { main_utf8_text[(_v30 as usize)] };
+    let _v32: u8 = _v31 as u8;
+    let _v33: i32 = _v32 as i32;
+    let _v34: i32 = _v29 + _v33;
+    let _v35: i64 = 0;
+    let _v36: u16 = unsafe { main_utf16_text[(_v35 as usize)] };
+    let _v37: i32 = _v36 as i32;
+    let _v38: i32 = _v34 + _v37;
+    let _v39: i64 = 0;
+    let _v40: u32 = unsafe { main_utf32_text[(_v39 as usize)] };
+    let _v41: i32 = _v40 as i32;
+    let _v42: i32 = _v38 + _v41;
+    let _v43: u16 = utf16_character;
+    let _v44: i32 = _v43 as i32;
+    let _v45: i32 = _v42 + _v44;
+    let _v46: u32 = utf32_character;
+    let _v47: i32 = _v46 as i32;
+    let _v48: i32 = _v45 + _v47;
+    unicode_total = _v48;
+    let _v49: i32 = 11;
+    let _v50: i32 = 22;
+    let _v51: i32 = _v49 + _v50;
+    let _v52: i32 = 33;
+    let _v53: i32 = _v51 + _v52;
+    generic_total = _v53;
+    let _v54: i32 = 31;
+    unsafe {
+        anonymous.__slate_anon_0.integer = _v54;
+    }
+    let _v55: i32 = 37;
+    anonymous.__slate_anon_1.x = _v55;
+    let _v56: i32 = 41;
+    anonymous.__slate_anon_1.y = _v56;
+    let _v57: i32 = unsafe { anonymous.__slate_anon_0.integer };
+    let _v58: i32 = anonymous.__slate_anon_1.x;
+    let _v59: i32 = _v57 + _v58;
+    let _v60: i32 = anonymous.__slate_anon_1.y;
+    let _v61: i32 = _v59 + _v60;
+    anonymous_total = _v61;
+    let _v62: i32 = 0;
+    unsafe {
+        c11_evaluation_total = _v62;
+    }
+    let _v63: i32 = 2;
+    let _v64: i32 = c11_evaluation_step(_v63);
+    let _v65: i32 = 3;
+    let _v66: i32 = c11_evaluation_step(_v65);
+    let _v67: i32 = _v64 + _v66;
+    let _v68: i32 = unsafe { c11_evaluation_total };
+    let _v69: i32 = _v67 + _v68;
+    evaluation_total = _v69;
+    let _v70: i64 = 1;
+    let _v71: i32 = 43;
+    let _v72: anon_struct = c11_make_temporary(_v71);
+    coerce = _v72;
+    let _v73: *mut C11Temporary = std::ptr::addr_of_mut!(coerce) as *mut C11Temporary;
+    let _v74: C11Temporary = unsafe { *_v73 };
+    ref_tmp0 = _v74;
+    let _v75: i32 = ref_tmp0.values[(_v70 as usize)];
+    temporary_total = _v75;
+    let _v76: i32 = 1;
+    static_assert_total = _v76;
+    let _v77: i32 = 0;
+    let _v78: i32 = 0;
+    let _v79: i32 = _v77 + _v78;
+    let _v80: i32 = 1;
+    let _v81: i32 = _v79 + _v80;
+    let _v82: i32 = 1;
+    let _v83: i32 = _v81 + _v82;
+    let _v84: i32 = 1;
+    let _v85: i32 = _v83 + _v84;
+    let _v86: i32 = 1;
+    let _v87: i32 = _v85 + _v86;
+    optional_total = _v87;
+    let _v88: i32 = 5;
+    unsafe {
+        c11_atomic_total = _v88;
+    }
+    let _v89: i32 = 17;
+    unsafe {
+        c11_thread_local_value = _v89;
+    }
+    let _v90: i32 = 0;
+    let _v91: *mut i32 = unsafe { __errno_location() };
+    unsafe {
+        *_v91 = _v90;
+    }
+    let _v92: *mut core::ffi::c_void = std::ptr::addr_of_mut!(thread_increment) as *mut core::ffi::c_void;
+    let _v93: i32 = unsafe { thrd_create(std::ptr::addr_of_mut!(thread) as *mut u64, Some(c11_thread_worker), _v92 as *mut core::ffi::c_void) };
+    thread_created = _v93;
+    let _v94: i32 = thread_created;
+    let _v95: i32 = 0;
+    let _v96: bool = _v94 == _v95;
+    let _v97: i32 = if _v96 {
+        let _v98: u64 = thread;
+        let _v99: i32 = unsafe { thrd_join(_v98 as u64, std::ptr::addr_of_mut!(thread_result) as *mut i32) };
+        _v99
+    } else {
+        let _v100: i32 = -1;
+        _v100
+    };
+    thread_joined = _v97;
+    let _v101: i32 = unsafe { std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(c11_atomic_total)).load(std::sync::atomic::Ordering::SeqCst) };
+    atomic_total = _v101;
+    let _v102: i32 = thread_created;
+    let _v103: i32 = 0;
+    let _v104: bool = _v102 == _v103;
+    let _v105: i32 = _v104 as i32;
+    let _v106: i32 = thread_joined;
+    let _v107: i32 = 0;
+    let _v108: bool = _v106 == _v107;
+    let _v109: i32 = _v108 as i32;
+    let _v110: i32 = _v105 + _v109;
+    let _v111: i32 = thread_result;
+    let _v112: i32 = _v110 + _v111;
+    let _v113: i32 = unsafe { c11_thread_local_value };
+    let _v114: i32 = _v112 + _v113;
+    let _v115: *mut i32 = unsafe { __errno_location() };
+    let _v116: i32 = unsafe { *_v115 };
+    let _v117: i32 = 0;
+    let _v118: bool = _v116 == _v117;
+    let _v119: i32 = _v118 as i32;
+    let _v120: i32 = _v114 + _v119;
+    thread_total = _v120;
+    let _v121: i32 = 0;
+    concurrency_total = _v121;
+    {
+        let _v122: i32 = 0;
+        let _v123: i32 = unsafe { mtx_init(std::ptr::addr_of_mut!(mutex) as *mut mtx_t, _v122 as i32) };
+        let _v124: i32 = 0;
+        let _v125: bool = _v123 == _v124;
+        if _v125 {
+            let _v126: i32 = 1;
+            let _v127: i32 = concurrency_total;
+            let _v128: i32 = _v127 + _v126;
+            concurrency_total = _v128;
+            let _v129: i32 = unsafe { mtx_lock(std::ptr::addr_of_mut!(mutex) as *mut mtx_t) };
+            let _v130: i32 = 0;
+            let _v131: bool = _v129 == _v130;
+            let _v132: i32 = _v131 as i32;
+            let _v133: i32 = concurrency_total;
+            let _v134: i32 = _v133 + _v132;
+            concurrency_total = _v134;
+            let _v135: i32 = unsafe { mtx_unlock(std::ptr::addr_of_mut!(mutex) as *mut mtx_t) };
+            let _v136: i32 = 0;
+            let _v137: bool = _v135 == _v136;
+            let _v138: i32 = _v137 as i32;
+            let _v139: i32 = concurrency_total;
+            let _v140: i32 = _v139 + _v138;
+            concurrency_total = _v140;
+            unsafe { mtx_destroy(std::ptr::addr_of_mut!(mutex) as *mut mtx_t) };
+        }
+    }
+    {
+        let _v141: i32 = unsafe { cnd_init(std::ptr::addr_of_mut!(condition) as *mut cnd_t) };
+        let _v142: i32 = 0;
+        let _v143: bool = _v141 == _v142;
+        if _v143 {
+            let _v144: i32 = 1;
+            let _v145: i32 = concurrency_total;
+            let _v146: i32 = _v145 + _v144;
+            concurrency_total = _v146;
+            unsafe { cnd_destroy(std::ptr::addr_of_mut!(condition) as *mut cnd_t) };
+        }
+    }
+    let _v147: i32 = 0;
+    unsafe {
+        c11_once_total = _v147;
+    }
+    unsafe { call_once(std::ptr::addr_of_mut!(once_control) as *mut i32, Some(c11_once_handler)) };
+    unsafe { call_once(std::ptr::addr_of_mut!(once_control) as *mut i32, Some(c11_once_handler)) };
+    let _v148: i32 = unsafe { c11_once_total };
+    let _v149: i32 = concurrency_total;
+    let _v150: i32 = _v149 + _v148;
+    concurrency_total = _v150;
+    {
+        let _v151: Option<unsafe extern "C" fn(*mut core::ffi::c_void)> = None;
+        let _v152: i32 = unsafe { tss_create(std::ptr::addr_of_mut!(thread_key) as *mut u32, _v151) };
+        let _v153: i32 = 0;
+        let _v154: bool = _v152 == _v153;
+        if _v154 {
+            let _v155: i32 = 1;
+            let _v156: i32 = concurrency_total;
+            let _v157: i32 = _v156 + _v155;
+            concurrency_total = _v157;
+            let _v158: u32 = thread_key;
+            let _v159: *mut core::ffi::c_void = std::ptr::addr_of_mut!(thread_increment) as *mut core::ffi::c_void;
+            let _v160: i32 = unsafe { tss_set(_v158 as u32, _v159 as *mut core::ffi::c_void) };
+            let _v161: i32 = 0;
+            let _v162: bool = _v160 == _v161;
+            let _v163: i32 = _v162 as i32;
+            let _v164: i32 = concurrency_total;
+            let _v165: i32 = _v164 + _v163;
+            concurrency_total = _v165;
+            let _v166: u32 = thread_key;
+            let _v167: *mut core::ffi::c_void = unsafe { tss_get(_v166 as u32) };
+            let _v168: *mut core::ffi::c_void = std::ptr::addr_of_mut!(thread_increment) as *mut core::ffi::c_void;
+            let _v169: bool = _v167 == _v168;
+            let _v170: i32 = _v169 as i32;
+            let _v171: i32 = concurrency_total;
+            let _v172: i32 = _v171 + _v170;
+            concurrency_total = _v172;
+            let _v173: u32 = thread_key;
+            unsafe { tss_delete(_v173 as u32) };
+        }
+    }
+    let _v174: i32 = 4;
+    let _v175: i32 = 1;
+    let _v176: bool = _v174 >= _v175;
+    let _v177: i32 = _v176 as i32;
+    let _v178: i32 = concurrency_total;
+    let _v179: i32 = _v178 + _v177;
+    concurrency_total = _v179;
+    let _v180: u16 = 0;
+    converted16 = _v180;
+    let _v181: u32 = 0;
+    converted32 = _v181;
+    let _v182: *mut i8 = b"A\0".as_ptr() as *mut i8;
+    let _v183: u64 = 1;
+    let _v184: u64 = (unsafe { mbrtoc16(std::ptr::addr_of_mut!(converted16) as *mut u16, _v182 as *const i8, _v183 as usize, std::ptr::addr_of_mut!(utf16_state) as *mut libc::mbstate_t) }) as u64;
+    let _v185: i32 = _v184 as i32;
+    let _v186: *mut i8 = multibyte16.as_mut_ptr() as *mut i8;
+    let _v187: u16 = 65;
+    let _v188: u64 = (unsafe { c16rtomb(_v186 as *mut i8, _v187 as u16, std::ptr::addr_of_mut!(utf16_state) as *mut libc::mbstate_t) }) as u64;
+    let _v189: i32 = _v188 as i32;
+    let _v190: i32 = _v185 + _v189;
+    let _v191: *mut i8 = b"B\0".as_ptr() as *mut i8;
+    let _v192: u64 = 1;
+    let _v193: u64 = (unsafe { mbrtoc32(std::ptr::addr_of_mut!(converted32) as *mut u32, _v191 as *const i8, _v192 as usize, std::ptr::addr_of_mut!(utf32_state) as *mut libc::mbstate_t) }) as u64;
+    let _v194: i32 = _v193 as i32;
+    let _v195: i32 = _v190 + _v194;
+    let _v196: *mut i8 = multibyte32.as_mut_ptr() as *mut i8;
+    let _v197: u32 = 66;
+    let _v198: u64 = (unsafe { c32rtomb(_v196 as *mut i8, _v197 as u32, std::ptr::addr_of_mut!(utf32_state) as *mut libc::mbstate_t) }) as u64;
+    let _v199: i32 = _v198 as i32;
+    let _v200: i32 = _v195 + _v199;
+    let _v201: u16 = converted16;
+    let _v202: i32 = _v201 as i32;
+    let _v203: i32 = _v200 + _v202;
+    let _v204: u32 = converted32;
+    let _v205: i32 = _v204 as i32;
+    let _v206: i32 = _v203 + _v205;
+    let _v207: i64 = 0;
+    let _v208: i8 = multibyte16[(_v207 as usize)];
+    let _v209: i32 = _v208 as i32;
+    let _v210: i32 = _v206 + _v209;
+    let _v211: i64 = 0;
+    let _v212: i8 = multibyte32[(_v211 as usize)];
+    let _v213: i32 = _v212 as i32;
+    let _v214: i32 = _v210 + _v213;
+    conversion_total = _v214;
+    let _v215: u64 = 64;
+    let _v216: u64 = 64;
+    let _v217: *mut core::ffi::c_void = unsafe { aligned_alloc(_v215 as usize, _v216 as usize) };
+    aligned_memory = _v217;
+    let _v218: *mut core::ffi::c_void = aligned_memory;
+    let _v219: *mut core::ffi::c_void = std::ptr::null_mut();
+    let _v220: bool = _v218 != _v219;
+    let _v221: bool = if _v220 {
+        let _v222: *mut core::ffi::c_void = aligned_memory;
+        let _v223: u64 = _v222 as u64;
+        let _v224: u64 = 64;
+        let _v225: u64 = _v223 % _v224;
+        let _v226: u64 = 0;
+        let _v227: bool = _v225 == _v226;
+        _v227
+    } else {
+        let _v228: bool = false;
+        _v228
+    };
+    let _v229: i32 = _v221 as i32;
+    let _v230: i32 = alignment_total;
+    let _v231: i32 = _v230 + _v229;
+    alignment_total = _v231;
+    let _v232: *mut core::ffi::c_void = aligned_memory;
+    unsafe { free(_v232 as *mut core::ffi::c_void) };
+    let _v233: i32 = unsafe { at_quick_exit(Some(c11_quick_handler)) };
+    let _v234: i32 = 0;
+    let _v235: bool = _v233 == _v234;
+    let _v236: i32 = _v235 as i32;
+    quick_total = _v236;
+    let _v237: *mut i8 = b"slate-c11-exclusive.tmp\0".as_ptr() as *mut i8;
+    let _v238: i32 = unsafe { remove(_v237 as *const i8) };
+    let _v239: *mut i8 = b"slate-c11-exclusive.tmp\0".as_ptr() as *mut i8;
+    let _v240: *mut libc::FILE = c11_open_exclusive(_v239);
+    exclusive_first = _v240;
+    let _v241: *mut i8 = b"slate-c11-exclusive.tmp\0".as_ptr() as *mut i8;
+    let _v242: *mut libc::FILE = c11_open_exclusive(_v241);
+    exclusive_second = _v242;
+    let _v243: *mut libc::FILE = exclusive_first;
+    let _v244: *mut libc::FILE = std::ptr::null_mut();
+    let _v245: bool = _v243 != _v244;
+    let _v246: bool = if _v245 {
+        let _v247: *mut libc::FILE = exclusive_second;
+        let _v248: *mut libc::FILE = std::ptr::null_mut();
+        let _v249: bool = _v247 == _v248;
+        _v249
+    } else {
+        let _v250: bool = false;
+        _v250
+    };
+    let _v251: i32 = _v246 as i32;
+    exclusive_total = _v251;
+    {
+        let _v252: *mut libc::FILE = exclusive_first;
+        let _v253: *mut libc::FILE = std::ptr::null_mut();
+        let _v254: bool = _v252 != _v253;
+        if _v254 {
+            let _v255: *mut libc::FILE = exclusive_first;
+            let _v256: i32 = unsafe { fclose(_v255 as *mut libc::FILE) };
+        }
+    }
+    {
+        let _v257: *mut libc::FILE = exclusive_second;
+        let _v258: *mut libc::FILE = std::ptr::null_mut();
+        let _v259: bool = _v257 != _v258;
+        if _v259 {
+            let _v260: *mut libc::FILE = exclusive_second;
+            let _v261: i32 = unsafe { fclose(_v260 as *mut libc::FILE) };
+        }
+    }
+    let _v262: *mut i8 = b"slate-c11-exclusive.tmp\0".as_ptr() as *mut i8;
+    let _v263: i32 = unsafe { remove(_v262 as *const i8) };
+    let _v264: i32 = 1;
+    let _v265: i32 = unsafe { timespec_get(std::ptr::addr_of_mut!(current_time) as *mut libc::timespec, _v264 as i32) };
+    let _v266: i32 = 1;
+    let _v267: bool = _v265 == _v266;
+    let _v268: bool = if _v267 {
+        let _v269: i64 = current_time.tv_nsec;
+        let _v270: i64 = 0;
+        let _v271: bool = _v269 >= _v270;
+        _v271
+    } else {
+        let _v272: bool = false;
+        _v272
+    };
+    let _v273: bool = if _v268 {
+        let _v274: i64 = current_time.tv_nsec;
+        let _v275: i64 = 1000000000;
+        let _v276: bool = _v274 < _v275;
+        _v276
+    } else {
+        let _v277: bool = false;
+        _v277
+    };
+    let _v278: i32 = _v273 as i32;
+    timespec_total = _v278;
+    let _v279: num_complex::Complex<f64> = num_complex::Complex { re: 2.0, im: 3.0 };
+    complex_value = _v279;
+    let _v280: num_complex::Complex<f64> = complex_value;
+    let _v281: f64 = _v280.re;
+    let _v282: f64 = 2.0;
+    let _v283: bool = _v281 == _v282;
+    let _v284: i32 = _v283 as i32;
+    let _v285: num_complex::Complex<f64> = complex_value;
+    let _v286: f64 = _v285.im;
+    let _v287: f64 = 3.0;
+    let _v288: bool = _v286 == _v287;
+    let _v289: i32 = _v288 as i32;
+    let _v290: i32 = _v284 + _v289;
+    complex_total = _v290;
+    let _v291: i32 = 9 as i32;
+    let _v292: i32 = 6;
+    let _v293: bool = _v291 >= _v292;
+    let _v294: i32 = _v293 as i32;
+    let _v295: i32 = 17 as i32;
+    let _v296: i32 = 10;
+    let _v297: bool = _v295 >= _v296;
+    let _v298: i32 = _v297 as i32;
+    let _v299: i32 = _v294 + _v298;
+    let _v300: i32 = 21 as i32;
+    let _v301: i32 = 10;
+    let _v302: bool = _v300 >= _v301;
+    let _v303: i32 = _v302 as i32;
+    let _v304: i32 = _v299 + _v303;
+    let _v305: f32 = 0.0000000000000000000000000000000000000000000014013;
+    let _v306: f32 = 0.0;
+    let _v307: bool = _v305 > _v306;
+    let _v308: i32 = _v307 as i32;
+    let _v309: i32 = _v304 + _v308;
+    let _v310: f64 = 0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005;
+    let _v311: f64 = 0.0;
+    let _v312: bool = _v310 > _v311;
+    let _v313: i32 = _v312 as i32;
+    let _v314: i32 = _v309 + _v313;
+    let _v315: LongDouble = LongDouble([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+    let _v316: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+    let _v317: bool = _v315 > _v316;
+    let _v318: i32 = _v317 as i32;
+    let _v319: i32 = _v314 + _v318;
+    let _v320: i32 = 1;
+    let _v321: i32 = -1;
+    let _v322: bool = _v320 >= _v321;
+    let _v323: i32 = _v322 as i32;
+    let _v324: i32 = _v319 + _v323;
+    let _v325: i32 = 1;
+    let _v326: i32 = -1;
+    let _v327: bool = _v325 >= _v326;
+    let _v328: i32 = _v327 as i32;
+    let _v329: i32 = _v324 + _v328;
+    let _v330: i32 = 1;
+    let _v331: i32 = -1;
+    let _v332: bool = _v330 >= _v331;
+    let _v333: i32 = _v332 as i32;
+    let _v334: i32 = _v329 + _v333;
+    limits_total = _v334;
+    let _v335: i32 = 0;
+    let _v336: i32 = limits_total;
+    let _v337: i32 = _v336 + _v335;
+    limits_total = _v337;
+    {
+        let _v338: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c11_never_flag)) };
+        let _v339: bool = _v338 != 0;
+        if _v339 {
+            let _v340: i32 = 99;
+            c11_never_return(_v340);
+        }
+    }
+    let _v341: *mut i8 = b"%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\0".as_ptr() as *mut i8;
+    let _v342: i32 = alignment_total;
+    let _v343: i32 = unicode_total;
+    let _v344: i32 = generic_total;
+    let _v345: i32 = anonymous_total;
+    let _v346: i32 = evaluation_total;
+    let _v347: i32 = temporary_total;
+    let _v348: i32 = static_assert_total;
+    let _v349: i32 = optional_total;
+    let _v350: i32 = atomic_total;
+    let _v351: i32 = thread_total;
+    let _v352: i32 = concurrency_total;
+    let _v353: i32 = conversion_total;
+    let _v354: i32 = quick_total;
+    let _v355: i32 = exclusive_total;
+    let _v356: i32 = timespec_total;
+    let _v357: i32 = complex_total;
+    let _v358: i32 = limits_total;
+    let _v359: i32 = 0;
+    let _v360: i32 = unsafe { printf(_v341 as *const i8, _v342, _v343, _v344, _v345, _v346, _v347, _v348, _v349, _v350, _v351, _v352, _v353, _v354, _v355, _v356, _v357, _v358, _v359) };
+    let _v361: i32 = 10;
+    let _v362: i32 = unsafe { putchar(_v361 as i32) };
+    let _v363: i32 = 0;
+    __retval = _v363;
+    let _v364: i32 = __retval;
+    std::process::exit(_v364 as i32);
+}
+
+unsafe extern "C" {
+    safe fn __slate_cf80_div(a: num_complex::Complex<LongDouble>, b: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+    safe fn __slate_cf80_mul(a: num_complex::Complex<LongDouble>, b: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+    safe fn __slate_f80_abs(a: LongDouble) -> LongDouble;
+    safe fn __slate_f80_add(a: LongDouble, b: LongDouble) -> LongDouble;
+    safe fn __slate_f80_ceil(a: LongDouble) -> LongDouble;
+    safe fn __slate_f80_copysign(a: LongDouble, b: LongDouble) -> LongDouble;
+    safe fn __slate_f80_div(a: LongDouble, b: LongDouble) -> LongDouble;
+    safe fn __slate_f80_eq(a: LongDouble, b: LongDouble) -> bool;
+    safe fn __slate_f80_floor(a: LongDouble) -> LongDouble;
+    safe fn __slate_f80_fma(a: LongDouble, b: LongDouble, c: LongDouble) -> LongDouble;
+    safe fn __slate_f80_fmax(a: LongDouble, b: LongDouble) -> LongDouble;
+    safe fn __slate_f80_fmin(a: LongDouble, b: LongDouble) -> LongDouble;
+    safe fn __slate_f80_fract(a: LongDouble) -> LongDouble;
+    safe fn __slate_f80_from_bool(a: bool) -> LongDouble;
+    safe fn __slate_f80_from_f32(a: f32) -> LongDouble;
+    safe fn __slate_f80_from_f64(a: f64) -> LongDouble;
+    safe fn __slate_f80_from_i128(a: i128) -> LongDouble;
+    safe fn __slate_f80_from_i16(a: i16) -> LongDouble;
+    safe fn __slate_f80_from_i32(a: i32) -> LongDouble;
+    safe fn __slate_f80_from_i64(a: i64) -> LongDouble;
+    safe fn __slate_f80_from_i8(a: i8) -> LongDouble;
+    safe fn __slate_f80_from_u128(a: u128) -> LongDouble;
+    safe fn __slate_f80_from_u16(a: u16) -> LongDouble;
+    safe fn __slate_f80_from_u32(a: u32) -> LongDouble;
+    safe fn __slate_f80_from_u64(a: u64) -> LongDouble;
+    safe fn __slate_f80_from_u8(a: u8) -> LongDouble;
+    safe fn __slate_f80_ge(a: LongDouble, b: LongDouble) -> bool;
+    safe fn __slate_f80_gt(a: LongDouble, b: LongDouble) -> bool;
+    safe fn __slate_f80_is_fp_class(a: LongDouble, flags: i32) -> bool;
+    safe fn __slate_f80_le(a: LongDouble, b: LongDouble) -> bool;
+    safe fn __slate_f80_lt(a: LongDouble, b: LongDouble) -> bool;
+    safe fn __slate_f80_mul(a: LongDouble, b: LongDouble) -> LongDouble;
+    safe fn __slate_f80_ne(a: LongDouble, b: LongDouble) -> bool;
+    safe fn __slate_f80_neg(a: LongDouble) -> LongDouble;
+    safe fn __slate_f80_rint(a: LongDouble) -> LongDouble;
+    safe fn __slate_f80_round(a: LongDouble) -> LongDouble;
+    safe fn __slate_f80_signbit(a: LongDouble) -> bool;
+    safe fn __slate_f80_sub(a: LongDouble, b: LongDouble) -> LongDouble;
+    safe fn __slate_f80_to_bool(a: LongDouble) -> bool;
+    safe fn __slate_f80_to_f32(a: LongDouble) -> f32;
+    safe fn __slate_f80_to_f64(a: LongDouble) -> f64;
+    safe fn __slate_f80_to_i128(a: LongDouble) -> i128;
+    safe fn __slate_f80_to_i16(a: LongDouble) -> i16;
+    safe fn __slate_f80_to_i32(a: LongDouble) -> i32;
+    safe fn __slate_f80_to_i64(a: LongDouble) -> i64;
+    safe fn __slate_f80_to_i8(a: LongDouble) -> i8;
+    safe fn __slate_f80_to_u128(a: LongDouble) -> u128;
+    safe fn __slate_f80_to_u16(a: LongDouble) -> u16;
+    safe fn __slate_f80_to_u32(a: LongDouble) -> u32;
+    safe fn __slate_f80_to_u64(a: LongDouble) -> u64;
+    safe fn __slate_f80_to_u8(a: LongDouble) -> u8;
+    safe fn __slate_f80_trunc(a: LongDouble) -> LongDouble;
+}

@@ -511,6 +511,20 @@ fn allocate_global_rust_names(
         };
         names.insert(source_name, rust_name);
     }
+    for global in &module.globals {
+        let Some(target) = global
+            .raw
+            .as_ref()
+            .and_then(|op| attr_symbol_ref(op, "aliasee"))
+        else {
+            continue;
+        };
+        let target_name = names
+            .get(target)
+            .cloned()
+            .unwrap_or_else(|| sanitize_ident(target).into_string());
+        names.insert(global.name.clone(), target_name);
+    }
     names
 }
 
@@ -2180,11 +2194,7 @@ impl __SlateVaArgs {
         if matches!(name, "llvm.compiler.used" | "llvm.used") {
             return;
         }
-        if let Some(target) = raw.and_then(|op| attr_symbol_ref(op, "aliasee")) {
-            self.ctx.diagnostics.error(
-                format!(
-                    "lower: unsupported global alias `{name}` to `{target}`; Rust has no faithful static alias representation"
-                ));
+        if raw.and_then(|op| attr_symbol_ref(op, "aliasee")).is_some() {
             return;
         }
         let rust_name = self.rust_global_name(name);

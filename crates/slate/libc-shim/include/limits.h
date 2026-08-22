@@ -30,6 +30,19 @@
 #define LLONG_MAX  0x7fffffffffffffffLL
 #define ULLONG_MAX (2ULL * LLONG_MAX + 1)
 
+#define BOOL_WIDTH __BOOL_WIDTH__
+#define CHAR_WIDTH CHAR_BIT
+#define SCHAR_WIDTH CHAR_BIT
+#define UCHAR_WIDTH CHAR_BIT
+#define SHRT_WIDTH __SHRT_WIDTH__
+#define USHRT_WIDTH __SHRT_WIDTH__
+#define INT_WIDTH __INT_WIDTH__
+#define UINT_WIDTH __INT_WIDTH__
+#define LONG_WIDTH __LONG_WIDTH__
+#define ULONG_WIDTH __LONG_WIDTH__
+#define LLONG_WIDTH __LLONG_WIDTH__
+#define ULLONG_WIDTH __LLONG_WIDTH__
+
 #define MB_LEN_MAX 4
 
 #if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
