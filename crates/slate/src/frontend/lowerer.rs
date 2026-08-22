@@ -799,7 +799,14 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         .iter()
         .map(|record| (sanitize_ident(&record.name).into_string(), record.clone()))
         .collect();
-    let local_collisions = resolve_local_record_collisions(cir, &c.records);
+    let local_record_candidates: Vec<crate::frontend::c_ast::Record> = c
+        .records
+        .iter()
+        .chain(&c.anonymous_header_records)
+        .chain(&c.named_header_records)
+        .cloned()
+        .collect();
+    let local_collisions = resolve_local_record_collisions(cir, &local_record_candidates);
     records.extend(local_collisions);
     let enums: BTreeMap<String, crate::frontend::c_ast::Enum> = c
         .enums
