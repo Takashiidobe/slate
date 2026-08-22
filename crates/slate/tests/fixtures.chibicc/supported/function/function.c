@@ -174,7 +174,7 @@ Ty21 struct_test38(void) {
                 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
 }
 
-inline int inline_fn(void) { return 3; }
+int inline_fn(void) { return 3; }
 
 int main() {
   ASSERT(3, ret3());
