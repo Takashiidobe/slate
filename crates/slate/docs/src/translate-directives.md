@@ -111,19 +111,31 @@ can also handle that case too.
 
 ## Supported pragma table
 
-| Pragma family                                       | Example                               | Unconditional                                                                                                     | Inside `#if`                                      |
-| --------------------------------------------------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| `#pragma once`                                      | `#pragma once`                        | no-output, always ok                                                                                              | n/a (preprocessor-only)                           |
-| `GCC`/`clang diagnostic`                            | `#pragma GCC diagnostic push`         | diagnostic-only, always ok                                                                                        | always ok                                         |
-| `pack`                                              | `#pragma pack(push, 1)`               | ok: recovered from Clang's per-record `MaxFieldAlignmentAttr` into `#[repr(C, packed)]` / `#[repr(C, packed(N))]` | explicit error (`unsupported semantic directive`) |
-| `GCC visibility`                                    | `#pragma GCC visibility push(hidden)` | ok (clang-resolved)                                                                                               | explicit error                                    |
-| `weak`                                              | `#pragma weak foo=bar`                | ok (clang-resolved)                                                                                               | explicit error                                    |
-| `redefine_extname`                                  | `#pragma redefine_extname foo bar`    | ok (clang-resolved)                                                                                               | explicit error                                    |
-| `push_macro`/`pop_macro`                            | `#pragma push_macro("X")`             | ok (clang-resolved)                                                                                               | explicit error                                    |
-| `GCC poison`                                        | `#pragma GCC poison foo`              | always skipped, never fails                                                                                       | always skipped, never fails                       |
-| `STDC CX_LIMITED_RANGE`                             | `#pragma STDC CX_LIMITED_RANGE ON`    | ok (clang-resolved)                                                                                               | explicit error                                    |
-| `STDC FP_CONTRACT`                                  | `#pragma STDC FP_CONTRACT OFF`        | ok: folded into `cir.fmuladd` choice by Clang (see `handoffs/floating-point-env.md`)                              | explicit error                                    |
-| `STDC FENV_ACCESS`                                  | `#pragma STDC FENV_ACCESS ON`         | ok (clang-resolved) — full fenv semantics still tracked separately, see below                                     | explicit error                                    |
-| `STDC FENV_ROUND`/`FENV_DEC_ROUND`                  | `#pragma STDC FENV_ROUND FE_UPWARD`   | ok (clang-resolved)                                                                                               | explicit error                                    |
-| vendor/unknown (`GCC optimize`, `slate_vendor ...`) | `#pragma GCC optimize("O2")`          | explicit error, always                                                                                            | explicit error, always                            |
-| unrecognized directive                              | `#slate_unknown ...`                  | explicit error, always                                                                                            | explicit error, always                            |
+Recognized pragmas translate cleanly on their own. Inside a `#if` branch,
+`translate-directives` still hard-errors on all of them (per-branch record
+layout / attribute merging isn't supported), so "recognized" below means
+"unconditional use is fine," not "safe everywhere."
+
+| Pragma                                                                  | Recognized? | Notes                                                                                       |
+| ----------------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------- |
+| `#pragma once`                                                          | yes         | No-output; the preprocessor consumes it before Slate sees anything.                         |
+| `#pragma GCC/clang diagnostic ...`                                      | yes         | Diagnostic-only, no program effect.                                                         |
+| `#pragma pack`                                                          | yes         | Recovered from Clang's `MaxFieldAlignmentAttr` into `repr(C, packed)`/`repr(C, packed(N))`. |
+| `#pragma GCC visibility push/pop`                                       | yes         | Clang-resolved before Slate runs.                                                           |
+| `#pragma weak`                                                          | yes         | Clang-resolved before Slate runs.                                                           |
+| `#pragma redefine_extname`                                              | yes         | Clang-resolved before Slate runs.                                                           |
+| `#pragma push_macro`/`pop_macro`                                        | yes         | Clang-resolved before Slate runs.                                                           |
+| `#pragma GCC poison`                                                    | yes         | Always skipped; never blocks translation, conditional or not.                               |
+| `#pragma STDC CX_LIMITED_RANGE`                                         | yes         | Clang-resolved before Slate runs.                                                           |
+| `#pragma STDC FP_CONTRACT`                                              | yes         | Folds into a `cir.fmuladd` choice in CIR (`handoffs/floating-point-env.md`).                |
+| `#pragma STDC FENV_ACCESS`/`FENV_ROUND`/`FENV_DEC_ROUND`                | yes         | Supported through C shims.                                                                  |
+| `#pragma clang optimize off/on`                                         | yes         | Codegen-only hint.                                                                          |
+| `#pragma unroll`/`nounroll`                                             | yes         | Codegen-only loop hint.                                                                     |
+| `#pragma clang loop ...`                                                | yes         | Codegen-only loop hints.                                                                    |
+| `#pragma clang attribute push/pop`                                      | yes         | Clang applies the wrapped attribute to each matching decl before CIR/AST emission           |
+| `#pragma clang fp contract/reassociate/exceptions`                      | partial     | `on`/`off`/`default` supported, `contract(fast)` blocked upstream in ClangIR                |
+| `#pragma GCC optimize`/`GCC target`/other vendor or unknown             | no          | Explicit error, always.                                                                     |
+| MSVC `section`/`data_seg`/`code_seg`/`intrinsic` (no `-fms-extensions`) | n/a         | Clang itself warns `unknown pragma ignored` and drops it                                    |
+| `#pragma comment(lib, ...)`                                             | no          | Clang parses it, but ClangIR codegen crashes.                                               |
+| `#pragma GCC target`/`push_options`/`pop_options`                       | n/a         | Clang doesn't implement these.                                                              |
+| unrecognized directive (`#slate_unknown ...`)                           | no          | Explicit error, always.                                                                     |
