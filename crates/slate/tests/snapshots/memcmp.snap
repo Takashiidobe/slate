@@ -1,0 +1,99 @@
+---
+source: tests/snapshot.rs
+expression: rust
+---
+#![feature(c_variadic)]
+#![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+
+unsafe extern "C" {
+    fn memcmp(_0: *const core::ffi::c_void, _1: *const core::ffi::c_void, _2: usize) -> i32;
+    fn printf(_0: *const i8, ...) -> i32;
+}
+
+fn get_count() -> i32 {
+    let mut __retval: i32 = 0;
+    let _v0: i32 = 4;
+    __retval = _v0;
+    let _v1: i32 = __retval;
+    return _v1;
+}
+
+fn main() {
+    let mut __retval: i32 = 0;
+    let mut equal_a: [u8; 4] = [0; 4];
+    let mut equal_b: [u8; 4] = [0; 4];
+    let mut equal_result: i32 = 0;
+    let mut unequal_a: [u8; 4] = [0; 4];
+    let mut unequal_b: [u8; 4] = [0; 4];
+    let mut unequal_result: i32 = 0;
+    let mut partial_a: [u8; 8] = [0; 8];
+    let mut partial_b: [u8; 8] = [0; 8];
+    let mut partial_result: i32 = 0;
+    let mut dyn_a: [u8; 8] = [0; 8];
+    let mut dyn_b: [u8; 8] = [0; 8];
+    let mut n: i32 = 0;
+    let mut dyn_result: i32 = 0;
+    let _v0: i32 = 0;
+    __retval = _v0;
+    equal_a = [1, 2, 3, 4];
+    equal_b = [1, 2, 3, 4];
+    let _v1: *mut u8 = equal_a.as_mut_ptr() as *mut u8;
+    let _v2: *mut core::ffi::c_void = _v1 as *mut core::ffi::c_void;
+    let _v3: *mut u8 = equal_b.as_mut_ptr() as *mut u8;
+    let _v4: *mut core::ffi::c_void = _v3 as *mut core::ffi::c_void;
+    let _v5: u64 = 4;
+    let _v6: i32 = unsafe { memcmp(_v2 as *const core::ffi::c_void, _v4 as *const core::ffi::c_void, _v5 as usize) };
+    let _v7: i32 = 0;
+    let _v8: bool = _v6 == _v7;
+    let _v9: i32 = _v8 as i32;
+    equal_result = _v9;
+    unequal_a = [1, 2, 3, 4];
+    unequal_b = [1, 2, 3, 9];
+    let _v10: *mut u8 = unequal_a.as_mut_ptr() as *mut u8;
+    let _v11: *mut core::ffi::c_void = _v10 as *mut core::ffi::c_void;
+    let _v12: *mut u8 = unequal_b.as_mut_ptr() as *mut u8;
+    let _v13: *mut core::ffi::c_void = _v12 as *mut core::ffi::c_void;
+    let _v14: u64 = 4;
+    let _v15: i32 = unsafe { memcmp(_v11 as *const core::ffi::c_void, _v13 as *const core::ffi::c_void, _v14 as usize) };
+    let _v16: i32 = 0;
+    let _v17: bool = _v15 == _v16;
+    let _v18: i32 = _v17 as i32;
+    unequal_result = _v18;
+    partial_a = [1, 2, 3, 4, 9, 9, 9, 9];
+    partial_b = [1, 2, 3, 4, 0, 0, 0, 0];
+    let _v19: *mut u8 = partial_a.as_mut_ptr() as *mut u8;
+    let _v20: *mut core::ffi::c_void = _v19 as *mut core::ffi::c_void;
+    let _v21: *mut u8 = partial_b.as_mut_ptr() as *mut u8;
+    let _v22: *mut core::ffi::c_void = _v21 as *mut core::ffi::c_void;
+    let _v23: u64 = 4;
+    let _v24: i32 = unsafe { memcmp(_v20 as *const core::ffi::c_void, _v22 as *const core::ffi::c_void, _v23 as usize) };
+    let _v25: i32 = 0;
+    let _v26: bool = _v24 == _v25;
+    let _v27: i32 = _v26 as i32;
+    partial_result = _v27;
+    dyn_a = [1, 2, 3, 4, 5, 6, 7, 8];
+    dyn_b = [1, 2, 3, 4, 5, 6, 7, 8];
+    let _v28: i32 = get_count();
+    n = _v28;
+    let _v29: *mut u8 = dyn_a.as_mut_ptr() as *mut u8;
+    let _v30: *mut core::ffi::c_void = _v29 as *mut core::ffi::c_void;
+    let _v31: *mut u8 = dyn_b.as_mut_ptr() as *mut u8;
+    let _v32: *mut core::ffi::c_void = _v31 as *mut core::ffi::c_void;
+    let _v33: i32 = n;
+    let _v34: u64 = _v33 as u64;
+    let _v35: i32 = unsafe { memcmp(_v30 as *const core::ffi::c_void, _v32 as *const core::ffi::c_void, _v34 as usize) };
+    let _v36: i32 = 0;
+    let _v37: bool = _v35 == _v36;
+    let _v38: i32 = _v37 as i32;
+    dyn_result = _v38;
+    let _v39: *mut i8 = b"%d %d %d %d\n\0".as_ptr() as *mut i8;
+    let _v40: i32 = equal_result;
+    let _v41: i32 = unequal_result;
+    let _v42: i32 = partial_result;
+    let _v43: i32 = dyn_result;
+    let _v44: i32 = unsafe { printf(_v39 as *const i8, _v40, _v41, _v42, _v43) };
+    let _v45: i32 = 0;
+    __retval = _v45;
+    let _v46: i32 = __retval;
+    std::process::exit(_v46 as i32);
+}

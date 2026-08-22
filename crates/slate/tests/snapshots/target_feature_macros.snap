@@ -1,0 +1,22 @@
+---
+source: tests/snapshot.rs
+expression: rust
+---
+#![feature(c_variadic)]
+#![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+
+unsafe extern "C" {
+    fn printf(_0: *const i8, ...) -> i32;
+}
+
+fn main() {
+    let mut __retval: i32 = 0;
+    let _v0: i32 = 0;
+    __retval = _v0;
+    let _v1: *mut i8 = b"target features\n\0".as_ptr() as *mut i8;
+    let _v2: i32 = unsafe { printf(_v1 as *const i8) };
+    let _v3: i32 = 0;
+    __retval = _v3;
+    let _v4: i32 = __retval;
+    std::process::exit(_v4 as i32);
+}

@@ -26,6 +26,7 @@ default-filter = '''
   + test(gcc_torture_unsupported_tests_still_fail)
   + test(libc_test_functional_supported_tests_match_c)
   + test(stdlib_coverage)
+  + test(translated_fixtures_match_snapshots)
 '''
 
 [[profile.default.overrides]]

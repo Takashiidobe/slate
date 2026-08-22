@@ -1,0 +1,83 @@
+---
+source: tests/snapshot.rs
+expression: rust
+---
+#![feature(c_variadic)]
+#![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+
+unsafe extern "C" {
+    fn printf(_0: *const i8, ...) -> i32;
+}
+
+fn basic_swap() {
+    let mut a: i32 = 0;
+    let mut b: i32 = 0;
+    let mut tmp: i32 = 0;
+    let _v0: i32 = 1;
+    a = _v0;
+    let _v1: i32 = 2;
+    b = _v1;
+    let _v2: i32 = a;
+    tmp = _v2;
+    let _v3: i32 = b;
+    a = _v3;
+    let _v4: i32 = tmp;
+    b = _v4;
+    let _v5: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
+    let _v6: i32 = a;
+    let _v7: i32 = b;
+    let _v8: i32 = unsafe { printf(_v5 as *const i8, _v6, _v7) };
+    return;
+}
+
+fn tmp_reused() {
+    let mut a: i32 = 0;
+    let mut b: i32 = 0;
+    let mut tmp: i32 = 0;
+    let _v0: i32 = 3;
+    a = _v0;
+    let _v1: i32 = 4;
+    b = _v1;
+    let _v2: i32 = a;
+    tmp = _v2;
+    let _v3: i32 = b;
+    a = _v3;
+    let _v4: i32 = tmp;
+    b = _v4;
+    let _v5: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
+    let _v6: i32 = a;
+    let _v7: i32 = b;
+    let _v8: i32 = tmp;
+    let _v9: i32 = unsafe { printf(_v5 as *const i8, _v6, _v7, _v8) };
+    return;
+}
+
+fn self_swap() {
+    let mut a: i32 = 0;
+    let mut tmp: i32 = 0;
+    let _v0: i32 = 5;
+    a = _v0;
+    let _v1: i32 = a;
+    tmp = _v1;
+    let _v2: i32 = a;
+    a = _v2;
+    let _v3: i32 = tmp;
+    a = _v3;
+    let _v4: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+    let _v5: i32 = a;
+    let _v6: i32 = unsafe { printf(_v4 as *const i8, _v5) };
+    return;
+}
+
+fn main() {
+    let mut __retval: i32 = 0;
+    let _v0: i32 = 0;
+    __retval = _v0;
+    basic_swap();
+    tmp_reused();
+    self_swap();
+    let _v1: i32 = 0;
+    __retval = _v1;
+    let _v2: i32 = __retval;
+    std::process::exit(_v2 as i32);
+}

@@ -21,6 +21,8 @@ clang-ir = { path = "../clang-ir/clang-ir" }
 [patch.crates-io]
 clang-ir-types = { path = "../clang-ir/clang-ir-types" }
 
+[dev-dependencies]
+insta = "1"
 
 [profile.test]
 opt-level = 3

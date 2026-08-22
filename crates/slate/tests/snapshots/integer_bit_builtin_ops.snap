@@ -1,0 +1,97 @@
+---
+source: tests/snapshot.rs
+expression: rust
+---
+#![feature(c_variadic)]
+#![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+
+unsafe extern "C" {
+    fn printf(_0: *const i8, ...) -> i32;
+}
+
+fn main() {
+    let mut __retval: i32 = 0;
+    let mut u: u32 = 0;
+    let mut z: u32 = 0;
+    let mut s: i32 = 0;
+    let mut sh: u32 = 0;
+    let mut rev: u32 = 0;
+    let mut swapped: u32 = 0;
+    let mut leading: i32 = 0;
+    let mut trailing: i32 = 0;
+    let mut first_set: i32 = 0;
+    let mut zero_first: i32 = 0;
+    let mut ones: i32 = 0;
+    let mut odd: i32 = 0;
+    let mut redundant_sign: i32 = 0;
+    let mut left: u32 = 0;
+    let mut right: u32 = 0;
+    let _v0: i32 = 0;
+    __retval = _v0;
+    let _v1: u32 = 305419896;
+    u = _v1;
+    let _v2: u32 = 0;
+    z = _v2;
+    let _v3: i32 = -12345;
+    s = _v3;
+    let _v4: u32 = 5;
+    sh = _v4;
+    let _v5: u32 = u;
+    let _v6: u32 = _v5.reverse_bits();
+    rev = _v6;
+    let _v7: u32 = u;
+    let _v8: u32 = _v7.swap_bytes();
+    swapped = _v8;
+    let _v9: u32 = u;
+    let _v10: u32 = _v9.leading_zeros();
+    let _v11: i32 = _v10 as i32;
+    leading = _v11;
+    let _v12: u32 = u;
+    let _v13: u32 = _v12.trailing_zeros();
+    let _v14: i32 = _v13 as i32;
+    trailing = _v14;
+    let _v15: u32 = u;
+    let _v16: i32 = _v15 as i32;
+    let _v17: i32 = if _v16 == 0 { 0 } else { (_v16.trailing_zeros() as i32) + 1 };
+    first_set = _v17;
+    let _v18: u32 = z;
+    let _v19: i32 = _v18 as i32;
+    let _v20: i32 = if _v19 == 0 { 0 } else { (_v19.trailing_zeros() as i32) + 1 };
+    zero_first = _v20;
+    let _v21: u32 = u;
+    let _v22: u32 = _v21.count_ones();
+    let _v23: i32 = _v22 as i32;
+    ones = _v23;
+    let _v24: u32 = u;
+    let _v25: u32 = _v24.count_ones() & 1;
+    let _v26: i32 = _v25 as i32;
+    odd = _v26;
+    let _v27: i32 = s;
+    let _v28: i32 = (if _v27 < 0 { !_v27 } else { _v27 }.leading_zeros() as i32) - 1;
+    redundant_sign = _v28;
+    let _v29: u32 = u;
+    let _v30: u32 = sh;
+    todo!("instruction without lowering");
+    left = _7;
+    let _v31: u32 = u;
+    let _v32: u32 = sh;
+    todo!("instruction without lowering");
+    right = _0;
+    let _v33: *mut i8 = b"%u %u %d %d %d %d %d %d %d %u %u\n\0".as_ptr() as *mut i8;
+    let _v34: u32 = rev;
+    let _v35: u32 = swapped;
+    let _v36: i32 = leading;
+    let _v37: i32 = trailing;
+    let _v38: i32 = first_set;
+    let _v39: i32 = zero_first;
+    let _v40: i32 = ones;
+    let _v41: i32 = odd;
+    let _v42: i32 = redundant_sign;
+    let _v43: u32 = left;
+    let _v44: u32 = right;
+    let _v45: i32 = unsafe { printf(_v33 as *const i8, _v34, _v35, _v36, _v37, _v38, _v39, _v40, _v41, _v42, _v43, _v44) };
+    let _v46: i32 = 0;
+    __retval = _v46;
+    let _v47: i32 = __retval;
+    std::process::exit(_v47 as i32);
+}

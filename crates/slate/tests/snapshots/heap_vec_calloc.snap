@@ -1,0 +1,42 @@
+---
+source: tests/snapshot.rs
+expression: rust
+---
+#![feature(c_variadic)]
+#![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+
+unsafe extern "C" {
+    fn calloc(_0: usize, _1: usize) -> *mut core::ffi::c_void;
+    fn printf(_0: *const i8, ...) -> i32;
+    fn free(_0: *mut core::ffi::c_void);
+}
+
+fn main() {
+    let mut __retval: i32 = 0;
+    let mut p: *mut i32 = std::ptr::null_mut();
+    let _v0: i32 = 0;
+    __retval = _v0;
+    let _v1: u64 = 4;
+    let _v2: u64 = 4;
+    let _v3: *mut core::ffi::c_void = unsafe { calloc(_v1 as usize, _v2 as usize) };
+    let _v4: *mut i32 = _v3 as *mut i32;
+    p = _v4;
+    let _v5: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+    let _v6: i64 = 0;
+    let _v7: *mut i32 = p;
+    let _v8: *mut i32 = unsafe { _v7.add(0) };
+    let _v9: i32 = unsafe { *_v8 };
+    let _v10: i64 = 3;
+    let _v11: *mut i32 = p;
+    let _v12: *mut i32 = unsafe { _v11.add(3) };
+    let _v13: i32 = unsafe { *_v12 };
+    let _v14: i32 = _v9 + _v13;
+    let _v15: i32 = unsafe { printf(_v5 as *const i8, _v14) };
+    let _v16: *mut i32 = p;
+    let _v17: *mut core::ffi::c_void = _v16 as *mut core::ffi::c_void;
+    unsafe { free(_v17 as *mut core::ffi::c_void) };
+    let _v18: i32 = 0;
+    __retval = _v18;
+    let _v19: i32 = __retval;
+    std::process::exit(_v19 as i32);
+}

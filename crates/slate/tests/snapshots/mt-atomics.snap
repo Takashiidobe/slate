@@ -1,0 +1,126 @@
+---
+source: tests/snapshot.rs
+expression: rust
+---
+#![feature(c_variadic)]
+#![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+
+#[repr(C)]
+#[allow(non_camel_case_types)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
+enum memory_order {
+    memory_order_relaxed = 0,
+    memory_order_consume = 1,
+    memory_order_acquire = 2,
+    memory_order_release = 3,
+    memory_order_acq_rel = 4,
+    memory_order_seq_cst = 5,
+}
+
+
+#[repr(C)]
+#[derive(Clone, Copy)]
+union __pthread_attr_t {
+    __size: [i8; 56],
+    __align: i64,
+}
+
+
+static mut counter: i32 = 0;
+
+unsafe extern "C" {
+    fn pthread_create(_0: *mut u64, _1: *const __pthread_attr_t, _2: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> *mut core::ffi::c_void>, _3: *mut core::ffi::c_void) -> i32;
+    fn pthread_join(_0: u64, _1: *mut *mut core::ffi::c_void) -> i32;
+    fn printf(_0: *const i8, ...) -> i32;
+}
+
+extern "C" fn worker(arg0: *mut core::ffi::c_void) -> *mut core::ffi::c_void {
+    let mut arg: *mut core::ffi::c_void = std::ptr::null_mut();
+    let mut __retval: *mut core::ffi::c_void = std::ptr::null_mut();
+    arg = arg0;
+    let _v0: *mut core::ffi::c_void = arg;
+    {
+        let mut i: i32 = 0;
+        let _v1: i32 = 0;
+        i = _v1;
+        loop {
+            let _v2: i32 = i;
+            let _v3: i32 = 100000;
+            let _v4: bool = _v2 < _v3;
+            if !_v4 {
+                break;
+            }
+            {
+                let _v5: i32 = 1;
+                let _v6: i32 = unsafe { std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(counter)).fetch_add(_v5, std::sync::atomic::Ordering::SeqCst) };
+            }
+            let _v7: i32 = i;
+            let _v8: i32 = _v7 + 1;
+            i = _v8;
+        }
+    }
+    let _v9: *mut core::ffi::c_void = std::ptr::null_mut();
+    __retval = _v9;
+    let _v10: *mut core::ffi::c_void = __retval;
+    return _v10;
+}
+
+fn main() {
+    let mut __retval: i32 = 0;
+    let mut threads: aligned::Aligned<aligned::A16, [u64; 4]> = aligned::Aligned([0; 4]);
+    let _v0: i32 = 0;
+    __retval = _v0;
+    {
+        let mut i: i32 = 0;
+        let _v1: i32 = 0;
+        i = _v1;
+        loop {
+            let _v2: i32 = i;
+            let _v3: i32 = 4;
+            let _v4: bool = _v2 < _v3;
+            if !_v4 {
+                break;
+            }
+            {
+                let _v5: i32 = i;
+                let _v6: i64 = _v5 as i64;
+                let _v7: *mut __pthread_attr_t = std::ptr::null_mut();
+                let _v8: *mut core::ffi::c_void = std::ptr::null_mut();
+                let _v9: i32 = unsafe { pthread_create(std::ptr::addr_of_mut!(threads[(_v6 as usize)]) as *mut u64, _v7 as *const __pthread_attr_t, Some(worker), _v8 as *mut core::ffi::c_void) };
+            }
+            let _v10: i32 = i;
+            let _v11: i32 = _v10 + 1;
+            i = _v11;
+        }
+    }
+    {
+        let mut i2: i32 = 0;
+        let _v12: i32 = 0;
+        i2 = _v12;
+        loop {
+            let _v13: i32 = i2;
+            let _v14: i32 = 4;
+            let _v15: bool = _v13 < _v14;
+            if !_v15 {
+                break;
+            }
+            {
+                let _v16: i32 = i2;
+                let _v17: i64 = _v16 as i64;
+                let _v18: u64 = threads[(_v17 as usize)];
+                let _v19: *mut *mut core::ffi::c_void = std::ptr::null_mut();
+                let _v20: i32 = unsafe { pthread_join(_v18 as u64, _v19 as *mut *mut core::ffi::c_void) };
+            }
+            let _v21: i32 = i2;
+            let _v22: i32 = _v21 + 1;
+            i2 = _v22;
+        }
+    }
+    let _v23: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+    let _v24: i32 = unsafe { std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(counter)).load(std::sync::atomic::Ordering::SeqCst) };
+    let _v25: i32 = unsafe { printf(_v23 as *const i8, _v24) };
+    let _v26: i32 = 0;
+    __retval = _v26;
+    let _v27: i32 = __retval;
+    std::process::exit(_v27 as i32);
+}

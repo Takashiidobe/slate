@@ -1,0 +1,130 @@
+---
+source: tests/snapshot.rs
+expression: rust
+---
+#![feature(c_variadic)]
+#![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+
+static mut once_total: i32 = 0;
+
+unsafe extern "C" {
+    fn thrd_create(_0: *mut u64, _1: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> i32>, _2: *mut core::ffi::c_void) -> i32;
+    fn thrd_join(_0: u64, _1: *mut i32) -> i32;
+    fn call_once(_0: *mut i32, _1: Option<unsafe extern "C" fn()>);
+    fn tss_create(_0: *mut u32, _1: Option<unsafe extern "C" fn(*mut core::ffi::c_void)>) -> i32;
+    fn tss_delete(_0: u32);
+    fn at_quick_exit(_0: Option<unsafe extern "C" fn()>) -> i32;
+    fn printf(_0: *const i8, ...) -> i32;
+}
+
+extern "C" fn thread_worker(arg1: *mut core::ffi::c_void) -> i32 {
+    let mut argument: *mut core::ffi::c_void = std::ptr::null_mut();
+    let mut __retval: i32 = 0;
+    argument = arg1;
+    let _v0: *mut core::ffi::c_void = argument;
+    let _v1: *mut i32 = _v0 as *mut i32;
+    let _v2: i32 = unsafe { *_v1 };
+    let _v3: i32 = 1;
+    let _v4: i32 = _v2 + _v3;
+    __retval = _v4;
+    let _v5: i32 = __retval;
+    return _v5;
+}
+
+extern "C" fn once_handler() {
+    let _v0: i32 = 1;
+    let _v1: i32 = unsafe { once_total };
+    let _v2: i32 = _v1 + _v0;
+    unsafe {
+        once_total = _v2;
+    }
+    return;
+}
+
+extern "C" fn tss_destructor(arg0: *mut core::ffi::c_void) {
+    let mut value: *mut core::ffi::c_void = std::ptr::null_mut();
+    value = arg0;
+    let _v0: *mut core::ffi::c_void = value;
+    let _v1: *mut core::ffi::c_void = std::ptr::null_mut();
+    let _v2: bool = _v0 != _v1;
+    let _v3: i32 = _v2 as i32;
+    let _v4: i32 = unsafe { once_total };
+    let _v5: i32 = _v4 + _v3;
+    unsafe {
+        once_total = _v5;
+    }
+    return;
+}
+
+extern "C" fn quick_handler() {
+    let _v0: i32 = 100;
+    let _v1: i32 = unsafe { once_total };
+    let _v2: i32 = _v1 + _v0;
+    unsafe {
+        once_total = _v2;
+    }
+    return;
+}
+
+fn main() {
+    let mut __retval: i32 = 0;
+    let mut thread: u64 = 0;
+    let mut key: u32 = 0;
+    let mut argument: i32 = 0;
+    let mut thread_result: i32 = 0;
+    let mut thread_created: i32 = 0;
+    let mut thread_joined: i32 = 0;
+    let mut control: i32 = 0;
+    let mut key_created: i32 = 0;
+    let mut quick_registered: i32 = 0;
+    let _v0: i32 = 0;
+    __retval = _v0;
+    let _v1: i32 = 40;
+    argument = _v1;
+    let _v2: i32 = 0;
+    thread_result = _v2;
+    let _v3: *mut core::ffi::c_void = std::ptr::addr_of_mut!(argument) as *mut core::ffi::c_void;
+    let _v4: i32 = unsafe { thrd_create(std::ptr::addr_of_mut!(thread) as *mut u64, Some(thread_worker), _v3 as *mut core::ffi::c_void) };
+    thread_created = _v4;
+    let _v5: i32 = thread_created;
+    let _v6: i32 = 0;
+    let _v7: bool = _v5 == _v6;
+    let _v8: i32 = if _v7 {
+        let _v9: u64 = thread;
+        let _v10: i32 = unsafe { thrd_join(_v9 as u64, std::ptr::addr_of_mut!(thread_result) as *mut i32) };
+        _v10
+    } else {
+        let _v11: i32 = -1;
+        _v11
+    };
+    thread_joined = _v8;
+    let _v12: i32 = 0;
+    control = _v12;
+    unsafe { call_once(std::ptr::addr_of_mut!(control) as *mut i32, Some(once_handler)) };
+    unsafe { call_once(std::ptr::addr_of_mut!(control) as *mut i32, Some(once_handler)) };
+    let _v13: i32 = unsafe { tss_create(std::ptr::addr_of_mut!(key) as *mut u32, Some(tss_destructor)) };
+    key_created = _v13;
+    {
+        let _v14: i32 = key_created;
+        let _v15: i32 = 0;
+        let _v16: bool = _v14 == _v15;
+        if _v16 {
+            let _v17: u32 = key;
+            unsafe { tss_delete(_v17 as u32) };
+        }
+    }
+    let _v18: i32 = unsafe { at_quick_exit(Some(quick_handler)) };
+    quick_registered = _v18;
+    let _v19: *mut i8 = b"%d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
+    let _v20: i32 = thread_created;
+    let _v21: i32 = thread_joined;
+    let _v22: i32 = thread_result;
+    let _v23: i32 = unsafe { once_total };
+    let _v24: i32 = key_created;
+    let _v25: i32 = quick_registered;
+    let _v26: i32 = unsafe { printf(_v19 as *const i8, _v20, _v21, _v22, _v23, _v24, _v25) };
+    let _v27: i32 = 0;
+    __retval = _v27;
+    let _v28: i32 = __retval;
+    std::process::exit(_v28 as i32);
+}

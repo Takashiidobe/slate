@@ -1,0 +1,55 @@
+---
+source: tests/snapshot.rs
+expression: rust
+---
+#![feature(c_variadic)]
+#![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+
+unsafe extern "C" {
+    fn printf(_0: *const i8, ...) -> i32;
+}
+
+fn main() {
+    let mut __retval: i32 = 0;
+    let mut a: aligned::Aligned<aligned::A16, [i32; 5]> = aligned::Aligned([0; 5]);
+    let mut sum: i32 = 0;
+    let _v0: i32 = 0;
+    __retval = _v0;
+    *a = [1, 2, 3, 4, 5];
+    let _v1: *mut i32 = a.as_mut_ptr() as *mut i32;
+    let _v2: *mut core::ffi::c_void = _v1 as *mut core::ffi::c_void;
+    let _v3: u64 = 20;
+    let _v4: u8 = 0;
+    unsafe { std::ptr::write_bytes(_v2 as *mut u8, _v4 as u8, _v3 as usize) };
+    let _v5: i32 = 0;
+    sum = _v5;
+    {
+        let mut i: i32 = 0;
+        let _v6: i32 = 0;
+        i = _v6;
+        loop {
+            let _v7: i32 = i;
+            let _v8: i32 = 5;
+            let _v9: bool = _v7 < _v8;
+            if !_v9 {
+                break;
+            }
+            let _v10: i32 = i;
+            let _v11: i64 = _v10 as i64;
+            let _v12: i32 = a[(_v11 as usize)];
+            let _v13: i32 = sum;
+            let _v14: i32 = _v13 + _v12;
+            sum = _v14;
+            let _v15: i32 = i;
+            let _v16: i32 = _v15 + 1;
+            i = _v16;
+        }
+    }
+    let _v17: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+    let _v18: i32 = sum;
+    let _v19: i32 = unsafe { printf(_v17 as *const i8, _v18) };
+    let _v20: i32 = 0;
+    __retval = _v20;
+    let _v21: i32 = __retval;
+    std::process::exit(_v21 as i32);
+}

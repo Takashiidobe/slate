@@ -1,0 +1,142 @@
+---
+source: tests/snapshot.rs
+expression: rust
+---
+#![feature(c_variadic)]
+#![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+
+#[repr(C, align(16))]
+#[derive(Clone, Copy)]
+struct Aligned {
+    a: i8,
+    b: i32,
+}
+
+
+static mut counter: i32 = 0;
+
+unsafe extern "C" {
+    fn printf(_0: *const i8, ...) -> i32;
+}
+
+fn next_value() -> i32 {
+    let mut __retval: i32 = 0;
+    let _v0: i32 = 9;
+    __retval = _v0;
+    let _v1: i32 = __retval;
+    return _v1;
+}
+
+fn effectful_case() -> i32 {
+    let mut __retval: i32 = 0;
+    let mut effectful: aligned::Aligned<aligned::A16, Aligned> = aligned::Aligned(Aligned { a: 0, b: 0 });
+    let _v0: i32 = next_value();
+    let _v1: i8 = _v0 as i8;
+    effectful.a = _v1;
+    let _v2: i32 = 7;
+    effectful.b = _v2;
+    let _v3: i8 = effectful.a;
+    let _v4: i32 = _v3 as i32;
+    let _v5: i32 = effectful.b;
+    let _v6: i32 = _v4 + _v5;
+    __retval = _v6;
+    let _v7: i32 = __retval;
+    return _v7;
+}
+
+fn repeated_case() -> i32 {
+    let mut __retval: i32 = 0;
+    let mut repeated: aligned::Aligned<aligned::A16, Aligned> = aligned::Aligned(Aligned { a: 0, b: 0 });
+    let _v0: i8 = 1;
+    repeated.a = _v0;
+    let _v1: i8 = 2;
+    repeated.a = _v1;
+    let _v2: i32 = 3;
+    repeated.b = _v2;
+    let _v3: i8 = repeated.a;
+    let _v4: i32 = _v3 as i32;
+    let _v5: i32 = repeated.b;
+    let _v6: i32 = _v4 + _v5;
+    __retval = _v6;
+    let _v7: i32 = __retval;
+    return _v7;
+}
+
+fn dependent_case() -> i32 {
+    let mut __retval: i32 = 0;
+    let mut dependent: aligned::Aligned<aligned::A16, Aligned> = aligned::Aligned(Aligned { a: 0, b: 0 });
+    let _v0: i32 = 8;
+    dependent.b = _v0;
+    let _v1: i32 = dependent.b;
+    let _v2: i8 = _v1 as i8;
+    dependent.a = _v2;
+    let _v3: i8 = dependent.a;
+    let _v4: i32 = _v3 as i32;
+    let _v5: i32 = dependent.b;
+    let _v6: i32 = _v4 + _v5;
+    __retval = _v6;
+    let _v7: i32 = __retval;
+    return _v7;
+}
+
+fn touch() {
+    let _v0: i32 = unsafe { counter };
+    let _v1: i32 = _v0 + 1;
+    unsafe {
+        counter = _v1;
+    }
+    return;
+}
+
+fn interrupted_case() -> i32 {
+    let mut __retval: i32 = 0;
+    let mut interrupted: aligned::Aligned<aligned::A16, Aligned> = aligned::Aligned(Aligned { a: 0, b: 0 });
+    let _v0: i8 = 4;
+    interrupted.a = _v0;
+    touch();
+    let _v1: i32 = 6;
+    interrupted.b = _v1;
+    let _v2: i8 = interrupted.a;
+    let _v3: i32 = _v2 as i32;
+    let _v4: i32 = interrupted.b;
+    let _v5: i32 = _v3 + _v4;
+    let _v6: i32 = unsafe { counter };
+    let _v7: i32 = _v5 + _v6;
+    __retval = _v7;
+    let _v8: i32 = __retval;
+    return _v8;
+}
+
+fn main() {
+    let mut __retval: i32 = 0;
+    let mut s: aligned::Aligned<aligned::A16, Aligned> = aligned::Aligned(Aligned { a: 0, b: 0 });
+    let _v0: i32 = 0;
+    __retval = _v0;
+    let _v1: i8 = 5;
+    s.a = _v1;
+    let _v2: i32 = 4660;
+    s.b = _v2;
+    let _v3: *mut i8 = b"%zu %zu\n\0".as_ptr() as *mut i8;
+    let _v4: u64 = std::mem::size_of::<Aligned>() as u64;
+    let _v5: u64 = std::mem::align_of::<Aligned>() as u64;
+    let _v6: i32 = unsafe { printf(_v3 as *const i8, _v4, _v5) };
+    let _v7: *mut i8 = b"%zu %zu\n\0".as_ptr() as *mut i8;
+    let _v8: u64 = std::mem::offset_of!(Aligned, a) as u64;
+    let _v9: u64 = std::mem::offset_of!(Aligned, b) as u64;
+    let _v10: i32 = unsafe { printf(_v7 as *const i8, _v8, _v9) };
+    let _v11: *mut i8 = b"%d %x\n\0".as_ptr() as *mut i8;
+    let _v12: i8 = s.a;
+    let _v13: i32 = _v12 as i32;
+    let _v14: i32 = s.b;
+    let _v15: i32 = unsafe { printf(_v11 as *const i8, _v13, _v14) };
+    let _v16: *mut i8 = b"%d %d %d %d\n\0".as_ptr() as *mut i8;
+    let _v17: i32 = effectful_case();
+    let _v18: i32 = repeated_case();
+    let _v19: i32 = dependent_case();
+    let _v20: i32 = interrupted_case();
+    let _v21: i32 = unsafe { printf(_v16 as *const i8, _v17, _v18, _v19, _v20) };
+    let _v22: i32 = 0;
+    __retval = _v22;
+    let _v23: i32 = __retval;
+    std::process::exit(_v23 as i32);
+}

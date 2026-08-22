@@ -1,0 +1,48 @@
+---
+source: tests/snapshot.rs
+expression: rust
+---
+#![feature(c_variadic)]
+#![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+
+#[repr(C)]
+#[derive(Clone, Copy)]
+union Word {
+    value: i32,
+    bytes: [u8; 4],
+}
+
+
+unsafe extern "C" {
+    fn printf(_0: *const i8, ...) -> i32;
+}
+
+fn main() {
+    let mut __retval: i32 = 0;
+    let mut word: Word = Word { value: 0 };
+    let _v0: i32 = 0;
+    __retval = _v0;
+    word = Word { value: 0 };
+    let _v1: u8 = 65;
+    let _v2: i64 = 0;
+    unsafe {
+        word.bytes[(_v2 as usize)] = _v1;
+    }
+    let _v3: u8 = 66;
+    let _v4: i64 = 1;
+    unsafe {
+        word.bytes[(_v4 as usize)] = _v3;
+    }
+    let _v5: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
+    let _v6: i64 = 0;
+    let _v7: u8 = unsafe { word.bytes[(_v6 as usize)] };
+    let _v8: i32 = _v7 as i32;
+    let _v9: i64 = 1;
+    let _v10: u8 = unsafe { word.bytes[(_v9 as usize)] };
+    let _v11: i32 = _v10 as i32;
+    let _v12: i32 = unsafe { printf(_v5 as *const i8, _v8, _v11) };
+    let _v13: i32 = 0;
+    __retval = _v13;
+    let _v14: i32 = __retval;
+    std::process::exit(_v14 as i32);
+}
