@@ -718,6 +718,11 @@ fn project_translation_escapes_rust_keywords() {
 }
 
 #[test]
+fn project_translation_exports_nonascii_function_names() {
+    build_and_diff("nonascii_function_name");
+}
+
+#[test]
 fn sibling_can_call_function_defined_in_root_translation_unit() {
     build_and_diff("root_tu_symbol");
 }

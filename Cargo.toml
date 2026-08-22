@@ -16,6 +16,7 @@ ordered-float = "5.3.0"
 triplers = { version = "0.1.1", path = "vendor/triplers" }
 mimalloc = "0.1.52"
 rustc_apfloat = "0.2.3"
+unicode-ident = "1"
 clang-ir = { path = "../clang-ir/clang-ir" }
 
 [patch.crates-io]
