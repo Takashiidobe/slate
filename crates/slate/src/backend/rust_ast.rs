@@ -160,11 +160,15 @@ impl Lint {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Feature {
+    AbiUnadjusted,
     AsmGotoWithOutputs,
     Breakpoint,
     CVariadic,
     F128,
     Linkage,
+    LinkLlvmIntrinsics,
+    PortableSimd,
+    SimdFfi,
     ThreadLocal,
     UsedWithArg,
 }
@@ -172,11 +176,15 @@ pub enum Feature {
 impl Feature {
     pub fn spelling(self) -> &'static str {
         match self {
+            Feature::AbiUnadjusted => "abi_unadjusted",
             Feature::AsmGotoWithOutputs => "asm_goto_with_outputs",
             Feature::Breakpoint => "breakpoint",
             Feature::CVariadic => "c_variadic",
             Feature::F128 => "f128",
             Feature::Linkage => "linkage",
+            Feature::LinkLlvmIntrinsics => "link_llvm_intrinsics",
+            Feature::PortableSimd => "portable_simd",
+            Feature::SimdFfi => "simd_ffi",
             Feature::ThreadLocal => "thread_local",
             Feature::UsedWithArg => "used_with_arg",
         }

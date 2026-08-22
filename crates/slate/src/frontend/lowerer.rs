@@ -816,6 +816,8 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         uses_thread_local: std::cell::Cell::new(false),
         uses_used_with_arg: std::cell::Cell::new(false),
         uses_asm_goto_outputs: std::cell::Cell::new(false),
+        uses_llvm_intrinsics: std::cell::Cell::new(false),
+        uses_portable_simd: std::cell::Cell::new(false),
         uses_memchr: std::cell::Cell::new(false),
         variadic_defs: BTreeSet::new(),
         boxed_variadic_defs: BTreeSet::new(),
@@ -1052,12 +1054,8 @@ fn lower_record_def(
             RecordField {
                 comments: comments(&field.comments),
                 name: sanitize_ident(&field.name),
-                ty: if trust_cir {
-                    cir_ty.cloned()
-                } else {
-                    None
-                }
-                .unwrap_or_else(|| c_record_field_type(&field.ty, va_list_boxed)),
+                ty: if trust_cir { cir_ty.cloned() } else { None }
+                    .unwrap_or_else(|| c_record_field_type(&field.ty, va_list_boxed)),
             }
         })
         .collect();
@@ -1232,6 +1230,8 @@ struct Lowerer<'a> {
     uses_thread_local: std::cell::Cell<bool>,
     uses_used_with_arg: std::cell::Cell<bool>,
     uses_asm_goto_outputs: std::cell::Cell<bool>,
+    uses_llvm_intrinsics: std::cell::Cell<bool>,
+    uses_portable_simd: std::cell::Cell<bool>,
     uses_memchr: std::cell::Cell<bool>,
     variadic_defs: BTreeSet<String>,
     boxed_variadic_defs: BTreeSet<String>,
@@ -1952,6 +1952,14 @@ impl __SlateVaArgs {
             });
         }
         if !self.llvm_intrinsic_shims.is_empty() {
+            self.uses_llvm_intrinsics.set(true);
+            if self
+                .llvm_intrinsic_shims
+                .values()
+                .any(intrinsics::extern_fn_decl_mentions_simd)
+            {
+                self.uses_portable_simd.set(true);
+            }
             items.push(Item::ExternBlock {
                 abi: "unadjusted".into(),
                 decls: self
@@ -2037,6 +2045,14 @@ impl __SlateVaArgs {
         }
         if self.uses_asm_goto_outputs.get() {
             insert_crate_feature(&mut items, Feature::AsmGotoWithOutputs);
+        }
+        if self.uses_llvm_intrinsics.get() {
+            insert_crate_feature(&mut items, Feature::LinkLlvmIntrinsics);
+            insert_crate_feature(&mut items, Feature::AbiUnadjusted);
+        }
+        if self.uses_portable_simd.get() {
+            insert_crate_feature(&mut items, Feature::PortableSimd);
+            insert_crate_feature(&mut items, Feature::SimdFfi);
         }
         for feature in &self.project.crate_features {
             insert_crate_feature(&mut items, *feature);

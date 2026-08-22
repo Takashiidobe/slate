@@ -59968,3 +59968,5402 @@ pub static RISCV_INTRINSICS: &[IntrinsicSignature] = &[
         overloaded_positions: Some(&[0]),
     },
 ];
+
+pub struct StdarchOverride {
+    pub link_name: &'static str,
+    pub params: &'static [&'static str],
+    pub ret: Option<&'static str>,
+}
+
+pub static X86_STDARCH_OVERRIDES: &[StdarchOverride] = &[
+    StdarchOverride {
+        link_name: "llvm.x86.addcarry.32",
+        params: &["u8", "u32", "u32"],
+        ret: Some("(u8, u32)"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.addcarry.64",
+        params: &["u8", "u64", "u64"],
+        ret: Some("(u8, u64)"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.aesdec128kl",
+        params: &["__m128i", "*const u8"],
+        ret: Some("AesOutput"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.aesdec256kl",
+        params: &["__m128i", "*const u8"],
+        ret: Some("AesOutput"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.aesdecwide128kl",
+        params: &[
+            "*const u8",
+            "__m128i",
+            "__m128i",
+            "__m128i",
+            "__m128i",
+            "__m128i",
+            "__m128i",
+            "__m128i",
+            "__m128i",
+        ],
+        ret: Some("WideAesOutput"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.aesdecwide256kl",
+        params: &[
+            "*const u8",
+            "__m128i",
+            "__m128i",
+            "__m128i",
+            "__m128i",
+            "__m128i",
+            "__m128i",
+            "__m128i",
+            "__m128i",
+        ],
+        ret: Some("WideAesOutput"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.aesenc128kl",
+        params: &["__m128i", "*const u8"],
+        ret: Some("AesOutput"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.aesenc256kl",
+        params: &["__m128i", "*const u8"],
+        ret: Some("AesOutput"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.aesencwide128kl",
+        params: &[
+            "*const u8",
+            "__m128i",
+            "__m128i",
+            "__m128i",
+            "__m128i",
+            "__m128i",
+            "__m128i",
+            "__m128i",
+            "__m128i",
+        ],
+        ret: Some("WideAesOutput"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.aesencwide256kl",
+        params: &[
+            "*const u8",
+            "__m128i",
+            "__m128i",
+            "__m128i",
+            "__m128i",
+            "__m128i",
+            "__m128i",
+            "__m128i",
+            "__m128i",
+        ],
+        ret: Some("WideAesOutput"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.aesni.aesdec",
+        params: &["__m128i", "__m128i"],
+        ret: Some("__m128i"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.aesni.aesdec.256",
+        params: &["__m256i", "__m256i"],
+        ret: Some("__m256i"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.aesni.aesdec.512",
+        params: &["__m512i", "__m512i"],
+        ret: Some("__m512i"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.aesni.aesdeclast",
+        params: &["__m128i", "__m128i"],
+        ret: Some("__m128i"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.aesni.aesdeclast.256",
+        params: &["__m256i", "__m256i"],
+        ret: Some("__m256i"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.aesni.aesdeclast.512",
+        params: &["__m512i", "__m512i"],
+        ret: Some("__m512i"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.aesni.aesenc",
+        params: &["__m128i", "__m128i"],
+        ret: Some("__m128i"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.aesni.aesenc.256",
+        params: &["__m256i", "__m256i"],
+        ret: Some("__m256i"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.aesni.aesenc.512",
+        params: &["__m512i", "__m512i"],
+        ret: Some("__m512i"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.aesni.aesenclast",
+        params: &["__m128i", "__m128i"],
+        ret: Some("__m128i"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.aesni.aesenclast.256",
+        params: &["__m256i", "__m256i"],
+        ret: Some("__m256i"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.aesni.aesenclast.512",
+        params: &["__m512i", "__m512i"],
+        ret: Some("__m512i"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.aesni.aesimc",
+        params: &["__m128i"],
+        ret: Some("__m128i"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.aesni.aeskeygenassist",
+        params: &["__m128i", "u8"],
+        ret: Some("__m128i"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx.cmp.pd.256",
+        params: &["__m256d", "__m256d", "u8"],
+        ret: Some("__m256d"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx.cmp.ps.256",
+        params: &["__m256", "__m256", "u8"],
+        ret: Some("__m256"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx.cvt.pd2dq.256",
+        params: &["__m256d"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx.cvt.ps2dq.256",
+        params: &["__m256"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx.cvtt.pd2dq.256",
+        params: &["__m256d"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx.cvtt.ps2dq.256",
+        params: &["__m256"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx.dp.ps.256",
+        params: &["__m256", "__m256", "i8"],
+        ret: Some("__m256"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx.ldu.dq.256",
+        params: &["*const i8"],
+        ret: Some("i8x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx.max.pd.256",
+        params: &["__m256d", "__m256d"],
+        ret: Some("__m256d"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx.max.ps.256",
+        params: &["__m256", "__m256"],
+        ret: Some("__m256"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx.min.pd.256",
+        params: &["__m256d", "__m256d"],
+        ret: Some("__m256d"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx.min.ps.256",
+        params: &["__m256", "__m256"],
+        ret: Some("__m256"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx.ptestnzc.256",
+        params: &["i64x4", "i64x4"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx.rcp.ps.256",
+        params: &["__m256"],
+        ret: Some("__m256"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx.round.pd.256",
+        params: &["__m256d", "i32"],
+        ret: Some("__m256d"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx.round.ps.256",
+        params: &["__m256", "i32"],
+        ret: Some("__m256"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx.rsqrt.ps.256",
+        params: &["__m256"],
+        ret: Some("__m256"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx.vpermilvar.pd",
+        params: &["__m128d", "i64x2"],
+        ret: Some("__m128d"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx.vpermilvar.pd.256",
+        params: &["__m256d", "i64x4"],
+        ret: Some("__m256d"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx.vpermilvar.ps",
+        params: &["__m128", "i32x4"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx.vpermilvar.ps.256",
+        params: &["__m256", "i32x8"],
+        ret: Some("__m256"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx.vtestc.pd.256",
+        params: &["__m256d", "__m256d"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx.vtestc.ps.256",
+        params: &["__m256", "__m256"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx.vtestnzc.pd",
+        params: &["__m128d", "__m128d"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx.vtestnzc.pd.256",
+        params: &["__m256d", "__m256d"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx.vtestnzc.ps",
+        params: &["__m128", "__m128"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx.vtestnzc.ps.256",
+        params: &["__m256", "__m256"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx.vtestz.pd.256",
+        params: &["__m256d", "__m256d"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx.vtestz.ps.256",
+        params: &["__m256", "__m256"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx.vzeroall",
+        params: &[],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx.vzeroupper",
+        params: &[],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.gather.d.d",
+        params: &["i32x4", "*const i8", "i32x4", "i32x4", "i8"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.gather.d.d.256",
+        params: &["i32x8", "*const i8", "i32x8", "i32x8", "i8"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.gather.d.pd",
+        params: &["__m128d", "*const i8", "i32x4", "__m128d", "i8"],
+        ret: Some("__m128d"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.gather.d.pd.256",
+        params: &["__m256d", "*const i8", "i32x4", "__m256d", "i8"],
+        ret: Some("__m256d"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.gather.d.ps",
+        params: &["__m128", "*const i8", "i32x4", "__m128", "i8"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.gather.d.ps.256",
+        params: &["__m256", "*const i8", "i32x8", "__m256", "i8"],
+        ret: Some("__m256"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.gather.d.q",
+        params: &["i64x2", "*const i8", "i32x4", "i64x2", "i8"],
+        ret: Some("i64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.gather.d.q.256",
+        params: &["i64x4", "*const i8", "i32x4", "i64x4", "i8"],
+        ret: Some("i64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.gather.q.d",
+        params: &["i32x4", "*const i8", "i64x2", "i32x4", "i8"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.gather.q.d.256",
+        params: &["i32x4", "*const i8", "i64x4", "i32x4", "i8"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.gather.q.pd",
+        params: &["__m128d", "*const i8", "i64x2", "__m128d", "i8"],
+        ret: Some("__m128d"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.gather.q.pd.256",
+        params: &["__m256d", "*const i8", "i64x4", "__m256d", "i8"],
+        ret: Some("__m256d"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.gather.q.ps",
+        params: &["__m128", "*const i8", "i64x2", "__m128", "i8"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.gather.q.ps.256",
+        params: &["__m128", "*const i8", "i64x4", "__m128", "i8"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.gather.q.q",
+        params: &["i64x2", "*const i8", "i64x2", "i64x2", "i8"],
+        ret: Some("i64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.gather.q.q.256",
+        params: &["i64x4", "*const i8", "i64x4", "i64x4", "i8"],
+        ret: Some("i64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.mpsadbw",
+        params: &["u8x32", "u8x32", "i8"],
+        ret: Some("u16x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.permd",
+        params: &["u32x8", "u32x8"],
+        ret: Some("u32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.permps",
+        params: &["__m256", "i32x8"],
+        ret: Some("__m256"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.pmadd.ub.sw",
+        params: &["u8x32", "i8x32"],
+        ret: Some("i16x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.pmadd.wd",
+        params: &["i16x16", "i16x16"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.pmul.hr.sw",
+        params: &["i16x16", "i16x16"],
+        ret: Some("i16x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.psad.bw",
+        params: &["u8x32", "u8x32"],
+        ret: Some("u64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.pshuf.b",
+        params: &["u8x32", "u8x32"],
+        ret: Some("u8x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.psign.b",
+        params: &["i8x32", "i8x32"],
+        ret: Some("i8x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.psign.d",
+        params: &["i32x8", "i32x8"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.psign.w",
+        params: &["i16x16", "i16x16"],
+        ret: Some("i16x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.psll.d",
+        params: &["i32x8", "i32x4"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.psll.q",
+        params: &["i64x4", "i64x2"],
+        ret: Some("i64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.psll.w",
+        params: &["i16x16", "i16x8"],
+        ret: Some("i16x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.psra.d",
+        params: &["i32x8", "i32x4"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.psra.w",
+        params: &["i16x16", "i16x8"],
+        ret: Some("i16x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.psrl.d",
+        params: &["i32x8", "i32x4"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.psrl.q",
+        params: &["i64x4", "i64x2"],
+        ret: Some("i64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.psrl.w",
+        params: &["i16x16", "i16x8"],
+        ret: Some("i16x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.vpdpbssd.128",
+        params: &["i32x4", "i8x16", "i8x16"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.vpdpbssd.256",
+        params: &["i32x8", "i8x32", "i8x32"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.vpdpbssds.128",
+        params: &["i32x4", "i8x16", "i8x16"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.vpdpbssds.256",
+        params: &["i32x8", "i8x32", "i8x32"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.vpdpbsud.128",
+        params: &["i32x4", "i8x16", "u8x16"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.vpdpbsud.256",
+        params: &["i32x8", "i8x32", "u8x32"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.vpdpbsuds.128",
+        params: &["i32x4", "i8x16", "u8x16"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.vpdpbsuds.256",
+        params: &["i32x8", "i8x32", "u8x32"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.vpdpbuud.128",
+        params: &["i32x4", "u8x16", "u8x16"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.vpdpbuud.256",
+        params: &["i32x8", "u8x32", "u8x32"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.vpdpbuuds.128",
+        params: &["i32x4", "u8x16", "u8x16"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.vpdpbuuds.256",
+        params: &["i32x8", "u8x32", "u8x32"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.vpdpwsud.128",
+        params: &["i32x4", "i16x8", "u16x8"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.vpdpwsud.256",
+        params: &["i32x8", "i16x16", "u16x16"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.vpdpwsuds.128",
+        params: &["i32x4", "i16x8", "u16x8"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.vpdpwsuds.256",
+        params: &["i32x8", "i16x16", "u16x16"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.vpdpwusd.128",
+        params: &["i32x4", "u16x8", "i16x8"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.vpdpwusd.256",
+        params: &["i32x8", "u16x16", "i16x16"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.vpdpwusds.128",
+        params: &["i32x4", "u16x8", "i16x8"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.vpdpwusds.256",
+        params: &["i32x8", "u16x16", "i16x16"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.vpdpwuud.128",
+        params: &["i32x4", "u16x8", "u16x8"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.vpdpwuud.256",
+        params: &["i32x8", "u16x16", "u16x16"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.vpdpwuuds.128",
+        params: &["i32x4", "u16x8", "u16x8"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx2.vpdpwuuds.256",
+        params: &["i32x8", "u16x16", "u16x16"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.add.pd.512",
+        params: &["f64x8", "f64x8", "i32"],
+        ret: Some("f64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.add.ps.512",
+        params: &["f32x16", "f32x16", "i32"],
+        ret: Some("f32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.conflict.d.128",
+        params: &["i32x4"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.conflict.d.256",
+        params: &["i32x8"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.conflict.d.512",
+        params: &["i32x16"],
+        ret: Some("i32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.conflict.q.128",
+        params: &["i64x2"],
+        ret: Some("i64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.conflict.q.256",
+        params: &["i64x4"],
+        ret: Some("i64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.conflict.q.512",
+        params: &["i64x8"],
+        ret: Some("i64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.cvtsi2sd64",
+        params: &["f64x2", "i64", "i32"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.cvtsi2ss32",
+        params: &["f32x4", "i32", "i32"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.cvtsi2ss64",
+        params: &["f32x4", "i64", "i32"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.cvttsd2si",
+        params: &["f64x2", "i32"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.cvttsd2si64",
+        params: &["f64x2", "i32"],
+        ret: Some("i64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.cvttsd2usi",
+        params: &["f64x2", "i32"],
+        ret: Some("u32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.cvttsd2usi64",
+        params: &["f64x2", "i32"],
+        ret: Some("u64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.cvttss2si",
+        params: &["f32x4", "i32"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.cvttss2si64",
+        params: &["f32x4", "i32"],
+        ret: Some("i64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.cvttss2usi",
+        params: &["f32x4", "i32"],
+        ret: Some("u32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.cvttss2usi64",
+        params: &["f32x4", "i32"],
+        ret: Some("u64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.cvtusi2ss",
+        params: &["f32x4", "u32", "i32"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.cvtusi642sd",
+        params: &["f64x2", "u64", "i32"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.cvtusi642ss",
+        params: &["f32x4", "u64", "i32"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.dbpsadbw.128",
+        params: &["u8x16", "u8x16", "i32"],
+        ret: Some("u16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.dbpsadbw.256",
+        params: &["u8x32", "u8x32", "i32"],
+        ret: Some("u16x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.dbpsadbw.512",
+        params: &["u8x64", "u8x64", "i32"],
+        ret: Some("u16x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.div.pd.512",
+        params: &["f64x8", "f64x8", "i32"],
+        ret: Some("f64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.div.ps.512",
+        params: &["f32x16", "f32x16", "i32"],
+        ret: Some("f32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.fpclass.pd.128",
+        params: &["f64x2", "i32"],
+        ret: Some("__mmask8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.fpclass.pd.256",
+        params: &["f64x4", "i32"],
+        ret: Some("__mmask8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.fpclass.pd.512",
+        params: &["f64x8", "i32"],
+        ret: Some("__mmask8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.fpclass.ps.128",
+        params: &["f32x4", "i32"],
+        ret: Some("__mmask8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.fpclass.ps.256",
+        params: &["f32x8", "i32"],
+        ret: Some("__mmask8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.fpclass.ps.512",
+        params: &["f32x16", "i32"],
+        ret: Some("__mmask16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.gather.dpd.512",
+        params: &["f64x8", "*const i8", "i32x8", "i8", "i32"],
+        ret: Some("f64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.gather.dpi.512",
+        params: &["i32x16", "*const i8", "i32x16", "i16", "i32"],
+        ret: Some("i32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.gather.dpq.512",
+        params: &["i64x8", "*const i8", "i32x8", "i8", "i32"],
+        ret: Some("i64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.gather.dps.512",
+        params: &["f32x16", "*const i8", "i32x16", "i16", "i32"],
+        ret: Some("f32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.gather.qpd.512",
+        params: &["f64x8", "*const i8", "i64x8", "i8", "i32"],
+        ret: Some("f64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.gather.qpi.512",
+        params: &["i32x8", "*const i8", "i64x8", "i8", "i32"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.gather.qpq.512",
+        params: &["i64x8", "*const i8", "i64x8", "i8", "i32"],
+        ret: Some("i64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.gather.qps.512",
+        params: &["f32x8", "*const i8", "i64x8", "i8", "i32"],
+        ret: Some("f32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.gather3div2.df",
+        params: &["f64x2", "*const i8", "i64x2", "u8", "i32"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.gather3div2.di",
+        params: &["i64x2", "*const i8", "i64x2", "u8", "i32"],
+        ret: Some("i64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.gather3div4.df",
+        params: &["f64x4", "*const i8", "i64x4", "u8", "i32"],
+        ret: Some("f64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.gather3div4.di",
+        params: &["i64x4", "*const i8", "i64x4", "u8", "i32"],
+        ret: Some("i64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.gather3div4.sf",
+        params: &["f32x4", "*const i8", "i64x2", "u8", "i32"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.gather3div4.si",
+        params: &["i32x4", "*const u8", "i64x2", "u8", "i32"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.gather3div8.sf",
+        params: &["f32x4", "*const i8", "i64x4", "u8", "i32"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.gather3div8.si",
+        params: &["i32x4", "*const i8", "i64x4", "u8", "i32"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.gather3siv2.df",
+        params: &["f64x2", "*const i8", "i32x4", "u8", "i32"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.gather3siv2.di",
+        params: &["i64x2", "*const i8", "i32x4", "u8", "i32"],
+        ret: Some("i64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.gather3siv4.df",
+        params: &["f64x4", "*const i8", "i32x4", "u8", "i32"],
+        ret: Some("f64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.gather3siv4.di",
+        params: &["i64x4", "*const i8", "i32x4", "u8", "i32"],
+        ret: Some("i64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.gather3siv4.sf",
+        params: &["f32x4", "*const u8", "i32x4", "u8", "i32"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.gather3siv4.si",
+        params: &["i32x4", "*const i8", "i32x4", "u8", "i32"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.gather3siv8.sf",
+        params: &["f32x8", "*const i8", "i32x8", "u8", "i32"],
+        ret: Some("f32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.gather3siv8.si",
+        params: &["i32x8", "*const i8", "i32x8", "u8", "i32"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.add.sd.round",
+        params: &["f64x2", "f64x2", "f64x2", "u8", "i32"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.add.ss.round",
+        params: &["f32x4", "f32x4", "f32x4", "u8", "i32"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cmp.pd.128",
+        params: &["f64x2", "f64x2", "i32", "i8"],
+        ret: Some("i8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cmp.pd.256",
+        params: &["f64x4", "f64x4", "i32", "i8"],
+        ret: Some("i8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cmp.pd.512",
+        params: &["f64x8", "f64x8", "i32", "i8", "i32"],
+        ret: Some("i8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cmp.ps.128",
+        params: &["f32x4", "f32x4", "i32", "i8"],
+        ret: Some("i8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cmp.ps.256",
+        params: &["f32x8", "f32x8", "i32", "i8"],
+        ret: Some("i8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cmp.ps.512",
+        params: &["f32x16", "f32x16", "i32", "i16", "i32"],
+        ret: Some("i16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cmp.sd",
+        params: &["__m128d", "__m128d", "i32", "i8", "i32"],
+        ret: Some("i8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cmp.ss",
+        params: &["__m128", "__m128", "i32", "i8", "i32"],
+        ret: Some("i8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.b.128",
+        params: &["i8x16", "i8x16", "u16"],
+        ret: Some("i8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.b.256",
+        params: &["i8x32", "i8x32", "u32"],
+        ret: Some("i8x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.b.512",
+        params: &["i8x64", "i8x64", "u64"],
+        ret: Some("i8x64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.d.128",
+        params: &["i32x4", "i32x4", "u8"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.d.256",
+        params: &["i32x8", "i32x8", "u8"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.d.512",
+        params: &["i32x16", "i32x16", "u16"],
+        ret: Some("i32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.pd.128",
+        params: &["f64x2", "f64x2", "u8"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.pd.256",
+        params: &["f64x4", "f64x4", "u8"],
+        ret: Some("f64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.pd.512",
+        params: &["f64x8", "f64x8", "u8"],
+        ret: Some("f64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.ps.128",
+        params: &["f32x4", "f32x4", "u8"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.ps.256",
+        params: &["f32x8", "f32x8", "u8"],
+        ret: Some("f32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.ps.512",
+        params: &["f32x16", "f32x16", "u16"],
+        ret: Some("f32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.q.128",
+        params: &["i64x2", "i64x2", "u8"],
+        ret: Some("i64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.q.256",
+        params: &["i64x4", "i64x4", "u8"],
+        ret: Some("i64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.q.512",
+        params: &["i64x8", "i64x8", "u8"],
+        ret: Some("i64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.store.b.128",
+        params: &["*mut i8", "i8x16", "u16"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.store.b.256",
+        params: &["*mut i8", "i8x32", "u32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.store.b.512",
+        params: &["*mut i8", "i8x64", "u64"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.store.d.128",
+        params: &["*mut i8", "i32x4", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.store.d.256",
+        params: &["*mut i8", "i32x8", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.store.d.512",
+        params: &["*mut i8", "i32x16", "u16"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.store.pd.128",
+        params: &["*mut i8", "f64x2", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.store.pd.256",
+        params: &["*mut i8", "f64x4", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.store.pd.512",
+        params: &["*mut i8", "f64x8", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.store.ps.128",
+        params: &["*mut i8", "f32x4", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.store.ps.256",
+        params: &["*mut i8", "f32x8", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.store.ps.512",
+        params: &["*mut i8", "f32x16", "u16"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.store.q.128",
+        params: &["*mut i8", "i64x2", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.store.q.256",
+        params: &["*mut i8", "i64x4", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.store.q.512",
+        params: &["*mut i8", "i64x8", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.store.w.128",
+        params: &["*mut i8", "i16x8", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.store.w.256",
+        params: &["*mut i8", "i16x16", "u16"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.store.w.512",
+        params: &["*mut i8", "i16x32", "u32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.w.128",
+        params: &["i16x8", "i16x8", "u8"],
+        ret: Some("i16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.w.256",
+        params: &["i16x16", "i16x16", "u16"],
+        ret: Some("i16x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.compress.w.512",
+        params: &["i16x32", "i16x32", "u32"],
+        ret: Some("i16x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvtpd2dq.128",
+        params: &["f64x2", "i32x4", "u8"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvtpd2dq.512",
+        params: &["f64x8", "i32x8", "u8", "i32"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvtpd2ps",
+        params: &["f64x2", "f32x4", "u8"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvtpd2ps.512",
+        params: &["f64x8", "f32x8", "u8", "i32"],
+        ret: Some("f32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvtpd2qq.128",
+        params: &["f64x2", "i64x2", "__mmask8"],
+        ret: Some("i64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvtpd2qq.256",
+        params: &["f64x4", "i64x4", "__mmask8"],
+        ret: Some("i64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvtpd2qq.512",
+        params: &["f64x8", "i64x8", "__mmask8", "i32"],
+        ret: Some("i64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvtpd2udq.128",
+        params: &["f64x2", "u32x4", "u8"],
+        ret: Some("u32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvtpd2udq.256",
+        params: &["f64x4", "u32x4", "u8"],
+        ret: Some("u32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvtpd2udq.512",
+        params: &["f64x8", "u32x8", "u8", "i32"],
+        ret: Some("u32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvtpd2uqq.128",
+        params: &["f64x2", "u64x2", "__mmask8"],
+        ret: Some("u64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvtpd2uqq.256",
+        params: &["f64x4", "u64x4", "__mmask8"],
+        ret: Some("u64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvtpd2uqq.512",
+        params: &["f64x8", "u64x8", "__mmask8", "i32"],
+        ret: Some("u64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvtps2dq.512",
+        params: &["f32x16", "i32x16", "u16", "i32"],
+        ret: Some("i32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvtps2pd.512",
+        params: &["f32x8", "f64x8", "u8", "i32"],
+        ret: Some("f64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvtps2qq.128",
+        params: &["f32x4", "i64x2", "__mmask8"],
+        ret: Some("i64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvtps2qq.256",
+        params: &["f32x4", "i64x4", "__mmask8"],
+        ret: Some("i64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvtps2qq.512",
+        params: &["f32x8", "i64x8", "__mmask8", "i32"],
+        ret: Some("i64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvtps2udq.128",
+        params: &["f32x4", "u32x4", "u8"],
+        ret: Some("u32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvtps2udq.256",
+        params: &["f32x8", "u32x8", "u8"],
+        ret: Some("u32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvtps2udq.512",
+        params: &["f32x16", "u32x16", "u16", "i32"],
+        ret: Some("u32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvtps2uqq.128",
+        params: &["f32x4", "u64x2", "__mmask8"],
+        ret: Some("u64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvtps2uqq.256",
+        params: &["f32x4", "u64x4", "__mmask8"],
+        ret: Some("u64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvtps2uqq.512",
+        params: &["f32x8", "u64x8", "__mmask8", "i32"],
+        ret: Some("u64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvtqq2ps.128",
+        params: &["i64x2", "f32x4", "__mmask8"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvtsd2ss.round",
+        params: &["f32x4", "f64x2", "f32x4", "u8", "i32"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvtss2sd.round",
+        params: &["f64x2", "f32x4", "f64x2", "u8", "i32"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvttpd2dq.128",
+        params: &["f64x2", "i32x4", "u8"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvttpd2dq.512",
+        params: &["f64x8", "i32x8", "u8", "i32"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvttpd2qq.128",
+        params: &["f64x2", "i64x2", "__mmask8"],
+        ret: Some("i64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvttpd2qq.256",
+        params: &["f64x4", "i64x4", "__mmask8"],
+        ret: Some("i64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvttpd2qq.512",
+        params: &["f64x8", "i64x8", "__mmask8", "i32"],
+        ret: Some("i64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvttpd2udq.128",
+        params: &["f64x2", "i32x4", "u8"],
+        ret: Some("u32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvttpd2udq.256",
+        params: &["f64x4", "i32x4", "u8"],
+        ret: Some("u32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvttpd2udq.512",
+        params: &["f64x8", "i32x8", "u8", "i32"],
+        ret: Some("u32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvttpd2uqq.128",
+        params: &["f64x2", "u64x2", "__mmask8"],
+        ret: Some("u64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvttpd2uqq.256",
+        params: &["f64x4", "u64x4", "__mmask8"],
+        ret: Some("u64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvttpd2uqq.512",
+        params: &["f64x8", "u64x8", "__mmask8", "i32"],
+        ret: Some("u64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvttps2dq.512",
+        params: &["f32x16", "i32x16", "u16", "i32"],
+        ret: Some("i32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvttps2qq.128",
+        params: &["f32x4", "i64x2", "__mmask8"],
+        ret: Some("i64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvttps2qq.256",
+        params: &["f32x4", "i64x4", "__mmask8"],
+        ret: Some("i64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvttps2qq.512",
+        params: &["f32x8", "i64x8", "__mmask8", "i32"],
+        ret: Some("i64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvttps2udq.128",
+        params: &["f32x4", "u32x4", "u8"],
+        ret: Some("u32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvttps2udq.256",
+        params: &["f32x8", "u32x8", "u8"],
+        ret: Some("u32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvttps2udq.512",
+        params: &["f32x16", "u32x16", "u16", "i32"],
+        ret: Some("u32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvttps2uqq.128",
+        params: &["f32x4", "u64x2", "__mmask8"],
+        ret: Some("u64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvttps2uqq.256",
+        params: &["f32x4", "u64x4", "__mmask8"],
+        ret: Some("u64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvttps2uqq.512",
+        params: &["f32x8", "u64x8", "__mmask8", "i32"],
+        ret: Some("u64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.cvtuqq2ps.128",
+        params: &["u64x2", "f32x4", "__mmask8"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.div.sd.round",
+        params: &["f64x2", "f64x2", "f64x2", "u8", "i32"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.div.ss.round",
+        params: &["f32x4", "f32x4", "f32x4", "u8", "i32"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.b.128",
+        params: &["i8x16", "i8x16", "u16"],
+        ret: Some("i8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.b.256",
+        params: &["i8x32", "i8x32", "u32"],
+        ret: Some("i8x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.b.512",
+        params: &["i8x64", "i8x64", "u64"],
+        ret: Some("i8x64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.d.128",
+        params: &["i32x4", "i32x4", "u8"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.d.256",
+        params: &["i32x8", "i32x8", "u8"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.d.512",
+        params: &["i32x16", "i32x16", "u16"],
+        ret: Some("i32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.load.b.128",
+        params: &["*const i8", "i8x16", "u16"],
+        ret: Some("i8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.load.b.256",
+        params: &["*const i8", "i8x32", "u32"],
+        ret: Some("i8x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.load.b.512",
+        params: &["*const i8", "i8x64", "u64"],
+        ret: Some("i8x64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.load.d.128",
+        params: &["*const i32", "i32x4", "u8"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.load.d.256",
+        params: &["*const i32", "i32x8", "u8"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.load.d.512",
+        params: &["*const i32", "i32x16", "u16"],
+        ret: Some("i32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.load.pd.128",
+        params: &["*const f64", "f64x2", "u8"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.load.pd.256",
+        params: &["*const f64", "f64x4", "u8"],
+        ret: Some("f64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.load.pd.512",
+        params: &["*const f64", "f64x8", "u8"],
+        ret: Some("f64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.load.ps.128",
+        params: &["*const f32", "f32x4", "u8"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.load.ps.256",
+        params: &["*const f32", "f32x8", "u8"],
+        ret: Some("f32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.load.ps.512",
+        params: &["*const f32", "f32x16", "u16"],
+        ret: Some("f32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.load.q.128",
+        params: &["*const i64", "i64x2", "u8"],
+        ret: Some("i64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.load.q.256",
+        params: &["*const i64", "i64x4", "u8"],
+        ret: Some("i64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.load.q.512",
+        params: &["*const i64", "i64x8", "u8"],
+        ret: Some("i64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.load.w.128",
+        params: &["*const i16", "i16x8", "u8"],
+        ret: Some("i16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.load.w.256",
+        params: &["*const i16", "i16x16", "u16"],
+        ret: Some("i16x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.load.w.512",
+        params: &["*const i16", "i16x32", "u32"],
+        ret: Some("i16x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.pd.128",
+        params: &["f64x2", "f64x2", "u8"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.pd.256",
+        params: &["f64x4", "f64x4", "u8"],
+        ret: Some("f64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.pd.512",
+        params: &["f64x8", "f64x8", "u8"],
+        ret: Some("f64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.ps.128",
+        params: &["f32x4", "f32x4", "u8"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.ps.256",
+        params: &["f32x8", "f32x8", "u8"],
+        ret: Some("f32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.ps.512",
+        params: &["f32x16", "f32x16", "u16"],
+        ret: Some("f32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.q.128",
+        params: &["i64x2", "i64x2", "u8"],
+        ret: Some("i64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.q.256",
+        params: &["i64x4", "i64x4", "u8"],
+        ret: Some("i64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.q.512",
+        params: &["i64x8", "i64x8", "u8"],
+        ret: Some("i64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.w.128",
+        params: &["i16x8", "i16x8", "u8"],
+        ret: Some("i16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.w.256",
+        params: &["i16x16", "i16x16", "u16"],
+        ret: Some("i16x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.expand.w.512",
+        params: &["i16x32", "i16x32", "u32"],
+        ret: Some("i16x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.fixupimm.pd.128",
+        params: &["f64x2", "f64x2", "i64x2", "i32", "u8"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.fixupimm.pd.256",
+        params: &["f64x4", "f64x4", "i64x4", "i32", "u8"],
+        ret: Some("f64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.fixupimm.pd.512",
+        params: &["f64x8", "f64x8", "i64x8", "i32", "u8", "i32"],
+        ret: Some("f64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.fixupimm.ps.128",
+        params: &["f32x4", "f32x4", "i32x4", "i32", "u8"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.fixupimm.ps.256",
+        params: &["f32x8", "f32x8", "i32x8", "i32", "u8"],
+        ret: Some("f32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.fixupimm.ps.512",
+        params: &["f32x16", "f32x16", "i32x16", "i32", "u16", "i32"],
+        ret: Some("f32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.fixupimm.sd",
+        params: &["f64x2", "f64x2", "i64x2", "i32", "u8", "i32"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.fixupimm.ss",
+        params: &["f32x4", "f32x4", "i32x4", "i32", "u8", "i32"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.fpclass.sd",
+        params: &["f64x2", "i32", "__mmask8"],
+        ret: Some("__mmask8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.fpclass.ss",
+        params: &["f32x4", "i32", "__mmask8"],
+        ret: Some("__mmask8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.getexp.pd.128",
+        params: &["f64x2", "f64x2", "u8"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.getexp.pd.256",
+        params: &["f64x4", "f64x4", "u8"],
+        ret: Some("f64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.getexp.pd.512",
+        params: &["f64x8", "f64x8", "u8", "i32"],
+        ret: Some("f64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.getexp.ps.128",
+        params: &["f32x4", "f32x4", "u8"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.getexp.ps.256",
+        params: &["f32x8", "f32x8", "u8"],
+        ret: Some("f32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.getexp.ps.512",
+        params: &["f32x16", "f32x16", "u16", "i32"],
+        ret: Some("f32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.getexp.sd",
+        params: &["f64x2", "f64x2", "f64x2", "u8", "i32"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.getexp.ss",
+        params: &["f32x4", "f32x4", "f32x4", "u8", "i32"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.getmant.pd.128",
+        params: &["f64x2", "i32", "f64x2", "u8"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.getmant.pd.256",
+        params: &["f64x4", "i32", "f64x4", "u8"],
+        ret: Some("f64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.getmant.pd.512",
+        params: &["f64x8", "i32", "f64x8", "u8", "i32"],
+        ret: Some("f64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.getmant.ps.128",
+        params: &["f32x4", "i32", "f32x4", "u8"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.getmant.ps.256",
+        params: &["f32x8", "i32", "f32x8", "u8"],
+        ret: Some("f32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.getmant.ps.512",
+        params: &["f32x16", "i32", "f32x16", "u16", "i32"],
+        ret: Some("f32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.getmant.sd",
+        params: &["f64x2", "f64x2", "i32", "f64x2", "u8", "i32"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.getmant.ss",
+        params: &["f32x4", "f32x4", "i32", "f32x4", "u8", "i32"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.max.sd.round",
+        params: &["f64x2", "f64x2", "f64x2", "u8", "i32"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.max.ss.round",
+        params: &["f32x4", "f32x4", "f32x4", "u8", "i32"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.min.sd.round",
+        params: &["f64x2", "f64x2", "f64x2", "u8", "i32"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.min.ss.round",
+        params: &["f32x4", "f32x4", "f32x4", "u8", "i32"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.mul.sd.round",
+        params: &["f64x2", "f64x2", "f64x2", "u8", "i32"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.mul.ss.round",
+        params: &["f32x4", "f32x4", "f32x4", "u8", "i32"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmov.db.128",
+        params: &["i32x4", "i8x16", "u8"],
+        ret: Some("i8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmov.db.256",
+        params: &["i32x8", "i8x16", "u8"],
+        ret: Some("i8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmov.db.mem.128",
+        params: &["*mut i8", "i32x4", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmov.db.mem.256",
+        params: &["*mut i8", "i32x8", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmov.db.mem.512",
+        params: &["*mut i8", "i32x16", "u16"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmov.dw.128",
+        params: &["i32x4", "i16x8", "u8"],
+        ret: Some("i16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmov.dw.mem.128",
+        params: &["*mut i8", "i32x4", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmov.dw.mem.256",
+        params: &["*mut i8", "i32x8", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmov.dw.mem.512",
+        params: &["*mut i8", "i32x16", "u16"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmov.qb.128",
+        params: &["i64x2", "i8x16", "u8"],
+        ret: Some("i8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmov.qb.256",
+        params: &["i64x4", "i8x16", "u8"],
+        ret: Some("i8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmov.qb.512",
+        params: &["i64x8", "i8x16", "u8"],
+        ret: Some("i8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmov.qb.mem.128",
+        params: &["*mut i8", "i64x2", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmov.qb.mem.256",
+        params: &["*mut i8", "i64x4", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmov.qb.mem.512",
+        params: &["*mut i8", "i64x8", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmov.qd.128",
+        params: &["i64x2", "i32x4", "u8"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmov.qd.mem.128",
+        params: &["*mut i8", "i64x2", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmov.qd.mem.256",
+        params: &["*mut i8", "i64x4", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmov.qd.mem.512",
+        params: &["*mut i8", "i64x8", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmov.qw.128",
+        params: &["i64x2", "i16x8", "u8"],
+        ret: Some("i16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmov.qw.256",
+        params: &["i64x4", "i16x8", "u8"],
+        ret: Some("i16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmov.qw.mem.128",
+        params: &["*mut i8", "i64x2", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmov.qw.mem.256",
+        params: &["*mut i8", "i64x4", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmov.qw.mem.512",
+        params: &["*mut i8", "i64x8", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.db.128",
+        params: &["i32x4", "i8x16", "u8"],
+        ret: Some("i8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.db.256",
+        params: &["i32x8", "i8x16", "u8"],
+        ret: Some("i8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.db.512",
+        params: &["i32x16", "i8x16", "u16"],
+        ret: Some("i8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.db.mem.128",
+        params: &["*mut i8", "i32x4", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.db.mem.256",
+        params: &["*mut i8", "i32x8", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.db.mem.512",
+        params: &["*mut i8", "i32x16", "u16"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.dw.128",
+        params: &["i32x4", "i16x8", "u8"],
+        ret: Some("i16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.dw.256",
+        params: &["i32x8", "i16x8", "u8"],
+        ret: Some("i16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.dw.512",
+        params: &["i32x16", "i16x16", "u16"],
+        ret: Some("i16x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.dw.mem.128",
+        params: &["*mut i8", "i32x4", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.dw.mem.256",
+        params: &["*mut i8", "i32x8", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.dw.mem.512",
+        params: &["*mut i8", "i32x16", "u16"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.qb.128",
+        params: &["i64x2", "i8x16", "u8"],
+        ret: Some("i8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.qb.256",
+        params: &["i64x4", "i8x16", "u8"],
+        ret: Some("i8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.qb.512",
+        params: &["i64x8", "i8x16", "u8"],
+        ret: Some("i8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.qb.mem.128",
+        params: &["*mut i8", "i64x2", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.qb.mem.256",
+        params: &["*mut i8", "i64x4", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.qb.mem.512",
+        params: &["*mut i8", "i64x8", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.qd.128",
+        params: &["i64x2", "i32x4", "u8"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.qd.256",
+        params: &["i64x4", "i32x4", "u8"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.qd.512",
+        params: &["i64x8", "i32x8", "u8"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.qd.mem.128",
+        params: &["*mut i8", "i64x2", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.qd.mem.256",
+        params: &["*mut i8", "i64x4", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.qd.mem.512",
+        params: &["*mut i8", "i64x8", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.qw.128",
+        params: &["i64x2", "i16x8", "u8"],
+        ret: Some("i16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.qw.256",
+        params: &["i64x4", "i16x8", "u8"],
+        ret: Some("i16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.qw.512",
+        params: &["i64x8", "i16x8", "u8"],
+        ret: Some("i16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.qw.mem.128",
+        params: &["*mut i8", "i64x2", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.qw.mem.256",
+        params: &["*mut i8", "i64x4", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.qw.mem.512",
+        params: &["*mut i8", "i64x8", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.wb.128",
+        params: &["i16x8", "i8x16", "u8"],
+        ret: Some("i8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovs.wb.mem.512",
+        params: &["*mut i8", "i16x32", "u32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.db.128",
+        params: &["u32x4", "u8x16", "u8"],
+        ret: Some("u8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.db.256",
+        params: &["u32x8", "u8x16", "u8"],
+        ret: Some("u8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.db.512",
+        params: &["u32x16", "u8x16", "u16"],
+        ret: Some("u8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.db.mem.128",
+        params: &["*mut i8", "i32x4", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.db.mem.256",
+        params: &["*mut i8", "i32x8", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.db.mem.512",
+        params: &["*mut i8", "i32x16", "u16"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.dw.128",
+        params: &["u32x4", "u16x8", "u8"],
+        ret: Some("u16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.dw.256",
+        params: &["u32x8", "u16x8", "u8"],
+        ret: Some("u16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.dw.512",
+        params: &["u32x16", "u16x16", "u16"],
+        ret: Some("u16x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.dw.mem.128",
+        params: &["*mut i8", "i32x4", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.dw.mem.256",
+        params: &["*mut i8", "i32x8", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.dw.mem.512",
+        params: &["*mut i8", "i32x16", "u16"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.qb.128",
+        params: &["u64x2", "u8x16", "u8"],
+        ret: Some("u8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.qb.256",
+        params: &["u64x4", "u8x16", "u8"],
+        ret: Some("u8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.qb.512",
+        params: &["u64x8", "u8x16", "u8"],
+        ret: Some("u8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.qb.mem.128",
+        params: &["*mut i8", "i64x2", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.qb.mem.256",
+        params: &["*mut i8", "i64x4", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.qb.mem.512",
+        params: &["*mut i8", "i64x8", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.qd.128",
+        params: &["u64x2", "u32x4", "u8"],
+        ret: Some("u32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.qd.256",
+        params: &["u64x4", "u32x4", "u8"],
+        ret: Some("u32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.qd.512",
+        params: &["u64x8", "u32x8", "u8"],
+        ret: Some("u32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.qd.mem.128",
+        params: &["*mut i8", "i64x2", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.qd.mem.256",
+        params: &["*mut i8", "i64x4", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.qd.mem.512",
+        params: &["*mut i8", "i64x8", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.qw.128",
+        params: &["u64x2", "u16x8", "u8"],
+        ret: Some("u16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.qw.256",
+        params: &["u64x4", "u16x8", "u8"],
+        ret: Some("u16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.qw.512",
+        params: &["u64x8", "u16x8", "u8"],
+        ret: Some("u16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.qw.mem.128",
+        params: &["*mut i8", "i64x2", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.qw.mem.256",
+        params: &["*mut i8", "i64x4", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.qw.mem.512",
+        params: &["*mut i8", "i64x8", "u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.wb.128",
+        params: &["u16x8", "u8x16", "u8"],
+        ret: Some("u8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.pmovus.wb.mem.512",
+        params: &["*mut i8", "i16x32", "u32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.range.pd.128",
+        params: &["f64x2", "f64x2", "i32", "f64x2", "__mmask8"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.range.pd.256",
+        params: &["f64x4", "f64x4", "i32", "f64x4", "__mmask8"],
+        ret: Some("f64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.range.pd.512",
+        params: &["f64x8", "f64x8", "i32", "f64x8", "__mmask8", "i32"],
+        ret: Some("f64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.range.ps.128",
+        params: &["f32x4", "f32x4", "i32", "f32x4", "__mmask8"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.range.ps.256",
+        params: &["f32x8", "f32x8", "i32", "f32x8", "__mmask8"],
+        ret: Some("f32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.range.ps.512",
+        params: &["f32x16", "f32x16", "i32", "f32x16", "__mmask16", "i32"],
+        ret: Some("f32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.range.sd",
+        params: &["f64x2", "f64x2", "f64x2", "__mmask8", "i32", "i32"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.range.ss",
+        params: &["f32x4", "f32x4", "f32x4", "__mmask8", "i32", "i32"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.reduce.pd.128",
+        params: &["f64x2", "i32", "f64x2", "__mmask8"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.reduce.pd.256",
+        params: &["f64x4", "i32", "f64x4", "__mmask8"],
+        ret: Some("f64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.reduce.pd.512",
+        params: &["f64x8", "i32", "f64x8", "__mmask8", "i32"],
+        ret: Some("f64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.reduce.ps.128",
+        params: &["f32x4", "i32", "f32x4", "__mmask8"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.reduce.ps.256",
+        params: &["f32x8", "i32", "f32x8", "__mmask8"],
+        ret: Some("f32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.reduce.ps.512",
+        params: &["f32x16", "i32", "f32x16", "__mmask16", "i32"],
+        ret: Some("f32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.reduce.sd",
+        params: &["f64x2", "f64x2", "f64x2", "__mmask8", "i32", "i32"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.reduce.ss",
+        params: &["f32x4", "f32x4", "f32x4", "__mmask8", "i32", "i32"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.rndscale.pd.128",
+        params: &["f64x2", "i32", "f64x2", "u8"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.rndscale.pd.256",
+        params: &["f64x4", "i32", "f64x4", "u8"],
+        ret: Some("f64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.rndscale.pd.512",
+        params: &["f64x8", "i32", "f64x8", "u8", "i32"],
+        ret: Some("f64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.rndscale.ps.128",
+        params: &["f32x4", "i32", "f32x4", "u8"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.rndscale.ps.256",
+        params: &["f32x8", "i32", "f32x8", "u8"],
+        ret: Some("f32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.rndscale.ps.512",
+        params: &["f32x16", "i32", "f32x16", "u16", "i32"],
+        ret: Some("f32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.rndscale.sd",
+        params: &["f64x2", "f64x2", "f64x2", "u8", "i32", "i32"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.rndscale.ss",
+        params: &["f32x4", "f32x4", "f32x4", "u8", "i32", "i32"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.scalef.pd.128",
+        params: &["f64x2", "f64x2", "f64x2", "u8"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.scalef.pd.256",
+        params: &["f64x4", "f64x4", "f64x4", "u8"],
+        ret: Some("f64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.scalef.pd.512",
+        params: &["f64x8", "f64x8", "f64x8", "u8", "i32"],
+        ret: Some("f64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.scalef.ps.128",
+        params: &["f32x4", "f32x4", "f32x4", "u8"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.scalef.ps.256",
+        params: &["f32x8", "f32x8", "f32x8", "u8"],
+        ret: Some("f32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.scalef.ps.512",
+        params: &["f32x16", "f32x16", "f32x16", "u16", "i32"],
+        ret: Some("f32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.scalef.sd",
+        params: &["f64x2", "f64x2", "f64x2", "u8", "i32"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.scalef.ss",
+        params: &["f32x4", "f32x4", "f32x4", "u8", "i32"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.sqrt.sd",
+        params: &["__m128d", "__m128d", "__m128d", "u8", "i32"],
+        ret: Some("__m128d"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.sqrt.ss",
+        params: &["__m128", "__m128", "__m128", "u8", "i32"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.sub.sd.round",
+        params: &["f64x2", "f64x2", "f64x2", "u8", "i32"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.sub.ss.round",
+        params: &["f32x4", "f32x4", "f32x4", "u8", "i32"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.vcvtph2ps.512",
+        params: &["i16x16", "f32x16", "u16", "i32"],
+        ret: Some("f32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.vcvtps2ph.128",
+        params: &["f32x4", "i32", "i16x8", "u8"],
+        ret: Some("i16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.vcvtps2ph.256",
+        params: &["f32x8", "i32", "i16x8", "u8"],
+        ret: Some("i16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mask.vcvtps2ph.512",
+        params: &["f32x16", "i32", "i16x16", "u16"],
+        ret: Some("i16x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.maskz.fixupimm.pd.128",
+        params: &["f64x2", "f64x2", "i64x2", "i32", "u8"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.maskz.fixupimm.pd.256",
+        params: &["f64x4", "f64x4", "i64x4", "i32", "u8"],
+        ret: Some("f64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.maskz.fixupimm.pd.512",
+        params: &["f64x8", "f64x8", "i64x8", "i32", "u8", "i32"],
+        ret: Some("f64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.maskz.fixupimm.ps.128",
+        params: &["f32x4", "f32x4", "i32x4", "i32", "u8"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.maskz.fixupimm.ps.256",
+        params: &["f32x8", "f32x8", "i32x8", "i32", "u8"],
+        ret: Some("f32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.maskz.fixupimm.ps.512",
+        params: &["f32x16", "f32x16", "i32x16", "i32", "u16", "i32"],
+        ret: Some("f32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.maskz.fixupimm.sd",
+        params: &["f64x2", "f64x2", "i64x2", "i32", "u8", "i32"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.maskz.fixupimm.ss",
+        params: &["f32x4", "f32x4", "i32x4", "i32", "u8", "i32"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.max.pd.512",
+        params: &["f64x8", "f64x8", "i32"],
+        ret: Some("f64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.max.ps.512",
+        params: &["f32x16", "f32x16", "i32"],
+        ret: Some("f32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.min.pd.512",
+        params: &["f64x8", "f64x8", "i32"],
+        ret: Some("f64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.min.ps.512",
+        params: &["f32x16", "f32x16", "i32"],
+        ret: Some("f32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mul.pd.512",
+        params: &["f64x8", "f64x8", "i32"],
+        ret: Some("f64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.mul.ps.512",
+        params: &["f32x16", "f32x16", "i32"],
+        ret: Some("f32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.permvar.df.256",
+        params: &["f64x4", "i64x4"],
+        ret: Some("f64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.permvar.df.512",
+        params: &["f64x8", "i64x8"],
+        ret: Some("f64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.permvar.di.256",
+        params: &["i64x4", "i64x4"],
+        ret: Some("i64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.permvar.di.512",
+        params: &["i64x8", "i64x8"],
+        ret: Some("i64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.permvar.hi.128",
+        params: &["i16x8", "i16x8"],
+        ret: Some("i16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.permvar.hi.256",
+        params: &["i16x16", "i16x16"],
+        ret: Some("i16x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.permvar.hi.512",
+        params: &["i16x32", "i16x32"],
+        ret: Some("i16x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.permvar.qi.128",
+        params: &["i8x16", "i8x16"],
+        ret: Some("i8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.permvar.qi.256",
+        params: &["i8x32", "i8x32"],
+        ret: Some("i8x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.permvar.qi.512",
+        params: &["i8x64", "i8x64"],
+        ret: Some("i8x64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.permvar.sf.512",
+        params: &["f32x16", "i32x16"],
+        ret: Some("f32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.permvar.si.512",
+        params: &["i32x16", "i32x16"],
+        ret: Some("i32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.pmaddubs.w.512",
+        params: &["u8x64", "i8x64"],
+        ret: Some("i16x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.pmaddw.d.512",
+        params: &["i16x32", "i16x32"],
+        ret: Some("i32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.pmul.hr.sw.512",
+        params: &["i16x32", "i16x32"],
+        ret: Some("i16x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.pmultishift.qb.128",
+        params: &["i8x16", "i8x16"],
+        ret: Some("i8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.pmultishift.qb.256",
+        params: &["i8x32", "i8x32"],
+        ret: Some("i8x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.pmultishift.qb.512",
+        params: &["i8x64", "i8x64"],
+        ret: Some("i8x64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.psad.bw.512",
+        params: &["u8x64", "u8x64"],
+        ret: Some("u64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.pshuf.b.512",
+        params: &["i8x64", "i8x64"],
+        ret: Some("i8x64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.psll.d.512",
+        params: &["i32x16", "i32x4"],
+        ret: Some("i32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.psll.q.512",
+        params: &["i64x8", "i64x2"],
+        ret: Some("i64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.psll.w.512",
+        params: &["i16x32", "i16x8"],
+        ret: Some("i16x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.psra.d.512",
+        params: &["i32x16", "i32x4"],
+        ret: Some("i32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.psra.q.128",
+        params: &["i64x2", "i64x2"],
+        ret: Some("i64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.psra.q.256",
+        params: &["i64x4", "i64x2"],
+        ret: Some("i64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.psra.q.512",
+        params: &["i64x8", "i64x2"],
+        ret: Some("i64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.psra.w.512",
+        params: &["i16x32", "i16x8"],
+        ret: Some("i16x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.psrl.d.512",
+        params: &["i32x16", "i32x4"],
+        ret: Some("i32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.psrl.q.512",
+        params: &["i64x8", "i64x2"],
+        ret: Some("i64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.psrl.w.512",
+        params: &["i16x32", "i16x8"],
+        ret: Some("i16x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.pternlog.d.128",
+        params: &["i32x4", "i32x4", "i32x4", "i32"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.pternlog.d.256",
+        params: &["i32x8", "i32x8", "i32x8", "i32"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.pternlog.d.512",
+        params: &["i32x16", "i32x16", "i32x16", "i32"],
+        ret: Some("i32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.pternlog.q.128",
+        params: &["i64x2", "i64x2", "i64x2", "i32"],
+        ret: Some("i64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.pternlog.q.256",
+        params: &["i64x4", "i64x4", "i64x4", "i32"],
+        ret: Some("i64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.pternlog.q.512",
+        params: &["i64x8", "i64x8", "i64x8", "i32"],
+        ret: Some("i64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.rcp14.pd.128",
+        params: &["f64x2", "f64x2", "u8"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.rcp14.pd.256",
+        params: &["f64x4", "f64x4", "u8"],
+        ret: Some("f64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.rcp14.pd.512",
+        params: &["f64x8", "f64x8", "u8"],
+        ret: Some("f64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.rcp14.ps.128",
+        params: &["f32x4", "f32x4", "u8"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.rcp14.ps.256",
+        params: &["f32x8", "f32x8", "u8"],
+        ret: Some("f32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.rcp14.ps.512",
+        params: &["f32x16", "f32x16", "u16"],
+        ret: Some("f32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.rcp14.sd",
+        params: &["f64x2", "f64x2", "f64x2", "u8"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.rcp14.ss",
+        params: &["f32x4", "f32x4", "f32x4", "u8"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.rsqrt14.pd.128",
+        params: &["f64x2", "f64x2", "u8"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.rsqrt14.pd.256",
+        params: &["f64x4", "f64x4", "u8"],
+        ret: Some("f64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.rsqrt14.pd.512",
+        params: &["f64x8", "f64x8", "u8"],
+        ret: Some("f64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.rsqrt14.ps.128",
+        params: &["f32x4", "f32x4", "u8"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.rsqrt14.ps.256",
+        params: &["f32x8", "f32x8", "u8"],
+        ret: Some("f32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.rsqrt14.ps.512",
+        params: &["f32x16", "f32x16", "u16"],
+        ret: Some("f32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.rsqrt14.sd",
+        params: &["f64x2", "f64x2", "f64x2", "u8"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.rsqrt14.ss",
+        params: &["f32x4", "f32x4", "f32x4", "u8"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.scatter.dpd.512",
+        params: &["*mut i8", "i8", "i32x8", "f64x8", "i32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.scatter.dpi.512",
+        params: &["*mut i8", "i16", "i32x16", "i32x16", "i32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.scatter.dpq.512",
+        params: &["*mut i8", "i8", "i32x8", "i64x8", "i32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.scatter.dps.512",
+        params: &["*mut i8", "i16", "i32x16", "f32x16", "i32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.scatter.qpd.512",
+        params: &["*mut i8", "i8", "i64x8", "f64x8", "i32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.scatter.qpi.512",
+        params: &["*mut i8", "i8", "i64x8", "i32x8", "i32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.scatter.qpq.512",
+        params: &["*mut i8", "i8", "i64x8", "i64x8", "i32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.scatter.qps.512",
+        params: &["*mut i8", "i8", "i64x8", "f32x8", "i32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.scatterdiv2.df",
+        params: &["*mut i8", "u8", "i64x2", "f64x2", "i32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.scatterdiv2.di",
+        params: &["*mut i8", "u8", "i64x2", "i64x2", "i32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.scatterdiv4.df",
+        params: &["*mut i8", "u8", "i64x4", "f64x4", "i32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.scatterdiv4.di",
+        params: &["*mut i8", "u8", "i64x4", "i64x4", "i32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.scatterdiv4.sf",
+        params: &["*mut i8", "u8", "i64x2", "f32x4", "i32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.scatterdiv4.si",
+        params: &["*mut i8", "u8", "i64x2", "i32x4", "i32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.scatterdiv8.sf",
+        params: &["*mut i8", "u8", "i64x4", "f32x4", "i32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.scatterdiv8.si",
+        params: &["*mut i8", "u8", "i64x4", "i32x4", "i32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.scattersiv2.df",
+        params: &["*mut i8", "u8", "i32x4", "f64x2", "i32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.scattersiv2.di",
+        params: &["*mut i8", "u8", "i32x4", "i64x2", "i32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.scattersiv4.df",
+        params: &["*mut i8", "u8", "i32x4", "f64x4", "i32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.scattersiv4.di",
+        params: &["*mut i8", "u8", "i32x4", "i64x4", "i32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.scattersiv4.sf",
+        params: &["*mut i8", "u8", "i32x4", "f32x4", "i32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.scattersiv4.si",
+        params: &["*mut i8", "u8", "i32x4", "i32x4", "i32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.scattersiv8.sf",
+        params: &["*mut i8", "u8", "i32x8", "f32x8", "i32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.scattersiv8.si",
+        params: &["*mut i8", "u8", "i32x8", "i32x8", "i32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.sitofp.round.v16f16.v16i16",
+        params: &["i16x16", "i32"],
+        ret: Some("__m256h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.sitofp.round.v16f16.v16i32",
+        params: &["i32x16", "i32"],
+        ret: Some("__m256h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.sitofp.round.v16f32.v16i32",
+        params: &["i32x16", "i32"],
+        ret: Some("f32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.sitofp.round.v2f64.v2i64",
+        params: &["i64x2", "i32"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.sitofp.round.v32f16.v32i16",
+        params: &["i16x32", "i32"],
+        ret: Some("__m512h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.sitofp.round.v4f32.v4i64",
+        params: &["i64x4", "i32"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.sitofp.round.v4f64.v4i64",
+        params: &["i64x4", "i32"],
+        ret: Some("f64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.sitofp.round.v8f16.v8i16",
+        params: &["i16x8", "i32"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.sitofp.round.v8f16.v8i32",
+        params: &["i32x8", "i32"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.sitofp.round.v8f16.v8i64",
+        params: &["i64x8", "i32"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.sitofp.round.v8f32.v8i64",
+        params: &["i64x8", "i32"],
+        ret: Some("f32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.sitofp.round.v8f64.v8i64",
+        params: &["i64x8", "i32"],
+        ret: Some("f64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.sqrt.pd.512",
+        params: &["f64x8", "i32"],
+        ret: Some("f64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.sqrt.ps.512",
+        params: &["f32x16", "i32"],
+        ret: Some("f32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.sub.pd.512",
+        params: &["f64x8", "f64x8", "i32"],
+        ret: Some("f64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.sub.ps.512",
+        params: &["f32x16", "f32x16", "i32"],
+        ret: Some("f32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.uitofp.round.v16f16.v16i16",
+        params: &["u16x16", "i32"],
+        ret: Some("__m256h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.uitofp.round.v16f16.v16i32",
+        params: &["u32x16", "i32"],
+        ret: Some("__m256h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.uitofp.round.v16f32.v16i32",
+        params: &["u32x16", "i32"],
+        ret: Some("f32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.uitofp.round.v2f64.v2i64",
+        params: &["u64x2", "i32"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.uitofp.round.v32f16.v32i16",
+        params: &["u16x32", "i32"],
+        ret: Some("__m512h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.uitofp.round.v4f32.v4i64",
+        params: &["u64x4", "i32"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.uitofp.round.v4f64.v4i64",
+        params: &["u64x4", "i32"],
+        ret: Some("f64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.uitofp.round.v8f16.v8i16",
+        params: &["u16x8", "i32"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.uitofp.round.v8f16.v8i32",
+        params: &["u32x8", "i32"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.uitofp.round.v8f16.v8i64",
+        params: &["u64x8", "i32"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.uitofp.round.v8f32.v8i64",
+        params: &["u64x8", "i32"],
+        ret: Some("f32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.uitofp.round.v8f64.v8i64",
+        params: &["u64x8", "i32"],
+        ret: Some("f64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vcomi.sd",
+        params: &["f64x2", "f64x2", "i32", "i32"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vcomi.ss",
+        params: &["f32x4", "f32x4", "i32", "i32"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vcvtsd2si32",
+        params: &["f64x2", "i32"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vcvtsd2si64",
+        params: &["f64x2", "i32"],
+        ret: Some("i64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vcvtsd2usi32",
+        params: &["f64x2", "i32"],
+        ret: Some("u32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vcvtsd2usi64",
+        params: &["f64x2", "i32"],
+        ret: Some("u64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vcvtss2si32",
+        params: &["f32x4", "i32"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vcvtss2si64",
+        params: &["f32x4", "i32"],
+        ret: Some("i64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vcvtss2usi32",
+        params: &["f32x4", "i32"],
+        ret: Some("u32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vcvtss2usi64",
+        params: &["f32x4", "i32"],
+        ret: Some("u64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vfmadd.f32",
+        params: &["f32", "f32", "f32", "i32"],
+        ret: Some("f32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vfmadd.f64",
+        params: &["f64", "f64", "f64", "i32"],
+        ret: Some("f64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vfmadd.pd.512",
+        params: &["__m512d", "__m512d", "__m512d", "i32"],
+        ret: Some("__m512d"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vfmadd.ps.512",
+        params: &["__m512", "__m512", "__m512", "i32"],
+        ret: Some("__m512"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vp2intersect.d.128",
+        params: &["i32x4", "i32x4"],
+        ret: Some("(u8, u8)"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vp2intersect.d.256",
+        params: &["i32x8", "i32x8"],
+        ret: Some("(u8, u8)"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vp2intersect.d.512",
+        params: &["i32x16", "i32x16"],
+        ret: Some("(u16, u16)"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vp2intersect.q.128",
+        params: &["i64x2", "i64x2"],
+        ret: Some("(u8, u8)"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vp2intersect.q.256",
+        params: &["i64x4", "i64x4"],
+        ret: Some("(u8, u8)"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vp2intersect.q.512",
+        params: &["i64x8", "i64x8"],
+        ret: Some("(u8, u8)"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpdpbusd.128",
+        params: &["i32x4", "u8x16", "i8x16"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpdpbusd.256",
+        params: &["i32x8", "u8x32", "i8x32"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpdpbusd.512",
+        params: &["i32x16", "u8x64", "i8x64"],
+        ret: Some("i32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpdpbusds.128",
+        params: &["i32x4", "u8x16", "i8x16"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpdpbusds.256",
+        params: &["i32x8", "u8x32", "i8x32"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpdpbusds.512",
+        params: &["i32x16", "u8x64", "i8x64"],
+        ret: Some("i32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpdpwssd.128",
+        params: &["i32x4", "i16x8", "i16x8"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpdpwssd.256",
+        params: &["i32x8", "i16x16", "i16x16"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpdpwssd.512",
+        params: &["i32x16", "i16x32", "i16x32"],
+        ret: Some("i32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpdpwssds.128",
+        params: &["i32x4", "i16x8", "i16x8"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpdpwssds.256",
+        params: &["i32x8", "i16x16", "i16x16"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpdpwssds.512",
+        params: &["i32x16", "i16x32", "i16x32"],
+        ret: Some("i32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpermi2var.d.128",
+        params: &["i32x4", "i32x4", "i32x4"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpermi2var.d.256",
+        params: &["i32x8", "i32x8", "i32x8"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpermi2var.d.512",
+        params: &["i32x16", "i32x16", "i32x16"],
+        ret: Some("i32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpermi2var.hi.128",
+        params: &["i16x8", "i16x8", "i16x8"],
+        ret: Some("i16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpermi2var.hi.256",
+        params: &["i16x16", "i16x16", "i16x16"],
+        ret: Some("i16x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpermi2var.hi.512",
+        params: &["i16x32", "i16x32", "i16x32"],
+        ret: Some("i16x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpermi2var.pd.128",
+        params: &["f64x2", "i64x2", "f64x2"],
+        ret: Some("f64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpermi2var.pd.256",
+        params: &["f64x4", "i64x4", "f64x4"],
+        ret: Some("f64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpermi2var.pd.512",
+        params: &["f64x8", "i64x8", "f64x8"],
+        ret: Some("f64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpermi2var.ps.128",
+        params: &["f32x4", "i32x4", "f32x4"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpermi2var.ps.256",
+        params: &["f32x8", "i32x8", "f32x8"],
+        ret: Some("f32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpermi2var.ps.512",
+        params: &["f32x16", "i32x16", "f32x16"],
+        ret: Some("f32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpermi2var.q.128",
+        params: &["i64x2", "i64x2", "i64x2"],
+        ret: Some("i64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpermi2var.q.256",
+        params: &["i64x4", "i64x4", "i64x4"],
+        ret: Some("i64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpermi2var.q.512",
+        params: &["i64x8", "i64x8", "i64x8"],
+        ret: Some("i64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpermi2var.qi.128",
+        params: &["i8x16", "i8x16", "i8x16"],
+        ret: Some("i8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpermi2var.qi.256",
+        params: &["i8x32", "i8x32", "i8x32"],
+        ret: Some("i8x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpermi2var.qi.512",
+        params: &["i8x64", "i8x64", "i8x64"],
+        ret: Some("i8x64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpermilvar.pd.512",
+        params: &["f64x8", "i64x8"],
+        ret: Some("f64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpermilvar.ps.512",
+        params: &["f32x16", "i32x16"],
+        ret: Some("f32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpmadd52h.uq.128",
+        params: &["__m128i", "__m128i", "__m128i"],
+        ret: Some("__m128i"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpmadd52h.uq.256",
+        params: &["__m256i", "__m256i", "__m256i"],
+        ret: Some("__m256i"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpmadd52h.uq.512",
+        params: &["__m512i", "__m512i", "__m512i"],
+        ret: Some("__m512i"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpmadd52l.uq.128",
+        params: &["__m128i", "__m128i", "__m128i"],
+        ret: Some("__m128i"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpmadd52l.uq.256",
+        params: &["__m256i", "__m256i", "__m256i"],
+        ret: Some("__m256i"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpmadd52l.uq.512",
+        params: &["__m512i", "__m512i", "__m512i"],
+        ret: Some("__m512i"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpshufbitqmb.128",
+        params: &["i8x16", "i8x16"],
+        ret: Some("__mmask16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpshufbitqmb.256",
+        params: &["i8x32", "i8x32"],
+        ret: Some("__mmask32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512.vpshufbitqmb.512",
+        params: &["i8x64", "i8x64"],
+        ret: Some("__mmask64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512bf16.cvtne2ps2bf16.128",
+        params: &["f32x4", "f32x4"],
+        ret: Some("i16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512bf16.cvtne2ps2bf16.256",
+        params: &["f32x8", "f32x8"],
+        ret: Some("i16x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512bf16.cvtne2ps2bf16.512",
+        params: &["f32x16", "f32x16"],
+        ret: Some("i16x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512bf16.cvtneps2bf16.256",
+        params: &["f32x8"],
+        ret: Some("i16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512bf16.cvtneps2bf16.512",
+        params: &["f32x16"],
+        ret: Some("i16x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512bf16.dpbf16ps.128",
+        params: &["f32x4", "i16x8", "i16x8"],
+        ret: Some("f32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512bf16.dpbf16ps.256",
+        params: &["f32x8", "i16x16", "i16x16"],
+        ret: Some("f32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512bf16.dpbf16ps.512",
+        params: &["f32x16", "i16x32", "i16x32"],
+        ret: Some("f32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512bf16.mask.cvtneps2bf16.128",
+        params: &["f32x4", "i16x8", "__mmask8"],
+        ret: Some("i16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.add.ph.512",
+        params: &["__m512h", "__m512h", "i32"],
+        ret: Some("__m512h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.div.ph.512",
+        params: &["__m512h", "__m512h", "i32"],
+        ret: Some("__m512h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.fpclass.ph.128",
+        params: &["__m128h", "i32"],
+        ret: Some("__mmask8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.fpclass.ph.256",
+        params: &["__m256h", "i32"],
+        ret: Some("__mmask16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.fpclass.ph.512",
+        params: &["__m512h", "i32"],
+        ret: Some("__mmask32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.add.sh.round",
+        params: &["__m128h", "__m128h", "__m128h", "__mmask8", "i32"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.cmp.ph.128",
+        params: &["__m128h", "__m128h", "i32", "__mmask8"],
+        ret: Some("__mmask8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.cmp.ph.256",
+        params: &["__m256h", "__m256h", "i32", "__mmask16"],
+        ret: Some("__mmask16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.cmp.ph.512",
+        params: &["__m512h", "__m512h", "i32", "__mmask32", "i32"],
+        ret: Some("__mmask32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.cmp.sh",
+        params: &["__m128h", "__m128h", "i32", "__mmask8", "i32"],
+        ret: Some("__mmask8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.div.sh.round",
+        params: &["__m128h", "__m128h", "__m128h", "__mmask8", "i32"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.fpclass.sh",
+        params: &["__m128h", "i32", "__mmask8"],
+        ret: Some("__mmask8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.getexp.ph.128",
+        params: &["__m128h", "__m128h", "__mmask8"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.getexp.ph.256",
+        params: &["__m256h", "__m256h", "__mmask16"],
+        ret: Some("__m256h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.getexp.ph.512",
+        params: &["__m512h", "__m512h", "__mmask32", "i32"],
+        ret: Some("__m512h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.getexp.sh",
+        params: &["__m128h", "__m128h", "__m128h", "__mmask8", "i32"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.getmant.ph.128",
+        params: &["__m128h", "i32", "__m128h", "__mmask8"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.getmant.ph.256",
+        params: &["__m256h", "i32", "__m256h", "__mmask16"],
+        ret: Some("__m256h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.getmant.ph.512",
+        params: &["__m512h", "i32", "__m512h", "__mmask32", "i32"],
+        ret: Some("__m512h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.getmant.sh",
+        params: &["__m128h", "__m128h", "i32", "__m128h", "__mmask8", "i32"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.max.sh.round",
+        params: &["__m128h", "__m128h", "__m128h", "__mmask8", "i32"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.min.sh.round",
+        params: &["__m128h", "__m128h", "__m128h", "__mmask8", "i32"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.mul.sh.round",
+        params: &["__m128h", "__m128h", "__m128h", "__mmask8", "i32"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.rcp.ph.128",
+        params: &["__m128h", "__m128h", "__mmask8"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.rcp.ph.256",
+        params: &["__m256h", "__m256h", "__mmask16"],
+        ret: Some("__m256h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.rcp.ph.512",
+        params: &["__m512h", "__m512h", "__mmask32"],
+        ret: Some("__m512h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.rcp.sh",
+        params: &["__m128h", "__m128h", "__m128h", "__mmask8"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.reduce.ph.128",
+        params: &["__m128h", "i32", "__m128h", "__mmask8"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.reduce.ph.256",
+        params: &["__m256h", "i32", "__m256h", "__mmask16"],
+        ret: Some("__m256h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.reduce.ph.512",
+        params: &["__m512h", "i32", "__m512h", "__mmask32", "i32"],
+        ret: Some("__m512h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.reduce.sh",
+        params: &["__m128h", "__m128h", "__m128h", "__mmask8", "i32", "i32"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.rndscale.ph.128",
+        params: &["__m128h", "i32", "__m128h", "__mmask8"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.rndscale.ph.256",
+        params: &["__m256h", "i32", "__m256h", "__mmask16"],
+        ret: Some("__m256h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.rndscale.ph.512",
+        params: &["__m512h", "i32", "__m512h", "__mmask32", "i32"],
+        ret: Some("__m512h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.rndscale.sh",
+        params: &["__m128h", "__m128h", "__m128h", "__mmask8", "i32", "i32"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.rsqrt.ph.128",
+        params: &["__m128h", "__m128h", "__mmask8"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.rsqrt.ph.256",
+        params: &["__m256h", "__m256h", "__mmask16"],
+        ret: Some("__m256h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.rsqrt.ph.512",
+        params: &["__m512h", "__m512h", "__mmask32"],
+        ret: Some("__m512h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.rsqrt.sh",
+        params: &["__m128h", "__m128h", "__m128h", "__mmask8"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.scalef.ph.128",
+        params: &["__m128h", "__m128h", "__m128h", "__mmask8"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.scalef.ph.256",
+        params: &["__m256h", "__m256h", "__m256h", "__mmask16"],
+        ret: Some("__m256h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.scalef.ph.512",
+        params: &["__m512h", "__m512h", "__m512h", "__mmask32", "i32"],
+        ret: Some("__m512h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.scalef.sh",
+        params: &["__m128h", "__m128h", "__m128h", "__mmask8", "i32"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.sqrt.sh",
+        params: &["__m128h", "__m128h", "__m128h", "__mmask8", "i32"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.sub.sh.round",
+        params: &["__m128h", "__m128h", "__m128h", "__mmask8", "i32"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtdq2ph.128",
+        params: &["i32x4", "__m128h", "__mmask8"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtpd2ph.128",
+        params: &["__m128d", "__m128h", "__mmask8"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtpd2ph.256",
+        params: &["__m256d", "__m128h", "__mmask8"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtpd2ph.512",
+        params: &["__m512d", "__m128h", "__mmask8", "i32"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtph2dq.128",
+        params: &["__m128h", "i32x4", "__mmask8"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtph2dq.256",
+        params: &["__m128h", "i32x8", "__mmask8"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtph2dq.512",
+        params: &["__m256h", "i32x16", "__mmask16", "i32"],
+        ret: Some("i32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtph2pd.128",
+        params: &["__m128h", "__m128d", "__mmask8"],
+        ret: Some("__m128d"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtph2pd.256",
+        params: &["__m128h", "__m256d", "__mmask8"],
+        ret: Some("__m256d"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtph2pd.512",
+        params: &["__m128h", "__m512d", "__mmask8", "i32"],
+        ret: Some("__m512d"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtph2psx.128",
+        params: &["__m128h", "__m128", "__mmask8"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtph2psx.256",
+        params: &["__m128h", "__m256", "__mmask8"],
+        ret: Some("__m256"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtph2psx.512",
+        params: &["__m256h", "__m512", "__mmask16", "i32"],
+        ret: Some("__m512"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtph2qq.128",
+        params: &["__m128h", "i64x2", "__mmask8"],
+        ret: Some("i64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtph2qq.256",
+        params: &["__m128h", "i64x4", "__mmask8"],
+        ret: Some("i64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtph2qq.512",
+        params: &["__m128h", "i64x8", "__mmask8", "i32"],
+        ret: Some("i64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtph2udq.128",
+        params: &["__m128h", "u32x4", "__mmask8"],
+        ret: Some("u32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtph2udq.256",
+        params: &["__m128h", "u32x8", "__mmask8"],
+        ret: Some("u32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtph2udq.512",
+        params: &["__m256h", "u32x16", "__mmask16", "i32"],
+        ret: Some("u32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtph2uqq.128",
+        params: &["__m128h", "u64x2", "__mmask8"],
+        ret: Some("u64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtph2uqq.256",
+        params: &["__m128h", "u64x4", "__mmask8"],
+        ret: Some("u64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtph2uqq.512",
+        params: &["__m128h", "u64x8", "__mmask8", "i32"],
+        ret: Some("u64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtph2uw.128",
+        params: &["__m128h", "u16x8", "__mmask8"],
+        ret: Some("u16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtph2uw.256",
+        params: &["__m256h", "u16x16", "__mmask16"],
+        ret: Some("u16x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtph2uw.512",
+        params: &["__m512h", "u16x32", "__mmask32", "i32"],
+        ret: Some("u16x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtph2w.128",
+        params: &["__m128h", "i16x8", "__mmask8"],
+        ret: Some("i16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtph2w.256",
+        params: &["__m256h", "i16x16", "__mmask16"],
+        ret: Some("i16x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtph2w.512",
+        params: &["__m512h", "i16x32", "__mmask32", "i32"],
+        ret: Some("i16x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtps2phx.128",
+        params: &["__m128", "__m128h", "__mmask8"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtps2phx.256",
+        params: &["__m256", "__m128h", "__mmask8"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtps2phx.512",
+        params: &["__m512", "__m256h", "__mmask16", "i32"],
+        ret: Some("__m256h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtqq2ph.128",
+        params: &["i64x2", "__m128h", "__mmask8"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtqq2ph.256",
+        params: &["i64x4", "__m128h", "__mmask8"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtsd2sh.round",
+        params: &["__m128h", "__m128d", "__m128h", "__mmask8", "i32"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtsh2sd.round",
+        params: &["__m128d", "__m128h", "__m128d", "__mmask8", "i32"],
+        ret: Some("__m128d"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtsh2ss.round",
+        params: &["__m128", "__m128h", "__m128", "__mmask8", "i32"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtss2sh.round",
+        params: &["__m128h", "__m128", "__m128h", "__mmask8", "i32"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvttph2dq.128",
+        params: &["__m128h", "i32x4", "__mmask8"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvttph2dq.256",
+        params: &["__m128h", "i32x8", "__mmask8"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvttph2dq.512",
+        params: &["__m256h", "i32x16", "__mmask16", "i32"],
+        ret: Some("i32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvttph2qq.128",
+        params: &["__m128h", "i64x2", "__mmask8"],
+        ret: Some("i64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvttph2qq.256",
+        params: &["__m128h", "i64x4", "__mmask8"],
+        ret: Some("i64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvttph2qq.512",
+        params: &["__m128h", "i64x8", "__mmask8", "i32"],
+        ret: Some("i64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvttph2udq.128",
+        params: &["__m128h", "u32x4", "__mmask8"],
+        ret: Some("u32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvttph2udq.256",
+        params: &["__m128h", "u32x8", "__mmask8"],
+        ret: Some("u32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvttph2udq.512",
+        params: &["__m256h", "u32x16", "__mmask16", "i32"],
+        ret: Some("u32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvttph2uqq.128",
+        params: &["__m128h", "u64x2", "__mmask8"],
+        ret: Some("u64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvttph2uqq.256",
+        params: &["__m128h", "u64x4", "__mmask8"],
+        ret: Some("u64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvttph2uqq.512",
+        params: &["__m128h", "u64x8", "__mmask8", "i32"],
+        ret: Some("u64x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvttph2uw.128",
+        params: &["__m128h", "u16x8", "__mmask8"],
+        ret: Some("u16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvttph2uw.256",
+        params: &["__m256h", "u16x16", "__mmask16"],
+        ret: Some("u16x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvttph2uw.512",
+        params: &["__m512h", "u16x32", "__mmask32", "i32"],
+        ret: Some("u16x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvttph2w.128",
+        params: &["__m128h", "i16x8", "__mmask8"],
+        ret: Some("i16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvttph2w.256",
+        params: &["__m256h", "i16x16", "__mmask16"],
+        ret: Some("i16x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvttph2w.512",
+        params: &["__m512h", "i16x32", "__mmask32", "i32"],
+        ret: Some("i16x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtudq2ph.128",
+        params: &["u32x4", "__m128h", "__mmask8"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtuqq2ph.128",
+        params: &["u64x2", "__m128h", "__mmask8"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vcvtuqq2ph.256",
+        params: &["u64x4", "__m128h", "__mmask8"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vfcmadd.cph.128",
+        params: &["__m128", "__m128", "__m128", "__mmask8"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vfcmadd.cph.256",
+        params: &["__m256", "__m256", "__m256", "__mmask8"],
+        ret: Some("__m256"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vfcmadd.cph.512",
+        params: &["__m512", "__m512", "__m512", "__mmask16", "i32"],
+        ret: Some("__m512"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vfcmadd.csh",
+        params: &["__m128", "__m128", "__m128", "__mmask8", "i32"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vfcmul.cph.128",
+        params: &["__m128", "__m128", "__m128", "__mmask8"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vfcmul.cph.256",
+        params: &["__m256", "__m256", "__m256", "__mmask8"],
+        ret: Some("__m256"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vfcmul.cph.512",
+        params: &["__m512", "__m512", "__m512", "__mmask16", "i32"],
+        ret: Some("__m512"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vfcmul.csh",
+        params: &["__m128", "__m128", "__m128", "__mmask8", "i32"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vfmadd.cph.128",
+        params: &["__m128", "__m128", "__m128", "__mmask8"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vfmadd.cph.256",
+        params: &["__m256", "__m256", "__m256", "__mmask8"],
+        ret: Some("__m256"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vfmadd.cph.512",
+        params: &["__m512", "__m512", "__m512", "__mmask16", "i32"],
+        ret: Some("__m512"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vfmadd.csh",
+        params: &["__m128", "__m128", "__m128", "__mmask8", "i32"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vfmul.cph.128",
+        params: &["__m128", "__m128", "__m128", "__mmask8"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vfmul.cph.256",
+        params: &["__m256", "__m256", "__m256", "__mmask8"],
+        ret: Some("__m256"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vfmul.cph.512",
+        params: &["__m512", "__m512", "__m512", "__mmask16", "i32"],
+        ret: Some("__m512"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mask.vfmul.csh",
+        params: &["__m128", "__m128", "__m128", "__mmask8", "i32"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.maskz.vfcmadd.cph.128",
+        params: &["__m128", "__m128", "__m128", "__mmask8"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.maskz.vfcmadd.cph.256",
+        params: &["__m256", "__m256", "__m256", "__mmask8"],
+        ret: Some("__m256"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.maskz.vfcmadd.cph.512",
+        params: &["__m512", "__m512", "__m512", "__mmask16", "i32"],
+        ret: Some("__m512"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.maskz.vfcmadd.csh",
+        params: &["__m128", "__m128", "__m128", "__mmask8", "i32"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.maskz.vfmadd.cph.128",
+        params: &["__m128", "__m128", "__m128", "__mmask8"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.maskz.vfmadd.cph.256",
+        params: &["__m256", "__m256", "__m256", "__mmask8"],
+        ret: Some("__m256"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.maskz.vfmadd.cph.512",
+        params: &["__m512", "__m512", "__m512", "__mmask16", "i32"],
+        ret: Some("__m512"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.maskz.vfmadd.csh",
+        params: &["__m128", "__m128", "__m128", "__mmask8", "i32"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.max.ph.128",
+        params: &["__m128h", "__m128h"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.max.ph.256",
+        params: &["__m256h", "__m256h"],
+        ret: Some("__m256h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.max.ph.512",
+        params: &["__m512h", "__m512h", "i32"],
+        ret: Some("__m512h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.min.ph.128",
+        params: &["__m128h", "__m128h"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.min.ph.256",
+        params: &["__m256h", "__m256h"],
+        ret: Some("__m256h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.min.ph.512",
+        params: &["__m512h", "__m512h", "i32"],
+        ret: Some("__m512h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.mul.ph.512",
+        params: &["__m512h", "__m512h", "i32"],
+        ret: Some("__m512h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.sqrt.ph.512",
+        params: &["__m512h", "i32"],
+        ret: Some("__m512h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.sub.ph.512",
+        params: &["__m512h", "__m512h", "i32"],
+        ret: Some("__m512h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.vcomi.sh",
+        params: &["__m128h", "__m128h", "i32", "i32"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.vcvtsh2si32",
+        params: &["__m128h", "i32"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.vcvtsh2si64",
+        params: &["__m128h", "i32"],
+        ret: Some("i64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.vcvtsh2usi32",
+        params: &["__m128h", "i32"],
+        ret: Some("u32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.vcvtsh2usi64",
+        params: &["__m128h", "i32"],
+        ret: Some("u64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.vcvtsi2sh",
+        params: &["__m128h", "i32", "i32"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.vcvtsi642sh",
+        params: &["__m128h", "i64", "i32"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.vcvttsh2si32",
+        params: &["__m128h", "i32"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.vcvttsh2si64",
+        params: &["__m128h", "i32"],
+        ret: Some("i64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.vcvttsh2usi32",
+        params: &["__m128h", "i32"],
+        ret: Some("u32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.vcvttsh2usi64",
+        params: &["__m128h", "i32"],
+        ret: Some("u64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.vcvtusi2sh",
+        params: &["__m128h", "u32", "i32"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.vcvtusi642sh",
+        params: &["__m128h", "u64", "i32"],
+        ret: Some("__m128h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.vfmadd.f16",
+        params: &["f16", "f16", "f16", "i32"],
+        ret: Some("f16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.vfmadd.ph.512",
+        params: &["__m512h", "__m512h", "__m512h", "i32"],
+        ret: Some("__m512h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.avx512fp16.vfmaddsub.ph.512",
+        params: &["__m512h", "__m512h", "__m512h", "i32"],
+        ret: Some("__m512h"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.bmi.bextr.32",
+        params: &["u32", "u32"],
+        ret: Some("u32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.bmi.bextr.64",
+        params: &["u64", "u64"],
+        ret: Some("u64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.bmi.bzhi.32",
+        params: &["u32", "u32"],
+        ret: Some("u32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.bmi.bzhi.64",
+        params: &["u64", "u64"],
+        ret: Some("u64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.bmi.pdep.32",
+        params: &["u32", "u32"],
+        ret: Some("u32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.bmi.pdep.64",
+        params: &["u64", "u64"],
+        ret: Some("u64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.bmi.pext.32",
+        params: &["u32", "u32"],
+        ret: Some("u32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.bmi.pext.64",
+        params: &["u64", "u64"],
+        ret: Some("u64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.clflushopt",
+        params: &["*const u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.encodekey128",
+        params: &["u32", "__m128i"],
+        ret: Some("EncodeKey128Output"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.encodekey256",
+        params: &["u32", "__m128i", "__m128i"],
+        ret: Some("EncodeKey256Output"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.fxrstor",
+        params: &["*const u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.fxrstor64",
+        params: &["*const u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.fxsave",
+        params: &["*mut u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.fxsave64",
+        params: &["*mut u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.ldtilecfg",
+        params: &["*const u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.loadiwkey",
+        params: &["__m128i", "__m128i", "__m128i", "u32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.movrsdi",
+        params: &["*const i64"],
+        ret: Some("i64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.movrshi",
+        params: &["*const i16"],
+        ret: Some("i16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.movrsqi",
+        params: &["*const i8"],
+        ret: Some("i8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.movrssi",
+        params: &["*const i32"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.pclmulqdq",
+        params: &["__m128i", "__m128i", "u8"],
+        ret: Some("__m128i"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.pclmulqdq.256",
+        params: &["__m256i", "__m256i", "u8"],
+        ret: Some("__m256i"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.pclmulqdq.512",
+        params: &["__m512i", "__m512i", "u8"],
+        ret: Some("__m512i"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.prefetchrs",
+        params: &["*const u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.rdrand.16",
+        params: &[],
+        ret: Some("(u16, i32)"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.rdrand.32",
+        params: &[],
+        ret: Some("(u32, i32)"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.rdrand.64",
+        params: &[],
+        ret: Some("(u64, i32)"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.rdseed.16",
+        params: &[],
+        ret: Some("(u16, i32)"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.rdseed.32",
+        params: &[],
+        ret: Some("(u32, i32)"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.rdseed.64",
+        params: &[],
+        ret: Some("(u64, i32)"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.rdtsc",
+        params: &[],
+        ret: Some("u64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.rdtscp",
+        params: &[],
+        ret: Some("(u64, u32)"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sha1msg1",
+        params: &["i32x4", "i32x4"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sha1msg2",
+        params: &["i32x4", "i32x4"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sha1nexte",
+        params: &["i32x4", "i32x4"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sha1rnds4",
+        params: &["i32x4", "i32x4", "i8"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sha256msg1",
+        params: &["i32x4", "i32x4"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sha256msg2",
+        params: &["i32x4", "i32x4"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sha256rnds2",
+        params: &["i32x4", "i32x4", "i32x4"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse.cmp.ps",
+        params: &["__m128", "__m128", "i8"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse.cmp.ss",
+        params: &["__m128", "__m128", "i8"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse.comieq.ss",
+        params: &["__m128", "__m128"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse.comige.ss",
+        params: &["__m128", "__m128"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse.comigt.ss",
+        params: &["__m128", "__m128"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse.comile.ss",
+        params: &["__m128", "__m128"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse.comilt.ss",
+        params: &["__m128", "__m128"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse.comineq.ss",
+        params: &["__m128", "__m128"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse.cvtss2si",
+        params: &["__m128"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse.cvtss2si64",
+        params: &["__m128"],
+        ret: Some("i64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse.cvttss2si",
+        params: &["__m128"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse.cvttss2si64",
+        params: &["__m128"],
+        ret: Some("i64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse.ldmxcsr",
+        params: &["*const i8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse.max.ps",
+        params: &["__m128", "__m128"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse.max.ss",
+        params: &["__m128", "__m128"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse.min.ps",
+        params: &["__m128", "__m128"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse.min.ss",
+        params: &["__m128", "__m128"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse.rcp.ps",
+        params: &["__m128"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse.rcp.ss",
+        params: &["__m128"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse.rsqrt.ps",
+        params: &["__m128"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse.rsqrt.ss",
+        params: &["__m128"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse.sfence",
+        params: &[],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse.stmxcsr",
+        params: &["*mut i8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse.ucomieq.ss",
+        params: &["__m128", "__m128"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse.ucomige.ss",
+        params: &["__m128", "__m128"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse.ucomigt.ss",
+        params: &["__m128", "__m128"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse.ucomile.ss",
+        params: &["__m128", "__m128"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse.ucomilt.ss",
+        params: &["__m128", "__m128"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse.ucomineq.ss",
+        params: &["__m128", "__m128"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.clflush",
+        params: &["*const u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.cmp.pd",
+        params: &["__m128d", "__m128d", "i8"],
+        ret: Some("__m128d"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.cmp.sd",
+        params: &["__m128d", "__m128d", "i8"],
+        ret: Some("__m128d"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.comieq.sd",
+        params: &["__m128d", "__m128d"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.comige.sd",
+        params: &["__m128d", "__m128d"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.comigt.sd",
+        params: &["__m128d", "__m128d"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.comile.sd",
+        params: &["__m128d", "__m128d"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.comilt.sd",
+        params: &["__m128d", "__m128d"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.comineq.sd",
+        params: &["__m128d", "__m128d"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.cvtpd2dq",
+        params: &["__m128d"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.cvtps2dq",
+        params: &["__m128"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.cvtsd2si",
+        params: &["__m128d"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.cvtsd2si64",
+        params: &["__m128d"],
+        ret: Some("i64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.cvtsd2ss",
+        params: &["__m128", "__m128d"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.cvttpd2dq",
+        params: &["__m128d"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.cvttps2dq",
+        params: &["__m128"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.cvttsd2si",
+        params: &["__m128d"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.cvttsd2si64",
+        params: &["__m128d"],
+        ret: Some("i64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.lfence",
+        params: &[],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.maskmov.dqu",
+        params: &["i8x16", "i8x16", "*mut i8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.max.pd",
+        params: &["__m128d", "__m128d"],
+        ret: Some("__m128d"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.max.sd",
+        params: &["__m128d", "__m128d"],
+        ret: Some("__m128d"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.mfence",
+        params: &[],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.min.pd",
+        params: &["__m128d", "__m128d"],
+        ret: Some("__m128d"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.min.sd",
+        params: &["__m128d", "__m128d"],
+        ret: Some("__m128d"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.pause",
+        params: &[],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.pmadd.wd",
+        params: &["i16x8", "i16x8"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.psad.bw",
+        params: &["u8x16", "u8x16"],
+        ret: Some("u64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.psll.d",
+        params: &["i32x4", "i32x4"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.psll.q",
+        params: &["i64x2", "i64x2"],
+        ret: Some("i64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.psll.w",
+        params: &["i16x8", "i16x8"],
+        ret: Some("i16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.psra.d",
+        params: &["i32x4", "i32x4"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.psra.w",
+        params: &["i16x8", "i16x8"],
+        ret: Some("i16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.psrl.d",
+        params: &["i32x4", "i32x4"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.psrl.q",
+        params: &["i64x2", "i64x2"],
+        ret: Some("i64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.psrl.w",
+        params: &["i16x8", "i16x8"],
+        ret: Some("i16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.ucomieq.sd",
+        params: &["__m128d", "__m128d"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.ucomige.sd",
+        params: &["__m128d", "__m128d"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.ucomigt.sd",
+        params: &["__m128d", "__m128d"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.ucomile.sd",
+        params: &["__m128d", "__m128d"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.ucomilt.sd",
+        params: &["__m128d", "__m128d"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse2.ucomineq.sd",
+        params: &["__m128d", "__m128d"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse3.ldu.dq",
+        params: &["*const i8"],
+        ret: Some("i8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse41.dppd",
+        params: &["__m128d", "__m128d", "u8"],
+        ret: Some("__m128d"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse41.dpps",
+        params: &["__m128", "__m128", "u8"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse41.insertps",
+        params: &["__m128", "__m128", "u8"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse41.mpsadbw",
+        params: &["u8x16", "u8x16", "u8"],
+        ret: Some("u16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse41.phminposuw",
+        params: &["u16x8"],
+        ret: Some("u16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse41.ptestnzc",
+        params: &["i64x2", "i64x2"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse41.round.pd",
+        params: &["__m128d", "i32"],
+        ret: Some("__m128d"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse41.round.ps",
+        params: &["__m128", "i32"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse41.round.sd",
+        params: &["__m128d", "__m128d", "i32"],
+        ret: Some("__m128d"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse41.round.ss",
+        params: &["__m128", "__m128", "i32"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse42.crc32.32.16",
+        params: &["u32", "u16"],
+        ret: Some("u32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse42.crc32.32.32",
+        params: &["u32", "u32"],
+        ret: Some("u32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse42.crc32.32.8",
+        params: &["u32", "u8"],
+        ret: Some("u32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse42.crc32.64.64",
+        params: &["u64", "u64"],
+        ret: Some("u64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse42.pcmpestri128",
+        params: &["i8x16", "i32", "i8x16", "i32", "i8"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse42.pcmpestria128",
+        params: &["i8x16", "i32", "i8x16", "i32", "i8"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse42.pcmpestric128",
+        params: &["i8x16", "i32", "i8x16", "i32", "i8"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse42.pcmpestrio128",
+        params: &["i8x16", "i32", "i8x16", "i32", "i8"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse42.pcmpestris128",
+        params: &["i8x16", "i32", "i8x16", "i32", "i8"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse42.pcmpestriz128",
+        params: &["i8x16", "i32", "i8x16", "i32", "i8"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse42.pcmpestrm128",
+        params: &["i8x16", "i32", "i8x16", "i32", "i8"],
+        ret: Some("u8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse42.pcmpistri128",
+        params: &["i8x16", "i8x16", "i8"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse42.pcmpistria128",
+        params: &["i8x16", "i8x16", "i8"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse42.pcmpistric128",
+        params: &["i8x16", "i8x16", "i8"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse42.pcmpistrio128",
+        params: &["i8x16", "i8x16", "i8"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse42.pcmpistris128",
+        params: &["i8x16", "i8x16", "i8"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse42.pcmpistriz128",
+        params: &["i8x16", "i8x16", "i8"],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse42.pcmpistrm128",
+        params: &["i8x16", "i8x16", "i8"],
+        ret: Some("i8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse4a.extrq",
+        params: &["i64x2", "i8x16"],
+        ret: Some("i64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse4a.extrqi",
+        params: &["i64x2", "u8", "u8"],
+        ret: Some("i64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse4a.insertq",
+        params: &["i64x2", "i64x2"],
+        ret: Some("i64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sse4a.insertqi",
+        params: &["i64x2", "i64x2", "u8", "u8"],
+        ret: Some("i64x2"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.ssse3.pmadd.ub.sw.128",
+        params: &["u8x16", "i8x16"],
+        ret: Some("i16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.ssse3.pmul.hr.sw.128",
+        params: &["i16x8", "i16x8"],
+        ret: Some("i16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.ssse3.pshuf.b.128",
+        params: &["u8x16", "u8x16"],
+        ret: Some("u8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.ssse3.psign.b.128",
+        params: &["i8x16", "i8x16"],
+        ret: Some("i8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.ssse3.psign.d.128",
+        params: &["i32x4", "i32x4"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.ssse3.psign.w.128",
+        params: &["i16x8", "i16x8"],
+        ret: Some("i16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.sttilecfg",
+        params: &["*mut u8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.subborrow.32",
+        params: &["u8", "u32", "u32"],
+        ret: Some("(u8, u32)"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.subborrow.64",
+        params: &["u8", "u64", "u64"],
+        ret: Some("(u8, u64)"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tbm.bextri.u32",
+        params: &["u32", "u32"],
+        ret: Some("u32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tbm.bextri.u64",
+        params: &["u64", "u64"],
+        ret: Some("u64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tcmmimfp16ps",
+        params: &["i8", "i8", "i8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tcmmimfp16ps.internal",
+        params: &["u16", "u16", "u16", "Tile", "Tile", "Tile"],
+        ret: Some("Tile"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tcmmrlfp16ps",
+        params: &["i8", "i8", "i8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tcmmrlfp16ps.internal",
+        params: &["u16", "u16", "u16", "Tile", "Tile", "Tile"],
+        ret: Some("Tile"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tcvtrowd2ps",
+        params: &["i8", "u32"],
+        ret: Some("f32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tcvtrowd2ps.internal",
+        params: &["u16", "u16", "Tile", "u32"],
+        ret: Some("f32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tcvtrowd2psi",
+        params: &["i8", "u32"],
+        ret: Some("f32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tcvtrowps2bf16h",
+        params: &["i8", "u32"],
+        ret: Some("u16x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tcvtrowps2bf16h.internal",
+        params: &["u16", "u16", "Tile", "u32"],
+        ret: Some("u16x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tcvtrowps2bf16hi",
+        params: &["i8", "u32"],
+        ret: Some("u16x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tcvtrowps2bf16l",
+        params: &["i8", "u32"],
+        ret: Some("u16x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tcvtrowps2bf16l.internal",
+        params: &["u16", "u16", "Tile", "u32"],
+        ret: Some("u16x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tcvtrowps2bf16li",
+        params: &["i8", "u32"],
+        ret: Some("u16x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tcvtrowps2phh",
+        params: &["i8", "u32"],
+        ret: Some("f16x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tcvtrowps2phh.internal",
+        params: &["u16", "u16", "Tile", "u32"],
+        ret: Some("f16x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tcvtrowps2phhi",
+        params: &["i8", "u32"],
+        ret: Some("f16x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tcvtrowps2phl",
+        params: &["i8", "u32"],
+        ret: Some("f16x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tcvtrowps2phl.internal",
+        params: &["u16", "u16", "Tile", "u32"],
+        ret: Some("f16x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tcvtrowps2phli",
+        params: &["i8", "u32"],
+        ret: Some("f16x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tdpbf16ps",
+        params: &["i8", "i8", "i8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tdpbf16ps.internal",
+        params: &["u16", "u16", "u16", "Tile", "Tile", "Tile"],
+        ret: Some("Tile"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tdpbf8ps",
+        params: &["i8", "i8", "i8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tdpbf8ps.internal",
+        params: &["u16", "u16", "u16", "Tile", "Tile", "Tile"],
+        ret: Some("Tile"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tdpbhf8ps",
+        params: &["i8", "i8", "i8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tdpbhf8ps.internal",
+        params: &["u16", "u16", "u16", "Tile", "Tile", "Tile"],
+        ret: Some("Tile"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tdpbssd",
+        params: &["i8", "i8", "i8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tdpbssd.internal",
+        params: &["u16", "u16", "u16", "Tile", "Tile", "Tile"],
+        ret: Some("Tile"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tdpbsud",
+        params: &["i8", "i8", "i8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tdpbsud.internal",
+        params: &["u16", "u16", "u16", "Tile", "Tile", "Tile"],
+        ret: Some("Tile"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tdpbusd",
+        params: &["i8", "i8", "i8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tdpbusd.internal",
+        params: &["u16", "u16", "u16", "Tile", "Tile", "Tile"],
+        ret: Some("Tile"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tdpbuud",
+        params: &["i8", "i8", "i8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tdpbuud.internal",
+        params: &["u16", "u16", "u16", "Tile", "Tile", "Tile"],
+        ret: Some("Tile"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tdpfp16ps",
+        params: &["i8", "i8", "i8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tdpfp16ps.internal",
+        params: &["u16", "u16", "u16", "Tile", "Tile", "Tile"],
+        ret: Some("Tile"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tdphbf8ps",
+        params: &["i8", "i8", "i8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tdphbf8ps.internal",
+        params: &["u16", "u16", "u16", "Tile", "Tile", "Tile"],
+        ret: Some("Tile"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tdphf8ps",
+        params: &["i8", "i8", "i8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tdphf8ps.internal",
+        params: &["u16", "u16", "u16", "Tile", "Tile", "Tile"],
+        ret: Some("Tile"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tileloadd64",
+        params: &["i8", "*const u8", "u64"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tileloadd64.internal",
+        params: &["u16", "u16", "*const u8", "u64"],
+        ret: Some("Tile"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tileloaddrs64",
+        params: &["i8", "*const u8", "u64"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tileloaddrs64.internal",
+        params: &["u16", "u16", "*const u8", "u64"],
+        ret: Some("Tile"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tileloaddrst164",
+        params: &["i8", "*const u8", "u64"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tileloaddrst164.internal",
+        params: &["u16", "u16", "*const u8", "u64"],
+        ret: Some("Tile"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tileloaddt164",
+        params: &["i8", "*const u8", "u64"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tileloaddt164.internal",
+        params: &["u16", "u16", "*const u8", "u64"],
+        ret: Some("Tile"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tilemovrow",
+        params: &["i8", "u32"],
+        ret: Some("i32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tilemovrow.internal",
+        params: &["u16", "u16", "Tile", "u32"],
+        ret: Some("i32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tilemovrowi",
+        params: &["i8", "u32"],
+        ret: Some("i32x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tilerelease",
+        params: &[],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tilestored64",
+        params: &["i8", "*mut u8", "u64"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tilestored64.internal",
+        params: &["u16", "u16", "*mut u8", "u64", "Tile"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tilezero",
+        params: &["i8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tilezero.internal",
+        params: &["u16", "u16"],
+        ret: Some("Tile"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tmmultf32ps",
+        params: &["i8", "i8", "i8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.tmmultf32ps.internal",
+        params: &["u16", "u16", "u16", "Tile", "Tile", "Tile"],
+        ret: Some("Tile"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vbcstnebf162ps128",
+        params: &["*const bf16"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vbcstnebf162ps256",
+        params: &["*const bf16"],
+        ret: Some("__m256"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vbcstnesh2ps128",
+        params: &["*const f16"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vbcstnesh2ps256",
+        params: &["*const f16"],
+        ret: Some("__m256"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vcvtneebf162ps128",
+        params: &["*const __m128bh"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vcvtneebf162ps256",
+        params: &["*const __m256bh"],
+        ret: Some("__m256"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vcvtneeph2ps128",
+        params: &["*const __m128h"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vcvtneeph2ps256",
+        params: &["*const __m256h"],
+        ret: Some("__m256"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vcvtneobf162ps128",
+        params: &["*const __m128bh"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vcvtneobf162ps256",
+        params: &["*const __m256bh"],
+        ret: Some("__m256"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vcvtneoph2ps128",
+        params: &["*const __m128h"],
+        ret: Some("__m128"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vcvtneoph2ps256",
+        params: &["*const __m256h"],
+        ret: Some("__m256"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vcvtneps2bf16128",
+        params: &["__m128"],
+        ret: Some("__m128bh"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vcvtneps2bf16256",
+        params: &["__m256"],
+        ret: Some("__m128bh"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vcvtps2ph.128",
+        params: &["f32x4", "i32"],
+        ret: Some("i16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vcvtps2ph.256",
+        params: &["f32x8", "i32"],
+        ret: Some("i16x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vgf2p8affineinvqb.128",
+        params: &["i8x16", "i8x16", "u8"],
+        ret: Some("i8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vgf2p8affineinvqb.256",
+        params: &["i8x32", "i8x32", "u8"],
+        ret: Some("i8x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vgf2p8affineinvqb.512",
+        params: &["i8x64", "i8x64", "u8"],
+        ret: Some("i8x64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vgf2p8affineqb.128",
+        params: &["i8x16", "i8x16", "u8"],
+        ret: Some("i8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vgf2p8affineqb.256",
+        params: &["i8x32", "i8x32", "u8"],
+        ret: Some("i8x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vgf2p8affineqb.512",
+        params: &["i8x64", "i8x64", "u8"],
+        ret: Some("i8x64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vgf2p8mulb.128",
+        params: &["i8x16", "i8x16"],
+        ret: Some("i8x16"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vgf2p8mulb.256",
+        params: &["i8x32", "i8x32"],
+        ret: Some("i8x32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vgf2p8mulb.512",
+        params: &["i8x64", "i8x64"],
+        ret: Some("i8x64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vsha512msg1",
+        params: &["i64x4", "i64x2"],
+        ret: Some("i64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vsha512msg2",
+        params: &["i64x4", "i64x4"],
+        ret: Some("i64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vsha512rnds2",
+        params: &["i64x4", "i64x4", "i64x2"],
+        ret: Some("i64x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vsm3msg1",
+        params: &["i32x4", "i32x4", "i32x4"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vsm3msg2",
+        params: &["i32x4", "i32x4", "i32x4"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vsm3rnds2",
+        params: &["i32x4", "i32x4", "i32x4", "i32"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vsm4key4128",
+        params: &["i32x4", "i32x4"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vsm4key4256",
+        params: &["i32x8", "i32x8"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vsm4rnds4128",
+        params: &["i32x4", "i32x4"],
+        ret: Some("i32x4"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.vsm4rnds4256",
+        params: &["i32x8", "i32x8"],
+        ret: Some("i32x8"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.xabort",
+        params: &["i8"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.xbegin",
+        params: &[],
+        ret: Some("i32"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.xend",
+        params: &[],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.xgetbv",
+        params: &["u32"],
+        ret: Some("i64"),
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.xrstor",
+        params: &["*const u8", "u32", "u32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.xrstor64",
+        params: &["*const u8", "u32", "u32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.xrstors",
+        params: &["*const u8", "u32", "u32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.xrstors64",
+        params: &["*const u8", "u32", "u32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.xsave",
+        params: &["*mut u8", "u32", "u32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.xsave64",
+        params: &["*mut u8", "u32", "u32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.xsavec",
+        params: &["*mut u8", "u32", "u32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.xsavec64",
+        params: &["*mut u8", "u32", "u32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.xsaveopt",
+        params: &["*mut u8", "u32", "u32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.xsaveopt64",
+        params: &["*mut u8", "u32", "u32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.xsaves",
+        params: &["*mut u8", "u32", "u32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.xsaves64",
+        params: &["*mut u8", "u32", "u32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.xsetbv",
+        params: &["u32", "u32", "u32"],
+        ret: None,
+    },
+    StdarchOverride {
+        link_name: "llvm.x86.xtest",
+        params: &[],
+        ret: Some("i32"),
+    },
+];

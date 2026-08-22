@@ -1,3 +1,4 @@
+use super::memory::{bitint_vector_lane_bits, pack_bitint_vector_expr, packed_mask_int_type};
 use super::*;
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
@@ -554,10 +555,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    // Prototype: declare a per-signature `extern "unadjusted"` shim keyed by
-    // `#[link_name = "llvm.<intrinsic_name>"]` and call it directly, using CIR's
-    // own resolved operand/result types. No LLVM-side type table needed since
-    // CIR already carries the concrete signature at the call site.
     pub(super) fn lower_call_llvm_intrinsic(&mut self, op: &inst::CallLlvmIntrinsic) {
         let param_types: Vec<Type> = op
             .arg_ops
@@ -574,8 +571,35 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .map(|ty| self.parent.rust_type(ty))
             .filter(|ty| !matches!(ty, Type::CLib(c) if *c == CLibType::VOID));
 
+        let raw_ret_type = op.result_ty.as_ref().map(|ty| self.parent.rust_type(ty));
+        let stdarch_override =
+            find_stdarch_override(&op.intrinsic_name, &raw_ret_type, &param_types);
+
+        let mask_packed_param_types: Vec<Type> = match stdarch_override {
+            Some(entry) => param_types
+                .iter()
+                .zip(entry.params)
+                .map(|(ty, mined)| {
+                    if let Type::Array { elem, len } = ty
+                        && mined.starts_with('u')
+                        && bitint_vector_lane_bits(elem) == Some(1)
+                        && let Some(packed) = packed_mask_int_type(*len as u32)
+                    {
+                        return packed;
+                    }
+                    ty.clone()
+                })
+                .collect(),
+            None => param_types.clone(),
+        };
+        let shim_param_types: Vec<Type> = mask_packed_param_types
+            .iter()
+            .map(|ty| simd_type(ty).unwrap_or_else(|| ty.clone()))
+            .collect();
+        let shim_ret_type = ret_type.as_ref().and_then(simd_type);
+
         let sanitized = sanitize_ident(&op.intrinsic_name);
-        let sig_key = format!("{sanitized}__{ret_type:?}__{param_types:?}");
+        let sig_key = format!("{sanitized}__{shim_ret_type:?}__{shim_param_types:?}");
         let sig_hash = {
             use std::hash::{Hash, Hasher};
             let mut hasher = std::collections::hash_map::DefaultHasher::new();
@@ -584,8 +608,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         };
         let shim_name = format!("__slate_intrinsic_{sanitized}_{sig_hash:x}");
 
-        let raw_ret_type = op.result_ty.as_ref().map(|ty| self.parent.rust_type(ty));
-        let link_name = mangled_link_name(&op.intrinsic_name, &raw_ret_type, &param_types);
+        let link_name = stdarch_override
+            .map(|entry| entry.link_name.to_string())
+            .unwrap_or_else(|| mangled_link_name(&op.intrinsic_name, &raw_ret_type, &param_types));
 
         self.parent
             .llvm_intrinsic_shims
@@ -595,7 +620,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 identity: FunctionIdentity::Unknown,
                 name: shim_name.clone(),
                 declared_type: None,
-                params: param_types
+                params: shim_param_types
                     .iter()
                     .enumerate()
                     .map(|(i, ty)| FnParam {
@@ -605,16 +630,37 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     })
                     .collect(),
                 variadic: false,
-                ret: ret_type.clone(),
+                ret: shim_ret_type.clone().or_else(|| ret_type.clone()),
                 safe: false,
             });
 
-        let args: Vec<Expr> = op.arg_ops.iter().map(|id| self.operand_expr(id)).collect();
+        let args: Vec<Expr> = op
+            .arg_ops
+            .iter()
+            .zip(param_types.iter())
+            .zip(mask_packed_param_types.iter())
+            .zip(shim_param_types.iter())
+            .map(|(((id, orig_ty), packed_ty), shim_ty)| {
+                let expr = self.operand_expr(id);
+                match (orig_ty, packed_ty) {
+                    (Type::Array { len, .. }, Type::Prim(prim)) if orig_ty != packed_ty => {
+                        pack_bitint_vector_expr(expr, *len as usize, 1, *prim)
+                    }
+                    _ if matches!(shim_ty, Type::Generic { .. }) => simd_from_array_expr(expr),
+                    _ => expr,
+                }
+            })
+            .collect();
         let call_expr = Self::unsafe_expr(Expr::Call {
             binding: CallBinding::Generated,
             func: Box::new(Expr::Var(shim_name.into())),
             args,
         });
+        let call_expr = if shim_ret_type.is_some() {
+            simd_to_array_expr(call_expr)
+        } else {
+            call_expr
+        };
         match &op.result {
             Some(result) if ret_type.is_some() => {
                 self.materialize_expr(result, call_expr, op.result_ty.as_ref())
@@ -624,7 +670,67 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 }
 
-fn find_intrinsic_signature(llvm_name: &str) -> Option<&'static intrinsics_table::IntrinsicSignature> {
+fn simd_element_prim(elem: &Type) -> Option<Prim> {
+    match elem {
+        Type::Prim(
+            prim @ (Prim::I8
+            | Prim::U8
+            | Prim::I16
+            | Prim::U16
+            | Prim::I32
+            | Prim::U32
+            | Prim::I64
+            | Prim::U64
+            | Prim::F32
+            | Prim::F64),
+        ) => Some(*prim),
+        _ => None,
+    }
+}
+
+pub(super) fn extern_fn_decl_mentions_simd(decl: &ExternFnDecl) -> bool {
+    decl.params
+        .iter()
+        .any(|param| type_mentions_simd(&param.ty))
+        || decl.ret.as_ref().is_some_and(type_mentions_simd)
+}
+
+fn type_mentions_simd(ty: &Type) -> bool {
+    matches!(ty, Type::Generic { name, .. } if name == "std::simd::Simd")
+}
+
+fn simd_type(ty: &Type) -> Option<Type> {
+    let Type::Array { elem, len } = ty else {
+        return None;
+    };
+    let prim = simd_element_prim(elem)?;
+    Some(Type::Generic {
+        name: "std::simd::Simd".into(),
+        args: vec![Type::Prim(prim), Type::Custom(len.to_string())],
+    })
+}
+
+fn simd_from_array_expr(expr: Expr) -> Expr {
+    Expr::Call {
+        binding: CallBinding::Generated,
+        func: Box::new(Expr::Path(Path::new(
+            ["std", "simd", "Simd", "from_array"].map(Ident::from),
+        ))),
+        args: vec![expr],
+    }
+}
+
+fn simd_to_array_expr(expr: Expr) -> Expr {
+    Expr::MethodCall {
+        recv: Box::new(expr),
+        method: "to_array".into(),
+        args: vec![],
+    }
+}
+
+fn find_intrinsic_signature(
+    llvm_name: &str,
+) -> Option<&'static intrinsics_table::IntrinsicSignature> {
     [
         intrinsics_table::X86_INTRINSICS,
         intrinsics_table::AARCH64_INTRINSICS,
@@ -651,7 +757,89 @@ fn mangle_llvm_type(ty: &Type) -> Option<String> {
     }
 }
 
-fn mangled_link_name(intrinsic_name: &str, ret_type: &Option<Type>, param_types: &[Type]) -> String {
+fn stdarch_shape(ty: &Type) -> Option<String> {
+    match ty {
+        Type::Prim(Prim::Bool) => Some("bool".into()),
+        Type::Prim(Prim::I8) => Some("i8".into()),
+        Type::Prim(Prim::U8) => Some("u8".into()),
+        Type::Prim(Prim::I16) => Some("i16".into()),
+        Type::Prim(Prim::U16) => Some("u16".into()),
+        Type::Prim(Prim::I32) => Some("i32".into()),
+        Type::Prim(Prim::U32) => Some("u32".into()),
+        Type::Prim(Prim::I64) => Some("i64".into()),
+        Type::Prim(Prim::U64) => Some("u64".into()),
+        Type::Prim(Prim::F32) => Some("f32".into()),
+        Type::Prim(Prim::F64) => Some("f64".into()),
+        Type::Array { elem, len }
+            if bitint_generic_parts(elem).is_some_and(|(_, bits, ..)| bits == "1") =>
+        {
+            matches!(len, 8 | 16 | 32 | 64).then(|| format!("u{len}"))
+        }
+        Type::Array { elem, len } => {
+            let lane = match elem.as_ref() {
+                Type::Prim(Prim::I8 | Prim::U8) => "i8",
+                Type::Prim(Prim::I16 | Prim::U16) => "i16",
+                Type::Prim(Prim::I32 | Prim::U32) => "i32",
+                Type::Prim(Prim::I64 | Prim::U64) => "i64",
+                Type::Prim(Prim::F32) => "f32",
+                Type::Prim(Prim::F64) => "f64",
+                _ => return None,
+            };
+            Some(format!("{lane}x{len}"))
+        }
+        _ => None,
+    }
+}
+
+fn stdarch_param_matches(mined: &str, resolved: &Type) -> bool {
+    let mined = mined.trim();
+    if let Type::Ptr { .. } = resolved {
+        return mined.starts_with("*mut") || mined.starts_with("*const");
+    }
+    stdarch_shape(resolved).is_some_and(|shape| shape == mined)
+}
+
+fn stdarch_ret_matches(mined: Option<&str>, resolved: &Option<Type>) -> bool {
+    match (mined, resolved) {
+        (None, None) => true,
+        (Some(mined), Some(ty)) => stdarch_param_matches(mined, ty),
+        _ => false,
+    }
+}
+
+fn find_stdarch_override(
+    intrinsic_name: &str,
+    ret_type: &Option<Type>,
+    param_types: &[Type],
+) -> Option<&'static intrinsics_table::StdarchOverride> {
+    let family_prefix = format!("llvm.{intrinsic_name}.");
+    let exact_name = format!("llvm.{intrinsic_name}");
+    let matches: Vec<&intrinsics_table::StdarchOverride> = intrinsics_table::X86_STDARCH_OVERRIDES
+        .iter()
+        .filter(|entry| {
+            entry.link_name == exact_name || entry.link_name.starts_with(&family_prefix)
+        })
+        .filter(|entry| {
+            entry.params.len() == param_types.len()
+                && entry
+                    .params
+                    .iter()
+                    .zip(param_types)
+                    .all(|(mined, resolved)| stdarch_param_matches(mined, resolved))
+                && stdarch_ret_matches(entry.ret, ret_type)
+        })
+        .collect();
+    match matches.as_slice() {
+        [only] => Some(only),
+        _ => None,
+    }
+}
+
+fn mangled_link_name(
+    intrinsic_name: &str,
+    ret_type: &Option<Type>,
+    param_types: &[Type],
+) -> String {
     let llvm_name = format!("llvm.{intrinsic_name}");
     let Some(signature) = find_intrinsic_signature(&llvm_name) else {
         return llvm_name;

@@ -1,5 +1,115 @@
 # Handoff: x86/ARM/RISC-V intrinsic (`call_llvm_intrinsic`) lowering
 
+## Update: stdarch override table (this session)
+
+Implemented the "Next step" section below, scoped to just the link-name
+override piece (not full `core::arch` call dispatch — narrower than the
+original plan, matching what was actually asked for):
+
+- `slate-intrinsic-gen` gained `--stdarch-src <core_arch/src dir>` and a
+  `mine_stdarch_overrides` pass (hand-rolled line scanner, no regex/serde
+  needed) that reads every `#[link_name = "llvm.x86...."]` extern-fn
+  declaration under stdarch's `x86`/`x86_64` source dirs and records its
+  mined Rust param/return type spellings (e.g. `i32x16`, `u16`, `*mut i8`).
+  Regenerate with the same command as before plus
+  `--stdarch-src "$(rustc --print sysroot)/lib/rustlib/src/rust/library/stdarch/crates/core_arch/src"`.
+  This emits a new `X86_STDARCH_OVERRIDES: &[StdarchOverride]` table
+  (1071 entries) appended to `intrinsics_table.rs`.
+- `intrinsics.rs` gained `find_stdarch_override`: for a CIR call site's
+  concrete resolved types, it renders each type into stdarch's own naming
+  convention (`stdarch_shape`) and looks for a **unique** mined entry among
+  the intrinsic's family (`llvm.<intrinsic_name>.*`) whose param/ret shapes
+  match. `<N x i1>` masks (slate's `[BInt<1,1,1>; N]`) are recognized and
+  mapped to stdarch's packed `uN` scalar convention; when a match is found,
+  the shim's declared param type *and* the argument expression are switched
+  to the packed scalar via the existing `pack_bitint_vector_expr`/
+  `packed_mask_int_type` helpers in `memory.rs` (bumped to `pub(super)`).
+  If found, this link name wins over `mangled_link_name`'s canonical
+  computation; otherwise falls back to canonical, unchanged.
+- Verified: re-ran the AVX512 `mask.expand` repro below —
+  `#[link_name = "llvm.x86.avx512.mask.expand.d.512"]` /
+  `...expand.pd.512` now come out (previously always the canonical
+  `.v16i32`/`.v8f64` names), with `_2: u16`/`_2: u8` scalar mask params
+  instead of `[bitint::BInt<1,1,1>; 16]` — exactly the shape the doc's
+  finding 5 established as necessary. Re-ran the non-overloaded
+  crc32/pause/rdtsc/fences fixture and confirmed its link names are
+  byte-identical to before (no regression). `cargo nextest r --release
+  --profile lowering` passes (one pre-existing, unrelated bitfield-codegen
+  failure in `gcc_torture_supported_tests_match_c` confirmed present on
+  `main` before this session's changes too, via `git stash`).
+
+## Update: `std::simd::Simd<T,N>` at the extern boundary (same session, follow-up)
+
+The link-name fix alone was **not sufficient** — `cargo build` on the
+AVX512 repro was still hitting `rustc-LLVM ERROR: Cannot select: intrinsic
+%llvm.x86.avx512.mask.expand` (the *unsuffixed* canonical name) even with
+the correct legacy `#[link_name]`, because slate's general `[i32; 16]`
+(plain LLVM array, not LLVM vector) argument types made LLVM's
+intrinsic-name lookup fall back to prefix-matching against the generic
+overloaded family, discarding the `.d.512` suffix.
+
+Fixed by lowering `call_llvm_intrinsic`'s shim signature (not the general
+vector representation elsewhere in slate) to `std::simd::Simd<T,N>` for any
+vector-typed operand/result position, converting at the call boundary only
+(`Simd::from_array(...)` going in, `.to_array()` coming out) so the rest of
+the generated function keeps using plain arrays unchanged:
+
+- `intrinsics.rs`: `simd_type`/`simd_element_prim` map a CIR-resolved
+  `Type::Array{elem, len}` to `Type::Generic { name: "std::simd::Simd",
+  args: [elem, len] }` when `elem` is a supported `SimdElement` prim
+  (i8/16/32/64, u8/16/32/64, f32/f64); `simd_from_array_expr`/
+  `simd_to_array_expr` build the conversion calls. Applied independently of
+  whether a stdarch override matched — this also benefits the plain
+  canonical/non-legacy overloaded case (e.g. `llvm.ctpop.v4i32`).
+- `rust_ast.rs` gained four new `Feature` variants
+  (`AbiUnadjusted`/`LinkLlvmIntrinsics`/`PortableSimd`/`SimdFfi`) and
+  `lowerer.rs` now auto-emits `#![feature(...)]` for them whenever
+  `llvm_intrinsic_shims` is non-empty (link_llvm_intrinsics/abi_unadjusted)
+  or any shim mentions `Simd<...>` (portable_simd/simd_ffi) — previously
+  these had to be hand-added to the generated crate's `main.rs`, a loose
+  end called out below; that's now fixed as a side effect.
+- Verified via a standalone `rustc` repro first (declaring
+  `Simd<i32,16>`-typed extern params with the legacy link name and calling
+  `Simd::from_array`/`.to_array()` at the boundary, no hand-rolled
+  `#[repr(simd)]` newtype) before wiring it into the lowerer — compiled and
+  produced output identical to `clang -mavx512f` on the same computation.
+- **End-to-end verified on the real AVX512 `mask.expand` repro below**:
+  `translate-project` now emits `std::simd::Simd<i32, 16>`/`Simd<f64, 8>`
+  extern params with the correct auto-added feature flags;
+  `cargo build`+`cargo run` on the generated crate produces stdout and exit
+  code **byte-identical** to `clang -mavx512f` for both the `_epi32` and
+  `_pd` overloads together in one binary. `cargo fmt`/`clippy` clean;
+  `cargo nextest r --release --profile lowering` still passes (same
+  pre-existing, unrelated `gcc_torture_supported_tests_match_c` bitfield
+  failure, confirmed present on `main` before this session too); the
+  non-overloaded crc32/rdtsc fixture's generated source is unchanged aside
+  from the two new auto-added feature lines and shim-name hashes (which
+  depend on the return-type debug string and are expected to shift).
+- Closed `slate-3f8g.4.9.1`.
+
+**Not yet covered / open follow-ups**, in case this needs picking up
+again:
+- The FFI-safety `improper_ctypes` lint warnings on every `Simd<T,N>`
+  extern param are expected (same as stdarch's own internal `iNxM`/`fNxM`
+  newtypes get this warning) — not a correctness issue, just noise; slate
+  doesn't currently suppress it for these shims.
+- `<N x i1>` masks are only packed to a scalar `uN` when a stdarch override
+  entry says so; a call site with a mask arg but *no* matching stdarch
+  override (canonical/non-legacy overloaded path) still emits
+  `[bitint::BInt<1,1,1>; N]` directly, which is not a real LLVM
+  `<N x i1>` vector either — untested, likely still broken, no repro
+  attempted this session.
+- Only x86/x86_64 stdarch sources are mined (`--stdarch-src` scans
+  `x86`/`x86_64` subdirs only); ARM/AArch64/RISC-V would need the same
+  treatment if/when their overloaded-intrinsic naming turns out to have
+  similar legacy-vs-canonical splits — not investigated.
+- The pre-existing, unrelated `rdtscp` `slate_shims.c` build failure
+  (`return type is an incomplete type` for the tuple-returning
+  `anon_struct` shim) blocks a full `cargo build` of the non-overloaded
+  crc32/rdtsc/fences fixture on this machine; confirmed pre-existing (same
+  failure with this session's changes stashed out) and out of scope here.
+
+
 ## Scope and state
 
 This is a fresh feature area, not a bug-fix loop. Slate could not translate any
