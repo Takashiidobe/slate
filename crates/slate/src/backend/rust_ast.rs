@@ -208,8 +208,17 @@ pub enum Attr {
     ExternWeakLinkage,
     LinkSection(String),
     Used(UsedKind),
-    Deprecated(String),
+    Deprecated(Option<String>),
     TargetFeature(String),
+    Cold,
+    MustUse,
+    Inline(InlineHint),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum InlineHint {
+    Always,
+    Never,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]

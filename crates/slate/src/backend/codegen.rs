@@ -3,8 +3,8 @@ use std::fmt::{self, Write};
 use crate::backend::rust_ast::{
     Abi, AsmDialect, AsmOperand, AsmReg, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType,
     Attr, Block, Cfg, Comment, CrateAttr, Derive, Expr, ExternDecl, FnDef, GenericParam, ImplBlock,
-    ImplItem, IndentStmt, Item, Method, Path, Program, RecordDef, RecordField, Repr, RustValue,
-    SelfKind, Stmt, StructDef, StructFields, TraitBound, TraitRef, Type,
+    ImplItem, IndentStmt, InlineHint, Item, Method, Path, Program, RecordDef, RecordField, Repr,
+    RustValue, SelfKind, Stmt, StructDef, StructFields, TraitBound, TraitRef, Type,
 };
 
 const INDENT: &str = "    ";
@@ -528,7 +528,8 @@ impl<W: Write> Codegen<W> {
                 }
                 crate::backend::rust_ast::UsedKind::Linker => self.out.write_str("used(linker)"),
             },
-            Attr::Deprecated(note) => {
+            Attr::Deprecated(None) => self.out.write_str("deprecated"),
+            Attr::Deprecated(Some(note)) => {
                 write!(self.out, "deprecated(note = {})", string_literal(note))
             }
             Attr::TargetFeature(features) => {
@@ -538,6 +539,10 @@ impl<W: Write> Codegen<W> {
                     string_literal(features)
                 )
             }
+            Attr::Cold => self.out.write_str("cold"),
+            Attr::MustUse => self.out.write_str("must_use"),
+            Attr::Inline(InlineHint::Always) => self.out.write_str("inline(always)"),
+            Attr::Inline(InlineHint::Never) => self.out.write_str("inline(never)"),
         }
     }
 

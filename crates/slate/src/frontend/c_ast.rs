@@ -1,7 +1,7 @@
 use serde::Deserialize;
 use serde_json::Value;
 use std::cell::RefCell;
-use std::collections::{BTreeSet, HashMap};
+use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitStatus};
 use thiserror::Error;
@@ -59,6 +59,10 @@ pub struct Unit {
     pub declaration_comments: Vec<DeclarationComment>,
     pub weak_refs: Vec<WeakRefAttribute>,
     pub naked_functions: BTreeSet<String>,
+    pub noinline_functions: BTreeSet<String>,
+    pub must_use_functions: BTreeSet<String>,
+    pub deprecated_functions: BTreeMap<String, Option<String>>,
+    pub unsupported_attribute_functions: BTreeMap<String, Vec<&'static str>>,
     pub floating_literals: HashMap<FloatingLiteralLoc, FloatingLiteralFact>,
     pub global_floating_literals: HashMap<String, Vec<FloatingLiteralFact>>,
     pub(crate) function_types: HashMap<String, String>,
@@ -661,6 +665,10 @@ fn parse_json_with_record_roots(
     let mut declaration_comments = Vec::new();
     let mut weak_refs = Vec::new();
     let mut naked_functions = BTreeSet::new();
+    let mut noinline_functions = BTreeSet::new();
+    let mut must_use_functions = BTreeSet::new();
+    let mut deprecated_functions = BTreeMap::new();
+    let mut unsupported_attribute_functions: BTreeMap<String, Vec<&'static str>> = BTreeMap::new();
     collect_enums(&root, source_file, record_roots, &enum_typedefs, &mut enums);
     collect_records(
         &root,
@@ -713,6 +721,14 @@ fn parse_json_with_record_roots(
     );
     collect_weak_ref_attributes(&root, source_file, &mut weak_refs);
     collect_naked_functions(&root, source_file, &mut naked_functions);
+    collect_function_attribute_facts(
+        &root,
+        source_file,
+        &mut noinline_functions,
+        &mut must_use_functions,
+        &mut deprecated_functions,
+        &mut unsupported_attribute_functions,
+    );
     let mut floating_literals = plugin_events.floating_literals;
     if let Some(source) = source_text.as_deref() {
         collect_floating_literals(&root, source_file, source, &mut floating_literals);
@@ -738,6 +754,10 @@ fn parse_json_with_record_roots(
         declaration_comments,
         weak_refs,
         naked_functions,
+        noinline_functions,
+        must_use_functions,
+        deprecated_functions,
+        unsupported_attribute_functions,
         floating_literals,
         global_floating_literals,
         function_types,
@@ -1293,6 +1313,65 @@ fn collect_naked_functions(node: &Value, source_file: &str, out: &mut BTreeSet<S
     }
     for child in children(node) {
         collect_naked_functions(child, source_file, out);
+    }
+}
+
+/// Diagnostic/optimization-only GNU attributes that have no faithful Rust
+/// equivalent (see slate-jep.7): tracked so callers can warn instead of
+/// silently dropping them.
+fn collect_function_attribute_facts(
+    node: &Value,
+    source_file: &str,
+    noinline: &mut BTreeSet<String>,
+    must_use: &mut BTreeSet<String>,
+    deprecated: &mut BTreeMap<String, Option<String>>,
+    unsupported: &mut BTreeMap<String, Vec<&'static str>>,
+) {
+    if kind(node) == Some("FunctionDecl")
+        && is_source_node(node, source_file)
+        && let Some(name) = node.get("name").and_then(Value::as_str)
+    {
+        let mut unsupported_kinds = Vec::new();
+        for child in children(node) {
+            match kind(child) {
+                Some("NoInlineAttr") => {
+                    noinline.insert(name.to_string());
+                }
+                Some("WarnUnusedResultAttr") => {
+                    must_use.insert(name.to_string());
+                }
+                Some("DeprecatedAttr") => {
+                    let message = child
+                        .get("message")
+                        .and_then(Value::as_str)
+                        .filter(|message| !message.is_empty())
+                        .map(str::to_string);
+                    deprecated.insert(name.to_string(), message);
+                }
+                Some("GNUInlineAttr") => unsupported_kinds.push("gnu_inline"),
+                Some("FormatAttr") => unsupported_kinds.push("format"),
+                Some("FormatArgAttr") => unsupported_kinds.push("format_arg"),
+                Some("SentinelAttr") => unsupported_kinds.push("sentinel"),
+                Some("NoSanitizeAttr") => unsupported_kinds.push("no_sanitize"),
+                _ => {}
+            }
+        }
+        if !unsupported_kinds.is_empty() {
+            unsupported
+                .entry(name.to_string())
+                .or_default()
+                .extend(unsupported_kinds);
+        }
+    }
+    for child in children(node) {
+        collect_function_attribute_facts(
+            child,
+            source_file,
+            noinline,
+            must_use,
+            deprecated,
+            unsupported,
+        );
     }
 }
 

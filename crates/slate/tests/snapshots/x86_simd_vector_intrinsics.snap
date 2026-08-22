@@ -27,6 +27,7 @@ unsafe extern "C" {
     fn printf(_0: *const i8, ...) -> i32;
 }
 
+#[inline(always)]
 fn _mm_set_epi32(arg41: i32, arg42: i32, arg43: i32, arg44: i32) -> [i64; 2] {
     let mut __i3: i32 = 0;
     let mut __i2: i32 = 0;
@@ -48,6 +49,7 @@ fn _mm_set_epi32(arg41: i32, arg42: i32, arg43: i32, arg44: i32) -> [i64; 2] {
     return _v6;
 }
 
+#[inline(always)]
 fn _mm_set1_epi32(arg40: i32) -> [i64; 2] {
     let mut __i: i32 = 0;
     let mut __retval: aligned::Aligned<aligned::A16, [i64; 2]> = aligned::Aligned([0; 2]);
@@ -62,6 +64,7 @@ fn _mm_set1_epi32(arg40: i32) -> [i64; 2] {
     return _v5;
 }
 
+#[inline(always)]
 fn _mm_add_epi32(arg38: [i64; 2], arg39: [i64; 2]) -> [i64; 2] {
     let mut __a: aligned::Aligned<aligned::A16, [i64; 2]> = aligned::Aligned([0; 2]);
     let mut __b: aligned::Aligned<aligned::A16, [i64; 2]> = aligned::Aligned([0; 2]);
@@ -79,6 +82,7 @@ fn _mm_add_epi32(arg38: [i64; 2], arg39: [i64; 2]) -> [i64; 2] {
     return _v6;
 }
 
+#[inline(always)]
 fn _mm_storeu_si128(arg36: *mut [i64; 2], arg37: [i64; 2]) {
     let mut __p: *mut [i64; 2] = std::ptr::null_mut();
     let mut __b: aligned::Aligned<aligned::A16, [i64; 2]> = aligned::Aligned([0; 2]);
@@ -116,6 +120,7 @@ fn sse2_probe(arg35: *mut i32) {
     return;
 }
 
+#[inline(always)]
 fn _mm_set_epi8(arg19: i8, arg20: i8, arg21: i8, arg22: i8, arg23: i8, arg24: i8, arg25: i8, arg26: i8, arg27: i8, arg28: i8, arg29: i8, arg30: i8, arg31: i8, arg32: i8, arg33: i8, arg34: i8) -> [i64; 2] {
     let mut __b15: i8 = 0;
     let mut __b14: i8 = 0;
@@ -173,6 +178,7 @@ fn _mm_set_epi8(arg19: i8, arg20: i8, arg21: i8, arg22: i8, arg23: i8, arg24: i8
     return _v18;
 }
 
+#[inline(always)]
 fn _mm_set1_epi8(arg18: i8) -> [i64; 2] {
     let mut __b: i8 = 0;
     let mut __retval: aligned::Aligned<aligned::A16, [i64; 2]> = aligned::Aligned([0; 2]);
@@ -199,6 +205,7 @@ fn _mm_set1_epi8(arg18: i8) -> [i64; 2] {
     return _v17;
 }
 
+#[inline(always)]
 fn _mm_setzero_si128() -> [i64; 2] {
     let mut __retval: aligned::Aligned<aligned::A16, [i64; 2]> = aligned::Aligned([0; 2]);
     let _v0: [i64; 2] = [0, 0];
@@ -208,6 +215,7 @@ fn _mm_setzero_si128() -> [i64; 2] {
 }
 
 #[target_feature(enable = "sse3,ssse3")]
+#[inline(always)]
 unsafe fn _mm_abs_epi8(arg17: [i64; 2]) -> [i64; 2] {
     let mut __a: aligned::Aligned<aligned::A16, [i64; 2]> = aligned::Aligned([0; 2]);
     let mut __retval: aligned::Aligned<aligned::A16, [i64; 2]> = aligned::Aligned([0; 2]);
@@ -222,6 +230,7 @@ unsafe fn _mm_abs_epi8(arg17: [i64; 2]) -> [i64; 2] {
 }
 
 #[target_feature(enable = "sse3,ssse3")]
+#[inline(always)]
 unsafe fn _mm_shuffle_epi8(arg15: [i64; 2], arg16: [i64; 2]) -> [i64; 2] {
     let mut __a: aligned::Aligned<aligned::A16, [i64; 2]> = aligned::Aligned([0; 2]);
     let mut __b: aligned::Aligned<aligned::A16, [i64; 2]> = aligned::Aligned([0; 2]);
@@ -267,6 +276,7 @@ unsafe fn ssse3_probe(arg14: *mut i8) {
 }
 
 #[target_feature(enable = "avx,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
+#[inline(always)]
 unsafe fn _mm256_set_epi32(arg6: i32, arg7: i32, arg8: i32, arg9: i32, arg10: i32, arg11: i32, arg12: i32, arg13: i32) -> [i64; 4] {
     let mut __i0: i32 = 0;
     let mut __i1: i32 = 0;
@@ -301,6 +311,7 @@ unsafe fn _mm256_set_epi32(arg6: i32, arg7: i32, arg8: i32, arg9: i32, arg10: i3
 }
 
 #[target_feature(enable = "avx,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
+#[inline(always)]
 unsafe fn _mm256_set1_epi32(arg5: i32) -> [i64; 4] {
     let mut __i: i32 = 0;
     let mut __retval: aligned::Aligned<aligned::A32, [i64; 4]> = aligned::Aligned([0; 4]);
@@ -320,6 +331,7 @@ unsafe fn _mm256_set1_epi32(arg5: i32) -> [i64; 4] {
 }
 
 #[target_feature(enable = "avx,avx2,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
+#[inline(always)]
 unsafe fn _mm256_add_epi32(arg3: [i64; 4], arg4: [i64; 4]) -> [i64; 4] {
     let mut __a: aligned::Aligned<aligned::A32, [i64; 4]> = aligned::Aligned([0; 4]);
     let mut __b: aligned::Aligned<aligned::A32, [i64; 4]> = aligned::Aligned([0; 4]);
@@ -338,6 +350,7 @@ unsafe fn _mm256_add_epi32(arg3: [i64; 4], arg4: [i64; 4]) -> [i64; 4] {
 }
 
 #[target_feature(enable = "avx,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
+#[inline(always)]
 unsafe fn _mm256_storeu_si256(arg1: *mut [i64; 4], arg2: [i64; 4]) {
     let mut __p: *mut [i64; 4] = std::ptr::null_mut();
     let mut __a: aligned::Aligned<aligned::A32, [i64; 4]> = aligned::Aligned([0; 4]);

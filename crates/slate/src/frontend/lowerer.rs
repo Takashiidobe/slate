@@ -4,10 +4,10 @@ use crate::backend::rust_ast::{
     Abi, AsmDialect, AsmOperand, AsmReg, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType,
     Attr as RustAttr, AttrArg, BinOp, CLIB_RECORD_TYPES, CLibInitializer, CLibType, Cfg, Comment,
     CrateAttr, Derive, EnumConst, EnumDef, Expr, ExprMatchArm, ExternDecl, ExternFnDecl, Feature,
-    FnDef, FnParam, Ident, ImplBlock, ImplItem, IndentStmt, InlineAsm, Item, Label, Lint, MatchArm,
-    Method, Path, Pattern, Prim, Program, Raw, RecordDef, RecordField, Repr, RustValue, SelfKind,
-    StdTrait, Stmt, StructDef, StructField, StructFields, SupportModule, TraitRef, Type, UnaryOp,
-    UsedKind, Visibility,
+    FnDef, FnParam, Ident, ImplBlock, ImplItem, IndentStmt, InlineAsm, InlineHint, Item, Label,
+    Lint, MatchArm, Method, Path, Pattern, Prim, Program, Raw, RecordDef, RecordField, Repr,
+    RustValue, SelfKind, StdTrait, Stmt, StructDef, StructField, StructFields, SupportModule,
+    TraitRef, Type, UnaryOp, UsedKind, Visibility,
 };
 use crate::cir::{Attr, Block, CirType, Module, Region};
 use crate::ctx::Ctx;
@@ -588,6 +588,15 @@ fn rustc_target_feature_name(name: &str) -> &str {
     }
 }
 
+pub fn always_inline_functions(module: &Module) -> BTreeSet<String> {
+    module
+        .functions
+        .iter()
+        .filter(|function| function.inline_kind == Some(clang_ir::enums::InlineKind::AlwaysInline))
+        .map(|function| function.name.clone())
+        .collect()
+}
+
 fn cir_type_mentions(ty: &CirType, is_target: &impl Fn(&CirType) -> bool) -> bool {
     if is_target(ty) {
         return true;
@@ -900,6 +909,11 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         project: project.clone(),
         unsafe_functions: project.unsafe_functions.clone(),
         target_feature_functions: target_feature_functions(cir),
+        always_inline_functions: always_inline_functions(cir),
+        noinline_functions: c.noinline_functions.clone(),
+        must_use_functions: c.must_use_functions.clone(),
+        deprecated_functions: c.deprecated_functions.clone(),
+        unsupported_attribute_functions: c.unsupported_attribute_functions.clone(),
         cross_uses: Vec::new(),
         ctor_calls: Vec::new(),
         dtor_calls: Vec::new(),
@@ -1318,6 +1332,11 @@ struct Lowerer<'a> {
     project: ProjectInfo,
     unsafe_functions: BTreeSet<String>,
     target_feature_functions: BTreeMap<String, Vec<String>>,
+    always_inline_functions: BTreeSet<String>,
+    noinline_functions: BTreeSet<String>,
+    must_use_functions: BTreeSet<String>,
+    deprecated_functions: BTreeMap<String, Option<String>>,
+    unsupported_attribute_functions: BTreeMap<String, Vec<&'static str>>,
     cross_uses: Vec<Item>,
     ctor_calls: Vec<String>,
     dtor_calls: Vec<String>,
@@ -2538,6 +2557,30 @@ impl __SlateVaArgs {
         lower_enum_def(enm, Visibility::Private).map(Item::Enum)
     }
 
+    fn warn_unsupported_function_attributes(&mut self, op: &Operation, name: &str) {
+        let mut kinds: Vec<&str> = Vec::new();
+        match attr_int(op, "side_effect") {
+            Some(1) => kinds.push("pure"),
+            Some(2) => kinds.push("const"),
+            _ => {}
+        }
+        if attr_bool(op, "hot") {
+            kinds.push("hot");
+        }
+        if let Some(extra) = self.unsupported_attribute_functions.get(name) {
+            kinds.extend(extra.iter().copied());
+        }
+        if kinds.is_empty() {
+            return;
+        }
+        kinds.sort_unstable();
+        kinds.dedup();
+        self.ctx.diagnostics.warn(format!(
+            "lower: `{}` on `{name}` has no faithful Rust equivalent; attribute dropped",
+            kinds.join(", ")
+        ));
+    }
+
     fn warn_protected_visibility(&mut self, op: &Operation, name: &str) {
         if visibility_is_protected(op) {
             self.ctx.diagnostics.warn(
@@ -2855,6 +2898,22 @@ impl __SlateVaArgs {
         if let Some(features) = self.target_feature_functions.get(name) {
             attrs.push(RustAttr::TargetFeature(features.join(",")));
         }
+        if attr_bool(op, "cold") {
+            attrs.push(RustAttr::Cold);
+        }
+        if self.always_inline_functions.contains(name) {
+            attrs.push(RustAttr::Inline(InlineHint::Always));
+        }
+        if self.noinline_functions.contains(name) {
+            attrs.push(RustAttr::Inline(InlineHint::Never));
+        }
+        if self.must_use_functions.contains(name) {
+            attrs.push(RustAttr::MustUse);
+        }
+        if let Some(message) = self.deprecated_functions.get(name) {
+            attrs.push(RustAttr::Deprecated(message.clone()));
+        }
+        self.warn_unsupported_function_attributes(op, name);
         self.warn_protected_visibility(op, name);
         if linkage_is_weak(op) {
             self.uses_linkage.set(true);

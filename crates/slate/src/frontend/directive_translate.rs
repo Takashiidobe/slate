@@ -234,7 +234,7 @@ pub fn warning_items(
     let items = match backend {
         WarningBackend::Standalone => vec![
             Item::Const {
-                attrs: vec![Attr::Deprecated(message.into())],
+                attrs: vec![Attr::Deprecated(Some(message.into()))],
                 name: format!("__SLATE_WARNING_{index}"),
                 ty: Type::Unit,
                 init: Expr::Block(Box::default()),

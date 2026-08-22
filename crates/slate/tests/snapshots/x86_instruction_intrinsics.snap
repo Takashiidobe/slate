@@ -20,6 +20,7 @@ unsafe extern "C" {
 }
 
 #[target_feature(enable = "sse4.2")]
+#[inline(always)]
 unsafe fn _mm_crc32_u8(arg6: u32, arg7: u8) -> u32 {
     let mut __C: u32 = 0;
     let mut __D: u8 = 0;
@@ -35,6 +36,7 @@ unsafe fn _mm_crc32_u8(arg6: u32, arg7: u8) -> u32 {
 }
 
 #[target_feature(enable = "sse4.2")]
+#[inline(always)]
 unsafe fn _mm_crc32_u16(arg4: u32, arg5: u16) -> u32 {
     let mut __C: u32 = 0;
     let mut __D: u16 = 0;
@@ -50,6 +52,7 @@ unsafe fn _mm_crc32_u16(arg4: u32, arg5: u16) -> u32 {
 }
 
 #[target_feature(enable = "sse4.2")]
+#[inline(always)]
 unsafe fn _mm_crc32_u32(arg2: u32, arg3: u32) -> u32 {
     let mut __C: u32 = 0;
     let mut __D: u32 = 0;
@@ -65,6 +68,7 @@ unsafe fn _mm_crc32_u32(arg2: u32, arg3: u32) -> u32 {
 }
 
 #[target_feature(enable = "sse4.2")]
+#[inline(always)]
 unsafe fn _mm_crc32_u64(arg0: u64, arg1: u64) -> u64 {
     let mut __C: u64 = 0;
     let mut __D: u64 = 0;

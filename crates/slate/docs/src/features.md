@@ -1038,14 +1038,14 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 
 ## Function and Optimization Attributes
 
-- [ ] `always_inline`
-- [ ] `noinline`
-- [ ] `gnu_inline`
+- [x] `always_inline`
+- [x] `noinline`
+- [ ] `gnu_inline` (no Rust equivalent; parsed and diagnosed, not lowered)
 - [ ] `flatten`
-- [ ] `hot`
-- [ ] `cold`
-- [ ] `pure`
-- [ ] `const`
+- [ ] `hot` (no Rust equivalent; parsed and diagnosed, not lowered)
+- [x] `cold`
+- [ ] `pure` (no Rust equivalent; parsed and diagnosed, not lowered)
+- [ ] `const` (no Rust equivalent; parsed and diagnosed, not lowered)
 - [x] `malloc`
 - [x] `alloc_size`
 - [x] `alloc_align`
@@ -1054,7 +1054,7 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 - [x] `nonnull`
 - [x] `noreturn`
 - [ ] `nothrow`
-- [ ] `warn_unused_result`
+- [x] `warn_unused_result`
 - [ ] `used`
 - [ ] `unused`
 - [ ] `retain`
@@ -1063,9 +1063,9 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 - [ ] `no_icf`
 - [ ] `no_instrument_function`
 - [ ] `no_profile_instrument_function`
-- [ ] `no_sanitize`
+- [ ] `no_sanitize` (no Rust equivalent; parsed and diagnosed, not lowered)
 - [ ] `optimize`
-- [ ] `target`
+- [x] `target`
 - [ ] `target_clones`
 - [ ] `target_version`
 
@@ -1089,15 +1089,15 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 
 ## Diagnostic and Contract Attributes
 
-- [ ] `deprecated`
+- [x] `deprecated`
 - [ ] `warning`
 - [ ] `error`
-- [ ] `format`
-- [ ] `format_arg`
+- [ ] `format` (no Rust equivalent; parsed and diagnosed, not lowered)
+- [ ] `format_arg` (no Rust equivalent; parsed and diagnosed, not lowered)
 - [ ] `access`
 - [x] `nonnull`
 - [ ] `null_terminated_string_arg`
-- [ ] `sentinel`
+- [ ] `sentinel` (no Rust equivalent; parsed and diagnosed, not lowered)
 
 ## Variable and Statement Attributes
 
