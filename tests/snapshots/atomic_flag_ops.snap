@@ -1,0 +1,136 @@
+---
+source: tests/snapshot.rs
+expression: rust
+---
+#![feature(c_variadic)]
+#![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+
+#[repr(C)]
+#[allow(non_camel_case_types)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
+enum memory_order {
+    memory_order_relaxed = 0,
+    memory_order_consume = 1,
+    memory_order_acquire = 2,
+    memory_order_release = 3,
+    memory_order_acq_rel = 4,
+    memory_order_seq_cst = 5,
+}
+
+
+#[repr(C)]
+#[derive(Clone, Copy)]
+struct atomic_flag {
+    _Value: bool,
+}
+
+
+unsafe extern "C" {
+    fn printf(_0: *const i8, ...) -> i32;
+}
+
+fn main() {
+    let mut __retval: i32 = 0;
+    let mut flag: atomic_flag = atomic_flag { _Value: false };
+    let mut first: i32 = 0;
+    let mut _atomictmp: bool = false;
+    let mut atomic_temp: bool = false;
+    let mut _atomictmp2: bool = false;
+    let mut second: i32 = 0;
+    let mut _atomictmp3: bool = false;
+    let mut atomic_temp2: bool = false;
+    let mut third: i32 = 0;
+    let mut _atomictmp4: bool = false;
+    let mut atomic_temp3: bool = false;
+    let mut _atomictmp5: bool = false;
+    let mut fourth: i32 = 0;
+    let mut _atomictmp6: bool = false;
+    let mut atomic_temp4: bool = false;
+    let _v0: i32 = 0;
+    __retval = _v0;
+    flag = atomic_flag { _Value: false };
+    let _v1: i32 = 1;
+    let _v2: bool = _v1 != 0;
+    _atomictmp = _v2;
+    let _v3: *mut u8 = std::ptr::addr_of_mut!(flag._Value) as *mut u8;
+    let _v4: *mut u8 = std::ptr::addr_of_mut!(_atomictmp) as *mut u8;
+    let _v5: *mut u8 = std::ptr::addr_of_mut!(atomic_temp) as *mut u8;
+    let _v6: u8 = unsafe { *_v4 };
+    let _v7: u8 = unsafe { std::sync::atomic::AtomicU8::from_ptr(_v3).swap(_v6, std::sync::atomic::Ordering::SeqCst) };
+    unsafe {
+        *_v5 = _v7;
+    }
+    let _v8: *mut bool = _v5 as *mut bool;
+    let _v9: bool = unsafe { *_v8 };
+    let _v10: i32 = _v9 as i32;
+    first = _v10;
+    let _v11: i32 = 0;
+    let _v12: bool = _v11 != 0;
+    _atomictmp2 = _v12;
+    let _v13: *mut u8 = std::ptr::addr_of_mut!(flag._Value) as *mut u8;
+    let _v14: *mut u8 = std::ptr::addr_of_mut!(_atomictmp2) as *mut u8;
+    let _v15: u8 = unsafe { *_v14 };
+    unsafe { std::sync::atomic::AtomicU8::from_ptr(_v13).store(_v15, std::sync::atomic::Ordering::Release) };
+    let _v16: i32 = 1;
+    let _v17: bool = _v16 != 0;
+    _atomictmp3 = _v17;
+    let _v18: *mut u8 = std::ptr::addr_of_mut!(flag._Value) as *mut u8;
+    let _v19: *mut u8 = std::ptr::addr_of_mut!(_atomictmp3) as *mut u8;
+    let _v20: *mut u8 = std::ptr::addr_of_mut!(atomic_temp2) as *mut u8;
+    let _v21: u8 = unsafe { *_v19 };
+    let _v22: u8 = unsafe { std::sync::atomic::AtomicU8::from_ptr(_v18).swap(_v21, std::sync::atomic::Ordering::Acquire) };
+    unsafe {
+        *_v20 = _v22;
+    }
+    let _v23: *mut bool = _v20 as *mut bool;
+    let _v24: bool = unsafe { *_v23 };
+    let _v25: i32 = _v24 as i32;
+    second = _v25;
+    let _v26: i32 = 1;
+    let _v27: bool = _v26 != 0;
+    _atomictmp4 = _v27;
+    let _v28: *mut u8 = std::ptr::addr_of_mut!(flag._Value) as *mut u8;
+    let _v29: *mut u8 = std::ptr::addr_of_mut!(_atomictmp4) as *mut u8;
+    let _v30: *mut u8 = std::ptr::addr_of_mut!(atomic_temp3) as *mut u8;
+    let _v31: u8 = unsafe { *_v29 };
+    let _v32: u8 = unsafe { std::sync::atomic::AtomicU8::from_ptr(_v28).swap(_v31, std::sync::atomic::Ordering::Relaxed) };
+    unsafe {
+        *_v30 = _v32;
+    }
+    let _v33: *mut bool = _v30 as *mut bool;
+    let _v34: bool = unsafe { *_v33 };
+    let _v35: i32 = _v34 as i32;
+    third = _v35;
+    let _v36: i32 = 0;
+    let _v37: bool = _v36 != 0;
+    _atomictmp5 = _v37;
+    let _v38: *mut u8 = std::ptr::addr_of_mut!(flag._Value) as *mut u8;
+    let _v39: *mut u8 = std::ptr::addr_of_mut!(_atomictmp5) as *mut u8;
+    let _v40: u8 = unsafe { *_v39 };
+    unsafe { std::sync::atomic::AtomicU8::from_ptr(_v38).store(_v40, std::sync::atomic::Ordering::SeqCst) };
+    let _v41: i32 = 1;
+    let _v42: bool = _v41 != 0;
+    _atomictmp6 = _v42;
+    let _v43: *mut u8 = std::ptr::addr_of_mut!(flag._Value) as *mut u8;
+    let _v44: *mut u8 = std::ptr::addr_of_mut!(_atomictmp6) as *mut u8;
+    let _v45: *mut u8 = std::ptr::addr_of_mut!(atomic_temp4) as *mut u8;
+    let _v46: u8 = unsafe { *_v44 };
+    let _v47: u8 = unsafe { std::sync::atomic::AtomicU8::from_ptr(_v43).swap(_v46, std::sync::atomic::Ordering::SeqCst) };
+    unsafe {
+        *_v45 = _v47;
+    }
+    let _v48: *mut bool = _v45 as *mut bool;
+    let _v49: bool = unsafe { *_v48 };
+    let _v50: i32 = _v49 as i32;
+    fourth = _v50;
+    let _v51: *mut i8 = b"%d %d %d %d\n\0".as_ptr() as *mut i8;
+    let _v52: i32 = first;
+    let _v53: i32 = second;
+    let _v54: i32 = third;
+    let _v55: i32 = fourth;
+    let _v56: i32 = unsafe { printf(_v51 as *const i8, _v52, _v53, _v54, _v55) };
+    let _v57: i32 = 0;
+    __retval = _v57;
+    let _v58: i32 = __retval;
+    std::process::exit(_v58 as i32);
+}

@@ -1,0 +1,89 @@
+---
+source: tests/snapshot.rs
+expression: rust
+---
+#![feature(c_variadic)]
+#![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+
+#[repr(C)]
+#[allow(non_camel_case_types)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
+enum Status {
+    STATUS_OK = 0,
+    STATUS_FAIL = 1,
+}
+
+
+#[repr(C)]
+#[derive(Clone, Copy)]
+struct Dispatcher {
+    run: Option<unsafe extern "C" fn(i32) -> u32>,
+}
+
+
+static mut lastCode: i32 = -1;
+
+unsafe extern "C" {
+    fn printf(_0: *const i8, ...) -> i32;
+}
+
+extern "C" fn succeed(arg1: i32) -> u32 {
+    let mut x: i32 = 0;
+    let mut __retval: u32 = 0;
+    x = arg1;
+    let _v0: i32 = x;
+    let _v1: i32 = 100;
+    let _v2: i32 = _v0 + _v1;
+    unsafe {
+        lastCode = _v2;
+    }
+    let _v3: u32 = Status::STATUS_OK as u32;
+    __retval = _v3;
+    let _v4: u32 = __retval;
+    return _v4;
+}
+
+extern "C" fn fail(arg0: i32) -> u32 {
+    let mut x: i32 = 0;
+    let mut __retval: u32 = 0;
+    x = arg0;
+    let _v0: i32 = x;
+    let _v1: i32 = 200;
+    let _v2: i32 = _v0 + _v1;
+    unsafe {
+        lastCode = _v2;
+    }
+    let _v3: u32 = Status::STATUS_FAIL as u32;
+    __retval = _v3;
+    let _v4: u32 = __retval;
+    return _v4;
+}
+
+fn main() {
+    let mut __retval: i32 = 0;
+    let mut d: Dispatcher = Dispatcher { run: None };
+    let mut a: i32 = 0;
+    let mut b: i32 = 0;
+    let _v0: i32 = 0;
+    __retval = _v0;
+    d.run = unsafe { std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32) -> u32>>(succeed as *const ()) };
+    let _v1: Option<unsafe extern "C" fn(i32) -> u32> = d.run;
+    let _v2: i32 = 1;
+    let _v3: u32 = unsafe { _v1.unwrap()(_v2) };
+    let _v4: i32 = unsafe { lastCode };
+    a = _v4;
+    d.run = unsafe { std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32) -> u32>>(fail as *const ()) };
+    let _v5: Option<unsafe extern "C" fn(i32) -> u32> = d.run;
+    let _v6: i32 = 2;
+    let _v7: u32 = unsafe { _v5.unwrap()(_v6) };
+    let _v8: i32 = unsafe { lastCode };
+    b = _v8;
+    let _v9: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
+    let _v10: i32 = a;
+    let _v11: i32 = b;
+    let _v12: i32 = unsafe { printf(_v9 as *const i8, _v10, _v11) };
+    let _v13: i32 = 0;
+    __retval = _v13;
+    let _v14: i32 = __retval;
+    std::process::exit(_v14 as i32);
+}

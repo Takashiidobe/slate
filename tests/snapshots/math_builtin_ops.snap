@@ -1,0 +1,106 @@
+---
+source: tests/snapshot.rs
+expression: rust
+---
+#![feature(c_variadic)]
+#![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+
+unsafe extern "C" {
+    fn sin(_0: f64) -> f64;
+    fn cos(_0: f64) -> f64;
+    fn tan(_0: f64) -> f64;
+    fn log(_0: f64) -> f64;
+    fn log10(_0: f64) -> f64;
+    fn log2(_0: f64) -> f64;
+    fn pow(_0: f64, _1: f64) -> f64;
+    fn sqrt(_0: f64) -> f64;
+    fn exp(_0: f64) -> f64;
+    fn exp2(_0: f64) -> f64;
+    fn fmod(_0: f64, _1: f64) -> f64;
+    fn lround(_0: f64) -> i64;
+    fn llround(_0: f64) -> i64;
+    fn printf(_0: *const i8, ...) -> i32;
+}
+
+fn main() {
+    let mut __retval: i32 = 0;
+    let mut a: f64 = 0.0;
+    let mut b: f64 = 0.0;
+    let mut c: f64 = 0.0;
+    let mut d: f64 = 0.0;
+    let mut e: f64 = 0.0;
+    let mut f: f64 = 0.0;
+    let mut trig: f64 = 0.0;
+    let mut logs: f64 = 0.0;
+    let mut powers: f64 = 0.0;
+    let mut rem: f64 = 0.0;
+    let mut rounded: i64 = 0;
+    let mut rounded_ll: i64 = 0;
+    let _v0: i32 = 0;
+    __retval = _v0;
+    let _v1: f64 = 0.5;
+    unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(a), _v1) };
+    let _v2: f64 = 2.0;
+    unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(b), _v2) };
+    let _v3: f64 = 8.0;
+    unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(c), _v3) };
+    let _v4: f64 = 5.75;
+    unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(d), _v4) };
+    let _v5: f64 = 2.0;
+    unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(e), _v5) };
+    let _v6: f64 = 2.5;
+    unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(f), _v6) };
+    let _v7: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+    let _v8: f64 = unsafe { sin(_v7 as f64) };
+    let _v9: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+    let _v10: f64 = unsafe { cos(_v9 as f64) };
+    let _v11: f64 = _v8 + _v10;
+    let _v12: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+    let _v13: f64 = unsafe { tan(_v12 as f64) };
+    let _v14: f64 = _v11 + _v13;
+    trig = _v14;
+    let _v15: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c)) };
+    let _v16: f64 = unsafe { log(_v15 as f64) };
+    let _v17: f64 = 100.0;
+    let _v18: f64 = unsafe { log10(_v17 as f64) };
+    let _v19: f64 = _v16 + _v18;
+    let _v20: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c)) };
+    let _v21: f64 = unsafe { log2(_v20 as f64) };
+    let _v22: f64 = _v19 + _v21;
+    logs = _v22;
+    let _v23: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(b)) };
+    let _v24: f64 = 3.0;
+    let _v25: f64 = unsafe { pow(_v23 as f64, _v24 as f64) };
+    let _v26: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c)) };
+    let _v27: f64 = unsafe { sqrt(_v26 as f64) };
+    let _v28: f64 = _v25 + _v27;
+    let _v29: f64 = 1.0;
+    let _v30: f64 = unsafe { exp(_v29 as f64) };
+    let _v31: f64 = _v28 + _v30;
+    let _v32: f64 = 3.0;
+    let _v33: f64 = unsafe { exp2(_v32 as f64) };
+    let _v34: f64 = _v31 + _v33;
+    powers = _v34;
+    let _v35: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(d)) };
+    let _v36: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(e)) };
+    let _v37: f64 = unsafe { fmod(_v35 as f64, _v36 as f64) };
+    rem = _v37;
+    let _v38: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f)) };
+    let _v39: i64 = unsafe { lround(_v38 as f64) };
+    rounded = _v39;
+    let _v40: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f)) };
+    let _v41: i64 = unsafe { llround(_v40 as f64) };
+    rounded_ll = _v41;
+    let _v42: *mut i8 = b"%.3f %.3f %.3f %.3f %ld %lld\n\0".as_ptr() as *mut i8;
+    let _v43: f64 = trig;
+    let _v44: f64 = logs;
+    let _v45: f64 = powers;
+    let _v46: f64 = rem;
+    let _v47: i64 = rounded;
+    let _v48: i64 = rounded_ll;
+    let _v49: i32 = unsafe { printf(_v42 as *const i8, _v43, _v44, _v45, _v46, _v47, _v48) };
+    let _v50: i32 = 0;
+    __retval = _v50;
+    let _v51: i32 = __retval;
+    std::process::exit(_v51 as i32);
+}

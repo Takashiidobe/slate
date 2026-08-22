@@ -1,0 +1,221 @@
+---
+source: tests/snapshot.rs
+expression: rust
+---
+#![feature(c_variadic)]
+#![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+
+unsafe extern "C" {
+    fn isalpha(_0: i32) -> i32;
+    fn printf(_0: *const i8, ...) -> i32;
+    fn isdigit(_0: i32) -> i32;
+    fn isupper(_0: i32) -> i32;
+    fn islower(_0: i32) -> i32;
+    fn isalnum(_0: i32) -> i32;
+    fn isxdigit(_0: i32) -> i32;
+    fn ispunct(_0: i32) -> i32;
+    fn iscntrl(_0: i32) -> i32;
+    fn isgraph(_0: i32) -> i32;
+    fn isprint(_0: i32) -> i32;
+    fn isspace(_0: i32) -> i32;
+}
+
+fn main() {
+    let mut __retval: i32 = 0;
+    let mut alpha: i8 = 0;
+    let mut digit: i8 = 0;
+    let mut space: i8 = 0;
+    let mut vtab: i8 = 0;
+    let mut punct: i8 = 0;
+    let _v0: i32 = 0;
+    __retval = _v0;
+    let _v1: i8 = 65;
+    alpha = _v1;
+    let _v2: i8 = 53;
+    digit = _v2;
+    let _v3: i8 = 32;
+    space = _v3;
+    let _v4: i8 = 11;
+    vtab = _v4;
+    let _v5: i8 = 33;
+    punct = _v5;
+    {
+        let _v6: i8 = alpha;
+        let _v7: i32 = _v6 as i32;
+        let _v8: i32 = unsafe { isalpha(_v7 as i32) };
+        let _v9: bool = _v8 != 0;
+        if _v9 {
+            let _v10: *mut i8 = b"alpha-yes\n\0".as_ptr() as *mut i8;
+            let _v11: i32 = unsafe { printf(_v10 as *const i8) };
+        } else {
+            let _v12: *mut i8 = b"alpha-no\n\0".as_ptr() as *mut i8;
+            let _v13: i32 = unsafe { printf(_v12 as *const i8) };
+        }
+    }
+    {
+        let _v14: i8 = digit;
+        let _v15: i32 = _v14 as i32;
+        let _v16: i32 = unsafe { isalpha(_v15 as i32) };
+        let _v17: bool = _v16 != 0;
+        let _v18: bool = !_v17;
+        if _v18 {
+            let _v19: *mut i8 = b"not-alpha-yes\n\0".as_ptr() as *mut i8;
+            let _v20: i32 = unsafe { printf(_v19 as *const i8) };
+        } else {
+            let _v21: *mut i8 = b"not-alpha-no\n\0".as_ptr() as *mut i8;
+            let _v22: i32 = unsafe { printf(_v21 as *const i8) };
+        }
+    }
+    {
+        let _v23: i8 = digit;
+        let _v24: i32 = _v23 as i32;
+        let _v25: i32 = unsafe { isdigit(_v24 as i32) };
+        let _v26: bool = _v25 != 0;
+        if _v26 {
+            let _v27: *mut i8 = b"digit-yes\n\0".as_ptr() as *mut i8;
+            let _v28: i32 = unsafe { printf(_v27 as *const i8) };
+        } else {
+            let _v29: *mut i8 = b"digit-no\n\0".as_ptr() as *mut i8;
+            let _v30: i32 = unsafe { printf(_v29 as *const i8) };
+        }
+    }
+    {
+        let _v31: i8 = alpha;
+        let _v32: i32 = _v31 as i32;
+        let _v33: i32 = unsafe { isupper(_v32 as i32) };
+        let _v34: bool = _v33 != 0;
+        if _v34 {
+            let _v35: *mut i8 = b"upper-yes\n\0".as_ptr() as *mut i8;
+            let _v36: i32 = unsafe { printf(_v35 as *const i8) };
+        } else {
+            let _v37: *mut i8 = b"upper-no\n\0".as_ptr() as *mut i8;
+            let _v38: i32 = unsafe { printf(_v37 as *const i8) };
+        }
+    }
+    {
+        let _v39: i8 = alpha;
+        let _v40: i32 = _v39 as i32;
+        let _v41: i32 = unsafe { islower(_v40 as i32) };
+        let _v42: bool = _v41 != 0;
+        if _v42 {
+            let _v43: *mut i8 = b"lower-yes\n\0".as_ptr() as *mut i8;
+            let _v44: i32 = unsafe { printf(_v43 as *const i8) };
+        } else {
+            let _v45: *mut i8 = b"lower-no\n\0".as_ptr() as *mut i8;
+            let _v46: i32 = unsafe { printf(_v45 as *const i8) };
+        }
+    }
+    {
+        let _v47: i8 = punct;
+        let _v48: i32 = _v47 as i32;
+        let _v49: i32 = unsafe { isalnum(_v48 as i32) };
+        let _v50: bool = _v49 != 0;
+        if _v50 {
+            let _v51: *mut i8 = b"alnum-yes\n\0".as_ptr() as *mut i8;
+            let _v52: i32 = unsafe { printf(_v51 as *const i8) };
+        } else {
+            let _v53: *mut i8 = b"alnum-no\n\0".as_ptr() as *mut i8;
+            let _v54: i32 = unsafe { printf(_v53 as *const i8) };
+        }
+    }
+    {
+        let _v55: i8 = alpha;
+        let _v56: i32 = _v55 as i32;
+        let _v57: i32 = unsafe { isxdigit(_v56 as i32) };
+        let _v58: bool = _v57 != 0;
+        if _v58 {
+            let _v59: *mut i8 = b"xdigit-yes\n\0".as_ptr() as *mut i8;
+            let _v60: i32 = unsafe { printf(_v59 as *const i8) };
+        } else {
+            let _v61: *mut i8 = b"xdigit-no\n\0".as_ptr() as *mut i8;
+            let _v62: i32 = unsafe { printf(_v61 as *const i8) };
+        }
+    }
+    {
+        let _v63: i8 = punct;
+        let _v64: i32 = _v63 as i32;
+        let _v65: i32 = unsafe { ispunct(_v64 as i32) };
+        let _v66: bool = _v65 != 0;
+        if _v66 {
+            let _v67: *mut i8 = b"punct-yes\n\0".as_ptr() as *mut i8;
+            let _v68: i32 = unsafe { printf(_v67 as *const i8) };
+        } else {
+            let _v69: *mut i8 = b"punct-no\n\0".as_ptr() as *mut i8;
+            let _v70: i32 = unsafe { printf(_v69 as *const i8) };
+        }
+    }
+    {
+        let _v71: i8 = vtab;
+        let _v72: i32 = _v71 as i32;
+        let _v73: i32 = unsafe { iscntrl(_v72 as i32) };
+        let _v74: bool = _v73 != 0;
+        if _v74 {
+            let _v75: *mut i8 = b"cntrl-yes\n\0".as_ptr() as *mut i8;
+            let _v76: i32 = unsafe { printf(_v75 as *const i8) };
+        } else {
+            let _v77: *mut i8 = b"cntrl-no\n\0".as_ptr() as *mut i8;
+            let _v78: i32 = unsafe { printf(_v77 as *const i8) };
+        }
+    }
+    {
+        let _v79: i8 = punct;
+        let _v80: i32 = _v79 as i32;
+        let _v81: i32 = unsafe { isgraph(_v80 as i32) };
+        let _v82: bool = _v81 != 0;
+        if _v82 {
+            let _v83: *mut i8 = b"graph-yes\n\0".as_ptr() as *mut i8;
+            let _v84: i32 = unsafe { printf(_v83 as *const i8) };
+        } else {
+            let _v85: *mut i8 = b"graph-no\n\0".as_ptr() as *mut i8;
+            let _v86: i32 = unsafe { printf(_v85 as *const i8) };
+        }
+    }
+    {
+        let _v87: i8 = space;
+        let _v88: i32 = _v87 as i32;
+        let _v89: i32 = unsafe { isprint(_v88 as i32) };
+        let _v90: bool = _v89 != 0;
+        if _v90 {
+            let _v91: *mut i8 = b"print-yes\n\0".as_ptr() as *mut i8;
+            let _v92: i32 = unsafe { printf(_v91 as *const i8) };
+        } else {
+            let _v93: *mut i8 = b"print-no\n\0".as_ptr() as *mut i8;
+            let _v94: i32 = unsafe { printf(_v93 as *const i8) };
+        }
+    }
+    {
+        let _v95: i8 = space;
+        let _v96: i32 = _v95 as i32;
+        let _v97: i32 = unsafe { isspace(_v96 as i32) };
+        let _v98: bool = _v97 != 0;
+        if _v98 {
+            let _v99: *mut i8 = b"space-yes\n\0".as_ptr() as *mut i8;
+            let _v100: i32 = unsafe { printf(_v99 as *const i8) };
+        } else {
+            let _v101: *mut i8 = b"space-no\n\0".as_ptr() as *mut i8;
+            let _v102: i32 = unsafe { printf(_v101 as *const i8) };
+        }
+    }
+    {
+        let _v103: i8 = vtab;
+        let _v104: i32 = _v103 as i32;
+        let _v105: i32 = unsafe { isspace(_v104 as i32) };
+        let _v106: bool = _v105 != 0;
+        if _v106 {
+            let _v107: *mut i8 = b"vtab-space-yes\n\0".as_ptr() as *mut i8;
+            let _v108: i32 = unsafe { printf(_v107 as *const i8) };
+        } else {
+            let _v109: *mut i8 = b"vtab-space-no\n\0".as_ptr() as *mut i8;
+            let _v110: i32 = unsafe { printf(_v109 as *const i8) };
+        }
+    }
+    let _v111: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+    let _v112: i8 = alpha;
+    let _v113: i32 = _v112 as i32;
+    let _v114: i32 = unsafe { isalpha(_v113 as i32) };
+    let _v115: i32 = unsafe { printf(_v111 as *const i8, _v114) };
+    let _v116: i32 = 0;
+    __retval = _v116;
+    let _v117: i32 = __retval;
+    std::process::exit(_v117 as i32);
+}

@@ -1,0 +1,73 @@
+---
+source: tests/snapshot.rs
+expression: rust
+---
+#![feature(c_variadic)]
+#![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+
+unsafe extern "C" {
+    fn malloc(_0: usize) -> *mut core::ffi::c_void;
+    fn printf(_0: *const i8, ...) -> i32;
+    fn free(_0: *mut core::ffi::c_void);
+}
+
+fn compute(arg0: i32) -> i32 {
+    let mut flag: i32 = 0;
+    let mut __retval: i32 = 0;
+    let mut p: *mut i32 = std::ptr::null_mut();
+    flag = arg0;
+    let _v0: *mut i32 = std::ptr::null_mut();
+    p = _v0;
+    {
+        let _v1: i32 = flag;
+        let _v2: bool = _v1 != 0;
+        if _v2 {
+            let _v3: u64 = 4;
+            let _v4: *mut core::ffi::c_void = unsafe { malloc(_v3 as usize) };
+            let _v5: *mut i32 = _v4 as *mut i32;
+            p = _v5;
+        }
+    }
+    {
+        let _v6: *mut i32 = p;
+        let _v7: bool = _v6 != std::ptr::null_mut();
+        if _v7 {
+            let mut v: i32 = 0;
+            let _v8: i32 = 41;
+            let _v9: *mut i32 = p;
+            unsafe {
+                *_v9 = _v8;
+            }
+            let _v10: *mut i32 = p;
+            let _v11: i32 = unsafe { *_v10 };
+            v = _v11;
+            let _v12: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+            let _v13: i32 = v;
+            let _v14: i32 = unsafe { printf(_v12 as *const i8, _v13) };
+            let _v15: *mut i32 = p;
+            let _v16: *mut core::ffi::c_void = _v15 as *mut core::ffi::c_void;
+            unsafe { free(_v16 as *mut core::ffi::c_void) };
+        } else {
+            let _v17: *mut i8 = b"no alloc\n\0".as_ptr() as *mut i8;
+            let _v18: i32 = unsafe { printf(_v17 as *const i8) };
+        }
+    }
+    let _v19: i32 = 0;
+    __retval = _v19;
+    let _v20: i32 = __retval;
+    return _v20;
+}
+
+fn main() {
+    let mut __retval: i32 = 0;
+    let _v0: i32 = 0;
+    __retval = _v0;
+    let _v1: i32 = 1;
+    let _v2: i32 = compute(_v1);
+    let _v3: i32 = 0;
+    let _v4: i32 = compute(_v3);
+    let _v5: i32 = 0;
+    __retval = _v5;
+    let _v6: i32 = __retval;
+    std::process::exit(_v6 as i32);
+}

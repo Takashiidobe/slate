@@ -1,0 +1,87 @@
+---
+source: tests/snapshot.rs
+expression: rust
+---
+#![feature(c_variadic)]
+#![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+
+unsafe extern "C" {
+    fn remove(_0: *const i8) -> i32;
+    fn fopen(_0: *const i8, _1: *const i8) -> *mut libc::FILE;
+    fn puts(_0: *const i8) -> i32;
+    fn fputs(_0: *const i8, _1: *mut libc::FILE) -> i32;
+    fn fclose(_0: *mut libc::FILE) -> i32;
+    fn fread(_0: *mut core::ffi::c_void, _1: usize, _2: usize, _3: *mut libc::FILE) -> usize;
+    fn printf(_0: *const i8, ...) -> i32;
+}
+
+fn main() {
+    let mut __retval: i32 = 0;
+    let mut f: *mut libc::FILE = std::ptr::null_mut();
+    let mut g: *mut libc::FILE = std::ptr::null_mut();
+    let mut buf: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
+    let mut n: u64 = 0;
+    let _v0: i32 = 0;
+    __retval = _v0;
+    let _v1: *mut i8 = b"slate_stdio_fread_size_one.tmp\0".as_ptr() as *mut i8;
+    let _v2: i32 = unsafe { remove(_v1 as *const i8) };
+    let _v3: *mut i8 = b"slate_stdio_fread_size_one.tmp\0".as_ptr() as *mut i8;
+    let _v4: *mut i8 = b"w\0".as_ptr() as *mut i8;
+    let _v5: *mut libc::FILE = unsafe { fopen(_v3 as *const i8, _v4 as *const i8) };
+    f = _v5;
+    {
+        let _v6: *mut libc::FILE = f;
+        let _v7: bool = _v6 != std::ptr::null_mut();
+        let _v8: bool = !_v7;
+        if _v8 {
+            let _v9: *mut i8 = b"open-fail\0".as_ptr() as *mut i8;
+            let _v10: i32 = unsafe { puts(_v9 as *const i8) };
+            let _v11: i32 = 0;
+            __retval = _v11;
+            let _v12: i32 = __retval;
+            std::process::exit(_v12 as i32);
+        }
+    }
+    let _v13: *mut i8 = b"hello world\0".as_ptr() as *mut i8;
+    let _v14: *mut libc::FILE = f;
+    let _v15: i32 = unsafe { fputs(_v13 as *const i8, _v14 as *mut libc::FILE) };
+    let _v16: *mut libc::FILE = f;
+    let _v17: i32 = unsafe { fclose(_v16 as *mut libc::FILE) };
+    let _v18: *mut i8 = b"slate_stdio_fread_size_one.tmp\0".as_ptr() as *mut i8;
+    let _v19: *mut i8 = b"r\0".as_ptr() as *mut i8;
+    let _v20: *mut libc::FILE = unsafe { fopen(_v18 as *const i8, _v19 as *const i8) };
+    g = _v20;
+    {
+        let _v21: *mut libc::FILE = g;
+        let _v22: bool = _v21 != std::ptr::null_mut();
+        let _v23: bool = !_v22;
+        if _v23 {
+            let _v24: *mut i8 = b"reopen-fail\0".as_ptr() as *mut i8;
+            let _v25: i32 = unsafe { puts(_v24 as *const i8) };
+            let _v26: i32 = 0;
+            __retval = _v26;
+            let _v27: i32 = __retval;
+            std::process::exit(_v27 as i32);
+        }
+    }
+    *buf = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let _v28: *mut i8 = buf.as_mut_ptr() as *mut i8;
+    let _v29: *mut core::ffi::c_void = _v28 as *mut core::ffi::c_void;
+    let _v30: u64 = 1;
+    let _v31: u64 = 11;
+    let _v32: *mut libc::FILE = g;
+    let _v33: u64 = (unsafe { fread(_v29 as *mut core::ffi::c_void, _v30 as usize, _v31 as usize, _v32 as *mut libc::FILE) }) as u64;
+    n = _v33;
+    let _v34: *mut i8 = b"%zu %s\n\0".as_ptr() as *mut i8;
+    let _v35: u64 = n;
+    let _v36: *mut i8 = buf.as_mut_ptr() as *mut i8;
+    let _v37: i32 = unsafe { printf(_v34 as *const i8, _v35, _v36) };
+    let _v38: *mut libc::FILE = g;
+    let _v39: i32 = unsafe { fclose(_v38 as *mut libc::FILE) };
+    let _v40: *mut i8 = b"slate_stdio_fread_size_one.tmp\0".as_ptr() as *mut i8;
+    let _v41: i32 = unsafe { remove(_v40 as *const i8) };
+    let _v42: i32 = 0;
+    __retval = _v42;
+    let _v43: i32 = __retval;
+    std::process::exit(_v43 as i32);
+}

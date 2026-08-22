@@ -1,0 +1,121 @@
+---
+source: tests/snapshot.rs
+expression: rust
+---
+#![feature(c_variadic)]
+#![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+
+unsafe extern "C" {
+    fn __muldc3(a: f64, b: f64, c: f64, d: f64) -> num_complex::Complex<f64>;
+    fn __divdc3(a: f64, b: f64, c: f64, d: f64) -> num_complex::Complex<f64>;
+    fn __mulsc3(a: f32, b: f32, c: f32, d: f32) -> num_complex::Complex<f32>;
+    fn __divsc3(a: f32, b: f32, c: f32, d: f32) -> num_complex::Complex<f32>;
+}
+
+unsafe extern "C" {
+    fn printf(_0: *const i8, ...) -> i32;
+}
+
+fn main() {
+    let mut __retval: i32 = 0;
+    let mut a: num_complex::Complex<f64> = num_complex::Complex { re: 0.0, im: 0.0 };
+    let mut b: num_complex::Complex<f64> = num_complex::Complex { re: 0.0, im: 0.0 };
+    let mut sum: num_complex::Complex<f64> = num_complex::Complex { re: 0.0, im: 0.0 };
+    let mut diff: num_complex::Complex<f64> = num_complex::Complex { re: 0.0, im: 0.0 };
+    let mut prod: num_complex::Complex<f64> = num_complex::Complex { re: 0.0, im: 0.0 };
+    let mut quot: num_complex::Complex<f64> = num_complex::Complex { re: 0.0, im: 0.0 };
+    let _v0: i32 = 0;
+    __retval = _v0;
+    let _v1: num_complex::Complex<f64> = num_complex::Complex { re: 1.0, im: 2.0 };
+    a = _v1;
+    let _v2: num_complex::Complex<f64> = num_complex::Complex { re: 3.0, im: 4.0 };
+    b = _v2;
+    let _v3: num_complex::Complex<f64> = a;
+    let _v4: num_complex::Complex<f64> = b;
+    let _v5: num_complex::Complex<f64> = num_complex::Complex { re: _v3.re + _v4.re, im: _v3.im + _v4.im };
+    sum = _v5;
+    let _v6: num_complex::Complex<f64> = a;
+    let _v7: num_complex::Complex<f64> = b;
+    let _v8: num_complex::Complex<f64> = num_complex::Complex { re: _v6.re - _v7.re, im: _v6.im - _v7.im };
+    diff = _v8;
+    let _v9: num_complex::Complex<f64> = a;
+    let _v10: num_complex::Complex<f64> = b;
+    let _v11: f64 = _v9.re;
+    let _v12: f64 = _v9.im;
+    let _v13: f64 = _v10.re;
+    let _v14: f64 = _v10.im;
+    let _v15: f64 = _v11 * _v13;
+    let _v16: f64 = _v12 * _v14;
+    let _v17: f64 = _v11 * _v14;
+    let _v18: f64 = _v12 * _v13;
+    let _v19: f64 = _v15 - _v16;
+    let _v20: f64 = _v17 + _v18;
+    let _v21: num_complex::Complex<f64> = num_complex::Complex { re: _v19, im: _v20 };
+    let _v22: bool = _v19 != _v19;
+    let _v23: bool = _v20 != _v20;
+    let _v24: bool = false;
+    let _v25: bool = if _v22 { _v23 } else { _v24 };
+    let _v26: num_complex::Complex<f64> = if _v25 {
+        let _v27: num_complex::Complex<f64> = unsafe { __muldc3(_v11, _v12, _v13, _v14) };
+        _v27
+    } else {
+        _v21
+    };
+    prod = _v26;
+    let _v28: num_complex::Complex<f64> = a;
+    let _v29: num_complex::Complex<f64> = b;
+    let _v30: f64 = _v28.re;
+    let _v31: f64 = _v28.im;
+    let _v32: f64 = _v29.re;
+    let _v33: f64 = _v29.im;
+    let _v34: num_complex::Complex<f64> = unsafe { __divdc3(_v30, _v31, _v32, _v33) };
+    quot = _v34;
+    let _v35: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+    let _v36: num_complex::Complex<f64> = sum;
+    let _v37: f64 = _v36.re;
+    let _v38: i32 = _v37 as i32;
+    let _v39: i32 = unsafe { printf(_v35 as *const i8, _v38) };
+    let _v40: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+    let _v41: num_complex::Complex<f64> = sum;
+    let _v42: f64 = _v41.im;
+    let _v43: i32 = _v42 as i32;
+    let _v44: i32 = unsafe { printf(_v40 as *const i8, _v43) };
+    let _v45: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+    let _v46: num_complex::Complex<f64> = diff;
+    let _v47: f64 = _v46.re;
+    let _v48: i32 = _v47 as i32;
+    let _v49: i32 = unsafe { printf(_v45 as *const i8, _v48) };
+    let _v50: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+    let _v51: num_complex::Complex<f64> = diff;
+    let _v52: f64 = _v51.im;
+    let _v53: i32 = _v52 as i32;
+    let _v54: i32 = unsafe { printf(_v50 as *const i8, _v53) };
+    let _v55: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+    let _v56: num_complex::Complex<f64> = prod;
+    let _v57: f64 = _v56.re;
+    let _v58: i32 = _v57 as i32;
+    let _v59: i32 = unsafe { printf(_v55 as *const i8, _v58) };
+    let _v60: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+    let _v61: num_complex::Complex<f64> = prod;
+    let _v62: f64 = _v61.im;
+    let _v63: i32 = _v62 as i32;
+    let _v64: i32 = unsafe { printf(_v60 as *const i8, _v63) };
+    let _v65: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+    let _v66: f64 = 100.0;
+    let _v67: num_complex::Complex<f64> = quot;
+    let _v68: f64 = _v67.re;
+    let _v69: f64 = _v66 * _v68;
+    let _v70: i32 = _v69 as i32;
+    let _v71: i32 = unsafe { printf(_v65 as *const i8, _v70) };
+    let _v72: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+    let _v73: f64 = 100.0;
+    let _v74: num_complex::Complex<f64> = quot;
+    let _v75: f64 = _v74.im;
+    let _v76: f64 = _v73 * _v75;
+    let _v77: i32 = _v76 as i32;
+    let _v78: i32 = unsafe { printf(_v72 as *const i8, _v77) };
+    let _v79: i32 = 0;
+    __retval = _v79;
+    let _v80: i32 = __retval;
+    std::process::exit(_v80 as i32);
+}

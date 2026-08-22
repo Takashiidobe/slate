@@ -1,0 +1,50 @@
+---
+source: tests/snapshot.rs
+expression: rust
+---
+#![feature(c_variadic)]
+#![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+
+unsafe extern "C" {
+    fn printf(_0: *const i8, ...) -> i32;
+}
+
+fn main() {
+    let mut __retval: i32 = 0;
+    let mut a: i32 = 0;
+    let mut neg: i32 = 0;
+    let mut u: u32 = 0;
+    let mut hex: u32 = 0;
+    let _v0: i32 = 0;
+    __retval = _v0;
+    let _v1: i32 = 5;
+    a = _v1;
+    let _v2: i32 = -5;
+    neg = _v2;
+    let _v3: u32 = 5;
+    u = _v3;
+    let _v4: u32 = 255;
+    hex = _v4;
+    let _v5: *mut i8 = b"%.3d %.3d\n\0".as_ptr() as *mut i8;
+    let _v6: i32 = a;
+    let _v7: i32 = neg;
+    let _v8: i32 = unsafe { printf(_v5 as *const i8, _v6, _v7) };
+    let _v9: *mut i8 = b"%8.3d|%-8.3d|%+.3d\n\0".as_ptr() as *mut i8;
+    let _v10: i32 = a;
+    let _v11: i32 = neg;
+    let _v12: i32 = a;
+    let _v13: i32 = unsafe { printf(_v9 as *const i8, _v10, _v11, _v12) };
+    let _v14: *mut i8 = b"%08.3d\n\0".as_ptr() as *mut i8;
+    let _v15: i32 = neg;
+    let _v16: i32 = unsafe { printf(_v14 as *const i8, _v15) };
+    let _v17: *mut i8 = b"%.3u %.4x %.4X %.4o\n\0".as_ptr() as *mut i8;
+    let _v18: u32 = u;
+    let _v19: u32 = hex;
+    let _v20: u32 = hex;
+    let _v21: u32 = hex;
+    let _v22: i32 = unsafe { printf(_v17 as *const i8, _v18, _v19, _v20, _v21) };
+    let _v23: i32 = 0;
+    __retval = _v23;
+    let _v24: i32 = __retval;
+    std::process::exit(_v24 as i32);
+}

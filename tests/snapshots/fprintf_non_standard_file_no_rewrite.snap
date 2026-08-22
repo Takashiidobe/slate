@@ -1,0 +1,47 @@
+---
+source: tests/snapshot.rs
+expression: rust
+---
+#![feature(c_variadic)]
+#![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+
+unsafe extern "C" {
+    fn fopen(_0: *const i8, _1: *const i8) -> *mut libc::FILE;
+    fn fprintf(_0: *mut libc::FILE, _1: *const i8, ...) -> i32;
+    fn fclose(_0: *mut libc::FILE) -> i32;
+    fn remove(_0: *const i8) -> i32;
+}
+
+fn main() {
+    let mut __retval: i32 = 0;
+    let mut f: *mut libc::FILE = std::ptr::null_mut();
+    let _v0: i32 = 0;
+    __retval = _v0;
+    let _v1: *mut i8 = b"slate_fprintf_non_standard.tmp\0".as_ptr() as *mut i8;
+    let _v2: *mut i8 = b"w\0".as_ptr() as *mut i8;
+    let _v3: *mut libc::FILE = unsafe { fopen(_v1 as *const i8, _v2 as *const i8) };
+    f = _v3;
+    {
+        let _v4: *mut libc::FILE = f;
+        let _v5: *mut libc::FILE = std::ptr::null_mut();
+        let _v6: bool = _v4 == _v5;
+        if _v6 {
+            let _v7: i32 = 1;
+            __retval = _v7;
+            let _v8: i32 = __retval;
+            std::process::exit(_v8 as i32);
+        }
+    }
+    let _v9: *mut libc::FILE = f;
+    let _v10: *mut i8 = b"value: %d\n\0".as_ptr() as *mut i8;
+    let _v11: i32 = 7;
+    let _v12: i32 = unsafe { fprintf(_v9 as *mut libc::FILE, _v10 as *const i8, _v11) };
+    let _v13: *mut libc::FILE = f;
+    let _v14: i32 = unsafe { fclose(_v13 as *mut libc::FILE) };
+    let _v15: *mut i8 = b"slate_fprintf_non_standard.tmp\0".as_ptr() as *mut i8;
+    let _v16: i32 = unsafe { remove(_v15 as *const i8) };
+    let _v17: i32 = 0;
+    __retval = _v17;
+    let _v18: i32 = __retval;
+    std::process::exit(_v18 as i32);
+}

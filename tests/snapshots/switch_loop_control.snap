@@ -1,0 +1,96 @@
+---
+source: tests/snapshot.rs
+expression: rust
+---
+#![feature(c_variadic)]
+#![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+
+unsafe extern "C" {
+    fn printf(_0: *const i8, ...) -> i32;
+}
+
+fn run() -> i32 {
+    let mut __retval: i32 = 0;
+    let mut out: i32 = 0;
+    let _v0: i32 = 0;
+    out = _v0;
+    {
+        let mut i: i32 = 0;
+        let _v1: i32 = 0;
+        i = _v1;
+        '__loop0: loop {
+            let _v2: i32 = i;
+            let _v3: i32 = 3;
+            let _v4: bool = _v2 <= _v3;
+            if !_v4 {
+                break;
+            }
+            '__continue0: {
+                {
+                    {
+                        let _v5: i32 = i;
+                        {
+                            let __switch_value1 = _v5;
+                            let mut __switch_case1: i32 = match __switch_value1 { 0 => 0, 1 => 1, 2 => 2, _ => 3 };
+                            '__switch1: loop {
+                                match __switch_case1 {
+                                    0 => {
+                                        let _v6: i32 = 1;
+                                        let _v7: i32 = out;
+                                        let _v8: i32 = _v7 + _v6;
+                                        out = _v8;
+                                        break '__switch1;
+                                    }
+                                    1 => {
+                                        break '__continue0;
+                                    }
+                                    2 => {
+                                        let _v9: i32 = 20;
+                                        let _v10: i32 = out;
+                                        let _v11: i32 = _v10 + _v9;
+                                        out = _v11;
+                                        break '__switch1;
+                                    }
+                                    3 => {
+                                        let _v12: i32 = 100;
+                                        let _v13: i32 = out;
+                                        let _v14: i32 = _v13 + _v12;
+                                        out = _v14;
+                                        break '__switch1;
+                                    }
+                                    _ => {
+                                        break '__switch1;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    let _v15: i32 = 3;
+                    let _v16: i32 = out;
+                    let _v17: i32 = _v16 + _v15;
+                    out = _v17;
+                }
+            }
+            let _v18: i32 = i;
+            let _v19: i32 = _v18 + 1;
+            i = _v19;
+        }
+    }
+    let _v20: i32 = out;
+    __retval = _v20;
+    let _v21: i32 = __retval;
+    return _v21;
+}
+
+fn main() {
+    let mut __retval: i32 = 0;
+    let _v0: i32 = 0;
+    __retval = _v0;
+    let _v1: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+    let _v2: i32 = run();
+    let _v3: i32 = unsafe { printf(_v1 as *const i8, _v2) };
+    let _v4: i32 = 0;
+    __retval = _v4;
+    let _v5: i32 = __retval;
+    std::process::exit(_v5 as i32);
+}

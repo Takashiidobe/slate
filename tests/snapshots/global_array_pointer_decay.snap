@@ -1,0 +1,74 @@
+---
+source: tests/snapshot.rs
+expression: rust
+---
+#![feature(c_variadic)]
+#![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+
+static mut aligned_values: aligned::Aligned<aligned::A32, [u32; 3]> = aligned::Aligned([4, 5, 6]);
+
+static mut values: [u32; 3] = [1, 2, 3];
+
+unsafe extern "C" {
+    fn printf(_0: *const i8, ...) -> i32;
+}
+
+fn update(arg1: *mut u32) -> u32 {
+    let mut items: *mut u32 = std::ptr::null_mut();
+    let mut __retval: u32 = 0;
+    items = arg1;
+    let _v0: u32 = 10;
+    let _v1: i64 = 0;
+    let _v2: *mut u32 = items;
+    let _v3: *mut u32 = unsafe { _v2.add(0) };
+    let _v4: u32 = unsafe { *_v3 };
+    let _v5: u32 = _v4 + _v0;
+    unsafe {
+        *_v3 = _v5;
+    }
+    let _v6: i64 = 0;
+    let _v7: *mut u32 = items;
+    let _v8: *mut u32 = unsafe { _v7.add(0) };
+    let _v9: u32 = unsafe { *_v8 };
+    let _v10: i64 = 2;
+    let _v11: *mut u32 = items;
+    let _v12: *mut u32 = unsafe { _v11.add(2) };
+    let _v13: u32 = unsafe { *_v12 };
+    let _v14: u32 = _v9 + _v13;
+    __retval = _v14;
+    let _v15: u32 = __retval;
+    return _v15;
+}
+
+fn middle(arg0: *mut [u32; 3]) -> u32 {
+    let mut items: *mut [u32; 3] = std::ptr::null_mut();
+    let mut __retval: u32 = 0;
+    items = arg0;
+    let _v0: i64 = 1;
+    let _v1: *mut [u32; 3] = items;
+    let _v2: u32 = unsafe { (*_v1)[(_v0 as usize)] };
+    __retval = _v2;
+    let _v3: u32 = __retval;
+    return _v3;
+}
+
+fn main() {
+    let mut __retval: i32 = 0;
+    let mut first: u32 = 0;
+    let mut second: u32 = 0;
+    let _v0: i32 = 0;
+    __retval = _v0;
+    let _v1: *mut u32 = std::ptr::addr_of_mut!(values).cast::<u32>();
+    let _v2: u32 = update(_v1);
+    first = _v2;
+    let _v3: *mut u32 = std::ptr::addr_of_mut!(aligned_values).cast::<u32>();
+    let _v4: u32 = update(_v3);
+    second = _v4;
+    let _v5: *mut i8 = b"%u %u %u\n\0".as_ptr() as *mut i8;
+    let _v6: u32 = first;
+    let _v7: u32 = second;
+    let _v8: u32 = middle(std::ptr::addr_of_mut!(values));
+    let _v9: i32 = unsafe { printf(_v5 as *const i8, _v6, _v7, _v8) };
+    let _v10: i32 = __retval;
+    std::process::exit(_v10 as i32);
+}

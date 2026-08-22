@@ -1,0 +1,196 @@
+---
+source: tests/snapshot.rs
+expression: rust
+---
+#![feature(c_variadic)]
+#![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+
+#[repr(C, align(16))]
+#[derive(Clone, Copy)]
+struct LongDouble([u8; 10]);
+
+impl core::ops::Add for LongDouble {
+    type Output = LongDouble;
+    fn add(self, o: LongDouble) -> LongDouble { __slate_f80_add(self, o) }
+}
+
+impl core::ops::Sub for LongDouble {
+    type Output = LongDouble;
+    fn sub(self, o: LongDouble) -> LongDouble { __slate_f80_sub(self, o) }
+}
+
+impl core::ops::Mul for LongDouble {
+    type Output = LongDouble;
+    fn mul(self, o: LongDouble) -> LongDouble { __slate_f80_mul(self, o) }
+}
+
+impl core::ops::Div for LongDouble {
+    type Output = LongDouble;
+    fn div(self, o: LongDouble) -> LongDouble { __slate_f80_div(self, o) }
+}
+
+impl core::ops::AddAssign for LongDouble {
+    fn add_assign(&mut self, o: LongDouble) { {
+    *self = __slate_f80_add(*self, o);
+} }
+}
+
+impl core::ops::SubAssign for LongDouble {
+    fn sub_assign(&mut self, o: LongDouble) { {
+    *self = __slate_f80_sub(*self, o);
+} }
+}
+
+impl core::ops::MulAssign for LongDouble {
+    fn mul_assign(&mut self, o: LongDouble) { {
+    *self = __slate_f80_mul(*self, o);
+} }
+}
+
+impl core::ops::DivAssign for LongDouble {
+    fn div_assign(&mut self, o: LongDouble) { {
+    *self = __slate_f80_div(*self, o);
+} }
+}
+
+impl core::ops::Neg for LongDouble {
+    type Output = LongDouble;
+    fn neg(self) -> LongDouble { __slate_f80_neg(self) }
+}
+
+impl core::cmp::PartialEq for LongDouble {
+    fn eq(&self, other: &LongDouble) -> bool { __slate_f80_eq(*self, *other) }
+}
+
+impl core::cmp::PartialOrd for LongDouble {
+    fn partial_cmp(&self, other: &LongDouble) -> Option<std::cmp::Ordering> { if __slate_f80_lt(*self, *other) { Some(std::cmp::Ordering::Less) } else { if __slate_f80_gt(*self, *other) { Some(std::cmp::Ordering::Greater) } else { if __slate_f80_eq(*self, *other) { Some(std::cmp::Ordering::Equal) } else { None } } } }
+}
+
+unsafe extern "C" {
+    fn strtold(_0: *const i8, _1: *mut *mut i8) -> LongDouble;
+    fn memcpy(_0: *mut core::ffi::c_void, _1: *const core::ffi::c_void, _2: usize) -> *mut core::ffi::c_void;
+    fn printf(_0: *const i8, ...) -> i32;
+}
+
+fn dump80(arg0: *mut i8, arg1: LongDouble) {
+    let mut name: *mut i8 = std::ptr::null_mut();
+    let mut value: LongDouble = LongDouble([0; 10]);
+    let mut bytes: [u8; 10] = [0; 10];
+    name = arg0;
+    value = arg1;
+    let _v0: *mut u8 = bytes.as_mut_ptr() as *mut u8;
+    let _v1: *mut core::ffi::c_void = _v0 as *mut core::ffi::c_void;
+    let _v2: *mut core::ffi::c_void = std::ptr::addr_of_mut!(value) as *mut core::ffi::c_void;
+    let _v3: u64 = 10;
+    let _v4: *mut core::ffi::c_void = unsafe { memcpy(_v1 as *mut core::ffi::c_void, _v2 as *const core::ffi::c_void, _v3 as usize) };
+    let _v5: *mut i8 = b"%s\0".as_ptr() as *mut i8;
+    let _v6: *mut i8 = name;
+    let _v7: i32 = unsafe { printf(_v5 as *const i8, _v6) };
+    {
+        let mut i: i32 = 0;
+        let _v8: i32 = 0;
+        i = _v8;
+        loop {
+            let _v9: i32 = i;
+            let _v10: i32 = 10;
+            let _v11: bool = _v9 < _v10;
+            if !_v11 {
+                break;
+            }
+            let _v12: *mut i8 = b"%02x\0".as_ptr() as *mut i8;
+            let _v13: i32 = i;
+            let _v14: i64 = _v13 as i64;
+            let _v15: u8 = bytes[(_v14 as usize)];
+            let _v16: i32 = _v15 as i32;
+            let _v17: i32 = unsafe { printf(_v12 as *const i8, _v16) };
+            let _v18: i32 = i;
+            let _v19: i32 = _v18 + 1;
+            i = _v19;
+        }
+    }
+    let _v20: *mut i8 = b"\n\0".as_ptr() as *mut i8;
+    let _v21: i32 = unsafe { printf(_v20 as *const i8) };
+    return;
+}
+
+fn main() {
+    let mut __retval: i32 = 0;
+    let mut end: *mut i8 = std::ptr::null_mut();
+    let mut value: LongDouble = LongDouble([0; 10]);
+    let _v0: i32 = 0;
+    __retval = _v0;
+    let _v1: *mut i8 = b"0x1.0000000000000002p0\0".as_ptr() as *mut i8;
+    let _v2: LongDouble = unsafe { __slate_strtold__rf80_pi8_ppi8(_v1 as *const i8, std::ptr::addr_of_mut!(end) as *mut *mut i8) };
+    value = _v2;
+    let _v3: *mut i8 = b"strtold\0".as_ptr() as *mut i8;
+    let _v4: LongDouble = value;
+    dump80(_v3, _v4);
+    let _v5: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+    let _v6: *mut i8 = end;
+    let _v7: i8 = unsafe { *_v6 };
+    let _v8: i32 = _v7 as i32;
+    let _v9: i32 = 0;
+    let _v10: bool = _v8 == _v9;
+    let _v11: i32 = _v10 as i32;
+    let _v12: i32 = unsafe { printf(_v5 as *const i8, _v11) };
+    let _v13: i32 = 0;
+    __retval = _v13;
+    let _v14: i32 = __retval;
+    std::process::exit(_v14 as i32);
+}
+
+unsafe extern "C" {
+    safe fn __slate_cf80_div(a: num_complex::Complex<LongDouble>, b: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+    safe fn __slate_cf80_mul(a: num_complex::Complex<LongDouble>, b: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+    safe fn __slate_f80_abs(a: LongDouble) -> LongDouble;
+    safe fn __slate_f80_add(a: LongDouble, b: LongDouble) -> LongDouble;
+    safe fn __slate_f80_ceil(a: LongDouble) -> LongDouble;
+    safe fn __slate_f80_copysign(a: LongDouble, b: LongDouble) -> LongDouble;
+    safe fn __slate_f80_div(a: LongDouble, b: LongDouble) -> LongDouble;
+    safe fn __slate_f80_eq(a: LongDouble, b: LongDouble) -> bool;
+    safe fn __slate_f80_floor(a: LongDouble) -> LongDouble;
+    safe fn __slate_f80_fma(a: LongDouble, b: LongDouble, c: LongDouble) -> LongDouble;
+    safe fn __slate_f80_fmax(a: LongDouble, b: LongDouble) -> LongDouble;
+    safe fn __slate_f80_fmin(a: LongDouble, b: LongDouble) -> LongDouble;
+    safe fn __slate_f80_fract(a: LongDouble) -> LongDouble;
+    safe fn __slate_f80_from_bool(a: bool) -> LongDouble;
+    safe fn __slate_f80_from_f32(a: f32) -> LongDouble;
+    safe fn __slate_f80_from_f64(a: f64) -> LongDouble;
+    safe fn __slate_f80_from_i128(a: i128) -> LongDouble;
+    safe fn __slate_f80_from_i16(a: i16) -> LongDouble;
+    safe fn __slate_f80_from_i32(a: i32) -> LongDouble;
+    safe fn __slate_f80_from_i64(a: i64) -> LongDouble;
+    safe fn __slate_f80_from_i8(a: i8) -> LongDouble;
+    safe fn __slate_f80_from_u128(a: u128) -> LongDouble;
+    safe fn __slate_f80_from_u16(a: u16) -> LongDouble;
+    safe fn __slate_f80_from_u32(a: u32) -> LongDouble;
+    safe fn __slate_f80_from_u64(a: u64) -> LongDouble;
+    safe fn __slate_f80_from_u8(a: u8) -> LongDouble;
+    safe fn __slate_f80_ge(a: LongDouble, b: LongDouble) -> bool;
+    safe fn __slate_f80_gt(a: LongDouble, b: LongDouble) -> bool;
+    safe fn __slate_f80_is_fp_class(a: LongDouble, flags: i32) -> bool;
+    safe fn __slate_f80_le(a: LongDouble, b: LongDouble) -> bool;
+    safe fn __slate_f80_lt(a: LongDouble, b: LongDouble) -> bool;
+    safe fn __slate_f80_mul(a: LongDouble, b: LongDouble) -> LongDouble;
+    safe fn __slate_f80_ne(a: LongDouble, b: LongDouble) -> bool;
+    safe fn __slate_f80_neg(a: LongDouble) -> LongDouble;
+    safe fn __slate_f80_rint(a: LongDouble) -> LongDouble;
+    safe fn __slate_f80_round(a: LongDouble) -> LongDouble;
+    safe fn __slate_f80_signbit(a: LongDouble) -> bool;
+    safe fn __slate_f80_sub(a: LongDouble, b: LongDouble) -> LongDouble;
+    safe fn __slate_f80_to_bool(a: LongDouble) -> bool;
+    safe fn __slate_f80_to_f32(a: LongDouble) -> f32;
+    safe fn __slate_f80_to_f64(a: LongDouble) -> f64;
+    safe fn __slate_f80_to_i128(a: LongDouble) -> i128;
+    safe fn __slate_f80_to_i16(a: LongDouble) -> i16;
+    safe fn __slate_f80_to_i32(a: LongDouble) -> i32;
+    safe fn __slate_f80_to_i64(a: LongDouble) -> i64;
+    safe fn __slate_f80_to_i8(a: LongDouble) -> i8;
+    safe fn __slate_f80_to_u128(a: LongDouble) -> u128;
+    safe fn __slate_f80_to_u16(a: LongDouble) -> u16;
+    safe fn __slate_f80_to_u32(a: LongDouble) -> u32;
+    safe fn __slate_f80_to_u64(a: LongDouble) -> u64;
+    safe fn __slate_f80_to_u8(a: LongDouble) -> u8;
+    safe fn __slate_f80_trunc(a: LongDouble) -> LongDouble;
+    fn __slate_strtold__rf80_pi8_ppi8(_0: *const i8, _1: *mut *mut i8) -> LongDouble;
+}

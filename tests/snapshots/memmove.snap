@@ -1,0 +1,131 @@
+---
+source: tests/snapshot.rs
+expression: rust
+---
+#![feature(c_variadic)]
+#![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+
+unsafe extern "C" {
+    fn memmove(_0: *mut core::ffi::c_void, _1: *const core::ffi::c_void, _2: usize) -> *mut core::ffi::c_void;
+    fn printf(_0: *const i8, ...) -> i32;
+}
+
+fn get_count() -> i32 {
+    let mut __retval: i32 = 0;
+    let _v0: i32 = 4;
+    __retval = _v0;
+    let _v1: i32 = __retval;
+    return _v1;
+}
+
+fn main() {
+    let mut __retval: i32 = 0;
+    let mut forward_buf: [u8; 8] = [0; 8];
+    let mut backward_buf: [u8; 8] = [0; 8];
+    let mut dyn_buf: [u8; 8] = [0; 8];
+    let mut n: i32 = 0;
+    let _v0: i32 = 0;
+    __retval = _v0;
+    forward_buf = [1, 2, 3, 4, 5, 6, 7, 8];
+    let _v1: *mut u8 = forward_buf.as_mut_ptr() as *mut u8;
+    let _v2: i32 = 1;
+    let _v3: *mut u8 = unsafe { _v1.add(1) };
+    let _v4: *mut core::ffi::c_void = _v3 as *mut core::ffi::c_void;
+    let _v5: *mut u8 = forward_buf.as_mut_ptr() as *mut u8;
+    let _v6: *mut core::ffi::c_void = _v5 as *mut core::ffi::c_void;
+    let _v7: u64 = 5;
+    let _v8: *mut core::ffi::c_void = unsafe { memmove(_v4 as *mut core::ffi::c_void, _v6 as *const core::ffi::c_void, _v7 as usize) };
+    backward_buf = [1, 2, 3, 4, 5, 6, 7, 8];
+    let _v9: *mut u8 = backward_buf.as_mut_ptr() as *mut u8;
+    let _v10: *mut core::ffi::c_void = _v9 as *mut core::ffi::c_void;
+    let _v11: *mut u8 = backward_buf.as_mut_ptr() as *mut u8;
+    let _v12: i32 = 1;
+    let _v13: *mut u8 = unsafe { _v11.add(1) };
+    let _v14: *mut core::ffi::c_void = _v13 as *mut core::ffi::c_void;
+    let _v15: u64 = 5;
+    let _v16: *mut core::ffi::c_void = unsafe { memmove(_v10 as *mut core::ffi::c_void, _v14 as *const core::ffi::c_void, _v15 as usize) };
+    dyn_buf = [1, 2, 3, 4, 5, 6, 7, 8];
+    let _v17: i32 = get_count();
+    n = _v17;
+    let _v18: *mut u8 = dyn_buf.as_mut_ptr() as *mut u8;
+    let _v19: *mut core::ffi::c_void = _v18 as *mut core::ffi::c_void;
+    let _v20: *mut u8 = dyn_buf.as_mut_ptr() as *mut u8;
+    let _v21: i32 = 1;
+    let _v22: *mut u8 = unsafe { _v20.add(1) };
+    let _v23: *mut core::ffi::c_void = _v22 as *mut core::ffi::c_void;
+    let _v24: i32 = n;
+    let _v25: u64 = _v24 as u64;
+    let _v26: *mut core::ffi::c_void = unsafe { memmove(_v19 as *mut core::ffi::c_void, _v23 as *const core::ffi::c_void, _v25 as usize) };
+    {
+        let mut i: i32 = 0;
+        let _v27: i32 = 0;
+        i = _v27;
+        loop {
+            let _v28: i32 = i;
+            let _v29: i32 = 8;
+            let _v30: bool = _v28 < _v29;
+            if !_v30 {
+                break;
+            }
+            let _v31: *mut i8 = b"%d \0".as_ptr() as *mut i8;
+            let _v32: i32 = i;
+            let _v33: i64 = _v32 as i64;
+            let _v34: u8 = forward_buf[(_v33 as usize)];
+            let _v35: i32 = _v34 as i32;
+            let _v36: i32 = unsafe { printf(_v31 as *const i8, _v35) };
+            let _v37: i32 = i;
+            let _v38: i32 = _v37 + 1;
+            i = _v38;
+        }
+    }
+    {
+        let mut i2: i32 = 0;
+        let _v39: i32 = 0;
+        i2 = _v39;
+        loop {
+            let _v40: i32 = i2;
+            let _v41: i32 = 8;
+            let _v42: bool = _v40 < _v41;
+            if !_v42 {
+                break;
+            }
+            let _v43: *mut i8 = b"%d \0".as_ptr() as *mut i8;
+            let _v44: i32 = i2;
+            let _v45: i64 = _v44 as i64;
+            let _v46: u8 = backward_buf[(_v45 as usize)];
+            let _v47: i32 = _v46 as i32;
+            let _v48: i32 = unsafe { printf(_v43 as *const i8, _v47) };
+            let _v49: i32 = i2;
+            let _v50: i32 = _v49 + 1;
+            i2 = _v50;
+        }
+    }
+    {
+        let mut i3: i32 = 0;
+        let _v51: i32 = 0;
+        i3 = _v51;
+        loop {
+            let _v52: i32 = i3;
+            let _v53: i32 = 8;
+            let _v54: bool = _v52 < _v53;
+            if !_v54 {
+                break;
+            }
+            let _v55: *mut i8 = b"%d \0".as_ptr() as *mut i8;
+            let _v56: i32 = i3;
+            let _v57: i64 = _v56 as i64;
+            let _v58: u8 = dyn_buf[(_v57 as usize)];
+            let _v59: i32 = _v58 as i32;
+            let _v60: i32 = unsafe { printf(_v55 as *const i8, _v59) };
+            let _v61: i32 = i3;
+            let _v62: i32 = _v61 + 1;
+            i3 = _v62;
+        }
+    }
+    let _v63: *mut i8 = b"\n\0".as_ptr() as *mut i8;
+    let _v64: i32 = unsafe { printf(_v63 as *const i8) };
+    let _v65: i32 = 0;
+    __retval = _v65;
+    let _v66: i32 = __retval;
+    std::process::exit(_v66 as i32);
+}

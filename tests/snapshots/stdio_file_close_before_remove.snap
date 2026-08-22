@@ -1,0 +1,50 @@
+---
+source: tests/snapshot.rs
+expression: rust
+---
+#![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+
+unsafe extern "C" {
+    fn fopen(_0: *const i8, _1: *const i8) -> *mut libc::FILE;
+    fn puts(_0: *const i8) -> i32;
+    fn fputs(_0: *const i8, _1: *mut libc::FILE) -> i32;
+    fn fclose(_0: *mut libc::FILE) -> i32;
+    fn remove(_0: *const i8) -> i32;
+}
+
+fn main() {
+    let mut __retval: i32 = 0;
+    let mut f: *mut libc::FILE = std::ptr::null_mut();
+    let _v0: i32 = 0;
+    __retval = _v0;
+    let _v1: *mut i8 = b"slate_stdio_close_before_remove.tmp\0".as_ptr() as *mut i8;
+    let _v2: *mut i8 = b"w\0".as_ptr() as *mut i8;
+    let _v3: *mut libc::FILE = unsafe { fopen(_v1 as *const i8, _v2 as *const i8) };
+    f = _v3;
+    {
+        let _v4: *mut libc::FILE = f;
+        let _v5: bool = _v4 != std::ptr::null_mut();
+        let _v6: bool = !_v5;
+        if _v6 {
+            let _v7: *mut i8 = b"open-fail\0".as_ptr() as *mut i8;
+            let _v8: i32 = unsafe { puts(_v7 as *const i8) };
+            let _v9: i32 = 0;
+            __retval = _v9;
+            let _v10: i32 = __retval;
+            std::process::exit(_v10 as i32);
+        }
+    }
+    let _v11: *mut i8 = b"owned\n\0".as_ptr() as *mut i8;
+    let _v12: *mut libc::FILE = f;
+    let _v13: i32 = unsafe { fputs(_v11 as *const i8, _v12 as *mut libc::FILE) };
+    let _v14: *mut libc::FILE = f;
+    let _v15: i32 = unsafe { fclose(_v14 as *mut libc::FILE) };
+    let _v16: *mut i8 = b"slate_stdio_close_before_remove.tmp\0".as_ptr() as *mut i8;
+    let _v17: i32 = unsafe { remove(_v16 as *const i8) };
+    let _v18: *mut i8 = b"done\0".as_ptr() as *mut i8;
+    let _v19: i32 = unsafe { puts(_v18 as *const i8) };
+    let _v20: i32 = 0;
+    __retval = _v20;
+    let _v21: i32 = __retval;
+    std::process::exit(_v21 as i32);
+}

@@ -1,0 +1,148 @@
+---
+source: tests/snapshot.rs
+expression: rust
+---
+#![feature(c_variadic)]
+#![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+
+unsafe extern "C" {
+    fn printf(_0: *const i8, ...) -> i32;
+}
+
+struct __SlateVaArg {
+    value: Box<dyn std::any::Any>,
+    size: usize,
+}
+
+impl __SlateVaArg {
+    fn new<T: 'static>(value: T) -> Self {
+        Self { value: Box::new(value), size: std::mem::size_of::<T>() }
+    }
+
+    fn read<T: Copy + 'static>(&self) -> T {
+        if let Some(value) = self.value.downcast_ref::<T>() {
+            return *value;
+        }
+        assert!(self.size >= std::mem::size_of::<T>());
+        unsafe {
+            std::ptr::read_unaligned(
+                (self.value.as_ref() as *const dyn std::any::Any) as *const () as *const T,
+            )
+        }
+    }
+}
+
+#[derive(Clone)]
+struct __SlateVaArgs {
+    args: Option<std::rc::Rc<Vec<__SlateVaArg>>>,
+    index: usize,
+}
+
+impl __SlateVaArgs {
+    fn new(args: Vec<__SlateVaArg>) -> Self {
+        Self { args: Some(std::rc::Rc::new(args)), index: 0 }
+    }
+
+    const fn empty() -> Self {
+        Self { args: None, index: 0 }
+    }
+
+    fn next_arg<T: Copy + 'static>(&mut self) -> T {
+        if std::mem::size_of::<T>() == 0 {
+            return unsafe { std::mem::zeroed() };
+        }
+        let args = self.args.as_ref().expect("va_arg with no arguments");
+        let value = args[self.index].read::<T>();
+        self.index += 1;
+        value
+    }
+}
+
+unsafe fn sum(arg1: i32, mut __slate_va_args: __SlateVaArgs) -> i32 {
+    let mut n: i32 = 0;
+    let mut __retval: i32 = 0;
+    let mut ap: __SlateVaArgs = __SlateVaArgs::empty();
+    let mut total: i32 = 0;
+    n = arg1;
+    unsafe {
+        ap = __slate_va_args.clone();
+    }
+    let _v0: i32 = 0;
+    total = _v0;
+    {
+        let mut i: i32 = 0;
+        let _v1: i32 = 0;
+        i = _v1;
+        loop {
+            let _v2: i32 = i;
+            let _v3: i32 = n;
+            let _v4: bool = _v2 < _v3;
+            if !_v4 {
+                break;
+            }
+            {
+                let _v5: i32 = unsafe { ap.next_arg::<i32>() };
+                let _v6: i32 = total;
+                let _v7: i32 = _v6 + _v5;
+                total = _v7;
+            }
+            let _v8: i32 = i;
+            let _v9: i32 = _v8 + 1;
+            i = _v9;
+        }
+    }
+    let _v10: i32 = total;
+    __retval = _v10;
+    let _v11: i32 = __retval;
+    return _v11;
+}
+
+unsafe fn pick_second(arg0: i32, mut __slate_va_args: __SlateVaArgs) -> i32 {
+    let mut marker: i32 = 0;
+    let mut __retval: i32 = 0;
+    let mut ap: __SlateVaArgs = __SlateVaArgs::empty();
+    let mut first: i32 = 0;
+    let mut second: i32 = 0;
+    marker = arg0;
+    unsafe {
+        ap = __slate_va_args.clone();
+    }
+    let _v0: i32 = unsafe { ap.next_arg::<i32>() };
+    first = _v0;
+    let _v1: i32 = unsafe { ap.next_arg::<i32>() };
+    second = _v1;
+    let _v2: i32 = marker;
+    let _v3: i32 = first;
+    let _v4: i32 = 10;
+    let _v5: i32 = _v3 * _v4;
+    let _v6: i32 = _v2 + _v5;
+    let _v7: i32 = second;
+    let _v8: i32 = _v6 + _v7;
+    __retval = _v8;
+    let _v9: i32 = __retval;
+    return _v9;
+}
+
+fn main() {
+    let mut __retval: i32 = 0;
+    let _v0: i32 = 0;
+    __retval = _v0;
+    let _v1: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+    let _v2: i32 = 4;
+    let _v3: i32 = 10;
+    let _v4: i32 = 20;
+    let _v5: i32 = 30;
+    let _v6: i32 = 40;
+    let _v7: i32 = unsafe { sum(_v2, __SlateVaArgs::new(vec![__SlateVaArg::new(_v3), __SlateVaArg::new(_v4), __SlateVaArg::new(_v5), __SlateVaArg::new(_v6)])) };
+    let _v8: i32 = unsafe { printf(_v1 as *const i8, _v7) };
+    let _v9: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+    let _v10: i32 = 5;
+    let _v11: i32 = 7;
+    let _v12: i32 = 9;
+    let _v13: i32 = unsafe { pick_second(_v10, __SlateVaArgs::new(vec![__SlateVaArg::new(_v11), __SlateVaArg::new(_v12)])) };
+    let _v14: i32 = unsafe { printf(_v9 as *const i8, _v13) };
+    let _v15: i32 = 0;
+    __retval = _v15;
+    let _v16: i32 = __retval;
+    std::process::exit(_v16 as i32);
+}

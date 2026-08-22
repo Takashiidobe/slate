@@ -1,0 +1,75 @@
+---
+source: tests/snapshot.rs
+expression: rust
+---
+#![feature(c_variadic)]
+#![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+
+unsafe extern "C" {
+    fn printf(_0: *const i8, ...) -> i32;
+}
+
+fn sum_items(arg0: *mut i32, arg1: i32, arg2: i32) -> i32 {
+    let mut items: *mut i32 = std::ptr::null_mut();
+    let mut printable: i32 = 0;
+    let mut length: i32 = 0;
+    let mut __retval: i32 = 0;
+    let mut total: i32 = 0;
+    items = arg0;
+    printable = arg1;
+    length = arg2;
+    let _v0: *mut i8 = b"this is another number: %d %d\n\0".as_ptr() as *mut i8;
+    let _v1: i32 = printable;
+    let _v2: i32 = length;
+    let _v3: i32 = unsafe { printf(_v0 as *const i8, _v1, _v2) };
+    let _v4: i32 = 0;
+    total = _v4;
+    {
+        let mut i: i32 = 0;
+        let _v5: i32 = 0;
+        i = _v5;
+        loop {
+            let _v6: i32 = i;
+            let _v7: i32 = 4;
+            let _v8: bool = _v6 < _v7;
+            if !_v8 {
+                break;
+            }
+            {
+                let _v9: i32 = i;
+                let _v10: i64 = _v9 as i64;
+                let _v11: *mut i32 = items;
+                let _v12: *mut i32 = unsafe { _v11.offset(_v10 as isize) };
+                let _v13: i32 = unsafe { *_v12 };
+                let _v14: i32 = total;
+                let _v15: i32 = _v14 + _v13;
+                total = _v15;
+            }
+            let _v16: i32 = i;
+            let _v17: i32 = _v16 + 1;
+            i = _v17;
+        }
+    }
+    let _v18: i32 = total;
+    __retval = _v18;
+    let _v19: i32 = __retval;
+    return _v19;
+}
+
+fn main() {
+    let mut __retval: i32 = 0;
+    let mut values: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
+    let _v0: i32 = 0;
+    __retval = _v0;
+    *values = [2, 4, 6, 8];
+    let _v1: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+    let _v2: *mut i32 = values.as_mut_ptr() as *mut i32;
+    let _v3: i32 = 5;
+    let _v4: i32 = 4;
+    let _v5: i32 = sum_items(_v2, _v3, _v4);
+    let _v6: i32 = unsafe { printf(_v1 as *const i8, _v5) };
+    let _v7: i32 = 0;
+    __retval = _v7;
+    let _v8: i32 = __retval;
+    std::process::exit(_v8 as i32);
+}

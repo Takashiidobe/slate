@@ -1,0 +1,38 @@
+---
+source: tests/snapshot.rs
+expression: rust
+---
+#![feature(c_variadic)]
+#![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+
+unsafe extern "C" {
+    static mut stdout: *mut libc::FILE;
+    fn vfprintf(_0: *mut libc::FILE, _1: *const i8, _2: core::ffi::VaList<'_>) -> i32;
+}
+
+unsafe extern "C" fn print_values(arg0: *mut i8, mut __slate_va_args: ...) {
+    let mut format: *mut i8 = std::ptr::null_mut();
+    let mut args: core::ffi::VaList<'_>;
+    format = arg0;
+    unsafe {
+        args = __slate_va_args.clone();
+    }
+    let _v0: *mut libc::FILE = unsafe { stdout };
+    let _v1: *mut i8 = format;
+    let _v2: i32 = unsafe { vfprintf(_v0 as *mut libc::FILE, _v1 as *const i8, args.clone()) };
+    return;
+}
+
+fn main() {
+    let mut __retval: i32 = 0;
+    let _v0: i32 = 0;
+    __retval = _v0;
+    let _v1: *mut i8 = b"%d %s\n\0".as_ptr() as *mut i8;
+    let _v2: i32 = 42;
+    let _v3: *mut i8 = b"forwarded\0".as_ptr() as *mut i8;
+    unsafe { print_values(_v1, _v2, _v3) };
+    let _v4: i32 = 0;
+    __retval = _v4;
+    let _v5: i32 = __retval;
+    std::process::exit(_v5 as i32);
+}

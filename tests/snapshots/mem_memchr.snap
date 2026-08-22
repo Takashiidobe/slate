@@ -1,0 +1,145 @@
+---
+source: tests/snapshot.rs
+expression: rust
+---
+#![feature(c_variadic)]
+#![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+
+fn __slate_memchr(s: *const core::ffi::c_void, c: i32, n: usize) -> *mut core::ffi::c_void {
+    let b: u8 = c as u8;
+    let bytes: *const u8 = s as *const u8;
+    let mut i: usize = 0;
+    while i < n {
+        if (unsafe { *bytes.add(i) }) == b {
+            return (unsafe { bytes.add(i) }) as *mut core::ffi::c_void;
+        }
+        i += 1;
+    }
+    return std::ptr::null_mut();
+}
+
+#[repr(C)]
+struct __SlateAllocaFrame0(*mut u8, *mut u8, *mut u8, *mut u8, *mut i8, *mut i8, *mut i8, *mut u8, *mut u8, *mut u8, u64, i32, [i8; 4], [u8; 4], [u8; 8], i32);
+
+unsafe extern "C" {
+    fn printf(_0: *const i8, ...) -> i32;
+}
+
+fn main() {
+    let mut __slate_alloca_frame0: __SlateAllocaFrame0 = __SlateAllocaFrame0(std::ptr::null_mut(), std::ptr::null_mut(), std::ptr::null_mut(), std::ptr::null_mut(), std::ptr::null_mut(), std::ptr::null_mut(), std::ptr::null_mut(), std::ptr::null_mut(), std::ptr::null_mut(), std::ptr::null_mut(), 0, 0, [0; 4], [0; 4], [0; 8], 0);
+    let _v0: i32 = 0;
+    __slate_alloca_frame0.15 = _v0;
+    __slate_alloca_frame0.14 = [10, 20, 30, 40, 50, 60, 70, 80];
+    __slate_alloca_frame0.13 = [9, 8, 7, 6];
+    __slate_alloca_frame0.12 = [97, 98, 99, 0];
+    let _v1: i64 = 3;
+    let _v2: u8 = __slate_alloca_frame0.14[(_v1 as usize)];
+    let _v3: i32 = _v2 as i32;
+    __slate_alloca_frame0.11 = _v3;
+    let _v4: u64 = 4;
+    unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(__slate_alloca_frame0.10), _v4) };
+    let _v5: *mut u8 = __slate_alloca_frame0.14.as_mut_ptr() as *mut u8;
+    let _v6: *mut core::ffi::c_void = _v5 as *mut core::ffi::c_void;
+    let _v7: i32 = __slate_alloca_frame0.11;
+    let _v8: u64 = 8;
+    let _v9: *mut core::ffi::c_void = __slate_memchr(_v6, _v7 as i32, _v8 as usize);
+    let _v10: *mut u8 = _v9 as *mut u8;
+    __slate_alloca_frame0.9 = _v10;
+    let _v11: *mut u8 = __slate_alloca_frame0.14.as_mut_ptr() as *mut u8;
+    let _v12: *mut core::ffi::c_void = _v11 as *mut core::ffi::c_void;
+    let _v13: i32 = 99;
+    let _v14: u64 = 8;
+    let _v15: *mut core::ffi::c_void = __slate_memchr(_v12, _v13 as i32, _v14 as usize);
+    let _v16: *mut u8 = _v15 as *mut u8;
+    __slate_alloca_frame0.8 = _v16;
+    let _v17: *mut u8 = __slate_alloca_frame0.14.as_mut_ptr() as *mut u8;
+    let _v18: *mut core::ffi::c_void = _v17 as *mut core::ffi::c_void;
+    let _v19: i32 = 10;
+    let _v20: u64 = 0;
+    let _v21: *mut core::ffi::c_void = __slate_memchr(_v18, _v19 as i32, _v20 as usize);
+    let _v22: *mut u8 = _v21 as *mut u8;
+    __slate_alloca_frame0.7 = _v22;
+    let _v23: *mut i8 = __slate_alloca_frame0.12.as_mut_ptr() as *mut i8;
+    let _v24: *mut core::ffi::c_void = _v23 as *mut core::ffi::c_void;
+    let _v25: i32 = 0;
+    let _v26: u64 = 4;
+    let _v27: *mut core::ffi::c_void = __slate_memchr(_v24, _v25 as i32, _v26 as usize);
+    let _v28: *mut i8 = _v27 as *mut i8;
+    __slate_alloca_frame0.6 = _v28;
+    let _v29: *mut i8 = __slate_alloca_frame0.12.as_mut_ptr() as *mut i8;
+    let _v30: *mut core::ffi::c_void = _v29 as *mut core::ffi::c_void;
+    let _v31: i32 = 0;
+    let _v32: u64 = 3;
+    let _v33: *mut core::ffi::c_void = __slate_memchr(_v30, _v31 as i32, _v32 as usize);
+    let _v34: *mut i8 = _v33 as *mut i8;
+    __slate_alloca_frame0.5 = _v34;
+    let _v35: *mut i8 = __slate_alloca_frame0.12.as_mut_ptr() as *mut i8;
+    let _v36: *mut core::ffi::c_void = _v35 as *mut core::ffi::c_void;
+    let _v37: i32 = 0;
+    let _v38: u64 = 2;
+    let _v39: *mut core::ffi::c_void = __slate_memchr(_v36, _v37 as i32, _v38 as usize);
+    let _v40: *mut i8 = _v39 as *mut i8;
+    __slate_alloca_frame0.4 = _v40;
+    let _v41: *mut u8 = __slate_alloca_frame0.14.as_mut_ptr() as *mut u8;
+    let _v42: *mut core::ffi::c_void = _v41 as *mut core::ffi::c_void;
+    let _v43: i32 = __slate_alloca_frame0.11;
+    let _v44: u64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(__slate_alloca_frame0.10)) };
+    let _v45: *mut core::ffi::c_void = __slate_memchr(_v42, _v43 as i32, _v44 as usize);
+    let _v46: *mut u8 = _v45 as *mut u8;
+    __slate_alloca_frame0.3 = _v46;
+    let _v47: *mut u8 = __slate_alloca_frame0.14.as_mut_ptr() as *mut u8;
+    let _v48: i32 = 2;
+    let _v49: *mut u8 = unsafe { _v47.add(2) };
+    __slate_alloca_frame0.2 = _v49;
+    let _v50: *mut u8 = __slate_alloca_frame0.2;
+    let _v51: *mut core::ffi::c_void = _v50 as *mut core::ffi::c_void;
+    let _v52: i32 = __slate_alloca_frame0.11;
+    let _v53: u64 = 2;
+    let _v54: *mut core::ffi::c_void = __slate_memchr(_v51, _v52 as i32, _v53 as usize);
+    let _v55: *mut u8 = _v54 as *mut u8;
+    __slate_alloca_frame0.1 = _v55;
+    let _v56: *mut u8 = __slate_alloca_frame0.13.as_mut_ptr() as *mut u8;
+    let _v57: *mut core::ffi::c_void = _v56 as *mut core::ffi::c_void;
+    let _v58: i32 = 7;
+    let _v59: u64 = 4;
+    let _v60: *mut core::ffi::c_void = __slate_memchr(_v57, _v58 as i32, _v59 as usize);
+    let _v61: *mut u8 = _v60 as *mut u8;
+    __slate_alloca_frame0.0 = _v61;
+    let _v62: *mut i8 = b"%ld %d %d %ld %d %d %ld %ld %ld\n\0".as_ptr() as *mut i8;
+    let _v63: *mut u8 = __slate_alloca_frame0.9;
+    let _v64: *mut u8 = __slate_alloca_frame0.14.as_mut_ptr() as *mut u8;
+    let _v65: i64 = unsafe { _v63.offset_from(_v64) as i64 };
+    let _v66: *mut u8 = __slate_alloca_frame0.8;
+    let _v67: *mut u8 = std::ptr::null_mut();
+    let _v68: bool = _v66 == _v67;
+    let _v69: i32 = _v68 as i32;
+    let _v70: *mut u8 = __slate_alloca_frame0.7;
+    let _v71: *mut u8 = std::ptr::null_mut();
+    let _v72: bool = _v70 == _v71;
+    let _v73: i32 = _v72 as i32;
+    let _v74: *mut i8 = __slate_alloca_frame0.6;
+    let _v75: *mut i8 = __slate_alloca_frame0.12.as_mut_ptr() as *mut i8;
+    let _v76: i64 = unsafe { _v74.offset_from(_v75) as i64 };
+    let _v77: *mut i8 = __slate_alloca_frame0.5;
+    let _v78: *mut i8 = std::ptr::null_mut();
+    let _v79: bool = _v77 == _v78;
+    let _v80: i32 = _v79 as i32;
+    let _v81: *mut i8 = __slate_alloca_frame0.4;
+    let _v82: *mut i8 = std::ptr::null_mut();
+    let _v83: bool = _v81 == _v82;
+    let _v84: i32 = _v83 as i32;
+    let _v85: *mut u8 = __slate_alloca_frame0.3;
+    let _v86: *mut u8 = __slate_alloca_frame0.14.as_mut_ptr() as *mut u8;
+    let _v87: i64 = unsafe { _v85.offset_from(_v86) as i64 };
+    let _v88: *mut u8 = __slate_alloca_frame0.1;
+    let _v89: *mut u8 = __slate_alloca_frame0.2;
+    let _v90: i64 = unsafe { _v88.offset_from(_v89) as i64 };
+    let _v91: *mut u8 = __slate_alloca_frame0.0;
+    let _v92: *mut u8 = __slate_alloca_frame0.13.as_mut_ptr() as *mut u8;
+    let _v93: i64 = unsafe { _v91.offset_from(_v92) as i64 };
+    let _v94: i32 = unsafe { printf(_v62 as *const i8, _v65, _v69, _v73, _v76, _v80, _v84, _v87, _v90, _v93) };
+    let _v95: i32 = 0;
+    __slate_alloca_frame0.15 = _v95;
+    let _v96: i32 = __slate_alloca_frame0.15;
+    std::process::exit(_v96 as i32);
+}

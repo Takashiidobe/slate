@@ -1,0 +1,66 @@
+---
+source: tests/snapshot.rs
+expression: rust
+---
+#![feature(c_variadic)]
+#![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+
+#[repr(C)]
+#[allow(non_camel_case_types)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
+enum truly_dead {
+    DEAD_A = 0,
+    DEAD_B = 1,
+}
+
+
+#[repr(C)]
+#[allow(non_camel_case_types)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
+enum color {
+    RED = 0,
+    GREEN = 1,
+    BLUE = 2,
+}
+
+
+static mut hidden_static: i32 = 5;
+
+static mut live_static: i32 = 7;
+
+unsafe extern "C" {
+    fn printf(_0: *const i8, ...) -> i32;
+}
+
+fn compute() -> i32 {
+    let mut __retval: i32 = 0;
+    let mut x: i32 = 0;
+    let _v0: i32 = unsafe { hidden_static };
+    x = _v0;
+    let _v1: i32 = 42;
+    __retval = _v1;
+    let _v2: i32 = __retval;
+    return _v2;
+}
+
+fn main() {
+    let mut __retval: i32 = 0;
+    let mut c: aligned::Aligned<aligned::A4, color> = aligned::Aligned(color::RED);
+    let _v0: i32 = 0;
+    __retval = _v0;
+    let _v1: u32 = color::GREEN as u32;
+    *c = color::GREEN;
+    let _v2: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+    let _v3: u32 = *c as u32;
+    let _v4: i32 = unsafe { printf(_v2 as *const i8, _v3) };
+    let _v5: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+    let _v6: i32 = unsafe { live_static };
+    let _v7: i32 = unsafe { printf(_v5 as *const i8, _v6) };
+    let _v8: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+    let _v9: i32 = compute();
+    let _v10: i32 = unsafe { printf(_v8 as *const i8, _v9) };
+    let _v11: i32 = 0;
+    __retval = _v11;
+    let _v12: i32 = __retval;
+    std::process::exit(_v12 as i32);
+}

@@ -1,0 +1,677 @@
+---
+source: tests/snapshot.rs
+expression: rust
+---
+#![feature(c_variadic)]
+#![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+
+#[repr(C, align(16))]
+#[derive(Clone, Copy)]
+struct LongDouble([u8; 10]);
+
+impl core::ops::Add for LongDouble {
+    type Output = LongDouble;
+    fn add(self, o: LongDouble) -> LongDouble { __slate_f80_add(self, o) }
+}
+
+impl core::ops::Sub for LongDouble {
+    type Output = LongDouble;
+    fn sub(self, o: LongDouble) -> LongDouble { __slate_f80_sub(self, o) }
+}
+
+impl core::ops::Mul for LongDouble {
+    type Output = LongDouble;
+    fn mul(self, o: LongDouble) -> LongDouble { __slate_f80_mul(self, o) }
+}
+
+impl core::ops::Div for LongDouble {
+    type Output = LongDouble;
+    fn div(self, o: LongDouble) -> LongDouble { __slate_f80_div(self, o) }
+}
+
+impl core::ops::AddAssign for LongDouble {
+    fn add_assign(&mut self, o: LongDouble) { {
+    *self = __slate_f80_add(*self, o);
+} }
+}
+
+impl core::ops::SubAssign for LongDouble {
+    fn sub_assign(&mut self, o: LongDouble) { {
+    *self = __slate_f80_sub(*self, o);
+} }
+}
+
+impl core::ops::MulAssign for LongDouble {
+    fn mul_assign(&mut self, o: LongDouble) { {
+    *self = __slate_f80_mul(*self, o);
+} }
+}
+
+impl core::ops::DivAssign for LongDouble {
+    fn div_assign(&mut self, o: LongDouble) { {
+    *self = __slate_f80_div(*self, o);
+} }
+}
+
+impl core::ops::Neg for LongDouble {
+    type Output = LongDouble;
+    fn neg(self) -> LongDouble { __slate_f80_neg(self) }
+}
+
+impl core::cmp::PartialEq for LongDouble {
+    fn eq(&self, other: &LongDouble) -> bool { __slate_f80_eq(*self, *other) }
+}
+
+impl core::cmp::PartialOrd for LongDouble {
+    fn partial_cmp(&self, other: &LongDouble) -> Option<std::cmp::Ordering> { if __slate_f80_lt(*self, *other) { Some(std::cmp::Ordering::Less) } else { if __slate_f80_gt(*self, *other) { Some(std::cmp::Ordering::Greater) } else { if __slate_f80_eq(*self, *other) { Some(std::cmp::Ordering::Equal) } else { None } } } }
+}
+
+mod __slate_bitfields {
+    #[bitfields::bitfield(u8, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
+    pub struct __SlateBitfield_C89Bits_0 {
+        #[bits(3)]
+        pub low: u32,
+        #[bits(4)]
+        pub high: i32,
+        #[bits(1)]
+        pub _reserved_0: u128,
+    }
+}
+
+#[repr(C)]
+#[allow(non_camel_case_types)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
+enum C89Color {
+    C89_RED = 3,
+    C89_GREEN = 5,
+    C89_BLUE = 7,
+}
+
+
+#[repr(C)]
+#[derive(Clone, Copy)]
+struct C89Bits {
+    __bitfield_0: __slate_bitfields::__SlateBitfield_C89Bits_0,
+    __bitfield_1: [u8; 3],
+}
+
+
+#[repr(C)]
+#[derive(Clone, Copy)]
+union C89Number {
+    integer: i32,
+    real: f64,
+}
+
+
+#[repr(C)]
+#[derive(Clone, Copy)]
+struct C89Point {
+    x: i32,
+    y: i32,
+}
+
+
+static mut c89_const_global: i32 = 17;
+
+static mut c89_external_value: i32 = 11;
+
+static mut c89_joined_value: i32 = 23;
+
+static mut c89_static_local_calls: i32 = 0;
+
+static mut c89_volatile_global: i32 = 19;
+
+unsafe extern "C" {
+    fn printf(_0: *const i8, ...) -> i32;
+}
+
+struct __SlateVaArg {
+    value: Box<dyn std::any::Any>,
+    size: usize,
+}
+
+impl __SlateVaArg {
+    fn new<T: 'static>(value: T) -> Self {
+        Self { value: Box::new(value), size: std::mem::size_of::<T>() }
+    }
+
+    fn read<T: Copy + 'static>(&self) -> T {
+        if let Some(value) = self.value.downcast_ref::<T>() {
+            return *value;
+        }
+        assert!(self.size >= std::mem::size_of::<T>());
+        unsafe {
+            std::ptr::read_unaligned(
+                (self.value.as_ref() as *const dyn std::any::Any) as *const () as *const T,
+            )
+        }
+    }
+}
+
+#[derive(Clone)]
+struct __SlateVaArgs {
+    args: Option<std::rc::Rc<Vec<__SlateVaArg>>>,
+    index: usize,
+}
+
+impl __SlateVaArgs {
+    fn new(args: Vec<__SlateVaArg>) -> Self {
+        Self { args: Some(std::rc::Rc::new(args)), index: 0 }
+    }
+
+    const fn empty() -> Self {
+        Self { args: None, index: 0 }
+    }
+
+    fn next_arg<T: Copy + 'static>(&mut self) -> T {
+        if std::mem::size_of::<T>() == 0 {
+            return unsafe { std::mem::zeroed() };
+        }
+        let args = self.args.as_ref().expect("va_arg with no arguments");
+        let value = args[self.index].read::<T>();
+        self.index += 1;
+        value
+    }
+}
+
+fn c89_store(arg4: *mut core::ffi::c_void, arg5: *mut core::ffi::c_void) {
+    let mut destination: *mut core::ffi::c_void = std::ptr::null_mut();
+    let mut source: *mut core::ffi::c_void = std::ptr::null_mut();
+    let mut output: *mut i32 = std::ptr::null_mut();
+    let mut input: *mut i32 = std::ptr::null_mut();
+    destination = arg4;
+    source = arg5;
+    let _v0: *mut core::ffi::c_void = destination;
+    let _v1: *mut i32 = _v0 as *mut i32;
+    output = _v1;
+    let _v2: *mut core::ffi::c_void = source;
+    let _v3: *mut i32 = _v2 as *mut i32;
+    input = _v3;
+    let _v4: *mut i32 = input;
+    let _v5: i32 = unsafe { *_v4 };
+    let _v6: *mut i32 = output;
+    unsafe {
+        *_v6 = _v5;
+    }
+    return;
+}
+
+extern "C" fn c89_add(arg2: i32, arg3: i32) -> i32 {
+    let mut left: i32 = 0;
+    let mut right: i32 = 0;
+    let mut __retval: i32 = 0;
+    left = arg2;
+    right = arg3;
+    let _v0: i32 = left;
+    let _v1: i32 = right;
+    let _v2: i32 = _v0 + _v1;
+    __retval = _v2;
+    let _v3: i32 = __retval;
+    return _v3;
+}
+
+fn c89_static_local() -> i32 {
+    let mut __retval: i32 = 0;
+    let _v0: i32 = 1;
+    let _v1: i32 = unsafe { c89_static_local_calls };
+    let _v2: i32 = _v1 + _v0;
+    unsafe {
+        c89_static_local_calls = _v2;
+    }
+    let _v3: i32 = unsafe { c89_static_local_calls };
+    __retval = _v3;
+    let _v4: i32 = __retval;
+    return _v4;
+}
+
+unsafe fn c89_variadic_sum(arg1: i32, mut __slate_va_args: __SlateVaArgs) -> i32 {
+    let mut count: i32 = 0;
+    let mut __retval: i32 = 0;
+    let mut arguments: __SlateVaArgs = __SlateVaArgs::empty();
+    let mut index: i32 = 0;
+    let mut total: i32 = 0;
+    count = arg1;
+    let _v0: i32 = 0;
+    total = _v0;
+    unsafe {
+        arguments = __slate_va_args.clone();
+    }
+    {
+        let _v1: i32 = 0;
+        index = _v1;
+        loop {
+            let _v2: i32 = index;
+            let _v3: i32 = count;
+            let _v4: bool = _v2 < _v3;
+            if !_v4 {
+                break;
+            }
+            {
+                let _v5: i32 = unsafe { arguments.next_arg::<i32>() };
+                let _v6: i32 = total;
+                let _v7: i32 = _v6 + _v5;
+                total = _v7;
+            }
+            let _v8: i32 = index;
+            let _v9: i32 = _v8 + 1;
+            index = _v9;
+        }
+    }
+    let _v10: i32 = total;
+    __retval = _v10;
+    let _v11: i32 = __retval;
+    return _v11;
+}
+
+fn c89_control_flow(arg0: i32) -> i32 {
+    let mut value: i32 = 0;
+    let mut __retval: i32 = 0;
+    let mut result: i32 = 0;
+    let mut index: i32 = 0;
+    let mut __state0: i32 = 0;
+    '__dispatch0: loop {
+        match __state0 {
+            0 => {
+                value = arg0;
+                let _v0: i32 = 0;
+                result = _v0;
+                let _v1: i32 = 0;
+                index = _v1;
+                {
+                    '__loop1: loop {
+                        let _v2: i32 = index;
+                        let _v3: i32 = value;
+                        let _v4: bool = _v2 < _v3;
+                        if !_v4 {
+                            break;
+                        }
+                        '__continue1: {
+                            {
+                                {
+                                    let _v5: i32 = index;
+                                    let _v6: i32 = 1;
+                                    let _v7: bool = _v5 == _v6;
+                                    if _v7 {
+                                        let _v8: i32 = index;
+                                        let _v9: i32 = _v8 + 1;
+                                        index = _v9;
+                                        break '__continue1;
+                                    }
+                                }
+                                let _v10: i32 = index;
+                                let _v11: i32 = result;
+                                let _v12: i32 = _v11 + _v10;
+                                result = _v12;
+                                {
+                                    let _v13: i32 = result;
+                                    let _v14: i32 = 20;
+                                    let _v15: bool = _v13 > _v14;
+                                    if _v15 {
+                                        break '__loop1;
+                                    }
+                                }
+                                let _v16: i32 = index;
+                                let _v17: i32 = _v16 + 1;
+                                index = _v17;
+                            }
+                        }
+                    }
+                }
+                {
+                    loop {
+                        {
+                            let _v18: i32 = result;
+                            let _v19: i32 = _v18 - 1;
+                            result = _v19;
+                        }
+                        let _v20: i32 = result;
+                        let _v21: i32 = 6;
+                        let _v22: bool = _v20 > _v21;
+                        if !_v22 {
+                            break;
+                        }
+                    }
+                }
+                {
+                    let _v23: i32 = value;
+                    {
+                        let __switch_value2 = _v23;
+                        let mut __switch_case2: i32 = match __switch_value2 { 4 => 0, _ => 1 };
+                        '__switch2: loop {
+                            match __switch_case2 {
+                                0 => {
+                                    let _v24: i32 = 10;
+                                    let _v25: i32 = result;
+                                    let _v26: i32 = _v25 + _v24;
+                                    result = _v26;
+                                    break '__switch2;
+                                }
+                                1 => {
+                                    let _v27: i32 = 0;
+                                    result = _v27;
+                                    break '__switch2;
+                                }
+                                _ => {
+                                    break '__switch2;
+                                }
+                            }
+                        }
+                    }
+                }
+                {
+                    let _v28: i32 = result;
+                    let _v29: i32 = 16;
+                    let _v30: bool = _v28 == _v29;
+                    if _v30 {
+                        __state0 = 1;
+                        continue '__dispatch0;
+                    }
+                }
+                let _v31: i32 = -1;
+                result = _v31;
+                __state0 = 1;
+                continue '__dispatch0;
+            }
+            1 => {
+                let _v32: i32 = result;
+                __retval = _v32;
+                let _v33: i32 = __retval;
+                return _v33;
+            }
+            _ => {
+                unreachable!();
+            }
+        }
+    }
+}
+
+fn main() {
+    let mut __retval: i32 = 0;
+    let mut automatic_value: i32 = 0;
+    let mut register_value: i32 = 0;
+    let mut signed_value: i32 = 0;
+    let mut unsigned_value: u64 = 0;
+    let mut signed_character: i8 = 0;
+    let mut float_value: f32 = 0.0;
+    let mut double_value: f64 = 0.0;
+    let mut long_double_value: LongDouble = LongDouble([0; 10]);
+    let mut wide_character: i32 = 0;
+    let mut color: aligned::Aligned<aligned::A4, C89Color> = aligned::Aligned(C89Color::C89_RED);
+    let mut point: C89Point = C89Point { x: 0, y: 0 };
+    let mut bits: C89Bits = C89Bits { __bitfield_0: unsafe { std::mem::transmute::<u8, __slate_bitfields::__SlateBitfield_C89Bits_0>(0) }, __bitfield_1: [0; 3] };
+    let mut number: C89Number = C89Number { integer: 0 };
+    let mut array: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
+    let mut copied_value: i32 = 0;
+    let mut source_value: i32 = 0;
+    let mut pointer: *mut i32 = std::ptr::null_mut();
+    let mut const_pointer: *mut i32 = std::ptr::null_mut();
+    let mut operation: Option<unsafe extern "C" fn(i32, i32) -> i32> = None;
+    let mut arithmetic: i32 = 0;
+    let mut bitwise: i32 = 0;
+    let mut logical: i32 = 0;
+    let mut conditional: i32 = 0;
+    let mut comma_value: i32 = 0;
+    let mut string_length: i32 = 0;
+    let mut static_calls: i32 = 0;
+    let mut variadic_total: i32 = 0;
+    let mut control_total: i32 = 0;
+    let mut standard_macro: i32 = 0;
+    let _v0: i32 = 0;
+    __retval = _v0;
+    let _v1: i32 = 2;
+    automatic_value = _v1;
+    let _v2: i32 = 3;
+    register_value = _v2;
+    let _v3: i32 = -5;
+    signed_value = _v3;
+    let _v4: u64 = 29;
+    unsigned_value = _v4;
+    let _v5: i8 = -7;
+    signed_character = _v5;
+    let _v6: f32 = 2.5;
+    float_value = _v6;
+    let _v7: f64 = 3.5;
+    double_value = _v7;
+    let _v8: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 1, 64]);
+    long_double_value = _v8;
+    let _v9: i32 = 90;
+    wide_character = _v9;
+    let _v10: u32 = C89Color::C89_GREEN as u32;
+    *color = C89Color::C89_GREEN;
+    let _v11: i32 = 31;
+    point.x = _v11;
+    let _v12: i32 = 37;
+    point.y = _v12;
+    let _v13: u32 = 6;
+    let _v14: u32 = (_v13 as u32) << 29 >> 29;
+    bits.__bitfield_0.set_low((_v13 as u32) << 29 >> 29);
+    let _v15: i32 = -3;
+    let _v16: i32 = (_v15 as i32) << 28 >> 28;
+    bits.__bitfield_0.set_high((_v15 as i32) << 28 >> 28);
+    let _v17: i32 = 41;
+    unsafe {
+        number.integer = _v17;
+    }
+    let _v18: i32 = 1;
+    let _v19: i64 = 0;
+    array[(_v19 as usize)] = _v18;
+    let _v20: i32 = 2;
+    let _v21: i64 = 1;
+    array[(_v21 as usize)] = _v20;
+    let _v22: i32 = 3;
+    let _v23: i64 = 2;
+    array[(_v23 as usize)] = _v22;
+    let _v24: i32 = 4;
+    let _v25: i64 = 3;
+    array[(_v25 as usize)] = _v24;
+    let _v26: *mut i32 = array.as_mut_ptr() as *mut i32;
+    pointer = _v26;
+    let _v27: *mut i32 = pointer;
+    const_pointer = _v27;
+    let _v28: i32 = 43;
+    source_value = _v28;
+    let _v29: i32 = 0;
+    copied_value = _v29;
+    let _v30: *mut core::ffi::c_void = std::ptr::addr_of_mut!(copied_value) as *mut core::ffi::c_void;
+    let _v31: *mut core::ffi::c_void = std::ptr::addr_of_mut!(source_value) as *mut core::ffi::c_void;
+    c89_store(_v30 as *mut core::ffi::c_void, _v31 as *mut core::ffi::c_void);
+    operation = unsafe { std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32, i32) -> i32>>(c89_add as *const ()) };
+    let _v32: i32 = automatic_value;
+    let _v33: i32 = register_value;
+    let _v34: i32 = _v32 + _v33;
+    let _v35: i32 = 4;
+    let _v36: i32 = _v34 * _v35;
+    let _v37: i32 = 3;
+    let _v38: i32 = _v36 - _v37;
+    arithmetic = _v38;
+    let _v39: i32 = 17;
+    let _v40: i32 = arithmetic;
+    let _v41: i32 = _v40 / _v39;
+    arithmetic = _v41;
+    let _v42: i32 = 3;
+    let _v43: i32 = arithmetic;
+    let _v44: i32 = _v43 % _v42;
+    arithmetic = _v44;
+    let _v45: i32 = 1;
+    let _v46: i32 = 5;
+    let _v47: i32 = _v45 << _v46;
+    let _v48: i32 = 3;
+    let _v49: i32 = _v47 | _v48;
+    let _v50: i32 = 2;
+    let _v51: i32 = _v49 ^ _v50;
+    bitwise = _v51;
+    let _v52: i32 = 31;
+    let _v53: i32 = bitwise;
+    let _v54: i32 = _v53 & _v52;
+    bitwise = _v54;
+    let _v55: i32 = signed_value;
+    let _v56: i32 = 0;
+    let _v57: bool = _v55 < _v56;
+    let _v58: bool = if _v57 {
+        let _v59: u64 = unsigned_value;
+        let _v60: u64 = 0;
+        let _v61: bool = _v59 > _v60;
+        _v61
+    } else {
+        let _v62: bool = false;
+        _v62
+    };
+    let _v63: bool = if _v58 {
+        let _v64: bool = true;
+        _v64
+    } else {
+        let _v65: i32 = 0;
+        let _v66: bool = _v65 != 0;
+        _v66
+    };
+    let _v67: i32 = _v63 as i32;
+    logical = _v67;
+    let _v68: i32 = logical;
+    let _v69: bool = _v68 != 0;
+    let _v70: i32 = 47;
+    let _v71: i32 = 0;
+    let _v72: i32 = if _v69 { _v70 } else { _v71 };
+    conditional = _v72;
+    let _v73: i32 = 1;
+    let _v74: i32 = automatic_value;
+    let _v75: i32 = _v74 + _v73;
+    automatic_value = _v75;
+    let _v76: i32 = automatic_value;
+    let _v77: i32 = 49;
+    let _v78: i32 = _v76 + _v77;
+    comma_value = _v78;
+    let _v79: i32 = 3;
+    let _v80: i32 = 1;
+    let _v81: i32 = _v79 - _v80;
+    string_length = _v81;
+    let _v82: i32 = c89_static_local();
+    let _v83: i32 = 10;
+    let _v84: i32 = _v82 * _v83;
+    let _v85: i32 = c89_static_local();
+    let _v86: i32 = _v84 + _v85;
+    static_calls = _v86;
+    let _v87: i32 = 4;
+    let _v88: i32 = 2;
+    let _v89: i32 = 3;
+    let _v90: i32 = 5;
+    let _v91: i32 = 7;
+    let _v92: i32 = unsafe { c89_variadic_sum(_v87, __SlateVaArgs::new(vec![__SlateVaArg::new(_v88), __SlateVaArg::new(_v89), __SlateVaArg::new(_v90), __SlateVaArg::new(_v91)])) };
+    variadic_total = _v92;
+    let _v93: i32 = 4;
+    let _v94: i32 = c89_control_flow(_v93);
+    control_total = _v94;
+    let _v95: i32 = 1;
+    standard_macro = _v95;
+    let _v96: *mut i8 = b"%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
+    let _v97: i32 = unsafe { c89_external_value };
+    let _v98: i32 = unsafe { c89_const_global };
+    let _v99: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c89_volatile_global)) };
+    let _v100: i32 = unsafe { c89_joined_value };
+    let _v101: i32 = 13;
+    let _v102: i32 = standard_macro;
+    let _v103: i32 = signed_value;
+    let _v104: u64 = unsigned_value;
+    let _v105: i32 = _v104 as i32;
+    let _v106: i8 = signed_character;
+    let _v107: i32 = _v106 as i32;
+    let _v108: f32 = float_value;
+    let _v109: i32 = _v108 as i32;
+    let _v110: f64 = double_value;
+    let _v111: i32 = _v110 as i32;
+    let _v112: LongDouble = long_double_value;
+    let _v113: i32 = __slate_f80_to_i32(_v112);
+    let _v114: i32 = wide_character;
+    let _v115: u32 = *color as u32;
+    let _v116: i32 = point.x;
+    let _v117: i32 = point.y;
+    let _v118: i32 = _v116 + _v117;
+    let _v119: u32 = (bits.__bitfield_0.low() as u32) << 29 >> 29;
+    let _v120: i32 = _v119 as i32;
+    let _v121: i32 = (bits.__bitfield_0.high() as i32) << 28 >> 28;
+    let _v122: i32 = unsafe { number.integer };
+    let _v123: i64 = 0;
+    let _v124: *mut i32 = const_pointer;
+    let _v125: *mut i32 = unsafe { _v124.add(0) };
+    let _v126: i32 = unsafe { *_v125 };
+    let _v127: i64 = 3;
+    let _v128: *mut i32 = const_pointer;
+    let _v129: *mut i32 = unsafe { _v128.add(3) };
+    let _v130: i32 = unsafe { *_v129 };
+    let _v131: i32 = _v126 + _v130;
+    let _v132: i32 = copied_value;
+    let _v133: Option<unsafe extern "C" fn(i32, i32) -> i32> = operation;
+    let _v134: i32 = 53;
+    let _v135: i32 = 6;
+    let _v136: i32 = unsafe { _v133.unwrap()(_v134, _v135) };
+    let _v137: i32 = arithmetic;
+    let _v138: i32 = bitwise;
+    let _v139: i32 = logical;
+    let _v140: i32 = conditional;
+    let _v141: i32 = comma_value;
+    let _v142: i32 = string_length;
+    let _v143: i32 = static_calls;
+    let _v144: i32 = variadic_total;
+    let _v145: i32 = control_total;
+    let _v146: i32 = _v144 + _v145;
+    let _v147: i32 = unsafe { printf(_v96 as *const i8, _v97, _v98, _v99, _v100, _v101, _v102, _v103, _v105, _v107, _v109, _v111, _v113, _v114, _v115, _v118, _v120, _v121, _v122, _v131, _v132, _v136, _v137, _v138, _v139, _v140, _v141, _v142, _v143, _v146) };
+    let _v148: i32 = 0;
+    __retval = _v148;
+    let _v149: i32 = __retval;
+    std::process::exit(_v149 as i32);
+}
+
+unsafe extern "C" {
+    safe fn __slate_cf80_div(a: num_complex::Complex<LongDouble>, b: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+    safe fn __slate_cf80_mul(a: num_complex::Complex<LongDouble>, b: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+    safe fn __slate_f80_abs(a: LongDouble) -> LongDouble;
+    safe fn __slate_f80_add(a: LongDouble, b: LongDouble) -> LongDouble;
+    safe fn __slate_f80_ceil(a: LongDouble) -> LongDouble;
+    safe fn __slate_f80_copysign(a: LongDouble, b: LongDouble) -> LongDouble;
+    safe fn __slate_f80_div(a: LongDouble, b: LongDouble) -> LongDouble;
+    safe fn __slate_f80_eq(a: LongDouble, b: LongDouble) -> bool;
+    safe fn __slate_f80_floor(a: LongDouble) -> LongDouble;
+    safe fn __slate_f80_fma(a: LongDouble, b: LongDouble, c: LongDouble) -> LongDouble;
+    safe fn __slate_f80_fmax(a: LongDouble, b: LongDouble) -> LongDouble;
+    safe fn __slate_f80_fmin(a: LongDouble, b: LongDouble) -> LongDouble;
+    safe fn __slate_f80_fract(a: LongDouble) -> LongDouble;
+    safe fn __slate_f80_from_bool(a: bool) -> LongDouble;
+    safe fn __slate_f80_from_f32(a: f32) -> LongDouble;
+    safe fn __slate_f80_from_f64(a: f64) -> LongDouble;
+    safe fn __slate_f80_from_i128(a: i128) -> LongDouble;
+    safe fn __slate_f80_from_i16(a: i16) -> LongDouble;
+    safe fn __slate_f80_from_i32(a: i32) -> LongDouble;
+    safe fn __slate_f80_from_i64(a: i64) -> LongDouble;
+    safe fn __slate_f80_from_i8(a: i8) -> LongDouble;
+    safe fn __slate_f80_from_u128(a: u128) -> LongDouble;
+    safe fn __slate_f80_from_u16(a: u16) -> LongDouble;
+    safe fn __slate_f80_from_u32(a: u32) -> LongDouble;
+    safe fn __slate_f80_from_u64(a: u64) -> LongDouble;
+    safe fn __slate_f80_from_u8(a: u8) -> LongDouble;
+    safe fn __slate_f80_ge(a: LongDouble, b: LongDouble) -> bool;
+    safe fn __slate_f80_gt(a: LongDouble, b: LongDouble) -> bool;
+    safe fn __slate_f80_is_fp_class(a: LongDouble, flags: i32) -> bool;
+    safe fn __slate_f80_le(a: LongDouble, b: LongDouble) -> bool;
+    safe fn __slate_f80_lt(a: LongDouble, b: LongDouble) -> bool;
+    safe fn __slate_f80_mul(a: LongDouble, b: LongDouble) -> LongDouble;
+    safe fn __slate_f80_ne(a: LongDouble, b: LongDouble) -> bool;
+    safe fn __slate_f80_neg(a: LongDouble) -> LongDouble;
+    safe fn __slate_f80_rint(a: LongDouble) -> LongDouble;
+    safe fn __slate_f80_round(a: LongDouble) -> LongDouble;
+    safe fn __slate_f80_signbit(a: LongDouble) -> bool;
+    safe fn __slate_f80_sub(a: LongDouble, b: LongDouble) -> LongDouble;
+    safe fn __slate_f80_to_bool(a: LongDouble) -> bool;
+    safe fn __slate_f80_to_f32(a: LongDouble) -> f32;
+    safe fn __slate_f80_to_f64(a: LongDouble) -> f64;
+    safe fn __slate_f80_to_i128(a: LongDouble) -> i128;
+    safe fn __slate_f80_to_i16(a: LongDouble) -> i16;
+    safe fn __slate_f80_to_i32(a: LongDouble) -> i32;
+    safe fn __slate_f80_to_i64(a: LongDouble) -> i64;
+    safe fn __slate_f80_to_i8(a: LongDouble) -> i8;
+    safe fn __slate_f80_to_u128(a: LongDouble) -> u128;
+    safe fn __slate_f80_to_u16(a: LongDouble) -> u16;
+    safe fn __slate_f80_to_u32(a: LongDouble) -> u32;
+    safe fn __slate_f80_to_u64(a: LongDouble) -> u64;
+    safe fn __slate_f80_to_u8(a: LongDouble) -> u8;
+    safe fn __slate_f80_trunc(a: LongDouble) -> LongDouble;
+}
