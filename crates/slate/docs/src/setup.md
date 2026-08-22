@@ -24,7 +24,7 @@ instead (all optional, all overriding a local-build default):
 | `SLATE_CIR_OPT`                     | `~/llvm-project/build-cir/bin/cir-opt`       | CIR -> MLIR generic form                                                                          |
 | `SLATE_CC`                          | `clang` (from `PATH`)                        | compile the C side of differential tests                                                          |
 | `SLATE_CARGO`                       | `cargo`                                      | compile the generated Rust                                                                        |
-| `SLATE_TARGET` / `SLATE_CLANG_ARGS` | —                                            | shared target triple / extra clang flags                                                          |
+| `SLATE_TARGET` / `SLATE_CLANG_ARGS` | N/A                                          | shared target triple / extra clang flags                                                          |
 | `SLATE_MACRO_DUMP_PLUGIN`           | `<$SLATE_CLANG build>/lib/SlateMacroDump.so` | the macro dump plugin binary (see below)                                                          |
 | `SLATE_LIBC_SHIM`                   | `libc-shim/include`                          | headers `SLATE_CLANG` parses with `-nostdlibinc -isystem <dir>` instead of the host's system libc |
 
@@ -46,7 +46,7 @@ against that build's internal headers rather than a stable ABI.
 
 ```bash
 cargo build --release
-cargo run -- translate tests/fixtures/add.c   # sanity check: C -> Rust on stdout
+cargo run -- translate tests/fixtures/add.c   # prints Rust to stdout
 ```
 
 ## Running tests
