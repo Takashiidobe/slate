@@ -114,7 +114,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 .extern_returns
                 .get(&callee_name)
                 .and_then(|ret| ret.as_deref())
-                .is_some_and(|ret| matches!(ret, "usize" | "isize") && ret != result_ty.render())
+                .is_some_and(|ret| ret != result_ty.render())
         });
         if self.parent.boxed_variadic_defs.contains(&callee_name) {
             let fixed = self
