@@ -83,12 +83,16 @@ void   explicit_bzero(void *, size_t);
 #endif
 
 #ifdef _GNU_SOURCE
-char *strdupa(const char *x);
-int   strverscmp(const char *, const char *);
-char *strchrnul(const char *, int);
-char *strcasestr(const char *, const char *);
-void *memrchr(const void *, int, size_t);
-void *mempcpy(void *, const void *, size_t);
+char       *strdupa(const char *x);
+int         strverscmp(const char *, const char *);
+char       *strchrnul(const char *, int);
+char       *strcasestr(const char *, const char *);
+void       *memrchr(const void *, int, size_t);
+void       *mempcpy(void *, const void *, size_t);
+void       *rawmemchr(const void *, int);
+void       *memfrob(void *, size_t);
+const char *strerrordesc_np(int);
+const char *strerrorname_np(int);
 #endif
 
 #if defined(__SLATE_LIBC_MSVC)

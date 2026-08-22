@@ -12,5 +12,6 @@
 #define GRND_INSECURE 0x0004
 
 ssize_t getrandom(void *, size_t, unsigned);
+int     getentropy(void *, size_t);
 
 #endif
