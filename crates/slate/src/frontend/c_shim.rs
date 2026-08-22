@@ -290,17 +290,30 @@ fn render_trampoline(name: &str) -> Option<String> {
 }
 
 const F80_SHIMS: &str = include_str!("./shims/long_double.c");
+const FENV_SHIMS: &str = include_str!("./shims/fenv.c");
 
 pub fn render_shim_c_source(shims: &[ExternFnDecl]) -> String {
-    let mut blocks = vec!["#include <stdio.h>\n#include <stdlib.h>\n#include <math.h>".to_string()];
+    let mut blocks = vec![
+        "#define _GNU_SOURCE\n#include <stdio.h>\n#include <stdlib.h>\n#include <math.h>"
+            .to_string(),
+    ];
     let has_f80 = shims
         .iter()
         .any(|shim| shim.name.contains("f80") || shim.name.starts_with("__slate_ld_"));
     if has_f80 {
         blocks.push(F80_SHIMS.to_string());
     }
+    if shims
+        .iter()
+        .any(|shim| shim.name.starts_with("__slate_fenv_"))
+    {
+        blocks.push(FENV_SHIMS.to_string());
+    }
     for shim in shims {
-        if shim.name.starts_with("__slate_f80_") || shim.name.starts_with("__slate_cf80_") {
+        if shim.name.starts_with("__slate_f80_")
+            || shim.name.starts_with("__slate_cf80_")
+            || shim.name.starts_with("__slate_fenv_")
+        {
             continue;
         } else if let Some(source) = render_typed_shim(shim) {
             blocks.push(source);
@@ -323,18 +336,30 @@ pub fn render_shim_c_source_for_program(program: &Program) -> String {
             ExternDecl::Static { .. } => None,
         })
         .collect();
-    let mut blocks = vec!["#include <stdio.h>\n#include <stdlib.h>\n#include <math.h>".to_string()];
+    let mut blocks = vec![
+        "#define _GNU_SOURCE\n#include <stdio.h>\n#include <stdlib.h>\n#include <math.h>"
+            .to_string(),
+    ];
     let has_f80 = shims
         .iter()
         .any(|shim| shim.name.contains("f80") || shim.name.starts_with("__slate_ld_"));
     if has_f80 {
         blocks.push(F80_SHIMS.to_string());
     }
+    if shims
+        .iter()
+        .any(|shim| shim.name.starts_with("__slate_fenv_"))
+    {
+        blocks.push(FENV_SHIMS.to_string());
+    }
     for record in long_double_records(program) {
         blocks.push(render_record_def(record));
     }
     for shim in &shims {
-        if shim.name.starts_with("__slate_f80_") || shim.name.starts_with("__slate_cf80_") {
+        if shim.name.starts_with("__slate_f80_")
+            || shim.name.starts_with("__slate_cf80_")
+            || shim.name.starts_with("__slate_fenv_")
+        {
             continue;
         } else if let Some(source) = render_typed_shim(shim) {
             blocks.push(source);
@@ -439,12 +464,20 @@ fn rust_type_has_long_double(ty: &Type) -> bool {
 }
 
 pub fn render_shim_c_source_for_names(names: &BTreeSet<String>) -> String {
-    let mut blocks = vec!["#include <stdio.h>\n#include <stdlib.h>\n#include <math.h>".to_string()];
+    let mut blocks = vec![
+        "#define _GNU_SOURCE\n#include <stdio.h>\n#include <stdlib.h>\n#include <math.h>"
+            .to_string(),
+    ];
     if names.iter().any(|name| name.contains("f80")) {
         blocks.push(F80_SHIMS.to_string());
     }
+    if names.iter().any(|name| name.starts_with("__slate_fenv_")) {
+        blocks.push(FENV_SHIMS.to_string());
+    }
     for name in names {
-        if let Some(trampoline) = render_trampoline(name) {
+        if name.starts_with("__slate_fenv_") {
+            continue;
+        } else if let Some(trampoline) = render_trampoline(name) {
             blocks.push(trampoline);
         }
     }

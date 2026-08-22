@@ -89,6 +89,25 @@ fn overflow_for_result_width(
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
     pub(super) fn lower_cmp(&mut self, op: &inst::Cmp) {
+        if op.fenv.is_some()
+            && let Some(bits) = self.value_type(&op.lhs).and_then(fenv_scalar_bits)
+            && let Some(name) = fenv_cmp_name(op.kind)
+        {
+            let shim = format!("__slate_fenv_{name}_f{bits}");
+            self.parent.uses_fenv_shims.set(true);
+            let lhs = self.operand_expr(&op.lhs);
+            let rhs = self.operand_expr(&op.rhs);
+            self.materialize_expr(
+                &op.result,
+                Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
+                    func: Box::new(Expr::Var(shim.into())),
+                    args: vec![lhs, rhs],
+                },
+                Some(&op.result_ty),
+            );
+            return;
+        }
         if let Some(expr) = self.lower_function_pointer_null_cmp(&op.lhs, &op.rhs, op.kind) {
             self.materialize_expr(&op.result, expr, Some(&op.result_ty));
             return;
@@ -259,6 +278,37 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             },
             result_ty,
         );
+    }
+
+    pub(super) fn lower_fenv_binary(
+        &mut self,
+        result: &str,
+        result_ty: Option<&CirType>,
+        lhs: &str,
+        rhs: &str,
+        rust_op: BinOp,
+        fenv: bool,
+    ) {
+        if fenv
+            && let Some(bits) = result_ty.and_then(fenv_scalar_bits)
+            && let Some(op_name) = fenv_binop_name(rust_op)
+        {
+            let shim = format!("__slate_fenv_{op_name}_f{bits}");
+            self.parent.uses_fenv_shims.set(true);
+            let lhs = self.operand_expr(lhs);
+            let rhs = self.operand_expr(rhs);
+            self.materialize_expr(
+                result,
+                Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
+                    func: Box::new(Expr::Var(shim.into())),
+                    args: vec![lhs, rhs],
+                },
+                result_ty,
+            );
+            return;
+        }
+        self.lower_binary(result, result_ty, lhs, rhs, rust_op);
     }
 
     pub(super) fn lower_saturating_arith(

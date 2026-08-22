@@ -445,6 +445,131 @@ pub(super) fn f80_shim_decls() -> Vec<ExternFnDecl> {
     decls
 }
 
+fn fenv_param(name: &str, ty: Type) -> FnParam {
+    FnParam {
+        name: name.into(),
+        mutable: false,
+        ty,
+    }
+}
+
+fn fenv_extern_decl(name: String, params: Vec<FnParam>, ret: Type) -> ExternFnDecl {
+    ExternFnDecl {
+        attrs: Vec::new(),
+        identity: FunctionIdentity::Unknown,
+        name,
+        declared_type: None,
+        params,
+        variadic: false,
+        ret: Some(ret),
+        safe: true,
+    }
+}
+
+pub(super) fn fenv_shim_decls() -> Vec<ExternFnDecl> {
+    let float_ty = |bits: u32| {
+        if bits == 32 {
+            Type::Prim(Prim::F32)
+        } else {
+            Type::Prim(Prim::F64)
+        }
+    };
+    let mut decls = Vec::new();
+    for bits in [32u32, 64] {
+        let f = float_ty(bits);
+        for op in ["add", "sub", "mul", "div", "rem"] {
+            decls.push(fenv_extern_decl(
+                format!("__slate_fenv_{op}_f{bits}"),
+                vec![fenv_param("a", f.clone()), fenv_param("b", f.clone())],
+                f.clone(),
+            ));
+        }
+        for cmp in ["lt", "le", "gt", "ge", "eq", "ne"] {
+            decls.push(fenv_extern_decl(
+                format!("__slate_fenv_{cmp}_f{bits}"),
+                vec![fenv_param("a", f.clone()), fenv_param("b", f.clone())],
+                Type::Prim(Prim::Bool),
+            ));
+        }
+        for unary in [
+            "sin",
+            "cos",
+            "exp",
+            "exp2",
+            "log",
+            "log2",
+            "log10",
+            "ceil",
+            "floor",
+            "round",
+            "rint",
+            "nearbyint",
+            "roundeven",
+            "trunc",
+            "sqrt",
+            "fabs",
+        ] {
+            decls.push(fenv_extern_decl(
+                format!("__slate_fenv_{unary}_f{bits}"),
+                vec![fenv_param("a", f.clone())],
+                f.clone(),
+            ));
+        }
+        for binary in ["pow", "fmax", "fmin", "copysign"] {
+            decls.push(fenv_extern_decl(
+                format!("__slate_fenv_{binary}_f{bits}"),
+                vec![fenv_param("a", f.clone()), fenv_param("b", f.clone())],
+                f.clone(),
+            ));
+        }
+        decls.push(fenv_extern_decl(
+            format!("__slate_fenv_fma_f{bits}"),
+            vec![
+                fenv_param("a", f.clone()),
+                fenv_param("b", f.clone()),
+                fenv_param("c", f.clone()),
+            ],
+            f.clone(),
+        ));
+        decls.push(fenv_extern_decl(
+            format!("__slate_fenv_i64_to_f{bits}"),
+            vec![fenv_param("a", Type::Prim(Prim::I64))],
+            f.clone(),
+        ));
+        decls.push(fenv_extern_decl(
+            format!("__slate_fenv_u64_to_f{bits}"),
+            vec![fenv_param("a", Type::Prim(Prim::U64))],
+            f.clone(),
+        ));
+        decls.push(fenv_extern_decl(
+            format!("__slate_fenv_f{bits}_to_i64"),
+            vec![fenv_param("a", f.clone())],
+            Type::Prim(Prim::I64),
+        ));
+        decls.push(fenv_extern_decl(
+            format!("__slate_fenv_f{bits}_to_u64"),
+            vec![fenv_param("a", f.clone())],
+            Type::Prim(Prim::U64),
+        ));
+        decls.push(fenv_extern_decl(
+            format!("__slate_fenv_f{bits}_to_bool"),
+            vec![fenv_param("a", f.clone())],
+            Type::Prim(Prim::Bool),
+        ));
+    }
+    decls.push(fenv_extern_decl(
+        "__slate_fenv_f32_to_f64".into(),
+        vec![fenv_param("a", Type::Prim(Prim::F32))],
+        Type::Prim(Prim::F64),
+    ));
+    decls.push(fenv_extern_decl(
+        "__slate_fenv_f64_to_f32".into(),
+        vec![fenv_param("a", Type::Prim(Prim::F64))],
+        Type::Prim(Prim::F32),
+    ));
+    decls
+}
+
 pub(super) fn is_long_double(ty: &CirType) -> bool {
     matches!(ty, CirType::LongDouble { .. } | CirType::Fp80)
 }
