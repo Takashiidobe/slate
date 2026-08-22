@@ -241,7 +241,7 @@ pub fn compile_c_multi_with_std_and_include(
     let inputs: Vec<&Path> = srcs.iter().map(PathBuf::as_path).collect();
     compile_c_cached(&inputs, out, &cache_key, "C compile failed", |temporary| {
         Command::new(cc())
-            .args(["-O0", &format!("-std={std}"), "-o"])
+            .args(["-O0", &format!("-std={std}"), "-fcommon", "-o"])
             .arg(temporary)
             .args(srcs)
             .args(include_dir.map(|dir| format!("-I{}", dir.display())))
@@ -308,7 +308,7 @@ pub fn translate_project(dir: &Path, crate_dir: &Path) -> Result<(), String> {
 }
 
 pub fn translate_project_with_std(dir: &Path, crate_dir: &Path, std: &str) -> Result<(), String> {
-    let clang_args = format!("{} -I{}", std_clang_args(std), dir.display());
+    let clang_args = format!("{} -I{} -fcommon", std_clang_args(std), dir.display());
     translate_project_with_clang_args(dir, crate_dir, clang_args)
 }
 

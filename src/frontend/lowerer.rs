@@ -2210,6 +2210,22 @@ impl __SlateVaArgs {
         if thread_local {
             self.uses_thread_local.set(true);
         }
+        if global.linkage == GlobalLinkageKind::Common
+            && self.project.cross_module_globals.contains_key(name)
+        {
+            let Some(ty) = ty else {
+                return;
+            };
+            self.extern_globals.insert(
+                rust_name,
+                ExternGlobal {
+                    source_name: name.to_string(),
+                    ty,
+                    thread_local,
+                },
+            );
+            return;
+        }
         if let Some(op) = raw {
             self.warn_protected_visibility(op, name);
         }
