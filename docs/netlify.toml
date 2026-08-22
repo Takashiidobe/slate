@@ -1,0 +1,3 @@
+[build]
+command = "mdbook build"
+publish = "book"

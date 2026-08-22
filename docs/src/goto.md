@@ -11,15 +11,15 @@ turns any goto with labels into an interpreter.
 
 ## How to flatten
 
-`src/cir/flatten.rs` decides per function, before anything else runs,
-whether it needs the flattened form at all. A function is left in its
-structured, region-based form unless it's still single-block _and_ contains
-a `cir.goto` (`needs_flattening`) functions without `goto`, and functions
+`src/cir/flatten.rs` decides per function whether it needs the flattened form at all.
+A function is left in its structured, region-based form unless it's still
+single-block _and_ contains a `cir.goto` (`needs_flattening`).
+Functions without `goto`, and functions
 CIR already emits as multi-block on their own (computed goto, `asm goto`,
 functions with top-level labels), never pay for the extra `cir-opt
 --cir-flatten-cfg --cir-goto-solver` invocation or the state-machine
 lowering path at all. Only the functions that actually need it get
-re-parsed in flattened form and spliced back into the module.
+re-parsed in flattened form.
 
 ## The dispatch loop
 
@@ -37,21 +37,13 @@ let mut __state0: i32 = 0;
 }
 ```
 
-one match arm per basic block, indexed by an integer state variable. Every
-alloca in the function is hoisted to the top (so it's visible from every
-arm), and any SSA value live across a block boundary is promoted to a
-`let mut` for the same reason (`cross_block_live_values` in `analysis.rs`).
-`goto`/`br` become `__stateN = <target>; continue`; `brcond` becomes an
-`if`/`else` choosing between two such assignments; `switch.flat` becomes a
-nested match picking the target state; computed goto and `indirect_br`
-assign a runtime-computed state instead of a constant one, which is why
-those functions are marked `dynamic` and never eligible for restructuring
-(below). This shape can represent _any_ control-flow graph, including
-irreducible ones that's the whole point of going through it at the cost
-of being unstructured, table-driven Rust instead of `if`/`loop`.
+which basically interprets an unstructured program with structured
+programming constructs. The con is that this is fairly inefficient (not
+to mention ugly). We'll talk about how to fix that in the next section,
+but note that not all gotos can be recovered into nicer if/else
+structure.
 
-`tests/fixtures/goto_irreducible.c` is an example that has no
-recoverable structure:
+Look at `tests/fixtures/goto_irreducible.c`, which is like this:
 
 ```c
 if (choose_b) goto b;
@@ -60,21 +52,37 @@ b: x = x + 2; if (x < 4) goto a;
 done: printf("%d\n", x);
 ```
 
-`a` and `b` jump into each other, and the entry point can land on either one
-first (from the initial `if`, or by falling through from the top) a
-two-node cycle with two distinct entries, the textbook irreducible graph.
+Draw it out:
+
+```
+        +---------+ entry +---------+
+        |                           |
+   !choose_b                    choose_b
+        |                           |
+        v                           v
+  +-----------+   x<3          +-----------+
+  |     a     | -------------> |     b     |
+  | x = x + 1 |                | x = x + 2 |
+  +-----------+ <------------- +-----------+
+        |            x<4             |
+        |                            |
+     (else)                       (else)
+        |                            |
+        v                            v
+        +---------> done <----------+
+```
+
+Since neither `a` nor `b` dominates the other, there's no single loop
+header a relooper could wrap a `while`/`loop` around while keeping the
+cycle's stack usage at O(1).
 
 ## Recovering structure
 
-Most real `goto` usage isn't actually irreducible. It's a disguised
-`break`, `continue`, or early-exit that CIR only flattened because it
-couldn't tell. `src/backend/facts/goto.rs` parses the dispatch-loop shape
-back out of the _lowered_ Rust AST (`DispatchLoop`, one `DispatchState` per
-arm, each ending in a `Transfer::{Goto, Branch, Switch, Return, Diverge}`)
-and classifies it with the same graph tools a relooper would use
-dominators, natural loops, strongly-connected components
-(`is_reducible`, `cyclic_sccs`). `src/backend/query/control_flow.rs` then
-tries, in order:
+Thankfully, most real `goto` usage can be repaired.
+`goto`s that are like `break`, `continue`, or early-exits can be
+recovered into structured programming constructs.
+
+Slate uses a relooper algorithm to check:
 
 - acyclic plain `if`/`else`/sequence, no loop at all;
 - a single self-loop `loop { ..; if !cond { break } }`, i.e. recovering
@@ -89,9 +97,7 @@ tries, in order:
 
 This runs as `Pass::Goto`, the first fixup pass in the pipeline (see
 [Rewriting](./writing-a-rewrite.md)), so later passes only ever have to deal
-with whichever of those four shapes the function ended up in. Like every
-fixup, it's independently verified by differential testing and optional in
-spirit disabling it just leaves more functions as dispatch loops.
+with whichever of those four shapes the function ended up in.
 
 ## Switch
 
@@ -103,15 +109,3 @@ into the next arm instead of falling through the match. For
 `tests/fixtures/switch_fallthrough.c`'s `case 1:` (no `break`, falls into
 `case 2:`), the lowered arm for state `0` ends with
 `__switch_case0 = 1; continue '__switch0;` instead of `break`.
-
-Duff's device a `switch` whose body is a single `do`/`while` with
-`case` labels interleaved inside the loop body doesn't fit that shape at
-all (the cases aren't parallel alternatives; they're entry points into
-_different offsets of the same loop iteration_), so it's detected
-separately (`duff_switch` in `cir_ops.rs`) and lowered by
-`lower_duff_switch` into a cascade of `if __switch_case0 <= K { .. }` guards
-inside the `do`-loop body one per case, in original order, each falling
-through into the next followed by resetting the index to `0` and
-re-checking the loop condition. This reproduces the "jump into the middle of
-a loop and fall through the rest of it" behavior Duff's device depends on
-without needing `goto` in the output at all.
