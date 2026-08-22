@@ -1586,7 +1586,8 @@ fn translate_project_with_targets(
             }
         }
         let mut seen_records = BTreeSet::new();
-        for record in &unit.records {
+        let anon_records = frontend::anon_local_records(&module);
+        for record in unit.records.iter().chain(anon_records.iter()) {
             let name = rust_ident(&record.name);
             if seen_records.insert(name.clone()) {
                 match record_occurrences.get_mut(&name) {
