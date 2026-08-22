@@ -1660,11 +1660,12 @@ fn collect_layout_queries(node: &Value, source_text: Option<&str>) -> Vec<Layout
 fn collect_layout_queries_at(node: &Value, source_text: Option<&str>, out: &mut Vec<LayoutQuery>) {
     match kind(node) {
         Some("UnaryExprOrTypeTraitExpr") => {
-            let ty = node
-                .get("argType")
-                .and_then(|arg| arg.get("qualType"))
-                .and_then(Value::as_str)
-                .map(parse_c_type);
+            let ty = node.get("argType").and_then(|arg| {
+                arg.get("desugaredQualType")
+                    .or_else(|| arg.get("qualType"))
+                    .and_then(Value::as_str)
+            });
+            let ty = ty.map(parse_c_type);
             match (node.get("name").and_then(Value::as_str), ty) {
                 (Some("sizeof"), Some(ty)) => out.push(LayoutQuery::Size(ty)),
                 (Some("alignof" | "_Alignof" | "__alignof"), Some(ty)) => {
