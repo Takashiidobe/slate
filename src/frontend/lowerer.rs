@@ -809,6 +809,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         long_double_shims: BTreeMap::new(),
         llvm_intrinsic_shims: BTreeMap::new(),
         uses_long_double: std::cell::Cell::new(false),
+        uses_fenv_shims: std::cell::Cell::new(false),
         uses_complex: std::cell::Cell::new(false),
         uses_f128: std::cell::Cell::new(false),
         uses_c_variadic: std::cell::Cell::new(false),
@@ -1224,6 +1225,7 @@ struct Lowerer<'a> {
     long_double_shims: BTreeMap<String, ExternFnDecl>,
     llvm_intrinsic_shims: BTreeMap<String, ExternFnDecl>,
     uses_long_double: std::cell::Cell<bool>,
+    uses_fenv_shims: std::cell::Cell<bool>,
     uses_complex: std::cell::Cell<bool>,
     uses_f128: std::cell::Cell<bool>,
     uses_c_variadic: std::cell::Cell<bool>,
@@ -1950,6 +1952,12 @@ impl __SlateVaArgs {
                     .cloned()
                     .map(ExternDecl::Fn)
                     .collect(),
+            });
+        }
+        if self.uses_fenv_shims.get() {
+            items.push(Item::ExternBlock {
+                abi: "C".into(),
+                decls: fenv_shim_decls().into_iter().map(ExternDecl::Fn).collect(),
             });
         }
         if !self.llvm_intrinsic_shims.is_empty() {
@@ -4343,39 +4351,43 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     );
                 }
                 Op::Fadd(value) => {
-                    return self.lower_binary(
+                    return self.lower_fenv_binary(
                         &value.result,
                         Some(&value.result_ty),
                         &value.lhs,
                         &value.rhs,
                         BinOp::Add,
+                        value.fenv.is_some(),
                     );
                 }
                 Op::Fsub(value) => {
-                    return self.lower_binary(
+                    return self.lower_fenv_binary(
                         &value.result,
                         Some(&value.result_ty),
                         &value.lhs,
                         &value.rhs,
                         BinOp::Sub,
+                        value.fenv.is_some(),
                     );
                 }
                 Op::Fmul(value) => {
-                    return self.lower_binary(
+                    return self.lower_fenv_binary(
                         &value.result,
                         Some(&value.result_ty),
                         &value.lhs,
                         &value.rhs,
                         BinOp::Mul,
+                        value.fenv.is_some(),
                     );
                 }
                 Op::Fdiv(value) => {
-                    return self.lower_binary(
+                    return self.lower_fenv_binary(
                         &value.result,
                         Some(&value.result_ty),
                         &value.lhs,
                         &value.rhs,
                         BinOp::Div,
+                        value.fenv.is_some(),
                     );
                 }
                 Op::Inc(value) => {
@@ -4474,83 +4486,163 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     );
                 }
                 Op::Cos(value) => {
-                    return self.lower_known_unary_method(
+                    let fenv = value.fenv.is_some();
+                    return self.lower_fenv_unary(
                         &value.result,
                         &value.result_ty,
                         &value.src,
-                        value.loc.as_ref(),
-                        Known::Cos,
                         "cos",
+                        fenv,
+                        |this| {
+                            this.lower_known_unary_method(
+                                &value.result,
+                                &value.result_ty,
+                                &value.src,
+                                value.loc.as_ref(),
+                                Known::Cos,
+                                "cos",
+                            );
+                        },
                     );
                 }
                 Op::Exp(value) => {
-                    return self.lower_known_unary_method(
+                    let fenv = value.fenv.is_some();
+                    return self.lower_fenv_unary(
                         &value.result,
                         &value.result_ty,
                         &value.src,
-                        value.loc.as_ref(),
-                        Known::Exp,
                         "exp",
+                        fenv,
+                        |this| {
+                            this.lower_known_unary_method(
+                                &value.result,
+                                &value.result_ty,
+                                &value.src,
+                                value.loc.as_ref(),
+                                Known::Exp,
+                                "exp",
+                            );
+                        },
                     );
                 }
                 Op::Exp2(value) => {
-                    return self.lower_known_unary_method(
+                    let fenv = value.fenv.is_some();
+                    return self.lower_fenv_unary(
                         &value.result,
                         &value.result_ty,
                         &value.src,
-                        value.loc.as_ref(),
-                        Known::Exp2,
                         "exp2",
+                        fenv,
+                        |this| {
+                            this.lower_known_unary_method(
+                                &value.result,
+                                &value.result_ty,
+                                &value.src,
+                                value.loc.as_ref(),
+                                Known::Exp2,
+                                "exp2",
+                            );
+                        },
                     );
                 }
                 Op::Log(value) => {
-                    return self.lower_known_unary_method(
+                    let fenv = value.fenv.is_some();
+                    return self.lower_fenv_unary(
                         &value.result,
                         &value.result_ty,
                         &value.src,
-                        value.loc.as_ref(),
-                        Known::Log,
-                        "ln",
+                        "log",
+                        fenv,
+                        |this| {
+                            this.lower_known_unary_method(
+                                &value.result,
+                                &value.result_ty,
+                                &value.src,
+                                value.loc.as_ref(),
+                                Known::Log,
+                                "ln",
+                            );
+                        },
                     );
                 }
                 Op::Log10(value) => {
-                    return self.lower_known_unary_method(
+                    let fenv = value.fenv.is_some();
+                    return self.lower_fenv_unary(
                         &value.result,
                         &value.result_ty,
                         &value.src,
-                        value.loc.as_ref(),
-                        Known::Log10,
                         "log10",
+                        fenv,
+                        |this| {
+                            this.lower_known_unary_method(
+                                &value.result,
+                                &value.result_ty,
+                                &value.src,
+                                value.loc.as_ref(),
+                                Known::Log10,
+                                "log10",
+                            );
+                        },
                     );
                 }
                 Op::Log2(value) => {
-                    return self.lower_known_unary_method(
+                    let fenv = value.fenv.is_some();
+                    return self.lower_fenv_unary(
                         &value.result,
                         &value.result_ty,
                         &value.src,
-                        value.loc.as_ref(),
-                        Known::Log2,
                         "log2",
+                        fenv,
+                        |this| {
+                            this.lower_known_unary_method(
+                                &value.result,
+                                &value.result_ty,
+                                &value.src,
+                                value.loc.as_ref(),
+                                Known::Log2,
+                                "log2",
+                            );
+                        },
                     );
                 }
                 Op::Sin(value) => {
-                    return self.lower_known_unary_method(
+                    let fenv = value.fenv.is_some();
+                    return self.lower_fenv_unary(
                         &value.result,
                         &value.result_ty,
                         &value.src,
-                        value.loc.as_ref(),
-                        Known::Sin,
                         "sin",
+                        fenv,
+                        |this| {
+                            this.lower_known_unary_method(
+                                &value.result,
+                                &value.result_ty,
+                                &value.src,
+                                value.loc.as_ref(),
+                                Known::Sin,
+                                "sin",
+                            );
+                        },
                     );
                 }
                 Op::Sqrt(value) => {
-                    return self.lower_known_unary_method(
+                    let fenv = value.fenv.is_some();
+                    return self.lower_fenv_unary(
                         &value.result,
                         &value.result_ty,
                         &value.src,
-                        value.loc.as_ref(),
-                        Known::Sqrt,
                         "sqrt",
+                        fenv,
+                        |this| {
+                            this.lower_known_unary_method(
+                                &value.result,
+                                &value.result_ty,
+                                &value.src,
+                                value.loc.as_ref(),
+                                Known::Sqrt,
+                                "sqrt",
+                            );
+                        },
                     );
                 }
                 Op::Tan(value) => {
@@ -4602,7 +4694,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     return self.lower_abs(&value.result, Some(&value.result_ty), &value.src);
                 }
                 Op::Fabs(value) => {
-                    return self.lower_abs(&value.result, Some(&value.result_ty), &value.src);
+                    let fenv = value.fenv.is_some();
+                    return self.lower_fenv_unary(
+                        &value.result,
+                        &value.result_ty,
+                        &value.src,
+                        "fabs",
+                        fenv,
+                        |this| {
+                            this.lower_abs(&value.result, Some(&value.result_ty), &value.src);
+                        },
+                    );
                 }
                 Op::Bitreverse(value) => {
                     return self.lower_unary_method(
@@ -4621,11 +4723,21 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     );
                 }
                 Op::Ceil(value) => {
-                    return self.lower_unary_method(
+                    let fenv = value.fenv.is_some();
+                    return self.lower_fenv_unary(
                         &value.result,
-                        Some(&value.result_ty),
+                        &value.result_ty,
                         &value.src,
                         "ceil",
+                        fenv,
+                        |this| {
+                            this.lower_unary_method(
+                                &value.result,
+                                Some(&value.result_ty),
+                                &value.src,
+                                "ceil",
+                            );
+                        },
                     );
                 }
                 Op::Clz(value) => {
@@ -4645,27 +4757,57 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     );
                 }
                 Op::Floor(value) => {
-                    return self.lower_unary_method(
+                    let fenv = value.fenv.is_some();
+                    return self.lower_fenv_unary(
                         &value.result,
-                        Some(&value.result_ty),
+                        &value.result_ty,
                         &value.src,
                         "floor",
+                        fenv,
+                        |this| {
+                            this.lower_unary_method(
+                                &value.result,
+                                Some(&value.result_ty),
+                                &value.src,
+                                "floor",
+                            );
+                        },
                     );
                 }
                 Op::Nearbyint(value) => {
-                    return self.lower_unary_method(
+                    let fenv = value.fenv.is_some();
+                    return self.lower_fenv_unary(
                         &value.result,
-                        Some(&value.result_ty),
+                        &value.result_ty,
                         &value.src,
-                        "round_ties_even",
+                        "nearbyint",
+                        fenv,
+                        |this| {
+                            this.lower_unary_method(
+                                &value.result,
+                                Some(&value.result_ty),
+                                &value.src,
+                                "round_ties_even",
+                            );
+                        },
                     );
                 }
                 Op::Rint(value) => {
-                    return self.lower_unary_method(
+                    let fenv = value.fenv.is_some();
+                    return self.lower_fenv_unary(
                         &value.result,
-                        Some(&value.result_ty),
+                        &value.result_ty,
                         &value.src,
-                        "round_ties_even",
+                        "rint",
+                        fenv,
+                        |this| {
+                            this.lower_unary_method(
+                                &value.result,
+                                Some(&value.result_ty),
+                                &value.src,
+                                "round_ties_even",
+                            );
+                        },
                     );
                 }
                 Op::Popcount(value) => {
@@ -4677,27 +4819,57 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     );
                 }
                 Op::Round(value) => {
-                    return self.lower_unary_method(
+                    let fenv = value.fenv.is_some();
+                    return self.lower_fenv_unary(
                         &value.result,
-                        Some(&value.result_ty),
+                        &value.result_ty,
                         &value.src,
                         "round",
+                        fenv,
+                        |this| {
+                            this.lower_unary_method(
+                                &value.result,
+                                Some(&value.result_ty),
+                                &value.src,
+                                "round",
+                            );
+                        },
                     );
                 }
                 Op::Roundeven(value) => {
-                    return self.lower_unary_method(
+                    let fenv = value.fenv.is_some();
+                    return self.lower_fenv_unary(
                         &value.result,
-                        Some(&value.result_ty),
+                        &value.result_ty,
                         &value.src,
-                        "round_ties_even",
+                        "roundeven",
+                        fenv,
+                        |this| {
+                            this.lower_unary_method(
+                                &value.result,
+                                Some(&value.result_ty),
+                                &value.src,
+                                "round_ties_even",
+                            );
+                        },
                     );
                 }
                 Op::Trunc(value) => {
-                    return self.lower_unary_method(
+                    let fenv = value.fenv.is_some();
+                    return self.lower_fenv_unary(
                         &value.result,
-                        Some(&value.result_ty),
+                        &value.result_ty,
                         &value.src,
                         "trunc",
+                        fenv,
+                        |this| {
+                            this.lower_unary_method(
+                                &value.result,
+                                Some(&value.result_ty),
+                                &value.src,
+                                "trunc",
+                            );
+                        },
                     );
                 }
                 Op::Minus(value) => {
@@ -4769,43 +4941,102 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     return;
                 }
                 Op::Pow(value) => {
-                    return self.lower_known_binary_method(
+                    let fenv = value.fenv.is_some();
+                    return self.lower_fenv_binary_op(
                         &value.result,
                         &value.result_ty,
                         (&value.lhs, &value.rhs),
-                        value.loc.as_ref(),
-                        Known::Pow,
-                        "powf",
+                        "pow",
+                        fenv,
+                        |this| {
+                            this.lower_known_binary_method(
+                                &value.result,
+                                &value.result_ty,
+                                (&value.lhs, &value.rhs),
+                                value.loc.as_ref(),
+                                Known::Pow,
+                                "powf",
+                            );
+                        },
                     );
                 }
                 Op::Copysign(value) => {
-                    return self.lower_binary_method(
+                    let fenv = value.fenv.is_some();
+                    return self.lower_fenv_binary_op(
                         &value.result,
-                        Some(&value.result_ty),
-                        &value.lhs,
-                        &value.rhs,
+                        &value.result_ty,
+                        (&value.lhs, &value.rhs),
                         "copysign",
+                        fenv,
+                        |this| {
+                            this.lower_binary_method(
+                                &value.result,
+                                Some(&value.result_ty),
+                                &value.lhs,
+                                &value.rhs,
+                                "copysign",
+                            );
+                        },
                     );
                 }
                 Op::Fmaxnum(value) => {
-                    return self.lower_binary_method(
+                    let fenv = value.fenv.is_some();
+                    return self.lower_fenv_binary_op(
                         &value.result,
-                        Some(&value.result_ty),
-                        &value.lhs,
-                        &value.rhs,
-                        "max",
+                        &value.result_ty,
+                        (&value.lhs, &value.rhs),
+                        "fmax",
+                        fenv,
+                        |this| {
+                            this.lower_binary_method(
+                                &value.result,
+                                Some(&value.result_ty),
+                                &value.lhs,
+                                &value.rhs,
+                                "max",
+                            );
+                        },
                     );
                 }
                 Op::Fminnum(value) => {
-                    return self.lower_binary_method(
+                    let fenv = value.fenv.is_some();
+                    return self.lower_fenv_binary_op(
                         &value.result,
-                        Some(&value.result_ty),
-                        &value.lhs,
-                        &value.rhs,
-                        "min",
+                        &value.result_ty,
+                        (&value.lhs, &value.rhs),
+                        "fmin",
+                        fenv,
+                        |this| {
+                            this.lower_binary_method(
+                                &value.result,
+                                Some(&value.result_ty),
+                                &value.lhs,
+                                &value.rhs,
+                                "min",
+                            );
+                        },
                     );
                 }
                 Op::Fma(value) => {
+                    if value.fenv.is_some()
+                        && let Some(bits) = fenv_scalar_bits(&value.result_ty)
+                    {
+                        let shim = format!("__slate_fenv_fma_f{bits}");
+                        self.parent.uses_fenv_shims.set(true);
+                        let a = self.operand_expr(&value.a);
+                        let b = self.operand_expr(&value.b);
+                        let c = self.operand_expr(&value.c);
+                        self.materialize_expr(
+                            &value.result,
+                            Expr::Call {
+                                binding: crate::function_identity::CallBinding::Generated,
+                                func: Box::new(Expr::Var(shim.into())),
+                                args: vec![a, b, c],
+                            },
+                            Some(&value.result_ty),
+                        );
+                        return;
+                    }
                     return self.lower_ternary_method(
                         &value.result,
                         &value.result_ty,

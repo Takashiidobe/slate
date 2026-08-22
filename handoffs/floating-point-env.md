@@ -88,6 +88,28 @@ Two options were discussed and compared:
    `FENV_ACCESS ON` it's left dynamic, so the shim doesn't need a mode
    parameter at all — it just needs to exist as an opaque call.
 
+**Also considered and rejected: the `softfp` crate**
+(docs.rs/softfp — pure-Rust IEEE 754 with explicit `RoundingMode` and
+callback-based exception-flag reporting, built for RISC-V emulation).
+Same conclusion as `arpfloat`, sharpened by `softfp`'s actual API: it
+reports exceptions and reads the rounding mode via a
+`softfp_set_exception_flags`-style *callback* the embedder supplies, not
+a per-call return — so to keep its output visible to the rest of the real
+C program (`fetestexcept()` etc.), the callback itself would still have
+to call into libc's `fegetround()`/`feraiseexcept()`. That's not fewer
+FFI calls than the C shim, it's more (a read call and a write call per
+op, wrapping a slower software arithmetic routine, vs. one opaque call
+doing real hardware arithmetic with exception flags set as a natural side
+effect). `softfp` is the right tool for a different sub-problem:
+`FENV_ROUND` pinning a *static*, compile-time-known mode (no
+`fesetround()` involved at all) — there, a Rust constant threads straight
+into `softfp`'s API with zero FFI and zero C-toolchain dependency, which
+matters for freestanding/`no_std` targets that don't have a paired cross
+C compiler the way every target Slate's differential testing already
+requires one for. Not in scope for `slate-0ar5` (that's the dynamic
+`FENV_ACCESS` case, where the shim wins outright), but worth remembering
+if `FENV_ROUND`'s static-mode case ever gets its own subtask.
+
 ## Scoped op surface
 
 Grepped every call site of `getConstrainedFPAttr()` in
@@ -131,24 +153,93 @@ alone.
 (`CIRBaseBuilder.h`: "fneg does not raise FP exceptions or depend on the
 rounding mode") — skip it.
 
-That's **7 op-shapes × {f32, f64}** as the true minimum (~14 functions plus
-comparison predicates), since f80/f128 already route through the existing
-long-double/quad shim paths for unrelated ABI reasons — threading `FenvAttr`
-through those is a much smaller lift than building them was originally.
+That's the five binary arithmetic ops, comparisons, and casts × {f32, f64}
+as the *minimum* — see Tier 1b below for the much larger transcendental/
+rounding-function surface that also turned out to need shimming. f80/f128
+already route through the existing long-double/quad shim paths for
+unrelated ABI reasons — threading `FenvAttr` through those is a much
+smaller lift than building them was originally.
 
-**Tier 2 — probably already opaque, verify before adding work.**
-`CIRGenBuiltin.cpp:544-903` shows ~30 more constrained ops (`acos`, `sin`,
-`cos`, `exp`, `log`, `pow`, `ceil`, `floor`, `fmod`, `lround`, ...). Slate
-already lowers most to Rust `f32`/`f64` std methods
-(`lowerer.rs:4476-4565`: `Op::Sin` → `.sin()`, etc.), and on most targets
-those std methods call into the real system libm — already an opaque
-extern call with the same barrier property, no shim needed. Exceptions to
-check: `sqrt` and `fabs` are typically compiled as direct hardware
-intrinsics (`llvm.sqrt.f64`/`llvm.fabs.f64`) rather than libm calls, so LLVM
-can constant-fold them the same way it folds native operators — these two
-probably need to move to Tier 1. Don't assume the rest of Tier 2 is fine
-without spot-checking generated IR; libm-calling behavior can vary by
-target/libc.
+**Tier 1b — verified via `rustc --emit=llvm-ir`, not just "probably
+opaque."** `CIRGenBuiltin.cpp:544-903` shows ~30 more constrained ops
+(`acos`, `sin`, `cos`, `exp`, `log`, `pow`, `ceil`, `floor`, `fmod`,
+`lround`, ...). The earlier version of this doc guessed most of these were
+already opaque libm calls and only flagged `sqrt`/`fabs` as likely
+exceptions — checked directly instead of assuming, and the real split is
+much wider. Compiled a probe crate with each `f64` method at
+`-O`/`--emit=llvm-ir` and read what call each one actually lowers to:
+
+*Compiles to an LLVM intrinsic (foldable/reorderable, same hazard as
+`+`/`*`, shimmed in `fenv.c`):* `.sin()` → `llvm.sin`, `.cos()` →
+`llvm.cos`, `.exp()`/`.exp2()` → `llvm.exp`/`llvm.exp2`,
+`.ln()`/`.log2()`/`.log10()` → `llvm.log*`, `.powf()` → `llvm.pow`,
+`.ceil()`/`.floor()`/`.round()`/`.round_ties_even()`/`.trunc()` →
+`llvm.ceil`/`llvm.floor`/`llvm.round`/`llvm.rint`/`llvm.trunc`,
+`.sqrt()`/`.abs()` → `llvm.sqrt`/`llvm.fabs`, `.max()`/`.min()` →
+`llvm.maximumnum`/`llvm.minimumnum`, `.copysign()` → `llvm.copysign`.
+`Op::Fma` (`.mul_add()` → `llvm.fma`) is in this category too when
+`FenvAttr` is set — same intrinsic, same foldability, distinct from the
+target-dispatch fix in `slate-kmao` (which only concerns `Op::Fmuladd`'s
+fuse-or-not decision, not this).
+
+*Already a real opaque extern call, no shim needed:* `.asin()`, `.atan()`,
+`.atan2()`, `.acos()`, `.acosh()`, `.asinh()`, `.atanh()`, `.cosh()`,
+`.sinh()`, `.tanh()`, `.cbrt()`, `.exp_m1()`, `.ln_1p()`, `.hypot()`,
+`.tan()`.
+
+All of `fenv.c`'s Tier 1b additions (`sin`/`cos`/`exp`/`exp2`/`log`/`log2`/
+`log10`/`pow`/`ceil`/`floor`/`round`/`rint`/`trunc`/`sqrt`/`fabs`/`fmax`/
+`fmin`/`copysign`/`fma`, × {f32, f64}) are already written — see
+`slate-0ar5.3`'s closure. Don't assume the "already opaque" list above is
+complete either without spot-checking IR for anything new added later;
+libm-calling behavior can vary by target/libc, and this list was itself
+wrong once already.
+
+## Containment strategy — dispatch per-op, never per-function/TU
+
+A real risk with this design: if implemented carelessly, it could shim
+*every* arithmetic op in a function just because `FENV_ACCESS ON` appears
+somewhere in it — tainting ordinary, unrelated code with shim calls for a
+pragma almost nothing uses, and actively hurting readability of the
+generated Rust.
+
+That risk doesn't require any cleverness on Slate's side to avoid, because
+Clang already solves it upstream. Checked `CIRGenFPOptionsRAII`
+(`CIRGenFunction.cpp:1376`): it constructs each op's `FenvAttr` from
+`e->getFPFeaturesInEffect(langOpts)` — the FP-pragma state at that
+*specific expression's* lexical position, as tracked by Sema's pragma
+stack. So `FenvAttr` isn't a per-function or per-TU flag Clang hands
+Slate — it's stamped independently on each individual `cir.fadd`/`cir.cast`/etc.
+instruction, present only if that particular expression was lexically
+inside an active `#pragma STDC FENV_ACCESS ON` region when Clang emitted
+it. An add two lines outside the pragma's block gets no attr at all, same
+op kind, same function.
+
+This also happens to be the *correct* boundary, not just a convenient
+one: `FENV_ACCESS`'s contract in the C standard is lexical, not
+reachability-based. Code outside an active `FENV_ACCESS ON` block that
+happens to run after an earlier `fesetround()` call at runtime gets no
+promises from the standard either — relying on that is undefined
+behavior, on the programmer, not the compiler. So matching Clang's
+lexical decision exactly is both the minimal-taint choice and the
+differential-correct one; they're the same thing here.
+
+**Implementation rule for `slate-0ar5.4`:** each `Op::Fadd`/`Op::Fmul`/etc.
+match arm must read `value.fenv.is_some()` off that specific op instance
+and branch to shim-vs-native right there — the same shape
+`Op::Fmuladd`/`type_mentions_long_double` dispatch already uses. Do
+**not** thread a `self.constrained`-style bool through `FunctionLowerer`
+for "we're inside a FENV_ACCESS region right now" — that would taint more
+code than the real C reference binary does, breaking differential parity,
+on top of reintroducing the exact readability regression this design
+exists to avoid.
+
+**Regression test to add in `slate-0ar5.4`/`.5`:** a fixture/probe with
+`FENV_ACCESS ON` around exactly one `+` (or other Tier 1 op), with
+ordinary arithmetic immediately before and after it in the same function,
+outside the pragma's block. Inspect the generated Rust and confirm only
+that one op became a shim call — the sibling ops stay plain native
+operators. Direct, cheap proof the taint doesn't leak.
 
 ## Open question — resolved (`slate-0ar5.1`)
 

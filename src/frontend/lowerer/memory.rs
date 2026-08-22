@@ -176,6 +176,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         };
         let src_ty = &src_ty;
+        if op.fenv.is_some() && self.try_lower_fenv_cast(result, result_ty, src, src_ty) {
+            return;
+        }
         if (is_cir_va_list_value_type(result_ty, &self.parent.aliases)
             || is_cir_va_list_value_type(src_ty, &self.parent.aliases))
             && let Some(place) = self.va_target_place(src)
@@ -433,6 +436,72 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             }
         };
         self.materialize_expr(result, expr, Some(result_ty));
+    }
+
+    fn try_lower_fenv_cast(
+        &mut self,
+        result: &str,
+        result_ty: &CirType,
+        src: &str,
+        src_ty: &CirType,
+    ) -> bool {
+        let src_expr = self.operand_expr(src);
+        let call = |name: String, arg: Expr| Expr::Call {
+            binding: crate::function_identity::CallBinding::Generated,
+            func: Box::new(Expr::Var(name.into())),
+            args: vec![arg],
+        };
+        let expr = match (src_ty, result_ty) {
+            (CirType::Single, CirType::Double) => call("__slate_fenv_f32_to_f64".into(), src_expr),
+            (CirType::Double, CirType::Single) => call("__slate_fenv_f64_to_f32".into(), src_expr),
+            (CirType::Single, CirType::Bool) => call("__slate_fenv_f32_to_bool".into(), src_expr),
+            (CirType::Double, CirType::Bool) => call("__slate_fenv_f64_to_bool".into(), src_expr),
+            (CirType::Bool, CirType::Single) => call(
+                "__slate_fenv_i64_to_f32".into(),
+                Expr::Cast {
+                    expr: Box::new(src_expr),
+                    ty: Type::Prim(Prim::I64),
+                },
+            ),
+            (CirType::Bool, CirType::Double) => call(
+                "__slate_fenv_i64_to_f64".into(),
+                Expr::Cast {
+                    expr: Box::new(src_expr),
+                    ty: Type::Prim(Prim::I64),
+                },
+            ),
+            (src, dest)
+                if let Some((signed, _)) = parse_cir_int_type(src)
+                    && let Some(float_bits) = fenv_scalar_bits(dest) =>
+            {
+                let carrier = if signed { Prim::I64 } else { Prim::U64 };
+                let carrier_name = if signed { "i64" } else { "u64" };
+                let shim = format!("__slate_fenv_{carrier_name}_to_f{float_bits}");
+                call(
+                    shim,
+                    Expr::Cast {
+                        expr: Box::new(src_expr),
+                        ty: Type::Prim(carrier),
+                    },
+                )
+            }
+            (src, dest)
+                if let Some(float_bits) = fenv_scalar_bits(src)
+                    && let Some((signed, _)) = parse_cir_int_type(dest) =>
+            {
+                let carrier_name = if signed { "i64" } else { "u64" };
+                let shim = format!("__slate_fenv_f{float_bits}_to_{carrier_name}");
+                let carrier_ty = self.parent.rust_type(dest);
+                Expr::Cast {
+                    expr: Box::new(call(shim, src_expr)),
+                    ty: carrier_ty,
+                }
+            }
+            _ => return false,
+        };
+        self.parent.uses_fenv_shims.set(true);
+        self.materialize_expr(result, expr, Some(result_ty));
+        true
     }
 
     pub(super) fn place_expr(&self, ptr: &str) -> Option<Expr> {

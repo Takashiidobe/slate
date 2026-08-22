@@ -154,11 +154,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         operands: (&str, &str, &str),
     ) {
         let rust_ty = self.parent.rust_type(result_ty);
-        let bits = match result_ty {
-            CirType::Single => Some(32),
-            CirType::Double => Some(64),
-            _ => None,
-        };
+        let bits = fenv_scalar_bits(result_ty);
         let fuses = type_mentions_long_double(&rust_ty)
             || bits.is_none_or(crate::cir::emit::target_has_native_fma);
         if fuses {
@@ -178,6 +174,61 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             rhs: Box::new(c),
         };
         self.materialize_expr(result, expr, Some(result_ty));
+    }
+
+    pub(super) fn lower_fenv_unary(
+        &mut self,
+        result: &str,
+        result_ty: &CirType,
+        value: &str,
+        fenv_name: &str,
+        fenv: bool,
+        fallback: impl FnOnce(&mut Self),
+    ) {
+        if fenv && let Some(bits) = fenv_scalar_bits(result_ty) {
+            let shim = format!("__slate_fenv_{fenv_name}_f{bits}");
+            self.parent.uses_fenv_shims.set(true);
+            let arg = self.operand_expr(value);
+            self.materialize_expr(
+                result,
+                Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
+                    func: Box::new(Expr::Var(shim.into())),
+                    args: vec![arg],
+                },
+                Some(result_ty),
+            );
+            return;
+        }
+        fallback(self);
+    }
+
+    pub(super) fn lower_fenv_binary_op(
+        &mut self,
+        result: &str,
+        result_ty: &CirType,
+        operands: (&str, &str),
+        fenv_name: &str,
+        fenv: bool,
+        fallback: impl FnOnce(&mut Self),
+    ) {
+        if fenv && let Some(bits) = fenv_scalar_bits(result_ty) {
+            let shim = format!("__slate_fenv_{fenv_name}_f{bits}");
+            self.parent.uses_fenv_shims.set(true);
+            let lhs = self.operand_expr(operands.0);
+            let rhs = self.operand_expr(operands.1);
+            self.materialize_expr(
+                result,
+                Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
+                    func: Box::new(Expr::Var(shim.into())),
+                    args: vec![lhs, rhs],
+                },
+                Some(result_ty),
+            );
+            return;
+        }
+        fallback(self);
     }
 
     pub(super) fn lower_signbit(&mut self, result: &str, result_ty: &CirType, value: &str) {

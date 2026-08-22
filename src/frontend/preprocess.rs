@@ -339,7 +339,10 @@ impl DirectiveRecord {
                 || is_macro_state_pragma(&self.raw_payload)
                 || is_poison_pragma(&self.raw_payload)
                 || is_cx_limited_range_pragma(&self.raw_payload)
-                || is_fp_contract_pragma(&self.raw_payload))
+                || is_fp_contract_pragma(&self.raw_payload)
+                || is_fenv_access_pragma(&self.raw_payload)
+                || is_fenv_round_pragma(&self.raw_payload)
+                || is_fenv_dec_round_pragma(&self.raw_payload))
     }
 
     pub fn is_poison_pragma(&self) -> bool {
@@ -473,6 +476,36 @@ fn is_fp_contract_pragma(payload: &str) -> bool {
         return false;
     }
     matches!(rest.trim(), "ON" | "OFF" | "DEFAULT")
+}
+
+fn is_fenv_access_pragma(payload: &str) -> bool {
+    let Some(rest) = payload.trim().strip_prefix("STDC FENV_ACCESS") else {
+        return false;
+    };
+    if !rest.starts_with(char::is_whitespace) {
+        return false;
+    }
+    matches!(rest.trim(), "ON" | "OFF" | "DEFAULT")
+}
+
+fn is_fenv_round_pragma(payload: &str) -> bool {
+    let Some(rest) = payload.trim().strip_prefix("STDC FENV_ROUND") else {
+        return false;
+    };
+    if !rest.starts_with(char::is_whitespace) {
+        return false;
+    }
+    c_identifier(rest.trim())
+}
+
+fn is_fenv_dec_round_pragma(payload: &str) -> bool {
+    let Some(rest) = payload.trim().strip_prefix("STDC FENV_DEC_ROUND") else {
+        return false;
+    };
+    if !rest.starts_with(char::is_whitespace) {
+        return false;
+    }
+    c_identifier(rest.trim())
 }
 
 fn c_identifier(value: &str) -> bool {

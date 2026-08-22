@@ -476,8 +476,8 @@ fn semantic_and_unknown_pragmas_remain_explicitly_unsupported() {
     );
 
     let error = translate_err_with_clang_args("reject/pragma_inventory.c", None);
-    assert!(error.contains("unsupported semantic directive #pragma at line 1"));
-    assert!(error.contains("STDC FENV_ACCESS ON"));
+    assert!(error.contains("unsupported semantic directive #pragma at line 6"));
+    assert!(error.contains("optimize(\"O2\")"));
 }
 
 #[test]

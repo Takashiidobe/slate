@@ -641,6 +641,38 @@ pub(super) fn parse_cir_int_type(ty: &CirType) -> Option<(bool, u32)> {
     }
 }
 
+pub(super) fn fenv_scalar_bits(ty: &CirType) -> Option<u32> {
+    match ty {
+        CirType::Single => Some(32),
+        CirType::Double => Some(64),
+        _ => None,
+    }
+}
+
+pub(super) fn fenv_binop_name(op: BinOp) -> Option<&'static str> {
+    match op {
+        BinOp::Add => Some("add"),
+        BinOp::Sub => Some("sub"),
+        BinOp::Mul => Some("mul"),
+        BinOp::Div => Some("div"),
+        BinOp::Rem => Some("rem"),
+        _ => None,
+    }
+}
+
+pub(super) fn fenv_cmp_name(kind: clang_ir::enums::CmpOpKind) -> Option<&'static str> {
+    use clang_ir::enums::CmpOpKind;
+    match kind {
+        CmpOpKind::Lt => Some("lt"),
+        CmpOpKind::Le => Some("le"),
+        CmpOpKind::Gt => Some("gt"),
+        CmpOpKind::Ge => Some("ge"),
+        CmpOpKind::Eq => Some("eq"),
+        CmpOpKind::Ne => Some("ne"),
+        _ => None,
+    }
+}
+
 pub(super) fn cir_type_to_ctype(
     ty: &CirType,
     aliases: &BTreeMap<String, CirType>,
