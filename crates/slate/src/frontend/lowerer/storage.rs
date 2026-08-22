@@ -620,7 +620,23 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 place
             }
         } else if let Some(slot) = self.slot_place(ptr) {
-            addr_of(slot)
+            let place = addr_of(slot);
+            match self.slot_types.get(ptr) {
+                Some(Type::Custom(name)) if self.parent.enums.contains_key(name) => {
+                    let raw_ty = self
+                        .value_type(ptr)
+                        .and_then(|cir_ty| self.pointee_type(cir_ty))
+                        .unwrap_or(Type::Prim(Prim::I32));
+                    Expr::Cast {
+                        expr: Box::new(place),
+                        ty: Type::Ptr {
+                            mutable,
+                            inner: Box::new(raw_ty),
+                        },
+                    }
+                }
+                _ => place,
+            }
         } else if let Some(global) = self.global_place(ptr) {
             let place = addr_of(global);
             if matches!(place, Expr::AddrOf { ref expr, .. } if matches!(**expr, Expr::Unary { op: UnaryOp::Deref, .. }))

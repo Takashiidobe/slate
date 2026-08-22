@@ -1223,6 +1223,7 @@ struct FunctionLowerer<'a, 'b> {
     slot_places: BTreeMap<String, Expr>,
     aligned_slots: BTreeSet<String>,
     slot_types: BTreeMap<String, Type>,
+    needs_alloca_layout_preservation: bool,
     member_ptrs: BTreeMap<String, MemberPtr>,
     element_ptrs: BTreeMap<String, ElementPtr>,
     block_addr_element_ptrs: BTreeMap<String, BlockAddrElementPtr>,
@@ -2539,6 +2540,13 @@ impl __SlateVaArgs {
         let param_types: Vec<&CirType> = function.params.iter().map(|(_, ty)| ty).collect();
         let body = function.body.as_ref()?;
         let entry = body.blocks.first()?;
+        let mut needs_alloca_layout_preservation = false;
+        walk_region_ops(body, &mut |op| {
+            if matches!(op, Op::PtrDiff(_)) {
+                needs_alloca_layout_preservation = true;
+            }
+            true
+        });
         let is_main = name == "main";
         let is_variadic = !is_main && function.varargs;
         let boxed_variadic = self.boxed_variadic_defs.contains(name);
@@ -2743,6 +2751,7 @@ impl __SlateVaArgs {
             slot_places: BTreeMap::new(),
             aligned_slots: BTreeSet::new(),
             slot_types: BTreeMap::new(),
+            needs_alloca_layout_preservation,
             member_ptrs: BTreeMap::new(),
             element_ptrs: BTreeMap::new(),
             block_addr_element_ptrs: BTreeMap::new(),
@@ -4081,7 +4090,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.value_types.extend(block.args.iter().cloned());
         let mut index = 0;
         while index < block.ops.len() {
-            if matches!(block.ops[index], Op::Alloca(_)) {
+            if self.needs_alloca_layout_preservation && matches!(block.ops[index], Op::Alloca(_)) {
                 let end = block.ops[index..]
                     .iter()
                     .take_while(|candidate| matches!(candidate, Op::Alloca(_)))
