@@ -184,10 +184,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     args: vec![],
                 }
             } else {
-                Expr::AddrOf {
-                    mutable: true,
-                    expr: Box::new(slot),
-                }
+                self.store_address_expr(operand)
             };
         }
         Expr::Var(sanitize_ident(operand))
