@@ -120,7 +120,7 @@ initializers reject.
 ## Adding a new `cir.*` handler
 
 1. Add or extend a C fixture reproducing the missing op (see
-   [writing-a-fixup.md](writing-a-fixup.md) for fixture conventions; the same
+   [writing a query-driven fixup](writing-a-query-driven-fixup.md) for fixture conventions; the same
    fixture-first rule applies to lowering features).
 2. Confirm it's a _lowering_ gap, not a fixup gap: `cargo run -- translate-lowered <file.c>`
    shows raw lowering output with no fixup passes applied.

@@ -28,7 +28,7 @@ before moving, dropping, or folding code they need to know things the AST
 shape alone doesn't answer - "is this expression pure," "is this the last
 read of this binding," "does this pointer alias anything else," "did this
 buffer ever get indexed." Answering those per-pass, by hand, is exactly the
-kind of pass-local walker `writing-a-fixup.md` warns against. Each fact is
+kind of pass-local walker `writing-a-query-driven-fixup.md` warns against. Each fact is
 computed once, in one dedicated module, so every pass gets the same answer
 through the same query methods on `QueryContext` (`def_use`, `effect`,
 `place`, `has_value`, `string_buffer`, ...; see the full list in

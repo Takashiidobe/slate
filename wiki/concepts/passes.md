@@ -20,7 +20,7 @@ emit-cir -> parse-cir -> load-ast -> lower(libc/unsafe) -> fixups -> generated-d
 ```
 
 For what the baseline lowerer and fixup ladder currently cover, see
-[README.md](README.md) (categorized summary) and
+[slate overview](slate-overview.md) (categorized summary) and
 
 ### parse-cir
 

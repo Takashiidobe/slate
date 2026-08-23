@@ -25,7 +25,7 @@ The ignored output is entirely under `target/`:
 The script removes splatted libraries and the UM, WinRT, and C++/WinRT include
 trees. It finishes by asking the configured CIR Clang to parse `vcruntime.h`
 and `stdio.h` for `x86_64-pc-windows-msvc`. Set `SLATE_CLANG` when the compiler
-is not at the repository default described in [README.md](README.md).
+is not at the repository default described in [slate overview](slate-overview.md).
 
 The xwin release, immutable Visual Studio package-manifest URL and digest, CRT
 version, SDK version, architecture, and target triple are constants at the top

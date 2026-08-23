@@ -17,3 +17,5 @@ diagnostics
 
 # Local Netlify folder
 .netlify
+
+.llog/

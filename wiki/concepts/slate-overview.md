@@ -168,7 +168,7 @@ translation unit and Rust target are rejected because Slate cannot express
 that distinction as a target cfg.
 
 The external pinned Microsoft CRT and UCRT header oracle used for MSVC work is
-bootstrapped under `target/`; see [msvc-sysroot.md](msvc-sysroot.md).
+bootstrapped under `target/`; see [msvc reference sysroot](msvc-reference-sysroot.md).
 
 The macOS ABI oracle uses an externally installed SDK plus pinned Apple public
 Libc and XNU sources under `target/`; see
