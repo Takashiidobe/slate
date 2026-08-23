@@ -192,6 +192,9 @@ pub enum DirectiveName {
 
 impl DirectiveName {
     fn parse(name: String) -> Self {
+        if !name.is_empty() && name.bytes().all(|byte| byte.is_ascii_digit()) {
+            return Self::Line;
+        }
         match name.as_str() {
             "" => Self::Null,
             "if" => Self::If,
