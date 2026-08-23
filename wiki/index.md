@@ -26,3 +26,4 @@
 - [builtin setjmp/longjmp lowering + selective backend re-enable](concepts/builtin-setjmp-longjmp-lowering-selective-backend-re-enable.md)
 - [predicate tokenizer no longer collapses #if conditions to opaque](concepts/predicate-tokenizer-no-longer-collapses-if-conditions-to-opaque.md)
 - [clangir function pointer const-qualifier drop bug](concepts/clangir-function-pointer-const-qualifier-drop-bug.md)
+- [libc-test dlopen companion .so harness support](concepts/libc-test-dlopen-companion-so-harness-support.md)
