@@ -1,3 +1,5 @@
+// Ignored: `# 200 "xyz" 2 3` is a GNU linemarker which isn't supported by
+// clang.
 #include "test.h"
 
 int main() {

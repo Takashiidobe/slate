@@ -46,28 +46,36 @@ directly to `cargo run -- translate`.
 | --- | --- | --- |
 | gcc-torture | `tests/fixtures.gcc-torture/` | `tests/fixtures.gcc-torture.unsupported/` (sibling dir) |
 | c-testsuite | `tests/fixtures.c-testsuite/` | `tests/fixtures.c-testsuite.unsupported/` (sibling dir) |
-| chibicc | `tests/fixtures.chibicc/supported/` | `tests/fixtures.chibicc/unsupported/` (nested bucket) |
+| chibicc | `tests/fixtures.chibicc/supported/` | `tests/fixtures.chibicc/unsupported/` (nested bucket, sibling `ignored/`) |
 | libc-test functional | `tests/fixtures.libc-test/functional/supported/` | `tests/fixtures.libc-test/functional/unsupported/` (nested bucket) |
 
 Promotion is always a `git mv` of the fixture from unsupported to supported —
 `gcc_torture_unsupported_tests_still_fail`'s failure message prints the exact
 command. Never hand-copy a fixture; `git mv` preserves history.
 
-### The `.ignored` bucket (gcc-torture only, so far)
+### The `.ignored` bucket
 
-`tests/fixtures.gcc-torture.ignored/` holds cases that are genuinely
-undefined behavior per the C standard, not a Slate lowering gap -- e.g.
-`strlen-5`, which reads past one array/struct member's declared bound into
-an adjacent sibling member by relying on incidental memory layout (C11
-6.5.6p8), unlike the struct-hack/flexible-array-member idiom (also
-technically UB pre-C99, but universally treated as a de facto supported
-contract, which Slate does support). This is not the same as "unsupported":
-`.unsupported/` is tracked work we intend to eventually fix; `.ignored/` is
-work we've decided not to chase because Slate correctly declining to
-reproduce the UB isn't a bug. No test suite scans this directory, so cases
-there don't count against `.unsupported` triage progress. Every fixture
-moved here needs a top-of-file comment explaining which standard clause
-makes it UB and why it's not the same as an idiom Slate does support.
+`tests/fixtures.gcc-torture.ignored/` (flat) and
+`tests/fixtures.chibicc/ignored/` (nested, same shape as `supported/` and
+`unsupported/`) hold cases that are not a Slate lowering gap at all -- either
+genuinely undefined behavior per the C standard, e.g. `strlen-5`, which reads
+past one array/struct member's declared bound into an adjacent sibling
+member by relying on incidental memory layout (C11 6.5.6p8), unlike the
+struct-hack/flexible-array-member idiom (also technically UB pre-C99, but
+universally treated as a de facto supported contract, which Slate does
+support); or a genuine toolchain limitation upstream of Slate entirely, e.g.
+chibicc's `include_macro`, which relies on a GCC-specific preprocessor
+whitespace-trimming behavior for macro-expanded `#include` header-names that
+clang itself (with or without CIR) doesn't implement -- reproduces with plain
+`clang -E`, before Slate's pipeline ever sees the file. This is not the same
+as "unsupported": `.unsupported/` is tracked work we intend to eventually
+fix; `.ignored/` is work we've decided not to chase because the failure
+isn't Slate's to fix. No test suite scans these directories, so cases there
+don't count against `.unsupported` triage progress. Every fixture moved here
+needs a top-of-file comment explaining why: which standard clause makes it
+UB (and why it's not the same as an idiom Slate does support), or which
+toolchain limitation is at fault and how it was confirmed to reproduce
+upstream of Slate.
 
 ## How to dig into one failing case
 
