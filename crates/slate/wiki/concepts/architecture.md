@@ -104,7 +104,7 @@ semantic contracts that Rust syntax cannot express; fact analysis
 (`src/backend/facts/`, [facts.md](facts.md)) imports that metadata without
 coupling the lowerer to the fixup fact API.
 
-**See [lowerer.md](lowerer.md) for the lowerer's internal module split** — the
+**See [lowerer internals](lowerer-internals.md) for the lowerer's internal module split** — the
 `Lowerer`/`FunctionLowerer` two-tier design, the submodule-by-concern table,
 op dispatch, and how to wire in a new `cir.*` handler.
 
@@ -123,7 +123,7 @@ unhandled op lowers to a marked fallback (a `todo!()`, an `unsafe` `libc` call,
 or a comment) and records a diagnostic instead of crashing or silently
 dropping code. Translation-unit-wide lowering state itself (globals, records,
 enums, known function signatures) lives on `Lowerer`, not `Ctx` — see
-[lowerer.md](lowerer.md).
+[lowerer internals](lowerer-internals.md).
 
 ## Pipeline shape
 
@@ -139,9 +139,9 @@ and the extension workflow.
 
 - **Lowering feature** (teach Slate to preserve more C semantics in baseline
   Rust — structs, arrays, pointer arithmetic, a new arithmetic operator, a new
-  `cir.*` op): see [lowerer.md](lowerer.md#adding-a-new-cir-handler).
+  `cir.*` op): see [lowerer internals](lowerer-internals.md#adding-a-new-cir-handler).
 - **Rust fixup** (turn already-correct baseline Rust into more idiomatic or
-  safer Rust): see [writing-a-fixup.md](writing-a-fixup.md).
+  safer Rust): see [writing a query-driven fixup](writing-a-query-driven-fixup.md).
 
 Both start from a fixture in `tests/fixtures/` and a failing differential test
 — never hand-verify output by eye. Keep baseline lowering conservative

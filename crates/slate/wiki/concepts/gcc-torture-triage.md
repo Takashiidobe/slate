@@ -3,7 +3,7 @@
 > Scope: working `slate-os0h.3.1` (triage the gcc-torture unsupported corpus
 > into focused bugs) and its children, or the equivalent triage epics for
 > `c-testsuite`, `chibicc`, and `libc-test/functional`. Read
-> [lowerer.md](lowerer.md) first if the bug turns out to be in lowering, not
+> [lowerer internals](lowerer-internals.md) first if the bug turns out to be in lowering, not
 > just test plumbing.
 
 ## The three-test pattern
@@ -83,8 +83,8 @@ upstream of Slate.
    fixups, exactly what the differential test compiles. Read this first.
 2. **`cargo run -- translate-lowered <file.c>`** — raw lowering, fixups
    skipped entirely. If a bug disappears here, it's a fixup bug
-   ([writing-a-fixup.md](writing-a-fixup.md)), not a lowering bug
-   ([lowerer.md](lowerer.md)). This is the fastest lowering-vs-fixup triage
+   ([writing a query-driven fixup](writing-a-query-driven-fixup.md)), not a lowering bug
+   ([lowerer internals](lowerer-internals.md)). This is the fastest lowering-vs-fixup triage
    step — do it before reading any lowerer code.
 3. **`cargo run -- emit-cir <file.c>`** — the generic-form CIR text the
    lowerer's parser actually consumes. If you need clang's own diagnostics

@@ -129,27 +129,32 @@ parses the generic-form CIR op-tree.
 
 **Read before making changes**
 
-- [agents/writing-a-fixup.md](agents/writing-a-fixup.md) — start here for any new
+- [wiki/concepts/writing-a-query-driven-fixup.md](wiki/concepts/writing-a-query-driven-fixup.md) — start here for any new
   or migrated rewrite: how to pick a rewrite shape and wire a new pass into
   the pipeline end to end.
-- [agents/fixups.md](agents/fixups.md) — the
+- [wiki/concepts/fixups.md](wiki/concepts/fixups.md) — the
   preferred query-driven interface for supported expression and definition
   rewrites: matcher/`EditSet` mechanics in depth.
-- [agents/facts.md](agents/facts.md) — the read-only analysis layer fixups
+- [wiki/concepts/facts.md](wiki/concepts/facts.md) — the read-only analysis layer fixups
   consume instead of re-deriving facts by hand.
-- [agents/architecture.md](agents/architecture.md) — sources, the two IRs, the
+- [wiki/concepts/architecture.md](wiki/concepts/architecture.md) — sources, the two IRs, the
   pipeline, and why CIR over LLVM IR.
-- [agents/lowerer.md](agents/lowerer.md) — the lowerer's internal module split:
+- [wiki/concepts/lowerer-internals.md](wiki/concepts/lowerer-internals.md) — the lowerer's internal module split:
   `Lowerer` vs `FunctionLowerer`, the `src/frontend/lowerer/*.rs` submodule
   map, op dispatch, and how to wire in a new `cir.*` handler. Read this before
   touching anything under `src/frontend/lowerer.rs` or `src/frontend/lowerer/`.
-- [agents/passes.md](agents/passes.md) — the pass catalog: what runs, in what order.
-- [agents/README.md](agents/README.md) — the supported-subset surface.
-- [agents/gcc-torture-triage.md](agents/gcc-torture-triage.md) — working the
+- [wiki/concepts/passes.md](wiki/concepts/passes.md) — the pass catalog: what runs, in what order.
+- [wiki/concepts/slate-overview.md](wiki/concepts/slate-overview.md) — the supported-subset surface.
+- [wiki/concepts/gcc-torture-triage.md](wiki/concepts/gcc-torture-triage.md) — working the
   gcc-torture/c-testsuite/chibicc/libc-test unsupported-corpus triage epics
   (`slate-os0h.3.1` and children): the three-test pattern, which nextest
   profile to use, how to dig into one failing case, where the compiled batch
   binary lives, and what failure signatures mean.
+- [wiki/](wiki/) — the `llog` work-log wiki: `wiki/concepts/` holds durable
+  design/decision docs (the above plus salsa-migration, libc-shim, and the
+  MSVC/macOS/Android/FreeBSD ABI oracle docs); `wiki/log/` holds point-in-time
+  entries. Use `llog search "<query>"` before re-deriving a decision that may
+  already be recorded.
 
 ## Conventions & Patterns
 

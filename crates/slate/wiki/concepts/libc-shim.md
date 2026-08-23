@@ -103,7 +103,7 @@ under `libc-shim/bits/msvc/` (`errno.h`, `signal.h`, `stddef.h`, `time.h`),
 included from the corresponding top-level header.
 
 Fixtures under `tests/fixtures/msvc/` cross-compile against `libc-shim`, and
-(when `target/msvc-sysroot` is bootstrapped, see [msvc-sysroot.md](msvc-sysroot.md))
+(when `target/msvc-sysroot` is bootstrapped, see [msvc reference sysroot](msvc-reference-sysroot.md))
 against the pinned xwin CRT/UCRT trees as a declaration/layout oracle. The
 `tests/differential.rs` fixture runner picks the target and compiler by the
 fixture's directory, so this is Clang-only verification — it does not run
