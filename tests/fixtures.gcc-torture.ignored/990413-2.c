@@ -1,3 +1,9 @@
+/* SLATE: not a Slate lowering bug -- the x87 asm here binds values with the
+   GCC "t"/"u"/"0" constraints (st(0)/st(1) stack registers), but rustc's
+   x87_reg register class is documented and enforced as clobber-only: it
+   cannot bind an input or output value even with
+   #![feature(asm_experimental_reg)]
+*/
 /* This tests for a bug in regstack that was breaking glibc's math library. */
 /* { dg-skip-if "" { ! { i?86-*-* x86_64-*-* } } } */
 
