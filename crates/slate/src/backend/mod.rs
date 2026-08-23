@@ -108,11 +108,20 @@ pub fn valid_pass_names() -> String {
 fn apply_with_logger(
     input: Program,
     _skip: &SkipSet,
-    _logger: &mut impl TraceLogger,
+    logger: &mut impl TraceLogger,
     _debug_options: DebugOptions,
 ) -> Program {
-    input
-    // let mut debug_done = false;
+    let mut program = input;
+    let mut incremental = salsa::SalsaFacts::new_empty();
+    incremental.set_program(&program);
+    let plan = {
+        let query = query::QueryContext::new(&program, &incremental);
+        let mut builder = query::ItemPlanBuilder::new();
+        builder.add_rule(&query, &query::rules::setjmp_recovery::program());
+        builder.finish()
+    };
+    plan.apply(&mut program, &incremental, logger);
+    program
     // let step_timing_threshold = std::env::var("SLATE_FIXUP_TIMING")
     //     .ok()
     //     .and_then(|millis| millis.parse().ok())

@@ -51,7 +51,9 @@ fn rewrite_setjmp_recovery(query: &QueryContext<'_>) -> QueryResult<SetjmpRecove
     let mut any_guard = false;
     for item in replacement.items.iter_mut() {
         if let Item::Fn(f) = item {
-            any_guard |= rewrite_setjmp_guards_in_body(&mut f.body, true, &mut buffers);
+            let mut locals = BTreeMap::new();
+            collect_let_bindings(&f.body, &mut locals);
+            any_guard |= rewrite_setjmp_guards_in_body(&mut f.body, true, &mut buffers, &locals);
         }
     }
     if !any_guard {
@@ -64,10 +66,12 @@ fn rewrite_setjmp_recovery(query: &QueryContext<'_>) -> QueryResult<SetjmpRecove
     }
     let mut origin_functions = BTreeSet::new();
     for item in replacement.items.iter_mut() {
-        if let Item::Fn(f) = item
-            && rewrite_longjmp_calls_in_body(&mut f.body, &buffers)
-        {
-            origin_functions.insert(f.name.clone());
+        if let Item::Fn(f) = item {
+            let mut locals = BTreeMap::new();
+            collect_let_bindings(&f.body, &mut locals);
+            if rewrite_longjmp_calls_in_body(&mut f.body, &buffers, &locals) {
+                origin_functions.insert(f.name.clone());
+            }
         }
     }
     for buffer in &buffers {
@@ -597,8 +601,18 @@ fn stmt_has_setjmp_guard(stmt: &Stmt) -> bool {
     found
 }
 
-fn setjmp_guard_shape(body: &[IndentStmt]) -> Option<(String, String, Vec<IndentStmt>)> {
-    let [let_indent, if_indent] = body else {
+fn setjmp_guard_shape(
+    body: &[IndentStmt],
+) -> Option<(&[IndentStmt], String, String, Vec<IndentStmt>)> {
+    setjmp_guard_shape_direct(body).or_else(|| setjmp_guard_shape_bool_temp(body))
+}
+
+fn setjmp_guard_shape_direct(
+    body: &[IndentStmt],
+) -> Option<(&[IndentStmt], String, String, Vec<IndentStmt>)> {
+    let prefix_len = body.len().checked_sub(2)?;
+    let (prefix, rest) = body.split_at(prefix_len);
+    let [let_indent, if_indent] = rest else {
         return None;
     };
     let Stmt::Let {
@@ -621,7 +635,60 @@ fn setjmp_guard_shape(body: &[IndentStmt]) -> Option<(String, String, Vec<Indent
     if !else_body.is_empty() || !cond_matches_binding(cond, binding_name) {
         return None;
     }
-    Some((buffer.to_string(), binding_name.clone(), then_body.clone()))
+    Some((
+        prefix,
+        buffer.to_string(),
+        binding_name.clone(),
+        then_body.clone(),
+    ))
+}
+
+fn setjmp_guard_shape_bool_temp(
+    body: &[IndentStmt],
+) -> Option<(&[IndentStmt], String, String, Vec<IndentStmt>)> {
+    let prefix_len = body.len().checked_sub(3)?;
+    let (prefix, rest) = body.split_at(prefix_len);
+    let [let_indent, cast_indent, if_indent] = rest else {
+        return None;
+    };
+    let Stmt::Let {
+        name: binding_name,
+        init: Some(init),
+        ..
+    } = &let_indent.stmt
+    else {
+        return None;
+    };
+    let buffer = setjmp_call_buffer(init)?;
+    let Stmt::Let {
+        name: cond_name,
+        init: Some(cond_init),
+        ..
+    } = &cast_indent.stmt
+    else {
+        return None;
+    };
+    if !cond_matches_binding(cond_init, binding_name) {
+        return None;
+    }
+    let Stmt::If {
+        cond,
+        then_body,
+        else_body,
+    } = &if_indent.stmt
+    else {
+        return None;
+    };
+    let matches_cond = matches!(cond, Expr::Var(name) if name.as_str() == cond_name);
+    if !else_body.is_empty() || !matches_cond {
+        return None;
+    }
+    Some((
+        prefix,
+        buffer.to_string(),
+        binding_name.clone(),
+        then_body.clone(),
+    ))
 }
 
 fn setjmp_call_buffer(expr: &Expr) -> Option<&str> {
@@ -666,7 +733,34 @@ fn resolve_address_root(expr: &Expr) -> Option<&str> {
     }
 }
 
-/// Rewrites `break`/`continue` statements in `body` that target a label not
+fn collect_let_bindings(body: &[IndentStmt], map: &mut BTreeMap<String, Expr>) {
+    for indent in body {
+        if let Stmt::Let {
+            name,
+            init: Some(init),
+            ..
+        } = &indent.stmt
+        {
+            map.insert(name.clone(), init.clone());
+        }
+        walk::nested_bodies_with_path(&indent.stmt, &mut Vec::new(), &mut |nested, _| {
+            collect_let_bindings(nested, map);
+        });
+    }
+}
+
+fn resolve_buffer_root(name: &str, locals: &BTreeMap<String, Expr>, depth: u32) -> String {
+    if depth > 32 {
+        return name.to_string();
+    }
+    if let Some(init) = locals.get(name)
+        && let Some(next) = resolve_address_root(init)
+    {
+        return resolve_buffer_root(next, locals, depth + 1);
+    }
+    name.to_string()
+}
+
 /// opened by a loop within `body` itself into `return <code>;`, so the
 /// closure can carry the jump out as a signal for the caller to perform
 /// after `catch_unwind` returns (a `break`/`continue` inside a closure
@@ -816,12 +910,13 @@ fn rewrite_setjmp_guards_in_body(
     body: &mut Vec<IndentStmt>,
     is_function_top_level: bool,
     buffers: &mut BTreeSet<String>,
+    locals: &BTreeMap<String, Expr>,
 ) -> bool {
     let mut changed = false;
     for indent in body.iter_mut() {
         let mut path = Vec::new();
         walk::nested_body_vecs_mut_with_path(&mut indent.stmt, &mut path, &mut |nested, _| {
-            changed |= rewrite_setjmp_guards_in_body(nested, false, buffers);
+            changed |= rewrite_setjmp_guards_in_body(nested, false, buffers, locals);
         });
     }
 
@@ -835,9 +930,12 @@ fn rewrite_setjmp_guards_in_body(
         let Stmt::Scope { body: guard_body } = &body[guard_index].stmt else {
             unreachable!()
         };
-        let Some((buffer, binding_name, recovery_body)) = setjmp_guard_shape(guard_body) else {
+        let Some((prefix, buffer, binding_name, recovery_body)) = setjmp_guard_shape(guard_body)
+        else {
             unreachable!()
         };
+        let prefix = prefix.to_vec();
+        let buffer = resolve_buffer_root(&buffer, locals, 0);
 
         let mut closure_body = body[guard_index + 1..].to_vec();
         let mut strip_trailing_return = false;
@@ -858,6 +956,7 @@ fn rewrite_setjmp_guards_in_body(
         }
 
         body.truncate(guard_index);
+        body.extend(prefix);
         let payload_name = payload_type_name(&buffer);
         buffers.insert(buffer);
 
@@ -981,22 +1080,30 @@ fn rewrite_setjmp_guards_in_body(
     changed
 }
 
-fn rewrite_longjmp_calls_in_body(body: &mut [IndentStmt], buffers: &BTreeSet<String>) -> bool {
+fn rewrite_longjmp_calls_in_body(
+    body: &mut [IndentStmt],
+    buffers: &BTreeSet<String>,
+    locals: &BTreeMap<String, Expr>,
+) -> bool {
     let mut changed = false;
     for indent in body.iter_mut() {
-        if let Some(new_stmt) = longjmp_rewrite(&indent.stmt, buffers) {
+        if let Some(new_stmt) = longjmp_rewrite(&indent.stmt, buffers, locals) {
             indent.stmt = new_stmt;
             changed = true;
         }
         let mut path = Vec::new();
         walk::nested_body_vecs_mut_with_path(&mut indent.stmt, &mut path, &mut |nested, _| {
-            changed |= rewrite_longjmp_calls_in_body(nested, buffers);
+            changed |= rewrite_longjmp_calls_in_body(nested, buffers, locals);
         });
     }
     changed
 }
 
-fn longjmp_rewrite(stmt: &Stmt, buffers: &BTreeSet<String>) -> Option<Stmt> {
+fn longjmp_rewrite(
+    stmt: &Stmt,
+    buffers: &BTreeSet<String>,
+    locals: &BTreeMap<String, Expr>,
+) -> Option<Stmt> {
     let Stmt::Expr(Expr::Unsafe(block)) = stmt else {
         return None;
     };
@@ -1013,13 +1120,14 @@ fn longjmp_rewrite(stmt: &Stmt, buffers: &BTreeSet<String>) -> Option<Stmt> {
         return None;
     };
     let buffer = resolve_address_root(buf_arg)?;
-    if !buffers.contains(buffer) {
+    let buffer = resolve_buffer_root(buffer, locals, 0);
+    if !buffers.contains(&buffer) {
         return None;
     }
     Some(Stmt::Expr(Expr::Call {
         func: Box::new(std_path(&["std", "panic", "panic_any"])),
         args: vec![Expr::StructLit {
-            name: payload_type_name(buffer),
+            name: payload_type_name(&buffer),
             fields: vec![("value".to_string(), val_arg.clone())],
         }],
         binding: CallBinding::Generated,

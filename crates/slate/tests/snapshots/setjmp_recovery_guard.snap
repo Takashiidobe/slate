@@ -48,7 +48,7 @@ fn inner_check(arg2: i32) {
         if _v2 {
             let _v3: *mut __slate_jmp_buf_tag = std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
             let _v4: i32 = 1;
-            unsafe { longjmp(_v3 as *mut __slate_jmp_buf_tag, _v4 as i32) };
+            std::panic::panic_any(__SlateJmpPayload_env { value: _v4 as i32 });
         }
     }
     return;
@@ -59,25 +59,27 @@ fn run_case(arg0: i32, arg1: i32) {
     let mut should_fail: i32 = 0;
     id = arg0;
     should_fail = arg1;
-    {
-        let _v0: *mut __slate_jmp_buf_tag = std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
-        let _v1: i32 = unsafe { setjmp(_v0 as *mut __slate_jmp_buf_tag) };
-        let _v2: bool = _v1 != 0;
-        if _v2 {
+let _v0: *mut __slate_jmp_buf_tag = std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
+    let __sj__v1 = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        let _v4: i32 = should_fail;
+        let _v5: bool = _v4 != 0;
+        let _v6: bool = !_v5;
+        let _v7: i32 = _v6 as i32;
+        inner_check(_v7);
+        let _v8: *mut i8 = b"PASS: case %d\n\0".as_ptr() as *mut i8;
+        let _v9: i32 = id;
+        let _v10: i32 = unsafe { printf(_v8 as *const i8, _v9) };
+}));
+    match __sj__v1 {
+        Ok(_) => {
+        }
+        Err(__sj_payload__v1) => {
+                let _v1: i32 = match __sj_payload__v1.downcast::<__SlateJmpPayload_env>() { Ok(__sj_p) => __sj_p.value, Err(__sj_other) => std::panic::resume_unwind(__sj_other) };
             let _v3: *mut i8 = b"case\0".as_ptr() as *mut i8;
             record_failure(_v3);
             return;
         }
     }
-    let _v4: i32 = should_fail;
-    let _v5: bool = _v4 != 0;
-    let _v6: bool = !_v5;
-    let _v7: i32 = _v6 as i32;
-    inner_check(_v7);
-    let _v8: *mut i8 = b"PASS: case %d\n\0".as_ptr() as *mut i8;
-    let _v9: i32 = id;
-    let _v10: i32 = unsafe { printf(_v8 as *const i8, _v9) };
-    return;
 }
 
 fn main() {
@@ -97,22 +99,25 @@ fn main() {
             }
             '__continue0: {
                 {
-                    {
-                        let _v5: *mut __slate_jmp_buf_tag = std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
-                        let _v6: i32 = unsafe { setjmp(_v5 as *mut __slate_jmp_buf_tag) };
-                        let _v7: bool = _v6 != 0;
-                        if _v7 {
-                            let _v8: *mut i8 = b"loop\0".as_ptr() as *mut i8;
-                            record_failure(_v8);
-                            break '__continue0;
+                    let _v5: *mut __slate_jmp_buf_tag = std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
+                        let __sj__v6 = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+    let _v9: i32 = i;
+    let _v10: i32 = i;
+    let _v11: i32 = 2;
+    let _v12: bool = _v10 == _v11;
+    let _v13: i32 = _v12 as i32;
+    run_case(_v9, _v13);
+}));
+                        match __sj__v6 {
+                            Ok(_) => {
+                            }
+                            Err(__sj_payload__v6) => {
+                                    let _v6: i32 = match __sj_payload__v6.downcast::<__SlateJmpPayload_env>() { Ok(__sj_p) => __sj_p.value, Err(__sj_other) => std::panic::resume_unwind(__sj_other) };
+                                let _v8: *mut i8 = b"loop\0".as_ptr() as *mut i8;
+                                record_failure(_v8);
+                                break '__continue0;
+                            }
                         }
-                    }
-                    let _v9: i32 = i;
-                    let _v10: i32 = i;
-                    let _v11: i32 = 2;
-                    let _v12: bool = _v10 == _v11;
-                    let _v13: i32 = _v12 as i32;
-                    run_case(_v9, _v13);
                 }
             }
             let _v14: i32 = i;
@@ -127,4 +132,8 @@ fn main() {
     __retval = _v19;
     let _v20: i32 = __retval;
     std::process::exit(_v20 as i32);
+}
+
+struct __SlateJmpPayload_env {
+    value: i32,
 }

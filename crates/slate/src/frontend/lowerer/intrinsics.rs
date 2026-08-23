@@ -290,7 +290,23 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_eh_setjmp(&mut self, op: &inst::EhSetjmp) {
-        self.materialize_expr(&op.res, Expr::Value(RustValue::I64(0)), Some(&op.res_ty));
+        let env = self.operand_expr(&op.env);
+        let call = Self::unsafe_expr(Expr::Call {
+            func: Box::new(Expr::Var("setjmp".into())),
+            args: vec![env],
+            binding: CallBinding::Generated,
+        });
+        self.materialize_expr(&op.res, call, Some(&op.res_ty));
+    }
+
+    pub(super) fn lower_eh_longjmp(&mut self, op: &inst::EhLongjmp) {
+        let env = self.operand_expr(&op.env);
+        let call = Self::unsafe_expr(Expr::Call {
+            func: Box::new(Expr::Var("longjmp".into())),
+            args: vec![env, Expr::Value(RustValue::I64(1))],
+            binding: CallBinding::Generated,
+        });
+        self.push_stmt(Stmt::Expr(call));
     }
 
     pub(super) fn lower_unsupported_value(
