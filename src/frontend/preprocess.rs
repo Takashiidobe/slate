@@ -1624,9 +1624,10 @@ enum Tok {
     Bang,
     And,
     Or,
+    Other,
 }
 
-fn tokenize(s: &str) -> Option<Vec<Tok>> {
+fn tokenize(s: &str) -> Vec<(Tok, usize, usize)> {
     let bytes = s.as_bytes();
     let mut toks = Vec::new();
     let mut i = 0;
@@ -1635,23 +1636,23 @@ fn tokenize(s: &str) -> Option<Vec<Tok>> {
         match b {
             b' ' | b'\t' => i += 1,
             b'(' => {
-                toks.push(Tok::LParen);
+                toks.push((Tok::LParen, i, i + 1));
                 i += 1;
             }
             b')' => {
-                toks.push(Tok::RParen);
+                toks.push((Tok::RParen, i, i + 1));
                 i += 1;
             }
-            b'!' => {
-                toks.push(Tok::Bang);
+            b'!' if bytes.get(i + 1) != Some(&b'=') => {
+                toks.push((Tok::Bang, i, i + 1));
                 i += 1;
             }
             b'&' if bytes.get(i + 1) == Some(&b'&') => {
-                toks.push(Tok::And);
+                toks.push((Tok::And, i, i + 2));
                 i += 2;
             }
             b'|' if bytes.get(i + 1) == Some(&b'|') => {
-                toks.push(Tok::Or);
+                toks.push((Tok::Or, i, i + 2));
                 i += 2;
             }
             b'_' | b'a'..=b'z' | b'A'..=b'Z' => {
@@ -1659,25 +1660,30 @@ fn tokenize(s: &str) -> Option<Vec<Tok>> {
                 while i < bytes.len() && (bytes[i] == b'_' || bytes[i].is_ascii_alphanumeric()) {
                     i += 1;
                 }
-                toks.push(Tok::Ident(s[start..i].to_string()));
+                toks.push((Tok::Ident(s[start..i].to_string()), start, i));
             }
-            _ => return None,
+            _ => {
+                let start = i;
+                i += 1;
+                toks.push((Tok::Other, start, i));
+            }
         }
     }
-    Some(toks)
+    toks
 }
 
-struct Parser {
-    toks: Vec<Tok>,
+struct Parser<'a> {
+    toks: Vec<(Tok, usize, usize)>,
     pos: usize,
+    src: &'a str,
 }
 
-impl Parser {
+impl<'a> Parser<'a> {
     fn peek(&self) -> Option<&Tok> {
-        self.toks.get(self.pos)
+        self.toks.get(self.pos).map(|(tok, ..)| tok)
     }
 
-    fn bump(&mut self) -> Option<Tok> {
+    fn bump(&mut self) -> Option<(Tok, usize, usize)> {
         let tok = self.toks.get(self.pos).cloned();
         if tok.is_some() {
             self.pos += 1;
@@ -1720,34 +1726,64 @@ impl Parser {
     }
 
     fn parse_primary(&mut self) -> Option<PredExpr> {
-        match self.bump()? {
+        match self.peek()? {
             Tok::LParen => {
+                self.bump();
                 let inner = self.parse_or()?;
-                match self.bump()? {
+                match self.bump()?.0 {
                     Tok::RParen => Some(inner),
                     _ => None,
                 }
             }
             Tok::Ident(name) if name == "defined" => {
+                self.bump();
                 if self.peek() == Some(&Tok::LParen) {
                     self.bump();
-                    let name = match self.bump()? {
+                    let name = match self.bump()?.0 {
                         Tok::Ident(n) => n,
                         _ => return None,
                     };
-                    match self.bump()? {
+                    match self.bump()?.0 {
                         Tok::RParen => Some(PredExpr::Defined(name)),
                         _ => None,
                     }
                 } else {
-                    match self.bump()? {
+                    match self.bump()?.0 {
                         Tok::Ident(n) => Some(PredExpr::Defined(n)),
                         _ => None,
                     }
                 }
             }
-            _ => None,
+            _ => self.parse_opaque_atom(),
         }
+    }
+
+    fn parse_opaque_atom(&mut self) -> Option<PredExpr> {
+        let &(_, start, mut end) = self.toks.get(self.pos)?;
+        let mut depth = 0usize;
+        while let Some((tok, _, tend)) = self.toks.get(self.pos) {
+            match tok {
+                Tok::LParen => {
+                    depth += 1;
+                    end = *tend;
+                    self.pos += 1;
+                }
+                Tok::RParen => {
+                    if depth == 0 {
+                        break;
+                    }
+                    depth -= 1;
+                    end = *tend;
+                    self.pos += 1;
+                }
+                Tok::And | Tok::Or if depth == 0 => break,
+                _ => {
+                    end = *tend;
+                    self.pos += 1;
+                }
+            }
+        }
+        Some(PredExpr::Opaque(self.src[start..end].trim().to_string()))
     }
 }
 
@@ -1758,10 +1794,15 @@ fn parse_predicate(raw: &str) -> PredExpr {
         _ => {}
     }
     let opaque = || PredExpr::Opaque(raw.trim().to_string());
-    let Some(toks) = tokenize(raw) else {
+    let toks = tokenize(raw);
+    if toks.is_empty() {
         return opaque();
+    }
+    let mut parser = Parser {
+        toks,
+        pos: 0,
+        src: raw,
     };
-    let mut parser = Parser { toks, pos: 0 };
     match parser.parse_or() {
         Some(expr) if parser.pos == parser.toks.len() => expr,
         _ => opaque(),

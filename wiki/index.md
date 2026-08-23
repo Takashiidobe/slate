@@ -24,3 +24,5 @@
 - [long-double-f80](concepts/long-double-f80.md)
 - [setjmp/longjmp lowering](concepts/setjmp-longjmp-lowering.md)
 - [builtin setjmp/longjmp lowering + selective backend re-enable](concepts/builtin-setjmp-longjmp-lowering-selective-backend-re-enable.md)
+- [predicate tokenizer no longer collapses #if conditions to opaque](concepts/predicate-tokenizer-no-longer-collapses-if-conditions-to-opaque.md)
+- [clangir function pointer const-qualifier drop bug](concepts/clangir-function-pointer-const-qualifier-drop-bug.md)
