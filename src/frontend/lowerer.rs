@@ -1402,6 +1402,7 @@ struct FunctionLowerer<'a, 'b> {
     dispatch: Option<DispatchCtx>,
     hoisting_allocas: bool,
     hoisted: BTreeSet<String>,
+    resolved_bi_allocas: BTreeSet<String>,
     declared_local_names: BTreeSet<String>,
     forward_allocas: BTreeSet<String>,
     forward_values: BTreeMap<String, Expr>,
@@ -3025,6 +3026,7 @@ impl __SlateVaArgs {
             dispatch: None,
             hoisting_allocas: false,
             hoisted: BTreeSet::new(),
+            resolved_bi_allocas: BTreeSet::new(),
             declared_local_names: declared_param_names,
             forward_allocas: forwardable_temp_allocas(op.regions.first()?),
             forward_values: BTreeMap::new(),
@@ -3067,6 +3069,7 @@ impl __SlateVaArgs {
             let returns_value = !matches!(ret, None | Some(Type::Unit));
             f.lower_dispatch(body, returns_value);
         } else {
+            f.lower_constant_size_bi_alloca_group(entry);
             f.lower_block(entry);
         }
         if diverges && matches!(f.body.last().map(|s| &s.stmt), Some(Stmt::Return(None))) {
