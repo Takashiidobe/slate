@@ -360,3 +360,33 @@ FunctionId)` key instead of its own `#[salsa::input]`; its body, base-walk
   backdates the rest") at the cost of that cheap check scaling with program
   size on every edit. `slate-kby1.6.10` is the sanity check that this
   tradeoff doesn't regress on a realistic-sized fixture.
+
+## Query-performance patterns
+
+Recurring hotspot shape found while chasing rewrite/compile-time performance
+(2026-08-09, `wiki/log/2026-08-09-00-00.md`): a fact lookup implemented as
+`some_facts(db).iter().find(|f| f.key == target)` over a salsa-tracked `Vec`
+looks cheap in isolation but is O(n) per call, and gets called from inside
+another loop over items — the actual complexity is quadratic or worse. The
+fix is consistently the same shape, not a one-off: add a second
+`#[salsa::tracked(returns(ref))]` query that returns a `BTreeMap<Key, Fact>`
+built from the first (`places_by_path`, `control_flow_by_key`,
+`all_binding_refs` in `src/backend/salsa.rs`/`src/backend/query/context.rs`
+are examples), and have callers key into the map instead of scanning the
+`Vec`. Salsa memoizes the map build itself, so this only costs a rebuild when
+the underlying facts actually change, not per lookup.
+
+Two more hotspots worth knowing about if compile-time regresses again:
+- **Clone-in-a-loop**: `expr_sites().into_iter()` (an owned, cloned
+  iteration) inside a per-binding loop was polynomial; switching to
+  `.iter()` and only cloning the one matched result fixed it (`65ab6bf3`).
+  When a query result only needs to be read, not owned, prefer borrowing
+  over `.into_iter()`/`.clone()` on a salsa-tracked collection.
+- **Unconditional salsa DB construction**: some fixup passes don't touch the
+  query layer at all; `apply_with_logger` (`src/backend/mod.rs`) skips
+  constructing a fresh `FixupDb`/`ProgramInput` for those passes rather than
+  paying setup cost every pass regardless of whether it's needed.
+
+Also switched the process allocator to `mimalloc` (`#[global_allocator]` in
+`src/main.rs`) alongside the def-use indexing work — reported as part of a
+~25% overall compile-time improvement combined with the indexing changes.

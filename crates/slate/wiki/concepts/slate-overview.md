@@ -52,7 +52,7 @@ C-only. To inspect raw lowered Rust before fixups, use
 Tracked as beads (`bd list --status=open`), not maintained here, so this list
 doesn't rot. As of this writing, open gaps are mostly about widening the
 idiomatization ladder rather than baseline C coverage — e.g. fully
-target-complete scalar modeling, `setjmp`/`longjmp`, remaining printf
+target-complete scalar modeling, remaining printf
 edge cases (precision/width forms), further libc idiomatization (`fgets`/
 `fread`/`fwrite` on owned `FILE` handles), consumption of allocation metadata
 by the fact passes, and `enumerate()` recovery for slice loops with a live
