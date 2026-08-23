@@ -581,6 +581,7 @@ pub struct RunConfig {
     pub compare_stderr: bool,
     pub timeout_seconds: Option<u64>,
     pub c_args: Vec<String>,
+    pub extra_files: Vec<PathBuf>,
 }
 
 /// A cargo bin target name derived from a case name (alnum/underscore only).
@@ -639,6 +640,16 @@ pub fn compare_batch_with_jobs(
             }
             std::fs::create_dir_all(&run_dir)
                 .map_err(|e| format!("create {}: {e}", run_dir.display()))?;
+            for extra in &case.config.extra_files {
+                let name = extra
+                    .file_name()
+                    .ok_or_else(|| format!("extra file has no name: {}", extra.display()))?;
+                let dest_dir = run_dir.join("src/functional");
+                std::fs::create_dir_all(&dest_dir)
+                    .map_err(|e| format!("create {}: {e}", dest_dir.display()))?;
+                std::fs::copy(extra, dest_dir.join(name))
+                    .map_err(|e| format!("stage {}: {e}", extra.display()))?;
+            }
             compare_runs(
                 &run_with_config(&c_bin, &case.config, &run_dir)?,
                 &run_with_config(&rs_bin, &case.config, &run_dir)?,

@@ -53,12 +53,17 @@ fn run_cases(group: &str, dir: &Path) -> Vec<(String, Result<(), String>)> {
 
     let translated = support::parallel_map_with_jobs(&cases, jobs, |(name, path)| {
         let generated = work.join(format!("{name}.generated.rs"));
+        let dso = name
+            .strip_suffix("_dlopen")
+            .map(|stem| path.with_file_name(format!("{stem}_dso.so")));
+        let extra_files = dso.filter(|p| p.is_file()).into_iter().collect();
         support::translate(path, &generated).map(|()| support::Case {
             name: name.clone(),
             c_src: path.clone(),
             rs_src: generated,
             config: support::RunConfig {
                 timeout_seconds: Some(5),
+                extra_files,
                 ..support::RunConfig::default()
             },
         })

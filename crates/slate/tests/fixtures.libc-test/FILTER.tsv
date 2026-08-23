@@ -5,7 +5,6 @@ functional/clock_gettime	admitted
 functional/crypt	compile-failed
 functional/dirname	admitted
 functional/dlopen	compile-failed
-functional/dlopen_dso	compile-failed
 functional/env	admitted
 functional/fcntl	admitted
 functional/fdopen	admitted
@@ -63,10 +62,8 @@ functional/tgmath	admitted
 functional/time	admitted
 functional/tls_align	compile-failed
 functional/tls_align_dlopen	admitted
-functional/tls_align_dso	compile-failed
 functional/tls_init	admitted
-functional/tls_init_dlopen	run-crashed:139
-functional/tls_init_dso	compile-failed
+functional/tls_init_dlopen	admitted
 functional/tls_local_exec	admitted
 functional/udiv	admitted
 functional/ungetc	admitted

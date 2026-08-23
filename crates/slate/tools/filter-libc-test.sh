@@ -56,8 +56,32 @@ done
 # regardless of where in main.c's own text a conditional
 # `#ifndef _GNU_SOURCE` guard would otherwise have appeared. Tests that need a
 # different common/*.c helper (rand.c, vmfill.c, fdfill.c, ...), argv, threads,
-# or a companion .so (the dlopen*.mk cases) don't link against this reduced
-# harness and are rejected here rather than vendored half-working.
+# or path.c's argv0-relative t_pathrel (dlopen.c itself) don't link against
+# this reduced harness and are rejected here rather than vendored
+# half-working. Cases that dlopen() a companion .so by a hardcoded
+# "src/functional/<dso>.so" path (tls_align_dlopen, tls_init_dlopen) get that
+# .so built and staged below instead.
+
+# A <name>.mk with an empty `$(N).BINS:=` and a non-empty `$(N).LIBS:=` is a
+# companion shared library upstream builds for a sibling *_dlopen case
+# (tls_align_dso.c, tls_init_dso.c, dlopen_dso.c), not a standalone test --
+# it has no main and must never be probed as its own case.
+is_dso_only_case() {
+    local mk="$libc_test_source/src/functional/$1.mk"
+    [[ -f "$mk" ]] || return 1
+    grep -qE '^\$\(N\)\.BINS:=[[:space:]]*$' "$mk" && grep -qE '^\$\(N\)\.LIBS:=' "$mk"
+}
+
+# *_dlopen.mk declares its companion .so as a build prerequisite, e.g.
+#   $(B)/$(N).err: $(B)/$(D)/tls_align_dso.so
+# Pull the "<stem>.so" stem out of that line so the case below can build and
+# stage the real shared object.
+dso_stem_for_case() {
+    local mk="$libc_test_source/src/functional/$1.mk"
+    [[ -f "$mk" ]] || return 0
+    grep -oE '\$\(D\)/[A-Za-z0-9_]+\.so' "$mk" | head -n1 | sed -E 's#.*/##; s/\.so$//'
+}
+
 filter_libc_test_functional_case() {
     local source=$1
     local name
@@ -87,8 +111,33 @@ filter_libc_test_functional_case() {
         return
     fi
 
+    # Build and stage the companion .so, if this case dlopen()s one, into a
+    # scratch dir shaped like the "src/functional/<dso>.so" path the test
+    # source hardcodes, so the native probe actually exercises real dynamic
+    # loading instead of a dlopen() failure that happens to match on both
+    # sides.
+    local dso_stem dso_source run_dir=""
+    dso_stem=$(dso_stem_for_case "$name")
+    if [[ -n "$dso_stem" ]]; then
+        dso_source="$libc_test_source/src/functional/$dso_stem.c"
+        if [[ -f "$dso_source" ]]; then
+            run_dir="$libc_test_work/rundir/$name"
+            mkdir -p "$run_dir/src/functional"
+            set +e
+            "$libc_test_clang" -O0 -std=c23 -shared -fPIC -o \
+                "$run_dir/src/functional/$dso_stem.so" "$dso_source" >/dev/null 2>&1
+            result=$?
+            set -e
+            [[ $result -eq 0 ]] || run_dir=""
+        fi
+    fi
+
     set +e
-    timeout "$libc_test_timeout" "$binary" >/dev/null 2>&1
+    if [[ -n "$run_dir" ]]; then
+        (cd "$run_dir" && timeout "$libc_test_timeout" "$binary" >/dev/null 2>&1)
+    else
+        timeout "$libc_test_timeout" "$binary" >/dev/null 2>&1
+    fi
     result=$?
     set -e
     if [[ $result -eq 124 ]]; then
@@ -99,15 +148,22 @@ filter_libc_test_functional_case() {
         printf 'functional/%s\trun-crashed:%s\n' "$name" "$result" >"$status"
     else
         printf 'functional/%s\tadmitted\n' "$name" >"$status"
+        if [[ -n "$run_dir" ]]; then
+            cp "$run_dir/src/functional/$dso_stem.so" "$libc_test_output/functional/$dso_stem.so"
+        fi
     fi
 }
 
 export libc_test_source libc_test_output libc_test_clang libc_test_timeout libc_test_work
-export -f filter_libc_test_functional_case
+export -f is_dso_only_case dso_stem_for_case filter_libc_test_functional_case
 
 find "$libc_test_source/src/functional" -maxdepth 1 -type f -name '*.c' -print0 \
     | sort -z \
-    | xargs -0 -r -P "$libc_test_jobs" -n 1 bash -c 'filter_libc_test_functional_case "$1"' _
+    | xargs -0 -r -P "$libc_test_jobs" -n 1 bash -c '
+        name=$(basename "$1" .c)
+        is_dso_only_case "$name" && exit 0
+        filter_libc_test_functional_case "$1"
+    ' _
 
 find "$libc_test_work/status" -type f -name '*.tsv' -exec sh -c 'cat "$@"' _ {} + \
     | sort >"$libc_test_output/FILTER.tsv"
