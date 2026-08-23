@@ -383,11 +383,116 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
+    pub(super) fn lower_constant_size_bi_alloca_group(&mut self, entry: &inst::Block) {
+        if !self.needs_alloca_layout_preservation {
+            return;
+        }
+        let mut const_ints: HashMap<String, i128> = HashMap::new();
+        let mut candidates: Vec<(inst::Alloca, u64)> = Vec::new();
+        for op in &entry.ops {
+            match op {
+                Op::Const(c) => {
+                    if let Some(value) = self.parent.resolve_attr(&c.value).as_int() {
+                        const_ints.insert(c.res.clone(), value);
+                    }
+                }
+                Op::Alloca(a) if a.name == "bi_alloca" => {
+                    if let Some(size_id) = &a.dyn_alloc_size
+                        && let Some(&value) = const_ints.get(size_id)
+                        && let Ok(size) = u64::try_from(value)
+                        && size > 0
+                    {
+                        candidates.push((a.clone(), size));
+                    }
+                }
+                _ => {}
+            }
+        }
+        if candidates.is_empty() {
+            return;
+        }
+
+        let frame_index = self.parent.generated_alloca_frames.len();
+        let frame_name = format!("__SlateAllocaFrame{frame_index}");
+        let frame_var = self.unique_local_name(format!("__slate_alloca_frame{frame_index}"));
+        let mut fields = Vec::with_capacity(candidates.len());
+        let mut init = Vec::with_capacity(candidates.len());
+
+        for (field_index, (op, size)) in candidates.iter().rev().enumerate() {
+            let elem_ty = self
+                .pointee_type(&op.addr_ty)
+                .unwrap_or(Type::Prim(Prim::U8));
+            let array_ty = Type::Array {
+                elem: Box::new(elem_ty),
+                len: *size,
+            };
+            let alignment = u32::try_from(op.alignment)
+                .ok()
+                .unwrap_or_else(|| type_alignment(&array_ty));
+            let over_aligned = alignment > type_alignment(&array_ty);
+            let (field_ty, field_init) = if over_aligned {
+                (
+                    aligned_type(array_ty.clone(), alignment),
+                    aligned_value(self.parent.default_value_expr(&array_ty), alignment),
+                )
+            } else {
+                (array_ty.clone(), self.parent.default_value_expr(&array_ty))
+            };
+            fields.push(field_ty);
+            init.push(field_init);
+
+            let mut field_expr = Expr::TupleField {
+                base: Box::new(Expr::Var(frame_var.clone().into())),
+                index: field_index,
+            };
+            if over_aligned {
+                field_expr = Expr::Unary {
+                    op: UnaryOp::Deref,
+                    expr: Box::new(field_expr),
+                };
+            }
+            self.values.insert(
+                op.addr.clone(),
+                Val::Expr(Expr::MethodCall {
+                    recv: Box::new(field_expr),
+                    method: "as_mut_ptr".into(),
+                    args: Vec::new(),
+                }),
+            );
+            self.resolved_bi_allocas.insert(op.addr.clone());
+        }
+
+        self.parent.generated_alloca_frames.push(StructDef {
+            attrs: vec![RustAttr::Repr(vec![Repr::C])],
+            vis: Visibility::Private,
+            field_vis: Visibility::Private,
+            generics: Vec::new(),
+            name: frame_name.clone(),
+            fields: StructFields::Tuple(fields),
+        });
+        self.push_stmt(Stmt::Let {
+            name: frame_var,
+            mutable: true,
+            ty: Some(Type::Custom(frame_name)),
+            init: Some(Expr::TupleStructLit {
+                name: self
+                    .parent
+                    .generated_alloca_frames
+                    .last()
+                    .expect("generated alloca frame")
+                    .name
+                    .clone(),
+                fields: init,
+            }),
+        });
+    }
+
     pub(super) fn lower_alloca(&mut self, op: &inst::Alloca) {
         let result = &op.addr;
         let cir_ty = &op.addr_ty;
-        // a forwarded compiler temp carries one SSA value: its single store
-        // records the value and its single load reads it back, so no local.
+        if self.resolved_bi_allocas.contains(result) {
+            return;
+        }
         if self.forward_allocas.contains(result) {
             if let Some(ty) = self.pointee_type(cir_ty) {
                 self.slot_types.insert(result.clone(), ty);
