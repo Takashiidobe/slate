@@ -129,6 +129,11 @@ parses the generic-form CIR op-tree.
 
 **Read before making changes**
 
+- [wiki/](wiki/) — the `llog` wiki: `wiki/concepts/` holds durable
+  design/decision docs `wiki/log/` holds point-in-time
+  entries. Use `llog search "<query>"` before re-deriving a decision that may
+  already be recorded, **always** write a log with `llog new` for changes
+  and especially decisions made. No more than 30 lines per log entry.
 - [wiki/concepts/writing-a-query-driven-fixup.md](wiki/concepts/writing-a-query-driven-fixup.md) — start here for any new
   or migrated rewrite: how to pick a rewrite shape and wire a new pass into
   the pipeline end to end.
@@ -150,11 +155,6 @@ parses the generic-form CIR op-tree.
   (`slate-os0h.3.1` and children): the three-test pattern, which nextest
   profile to use, how to dig into one failing case, where the compiled batch
   binary lives, and what failure signatures mean.
-- [wiki/](wiki/) — the `llog` work-log wiki: `wiki/concepts/` holds durable
-  design/decision docs (the above plus salsa-migration, libc-shim, and the
-  MSVC/macOS/Android/FreeBSD ABI oracle docs); `wiki/log/` holds point-in-time
-  entries. Use `llog search "<query>"` before re-deriving a decision that may
-  already be recorded.
 
 ## Conventions & Patterns
 

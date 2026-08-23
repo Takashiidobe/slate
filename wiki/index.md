@@ -23,3 +23,4 @@
 - [va_list lowering](concepts/va-list-lowering.md)
 - [long-double-f80](concepts/long-double-f80.md)
 - [setjmp/longjmp lowering](concepts/setjmp-longjmp-lowering.md)
+- [builtin setjmp/longjmp lowering + selective backend re-enable](concepts/builtin-setjmp-longjmp-lowering-selective-backend-re-enable.md)
