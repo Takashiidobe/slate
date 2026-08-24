@@ -17,7 +17,8 @@
 #define __NEED_wint_t
 #define __NEED_wctype_t
 #if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
-    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||  \
+    defined(__SLATE_LIBC_BIONIC)
 #define __NEED_locale_t
 #endif
 #define __NEED_wctrans_t
@@ -46,7 +47,8 @@ wctrans_t wctrans(const char *);
 wctype_t  wctype(const char *);
 
 #if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
-    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||  \
+    defined(__SLATE_LIBC_BIONIC)
 int       iswalnum_l(wint_t, locale_t);
 int       iswalpha_l(wint_t, locale_t);
 int       iswblank_l(wint_t, locale_t);

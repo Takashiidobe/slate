@@ -21,6 +21,10 @@
 #define __NEED_wchar_t
 #endif
 
+#if defined(__SLATE_LIBC_BIONIC)
+#define __NEED_off_t
+#endif
+
 #define __NEED_NULL
 #define __NEED_va_list
 #include <bits/types.h>
@@ -68,6 +72,16 @@ extern FILE *__stderrp;
 #define FILENAME_MAX 1024
 #define TMP_MAX      308915776
 #define L_tmpnam     1024
+#elif defined(__SLATE_LIBC_BIONIC)
+typedef off_t fpos_t;
+
+extern FILE *const stdin;
+extern FILE *const stdout;
+extern FILE *const stderr;
+
+#define stdin  (stdin)
+#define stdout (stdout)
+#define stderr (stderr)
 #else
 typedef union _G_fpos64_t {
   char      __opaque[16];

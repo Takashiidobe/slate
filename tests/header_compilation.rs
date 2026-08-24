@@ -14,6 +14,17 @@ fn bionic_headers() -> Vec<String> {
         .collect()
 }
 
+fn bionic_stdio_locale_headers() -> Vec<String> {
+    let manifest =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("libc-shim/bionic-stdio-locale-headers.txt");
+    fs::read_to_string(manifest)
+        .expect("read Bionic stdio/locale header manifest")
+        .lines()
+        .filter(|line| !line.is_empty())
+        .map(str::to_string)
+        .collect()
+}
+
 fn msvc_headers() -> Vec<String> {
     let manifest = Path::new(env!("CARGO_MANIFEST_DIR")).join("libc-shim/msvc-basic-headers.txt");
     fs::read_to_string(manifest)
@@ -66,6 +77,20 @@ fn bionic_basic_header_manifest_compiles_for_64_bit_targets() {
         let source = format!(
             "{includes}\n_Static_assert(sizeof(wchar_t) == 4, \"wchar_t\");\n_Static_assert(__SLATE_ANDROID_API__ == 21, \"API\");\nint main(void) {{ return 0; }}\n"
         );
+        compile_test_program(&config, &source).unwrap();
+    }
+}
+
+#[test]
+fn bionic_stdio_locale_header_manifest_compiles_for_64_bit_targets() {
+    let headers = bionic_stdio_locale_headers();
+    for arch in [Architecture::Aarch64, Architecture::X86_64] {
+        let config = TestConfig::new(arch, LibcVariant::Bionic);
+        let includes = headers
+            .iter()
+            .map(|header| format!("#include <{header}>\n"))
+            .collect::<String>();
+        let source = format!("{includes}\nint main(void) {{ return 0; }}\n");
         compile_test_program(&config, &source).unwrap();
     }
 }
