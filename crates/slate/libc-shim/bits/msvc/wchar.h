@@ -31,5 +31,7 @@ wchar_t *wmemset(wchar_t *, wchar_t, size_t);
 #include <bits/msvc/wchar/stdlib.h>
 #include <bits/msvc/wchar/string.h>
 #include <bits/msvc/wchar/wctype.h>
+#include <bits/msvc/secure/wchar.h>
+#include <bits/msvc/process.h>
 
 #endif

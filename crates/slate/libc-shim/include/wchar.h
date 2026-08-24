@@ -14,6 +14,8 @@
 #define __NEED_NULL
 #define __NEED_wctype_t
 #define __NEED_mbstate_t
+#define __NEED_time_t
+#define __NEED_msvc_struct_tm
 #include <bits/types.h>
 
 #include <bits/msvc/wchar.h>

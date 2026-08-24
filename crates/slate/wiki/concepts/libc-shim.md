@@ -83,12 +83,12 @@ missing Bionic declaration cannot silently resolve to glibc or musl.
 
 ## Basic x86-64 MSVC profile
 
-`SLATE_TARGET=x86_64-pc-windows-msvc` selects the narrow MSVC profile. Its
+`SLATE_TARGET=x86_64-pc-windows-msvc` selects the MSVC profile. Its
 tracked public-header manifest is `libc-shim/msvc-basic-headers.txt` and covers
-`assert.h`, `ctype.h`, `errno.h`, `float.h`, `limits.h`, `signal.h`,
-`stdarg.h`, `stddef.h`, `stdint.h`, `stdio.h`, `stdlib.h`, `string.h`, and
-`time.h`, plus the UCRT `sys/stat.h`, `sys/timeb.h`, `sys/types.h`, and
-`sys/utime.h` extensions.
+the supported ISO C assertion, character, error, floating environment, float,
+limits, locale, math, signal, variadic, scalar, integer, stream, allocation,
+string, time, and wide-character surfaces. It also admits UCRT `process.h`,
+`sys/stat.h`, `sys/timeb.h`, `sys/types.h`, and `sys/utime.h` extensions.
 
 The profile models LLP64: pointers, `size_t`, `ptrdiff_t`, `intptr_t`, and
 `uintptr_t` are 64-bit; `long` is 32-bit; `long long` is 64-bit; `wchar_t` is
@@ -110,6 +110,19 @@ utime, and timeb function families. They deliberately omit POSIX stat fields,
 mode constants, and timestamp APIs. Secure variants and macro-selected aliases
 are separate surfaces.
 
+Secure CRT declarations are grouped under `libc-shim/bits/msvc/secure/`.
+The UCRT default of `__STDC_WANT_SECURE_LIB__ == 1` exposes `rsize_t` and the
+standard bounds-checked names. Defining it as zero hides those names while
+retaining underscore-prefixed Microsoft extensions and the UCRT conversion
+functions that are not Annex K-gated. Inline forwarding and imported symbol
+selection remain outside the declaration shim.
+
+`process.h` exposes the UCRT process identifiers, `_cwait`, narrow and wide
+exec/spawn families, and begin/end thread callback signatures. The MSVC
+`stdlib.h`/`wchar.h` branches also expose program-path, startup argument, and
+narrow/wide environment accessors. Windows SDK process APIs and obsolete DLL
+loader helpers are not part of the declaration shim.
+
 Fixtures under `tests/fixtures/msvc/` cross-compile against `libc-shim`, and
 (when `target/msvc-sysroot` is bootstrapped, see [msvc reference sysroot](msvc-reference-sysroot.md))
 against the pinned xwin CRT/UCRT trees as a declaration/layout oracle. The
@@ -127,11 +140,14 @@ translatable. `tests/fixtures/msvc/llp64.c` is the one fixture Slate does
 translate end to end, and is kept free of headers that declare aggregates for
 that reason.
 
-This milestone does not expose pthreads, Unix process APIs, ioctl, or Unix
-sockets. Including `pthread.h`, `unistd.h`, `sys/ioctl.h`, or `sys/socket.h`
-fails explicitly. Directory traversal and file discovery, secure CRT
-extensions, Windows UM/WinRT APIs, library discovery, and linking remain
-follow-up work.
+Every admitted header compiles independently against the shim and, when the
+pinned sysroot is present, xwin. Excluded UCRT families are tracked by
+`slate-wlpp.8` through `slate-wlpp.11`: filesystem/descriptors/search/allocation,
+console/DOS, multibyte/UTF, and remaining numeric extensions. Internal CRT,
+C++/SafeInt, generic-text, and Windows SDK headers are outside the C declaration
+manifest. Macro redirects and inline/import identities remain in
+`slate-wlpp.4`. Including `pthread.h`, `unistd.h`, `sys/ioctl.h`, or
+`sys/socket.h` fails explicitly.
 
 For safety across libcs:
 

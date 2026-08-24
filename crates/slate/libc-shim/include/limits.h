@@ -3,6 +3,12 @@
 
 #include <features.h>
 
+#if defined(__SLATE_LIBC_MSVC)
+
+#include <bits/msvc/limits.h>
+
+#else
+
 #define BITINT_MAXWIDTH __BITINT_MAXWIDTH__
 
 #if '\xff' > 0
@@ -166,5 +172,7 @@
 #define _XOPEN_IOV_MAX  16
 #define _XOPEN_NAME_MAX 255
 #define _XOPEN_PATH_MAX 1024
+
+#endif
 
 #endif

@@ -1,7 +1,8 @@
 mod support;
 
 use std::fs;
-use std::path::Path;
+use std::path::{Path, PathBuf};
+use std::process::Command;
 use support::libc_shim::{Architecture, LibcVariant, TestConfig, compile_test_program};
 
 fn bionic_headers() -> Vec<String> {
@@ -55,6 +56,57 @@ fn header_program(headers: &[String]) -> String {
     )
 }
 
+fn clang() -> PathBuf {
+    std::env::var_os("SLATE_CLANG").map_or_else(
+        || {
+            PathBuf::from(std::env::var_os("HOME").unwrap_or_default())
+                .join("llvm-project/build-cir/bin/clang")
+        },
+        PathBuf::from,
+    )
+}
+
+fn xwin_include_dirs() -> Option<[PathBuf; 2]> {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/msvc-sysroot");
+    let crt = root.join("crt/include");
+    let ucrt = root.join("sdk/include/ucrt");
+    (crt.is_dir() && ucrt.is_dir()).then_some([crt, ucrt])
+}
+
+fn compile_xwin_header(header: &str, include_dirs: &[PathBuf; 2]) -> Result<(), String> {
+    let cache = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/test-cache");
+    fs::create_dir_all(&cache).map_err(|error| format!("create cache: {error}"))?;
+    let stem = header.replace(['/', '.'], "_");
+    let source = cache.join(format!("msvc_header_{stem}.c"));
+    let object = cache.join(format!("msvc_header_{stem}.o"));
+    fs::write(
+        &source,
+        format!("#include <{header}>\nint main(void) {{ return 0; }}\n"),
+    )
+    .map_err(|error| format!("write {}: {error}", source.display()))?;
+    let output = Command::new(clang())
+        .args([
+            "-xc",
+            "-c",
+            "-nostdlibinc",
+            "--target=x86_64-pc-windows-msvc",
+        ])
+        .arg("-isystem")
+        .arg(&include_dirs[0])
+        .arg("-isystem")
+        .arg(&include_dirs[1])
+        .arg("-o")
+        .arg(object)
+        .arg(source)
+        .output()
+        .map_err(|error| format!("spawn {}: {error}", clang().display()))?;
+    output
+        .status
+        .success()
+        .then_some(())
+        .ok_or_else(|| String::from_utf8_lossy(&output.stderr).into_owned())
+}
+
 #[test]
 fn msvc_basic_header_manifest_compiles() {
     let headers = msvc_headers();
@@ -63,6 +115,33 @@ fn msvc_basic_header_manifest_compiles() {
     }
     let config = TestConfig::new(Architecture::X86_64, LibcVariant::Msvc);
     compile_test_program(&config, &header_program(&headers)).unwrap();
+}
+
+#[test]
+fn msvc_manifest_headers_compile_standalone() {
+    let headers = msvc_headers();
+    let config = TestConfig::new(Architecture::X86_64, LibcVariant::Msvc);
+    let xwin = xwin_include_dirs();
+    let failures = headers
+        .iter()
+        .filter_map(|header| {
+            let source = format!("#include <{header}>\nint main(void) {{ return 0; }}\n");
+            if let Err(error) = compile_test_program(&config, &source) {
+                return Some(format!("{header} against shim:\n{error}"));
+            }
+            if let Some(include_dirs) = &xwin
+                && let Err(error) = compile_xwin_header(header, include_dirs)
+            {
+                return Some(format!("{header} against xwin:\n{error}"));
+            }
+            None
+        })
+        .collect::<Vec<_>>();
+    assert!(
+        failures.is_empty(),
+        "MSVC manifest headers failed standalone compilation:\n{}",
+        failures.join("\n\n")
+    );
 }
 
 #[test]

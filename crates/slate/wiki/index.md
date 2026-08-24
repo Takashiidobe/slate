@@ -38,3 +38,6 @@
 - [Reusable CIR normalization ownership](concepts/reusable-cir-normalization-ownership.md)
 - [Typed module alias ownership](concepts/typed-module-alias-ownership.md)
 - [model MSVC time and file status families](concepts/model-msvc-time-and-file-status-families.md)
+- [MSVC secure CRT declaration surface](concepts/msvc-secure-crt-declaration-surface.md)
+- [MSVC process and environment surface](concepts/msvc-process-and-environment-surface.md)
+- [MSVC UCRT manifest audit](concepts/msvc-ucrt-manifest-audit.md)
