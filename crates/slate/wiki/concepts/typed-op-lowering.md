@@ -18,6 +18,11 @@ Each generated `Op` variant routes directly to its typed handler. New handlers
 must accept the generated struct and use the SSA type lookup when an operand's
 type is not stored directly on that struct.
 
+Typed module conversion is fallible. Missing or invalid definition attributes
+and `cir.*` operations that fail their generated schema produce structured
+`ModelError` values. Non-CIR dialect operations remain explicitly represented
+as `Op::Other`; they are not confused with known CIR schema drift.
+
 Use the generated fields and the SSA type lookup as-is; don't add a
 universal operand-type field to generated operations just to avoid touching
 call sites — that reintroduces the untyped escape hatch this migration

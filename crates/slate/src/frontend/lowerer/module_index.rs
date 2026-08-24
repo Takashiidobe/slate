@@ -57,7 +57,7 @@ pub(super) fn widen_flexible_array_members(
     records: &mut BTreeMap<String, crate::frontend::c_ast::Record>,
 ) {
     for global in &cir.globals {
-        let expanded = cir.generic.resolve_type(&global.ty);
+        let expanded = cir.resolve_type(&global.ty);
         let Some(record_name) = slate_record_name(expanded) else {
             continue;
         };
@@ -116,7 +116,6 @@ pub(super) fn required_record_defs(
             .or_insert_with(|| record.clone());
     }
     let cir_kinds: BTreeMap<String, RecordKind> = cir
-        .generic
         .type_aliases
         .iter()
         .filter_map(|(alias, ty)| {
@@ -185,7 +184,6 @@ pub(super) fn required_record_defs(
 
 pub fn shim_records_for_module(cir: &Module, c: &Unit) -> Vec<crate::frontend::c_ast::Record> {
     let referenced: BTreeSet<&str> = cir
-        .generic
         .type_aliases
         .values()
         .filter_map(slate_record_name)

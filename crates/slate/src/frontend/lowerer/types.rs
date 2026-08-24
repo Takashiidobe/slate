@@ -72,7 +72,7 @@ pub(super) fn rust_type_with_aliases(
         CirType::Fp80 | CirType::LongDouble { .. } => {
             if is_quad_long_double(cir_ty) {
                 Type::Prim(Prim::F128)
-            } else if crate::cir::emit::uses_f64_long_double_abi() {
+            } else if crate::frontend::toolchain::uses_f64_long_double_abi() {
                 Type::Prim(Prim::F64)
             } else {
                 Type::LongDouble

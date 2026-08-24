@@ -937,7 +937,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return None;
         }
         self.macro_consts.pop_front();
-        if crate::cir::emit::uses_f64_long_double_abi() {
+        if crate::frontend::toolchain::uses_f64_long_double_abi() {
             return Some(Expr::Call {
                 binding: crate::function_identity::CallBinding::Generated,
                 func: Box::new(Expr::Var("f64::from_bits".into())),

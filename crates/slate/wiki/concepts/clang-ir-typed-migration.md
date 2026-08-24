@@ -9,10 +9,9 @@ are ongoing.
 
 ## Phase 1 — typed `Attribute`/`Type` layer
 
-Swapped `src/cir/ir.rs`'s generic layer onto clang-ir's typed AST. `Attr`/
-`CirType` (`src/cir/ir.rs`) are literally `pub use clang_ir::ast::{Attribute as
-Attr, ..., Type as CirType}` — not a separate representation needing
-reconciliation.
+Slate imports clang-ir's typed AST and model directly. `Attribute`, `Type`,
+`model::Module`, and generated operations have no Slate compatibility wrapper
+or separate representation needing reconciliation.
 
 `lower_const` (storage.rs) now pulls `op.attr("value")`, resolves `#name`
 aliases via `resolve_attr`, and matches structurally on
@@ -144,12 +143,9 @@ region traversal engine still require `&Op` alongside the typed
 this; runtime operand-type queries now go through the SSA lookup rather than
 re-deriving from raw operand strings.
 
-## cir-opt invocation count
+## cir-opt invocation ownership
 
-Acceptance criterion not yet verified for any phase: `cir-opt` should run
-exactly once per compilation unit. `src/cir/emit.rs`/`src/cir/flatten.rs` need
-to hand already-normalized generic-form text directly to clang-ir's parser
-instead of letting clang-ir's own `Toolchain` re-invoke `cir-opt` internally
-— check whether clang-ir already exposes a `parse_generic`/`from_text`-shaped
-entry point that skips its own invocation before assuming this needs adding
-on the clang-ir side too.
+`frontend::toolchain` invokes clang-ir's flag-capable normalization API once
+per emission. `frontend::cir_input` parses that generic-form result directly;
+it performs a second flattened emission only when goto detection or Clang's
+dominance failure requires the selective CFG fallback.

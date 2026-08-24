@@ -20,14 +20,12 @@ use triplers::{ArchPart, Canonicalizable, Env, Kernel, Triple, Vendor};
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Tool {
     Clang,
-    CirOpt,
 }
 
 impl std::fmt::Display for Tool {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Clang => f.write_str("clang"),
-            Self::CirOpt => f.write_str("cir-opt"),
         }
     }
 }
@@ -37,7 +35,6 @@ pub enum ToolOperation {
     Preprocess,
     MacroDump,
     EmitCir,
-    OptimizeCir,
 }
 
 impl std::fmt::Display for ToolOperation {
@@ -46,7 +43,6 @@ impl std::fmt::Display for ToolOperation {
             Self::Preprocess => f.write_str("clang -E"),
             Self::MacroDump => f.write_str("clang -dM -E"),
             Self::EmitCir => f.write_str("clang -emit-cir"),
-            Self::OptimizeCir => f.write_str("cir-opt"),
         }
     }
 }
@@ -84,25 +80,13 @@ pub enum TargetError {
 pub enum EmitError {
     #[error(transparent)]
     Target(#[from] TargetError),
+    #[error(transparent)]
+    Normalize(#[from] clang_ir::Error),
     #[error("spawn {command}: {source}")]
     Spawn {
         tool: Tool,
         operation: ToolOperation,
         command: String,
-        #[source]
-        source: std::io::Error,
-    },
-    #[error("write to {tool}: {source}")]
-    WriteInput {
-        tool: Tool,
-        operation: ToolOperation,
-        #[source]
-        source: std::io::Error,
-    },
-    #[error("wait {tool}: {source}")]
-    Wait {
-        tool: Tool,
-        operation: ToolOperation,
         #[source]
         source: std::io::Error,
     },
@@ -119,7 +103,7 @@ fn home() -> String {
     std::env::var("HOME").expect("HOME not set")
 }
 
-fn clang() -> String {
+pub fn clang() -> String {
     std::env::var("SLATE_CLANG")
         .unwrap_or_else(|_| format!("{}/llvm-project/build-cir/bin/clang", home()))
 }
@@ -576,7 +560,7 @@ pub fn emit_generic_with_args(src: &Path, extra_args: &[String]) -> Result<Strin
 /// translation unit into a plain multi-block CFG (`cir.switch.flat`,
 /// `cir.brcond`, real `cir.br` edges in place of `cir.goto`/`cir.label`)
 /// instead of ClangIR's usual nested structured form. Only meant to be
-/// re-run on translation units that need it (see `cir::flatten`) — applying
+/// re-run on translation units that need it (see `frontend::cir_input`) — applying
 /// this to every function unconditionally would flatten goto-free functions
 /// too, which lowers to a correct but far uglier `loop { match state {..} }`
 /// dispatch instead of native Rust control flow.
@@ -632,49 +616,10 @@ fn emit_generic_with_args_and_cir_opt_flags(
         });
     }
 
-    // TODO: cir-opt could run `--cir-idiom-recognizer` here to raise raw
-    // `@memcpy`/`@memset`/`@memmove` calls into `cir.libc.*` ops (easier to
-    // pattern-match downstream), but the pass's recognizeStandardLibraryCall is
-    // a no-op stub in the current CIR build, so it would raise nothing. Revisit
-    // if it lands.
-    let cir_opt_command = cir_opt();
-    let mut child = Command::new(&cir_opt_command)
-        .args(cir_opt_flags)
-        .arg("--mlir-print-op-generic")
-        .arg("--mlir-print-debuginfo")
-        .stdin(Stdio::piped())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .spawn()
-        .map_err(|source| EmitError::Spawn {
-            tool: Tool::CirOpt,
-            operation: ToolOperation::OptimizeCir,
-            command: cir_opt_command,
-            source,
-        })?;
-    use std::io::Write;
-    child
-        .stdin
-        .take()
-        .unwrap()
-        .write_all(&clang_out.stdout)
-        .map_err(|source| EmitError::WriteInput {
-            tool: Tool::CirOpt,
-            operation: ToolOperation::OptimizeCir,
-            source,
-        })?;
-    let out = child.wait_with_output().map_err(|source| EmitError::Wait {
-        tool: Tool::CirOpt,
-        operation: ToolOperation::OptimizeCir,
-        source,
-    })?;
-    if !out.status.success() {
-        return Err(EmitError::ToolFailed {
-            tool: Tool::CirOpt,
-            operation: ToolOperation::OptimizeCir,
-            status: out.status,
-            stderr: String::from_utf8_lossy(&out.stderr).into_owned(),
-        });
-    }
-    Ok(String::from_utf8_lossy(&out.stdout).into_owned())
+    Ok(
+        clang_ir::Toolchain::with_cir_opt(cir_opt()).normalize_to_generic_with_flags(
+            &String::from_utf8_lossy(&clang_out.stdout),
+            cir_opt_flags,
+        )?,
+    )
 }

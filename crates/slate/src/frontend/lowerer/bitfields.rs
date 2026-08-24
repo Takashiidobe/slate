@@ -43,7 +43,7 @@ fn collect_function_bitfields(
     members: &mut BTreeMap<String, MemberStorage>,
     storages: &mut BitfieldStorages,
 ) {
-    let aliases = &module.generic.type_aliases;
+    let aliases = &module.type_aliases;
     walk_region_ops(body, &mut |op| {
         match op {
             Op::GetMember(op) => {
@@ -102,7 +102,7 @@ fn collect_bitfield(
         .entry(member.field.clone())
         .or_insert_with(|| BitfieldField {
             name: member.field.clone(),
-            ty: rust_type_with_aliases(result_ty, &module.generic.type_aliases, false),
+            ty: rust_type_with_aliases(result_ty, &module.type_aliases, false),
             size,
             offset,
         });
@@ -136,7 +136,7 @@ fn member_storage(
 }
 
 fn bitfield_info(info: &Attr, module: &Module) -> Option<(u32, u32)> {
-    match module.generic.resolve_attr(info) {
+    match module.resolve_attr(info) {
         Attr::BitfieldInfo { size, offset, .. } => {
             Some((u32::try_from(*size).ok()?, u32::try_from(*offset).ok()?))
         }

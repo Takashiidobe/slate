@@ -1,6 +1,7 @@
 use crate::backend::{self, rust_ast};
-use crate::frontend::{self, c_ast, directive_translate, preprocess};
-use crate::{cir, ctx};
+use crate::ctx;
+use crate::frontend::{self, c_ast, cir_input, directive_translate, preprocess};
+use clang_ir::model::Module;
 use std::path::{Path, PathBuf};
 use thiserror::Error as ThisError;
 
@@ -37,7 +38,7 @@ pub enum Error {
     Cir {
         path: PathBuf,
         #[source]
-        source: cir::ModuleError,
+        source: cir_input::ModuleError,
     },
     #[error("load Clang AST for {path}: {source}")]
     Ast {
@@ -89,14 +90,14 @@ pub fn translate_with_args(path: &Path, extra_args: &[String]) -> Result<String,
     Ok(backend::apply_with(program, &skip_set_from_env()?).emit())
 }
 
-pub fn lowered_program(path: &Path) -> Result<(cir::Module, rust_ast::Program), Error> {
+pub fn lowered_program(path: &Path) -> Result<(Module, rust_ast::Program), Error> {
     lowered_program_with_args(path, &[])
 }
 
 pub fn lowered_program_with_args(
     path: &Path,
     extra_args: &[String],
-) -> Result<(cir::Module, rust_ast::Program), Error> {
+) -> Result<(Module, rust_ast::Program), Error> {
     let (source, raw) = preprocess::read_source(path).map_err(|source| Error::Read {
         path: path.to_path_buf(),
         source,
@@ -138,7 +139,7 @@ pub fn lowered_program_with_args(
         .cloned()
         .chain(input.extra_args().iter().cloned())
         .collect();
-    let module = cir::emit_module(path, &all_args).map_err(|source| Error::Cir {
+    let module = cir_input::emit_module(path, &all_args).map_err(|source| Error::Cir {
         path: path.to_path_buf(),
         source,
     })?;

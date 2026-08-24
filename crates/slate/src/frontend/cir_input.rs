@@ -1,11 +1,12 @@
 use std::collections::BTreeMap;
 use std::path::Path;
 
-use super::emit::{
+use crate::frontend::toolchain::{
     EmitError, Tool, ToolOperation, emit_generic_with_args, emit_generic_with_args_flattened,
 };
-use super::{GenericModule, Module, Op};
 use clang_ir::Error as ParseError;
+use clang_ir::ast::{Module as GenericModule, Operation as Op};
+use clang_ir::model::Module;
 use thiserror::Error;
 
 #[derive(Debug, Error)]
@@ -14,6 +15,8 @@ pub enum ModuleError {
     Emit(#[from] EmitError),
     #[error(transparent)]
     Parse(#[from] ParseError),
+    #[error(transparent)]
+    Model(#[from] clang_ir::model::ModelError),
 }
 
 fn parse_module(text: &str) -> Result<GenericModule, ParseError> {
@@ -136,7 +139,7 @@ pub fn emit_module(src: &Path, extra_args: &[String]) -> Result<Module, ModuleEr
         }) if stderr.contains("does not dominate this use") => {
             return Ok(Module::from_generic(parse_module(
                 &emit_generic_with_args_flattened(src, extra_args)?,
-            )?));
+            )?)?);
         }
         Err(error) => return Err(error.into()),
     };
@@ -145,5 +148,5 @@ pub fn emit_module(src: &Path, extra_args: &[String]) -> Result<Module, ModuleEr
         let flat_module = parse_module(&emit_generic_with_args_flattened(src, extra_args)?)?;
         merge_flattened_functions(&mut module, &flat_module);
     }
-    Ok(Module::from_generic(module))
+    Ok(Module::from_generic(module)?)
 }

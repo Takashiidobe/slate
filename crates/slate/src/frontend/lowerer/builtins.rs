@@ -156,7 +156,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let rust_ty = self.parent.rust_type(result_ty);
         let bits = fenv_scalar_bits(result_ty);
         let fuses = type_mentions_long_double(&rust_ty)
-            || bits.is_none_or(crate::cir::emit::target_has_native_fma);
+            || bits.is_none_or(crate::frontend::toolchain::target_has_native_fma);
         if fuses {
             self.lower_ternary_method(result, result_ty, operands, "mul_add");
             return;

@@ -279,7 +279,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         args: &[Expr],
         arg_types: &[CirType],
     ) -> bool {
-        if crate::cir::emit::uses_f64_long_double_abi() {
+        if crate::frontend::toolchain::uses_f64_long_double_abi() {
             return false;
         }
         let cf80_shim = match callee_name {

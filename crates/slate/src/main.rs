@@ -1,6 +1,8 @@
+use clang_ir::ast::Type as CirType;
+use clang_ir::model::Module;
 use slate::backend::{self, codegen, rust_ast};
 use slate::frontend::{self, c_ast, c_shim, directive_translate, preprocess};
-use slate::{api, cir, compile_commands, ctx};
+use slate::{api, compile_commands, ctx};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitCode};
@@ -94,7 +96,7 @@ fn cli_result<T, E: std::fmt::Display>(result: Result<T, E>) -> Result<T, String
 }
 
 fn emit_cir(path: &Path) -> Result<String, String> {
-    cli_result(cir::emit_generic(path))
+    cli_result(frontend::toolchain::emit_generic(path))
 }
 
 fn translate(path: &Path) -> Result<String, String> {
@@ -105,7 +107,7 @@ fn translate_with_clang_args(path: &Path, clang_args: &[String]) -> Result<Strin
     cli_result(api::translate_with_args(path, clang_args))
 }
 
-fn lowered_program(path: &Path) -> Result<(cir::Module, rust_ast::Program), String> {
+fn lowered_program(path: &Path) -> Result<(Module, rust_ast::Program), String> {
     cli_result(api::lowered_program(path))
 }
 
@@ -330,7 +332,7 @@ struct TargetVariant {
 }
 
 fn target_cfg(target: &str) -> Result<rust_ast::Cfg, String> {
-    let target = cli_result(cir::emit::target_config(target))?;
+    let target = cli_result(frontend::toolchain::target_config(target))?;
     Ok(rust_ast::Cfg::All(vec![
         rust_ast::Cfg::Opt {
             key: "target_arch".into(),
@@ -360,7 +362,7 @@ fn target_cfg(target: &str) -> Result<rust_ast::Cfg, String> {
 }
 
 fn target_variants(extra_targets: &[String]) -> Result<Vec<TargetVariant>, String> {
-    let active = cir::emit::active_target();
+    let active = frontend::toolchain::active_target();
     let mut variants = vec![TargetVariant {
         cfg: target_cfg(&active)?,
         clang_args: Vec::new(),
@@ -371,7 +373,7 @@ fn target_variants(extra_targets: &[String]) -> Result<Vec<TargetVariant>, Strin
         if seen.insert(cfg.clone()) {
             variants.push(TargetVariant {
                 cfg,
-                clang_args: cli_result(cir::emit::target_override_args(target))?,
+                clang_args: cli_result(frontend::toolchain::target_override_args(target))?,
             });
         }
     }
@@ -928,7 +930,7 @@ fn translate_project_lib_crate_with_manifest(
             directive_translate::WarningBackend::SupportMacro,
         )?;
         uses_slate_support |= !warning_items.is_empty();
-        let module = cli_result(cir::emit_module(path, &[]))?;
+        let module = cli_result(frontend::cir_input::emit_module(path, &[]))?;
         for sym in frontend::defined_functions(&module) {
             defined.insert(sym, stem.clone());
         }
@@ -991,7 +993,7 @@ fn translate_project_lib_crate_with_manifest(
     let translate_tests = source_manifest.is_none() && tests_dir.is_dir();
     if translate_tests {
         for (_, path) in collect_c_modules(&tests_dir)? {
-            let module = cli_result(cir::emit_module(&path, &[]))?;
+            let module = cli_result(frontend::cir_input::emit_module(&path, &[]))?;
             has_setlocale |= frontend::declared_functions(&module)
                 .iter()
                 .any(|name| name == "setlocale");
@@ -1026,9 +1028,9 @@ fn translate_project_lib_crate_with_manifest(
     let mut written = Vec::new();
     let mut module_paths: Vec<PathBuf> = Vec::new();
     let mut module_progs: Vec<rust_ast::Program> = Vec::new();
-    let mut merged_aliases: BTreeMap<String, cir::CirType> = BTreeMap::new();
+    let mut merged_aliases: BTreeMap<String, CirType> = BTreeMap::new();
     for (stem, path, module, unit, warning_items) in loaded_modules {
-        merged_aliases.extend(module.generic.type_aliases.clone());
+        merged_aliases.extend(module.type_aliases.clone());
         let mut ctx = ctx::Ctx::default();
         let mut program = frontend::lower_with_project(&module, &unit, &mut ctx, &project);
         for d in &ctx.diagnostics.items {
@@ -1097,7 +1099,7 @@ fn translate_project_lib_crate_with_manifest(
                 directive_translate::WarningBackend::SupportMacro,
             )?;
             uses_slate_support |= !warning_items.is_empty();
-            let module = cli_result(cir::emit_module(&path, &[]))?;
+            let module = cli_result(frontend::cir_input::emit_module(&path, &[]))?;
             let unit = cli_result(c_ast::parse_file_with_project_records(&path, project_dir))?;
             let test_project = frontend::ProjectInfo {
                 cross_module: project.cross_module.clone(),
@@ -1173,13 +1175,13 @@ struct LoadedLibraryVariant {
     cfg: rust_ast::Cfg,
     stem: String,
     path: PathBuf,
-    module: cir::Module,
+    module: Module,
     unit: c_ast::Unit,
     warning_items: Vec<rust_ast::Item>,
 }
 
 fn compile_command_args(command: &compile_commands::CompileCommand) -> Result<Vec<String>, String> {
-    let mut args = cli_result(cir::emit::target_override_args(&command.target))?;
+    let mut args = cli_result(frontend::toolchain::target_override_args(&command.target))?;
     args.extend(command.args.iter().cloned());
     Ok(args)
 }
@@ -1253,7 +1255,7 @@ fn translate_project_lib_crate_with_compile_commands(
             directive_translate::WarningBackend::SupportMacro,
         )?;
         uses_slate_support |= !warning_items.is_empty();
-        let module = cli_result(cir::emit_module(path, &args))?;
+        let module = cli_result(frontend::cir_input::emit_module(path, &args))?;
         let variant_facts = facts.entry(cfg.clone()).or_default();
         for symbol in frontend::defined_functions(&module) {
             variant_facts.defined.insert(symbol, stem.clone());
@@ -1357,7 +1359,7 @@ fn translate_project_lib_crate_with_compile_commands(
     let mut written = Vec::new();
     let mut module_paths: Vec<PathBuf> = Vec::new();
     let mut module_progs: Vec<rust_ast::Program> = Vec::new();
-    let mut merged_aliases: BTreeMap<String, cir::CirType> = BTreeMap::new();
+    let mut merged_aliases: BTreeMap<String, CirType> = BTreeMap::new();
     for (stem, variants) in &loaded_by_stem {
         let mut programs = Vec::new();
         for cfg in &cfgs {
@@ -1365,7 +1367,7 @@ fn translate_project_lib_crate_with_compile_commands(
                 programs.push((cfg.clone(), rust_ast::Program::default()));
                 continue;
             };
-            merged_aliases.extend(variant.module.generic.type_aliases.clone());
+            merged_aliases.extend(variant.module.type_aliases.clone());
             let variant_facts = facts.get(cfg).expect("variant facts");
             let project = frontend::ProjectInfo {
                 cross_module: variant_facts.defined.clone(),
@@ -1555,7 +1557,7 @@ fn translate_project_with_targets(
     let mut enum_occurrences: BTreeMap<String, (c_ast::Enum, usize)> = BTreeMap::new();
     for (stem, path) in &modules {
         reject_active_unsupported_file(path, "translate-project")?;
-        let module = cli_result(cir::emit_module(path, &[]))?;
+        let module = cli_result(frontend::cir_input::emit_module(path, &[]))?;
         for sym in frontend::defined_functions(&module) {
             if sym == "main" {
                 root = Some(stem.clone());
@@ -1682,7 +1684,7 @@ fn translate_project_with_targets(
     let mut shims: BTreeMap<String, rust_ast::ExternFnDecl> = BTreeMap::new();
     let mut module_paths: Vec<PathBuf> = Vec::new();
     let mut module_progs: Vec<rust_ast::Program> = Vec::new();
-    let mut merged_aliases: BTreeMap<String, cir::CirType> = BTreeMap::new();
+    let mut merged_aliases: BTreeMap<String, CirType> = BTreeMap::new();
     for (stem, path) in &modules {
         let is_root = *stem == root;
         let project = frontend::ProjectInfo {
@@ -1712,7 +1714,7 @@ fn translate_project_with_targets(
         };
         let mut variant_programs = Vec::new();
         for target in &targets {
-            let module = match cir::emit_module(path, &target.clang_args) {
+            let module = match frontend::cir_input::emit_module(path, &target.clang_args) {
                 Ok(m) => m,
                 Err(e) => {
                     eprintln!(
@@ -1723,7 +1725,7 @@ fn translate_project_with_targets(
                     continue;
                 }
             };
-            merged_aliases.extend(module.generic.type_aliases.clone());
+            merged_aliases.extend(module.type_aliases.clone());
             let unit = match c_ast::parse_file_with_args(path, &target.clang_args) {
                 Ok(u) => u,
                 Err(e) => {
@@ -1891,7 +1893,7 @@ fn translate_project_with_compile_commands(
             preprocess::read_source(path).map_err(|e| format!("read {}: {e}", path.display()))?;
         let pp = cli_result(preprocess::record_translation_unit(path, &source, &args))?;
         reject_active_unsupported(&pp, "translate-project --compile-commands")?;
-        let module = cli_result(cir::emit_module(path, &args))?;
+        let module = cli_result(frontend::cir_input::emit_module(path, &args))?;
         for sym in frontend::defined_functions(&module) {
             if sym == "main" {
                 root = Some(stem.clone());
@@ -2020,7 +2022,7 @@ fn translate_project_with_compile_commands(
     let mut shims: BTreeMap<String, rust_ast::ExternFnDecl> = BTreeMap::new();
     let mut module_paths: Vec<PathBuf> = Vec::new();
     let mut module_progs: Vec<rust_ast::Program> = Vec::new();
-    let mut merged_aliases: BTreeMap<String, cir::CirType> = BTreeMap::new();
+    let mut merged_aliases: BTreeMap<String, CirType> = BTreeMap::new();
     for (stem, path) in &modules {
         let is_root = *stem == root;
         let project = frontend::ProjectInfo {
@@ -2054,7 +2056,7 @@ fn translate_project_with_compile_commands(
         let mut variant_programs = Vec::new();
         for (cfg, command) in variants {
             let args = compile_command_args(command)?;
-            let module = match cir::emit_module(path, &args) {
+            let module = match frontend::cir_input::emit_module(path, &args) {
                 Ok(m) => m,
                 Err(e) => {
                     eprintln!(
@@ -2065,7 +2067,7 @@ fn translate_project_with_compile_commands(
                     continue;
                 }
             };
-            merged_aliases.extend(module.generic.type_aliases.clone());
+            merged_aliases.extend(module.type_aliases.clone());
             let unit = match c_ast::parse_file_with_project_records_and_args(
                 path,
                 project_dir,

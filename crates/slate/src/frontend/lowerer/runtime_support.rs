@@ -579,7 +579,9 @@ pub(super) fn is_quad_long_double(ty: &CirType) -> bool {
 }
 
 pub(super) fn is_wrapped_long_double(ty: &CirType) -> bool {
-    is_long_double(ty) && !is_quad_long_double(ty) && !crate::cir::emit::uses_f64_long_double_abi()
+    is_long_double(ty)
+        && !is_quad_long_double(ty)
+        && !crate::frontend::toolchain::uses_f64_long_double_abi()
 }
 
 pub(super) fn long_double_shim_type_tag(ty: &Type) -> String {
