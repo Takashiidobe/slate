@@ -715,7 +715,11 @@ typedef __socklen_t socklen_t;
 #undef __NEED_socklen_t
 
 #if defined(__NEED_locale_t) && !defined(__DEFINED_locale_t)
+#if defined(__SLATE_LIBC_DARWIN)
+typedef struct _xlocale *locale_t;
+#else
 typedef struct __locale_struct *locale_t;
+#endif
 #define __DEFINED_locale_t
 #endif
 #undef __NEED_locale_t

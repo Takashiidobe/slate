@@ -438,6 +438,39 @@ fn rejects_symbol_changing_redeclaration() {
 }
 
 #[test]
+fn reports_source_and_assembler_symbol_names() {
+    let case = Case::new(
+        "#define public_api(value) internal_api(value)\nextern int internal_api(int) __asm__(\"internal_api$DARWIN_EXTSN\");\nint f(int value) { return public_api(value); }\n",
+        &[],
+    );
+    let event = event(&case, "internal_api");
+    assert_eq!(event["source_name"], "public_api");
+    assert_eq!(event["foreign_name"], "internal_api$DARWIN_EXTSN");
+    assert_eq!(event["symbol_override"], true);
+    assert_eq!(event["source_macros"][0], "public_api");
+}
+
+#[test]
+fn reports_weak_import_and_availability() {
+    let case = Case::new(
+        "extern int future_api(void) __attribute__((weak_import, availability(macos, introduced=12.0)));\nint f(void) { return future_api(); }\n",
+        &[],
+    );
+    let events = case.events_with_args(&[
+        "--target=arm64-apple-macos11.0",
+        "-I",
+        case.dir.to_str().expect("UTF-8 case path"),
+    ]);
+    let event = by_name(events, "future_api")
+        .into_iter()
+        .next()
+        .expect("future_api event");
+    assert_eq!(event["weak_import"], true);
+    assert_eq!(event["availability"][0]["platform"], "macos");
+    assert_eq!(event["availability"][0]["introduced"], "12.0");
+}
+
+#[test]
 fn output_is_deterministic() {
     let case = Case::new(
         "#include <string.h>\nint f(const char *a, const char *b) { return strcmp(a, b) + (int)strlen(a); }\n",

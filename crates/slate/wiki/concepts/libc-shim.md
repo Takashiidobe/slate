@@ -49,11 +49,22 @@ Darwin's exact and fast integer typedefs, signed 64-bit `time_t`, unsigned
 `long double`. Generated Rust uses `f64` for Darwin `long double` and checks
 for `aarch64-apple-darwin` without linking when that Rust target is installed.
 
-The basic manifest deliberately excludes wide and locale APIs, full `FILE`
-layout, POSIX signals, pthreads, filesystem and directory structures, sockets,
-process APIs, and Darwin symbol redirects. Those surfaces remain unavailable
-as supported macOS profiles until their dedicated ABI tickets are complete.
-The shim does not search Linux host include directories for a Darwin target.
+The basic manifest is extended by
+`libc-shim/macos-stdio-locale-headers.txt`, which models Darwin's public
+`struct __sFILE`, `fpos_t`, 128-byte `mbstate_t`, `_xlocale` handle, `lconv`,
+locale category and `langinfo` values, wide-character types, and standard
+stream accessors. POSIX signals, pthreads, filesystem and directory
+structures, sockets, and process APIs remain outside the supported profile
+until their dedicated ABI tickets are complete. Carrying Darwin
+assembler-label identities through generated Rust also remains pending. The
+shim does not search Linux host include directories for a Darwin target.
+
+Darwin defaults to `__DARWIN_C_FULL`. `_POSIX_SOURCE`, `_POSIX_C_SOURCE`, and
+`_XOPEN_SOURCE` select the matching Darwin namespace, while
+`_DARWIN_C_SOURCE` restores the full namespace alongside a POSIX request.
+The AArch64 profile fixes UNIX 2003 and 64-bit inode selection and defines the
+Darwin assembler-label families so Clang provenance can retain the selected
+foreign symbol.
 
 ## Basic 64-bit Android Bionic profiles
 

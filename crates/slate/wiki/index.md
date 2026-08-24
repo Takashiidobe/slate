@@ -41,3 +41,4 @@
 - [MSVC secure CRT declaration surface](concepts/msvc-secure-crt-declaration-surface.md)
 - [MSVC process and environment surface](concepts/msvc-process-and-environment-surface.md)
 - [MSVC UCRT manifest audit](concepts/msvc-ucrt-manifest-audit.md)
+- [Model Darwin stdio locale and wide text ABI](concepts/model-darwin-stdio-locale-and-wide-text-abi.md)
