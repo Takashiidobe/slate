@@ -106,6 +106,7 @@ const char *strerrorname_np(int);
 
 #if defined(__SLATE_LIBC_MSVC)
 #include <bits/msvc/locale/string.h>
+#include <bits/msvc/secure/string.h>
 #include <bits/msvc/wchar/string.h>
 #endif
 

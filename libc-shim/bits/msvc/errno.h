@@ -86,4 +86,6 @@
 #define ETXTBSY         139
 #define EWOULDBLOCK     140
 
+#include <bits/msvc/secure/errno.h>
+
 #endif

@@ -6,6 +6,7 @@ float.h
 limits.h
 locale.h
 math.h
+process.h
 stdarg.h
 signal.h
 stddef.h

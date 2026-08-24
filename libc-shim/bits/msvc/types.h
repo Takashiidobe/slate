@@ -71,3 +71,19 @@ typedef struct _iobuf FILE;
 typedef __slate_wchar_t wctrans_t;
 #define __DEFINED_wctrans_t
 #endif
+
+#if defined(__NEED_msvc_struct_tm) && !defined(__DEFINED_msvc_struct_tm)
+struct tm {
+  int tm_sec;
+  int tm_min;
+  int tm_hour;
+  int tm_mday;
+  int tm_mon;
+  int tm_year;
+  int tm_wday;
+  int tm_yday;
+  int tm_isdst;
+};
+#define __DEFINED_msvc_struct_tm
+#endif
+#undef __NEED_msvc_struct_tm

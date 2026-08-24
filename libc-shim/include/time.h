@@ -8,6 +8,7 @@
 #define __NEED_size_t
 #define __NEED_time_t
 #define __NEED_clock_t
+#define __NEED_msvc_struct_tm
 #include <bits/types.h>
 
 #include <bits/msvc/time.h>

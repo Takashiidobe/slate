@@ -10,6 +10,9 @@
 #define __NEED_size_t
 #define __NEED_wchar_t
 #define __NEED_NULL
+#if defined(__SLATE_LIBC_MSVC)
+#define __NEED_uintptr_t
+#endif
 #include <bits/types.h>
 
 #if defined(__SLATE_LIBC_MSVC)
@@ -39,16 +42,20 @@ _Noreturn void exit(int status);
 _Noreturn void _Exit(int status);
 _Noreturn void quick_exit(int status);
 _Noreturn void abort(void);
+#if !defined(__SLATE_LIBC_MSVC)
 _Noreturn void abort_with_reason(const char *restrict reason);
+#endif
 int            atexit(void (*func)(void));
 int            at_quick_exit(void (*func)(void));
 
 void *malloc(size_t size);
 void *calloc(size_t nmemb, size_t size);
 void *realloc(void *ptr, size_t size);
+#if !defined(__SLATE_LIBC_MSVC)
 void *aligned_alloc(size_t alignment, size_t size);
 void  free_sized(void *ptr, size_t size);
 void  free_aligned_sized(void *ptr, size_t alignment, size_t size);
+#endif
 void  free(void *ptr);
 
 int       abs(int j);
@@ -65,11 +72,13 @@ double      atof(const char *nptr);
 double      strtod(const char *restrict nptr, char **restrict endptr);
 float       strtof(const char *restrict nptr, char **restrict endptr);
 long double strtold(const char *restrict nptr, char **restrict endptr);
+#if !defined(__SLATE_LIBC_MSVC)
 int         strfromd(char *restrict s, size_t n, const char *restrict format,
                      double fp);
 int strfromf(char *restrict s, size_t n, const char *restrict format, float fp);
 int strfroml(char *restrict s, size_t n, const char *restrict format,
              long double fp);
+#endif
 long strtol(const char *restrict nptr, char **restrict endptr, int base);
 unsigned long strtoul(const char *restrict nptr, char **restrict endptr,
                       int base);
@@ -94,8 +103,10 @@ int    wctomb(char *s, wchar_t wc);
 size_t mbstowcs(wchar_t *restrict dst, const char *restrict src, size_t len);
 size_t wcstombs(char *restrict dst, const wchar_t *restrict src, size_t len);
 
+#if !defined(__SLATE_LIBC_MSVC)
 size_t __ctype_get_mb_cur_max(void);
 #define MB_CUR_MAX (__ctype_get_mb_cur_max())
+#endif
 
 #if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
     defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
@@ -173,15 +184,16 @@ long double strtold_l(const char *restrict nptr, char **restrict endptr,
 #endif
 #endif
 
+#if !defined(__SLATE_LIBC_MSVC)
 void         arc4random_stir(void);
 void         arc4random_addrandom(unsigned char *data, int length);
 unsigned int arc4random(void);
 void         arc4random_buf(void *buffer, size_t size);
 unsigned int arc4random_uniform(unsigned int upper_bound);
+#endif
 
 #if defined(__SLATE_LIBC_MSVC)
-#include <bits/msvc/locale/stdlib.h>
-#include <bits/msvc/wchar/stdlib.h>
+#include <bits/msvc/stdlib.h>
 #endif
 
 #endif

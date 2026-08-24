@@ -107,7 +107,9 @@
 #define __inline
 #endif
 
-#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
+#if defined(__SLATE_LIBC_MSVC)
+#define __noreturn __declspec(noreturn)
+#elif defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
 #define __noreturn [[noreturn]]
 #elif __STDC_VERSION__ >= 201112L
 #include <stdnoreturn.h>
