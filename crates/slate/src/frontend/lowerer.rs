@@ -923,6 +923,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         uses_llvm_intrinsics: std::cell::Cell::new(false),
         uses_portable_simd: std::cell::Cell::new(false),
         uses_memchr: std::cell::Cell::new(false),
+        synthetic_externs: BTreeMap::new(),
         variadic_defs: BTreeSet::new(),
         boxed_variadic_defs: BTreeSet::new(),
         va_list_boxed: false,
@@ -1346,6 +1347,7 @@ struct Lowerer<'a> {
     uses_llvm_intrinsics: std::cell::Cell<bool>,
     uses_portable_simd: std::cell::Cell<bool>,
     uses_memchr: std::cell::Cell<bool>,
+    synthetic_externs: BTreeMap<String, ExternFnDecl>,
     variadic_defs: BTreeSet<String>,
     boxed_variadic_defs: BTreeSet<String>,
     va_list_boxed: bool,
@@ -2040,6 +2042,29 @@ impl __SlateVaArgs {
                 items.extend(self.declaration_comment_items("FunctionDecl", name));
                 items.push(item);
             }
+        }
+
+        let mut synthetic_externs = Vec::new();
+        for (name, decl) in std::mem::take(&mut self.synthetic_externs) {
+            if self.externs.contains_key(&name) {
+                continue;
+            }
+            self.externs.insert(
+                name.clone(),
+                decl.params.iter().map(|param| param.ty.clone()).collect(),
+            );
+            self.extern_returns
+                .insert(name, decl.ret.as_ref().map(Type::render));
+            synthetic_externs.push(ExternDecl::Fn(decl));
+        }
+        if !synthetic_externs.is_empty() {
+            items.splice(
+                1..1,
+                [Item::ExternBlock {
+                    abi: "C".into(),
+                    decls: synthetic_externs,
+                }],
+            );
         }
 
         let storage_items: Vec<Item> = self
@@ -4021,6 +4046,57 @@ impl __SlateVaArgs {
             }
         }
         Some(expr)
+    }
+}
+
+fn builtin_setjmp_ptr_ptr_void() -> Type {
+    Type::Ptr {
+        mutable: true,
+        inner: Box::new(Type::Ptr {
+            mutable: true,
+            inner: Box::new(Type::CLib(CLibType::VOID)),
+        }),
+    }
+}
+
+fn builtin_setjmp_extern_decl() -> ExternFnDecl {
+    ExternFnDecl {
+        attrs: Vec::new(),
+        name: "setjmp".into(),
+        identity: FunctionIdentity::Unknown,
+        declared_type: None,
+        params: vec![FnParam {
+            name: "_0".into(),
+            mutable: false,
+            ty: builtin_setjmp_ptr_ptr_void(),
+        }],
+        variadic: false,
+        ret: Some(Type::Prim(Prim::I32)),
+        safe: false,
+    }
+}
+
+fn builtin_longjmp_extern_decl() -> ExternFnDecl {
+    ExternFnDecl {
+        attrs: Vec::new(),
+        name: "longjmp".into(),
+        identity: FunctionIdentity::Unknown,
+        declared_type: None,
+        params: vec![
+            FnParam {
+                name: "_0".into(),
+                mutable: false,
+                ty: builtin_setjmp_ptr_ptr_void(),
+            },
+            FnParam {
+                name: "_1".into(),
+                mutable: false,
+                ty: Type::Prim(Prim::I32),
+            },
+        ],
+        variadic: false,
+        ret: Some(Type::Never),
+        safe: false,
     }
 }
 
