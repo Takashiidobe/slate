@@ -1,3 +1,10 @@
+// LOWERING-LABEL: {{^}}fn main() {
+// LOWERING-DAG: _v{{[0-9]+}} == std::ptr::addr_of_mut!(utc)
+// LOWERING-DAG: _v{{[0-9]+}} == std::ptr::addr_of_mut!(local)
+// LOWERING-NOT: _v{{[0-9]+}} == utc
+// LOWERING-NOT: _v{{[0-9]+}} == local
+// LOWERING: {{^}}}
+
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <time.h>

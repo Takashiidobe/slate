@@ -24,6 +24,7 @@ instead (all optional, all overriding a local-build default):
 | `SLATE_CIR_OPT`                     | `~/llvm-project/build-cir/bin/cir-opt`       | CIR -> MLIR generic form                                                                          |
 | `SLATE_CC`                          | `clang` (from `PATH`)                        | compile the C side of differential tests                                                          |
 | `SLATE_CARGO`                       | `cargo`                                      | compile the generated Rust                                                                        |
+| `SLATE_FILECHECK`                   | sibling of `SLATE_CLANG`, then `FileCheck`   | match profile-specific generated-Rust assertions in C fixtures                                    |
 | `SLATE_TARGET` / `SLATE_CLANG_ARGS` | N/A                                          | shared target triple / extra clang flags                                                          |
 | `SLATE_MACRO_DUMP_PLUGIN`           | `<$SLATE_CLANG build>/lib/SlateMacroDump.so` | the macro dump plugin binary (see below)                                                          |
 | `SLATE_LIBC_SHIM`                   | `libc-shim/include`                          | headers `SLATE_CLANG` parses with `-nostdlibinc -isystem <dir>` instead of the host's system libc |
@@ -80,6 +81,11 @@ To run just one fixture, run `SLATE_DIFF_FIXTURE`:
 ```bash
 SLATE_DIFF_FIXTURE=<name> cargo nextest r --release --profile lowering
 ```
+
+Fixtures can carry `COMMON`, `LOWERING`, and `REWRITES` FileCheck directives.
+The active nextest profile selects only its own directives plus `COMMON`.
+See `wiki/concepts/differential-fixtures.md` for function-scoped unordered
+checks and the complete syntax.
 
 ## Cleanup
 
