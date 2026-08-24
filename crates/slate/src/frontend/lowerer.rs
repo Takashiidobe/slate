@@ -4047,10 +4047,6 @@ pub fn is_clib_record_type(name: &str) -> bool {
 }
 
 fn clib_record_type(name: &str) -> Option<CLibType> {
-    let name = match name {
-        "__mbstate_t" => "mbstate_t",
-        _ => name,
-    };
     CLIB_RECORD_TYPES
         .iter()
         .copied()

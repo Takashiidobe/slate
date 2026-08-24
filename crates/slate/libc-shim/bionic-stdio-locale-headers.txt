@@ -1,0 +1,6 @@
+stdio.h
+locale.h
+wchar.h
+wctype.h
+uchar.h
+langinfo.h

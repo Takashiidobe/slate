@@ -79,6 +79,9 @@ typedef struct {
 #if defined(__SLATE_LIBC_DARWIN)
 typedef int          __wctrans_t;
 typedef unsigned int __wctype_t;
+#elif defined(__SLATE_LIBC_BIONIC)
+typedef const void *__wctrans_t;
+typedef long        __wctype_t;
 #else
 typedef const int    *__wctrans_t;
 typedef unsigned long __wctype_t;
@@ -233,6 +236,14 @@ typedef __off_t __fpos_t;
 typedef struct {
   unsigned __opaque1;
   unsigned __opaque2;
+} __mbstate_t;
+
+#elif defined(__SLATE_LIBC_BIONIC)
+typedef struct {
+  unsigned char __seq[4];
+#if defined(__SLATE_WORDSIZE_64)
+  unsigned char __reserved[4];
+#endif
 } __mbstate_t;
 
 #else

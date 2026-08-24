@@ -1119,7 +1119,6 @@ impl CLibType {
 
 pub const CLIB_RECORD_TYPES: &[CLibType] = &[
     CLibType::new("FILE", "libc::FILE", 1, CLibInitializer::ScalarZero),
-    CLibType::new("mbstate_t", "libc::mbstate_t", 4, CLibInitializer::Zeroed),
     CLibType::new(
         "pthread_attr_t",
         "libc::pthread_attr_t",

@@ -1,5 +1,6 @@
 ---
 source: tests/snapshot.rs
+assertion_line: 38
 expression: rust
 ---
 #![feature(c_variadic)]
@@ -7,24 +8,32 @@ expression: rust
 
 #[repr(C)]
 #[derive(Clone, Copy)]
+struct __mbstate_t {
+    __count: i32,
+    __value: anon_0,
+}
+
+
+#[repr(C)]
+#[derive(Clone, Copy)]
 union anon_0 {
-    __slate_anon_0: i32,
-    __slate_anon_1: [i8; 4],
+    __wch: i32,
+    __wchb: [i8; 4],
 }
 
 
 unsafe extern "C" {
-    fn mbrtoc16(_0: *mut u16, _1: *const i8, _2: usize, _3: *mut libc::mbstate_t) -> usize;
-    fn c16rtomb(_0: *mut i8, _1: u16, _2: *mut libc::mbstate_t) -> usize;
-    fn mbrtoc32(_0: *mut u32, _1: *const i8, _2: usize, _3: *mut libc::mbstate_t) -> usize;
-    fn c32rtomb(_0: *mut i8, _1: u32, _2: *mut libc::mbstate_t) -> usize;
+    fn mbrtoc16(_0: *mut u16, _1: *const i8, _2: usize, _3: *mut __mbstate_t) -> usize;
+    fn c16rtomb(_0: *mut i8, _1: u16, _2: *mut __mbstate_t) -> usize;
+    fn mbrtoc32(_0: *mut u32, _1: *const i8, _2: usize, _3: *mut __mbstate_t) -> usize;
+    fn c32rtomb(_0: *mut i8, _1: u32, _2: *mut __mbstate_t) -> usize;
     fn printf(_0: *const i8, ...) -> i32;
 }
 
 fn main() {
     let mut __retval: i32 = 0;
-    let mut state16: libc::mbstate_t = unsafe { std::mem::zeroed::<libc::mbstate_t>() };
-    let mut state32: libc::mbstate_t = unsafe { std::mem::zeroed::<libc::mbstate_t>() };
+    let mut state16: __mbstate_t = __mbstate_t { __count: 0, __value: anon_0 { __wch: 0 } };
+    let mut state32: __mbstate_t = __mbstate_t { __count: 0, __value: anon_0 { __wch: 0 } };
     let mut converted16: u16 = 0;
     let mut converted32: u32 = 0;
     let mut multibyte16: [i8; 4] = [0; 4];
@@ -35,8 +44,8 @@ fn main() {
     let mut write32: u64 = 0;
     let _v0: i32 = 0;
     __retval = _v0;
-    state16 = unsafe { std::mem::zeroed::<libc::mbstate_t>() };
-    state32 = unsafe { std::mem::zeroed::<libc::mbstate_t>() };
+    state16 = __mbstate_t { __count: 0, __value: anon_0 { __wch: 0 } };
+    state32 = __mbstate_t { __count: 0, __value: anon_0 { __wch: 0 } };
     let _v1: u16 = 0;
     converted16 = _v1;
     let _v2: u32 = 0;
@@ -45,19 +54,19 @@ fn main() {
     multibyte32 = [0, 0, 0, 0];
     let _v3: *mut i8 = b"A\0".as_ptr() as *mut i8;
     let _v4: u64 = 1;
-    let _v5: u64 = (unsafe { mbrtoc16(std::ptr::addr_of_mut!(converted16) as *mut u16, _v3 as *const i8, _v4 as usize, std::ptr::addr_of_mut!(state16) as *mut libc::mbstate_t) }) as u64;
+    let _v5: u64 = (unsafe { mbrtoc16(std::ptr::addr_of_mut!(converted16) as *mut u16, _v3 as *const i8, _v4 as usize, std::ptr::addr_of_mut!(state16) as *mut __mbstate_t) }) as u64;
     read16 = _v5;
     let _v6: *mut i8 = multibyte16.as_mut_ptr() as *mut i8;
     let _v7: u16 = 65;
-    let _v8: u64 = (unsafe { c16rtomb(_v6 as *mut i8, _v7 as u16, std::ptr::addr_of_mut!(state16) as *mut libc::mbstate_t) }) as u64;
+    let _v8: u64 = (unsafe { c16rtomb(_v6 as *mut i8, _v7 as u16, std::ptr::addr_of_mut!(state16) as *mut __mbstate_t) }) as u64;
     write16 = _v8;
     let _v9: *mut i8 = b"B\0".as_ptr() as *mut i8;
     let _v10: u64 = 1;
-    let _v11: u64 = (unsafe { mbrtoc32(std::ptr::addr_of_mut!(converted32) as *mut u32, _v9 as *const i8, _v10 as usize, std::ptr::addr_of_mut!(state32) as *mut libc::mbstate_t) }) as u64;
+    let _v11: u64 = (unsafe { mbrtoc32(std::ptr::addr_of_mut!(converted32) as *mut u32, _v9 as *const i8, _v10 as usize, std::ptr::addr_of_mut!(state32) as *mut __mbstate_t) }) as u64;
     read32 = _v11;
     let _v12: *mut i8 = multibyte32.as_mut_ptr() as *mut i8;
     let _v13: u32 = 66;
-    let _v14: u64 = (unsafe { c32rtomb(_v12 as *mut i8, _v13 as u32, std::ptr::addr_of_mut!(state32) as *mut libc::mbstate_t) }) as u64;
+    let _v14: u64 = (unsafe { c32rtomb(_v12 as *mut i8, _v13 as u32, std::ptr::addr_of_mut!(state32) as *mut __mbstate_t) }) as u64;
     write32 = _v14;
     let _v15: *mut i8 = b"%zu %zu %u %d %zu %zu %u %d\n\0".as_ptr() as *mut i8;
     let _v16: u64 = read16;

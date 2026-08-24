@@ -19,6 +19,12 @@
 #define LC_MONETARY 4
 #define LC_MESSAGES 5
 #define LC_ALL      6
+#define LC_PAPER          7
+#define LC_NAME           8
+#define LC_ADDRESS        9
+#define LC_TELEPHONE      10
+#define LC_MEASUREMENT    11
+#define LC_IDENTIFICATION 12
 
 /* Field order/types must match the real glibc struct lconv exactly:
    localeconv() returns a pointer into glibc's own static instance. */
@@ -51,19 +57,26 @@ struct lconv {
 };
 
 #if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
-    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||  \
+    defined(__SLATE_LIBC_BIONIC)
 #define __NEED_NULL
 #define __NEED_locale_t
 #include <bits/types.h>
 
 #define LC_GLOBAL_LOCALE ((locale_t) - 1)
 
-#define LC_CTYPE_MASK    (1 << LC_CTYPE)
-#define LC_NUMERIC_MASK  (1 << LC_NUMERIC)
-#define LC_TIME_MASK     (1 << LC_TIME)
-#define LC_COLLATE_MASK  (1 << LC_COLLATE)
-#define LC_MONETARY_MASK (1 << LC_MONETARY)
-#define LC_MESSAGES_MASK (1 << LC_MESSAGES)
+#define LC_CTYPE_MASK          (1 << LC_CTYPE)
+#define LC_NUMERIC_MASK        (1 << LC_NUMERIC)
+#define LC_TIME_MASK           (1 << LC_TIME)
+#define LC_COLLATE_MASK        (1 << LC_COLLATE)
+#define LC_MONETARY_MASK       (1 << LC_MONETARY)
+#define LC_MESSAGES_MASK       (1 << LC_MESSAGES)
+#define LC_PAPER_MASK          (1 << LC_PAPER)
+#define LC_NAME_MASK           (1 << LC_NAME)
+#define LC_ADDRESS_MASK        (1 << LC_ADDRESS)
+#define LC_TELEPHONE_MASK      (1 << LC_TELEPHONE)
+#define LC_MEASUREMENT_MASK    (1 << LC_MEASUREMENT)
+#define LC_IDENTIFICATION_MASK (1 << LC_IDENTIFICATION)
 #define LC_ALL_MASK      0x7fffffff
 
 locale_t duplocale(locale_t);
