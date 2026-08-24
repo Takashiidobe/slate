@@ -13,6 +13,10 @@ stdint.h
 stdio.h
 stdlib.h
 string.h
+sys/stat.h
+sys/timeb.h
+sys/types.h
+sys/utime.h
 time.h
 wchar.h
 wctype.h

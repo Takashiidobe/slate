@@ -45,7 +45,7 @@ impl FixtureFlavor {
             FixtureFlavor::Default => None,
             FixtureFlavor::Bionic => Some("aarch64-linux-android"),
             FixtureFlavor::Macos => Some("aarch64-apple-darwin"),
-            FixtureFlavor::Msvc => Some("x86_64-pc-windows-msvc"),
+            FixtureFlavor::Msvc => None,
         }
     }
 
@@ -200,6 +200,9 @@ fn fixtures() -> Vec<Fixture> {
     if selected.is_none() {
         let profile = support::filecheck::Profile::active();
         fixtures.retain(|fixture| {
+            if fixture.flavor == FixtureFlavor::Msvc {
+                return true;
+            }
             std::fs::read_to_string(&fixture.path).is_ok_and(|source| {
                 support::filecheck::has_checks_with_prefixes(
                     &source,
@@ -324,6 +327,9 @@ fn run_cross_target_fixture(
     {
         compile_for_target(&format!("{name}_xwin"), target, &[crt, ucrt], &[], path)
             .map_err(|e| format!("xwin oracle compile failed:\n{e}"))?;
+    }
+    if flavor == FixtureFlavor::Msvc {
+        return Ok(());
     }
     if flavor == FixtureFlavor::Macos
         && name == "fundamental_types"

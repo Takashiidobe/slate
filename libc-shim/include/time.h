@@ -3,6 +3,17 @@
 
 #include <features.h>
 
+#if defined(__SLATE_LIBC_MSVC)
+
+#define __NEED_size_t
+#define __NEED_time_t
+#define __NEED_clock_t
+#include <bits/types.h>
+
+#include <bits/msvc/time.h>
+
+#else
+
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
 #define __STDC_VERSION_TIME_H__ 202311L
 #endif
@@ -60,11 +71,7 @@ char      *ctime(const time_t *);
 int        timespec_get(struct timespec *, int);
 int        timespec_getres(struct timespec *, int);
 
-#if defined(__SLATE_LIBC_MSVC)
-#include <bits/msvc/time.h>
-#else
 #define CLOCKS_PER_SEC 1000000L
-#endif
 
 #define TIME_UTC 1
 
@@ -174,6 +181,8 @@ __REDIR(stime, __stime64);
 __REDIR(timegm, __timegm_time64);
 __REDIR(timelocal, __timelocal64);
 #endif
+#endif
+
 #endif
 
 #endif

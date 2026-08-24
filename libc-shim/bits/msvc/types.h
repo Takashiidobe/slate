@@ -22,6 +22,19 @@ struct __crt_locale_pointers;
 
 typedef struct __crt_locale_pointers *_locale_t;
 
+#ifndef __DEFINED_msvc_time_types
+typedef long      __time32_t;
+typedef long long __time64_t;
+#define __DEFINED_msvc_time_types
+#endif
+
+#ifndef __DEFINED_msvc_stat_types
+typedef unsigned short _ino_t;
+typedef unsigned int   _dev_t;
+typedef long           _off_t;
+#define __DEFINED_msvc_stat_types
+#endif
+
 #endif
 
 #if defined(__NEED_msvc_locale_layouts) &&                                     \
