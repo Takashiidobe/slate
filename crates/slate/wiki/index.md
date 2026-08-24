@@ -31,3 +31,4 @@
 - [Port differential source assertions to fixture FileCheck](concepts/port-differential-source-assertions-to-fixture-filecheck.md)
 - [Target-qualified FileCheck is independent of fixture flavor](concepts/target-qualified-filecheck-is-independent-of-fixture-flavor.md)
 - [FileCheck follows generated artifact ownership](concepts/filecheck-follows-generated-artifact-ownership.md)
+- [Remove obsolete snapshot test infrastructure](concepts/remove-obsolete-snapshot-test-infrastructure.md)
