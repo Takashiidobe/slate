@@ -1,19 +1,15 @@
 use super::*;
 
-pub(super) fn collect_assembly_strings<'a>(op: &'a Operation, out: &mut Vec<&'a str>) {
-    if op.mnemonic() == "asm"
-        && let Some(template) = attr_str(op, "asm_string")
-    {
-        out.push(template);
-    }
-    if let Some(Attr::Array(values)) = op.attr("cir.module_asm") {
-        out.extend(values.iter().filter_map(Attr::as_str));
-    }
-    for region in &op.regions {
-        for block in &region.blocks {
-            for child in &block.ops {
-                collect_assembly_strings(child, out);
-            }
+pub(super) fn collect_assembly_strings(module: &Module, out: &mut Vec<String>) {
+    out.extend(module.module_asm.iter().cloned());
+    for function in &module.functions {
+        if let Some(body) = &function.body {
+            walk_region_ops(body, &mut |op| {
+                if let Op::Asm(asm) = op {
+                    out.push(asm.asm_string.clone());
+                }
+                true
+            });
         }
     }
 }
@@ -31,14 +27,11 @@ pub(super) fn is_asm_symbol_char(ch: char) -> bool {
 }
 
 pub(super) fn lower_module_asm(
-    module_op: &Operation,
+    module: &Module,
     diagnostics: &mut crate::ctx::Diagnostics,
 ) -> Vec<Item> {
-    let Some(Attr::Array(values)) = module_op.attr("cir.module_asm") else {
-        return Vec::new();
-    };
     let mut templates = Vec::new();
-    for raw in values.iter().filter_map(Attr::as_str) {
+    for raw in &module.module_asm {
         match String::from_utf8(decode_cir_string(raw)) {
             Ok(template) if !template.is_empty() => templates.push(template),
             Ok(_) => {}
@@ -48,7 +41,7 @@ pub(super) fn lower_module_asm(
     if templates.is_empty() {
         return Vec::new();
     }
-    let Some(triple) = attr_str(module_op, "cir.triple") else {
+    let Some(triple) = module.triple.as_deref() else {
         diagnostics.error("lower: file-scope assembly has no CIR target triple");
         return Vec::new();
     };
@@ -75,14 +68,14 @@ pub(super) fn lower_module_asm(
 }
 
 pub(super) fn lower_weak_alias_asm(
-    module_op: &Operation,
+    module: &Module,
     aliases: &BTreeMap<String, String>,
     diagnostics: &mut crate::ctx::Diagnostics,
 ) -> Vec<Item> {
     if aliases.is_empty() {
         return Vec::new();
     }
-    let Some(triple) = attr_str(module_op, "cir.triple") else {
+    let Some(triple) = module.triple.as_deref() else {
         diagnostics.error("lower: weak aliases require a CIR target triple");
         return Vec::new();
     };
@@ -129,14 +122,6 @@ pub(super) fn rust_target_arch(triple: &str) -> Option<&'static str> {
         "bpfeb" | "bpfel" => Some("bpf"),
         "nvptx64" => Some("nvptx64"),
         "xtensa" => Some("xtensa"),
-        _ => None,
-    }
-}
-
-pub(super) fn op_asm_dialect(op: &Operation) -> Option<AsmDialect> {
-    match attr_int(op, "asm_flavor") {
-        Some(0) => Some(AsmDialect::Att),
-        Some(1) => Some(AsmDialect::Intel),
         _ => None,
     }
 }

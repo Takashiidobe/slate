@@ -32,3 +32,5 @@
 - [Target-qualified FileCheck is independent of fixture flavor](concepts/target-qualified-filecheck-is-independent-of-fixture-flavor.md)
 - [FileCheck follows generated artifact ownership](concepts/filecheck-follows-generated-artifact-ownership.md)
 - [Remove obsolete snapshot test infrastructure](concepts/remove-obsolete-snapshot-test-infrastructure.md)
+- [clang-ir type projection accessors](concepts/clang-ir-type-projection-accessors.md)
+- [Retire generic operation helpers from semantic lowering](concepts/retire-generic-operation-helpers-from-semantic-lowering.md)

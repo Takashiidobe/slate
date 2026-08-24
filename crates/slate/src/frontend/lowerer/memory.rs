@@ -60,14 +60,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         });
         let array_len = self
             .value_type(&op.base)
-            .and_then(cir_ptr_inner)
-            .and_then(parse_cir_array_type)
+            .and_then(CirType::pointee)
+            .and_then(CirType::as_array)
             .map(|(_, len)| len);
         let out_of_bounds = array_len.is_some_and(|len| {
             self.known_arith_value(&op.index)
                 .is_some_and(|value| value >= i128::from(len))
         });
-        let elem_ty = cir_ptr_inner(&op.result_ty).map(|ty| self.parent.rust_type(ty));
+        let elem_ty = op.result_ty.pointee().map(|ty| self.parent.rust_type(ty));
         if let Some(Val::Global(name)) = self.values.get(&op.base).cloned() {
             if let Some(labels) = self.parent.block_addr_globals.get(&name) {
                 self.block_addr_element_ptrs.insert(
@@ -188,16 +188,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.values.insert(result.clone(), Val::Expr(place));
             return;
         }
-        if let Some(operand_record) = cir_ptr_inner(src_ty).and_then(cir_record_name)
+        if let Some(operand_record) = src_ty.pointee().and_then(slate_record_name)
             && is_abi_coercion_record_name(operand_record)
-            && let Some(real_record) = cir_ptr_inner(result_ty).and_then(cir_record_name)
+            && let Some(real_record) = result_ty.pointee().and_then(slate_record_name)
             && !is_abi_coercion_record_name(real_record)
         {
             self.coerce_alloca_real_type
                 .insert(src.clone(), (src.clone(), real_record.to_string()));
-        } else if let Some(result_record) = cir_ptr_inner(result_ty).and_then(cir_record_name)
+        } else if let Some(result_record) = result_ty.pointee().and_then(slate_record_name)
             && is_abi_coercion_record_name(result_record)
-            && let Some(real_record) = cir_ptr_inner(src_ty).and_then(cir_record_name)
+            && let Some(real_record) = src_ty.pointee().and_then(slate_record_name)
             && !is_abi_coercion_record_name(real_record)
         {
             self.coerce_alloca_real_type
@@ -320,9 +320,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         if bitint_generic_parts(&result_rust_ty).is_some()
             && bitint_generic_parts(&src_rust_ty).is_none()
-            && parse_cir_int_type(src_ty).is_some()
+            && resolved_integer_parts(src_ty, &self.parent.aliases).is_some()
         {
-            let (signed, _) = parse_cir_int_type(src_ty).unwrap();
+            let (signed, _) = resolved_integer_parts(src_ty, &self.parent.aliases).unwrap();
             let value = bitint_from_int_expr(&result_rust_ty, self.operand_expr(src), signed)
                 .expect("checked bitint result type");
             self.materialize_expr(result, value, Some(result_ty));
@@ -330,7 +330,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         if bitint_generic_parts(&src_rust_ty).is_some()
             && bitint_generic_parts(&result_rust_ty).is_none()
-            && parse_cir_int_type(result_ty).is_some()
+            && resolved_integer_parts(result_ty, &self.parent.aliases).is_some()
         {
             let (wide, _) = bitint_to_int_expr(&src_rust_ty, self.operand_expr(src))
                 .expect("checked bitint source type");
@@ -490,7 +490,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 },
             ),
             (src, dest)
-                if let Some((signed, _)) = parse_cir_int_type(src)
+                if let Some((signed, _)) = resolved_integer_parts(src, &self.parent.aliases)
                     && let Some(float_bits) = fenv_scalar_bits(dest) =>
             {
                 let carrier = if signed { Prim::I64 } else { Prim::U64 };
@@ -506,7 +506,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             }
             (src, dest)
                 if let Some(float_bits) = fenv_scalar_bits(src)
-                    && let Some((signed, _)) = parse_cir_int_type(dest) =>
+                    && let Some((signed, _)) =
+                        resolved_integer_parts(dest, &self.parent.aliases) =>
             {
                 let carrier_name = if signed { "i64" } else { "u64" };
                 let shim = format!("__slate_fenv_f{float_bits}_to_{carrier_name}");
@@ -596,7 +597,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             || self.ptr_requires_unsafe(&op.addr)
             || self
                 .value_type(&op.addr)
-                .and_then(cir_ptr_inner)
+                .and_then(CirType::pointee)
                 .is_some_and(|ty| self.parent.cir_type_is_union(ty));
         let field_is_trailing = self.member_field_is_trailing(&op.addr, &field);
         self.member_ptrs.insert(
@@ -622,9 +623,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     ) -> Option<(String, Type, bool)> {
         let record_name = self
             .value_type(base_ptr)
-            .and_then(cir_ptr_pointee)
+            .and_then(CirType::pointee)
             .map(|ty| self.parent.expand_alias(ty))
-            .and_then(cir_record_name)?;
+            .and_then(slate_record_name)?;
         let record_name = sanitize_ident(record_name).into_string();
         let record = self.parent.records.get(&record_name)?;
         let fields = self.parent.bitfield_storage_fields(record)?;
@@ -637,7 +638,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .map(|storage| Type::Custom(storage.wrapper.clone()));
         let ty = wrapper
             .clone()
-            .or_else(|| cir_ptr_pointee(result_ty).map(|ty| self.parent.rust_type(ty)))?;
+            .or_else(|| result_ty.pointee().map(|ty| self.parent.rust_type(ty)))?;
         Some((
             sanitize_ident(&field.name).into_string(),
             ty,
@@ -846,9 +847,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     fn record_name_from_base_type(&self, base_ptr: &str) -> Option<String> {
         let record_name = self
             .value_type(base_ptr)
-            .and_then(cir_ptr_pointee)
+            .and_then(CirType::pointee)
             .map(|ty| self.parent.expand_alias(ty))
-            .and_then(cir_record_name)?;
+            .and_then(slate_record_name)?;
         Some(sanitize_ident(record_name).into_string())
     }
 
@@ -1066,7 +1067,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     pub(super) fn cir_int_is_unsigned(&self, ty: &CirType) -> bool {
         let resolved = self.parent.expand_alias(ty);
-        parse_cir_int_type(resolved).is_some_and(|(signed, _)| !signed)
+        resolved.as_integer().is_some_and(|(signed, _, _)| !signed)
     }
 }
 

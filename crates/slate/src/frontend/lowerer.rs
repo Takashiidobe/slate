@@ -1,4 +1,4 @@
-//! lower: combine the CIR Operation-tree with the C AST oracle into Rust output.
+//! lower: combine the typed CIR tree with the C AST oracle into Rust output.
 
 use crate::backend::rust_ast::{
     Abi, AsmDialect, AsmOperand, AsmReg, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType,
@@ -9,7 +9,7 @@ use crate::backend::rust_ast::{
     RustValue, SelfKind, StdTrait, Stmt, StructDef, StructField, StructFields, SupportModule,
     TraitRef, Type, UnaryOp, UsedKind, Visibility,
 };
-use crate::cir::{Attr, Block, CirType, Module, Region};
+use crate::cir::{Attr, CirType, Module};
 use crate::ctx::Ctx;
 use crate::frontend::c_ast::{
     CType, EnumConstRef, FloatingLiteralFact, FloatingLiteralLoc, LayoutQuery, Loc, MacroConst,
@@ -17,7 +17,7 @@ use crate::frontend::c_ast::{
 };
 use crate::frontend::function_abi::repair_function_signature;
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
-use clang_ir::ast::{Operation, SourceLocation};
+use clang_ir::ast::SourceLocation;
 use clang_ir::enums::CmpOpKind;
 use clang_ir::model::{
     Function as CirFunction, Global as CirGlobal, GlobalLinkageKind, MemOrder, Op, VisibilityKind,
@@ -74,10 +74,6 @@ pub struct ProjectInfo {
     pub cross_referenced_globals: BTreeSet<String>,
     pub address_taken_functions: BTreeSet<String>,
 }
-
-const WEAK_ANY_LINKAGE: i64 = 4;
-const HIDDEN_VISIBILITY: i64 = 1;
-const PROTECTED_VISIBILITY: i64 = 2;
 
 fn attr_array_values(attr: &Attr) -> Option<&[Attr]> {
     match attr {
@@ -137,7 +133,7 @@ fn widen_flexible_array_members(
 ) {
     for global in &cir.globals {
         let expanded = cir.generic.resolve_type(&global.ty);
-        let Some(record_name) = cir_record_name(expanded) else {
+        let Some(record_name) = slate_record_name(expanded) else {
             continue;
         };
         let record_name = sanitize_ident(record_name).into_string();
@@ -158,7 +154,7 @@ fn widen_flexible_array_members(
                     .last()
                     .and_then(|elem| match elem {
                         Attr::ConstArray { ty, .. } | Attr::Zero { ty } => {
-                            parse_cir_array_type(ty).map(|(_, len)| len)
+                            ty.as_array().map(|(_, len)| len)
                         }
                         _ => None,
                     })
@@ -200,7 +196,7 @@ fn required_record_defs(
         .iter()
         .filter_map(|(alias, ty)| {
             let name =
-                lowered_record_name(cir_record_name(ty).or_else(|| alias.strip_prefix("rec_"))?)?;
+                lowered_record_name(slate_record_name(ty).or_else(|| alias.strip_prefix("rec_"))?)?;
             let kind = match ty {
                 CirType::Struct { .. } => RecordKind::Struct,
                 CirType::Union { .. } => RecordKind::Union,
@@ -267,17 +263,13 @@ pub fn shim_records_for_module(cir: &Module, c: &Unit) -> Vec<crate::frontend::c
         .generic
         .type_aliases
         .values()
-        .filter_map(|ty| cir_record_name(ty))
+        .filter_map(slate_record_name)
         .collect();
     c.named_header_records
         .iter()
         .filter(|&record| referenced.contains(record.name.as_str()))
         .cloned()
         .collect()
-}
-
-fn linkage_is_external(op: &Operation) -> bool {
-    matches!(attr_int(op, "linkage").unwrap_or(0), 0 | WEAK_ANY_LINKAGE)
 }
 
 fn typed_linkage_is_external(linkage: GlobalLinkageKind) -> bool {
@@ -291,20 +283,9 @@ fn typed_global_is_exported(global: &CirGlobal) -> bool {
     typed_linkage_is_external(global.linkage) && global.visibility != Some(VisibilityKind::Hidden)
 }
 
-fn visibility_allows_export(op: &Operation) -> bool {
-    attr_int(op, "global_visibility").unwrap_or(0) != HIDDEN_VISIBILITY
-}
-
-fn externally_exported(op: &Operation) -> bool {
-    linkage_is_external(op) && visibility_allows_export(op)
-}
-
-fn visibility_is_protected(op: &Operation) -> bool {
-    attr_int(op, "global_visibility") == Some(PROTECTED_VISIBILITY)
-}
-
-fn linkage_is_weak(op: &Operation) -> bool {
-    attr_int(op, "linkage") == Some(WEAK_ANY_LINKAGE)
+fn typed_function_is_exported(function: &CirFunction) -> bool {
+    typed_linkage_is_external(function.linkage)
+        && function.visibility != Some(VisibilityKind::Hidden)
 }
 
 fn symbol_attrs(
@@ -339,70 +320,55 @@ fn insert_crate_feature(items: &mut [Item], feature: Feature) {
     }
 }
 
-fn region_ends_in_noreturn_call(region: &Region) -> bool {
+fn region_ends_in_noreturn_call(region: &inst::Region) -> bool {
     if region.blocks.len() != 1 {
         return false;
     }
     let Some(block) = region.blocks.first() else {
         return false;
     };
-    let ops: &[Operation] = match block.ops.last() {
-        Some(last) if matches!(last.mnemonic(), "return" | "yield") => {
-            &block.ops[..block.ops.len() - 1]
-        }
+    let ops: &[Op] = match block.ops.last() {
+        Some(Op::Return(_) | Op::Yield(_)) => &block.ops[..block.ops.len() - 1],
         _ => &block.ops,
     };
     match ops.last() {
-        Some(op) if op.mnemonic() == "call" => attr_bool(op, "noreturn"),
-        Some(op) if op.mnemonic() == "scope" => {
-            op.regions.first().is_some_and(region_ends_in_noreturn_call)
-        }
+        Some(Op::Call(call)) => call.noreturn,
+        Some(Op::Scope(scope)) => region_ends_in_noreturn_call(&scope.scope_region),
         _ => false,
     }
 }
 
-fn function_requires_unsafe_contract(op: &Operation) -> bool {
-    let Some(function_type) = attr_type(op, "function_type") else {
-        return false;
-    };
-    let (params, _) = parse_function_type(function_type);
-    if !params
+fn function_requires_unsafe_contract(function: &CirFunction) -> bool {
+    if !function
+        .params
         .iter()
-        .any(|ty| matches!(ty, CirType::Pointer { .. }))
+        .any(|(_, ty)| matches!(ty, CirType::Pointer { .. }))
     {
         return false;
     }
-
-    let mut ops = Vec::new();
-    collect_region_ops_recursive(op, &mut ops);
+    let Some(body) = &function.body else {
+        return false;
+    };
     let mut local_ptrs = BTreeSet::new();
-    for op in ops {
-        if op.mnemonic() == "alloca"
-            || (matches!(op.mnemonic(), "get_member" | "get_element")
-                && op
-                    .operands
-                    .first()
-                    .is_some_and(|base| local_ptrs.contains(base)))
-        {
-            local_ptrs.extend(op.results.iter().map(|(id, _)| id.clone()));
-        } else if matches!(op.mnemonic(), "load" | "store")
-            && op
-                .operands
-                .last()
-                .is_some_and(|ptr| !local_ptrs.contains(ptr))
-        {
-            return true;
+    let mut unsafe_access = false;
+    walk_region_ops(body, &mut |op| {
+        match op {
+            Op::Alloca(alloca) => {
+                local_ptrs.insert(alloca.addr.clone());
+            }
+            Op::GetMember(member) if local_ptrs.contains(&member.addr) => {
+                local_ptrs.insert(member.result.clone());
+            }
+            Op::GetElement(element) if local_ptrs.contains(&element.base) => {
+                local_ptrs.insert(element.result.clone());
+            }
+            Op::Load(load) if !local_ptrs.contains(&load.addr) => unsafe_access = true,
+            Op::Store(store) if !local_ptrs.contains(&store.addr) => unsafe_access = true,
+            _ => {}
         }
-    }
-    false
-}
-
-fn builtin_module(module: &Module) -> Option<&Operation> {
-    module
-        .generic
-        .ops
-        .iter()
-        .find(|op| op.name == "builtin.module")
+        !unsafe_access
+    });
+    unsafe_access
 }
 
 /// Extracts `#cir.block_addr_info<@func, "label">` labels from a
@@ -427,9 +393,7 @@ pub fn defined_functions(module: &Module) -> Vec<String> {
         .filter(|function| {
             typed_linkage_is_external(function.linkage)
                 && (!function.is_declaration()
-                    || function.raw.as_ref().is_some_and(|op| {
-                        attr_symbol_ref(op, "aliasee").is_some() && !linkage_is_weak(op)
-                    }))
+                    || function.aliasee.is_some() && function.linkage != GlobalLinkageKind::WeakAny)
         })
         .map(|function| function.name.clone())
         .collect()
@@ -512,11 +476,7 @@ fn allocate_global_rust_names(
         names.insert(source_name, rust_name);
     }
     for global in &module.globals {
-        let Some(target) = global
-            .raw
-            .as_ref()
-            .and_then(|op| attr_symbol_ref(op, "aliasee"))
-        else {
+        let Some(target) = global.aliasee.as_deref() else {
             continue;
         };
         let target_name = names
@@ -535,13 +495,7 @@ pub fn unsafe_defined_functions(module: &Module) -> BTreeSet<String> {
         .filter(|function| {
             !function.is_declaration() && typed_linkage_is_external(function.linkage)
         })
-        .filter(|function| {
-            function.varargs
-                || function
-                    .raw
-                    .as_ref()
-                    .is_some_and(function_requires_unsafe_contract)
-        })
+        .filter(|function| function.varargs || function_requires_unsafe_contract(function))
         .map(|function| function.name.clone())
         .filter(|name| name != "main")
         .collect();
@@ -549,10 +503,7 @@ pub fn unsafe_defined_functions(module: &Module) -> BTreeSet<String> {
         if !function.is_declaration() {
             continue;
         }
-        let Some(op) = function.raw.as_ref() else {
-            continue;
-        };
-        let Some(target) = attr_symbol_ref(op, "aliasee") else {
+        let Some(target) = function.aliasee.as_deref() else {
             continue;
         };
         if unsafe_functions.contains(target) {
@@ -713,18 +664,15 @@ pub fn required_features(module: &Module) -> BTreeSet<Feature> {
         {
             features.insert(Feature::F16);
         }
-        if function.linkage == GlobalLinkageKind::WeakAny
-            && function
-                .raw
-                .as_ref()
-                .is_none_or(|op| attr_symbol_ref(op, "aliasee").is_none())
-        {
+        if function.linkage == GlobalLinkageKind::WeakAny && function.aliasee.is_none() {
             features.insert(Feature::Linkage);
         }
         if function.varargs
-            || function.raw.as_ref().is_some_and(|op| {
-                attr_type(op, "function_type").is_some_and(function_type_contains_va_list)
-            })
+            || function
+                .params
+                .iter()
+                .any(|(_, ty)| function_type_contains_va_list(ty))
+            || function_type_contains_va_list(&function.return_ty)
         {
             features.insert(Feature::CVariadic);
         }
@@ -772,7 +720,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         .generic
         .type_aliases
         .values()
-        .filter_map(|ty| cir_record_name(ty))
+        .filter_map(slate_record_name)
         .map(|name| sanitize_ident(name).into_string())
         .collect();
     let mut anon_record_names: BTreeSet<String> = anon_records
@@ -1699,21 +1647,11 @@ impl<'a> Lowerer<'a> {
         }
         items.extend(self.standard_record_defs());
 
-        let Some(module_op) = builtin_module(module) else {
-            self.ctx.diagnostics.error("lower: no builtin.module op");
-            return Program { items };
-        };
-
         self.weak_aliases = module
             .functions
             .iter()
             .filter(|function| function.linkage == GlobalLinkageKind::WeakAny)
-            .filter_map(|function| {
-                Some((
-                    function.name.clone(),
-                    attr_symbol_ref(function.raw.as_ref()?, "aliasee")?.to_string(),
-                ))
-            })
+            .filter_map(|function| Some((function.name.clone(), function.aliasee.clone()?)))
             .collect();
         self.external_weak_targets = self
             .weak_refs
@@ -1753,7 +1691,7 @@ impl<'a> Lowerer<'a> {
             })
             .collect();
         let mut assembly_strings = Vec::new();
-        collect_assembly_strings(module_op, &mut assembly_strings);
+        collect_assembly_strings(module, &mut assembly_strings);
         let asm_referenced_globals: BTreeSet<String> = module
             .globals
             .iter()
@@ -1765,9 +1703,9 @@ impl<'a> Lowerer<'a> {
             })
             .map(|name| sanitize_ident(name).into_string())
             .collect();
-        items.extend(lower_module_asm(module_op, &mut self.ctx.diagnostics));
+        items.extend(lower_module_asm(module, &mut self.ctx.diagnostics));
         items.extend(lower_weak_alias_asm(
-            module_op,
+            module,
             &self.weak_aliases,
             &mut self.ctx.diagnostics,
         ));
@@ -1880,34 +1818,25 @@ impl<'a> Lowerer<'a> {
             .iter()
             .filter(|function| function.is_declaration())
         {
-            let Some(op) = function.raw.as_ref() else {
-                continue;
-            };
-            if attr_symbol_ref(op, "aliasee").is_some() {
-                if linkage_is_weak(op) {
-                    let Some(name) = attr_str(op, "sym_name") else {
-                        continue;
-                    };
-                    let function_type = attr_type(op, "function_type").unwrap_or(&CirType::Void);
-                    let (decl, params, ret) = self.extern_fn_signature(name, function_type);
+            if function.aliasee.is_some() {
+                if function.linkage == GlobalLinkageKind::WeakAny {
+                    let name = &function.name;
+                    let (decl, params, ret) = self.extern_fn_signature(function);
                     if decl.variadic {
                         self.uses_c_variadic.set(true);
                     }
-                    self.externs.insert(name.to_string(), params);
-                    self.extern_returns.insert(name.to_string(), ret);
+                    self.externs.insert(name.clone(), params);
+                    self.extern_returns.insert(name.clone(), ret);
                     extern_decls.push(ExternDecl::Fn(decl));
                 }
                 continue;
             }
-            let Some(name) = attr_str(op, "sym_name") else {
-                continue;
-            };
+            let name = &function.name;
             if let Some(target) = self.weak_refs.get(name).cloned() {
                 if self.external_weak_targets.contains(&target)
                     && emitted_weak_targets.insert(target.clone())
                 {
-                    let function_type = attr_type(op, "function_type").unwrap_or(&CirType::Void);
-                    let (decl, params, ret) = self.extern_fn_signature(&target, function_type);
+                    let (decl, params, ret) = self.extern_fn_signature_as(&target, function);
                     if decl.variadic {
                         self.ctx.diagnostics.error(format!(
                             "lower: variadic weakref alias `{name}` to external target `{target}`"
@@ -1939,13 +1868,12 @@ impl<'a> Lowerer<'a> {
                 });
                 continue;
             }
-            let function_type = attr_type(op, "function_type").unwrap_or(&CirType::Void);
-            let (mut decl, params, ret) = self.extern_fn_signature(name, function_type);
-            if attr_bool(op, "noreturn") {
+            let (mut decl, params, ret) = self.extern_fn_signature(function);
+            if function.noreturn {
                 decl.ret = Some(Type::Never);
             }
-            self.externs.insert(name.to_string(), params);
-            self.extern_returns.insert(name.to_string(), ret.clone());
+            self.externs.insert(name.clone(), params);
+            self.extern_returns.insert(name.clone(), ret.clone());
             extern_decls.push(ExternDecl::Fn(decl));
         }
         if !extern_decls.is_empty() {
@@ -2029,12 +1957,9 @@ impl __SlateVaArgs {
         );
 
         for function in &module.functions {
-            let Some(op) = function.raw.as_ref() else {
-                continue;
-            };
             let name = &function.name;
             let item = if function.is_declaration() {
-                self.lower_func_alias(op, &module.functions)
+                self.lower_func_alias(function, &module.functions)
             } else {
                 self.lower_func(function)
             };
@@ -2223,11 +2148,10 @@ impl __SlateVaArgs {
 
     fn collect_global(&mut self, global: &CirGlobal) {
         let name = global.name.as_str();
-        let raw = global.raw.as_ref();
         if matches!(name, "llvm.compiler.used" | "llvm.used") {
             return;
         }
-        if raw.and_then(|op| attr_symbol_ref(op, "aliasee")).is_some() {
+        if global.aliasee.is_some() {
             return;
         }
         let rust_name = self.rust_global_name(name);
@@ -2259,12 +2183,8 @@ impl __SlateVaArgs {
             );
             return;
         }
-        if let Some(op) = raw {
-            self.warn_protected_visibility(op, name);
-        }
-        let section = raw
-            .and_then(|op| attr_str(op, "section"))
-            .map(str::to_owned);
+        self.warn_protected_visibility(global.visibility, name);
+        let section = global.section.clone();
         let used = self
             .used_symbols
             .get(&sanitize_ident(name).into_string())
@@ -2420,7 +2340,7 @@ impl __SlateVaArgs {
             && !ty
                 .as_ref()
                 .is_some_and(|ty| matches!(ty, Type::VaList) || is_boxed_va_args_type(ty))
-            && let Some((elem, len)) = parse_cir_array_type(&global.ty)
+            && let Some((elem, len)) = global.ty.as_array()
         {
             if is_c_global && let Some(ty) = ty {
                 self.globals.insert(
@@ -2445,7 +2365,7 @@ impl __SlateVaArgs {
             } else if matches!(elem, CirType::Named(n) if n == "s8i") && name.starts_with(".str") {
                 self.strings.insert(name.to_string(), vec![0; len as usize]);
             } else if name.starts_with(".str")
-                && parse_cir_int_type(elem).is_some()
+                && resolved_integer_parts(elem, &self.aliases).is_some()
                 && let Some(ty) = ty
             {
                 self.globals.insert(
@@ -2463,7 +2383,7 @@ impl __SlateVaArgs {
                         used: used.clone(),
                     },
                 );
-            } else if parse_cir_int_type(elem).is_some() {
+            } else if resolved_integer_parts(elem, &self.aliases).is_some() {
                 self.const_arrays.insert(name.to_string(), Vec::new());
             } else {
                 self.const_zero_globals.insert(name.to_string());
@@ -2532,12 +2452,12 @@ impl __SlateVaArgs {
 
     fn lower_func_alias(
         &mut self,
-        op: &Operation,
-        functions: &[clang_ir::model::Function],
+        function: &CirFunction,
+        functions: &[CirFunction],
     ) -> Option<Item> {
-        let name = attr_str(op, "sym_name")?;
-        let target = attr_symbol_ref(op, "aliasee")?;
-        if linkage_is_weak(op) {
+        let name = &function.name;
+        let target = function.aliasee.as_deref()?;
+        if function.linkage == GlobalLinkageKind::WeakAny {
             return None;
         }
         let target_op = functions
@@ -2550,8 +2470,7 @@ impl __SlateVaArgs {
             return None;
         }
 
-        let function_type = attr_type(op, "function_type").unwrap_or(&CirType::Void);
-        let (decl, _, _) = self.extern_fn_signature(name, function_type);
+        let (decl, _, _) = self.extern_fn_signature(function);
         if decl.variadic {
             self.ctx.diagnostics.error(format!(
                 "lower: unsupported variadic function alias `{name}` to `{target}`"
@@ -2560,15 +2479,16 @@ impl __SlateVaArgs {
         }
 
         let external_def = self.project.emit_pub
-            && (externally_exported(op) || self.project.cross_referenced_functions.contains(name));
-        self.warn_protected_visibility(op, name);
+            && (typed_function_is_exported(function)
+                || self.project.cross_referenced_functions.contains(name));
+        self.warn_protected_visibility(function.visibility, name);
         let attrs = symbol_attrs(
             external_def,
-            linkage_is_weak(op),
-            attr_str(op, "section"),
+            function.linkage == GlobalLinkageKind::WeakAny,
+            function.section.as_deref(),
             &[],
         );
-        if linkage_is_weak(op) {
+        if function.linkage == GlobalLinkageKind::WeakAny {
             self.uses_linkage.set(true);
         }
         let args = decl
@@ -2616,14 +2536,15 @@ impl __SlateVaArgs {
         lower_enum_def(enm, Visibility::Private).map(Item::Enum)
     }
 
-    fn warn_unsupported_function_attributes(&mut self, op: &Operation, name: &str) {
+    fn warn_unsupported_function_attributes(&mut self, function: &CirFunction) {
+        let name = &function.name;
         let mut kinds: Vec<&str> = Vec::new();
-        match attr_int(op, "side_effect") {
-            Some(1) => kinds.push("pure"),
-            Some(2) => kinds.push("const"),
+        match function.side_effect {
+            Some(clang_ir::enums::SideEffect::Pure) => kinds.push("pure"),
+            Some(clang_ir::enums::SideEffect::Const) => kinds.push("const"),
             _ => {}
         }
-        if attr_bool(op, "hot") {
+        if function.hot {
             kinds.push("hot");
         }
         if let Some(extra) = self.unsupported_attribute_functions.get(name) {
@@ -2640,8 +2561,8 @@ impl __SlateVaArgs {
         ));
     }
 
-    fn warn_protected_visibility(&mut self, op: &Operation, name: &str) {
-        if visibility_is_protected(op) {
+    fn warn_protected_visibility(&mut self, visibility: Option<VisibilityKind>, name: &str) {
+        if visibility == Some(VisibilityKind::Protected) {
             self.ctx.diagnostics.warn(
                 format!(
                     "lower: protected visibility on `{name}` has no faithful Rust representation; falling back to default exported visibility"
@@ -2730,7 +2651,7 @@ impl __SlateVaArgs {
             return None;
         }
         let expanded = self.aliases.values().find(|ty| {
-            cir_record_name(ty).is_some_and(|name| {
+            slate_record_name(ty).is_some_and(|name| {
                 sanitize_ident(name).as_str() == sanitize_ident(&record.name).as_str()
             })
         })?;
@@ -2783,7 +2704,7 @@ impl __SlateVaArgs {
             if self
                 .aliases
                 .values()
-                .any(|ty| cir_record_name(ty) == Some(name))
+                .any(|ty| slate_record_name(ty) == Some(name))
             {
                 out.push(Item::Record(standard_record_def(name)));
             }
@@ -2792,7 +2713,6 @@ impl __SlateVaArgs {
     }
 
     fn lower_func(&mut self, function: &CirFunction) -> Option<Item> {
-        let op = function.raw.as_ref()?;
         let name = &function.name;
         let weak_alias_target = self.weak_aliases.values().any(|target| target == name);
         let param_types: Vec<&CirType> = function.params.iter().map(|(_, ty)| ty).collect();
@@ -2874,7 +2794,7 @@ impl __SlateVaArgs {
             (Visibility::Private, None, None, prelude)
         } else {
             let external_def = self.project.emit_pub
-                && (externally_exported(op)
+                && (typed_function_is_exported(function)
                     || self.project.cross_referenced_functions.contains(name))
                 || weak_alias_target;
             let vis = if external_def {
@@ -2900,10 +2820,8 @@ impl __SlateVaArgs {
             (vis, abi, ret, Vec::<Stmt>::new())
         };
 
-        let diverges = !is_main
-            && attr_bool(op, "noreturn")
-            && op.regions.first().is_some_and(region_ends_in_noreturn_call);
-        if !is_main && attr_bool(op, "noreturn") && !diverges {
+        let diverges = !is_main && function.noreturn && region_ends_in_noreturn_call(body);
+        if !is_main && function.noreturn && !diverges {
             self.ctx.diagnostics.warn(
                 format!(
                     "lower: __attribute__((noreturn)) on `{name}` does not structurally prove divergence; keeping its declared return type"
@@ -2946,12 +2864,12 @@ impl __SlateVaArgs {
         let mut attrs = symbol_attrs(
             !is_main
                 && (self.project.emit_pub
-                    && (externally_exported(op)
+                    && (typed_function_is_exported(function)
                         || self.project.cross_referenced_functions.contains(name))
                     || weak_alias_target
                     || self.long_double_callback_trampolines.contains_key(name)),
-            linkage_is_weak(op),
-            attr_str(op, "section"),
+            function.linkage == GlobalLinkageKind::WeakAny,
+            function.section.as_deref(),
             &[],
         );
         let rust_fn_name = sanitize_ident(name);
@@ -2965,7 +2883,7 @@ impl __SlateVaArgs {
         if let Some(features) = self.target_feature_functions.get(name) {
             attrs.push(RustAttr::TargetFeature(features.join(",")));
         }
-        if attr_bool(op, "cold") {
+        if function.cold {
             attrs.push(RustAttr::Cold);
         }
         if self.always_inline_functions.contains(name) {
@@ -2980,9 +2898,9 @@ impl __SlateVaArgs {
         if let Some(message) = self.deprecated_functions.get(name) {
             attrs.push(RustAttr::Deprecated(message.clone()));
         }
-        self.warn_unsupported_function_attributes(op, name);
-        self.warn_protected_visibility(op, name);
-        if linkage_is_weak(op) {
+        self.warn_unsupported_function_attributes(function);
+        self.warn_protected_visibility(function.visibility, name);
+        if function.linkage == GlobalLinkageKind::WeakAny {
             self.uses_linkage.set(true);
         }
         let unsafe_ = is_variadic || self.unsafe_functions.contains(name);
@@ -3005,28 +2923,38 @@ impl __SlateVaArgs {
             .unwrap_or_default()
             .into();
         let asm_gotos: VecDeque<_> = self.asm_gotos.get(name).cloned().unwrap_or_default().into();
-        let mut function_ops = Vec::new();
-        collect_region_ops_recursive(op, &mut function_ops);
         if self.naked_functions.contains(name) {
-            return self.lower_naked_func(name, &function_ops, attrs, vis, params, ret);
+            return self.lower_naked_func(name, body, attrs, vis, params, ret);
         }
         let local_enum_decls = self
             .local_enum_decls
             .get(name)
             .map_or(&[][..], Vec::as_slice);
         let integer_enum_locals =
-            enum_locals_requiring_integer_storage(local_enum_decls, &self.enums, &function_ops);
+            enum_locals_requiring_integer_storage(local_enum_decls, &self.enums, body);
         let local_enum_types: BTreeMap<String, String> = local_enum_decls
             .iter()
             .filter(|decl| self.enums.contains_key(&decl.enum_name))
             .filter(|decl| !integer_enum_locals.contains(&decl.name))
             .map(|decl| (decl.name.clone(), decl.enum_name.clone()))
             .collect();
-        let va_allocas = function_ops
-            .iter()
-            .filter(|op| matches!(op.mnemonic(), "va_start" | "va_arg" | "va_copy"))
-            .flat_map(|op| op.operands.iter().cloned())
-            .collect();
+        let mut va_allocas = BTreeSet::new();
+        walk_region_ops(body, &mut |op| {
+            match op {
+                Op::VaStart(op) => {
+                    va_allocas.insert(op.arg_list.clone());
+                }
+                Op::VaArg(op) => {
+                    va_allocas.insert(op.arg_list.clone());
+                }
+                Op::VaCopy(op) => {
+                    va_allocas.insert(op.src_list.clone());
+                    va_allocas.insert(op.dst_list.clone());
+                }
+                _ => {}
+            }
+            true
+        });
         let mut f = FunctionLowerer {
             parent: self,
             values: BTreeMap::new(),
@@ -3053,7 +2981,7 @@ impl __SlateVaArgs {
             hoisted: BTreeSet::new(),
             resolved_bi_allocas: BTreeSet::new(),
             declared_local_names: declared_param_names,
-            forward_allocas: forwardable_temp_allocas(op.regions.first()?),
+            forward_allocas: forwardable_temp_allocas(body),
             forward_values: BTreeMap::new(),
             immutable_temps: BTreeSet::new(),
             va_allocas,
@@ -3115,18 +3043,20 @@ impl __SlateVaArgs {
     fn lower_naked_func(
         &mut self,
         name: &str,
-        function_ops: &[&Operation],
+        body: &inst::Region,
         mut attrs: Vec<RustAttr>,
         vis: Visibility,
         params: Vec<FnParam>,
         ret: Option<Type>,
     ) -> Option<Item> {
-        let asm_ops: Vec<&Operation> = function_ops
-            .iter()
-            .filter(|op| op.mnemonic() == "asm")
-            .copied()
-            .collect();
-        let Some(dialect) = asm_ops.first().map(|op| op_asm_dialect(op)) else {
+        let mut asm_ops = Vec::new();
+        walk_region_ops(body, &mut |op| {
+            if let Op::Asm(asm) = op {
+                asm_ops.push(asm.clone());
+            }
+            true
+        });
+        let Some(dialect) = asm_ops.first().map(|op| cir_asm_dialect(op.asm_flavor)) else {
             self.ctx.diagnostics.error(format!(
                 "lower: __attribute__((naked)) function `{name}` has no inline assembly body"
             ));
@@ -3134,10 +3064,7 @@ impl __SlateVaArgs {
         };
         let mut lines = Vec::with_capacity(asm_ops.len());
         for asm_op in asm_ops {
-            let Some(raw) = attr_str(asm_op, "asm_string") else {
-                continue;
-            };
-            let Ok(template) = String::from_utf8(decode_cir_string(raw)) else {
+            let Ok(template) = String::from_utf8(decode_cir_string(&asm_op.asm_string)) else {
                 self.ctx
                     .diagnostics
                     .error("lower: inline assembly template is not valid UTF-8");
@@ -3263,29 +3190,29 @@ impl __SlateVaArgs {
         stmts
     }
 
-    /// Build a Rust `extern "C"` signature for a body-less C declaration,
-    /// returning `(line, fixed_param_rust_types, return_type)`. Trailing `...` becomes a Rust
-    /// variadic; a missing return arrow means the C function returns `void`.
     fn extern_fn_signature(
         &self,
-        name: &str,
-        function_type: &CirType,
+        function: &CirFunction,
     ) -> (ExternFnDecl, Vec<Type>, Option<String>) {
-        let (param_tys, ret_ty) = parse_function_type(function_type);
-        let variadic = function_type_is_variadic(function_type);
+        self.extern_fn_signature_as(&function.name, function)
+    }
 
-        let params = param_tys
+    fn extern_fn_signature_as(
+        &self,
+        name: &str,
+        function: &CirFunction,
+    ) -> (ExternFnDecl, Vec<Type>, Option<String>) {
+        let params = function
+            .params
             .iter()
             .enumerate()
-            .map(|(i, ty)| FnParam {
+            .map(|(i, (_, ty))| FnParam {
                 name: format!("_{i}"),
                 mutable: false,
                 ty: self.rust_type(ty),
             })
             .collect::<Vec<_>>();
-        let ret_ast = ret_ty
-            .as_ref()
-            .map(|ty| self.rust_type(ty))
+        let ret_ast = Some(self.rust_type(&function.return_ty))
             .filter(|ty| !matches!(ty, Type::CLib(c) if *c == CLibType::VOID));
         let identity = *self
             .known_functions
@@ -3297,7 +3224,7 @@ impl __SlateVaArgs {
             identity,
             declared_type: self.function_types.get(name).cloned(),
             params,
-            variadic,
+            variadic: function.varargs,
             ret: ret_ast,
             safe: false,
         };
@@ -3362,7 +3289,7 @@ impl __SlateVaArgs {
         if matches!(ty, CirType::Union { .. }) {
             return true;
         }
-        cir_record_name(ty)
+        slate_record_name(ty)
             .and_then(|name| self.records.get(sanitize_ident(name).as_str()))
             .is_some_and(|record| record.kind == RecordKind::Union)
     }

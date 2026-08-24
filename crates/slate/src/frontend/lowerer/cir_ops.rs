@@ -189,10 +189,6 @@ pub(super) fn region_ends_control_flow(region: &inst::Region) -> bool {
         })
 }
 
-pub(super) fn op_result_type(op: &Operation) -> Option<&CirType> {
-    op.results.first().map(|(_, ty)| ty)
-}
-
 // `u32` -> 32; None for bool/isize/usize/non-integers (no fixed width to mask to).
 pub(super) fn int_bits(rust_ty: &str) -> Option<u32> {
     rust_ty
@@ -225,31 +221,4 @@ pub(super) fn asm_output_types<'a>(
         _ => return None,
     };
     (fields.len() == output_count).then_some(fields)
-}
-
-pub(super) fn op_operand_types(op: &Operation) -> &[CirType] {
-    &op.operand_types
-}
-
-pub(super) fn cir_ptr_inner(ty: &CirType) -> Option<&CirType> {
-    match ty {
-        CirType::Pointer { pointee: inner, .. } => Some(inner),
-        _ => None,
-    }
-}
-
-pub(super) fn parse_function_type(ty: &CirType) -> (Vec<CirType>, Option<CirType>) {
-    match ty {
-        CirType::Func {
-            inputs,
-            optional_return_type,
-            ..
-        } => (inputs.clone(), optional_return_type.as_deref().cloned()),
-        _ => (Vec::new(), None),
-    }
-}
-
-/// Whether a `!cir.func<..>` type ends its parameter list with `...`.
-pub(super) fn function_type_is_variadic(ty: &CirType) -> bool {
-    matches!(ty, CirType::Func { var_arg: true, .. })
 }

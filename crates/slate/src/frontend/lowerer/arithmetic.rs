@@ -259,7 +259,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         rhs: &str,
         rust_op: BinOp,
     ) {
-        if let Some((_, len)) = result_ty.and_then(parse_cir_vector_type) {
+        if let Some((_, len, _)) = result_ty.and_then(CirType::as_vector) {
             self.materialize_expr(
                 result,
                 self.vector_binary_expr(lhs, rhs, len, rust_op),
@@ -319,7 +319,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         rhs: &str,
         rust_method: &str,
     ) {
-        if let Some((_, len)) = parse_cir_vector_type(result_ty) {
+        if let Some((_, len, _)) = result_ty.as_vector() {
             let lhs = self.operand_expr(lhs);
             let rhs = self.operand_expr(rhs);
             let elems = (0..len)
@@ -355,7 +355,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         rhs: &str,
         rust_op: BinOp,
     ) {
-        if let Some((_, len)) = ty.and_then(parse_cir_vector_type) {
+        if let Some((_, len, _)) = ty.and_then(CirType::as_vector) {
             self.materialize_expr(result, self.vector_binary_expr(lhs, rhs, len, rust_op), ty);
             return;
         }
@@ -444,7 +444,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         wide_overflow: Expr,
         wide_signed: bool,
     ) {
-        match parse_cir_int_type(results.1) {
+        match resolved_integer_parts(results.1, &self.parent.aliases) {
             Some((result_signed, result_bits)) if result_bits <= 128 => {
                 let result_rust_ty = self.parent.rust_type(results.1);
                 let narrowed =
@@ -481,7 +481,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let operand_rust_ty = operand_ty
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or(Type::Prim(Prim::I32));
-        let operand_int_ty = operand_ty.and_then(parse_cir_int_type);
+        let operand_int_ty =
+            operand_ty.and_then(|ty| resolved_integer_parts(ty, &self.parent.aliases));
 
         if bitint_generic_parts(&operand_rust_ty).is_some()
             && operand_int_ty.is_some_and(|(_, bits)| bits <= 128)
@@ -533,7 +534,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     // Rust's `>>` is arithmetic on signed and logical on unsigned, matching C by type.
     // cir.not is C's unary `~`; Rust spells integer bitwise complement `!`.
     pub(super) fn lower_not(&mut self, result: &str, result_ty: &CirType, value: &str) {
-        if let Some((_, len)) = parse_cir_vector_type(result_ty) {
+        if let Some((_, len, _)) = result_ty.as_vector() {
             let value = self.operand_expr(value);
             self.materialize_expr(
                 result,
@@ -563,7 +564,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_neg(&mut self, result: &str, result_ty: &CirType, value: &str) {
-        if let Some((elem_ty, len)) = parse_cir_vector_type(result_ty) {
+        if let Some((elem_ty, len, _)) = result_ty.as_vector() {
             let value = self.operand_expr(value);
             let elem_rust_ty = self.parent.rust_type(elem_ty);
             let elem_is_wrapping_int = matches!(
@@ -664,7 +665,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_abs(&mut self, result: &str, result_ty: Option<&CirType>, value: &str) {
-        if let Some((elem_ty, len)) = result_ty.and_then(parse_cir_vector_type) {
+        if let Some((elem_ty, len, _)) = result_ty.and_then(CirType::as_vector) {
             let is_int_elem = match elem_ty {
                 CirType::Int { .. } => true,
                 CirType::Named(name) => matches!(

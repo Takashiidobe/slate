@@ -42,7 +42,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         let rust_ty = self.parent.rust_type(ty);
-        if let Some((signed, _)) = parse_cir_int_type(ty)
+        if let Some((signed, _)) = resolved_integer_parts(ty, &self.parent.aliases)
             && let Type::Prim(prim) = &rust_ty
         {
             let value = if signed {
@@ -296,7 +296,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             !self.forward_allocas.contains(&op.addr)
                 && !self.hoisted.contains(&op.addr)
                 && op.dyn_alloc_size.is_none()
-                && !cir_ptr_pointee(&op.addr_ty).is_some_and(|pointee| {
+                && !op.addr_ty.pointee().is_some_and(|pointee| {
                     is_cir_va_list_record_type(pointee, &self.parent.aliases)
                 })
                 && !self
