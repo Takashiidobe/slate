@@ -12,3 +12,6 @@ int run_a(void) {
   }
   return total;
 }
+// LOWERING-DAG: struct Item
+// LOWERING-DAG: value: i32
+// LOWERING-DAG: weight: i32

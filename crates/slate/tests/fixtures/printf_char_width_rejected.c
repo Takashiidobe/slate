@@ -5,3 +5,6 @@ int main(void) {
   printf("%*c\n", width, 'a');
   return 0;
 }
+// REWRITES-DAG: fn printf(
+// REWRITES-DAG: unsafe { printf(
+// REWRITES-NOT: println!(

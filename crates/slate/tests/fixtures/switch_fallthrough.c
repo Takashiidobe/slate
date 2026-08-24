@@ -22,3 +22,6 @@ int main(void) {
   printf("%d %d %d %d %d\n", score(1), score(2), score(3), score(4), score(8));
   return 0;
 }
+// REWRITES-DAG: match __switch_case0 {
+// REWRITES-DAG: 0 => {
+// REWRITES-NOT: _ => break '__switch0,

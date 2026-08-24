@@ -20,3 +20,6 @@ int main(void) {
   printf("%d\n", jump_probe(input));
   return 0;
 }
+// REWRITES-DAG: __state0 = [1, 2, 3]
+// REWRITES-DAG: continue '__dispatch0;
+// REWRITES-DAG: match __state0 {

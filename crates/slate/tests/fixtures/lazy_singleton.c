@@ -1,3 +1,10 @@
+// REWRITES-DAG: static cached_value: std::sync::OnceLock<i32> = std::sync::OnceLock::new();
+// REWRITES-NOT: static mut cached_value
+// REWRITES-NOT: computed
+// REWRITES-LABEL: {{^}}fn get_value() -> i32 {
+// REWRITES-DAG: *cached_value.get_or_init(|| compute())
+// REWRITES: {{^}}}
+
 #include <stdio.h>
 
 static int cached_value = 0;

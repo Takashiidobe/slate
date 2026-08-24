@@ -14,3 +14,9 @@ int main(void) {
   printf("%d %d %d %d\n", first, second, third, fourth);
   return 0;
 }
+// REWRITES-DAG: struct atomic_flag
+// REWRITES-DAG: std::sync::atomic::AtomicU8::from_ptr
+// REWRITES-DAG: .swap(
+// REWRITES-DAG: std::sync::atomic::Ordering::Acquire
+// REWRITES-DAG: .store(
+// REWRITES-DAG: std::sync::atomic::Ordering::Release

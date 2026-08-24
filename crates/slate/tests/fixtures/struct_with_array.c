@@ -21,3 +21,5 @@ int main(void) {
   printf("%d\n", sum);
   return 0;
 }
+// REWRITES-DAG: b.data[0] = 10;
+// REWRITES-DAG: b.len = 3;

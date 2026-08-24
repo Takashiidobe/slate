@@ -15,3 +15,10 @@ int main(void) {
   printf("%d\n", chosen(3, 6));
   return 0;
 }
+// REWRITES-DAG: add_pair as *const ()
+// REWRITES-DAG: Option<unsafe extern "C" fn(i32, i32) -> i32>>(add_pair as *const ())
+// REWRITES-DAG: .unwrap()(
+// REWRITES-DAG: lhs + rhs
+// REWRITES-DAG: lhs * rhs
+// REWRITES-NOT: return _v
+// REWRITES-NOT: let mut __retval: i32 = lhs

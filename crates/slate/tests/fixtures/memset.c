@@ -28,3 +28,12 @@ int main(void) {
   printf("\n");
   return 0;
 }
+// REWRITES-DAG: fn memset(_0: *mut core::ffi::c_void, _1: i32, _2: usize) -> *mut core::ffi::c_void;
+// REWRITES-NOT: safe fn memset(
+// REWRITES-LABEL: {{^}}fn main() {
+// REWRITES-DAG: zero_buf.fill(0);
+// REWRITES-DAG: value_buf.fill(65);
+// REWRITES-DAG: partial_buf[(0..4)].fill(9);
+// REWRITES-DAG: unsafe { memset(
+// REWRITES-DAG: dynamic_buf.as_mut_ptr()
+// REWRITES: {{^}}}

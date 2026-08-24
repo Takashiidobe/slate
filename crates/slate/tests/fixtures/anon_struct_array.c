@@ -14,3 +14,9 @@ int main(void) {
   printf("%d\n", error_log[0].code);
   return 0;
 }
+// REWRITES-DAG: struct __slate_anonymous_struct_0(i32, *mut i8, f64);
+// REWRITES-DAG: error_log: aligned::Aligned<aligned::A16, [__slate_anonymous_struct_0; 3]>
+// REWRITES-DAG: __slate_anonymous_struct_0(404,
+// REWRITES-DAG: error_log[0].0
+// REWRITES-NOT: anon_0
+// REWRITES-NOT: error_log[0].code

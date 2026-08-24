@@ -22,3 +22,15 @@ int main(void) {
   remove("slate_stdio_file_write.tmp");
   return 0;
 }
+// REWRITES-LABEL: {{^}}fn main() {
+// REWRITES: unsafe { remove((c"slate_stdio_file_write.tmp"
+// REWRITES: let mut f = std::fs::OpenOptions::new().write(true).create(true).truncate(true).open("slate_stdio_file_write.tmp")
+// REWRITES: std::io::Write::write_all(&mut f, b"owned\n").unwrap();
+// REWRITES: drop(f);
+// REWRITES: std::io::BufReader::new(std::fs::OpenOptions::new().read(true).open("slate_stdio_file_write.tmp")
+// REWRITES-DAG: std::io::BufRead::read_until(
+// REWRITES-DAG: unsafe { fputs(buf.as_mut_ptr()
+// REWRITES-NOT: unsafe { fputs((c"owned\n"
+// REWRITES-NOT: unsafe { fgets(
+// REWRITES-NOT: unsafe { fclose(
+// REWRITES: {{^}}}

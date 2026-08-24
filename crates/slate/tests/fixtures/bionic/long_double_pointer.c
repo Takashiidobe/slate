@@ -8,3 +8,5 @@ long double probe(void) {
 }
 
 int main(void) { return 0; }
+// REWRITES-BIONIC-X86_64-DAG: fn store_long_double(_0: *mut f128);
+// REWRITES-BIONIC-X86_64-DAG: fn load_long_double(_0: *const f128) -> *const f128;

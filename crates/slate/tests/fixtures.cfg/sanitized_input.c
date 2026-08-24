@@ -13,3 +13,7 @@ int selected(void) { return INCLUDED_VALUE; }
 const char *source_name(void) { return __FILE__; }
 
 int main(void) { return selected() == 0; }
+// DIRECTIVES-DAG: #[cfg(feature = "sanitized_left")]
+// DIRECTIVES-DAG: #[cfg(not(feature = "sanitized_left"))]
+// DIRECTIVES-DAG: i32::MAX
+// DIRECTIVES-DAG: tests/fixtures.cfg/sanitized_input.c

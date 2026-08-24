@@ -25,3 +25,7 @@ int main(void) {
   printf("%d\n", overwrite_left(3, 8));
   return 0;
 }
+// REWRITES-DAG: p.left + p.right
+// REWRITES-DAG: p.left = p.right + 2;
+// REWRITES-NOT: unsafe { p.left }
+// REWRITES-NOT: unsafe { p.right }

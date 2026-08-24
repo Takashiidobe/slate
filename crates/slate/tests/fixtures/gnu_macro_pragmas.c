@@ -1,3 +1,7 @@
+// LOWERING-DAG: static mut macro_inner: i32 = 11;
+// LOWERING-DAG: static mut macro_outer: i32 = 7;
+// LOWERING-NOT: poisoned_but_unused
+
 #include <stdio.h>
 
 #define GNU_MACRO_VALUE 7

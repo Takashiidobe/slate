@@ -19,6 +19,8 @@ default-filter = '''
 [profile.lowering]
 default-filter = '''
   test(generated_differential)
+  + test(generated_cross_tu_filecheck)
+  + test(generated_library_filecheck)
   + test(c_testsuite_supported_tests_match_c)
   + test(chibicc_supported_tests_match_c)
   + test(chibicc_unsupported_tests_still_fail)

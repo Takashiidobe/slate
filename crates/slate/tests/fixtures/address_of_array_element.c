@@ -15,3 +15,13 @@ int main(void) {
   printf("%d %ld %d\n", *p + *q, q - p, read_array_element_through_call());
   return 0;
 }
+// REWRITES-DAG: fn read_pointer(pointer: &mut i32) -> i32
+// REWRITES-DAG: values[1] + values[3]
+// REWRITES-DAG: 3 - 1
+// REWRITES-DAG: read_pointer(&mut values[0])
+// REWRITES-NOT: __retval
+// REWRITES-NOT: std::process::exit
+// REWRITES-NOT: unsafe { *p }
+// REWRITES-NOT: unsafe { *q }
+// REWRITES-NOT: unsafe { *pointer }
+// REWRITES-NOT: .offset_from(

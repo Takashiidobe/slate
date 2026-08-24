@@ -11,3 +11,7 @@ int main(void) {
   }
   return 0;
 }
+// REWRITES-LABEL: {{^}}fn classify(
+// REWRITES-DAG: isalpha(
+// REWRITES-NOT: is_ascii_alphabetic
+// REWRITES: {{^}}}

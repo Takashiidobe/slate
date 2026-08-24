@@ -12,3 +12,5 @@ int main(void) {
   printf("%d\n", bump_counter());
   return 0;
 }
+// REWRITES-DAG: static mut counter: i32 = 2;
+// REWRITES-NOT: *counter

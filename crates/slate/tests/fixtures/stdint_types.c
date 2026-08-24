@@ -15,6 +15,9 @@ static int32_t add_i32(int32_t a, int16_t b) {
   int32_t sum = a + b;
   return sum;
 }
+// REWRITES-NOT: fn printf(
+// REWRITES-NOT: unsafe { printf(
+// REWRITES-DAG: println!("{}
 
 static uint64_t widen_u32(uint32_t value) {
   uint64_t wide = value + global_size;

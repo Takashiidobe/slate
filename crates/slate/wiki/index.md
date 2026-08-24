@@ -28,3 +28,6 @@
 - [clangir function pointer const-qualifier drop bug](concepts/clangir-function-pointer-const-qualifier-drop-bug.md)
 - [libc-test dlopen companion .so harness support](concepts/libc-test-dlopen-companion-so-harness-support.md)
 - [Directive-driven differential fixtures use profile-scoped FileCheck](concepts/directive-driven-differential-fixtures-use-profile-scoped-filecheck.md)
+- [Port differential source assertions to fixture FileCheck](concepts/port-differential-source-assertions-to-fixture-filecheck.md)
+- [Target-qualified FileCheck is independent of fixture flavor](concepts/target-qualified-filecheck-is-independent-of-fixture-flavor.md)
+- [FileCheck follows generated artifact ownership](concepts/filecheck-follows-generated-artifact-ownership.md)

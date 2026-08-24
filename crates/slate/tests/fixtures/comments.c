@@ -32,3 +32,12 @@ int main(void) {
              ? 0
              : 1;
 }
+// LOWERING-DAG: /// selects an operating mode
+// LOWERING-DAG: /// disable processing
+// LOWERING-DAG: /// enable processing
+// LOWERING-DAG: /// stores a selected mode
+// LOWERING-DAG: /// names holder records
+// LOWERING-DAG: /// current mode value
+// LOWERING-DAG: /// counts completed operations
+// LOWERING-DAG: /// increments a value and records the operation
+// LOWERING-DAG: /// stores the intermediate result

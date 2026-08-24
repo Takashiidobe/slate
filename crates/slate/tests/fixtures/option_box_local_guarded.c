@@ -22,3 +22,12 @@ int main(void) {
   compute(0);
   return 0;
 }
+// REWRITES-DAG: let mut p: Option<Box<i32>> = None;
+// REWRITES-DAG: p = Some(Box::<i32>::new(0));
+// REWRITES-DAG: match p.take() {
+// REWRITES-DAG: *p = 41;
+// REWRITES-DAG: let v: i32 = *p;
+// REWRITES-NOT: fn free(
+// REWRITES-NOT: fn malloc(
+// REWRITES-NOT: std::ptr::null_mut()
+// REWRITES-NOT: unsafe

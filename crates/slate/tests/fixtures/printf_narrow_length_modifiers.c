@@ -18,3 +18,7 @@ int main(void) {
   printf("%hhd %hhd %hhu %hd %hu\n", full_int, uc, negative, wide, wide);
   return 0;
 }
+// REWRITES-NOT: fn printf(
+// REWRITES-NOT: unsafe { printf(
+// REWRITES-DAG: ((s as i32) as u16) as i16
+// REWRITES-DAG: (full_int as u8) as i8

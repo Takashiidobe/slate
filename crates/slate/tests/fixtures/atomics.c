@@ -27,3 +27,16 @@ int main(void) {
          fxor, xchg_old, ok, expected, bad, expected2, (int)a);
   return 0;
 }
+// REWRITES-DAG: let a = std::sync::atomic::AtomicI32::new(0);
+// REWRITES-DAG: a.store(100, std::sync::atomic::Ordering::SeqCst);
+// REWRITES-DAG: let loaded: i32 = a.load(std::sync::atomic::Ordering::SeqCst);
+// REWRITES-DAG: let fa: i32 = a.fetch_add(5, std::sync::atomic::Ordering::SeqCst);
+// REWRITES-DAG: let xchg_old: i32 = a.swap(7, std::sync::atomic::Ordering::SeqCst);
+// REWRITES-DAG: a.compare_exchange(expected, 42,
+// REWRITES-DAG: expected = v;
+// REWRITES-DAG: expected2 = v;
+// REWRITES-NOT: _atomictmp
+// REWRITES-NOT: atomic_temp
+// REWRITES-NOT: cmpxchg_bool
+// REWRITES-NOT: from_ptr
+// REWRITES-NOT: let mut a

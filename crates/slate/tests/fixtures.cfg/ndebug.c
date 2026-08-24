@@ -10,3 +10,7 @@ int main(void) {
   printf("%d\n", debug_code());
   return 0;
 }
+// DIRECTIVES-DAG: #[cfg(not(debug_assertions))]
+// DIRECTIVES-DAG: #[cfg(debug_assertions)]
+// DIRECTIVES-DAG: let _v{{[0-9]+}}: i32 = 0;
+// DIRECTIVES-DAG: let _v{{[0-9]+}}: i32 = 1;

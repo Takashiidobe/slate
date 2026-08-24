@@ -1,3 +1,22 @@
+// REWRITES-DAG: struct __SlateVaArgs {
+// REWRITES-NOT: core::ffi::VaList
+// REWRITES-LABEL: {{^}}unsafe fn sum(
+// REWRITES-DAG: let mut ap: __SlateVaArgs;
+// REWRITES-DAG: let mut total: i32 = 0;
+// REWRITES-DAG: ap = __slate_va_args.clone();
+// REWRITES-DAG: for _ in 0..n {
+// REWRITES-DAG: total += unsafe { ap.next_arg::<i32>() };
+// REWRITES-NOT: if !(i < n)
+// REWRITES: {{^}}}
+// REWRITES-LABEL: {{^}}unsafe fn pick_second(
+// REWRITES-DAG: let first: i32 = unsafe { ap.next_arg::<i32>() };
+// REWRITES-DAG: let second: i32 = unsafe { ap.next_arg::<i32>() };
+// REWRITES: {{^}}}
+// REWRITES-LABEL: {{^}}fn main() {
+// REWRITES-DAG: sum(4, __SlateVaArgs::new(
+// REWRITES-DAG: pick_second(5, __SlateVaArgs::new(
+// REWRITES: {{^}}}
+
 #include <stdarg.h>
 #include <stdio.h>
 

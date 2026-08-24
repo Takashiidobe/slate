@@ -21,3 +21,9 @@ int main(void) {
   printf("%d\n", pick_index(1));
   return 0;
 }
+// REWRITES-DAG: values[2]
+// REWRITES-DAG: values[((index as i64) as usize)]
+// REWRITES-NOT: return _v
+// REWRITES-NOT: (0 as usize)
+// REWRITES-NOT: (1 as usize)
+// REWRITES-NOT: (2 as usize)

@@ -10,3 +10,10 @@ int main(void) {
   free(p);
   return 0;
 }
+// REWRITES-DAG: let mut p: Vec<i32> = vec![0; 3usize];
+// REWRITES-DAG: p[0] = 1;
+// REWRITES-DAG: p[1] = 2;
+// REWRITES-DAG: p[2] = 3;
+// REWRITES-NOT: let _v
+// REWRITES-NOT: fn malloc(
+// REWRITES-NOT: fn free(

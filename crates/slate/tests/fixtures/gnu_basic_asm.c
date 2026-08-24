@@ -1,3 +1,11 @@
+// LOWERING-DAG: #[cfg(target_arch = "x86_64")]
+// LOWERING-DAG: core::arch::global_asm!(".text\n.globl gnu_basic_asm_function
+// LOWERING-DAG: #[unsafe(no_mangle)]
+// LOWERING-DAG: static mut gnu_basic_asm_value: i32 = 0;
+// LOWERING-LABEL: {{^}}fn gnu_function_basic_asm() -> i32 {
+// LOWERING-DAG: core::arch::asm!("movl $23, gnu_basic_asm_value(%rip)", options(att_syntax, raw));
+// LOWERING: {{^}}}
+
 #include <stdio.h>
 
 __asm__(".text\n"

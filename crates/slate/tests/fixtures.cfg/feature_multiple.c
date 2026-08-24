@@ -16,3 +16,8 @@ int main(void) {
   printf("%d %d\n", first_code(), second_code());
   return 0;
 }
+// DIRECTIVES-DAG: #[cfg(feature = "first_feature")]
+// DIRECTIVES-DAG: #[cfg(not(feature = "first_feature"))]
+// DIRECTIVES-DAG: #[cfg(feature = "second_feature")]
+// DIRECTIVES-DAG: #[cfg(not(feature = "second_feature"))]
+// DIRECTIVES-NOT: all(feature = "first_feature", feature = "second_feature")

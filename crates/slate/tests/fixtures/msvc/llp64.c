@@ -34,3 +34,17 @@ int main(void) {
   printf("%zu %d\n", strlen(buffer), isdigit('7') != 0);
   return 0;
 }
+// REWRITES-MSVC-DAG: fn imported_msvc(
+// REWRITES-MSVC-DAG: _0: usize
+// REWRITES-MSVC-DAG: _1: isize
+// REWRITES-MSVC-DAG: _2: isize
+// REWRITES-MSVC-DAG: _3: usize
+// REWRITES-MSVC-DAG: _4: u16
+// REWRITES-MSVC-DAG: _5: i32
+// REWRITES-MSVC-DAG: _6: i64
+// REWRITES-MSVC-DAG: _7: f64
+// REWRITES-MSVC-DAG: ) -> i64;
+// REWRITES-MSVC-NOT: pthread
+// REWRITES-MSVC-NOT: ioctl
+// REWRITES-MSVC-NOT: socket
+// REWRITES-MSVC-NOT: fork

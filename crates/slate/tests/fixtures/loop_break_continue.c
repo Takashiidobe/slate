@@ -24,3 +24,10 @@ int main(void) {
   printf("%d\n", grid(3, 3));
   return 0;
 }
+// REWRITES-LABEL: {{^}}fn grid(
+// REWRITES-DAG: if c != r {
+// REWRITES-DAG: if c > 4 {
+// REWRITES-DAG: break;
+// REWRITES-NOT: __continue
+// REWRITES-NOT: __loop
+// REWRITES: {{^}}}

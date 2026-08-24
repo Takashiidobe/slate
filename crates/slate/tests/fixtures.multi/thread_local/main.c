@@ -22,3 +22,4 @@ int main(void) {
   printf("%d %d %d %d\n", worker_result, shared_value, created, joined);
   return 0;
 }
+// LOWERING-DAG: use crate::state::shared_value;

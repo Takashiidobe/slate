@@ -35,3 +35,11 @@ int main(void) {
          once_total, key_created, quick_registered);
   return 0;
 }
+// LOWERING-DAG: Option<unsafe extern "C" fn
+// LOWERING-DAG: extern "C" fn thread_worker
+// LOWERING-DAG: extern "C" fn once_handler
+// LOWERING-DAG: extern "C" fn tss_destructor
+// LOWERING-DAG: extern "C" fn quick_handler
+// LOWERING-DAG: let mut control: i32 = 0;
+// LOWERING-DAG: call_once(std::ptr::addr_of_mut!(control) as *mut i32
+// LOWERING-NOT: Option<fn(

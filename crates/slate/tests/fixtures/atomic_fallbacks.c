@@ -18,3 +18,6 @@ int main(void) {
          now_p - values, *now_p, old_x - values, now_x - values);
   return 0;
 }
+// REWRITES-DAG: *std::ptr::addr_of_mut!(f) =
+// REWRITES-DAG: *std::ptr::addr_of_mut!(p) =
+// REWRITES-NOT: AtomicF32

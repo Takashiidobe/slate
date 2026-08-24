@@ -9,3 +9,5 @@ int main(void) {
     printf("%La\n", y);
   return 0;
 }
+// LOWERING-DAG: fn __slate_printf__ri32_pi8_f80(
+// LOWERING-DAG: fn __slate_sscanf__ri32_pi8_pi8_pf80(

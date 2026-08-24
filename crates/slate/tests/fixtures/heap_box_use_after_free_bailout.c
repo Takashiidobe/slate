@@ -8,3 +8,7 @@ int main(void) {
   printf("%d %d\n", *x, *x);
   return 0;
 }
+// REWRITES-DAG: let mut x: *mut i32
+// REWRITES-DAG: fn free(
+// REWRITES-DAG: unsafe { free(
+// REWRITES-NOT: Box<i32>

@@ -54,3 +54,13 @@ int main(void) {
          interrupted_case());
   return 0;
 }
+// REWRITES-DAG: let s: Aligned = Aligned { a: 5, b: 4660 };
+// REWRITES-DAG: std::mem::size_of::<Aligned>() as u64
+// REWRITES-DAG: std::mem::align_of::<Aligned>() as u64
+// REWRITES-DAG: std::mem::offset_of!(Aligned, a) as u64
+// REWRITES-DAG: std::mem::offset_of!(Aligned, b) as u64
+// REWRITES-DAG: let mut effectful: Aligned = Aligned { a: 0, b: 0 };
+// REWRITES-DAG: let mut repeated: Aligned = Aligned { a: 0, b: 0 };
+// REWRITES-DAG: let mut dependent: Aligned = Aligned { a: 0, b: 0 };
+// REWRITES-DAG: let mut interrupted: Aligned = Aligned { a: 4, b: 0 };
+// REWRITES-NOT: let mut s: Aligned

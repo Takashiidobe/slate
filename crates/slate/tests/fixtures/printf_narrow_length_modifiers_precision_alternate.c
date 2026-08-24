@@ -9,3 +9,9 @@ int main(void) {
   printf("%.5hd %#hx\n", b, c);
   return 0;
 }
+// REWRITES-NOT: fn printf(
+// REWRITES-NOT: unsafe { printf(
+// REWRITES-DAG: let __slate_printf_arg = (a as u8) as i8;
+// REWRITES-DAG: let __slate_printf_arg = (b as u16) as i16;
+// REWRITES-DAG: format!("{:04o}", a as u8)
+// REWRITES-DAG: format!("{:02x}", a as u8)

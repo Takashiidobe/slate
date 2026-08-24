@@ -4,3 +4,6 @@ int main(void) {
   printf("%5s|%-5s|%.1s|%6.1s\n", "hi", "hi", "hi", "hi");
   return 0;
 }
+// REWRITES-NOT: fn printf(
+// REWRITES-NOT: unsafe { printf(
+// REWRITES-DAG: println!("{}|{}|{}|{}", "   hi", "hi   ", "h", "     h");

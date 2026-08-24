@@ -13,3 +13,5 @@ static int value_after_endif = MACRO_STATE_VALUE;
 #endif
 
 int main(void) { return value_after_endif == MACRO_STATE_VALUE ? 0 : 1; }
+// DIRECTIVES-DAG: #[cfg(feature = "nested_macro_state")]
+// DIRECTIVES-DAG: compile_error!("unsupported semantic directive #pragma at line 4: push_macro(\"MACRO_STATE_VALUE\")");

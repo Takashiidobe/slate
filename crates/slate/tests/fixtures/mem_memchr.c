@@ -25,3 +25,23 @@ int main(void) {
          (long)(const_hit - cbuf));
   return 0;
 }
+// REWRITES-DAG: fn __slate_memchr(
+// REWRITES-DAG: std::slice::from_raw_parts(bytes, n)
+// REWRITES-LABEL: {{^}}fn main() {
+// REWRITES-DAG: let hit = buf.as_slice().iter().position(
+// REWRITES-DAG: (*__slate_byte as u8) == ((needle as i32) as u8)
+// REWRITES-DAG: let miss = buf.as_slice().iter().position(
+// REWRITES-DAG: let const_hit = cbuf.as_slice().iter().position(
+// REWRITES-DAG: let nul_after = Some(3);
+// REWRITES-DAG: let zero: *mut u8
+// REWRITES-DAG: let nul_equal: *mut i8
+// REWRITES-DAG: let nul_before: *mut i8
+// REWRITES-DAG: let partial: *mut u8
+// REWRITES-DAG: let offset: *mut u8
+// REWRITES-DAG: partial.offset_from(
+// REWRITES-DAG: offset.offset_from(
+// REWRITES-NOT: let mut hit
+// REWRITES-NOT: let mut miss
+// REWRITES-NOT: let mut nul_after
+// REWRITES-NOT: map_or(std::ptr::null_mut()
+// REWRITES: {{^}}}

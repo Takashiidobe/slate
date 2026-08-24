@@ -36,3 +36,6 @@ int main(void) {
   printf("%d %d %d %d\n", a, b, c, d);
   return 0;
 }
+// REWRITES-LABEL: {{^}}fn likely_nonzero(
+// REWRITES-DAG: unsafe { core::hint::assert_unchecked(
+// REWRITES: {{^}}}
