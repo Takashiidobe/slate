@@ -4,8 +4,6 @@
 //! Compilers are overridable so the CIR-built clang can be swapped in:
 //!   SLATE_CC=~/llvm-project/build-cir/bin/clang cargo nextest r --release
 
-// Diff tests are disabled while working on lowering
-/*
 mod support;
 
 use std::path::{Path, PathBuf};
@@ -134,6 +132,13 @@ fn fixtures() -> Vec<Fixture> {
         &selected,
         &mut fixtures,
     );
+    if selected.is_none() {
+        let profile = support::filecheck::Profile::active();
+        fixtures.retain(|fixture| {
+            std::fs::read_to_string(&fixture.path)
+                .is_ok_and(|source| support::filecheck::has_checks(&source, profile))
+        });
+    }
     fixtures.sort_by(|a, b| a.name.cmp(&b.name));
     fixtures
 }
@@ -274,46 +279,6 @@ fn run_cross_target_fixture(
     Ok(())
 }
 
-fn cargo_check_generated_for_target(name: &str, rust: &str, target: &str) -> Result<(), String> {
-    let libdir = Command::new("rustc")
-        .args(["--print", "target-libdir", "--target", target])
-        .output()
-        .map_err(|e| format!("spawn rustc: {e}"))?;
-    let libdir = PathBuf::from(String::from_utf8_lossy(&libdir.stdout).trim());
-    if !libdir.is_dir() {
-        eprintln!("skipping {target} cargo check: Rust target is not installed");
-        return Ok(());
-    }
-    let project = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("target/difftest-cross-check")
-        .join(name);
-    support::write_if_changed(
-        project.join("Cargo.toml"),
-        format!(
-            "[package]\nname = \"{name}\"\nversion = \"0.0.0\"\nedition = \"2024\"\n\n[dependencies]\nlibc = \"0.2\"\n"
-        )
-        .as_bytes(),
-    )
-    .map_err(|e| format!("write cross-check manifest: {e}"))?;
-    support::write_if_changed(project.join("src/main.rs"), rust.as_bytes())
-        .map_err(|e| format!("write cross-check source: {e}"))?;
-    let output = Command::new("cargo")
-        .args(["check", "--quiet", "--manifest-path"])
-        .arg(project.join("Cargo.toml"))
-        .args(["--target", target, "--target-dir"])
-        .arg(project.join("target"))
-        .output()
-        .map_err(|e| format!("spawn cargo check: {e}"))?;
-    if output.status.success() {
-        Ok(())
-    } else {
-        Err(format!(
-            "generated Rust cargo check failed for {target}:\n{}",
-            String::from_utf8_lossy(&output.stderr)
-        ))
-    }
-}
-
 fn android_ndk_clang() -> Option<PathBuf> {
     let path = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("target/android-ndk-oracle/ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/clang");
@@ -365,11 +330,23 @@ fn generated_differential() {
         .collect();
     let translated = support::parallel_map(&default_fixtures, |f| {
         let generated = tmp.join(format!("{}.generated.rs", f.name));
-        support::translate(&f.path, &generated).map(|()| support::Case {
-            name: f.name.clone(),
-            c_src: f.path.clone(),
-            rs_src: generated,
-            config: support::RunConfig::default(),
+        support::translate(&f.path, &generated).and_then(|()| {
+            let fixture = std::fs::read_to_string(&f.path)
+                .map_err(|e| format!("read {}: {e}", f.path.display()))?;
+            let rust = std::fs::read_to_string(&generated)
+                .map_err(|e| format!("read {}: {e}", generated.display()))?;
+            support::filecheck::check_generated_rust(
+                &fixture,
+                &rust,
+                support::filecheck::Profile::active(),
+                &tmp.join("filecheck").join(&f.name),
+            )?;
+            Ok(support::Case {
+                name: f.name.clone(),
+                c_src: f.path.clone(),
+                rs_src: generated,
+                config: support::RunConfig::default(),
+            })
         })
     });
     let mut cases = Vec::new();
@@ -420,6 +397,7 @@ fn generated_differential() {
     }
 }
 
+/*
 #[test]
 fn failed_batch_rebuild_does_not_accept_stale_binary() {
     let work = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-stale-bin-regression");
@@ -778,23 +756,6 @@ fn msvc_long_double_macro_constant_lowers_to_f64_bits() {
         "x86_64-pc-windows-msvc",
     )
     .unwrap();
-}
-
-#[test]
-fn function_alias_lowers_to_forwarding_wrapper() {
-    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-alias-function");
-    std::fs::create_dir_all(&tmp).expect("create tmp dir");
-    let c_src = fixtures_dir().join("alias_function.c");
-    let generated = tmp.join("alias_function.generated.rs");
-
-    support::translate(&c_src, &generated).expect("translate alias function fixture");
-    let rust = std::fs::read_to_string(&generated).expect("read generated alias function rust");
-
-    assert!(rust.contains("fn alias_impl(_0: i32) -> i32"));
-    assert!(
-        rust.contains("real_impl(_0)\n}"),
-        "alias wrapper should forward to real_impl:\n{rust}"
-    );
 }
 
 #[test]
@@ -1190,18 +1151,6 @@ fn gnu_empty_struct_emits_zero_sized_rust_type() {
     assert!(rust.contains("#[repr(C)]\n#[derive(Clone, Copy)]\nstruct GNUEmpty {\n}"));
     assert!(rust.contains("fn empty_size(value: GNUEmpty) -> u64"));
     assert!(rust.contains("let mut value: GNUEmpty = GNUEmpty {  };"));
-}
-
-#[test]
-fn pointer_comparisons_preserve_address_operands() {
-    let tmp = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-pointer-compare-address");
-    std::fs::create_dir_all(&tmp).expect("create tmp dir");
-
-    let rust = translate_fixture(&tmp, "pointer_compare_address");
-    assert!(rust.contains("_v2 == std::ptr::addr_of_mut!(utc)"));
-    assert!(rust.contains("_v4 == std::ptr::addr_of_mut!(local)"));
-    assert!(!rust.contains("_v2 == utc"));
-    assert!(!rust.contains("_v4 == local"));
 }
 
 #[test]

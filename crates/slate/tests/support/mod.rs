@@ -2,6 +2,7 @@
     dead_code,
     reason = "test helper toolbox; helpers may sit unused between runs"
 )]
+pub mod filecheck;
 pub mod libc_shim;
 
 use std::collections::BTreeMap;

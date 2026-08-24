@@ -27,3 +27,4 @@
 - [predicate tokenizer no longer collapses #if conditions to opaque](concepts/predicate-tokenizer-no-longer-collapses-if-conditions-to-opaque.md)
 - [clangir function pointer const-qualifier drop bug](concepts/clangir-function-pointer-const-qualifier-drop-bug.md)
 - [libc-test dlopen companion .so harness support](concepts/libc-test-dlopen-companion-so-harness-support.md)
+- [Directive-driven differential fixtures use profile-scoped FileCheck](concepts/directive-driven-differential-fixtures-use-profile-scoped-filecheck.md)

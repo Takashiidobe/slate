@@ -1,3 +1,7 @@
+// COMMON-LABEL: {{^}}fn alias_impl(_0: i32) -> i32 {
+// COMMON-DAG: real_impl(_0)
+// COMMON: {{^}}}
+
 #include <stdio.h>
 
 int real_impl(int x) { return x * 3 + 1; }
