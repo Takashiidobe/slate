@@ -34,3 +34,4 @@
 - [Remove obsolete snapshot test infrastructure](concepts/remove-obsolete-snapshot-test-infrastructure.md)
 - [clang-ir type projection accessors](concepts/clang-ir-type-projection-accessors.md)
 - [Retire generic operation helpers from semantic lowering](concepts/retire-generic-operation-helpers-from-semantic-lowering.md)
+- [Lowerer phase file boundaries](concepts/lowerer-phase-file-boundaries.md)

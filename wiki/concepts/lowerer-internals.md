@@ -37,11 +37,9 @@ Lowering runs in two nested passes over one `Lowerer<'a>`:
   the state-machine fallback for CFGs that don't reloop cleanly), and va_list /
   asm / macro-const bookkeeping local to the function.
 
-Free functions outside both structs (`attr_str`, `region_ops`, `parse_cir_*`,
-type-string parsing, etc.) are stateless CIR/text parsing helpers — they take
-whatever `Operation`/`&str`/`&Module` they need as arguments instead of reading
-`self`, so they're reusable from both `Lowerer` and `FunctionLowerer` methods
-and from the collection pass.
+Free functions outside both structs are stateless typed-CIR analysis and type
+lowering helpers. They take the typed `Module`, `Function`, `Op`, or structural
+type/attribute data they need instead of reading lowering state.
 
 ## Op dispatch
 
@@ -70,7 +68,7 @@ glob-imported, since their functions are reached as `self.method()`.
 
 | Module               | Kind                    | Owns                                                                                                                                                                                                                                                                                                                |
 | -------------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `analysis.rs`        | free fns, glob-imported | Whole-op-tree scans that run once before any function is lowered: lifecycle hooks (ctors/dtors), used-symbol collection, cross-block-liveness for the goto-dispatch fallback, enum locals that need integer storage, `attr_str`/`attr_int`-style op-attribute readers.                                              |
+| `analysis.rs`        | free fns, glob-imported | Typed whole-module and function-region analyses: lifecycle hooks, used symbols, cross-block liveness, enum locals requiring integer storage, C ABI targets, and native `va_list` requirements.                                                                                                                       |
 | `arithmetic.rs`      | `impl FunctionLowerer`  | Integer/float binary and unary arithmetic ops, overflow-checked arithmetic (`AddOverflow` etc.), shifts, rotates, `select`, constant-folding helpers for arithmetic ops.                                                                                                                                            |
 | `asm.rs`             | free fns, glob-imported | Inline-asm template translation, module-level `asm()` blocks, weak-alias `.symver`-style asm, register/dialect parsing.                                                                                                                                                                                             |
 | `atomic.rs`          | free fns, glob-imported | Mapping CIR atomic op/ordering attrs to `rust_ast` atomic types and `AtomicOrdering`.                                                                                                                                                                                                                               |
@@ -80,20 +78,23 @@ glob-imported, since their functions are reached as `self.method()`.
 | `cir_ops.rs`         | free fns, glob-imported | Structural CIR shape helpers: switch-case pattern extraction (including Duff's-device detection), "does this region diverge", opaque single-op/region unwrapping, result-type parsing.                                                                                                                              |
 | `constants.rs`       | free fns, glob-imported | Parsing CIR constant attribute text (`#cir.int<..>`, `#cir.global_view<..>`, `#cir.const_array<..>`, `#cir.ptr<N>`, float bit patterns) into `Expr`/`RustValue`; the standard-library record shim table.                                                                                                            |
 | `control_flow.rs`    | `impl FunctionLowerer`  | `cir.if`/`cir.for`/`cir.while`/`cir.do`/`cir.switch`/`cir.scope`, `break`/`continue`/`goto`/`return`, and the state-machine fallback (`lower_dispatch`) for irreducible control flow.                                                                                                                               |
+| `dispatch.rs`        | `impl FunctionLowerer`  | The single typed block/region traversal and `Op` dispatch match, including SSA result-type recording and cross-block materialization.                                                                                                                                                                               |
 | `expressions.rs`     | `impl FunctionLowerer`  | `_Complex` arithmetic (add/sub/mul/div/conj) and complex-part extraction.                                                                                                                                                                                                                                           |
+| `function_setup.rs`  | `impl Lowerer`          | Function aliases and declarations, per-function state construction, signatures, entry arguments, naked functions, and function-level attribute diagnostics.                                                                                                                                                         |
 | `intrinsics.rs`      | `impl FunctionLowerer`  | `__builtin_*`/LLVM-intrinsic ops that aren't plain arithmetic: trap/unreachable, `__builtin_object_size`, vector shuffle/extract/insert, x86 target intrinsics, extended asm, setjmp.                                                                                                                               |
 | `memory.rs`          | `impl FunctionLowerer`  | Everything that computes or dereferences a place: `cir.get_member`/`get_element`/`extract_member`/`insert_member`, casts, pointer-difference/stride, bitfield get/set, and the `place_expr`/`place_or_deref_expr` machinery every other handler calls to turn a CIR SSA pointer value into a Rust place expression. |
-| `op_utils.rs`        | free fns, glob-imported | Low-level `Op` attribute accessors (`attr_symbol_ref`, `attr_int`, `attr_bool`, successor-operand parsing, aggregate member index) used throughout every other submodule.                                                                                                                                           |
+| `module_index.rs`    | free fns, re-exported   | Translation-unit discovery: public/declared symbols, feature requirements, unsafe contracts, linkage metadata, record dependencies, and global Rust-name allocation.                                                                                                                                                 |
+| `op_utils.rs`        | free fns, glob-imported | Shared typed `Op` traversal and focused attribute-value helpers.                                                                                                                                                                                                                                                     |
+| `record_analysis.rs` | free fns, re-exported   | Anonymous-record discovery, CIR/AST record reconciliation, collision resolution, field-name recovery, and anonymous bitfield-slot analysis.                                                                                                                                                                         |
 | `runtime_support.rs` | free fns, glob-imported | The generated `f80`/long-double shim: trait impls, extern decls, cast helpers, emitted once per program when `uses_long_double` is set.                                                                                                                                                                             |
 | `storage.rs`         | `impl FunctionLowerer`  | `cir.alloca`/`store`/`load`/`copy`/`const`, local-slot naming and hoisting, and — notably — `render_const_value_expr`-adjacent global-initializer materialization shared with `Lowerer` (macro consts, layout queries, enum consts pulled from the fact queues).                                                    |
-| `types.rs`           | free fns, glob-imported | CIR type-string parsing into `rust_ast::Type` (`rust_type`, `rust_type_with_aliases`), `_BitInt` support, va_list detection, anonymous-record synthesis (`anon_local_records`, exported for use outside the lowerer).                                                                                               |
+| `types.rs`           | free fns, glob-imported | Structural CIR/C type conversion into `rust_ast::Type`, alias resolution, `_BitInt`, `va_list`, floating-environment, and type-property queries.                                                                                                                                                                     |
 | `values.rs`          | `impl FunctionLowerer`  | Temp/statement emission plumbing every handler uses: `next_temp`, `push_stmt`/`push_assign`, `materialize_expr`, `unsafe_expr`/`unsafe_stmt` wrapping, function-pointer null/byte-representation handling.                                                                                                          |
 
-`lowerer.rs` itself keeps: the `Lowerer`/`FunctionLowerer`/`DispatchCtx`/
-`LoopFrame`/`MemberPtr`/`ElementPtr` struct definitions, `lower_module`,
-`lower_op`'s dispatch match, global collection (`collect_global` and its
-`#cir.*`-initializer branches), record/enum/function-signature setup, and a
-handful of helpers not (yet) worth splitting out — e.g. `global_view_init_expr`
+`lowerer.rs` itself keeps the `Lowerer`/`FunctionLowerer`/`DispatchCtx`/
+`LoopFrame`/`MemberPtr`/`ElementPtr` state definitions, `lower_module`, global
+collection, record/enum emission, initializer rendering, layout logic, and a
+handful of tightly coupled helpers — e.g. `global_view_init_expr`
 / `global_view_index_path` (constant address-of-global expressions, including
 indexed sub-object views: `&arr[i]`, `&record.field`, chained through nested
 arrays/records/unions) and `record_field_offset` (byte offset of a named field,
