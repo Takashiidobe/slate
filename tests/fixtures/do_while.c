@@ -38,3 +38,15 @@ int main(void) {
   printf("%d\n", continue_checks_condition(6));
   return 0;
 }
+// REWRITES-LABEL: {{^}}fn sum_do_while(
+// REWRITES-DAG: loop {
+// REWRITES-DAG: total += i;
+// REWRITES-DAG: i += 1;
+// REWRITES-NOT: {{^        \{$}}
+// REWRITES: {{^}}}
+// REWRITES-LABEL: {{^}}fn continue_checks_condition(
+// REWRITES-DAG: loop {
+// REWRITES-DAG: i += 1;
+// REWRITES-DAG: if i % 2 != 0 {
+// REWRITES-NOT: {{^            \{$}}
+// REWRITES: {{^}}}

@@ -9,3 +9,6 @@ int main(void) {
   printf("%05d|%-4d|%+d|%5u|%+06ld\n", a, b, c, u, l);
   return 0;
 }
+// REWRITES-NOT: fn printf(
+// REWRITES-NOT: unsafe { printf(
+// REWRITES-DAG: println!("{:05}|{:<4}|{:+}|{:5}|{:+06}",

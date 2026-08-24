@@ -1,3 +1,7 @@
+// REWRITES-DAG: static mut cached_value
+// REWRITES-DAG: static mut computed
+// REWRITES-NOT: OnceLock
+
 #include <stdio.h>
 
 static int cached_value = 0;

@@ -13,3 +13,6 @@ int main(void) {
   printf("%d\n", named.value + point.x + point.y);
   return 0;
 }
+// REWRITES-DAG: struct __slate_anonymous_struct_0 {
+// REWRITES-DAG: struct anon_0 {
+// REWRITES-DAG: let point: anon_0 = anon_0 { x: 3, y: 4 };

@@ -14,3 +14,9 @@ int main(void) {
   printf("%d\n", sum_items(values, 5, 4));
   return 0;
 }
+// REWRITES-DAG: fn sum_items(items: &[i32], printable: i32, length: i32) -> i32
+// REWRITES-DAG: println!("this is another number: {} {}", printable, length);
+// REWRITES-DAG: for i in 0..4
+// REWRITES-DAG: total += items[(i as usize)];
+// REWRITES-DAG: sum_items(values.as_slice(), 5, 4)
+// REWRITES-NOT: .offset(

@@ -7,3 +7,7 @@ int main(void) {
   printf("addr=%p", (void *)(uintptr_t)0xABCD);
   return 0;
 }
+// REWRITES-NOT: fn printf(
+// REWRITES-NOT: unsafe { printf(
+// REWRITES-DAG: println!("{:p}",
+// REWRITES-DAG: print!("addr={:p}",

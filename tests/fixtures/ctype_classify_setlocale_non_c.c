@@ -17,3 +17,8 @@ int main(void) {
   }
   return 0;
 }
+// REWRITES-LABEL: {{^}}fn main() {
+// REWRITES-DAG: isalpha(
+// REWRITES-DAG: .is_ascii_digit()
+// REWRITES-NOT: is_ascii_alphabetic
+// REWRITES: {{^}}}

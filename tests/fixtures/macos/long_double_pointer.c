@@ -8,3 +8,5 @@ long double probe(void) {
 }
 
 int main(void) { return 0; }
+// REWRITES-MACOS-DAG: fn store_long_double(_0: *mut f64);
+// REWRITES-MACOS-DAG: fn load_long_double(_0: *const f64) -> *const f64;

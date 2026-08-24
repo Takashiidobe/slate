@@ -18,3 +18,11 @@ done:
   printf("%d\n", x);
   return 0;
 }
+// REWRITES-DAG: let mut __block0: i32;
+// REWRITES-DAG: match __block0 {
+// REWRITES-DAG: __block0 = 2;
+// REWRITES-DAG: __block0 = 1;
+// REWRITES-DAG: println!("{}", x);
+// REWRITES-NOT: __state0
+// REWRITES-NOT: __dispatch0
+// REWRITES-NOT: {{^    x = 0;$}}

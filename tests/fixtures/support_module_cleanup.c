@@ -6,3 +6,6 @@ int main(void) {
   printf("%d\n", atoi(digits));
   return 0;
 }
+// REWRITES-DAG: digits.parse::<i32>().unwrap_or(0)
+// REWRITES-NOT: mod __slate_runtime
+// REWRITES-NOT: fn atoi(

@@ -9,3 +9,7 @@ int main(void) {
   printf("%d\n", sum);
   return 0;
 }
+// REWRITES-LABEL: {{^}}fn main() {
+// REWRITES-DAG: a.fill(0);
+// REWRITES-NOT: std::ptr::write_bytes
+// REWRITES: {{^}}}

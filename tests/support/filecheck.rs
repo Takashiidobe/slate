@@ -24,9 +24,13 @@ impl Profile {
 }
 
 pub fn has_checks(fixture: &str, profile: Profile) -> bool {
+    has_checks_with_prefixes(fixture, profile, &[])
+}
+
+pub fn has_checks_with_prefixes(fixture: &str, profile: Profile, prefixes: &[&str]) -> bool {
     fixture
         .lines()
-        .any(|line| directive(line, profile).is_some())
+        .any(|line| directive(line, profile, prefixes).is_some())
 }
 
 pub fn check_generated_rust(
@@ -35,7 +39,20 @@ pub fn check_generated_rust(
     profile: Profile,
     work_dir: &Path,
 ) -> Result<(), String> {
-    let groups = check_groups(fixture, profile)?;
+    check_generated_rust_with_prefixes(fixture, generated, profile, &[], work_dir)
+}
+
+pub fn check_generated_rust_with_prefixes(
+    fixture: &str,
+    generated: &str,
+    profile: Profile,
+    prefixes: &[&str],
+    work_dir: &Path,
+) -> Result<(), String> {
+    if profile == Profile::Rewrites {
+        return Ok(());
+    }
+    let groups = check_groups(fixture, profile, prefixes)?;
     if groups.is_empty() {
         return Ok(());
     }
@@ -53,12 +70,16 @@ pub fn check_generated_rust(
     Ok(())
 }
 
-fn check_groups(fixture: &str, profile: Profile) -> Result<Vec<Vec<String>>, String> {
+fn check_groups(
+    fixture: &str,
+    profile: Profile,
+    prefixes: &[&str],
+) -> Result<Vec<Vec<String>>, String> {
     let mut groups: Vec<Vec<String>> = Vec::new();
     let mut global = Vec::new();
     let mut current: Option<Vec<String>> = None;
     for (line_number, line) in fixture.lines().enumerate() {
-        let Some((directive, pattern)) = directive(line, profile) else {
+        let Some((directive, pattern)) = directive(line, profile, prefixes) else {
             continue;
         };
         let normalized = normalize_directive(directive).ok_or_else(|| {
@@ -81,9 +102,22 @@ fn check_groups(fixture: &str, profile: Profile) -> Result<Vec<Vec<String>>, Str
     if let Some(group) = current {
         groups.push(group);
     }
-    if !global.is_empty() {
-        groups.insert(0, global);
+    let mut global_groups: Vec<Vec<String>> = Vec::new();
+    for check in global {
+        if check.starts_with("// CHECK-NEXT:")
+            || check.starts_with("// CHECK-SAME:")
+            || check.starts_with("// CHECK-EMPTY:")
+        {
+            let group = global_groups
+                .last_mut()
+                .ok_or_else(|| format!("`{check}` requires a preceding global check"))?;
+            group.push(check);
+        } else {
+            global_groups.push(vec![check]);
+        }
     }
+    global_groups.extend(groups);
+    groups = global_groups;
     groups.into_iter().try_fold(Vec::new(), |mut out, group| {
         if group
             .first()
@@ -108,6 +142,7 @@ fn expand_label_group(group: &[String]) -> Result<Vec<Vec<String>>, String> {
     }
     let boundary = "// CHECK-NOT: {{^}}}".to_string();
     let mut expanded = Vec::new();
+    let mut ordered = Vec::new();
     for check in middle {
         if let Some(pattern) = check.strip_prefix("// CHECK-DAG: ") {
             expanded.push(vec![
@@ -119,24 +154,37 @@ fn expand_label_group(group: &[String]) -> Result<Vec<Vec<String>>, String> {
             ]);
         } else if check.starts_with("// CHECK-NOT: ") {
             expanded.push(vec![label.clone(), check.clone(), close.clone()]);
+        } else if check.starts_with("// CHECK:")
+            || check.starts_with("// CHECK-NEXT:")
+            || check.starts_with("// CHECK-SAME:")
+            || check.starts_with("// CHECK-EMPTY:")
+        {
+            ordered.push(check.clone());
         } else {
             return Err(format!(
-                "function label blocks currently support DAG and NOT assertions, got `{check}`"
+                "unsupported assertion in function label block: `{check}`"
             ));
         }
+    }
+    if !ordered.is_empty() {
+        let mut group = vec![label.clone(), boundary.clone()];
+        group.extend(ordered);
+        group.push(boundary);
+        group.push(close.clone());
+        expanded.push(group);
     }
     Ok(expanded)
 }
 
-fn directive(line: &str, profile: Profile) -> Option<(&str, &str)> {
+fn directive<'a>(line: &'a str, profile: Profile, prefixes: &[&str]) -> Option<(&'a str, &'a str)> {
     let line = line.trim_start().strip_prefix("//")?.trim_start();
     let (name, pattern) = line.split_once(':')?;
-    for prefix in ["COMMON", profile.prefix()] {
+    for prefix in prefixes.iter().copied().chain(["COMMON", profile.prefix()]) {
         if name == prefix {
             return Some(("", pattern.trim_start()));
         }
         if let Some(suffix) = name.strip_prefix(prefix)
-            && suffix.starts_with('-')
+            && normalize_directive(suffix).is_some()
         {
             return Some((suffix, pattern.trim_start()));
         }

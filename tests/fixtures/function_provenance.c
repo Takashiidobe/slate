@@ -211,3 +211,8 @@ int main(void) {
   exit(0);
   return project_state == 80 ? 1 : 58;
 }
+// REWRITES-LABEL: {{^}}fn exit(status: i32) {
+// REWRITES: {{^}}}
+// REWRITES-LABEL: {{^}}fn main() {
+// REWRITES-DAG: exit(0);
+// REWRITES: {{^}}}

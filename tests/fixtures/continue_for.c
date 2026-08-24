@@ -17,3 +17,9 @@ int main(void) {
   printf("%d\n", sum_odds(0));
   return 0;
 }
+// REWRITES-LABEL: {{^}}fn sum_odds(
+// REWRITES-DAG: if i % 2 != 0 {
+// REWRITES-DAG: total += i;
+// REWRITES-NOT: __continue
+// REWRITES-NOT: __loop
+// REWRITES: {{^}}}

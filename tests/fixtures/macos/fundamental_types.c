@@ -103,3 +103,14 @@ int darwin_variadic_count(int count, ...) {
 }
 
 int main(void) { return printf("%d\n", errno == 0); }
+// REWRITES-MACOS-DAG: fn darwin_import(
+// REWRITES-MACOS-DAG: _0: usize
+// REWRITES-MACOS-DAG: _1: isize
+// REWRITES-MACOS-DAG: _2: isize
+// REWRITES-MACOS-DAG: _3: usize
+// REWRITES-MACOS-DAG: _4: i32
+// REWRITES-MACOS-DAG: _5: i64
+// REWRITES-MACOS-DAG: _6: u64
+// REWRITES-MACOS-DAG: _7: f64
+// REWRITES-MACOS-DAG: next_arg::<i32>()
+// REWRITES-MACOS-NOT: f128

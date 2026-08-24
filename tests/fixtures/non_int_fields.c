@@ -45,3 +45,9 @@ int main(void) {
   printf("%d\n", union_char('Z'));
   return 0;
 }
+// REWRITES-DAG: let _v{{[0-9]+}}: i8 = m.tag;
+// REWRITES-DAG: let _v{{[0-9]+}}: u8 = m.code;
+// REWRITES-DAG: let _v{{[0-9]+}}: f32 = m.ratio;
+// REWRITES-DAG: let _v{{[0-9]+}}: f64 = m.total;
+// REWRITES-DAG: unsafe { s.total }
+// REWRITES-DAG: (unsafe { s.tag }) as i32

@@ -27,3 +27,5 @@ int main(void) {
   remove("slate_stdio_gets_loop_unsupported.tmp");
   return 0;
 }
+// LOWERING-DAG: fn strlen(_0: *const i8) -> usize;
+// LOWERING-NOT: safe fn strlen(

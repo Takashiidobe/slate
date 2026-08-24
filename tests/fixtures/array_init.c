@@ -1,3 +1,15 @@
+// REWRITES-NOT: fn printf(
+// REWRITES-NOT: unsafe { printf(
+// REWRITES-DAG: println!("{}", sum);
+// REWRITES-DAG: println!("{} {}", partial[1], partial[3]);
+// REWRITES-DAG: println!("{}", s);
+// REWRITES-DAG: let padded: [i8; 8] = [104, 105, 0, 0, 0, 0, 0, 0];
+// REWRITES-LABEL: {{^}}fn main() {
+// REWRITES-DAG: for i in 0..5 {
+// REWRITES-DAG: sum += a[((i as i64) as usize)];
+// REWRITES-NOT: if !(i < 5)
+// REWRITES: {{^}}}
+
 #include <stdio.h>
 
 int main(void) {

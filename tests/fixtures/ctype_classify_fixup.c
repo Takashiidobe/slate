@@ -78,3 +78,26 @@ int main(void) {
 
   return 0;
 }
+// REWRITES-NOT: fn isdigit(
+// REWRITES-NOT: fn isupper(
+// REWRITES-NOT: fn islower(
+// REWRITES-NOT: fn isalnum(
+// REWRITES-NOT: fn isxdigit(
+// REWRITES-NOT: fn ispunct(
+// REWRITES-NOT: fn iscntrl(
+// REWRITES-NOT: fn isgraph(
+// REWRITES-NOT: fn isprint(
+// REWRITES-NOT: fn isspace(
+// REWRITES-LABEL: {{^}}fn main() {
+// REWRITES-DAG: .is_ascii_alphabetic()
+// REWRITES-DAG: .is_ascii_digit()
+// REWRITES-DAG: .is_ascii_uppercase()
+// REWRITES-DAG: .is_ascii_lowercase()
+// REWRITES-DAG: .is_ascii_alphanumeric()
+// REWRITES-DAG: .is_ascii_hexdigit()
+// REWRITES-DAG: .is_ascii_punctuation()
+// REWRITES-DAG: .is_ascii_control()
+// REWRITES-DAG: .is_ascii_graphic()
+// REWRITES-DAG: .is_ascii_whitespace()
+// REWRITES-DAG: unsafe { isalpha(
+// REWRITES: {{^}}}

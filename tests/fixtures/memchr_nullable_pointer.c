@@ -7,3 +7,4 @@ int main(void) {
   printf("%ld %d\n", hit - buf, miss == 0);
   return 0;
 }
+// REWRITES-NOT: fn __slate_memchr(

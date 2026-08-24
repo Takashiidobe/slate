@@ -9,3 +9,6 @@ int main(void) {
   printf("% g\n", x);
   return 0;
 }
+// REWRITES-DAG: fn printf(
+// REWRITES-DAG: unsafe { printf(
+// REWRITES-NOT: println!(

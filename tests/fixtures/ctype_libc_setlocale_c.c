@@ -9,3 +9,5 @@ int main(void) {
   printf("%d %d\n", toupper(lower), tolower(upper));
   return 0;
 }
+// REWRITES-NOT: fn toupper(
+// REWRITES-NOT: fn tolower(

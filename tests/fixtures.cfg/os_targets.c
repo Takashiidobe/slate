@@ -18,3 +18,15 @@ int main(void) {
   printf("%d\n", os_code());
   return 0;
 }
+// DIRECTIVES-DAG: #[cfg(windows)]
+// DIRECTIVES-DAG: #[cfg(target_os = "android")]
+// DIRECTIVES-DAG: #[cfg(target_os = "linux")]
+// DIRECTIVES-DAG: #[cfg(target_vendor = "apple")]
+// DIRECTIVES-DAG: #[cfg(target_os = "freebsd")]
+// DIRECTIVES-DAG: #[cfg(not(any(windows, target_os = "android", target_os = "linux", target_vendor = "apple", target_os = "freebsd")))]
+// DIRECTIVES-DAG: let _v{{[0-9]+}}: i32 = 10;
+// DIRECTIVES-DAG: let _v{{[0-9]+}}: i32 = 25;
+// DIRECTIVES-DAG: let _v{{[0-9]+}}: i32 = 20;
+// DIRECTIVES-DAG: let _v{{[0-9]+}}: i32 = 30;
+// DIRECTIVES-DAG: let _v{{[0-9]+}}: i32 = 35;
+// DIRECTIVES-DAG: let _v{{[0-9]+}}: i32 = 40;

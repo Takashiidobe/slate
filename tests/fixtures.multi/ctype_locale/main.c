@@ -10,3 +10,7 @@ int main(void) {
   printf("%d %d\n", toupper(lower), tolower(upper));
   return 0;
 }
+// REWRITES-LABEL: {{^}}fn main() {
+// REWRITES-DAG: unsafe { toupper(
+// REWRITES-DAG: unsafe { tolower(
+// REWRITES: {{^}}}

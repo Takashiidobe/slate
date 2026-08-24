@@ -11,3 +11,10 @@ int main(void) {
   printf("%.3u %.4x %.4X %.4o\n", u, hex, hex, hex);
   return 0;
 }
+// REWRITES-NOT: fn printf(
+// REWRITES-NOT: unsafe { printf(
+// REWRITES-DAG: format!("-{:03}", __slate_printf_arg.unsigned_abs())
+// REWRITES-DAG: format!("{:>8}",
+// REWRITES-DAG: format!("{:<8}",
+// REWRITES-DAG: format!("+{:03}", __slate_printf_arg)
+// REWRITES-DAG: format!("{:04x}", hex)

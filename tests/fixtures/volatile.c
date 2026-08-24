@@ -1,3 +1,10 @@
+// REWRITES-NOT: return _v
+// REWRITES-DAG: std::ptr::read_volatile
+// LOWERING-LABEL: {{^}}fn volatile_local(
+// LOWERING-DAG: std::ptr::read_volatile
+// LOWERING-DAG: std::ptr::write_volatile
+// LOWERING: {{^}}}
+
 #include <stdio.h>
 
 static int volatile_local(int value) {

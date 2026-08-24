@@ -19,3 +19,9 @@ int main(void) {
   printf("%zu %zu\n", sizeof(union ld_union), _Alignof(union ld_union));
   return 0;
 }
+// REWRITES-MACOS-DAG: value: f64
+// REWRITES-MACOS-DAG: ld: f64
+// REWRITES-MACOS: let _v{{[0-9]+}}: u64 = 8;
+// REWRITES-MACOS-NEXT: let _v{{[0-9]+}}: u64 = 8;
+// REWRITES-MACOS-DAG: std::mem::offset_of!(ld_box, value) as u64
+// REWRITES-MACOS-NOT: LongDouble

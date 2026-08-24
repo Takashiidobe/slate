@@ -22,3 +22,8 @@ int main(void) {
   compute(0);
   return 0;
 }
+// REWRITES-DAG: let mut p: *mut i32 = std::ptr::null_mut();
+// REWRITES-DAG: if p != std::ptr::null_mut()
+// REWRITES-DAG: .add(1)
+// REWRITES-DAG: fn free(
+// REWRITES-NOT: Option<Box

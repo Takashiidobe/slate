@@ -13,3 +13,9 @@ int main(void) {
   free(x);
   return 0;
 }
+// REWRITES-DAG: fn alloc() -> Vec<i32>
+// REWRITES-DAG: fn indirect() -> Vec<i32>
+// REWRITES-DAG: let mut x: Vec<i32>
+// REWRITES-DAG: x[0] = 10;
+// REWRITES-NOT: *mut i32
+// REWRITES-NOT: unsafe

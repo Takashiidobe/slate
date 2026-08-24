@@ -10,3 +10,7 @@ int main(void) {
   printf("%d\n", unix_code());
   return 0;
 }
+// DIRECTIVES-DAG: #[cfg(unix)]
+// DIRECTIVES-DAG: #[cfg(not(unix))]
+// DIRECTIVES-DAG: let _v{{[0-9]+}}: i32 = 1;
+// DIRECTIVES-DAG: let _v{{[0-9]+}}: i32 = 0;

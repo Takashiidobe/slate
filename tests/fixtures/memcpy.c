@@ -31,3 +31,12 @@ int main(void) {
   printf("\n");
   return 0;
 }
+// REWRITES-DAG: fn memcpy(_0: *mut core::ffi::c_void, _1: *const core::ffi::c_void, _2: usize) -> *mut core::ffi::c_void;
+// REWRITES-NOT: safe fn memcpy(
+// REWRITES-LABEL: {{^}}fn main() {
+// REWRITES-DAG: full_dst = full_src;
+// REWRITES-DAG: partial_dst[(0..4)].copy_from_slice(&partial_src[(0..4)]);
+// REWRITES-DAG: unsafe { memcpy(
+// REWRITES-DAG: alias_buf.as_mut_ptr()
+// REWRITES-DAG: dyn_dst.as_mut_ptr()
+// REWRITES: {{^}}}

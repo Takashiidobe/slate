@@ -687,3 +687,7 @@ int main(void) {
   printf("long-double torture: PASS (%d checks)\n", checks);
   return 0;
 }
+// REWRITES-X86_64-GNU-DAG: fn ext_store(_0: *mut LongDouble, _1: LongDouble);
+// REWRITES-X86_64-GNU-DAG: fn ext_load(_0: *const LongDouble) -> LongDouble;
+// REWRITES-X86_64-GNU-DAG: fn __slate_ext_store__rv_pf80_f80(_0: *mut LongDouble
+// REWRITES-X86_64-GNU-DAG: fn __slate_ext_load__rf80_pf80(_0: *const LongDouble

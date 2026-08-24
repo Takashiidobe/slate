@@ -22,3 +22,12 @@ int main(void) {
          first_set, zero_first, ones, odd, redundant_sign, left, right);
   return 0;
 }
+// REWRITES-LABEL: {{^}}fn main() {
+// REWRITES-DAG: let leading: i32 = u.leading_zeros() as i32;
+// REWRITES-DAG: let trailing: i32 = u.trailing_zeros() as i32;
+// REWRITES-DAG: let first_set: i32 = if (u as i32) == 0 { 0 } else { ((u as i32).trailing_zeros() as i32) + 1 };
+// REWRITES-DAG: let ones: i32 = u.count_ones() as i32;
+// REWRITES-DAG: let odd: i32 = (u.count_ones() & 1) as i32;
+// REWRITES-DAG: let redundant_sign: i32 = (if s < 0 { !s } else { s }.leading_zeros() as i32) - 1;
+// REWRITES-NOT: let _v
+// REWRITES: {{^}}}

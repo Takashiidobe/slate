@@ -6,6 +6,10 @@ static int mark(int value) {
   hits += 1;
   return value;
 }
+// REWRITES-NOT: fn printf(
+// REWRITES-NOT: unsafe { printf(
+// REWRITES-DAG: println!("{} {}",
+// REWRITES-DAG: println!("{} {} {}",
 
 static int logical_and(int a, int b) { return a && mark(b); }
 

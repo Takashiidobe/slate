@@ -23,3 +23,4 @@ int main(void) {
   printf("%d\n", overwrite(3, 9));
   return 0;
 }
+// REWRITES-DAG: unsafe { p.left }

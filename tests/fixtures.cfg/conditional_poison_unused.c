@@ -3,3 +3,4 @@
 #endif
 
 int main(void) { return 0; }
+// DIRECTIVES-NOT: compile_error!

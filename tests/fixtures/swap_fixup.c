@@ -32,3 +32,16 @@ int main(void) {
   self_swap();
   return 0;
 }
+// REWRITES-LABEL: {{^}}fn basic_swap() {
+// REWRITES-DAG: std::mem::swap(&mut a, &mut b);
+// REWRITES: {{^}}}
+// REWRITES-LABEL: {{^}}fn tmp_reused() {
+// REWRITES-DAG: let tmp: i32 = a;
+// REWRITES-DAG: a = b;
+// REWRITES-DAG: b = tmp;
+// REWRITES-NOT: std::mem::swap
+// REWRITES: {{^}}}
+// REWRITES-LABEL: {{^}}fn self_swap() {
+// REWRITES-DAG: a = a;
+// REWRITES-NOT: std::mem::swap
+// REWRITES: {{^}}}

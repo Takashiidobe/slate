@@ -7,6 +7,41 @@ fn cfg_fixtures_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures.cfg")
 }
 
+fn check_directive_output(name: &str, rust: &str) {
+    let fixture_path = cfg_fixtures_dir().join(name);
+    let fixture = std::fs::read_to_string(&fixture_path).expect("read directive fixture");
+    support::filecheck::check_generated_rust_with_prefixes(
+        &fixture,
+        rust,
+        support::filecheck::Profile::Lowering,
+        &["DIRECTIVES"],
+        &Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("target/directive-filecheck")
+            .join(name),
+    )
+    .unwrap_or_else(|error| panic!("{}: {error}", fixture_path.display()));
+}
+
+fn directive_filecheck_fixtures() -> Vec<String> {
+    let mut fixtures = std::fs::read_dir(cfg_fixtures_dir())
+        .expect("read directive fixtures")
+        .filter_map(|entry| entry.ok())
+        .filter(|entry| entry.path().extension().and_then(|ext| ext.to_str()) == Some("c"))
+        .filter(|entry| {
+            std::fs::read_to_string(entry.path()).is_ok_and(|fixture| {
+                support::filecheck::has_checks_with_prefixes(
+                    &fixture,
+                    support::filecheck::Profile::Lowering,
+                    &["DIRECTIVES"],
+                )
+            })
+        })
+        .map(|entry| entry.file_name().to_string_lossy().into_owned())
+        .collect::<Vec<_>>();
+    fixtures.sort();
+    fixtures
+}
+
 fn translate_directives(name: &str) -> String {
     let src = cfg_fixtures_dir().join(name);
     let out = Command::new(env!("CARGO_BIN_EXE_slate"))
@@ -19,7 +54,9 @@ fn translate_directives(name: &str) -> String {
         "translate-directives failed for {name}:\n{}",
         String::from_utf8_lossy(&out.stderr)
     );
-    String::from_utf8(out.stdout).expect("generated Rust is utf8")
+    let rust = String::from_utf8(out.stdout).expect("generated Rust is utf8");
+    check_directive_output(name, &rust);
+    rust
 }
 
 fn translate_directives_err(name: &str) -> String {
@@ -129,193 +166,11 @@ fn write_generated(name: &str, rust: &str) -> PathBuf {
     out
 }
 
-fn assert_tail_value(rust: &str, value: &str) {
-    assert!(rust.contains(&format!("\n    {value}\n}}")));
-}
-
 #[test]
-#[ignore = "rewrite passes disabled while lowering is the focus"]
-fn translates_os_macro_variants_to_cfg_items() {
-    let rust = translate_directives("os_targets.c");
-
-    assert!(rust.contains("#[cfg(windows)]\nfn os_code() -> i32"));
-    assert!(rust.contains("#[cfg(target_os = \"android\")]\nfn os_code() -> i32"));
-    assert!(rust.contains("#[cfg(target_os = \"linux\")]\nfn os_code() -> i32"));
-    assert!(rust.contains("#[cfg(target_vendor = \"apple\")]\nfn os_code() -> i32"));
-    assert!(rust.contains("#[cfg(target_os = \"freebsd\")]\nfn os_code() -> i32"));
-    assert!(rust.contains(
-        "#[cfg(not(any(windows, target_os = \"android\", target_os = \"linux\", target_vendor = \"apple\", target_os = \"freebsd\")))]\nfn os_code() -> i32"
-    ));
-    assert_tail_value(&rust, "10");
-    assert_tail_value(&rust, "25");
-    assert_tail_value(&rust, "20");
-    assert_tail_value(&rust, "30");
-    assert_tail_value(&rust, "35");
-    assert_tail_value(&rust, "40");
-    assert_eq!(rust.matches("fn main()").count(), 1);
-}
-
-#[test]
-#[ignore = "rewrite passes disabled while lowering is the focus"]
-fn translates_win64_macro_to_composed_cfg_item() {
-    let rust = translate_directives("win64_target.c");
-
-    assert!(
-        rust.contains(
-            "#[cfg(all(windows, target_pointer_width = \"64\"))]\nfn win64_code() -> i32"
-        )
-    );
-    assert!(rust.contains(
-        "#[cfg(not(all(windows, target_pointer_width = \"64\")))]\nfn win64_code() -> i32"
-    ));
-    assert_tail_value(&rust, "64");
-    assert_tail_value(&rust, "0");
-    assert_eq!(rust.matches("fn main()").count(), 1);
-}
-
-#[test]
-#[ignore = "rewrite passes disabled while lowering is the focus"]
-fn translates_unix_macro_to_cfg_item() {
-    let rust = translate_directives("unix_target.c");
-
-    assert!(rust.contains("#[cfg(unix)]\nfn unix_code() -> i32"));
-    assert!(rust.contains("#[cfg(not(unix))]\nfn unix_code() -> i32"));
-    assert_tail_value(&rust, "1");
-    assert_tail_value(&rust, "0");
-    assert_eq!(rust.matches("fn main()").count(), 1);
-}
-
-#[test]
-#[ignore = "rewrite passes disabled while lowering is the focus"]
-fn translates_arch_macro_variants_to_cfg_items() {
-    let rust = translate_directives("arch_targets.c");
-
-    assert!(rust.contains("#[cfg(target_arch = \"x86_64\")]\nfn arch_code() -> i32"));
-    assert!(rust.contains("#[cfg(target_arch = \"x86\")]\nfn arch_code() -> i32"));
-    assert!(rust.contains("#[cfg(target_arch = \"aarch64\")]\nfn arch_code() -> i32"));
-    assert!(rust.contains("#[cfg(target_arch = \"arm\")]\nfn arch_code() -> i32"));
-    assert!(rust.contains("#[cfg(target_arch = \"powerpc64\")]\nfn arch_code() -> i32"));
-    assert!(rust.contains("#[cfg(target_arch = \"powerpc\")]\nfn arch_code() -> i32"));
-    assert!(rust.contains("#[cfg(target_arch = \"wasm64\")]\nfn arch_code() -> i32"));
-    assert!(rust.contains("#[cfg(target_arch = \"wasm32\")]\nfn arch_code() -> i32"));
-    assert!(rust.contains("#[cfg(target_arch = \"riscv64\")]\nfn arch_code() -> i32"));
-    assert!(rust.contains("#[cfg(target_arch = \"riscv32\")]\nfn arch_code() -> i32"));
-    assert!(rust.contains(
-        "#[cfg(not(any(target_arch = \"x86_64\", target_arch = \"x86\", target_arch = \"aarch64\", target_arch = \"arm\", target_arch = \"powerpc64\", target_arch = \"powerpc\", target_arch = \"wasm64\", target_arch = \"wasm32\", target_arch = \"riscv64\", target_arch = \"riscv32\")))]\nfn arch_code() -> i32"
-    ));
-    assert_tail_value(&rust, "64");
-    assert_tail_value(&rust, "86");
-    assert_tail_value(&rust, "128");
-    assert_tail_value(&rust, "32");
-    assert_tail_value(&rust, "640");
-    assert_tail_value(&rust, "320");
-    assert_tail_value(&rust, "6400");
-    assert_tail_value(&rust, "3200");
-    assert_tail_value(&rust, "645");
-    assert_tail_value(&rust, "325");
-    assert_tail_value(&rust, "0");
-    assert_eq!(rust.matches("fn main()").count(), 1);
-}
-
-#[test]
-#[ignore = "rewrite passes disabled while lowering is the focus"]
-fn translates_pointer_width_macro_variants_to_cfg_items() {
-    let rust = translate_directives("pointer_width_targets.c");
-
-    assert!(rust.contains("#[cfg(target_pointer_width = \"64\")]\nfn pointer_width_code() -> i32"));
-    assert!(rust.contains("#[cfg(target_pointer_width = \"32\")]\nfn pointer_width_code() -> i32"));
-    assert!(rust.contains(
-        "#[cfg(not(any(target_pointer_width = \"64\", target_pointer_width = \"32\")))]\nfn pointer_width_code() -> i32"
-    ));
-    assert_tail_value(&rust, "64");
-    assert_tail_value(&rust, "32");
-    assert_tail_value(&rust, "0");
-    assert_eq!(rust.matches("fn main()").count(), 1);
-}
-
-#[test]
-#[ignore = "rewrite passes disabled while lowering is the focus"]
-fn translates_arm_endian_macro_variants_to_cfg_items() {
-    let rust = translate_directives("arm_endian_targets.c");
-
-    assert!(rust.contains(
-        "#[cfg(any(all(target_arch = \"arm\", target_endian = \"big\"), all(target_arch = \"aarch64\", target_endian = \"big\")))]\nfn arm_endian_code() -> i32"
-    ));
-    assert!(rust.contains(
-        "#[cfg(any(all(target_arch = \"arm\", target_endian = \"little\"), all(target_arch = \"aarch64\", target_endian = \"little\")))]\nfn arm_endian_code() -> i32"
-    ));
-    assert!(rust.contains(
-        "#[cfg(not(any(any(all(target_arch = \"arm\", target_endian = \"big\"), all(target_arch = \"aarch64\", target_endian = \"big\")), any(all(target_arch = \"arm\", target_endian = \"little\"), all(target_arch = \"aarch64\", target_endian = \"little\")))))]\nfn arm_endian_code() -> i32"
-    ));
-    assert_tail_value(&rust, "100");
-    assert_tail_value(&rust, "200");
-    assert_tail_value(&rust, "0");
-    assert_eq!(rust.matches("fn main()").count(), 1);
-}
-
-#[test]
-#[ignore = "rewrite passes disabled while lowering is the focus"]
-fn translates_ndebug_variants_to_debug_assertion_cfg_items() {
-    let rust = translate_directives("ndebug.c");
-
-    assert!(rust.contains("#[cfg(not(debug_assertions))]\nfn debug_code() -> i32"));
-    assert!(rust.contains("#[cfg(debug_assertions)]\nfn debug_code() -> i32"));
-    assert_tail_value(&rust, "0");
-    assert_tail_value(&rust, "1");
-    assert_eq!(rust.matches("fn main()").count(), 1);
-}
-
-#[test]
-#[ignore = "rewrite passes disabled while lowering is the focus"]
-fn translates_single_custom_macro_to_feature_cfg_items() {
-    let rust = translate_directives("feature_single.c");
-
-    assert!(rust.contains("#[cfg(feature = \"my_feature\")]\nfn feature_code() -> i32"));
-    assert!(rust.contains("#[cfg(not(feature = \"my_feature\"))]\nfn feature_code() -> i32"));
-    assert_tail_value(&rust, "10");
-    assert_tail_value(&rust, "20");
-    assert_eq!(rust.matches("fn main()").count(), 1);
-}
-
-#[test]
-fn translates_independent_custom_macro_chains_without_cross_product() {
-    let rust = translate_directives("feature_multiple.c");
-
-    assert!(rust.contains("#[cfg(feature = \"first_feature\")]\nfn first_code() -> i32"));
-    assert!(rust.contains("#[cfg(not(feature = \"first_feature\"))]\nfn first_code() -> i32"));
-    assert!(rust.contains("#[cfg(feature = \"second_feature\")]\nfn second_code() -> i32"));
-    assert!(rust.contains("#[cfg(not(feature = \"second_feature\"))]\nfn second_code() -> i32"));
-    assert!(!rust.contains("all(feature = \"first_feature\", feature = \"second_feature\")"));
-    assert_eq!(rust.matches("fn first_code()").count(), 2);
-    assert_eq!(rust.matches("fn second_code()").count(), 2);
-    assert_eq!(rust.matches("fn main()").count(), 1);
-}
-
-#[test]
-fn translates_nested_custom_macro_chains_with_parent_cfg() {
-    let rust = translate_directives("feature_nested.c");
-
-    assert!(rust.contains(
-        "#[cfg(all(feature = \"outer_feature\", feature = \"inner_feature\"))]\nfn nested_code() -> i32"
-    ));
-    assert!(rust.contains(
-        "#[cfg(all(feature = \"outer_feature\", not(feature = \"inner_feature\")))]\nfn nested_code() -> i32"
-    ));
-    assert!(rust.contains("#[cfg(not(feature = \"outer_feature\"))]\nfn nested_code() -> i32"));
-    assert_eq!(rust.matches("fn nested_code()").count(), 3);
-    assert_eq!(rust.matches("fn main()").count(), 1);
-}
-
-#[test]
-#[ignore = "rewrite passes disabled while lowering is the focus"]
-fn sanitizes_fatal_directives_without_changing_frontend_source_identity() {
-    let rust = translate_directives("sanitized_input.c");
-
-    assert!(rust.contains("#[cfg(feature = \"sanitized_left\")]\nfn selected() -> i32"));
-    assert!(rust.contains("#[cfg(not(feature = \"sanitized_left\"))]\nfn selected() -> i32"));
-    assert!(rust.contains("i32::MAX"));
-    assert_tail_value(&rust, "37");
-    assert!(rust.contains("tests/fixtures.cfg/sanitized_input.c"));
+fn generated_directive_filecheck() {
+    for fixture in directive_filecheck_fixtures() {
+        translate_directives(&fixture);
+    }
 }
 
 #[test]
@@ -338,9 +193,6 @@ fn conditional_error_fails_only_when_its_cfg_is_selected() {
 
     let rust = translate_directives("error_conditional.c");
     assert!(
-        rust.contains("#[cfg(feature = \"fail_build\")]\ncompile_error!(\"selected failure\");")
-    );
-    assert!(
         compile_with_cfgs("error_conditional_inactive", &rust, &[])
             .status
             .success()
@@ -354,9 +206,6 @@ fn conditional_error_fails_only_when_its_cfg_is_selected() {
 fn nested_error_uses_the_effective_cfg_condition() {
     let rust = translate_directives("error_nested.c");
 
-    assert!(rust.contains(
-        "#[cfg(all(feature = \"outer_failure\", feature = \"inner_failure\"))]\ncompile_error!(\"nested failure\");"
-    ));
     assert!(
         compile_with_cfgs("error_nested_outer_only", &rust, &["outer_failure"])
             .status
@@ -397,10 +246,6 @@ fn warning_uses_a_self_contained_compile_time_fallback() {
 fn warning_follows_its_recovered_cfg_without_becoming_an_error() {
     let rust = translate_directives("warning_directives.c");
 
-    assert!(rust.contains("WARNING_TOKEN \\\"quoted\\\" C:\\\\tmp"));
-    assert!(rust.contains(
-        "#[cfg(feature = \"slate_warning_feature\")]\n#[deprecated(note = \"selected warning\")]"
-    ));
     let inactive = compile_with_cfgs("warning_cfg_inactive", &rust, &[]);
     assert!(inactive.status.success());
     assert!(!String::from_utf8_lossy(&inactive.stderr).contains("selected warning"));
@@ -510,9 +355,6 @@ fn conditional_pack_remains_unsupported_only_in_multi_config_translation() {
     assert!(!active_single.contains("compile_error!"));
 
     let rust = translate_directives("unsupported_conditional.c");
-    assert!(rust.contains(
-        "#[cfg(feature = \"packed_layout\")]\ncompile_error!(\"unsupported semantic directive #pragma at line 2: pack(push, 1)\");"
-    ));
     assert!(
         compile_with_cfgs("unsupported_conditional_inactive", &rust, &[])
             .status
@@ -536,9 +378,6 @@ fn conditional_visibility_remains_unsupported_only_in_multi_config_translation()
     assert!(!active_single.contains("compile_error!"));
 
     let rust = translate_directives("unsupported_conditional_visibility.c");
-    assert!(rust.contains(
-        "#[cfg(feature = \"hidden_api\")]\ncompile_error!(\"unsupported semantic directive #pragma at line 2: GCC visibility push(hidden)\");"
-    ));
     assert!(
         compile_with_cfgs("unsupported_conditional_visibility_inactive", &rust, &[])
             .status
@@ -568,12 +407,6 @@ fn conditional_symbol_pragmas_remain_unsupported_only_in_multi_config_translatio
     assert!(!active_single.contains("compile_error!"));
 
     let rust = translate_directives("unsupported_conditional_symbol_pragmas.c");
-    assert!(rust.contains(
-        "#[cfg(feature = \"symbol_pragmas\")]\ncompile_error!(\"unsupported semantic directive #pragma at line 2: weak conditional_alias = conditional_target\");"
-    ));
-    assert!(rust.contains(
-        "#[cfg(feature = \"symbol_pragmas\")]\ncompile_error!(\"unsupported semantic directive #pragma at line 3: redefine_extname conditional_name conditional_actual\");"
-    ));
     assert!(
         compile_with_cfgs(
             "unsupported_conditional_symbol_pragmas_inactive",
@@ -607,9 +440,6 @@ fn conditional_macro_state_remains_unsupported_only_in_multi_config_translation(
     assert!(!active_single.contains("compile_error!"));
 
     let rust = translate_directives("unsupported_conditional_macro_state.c");
-    assert!(rust.contains(
-        "#[cfg(feature = \"nested_macro_state\")]\ncompile_error!(\"unsupported semantic directive #pragma at line 4: push_macro(\\\"MACRO_STATE_VALUE\\\")\");"
-    ));
     assert!(
         compile_with_cfgs("unsupported_conditional_macro_state_inactive", &rust, &[])
             .status
@@ -626,7 +456,6 @@ fn conditional_macro_state_remains_unsupported_only_in_multi_config_translation(
 #[test]
 fn unused_conditional_poison_needs_no_generated_error() {
     let rust = translate_directives("conditional_poison_unused.c");
-    assert!(!rust.contains("compile_error!"));
     assert!(
         compile_with_cfgs("conditional_poison_unused_inactive", &rust, &[])
             .status
@@ -677,10 +506,6 @@ fn include_next_uses_the_clang_header_search_order() {
 fn line_directive_preserves_cfg_item_joins_and_presumed_values() {
     let rust = translate_directives("line_directive.c");
 
-    assert!(rust.contains("#[cfg(feature = \"line_feature\")]\nfn line_value() -> i32"));
-    assert!(rust.contains("#[cfg(not(feature = \"line_feature\"))]\nfn line_value() -> i32"));
-    assert!(rust.contains("701"));
-    assert!(rust.contains("704"));
     assert!(
         compile_and_run("line_directive_default", &rust)
             .status

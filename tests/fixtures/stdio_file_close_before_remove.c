@@ -12,3 +12,7 @@ int main(void) {
   puts("done");
   return 0;
 }
+// REWRITES-LABEL: {{^}}fn main() {
+// REWRITES: drop(f);
+// REWRITES: unsafe { remove(
+// REWRITES: {{^}}}

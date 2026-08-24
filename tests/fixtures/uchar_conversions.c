@@ -19,3 +19,9 @@ int main(void) {
          (unsigned)converted32, multibyte32[0]);
   return 0;
 }
+// REWRITES-DAG: fn mbrtoc16(_0: *mut u16, _1: *const i8, _2: usize, _3: *mut libc::mbstate_t) -> usize;
+// REWRITES-DAG: fn c16rtomb(_0: *mut i8, _1: u16, _2: *mut libc::mbstate_t) -> usize;
+// REWRITES-DAG: fn mbrtoc32(_0: *mut u32, _1: *const i8, _2: usize, _3: *mut libc::mbstate_t) -> usize;
+// REWRITES-DAG: fn c32rtomb(_0: *mut i8, _1: u32, _2: *mut libc::mbstate_t) -> usize;
+// REWRITES-DAG: libc::mbstate_t = unsafe { std::mem::zeroed::<libc::mbstate_t>() };
+// REWRITES-NOT: *mut __mbstate_t

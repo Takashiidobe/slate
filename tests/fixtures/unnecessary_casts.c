@@ -10,3 +10,6 @@ int main(void) {
   printf("%d\n", c);
   return 0;
 }
+// REWRITES-DAG: c = a + b;
+// REWRITES-NOT: a as i32
+// REWRITES-NOT: b as i32

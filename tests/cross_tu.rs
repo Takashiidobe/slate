@@ -23,6 +23,80 @@ fn c_sources(dir: &Path) -> Vec<PathBuf> {
     srcs
 }
 
+fn check_project_modules(
+    fixture_dir: &Path,
+    rust_src_dir: &Path,
+    profile: support::filecheck::Profile,
+    work_dir: &Path,
+) -> Result<(), String> {
+    for c_source in c_sources(fixture_dir) {
+        let fixture = std::fs::read_to_string(&c_source)
+            .map_err(|error| format!("read {}: {error}", c_source.display()))?;
+        if !support::filecheck::has_checks(&fixture, profile) {
+            continue;
+        }
+        let stem = c_source
+            .file_stem()
+            .and_then(|stem| stem.to_str())
+            .ok_or_else(|| format!("invalid C fixture name: {}", c_source.display()))?;
+        let rust_source = rust_src_dir.join(format!("{stem}.rs"));
+        let generated = std::fs::read_to_string(&rust_source)
+            .map_err(|error| format!("read {}: {error}", rust_source.display()))?;
+        support::filecheck::check_generated_rust(
+            &fixture,
+            &generated,
+            profile,
+            &work_dir.join(stem),
+        )
+        .map_err(|error| {
+            format!(
+                "{} -> {}: {error}",
+                c_source.display(),
+                rust_source.display()
+            )
+        })?;
+    }
+    Ok(())
+}
+
+fn project_filecheck_fixtures(profile: support::filecheck::Profile) -> Vec<String> {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures.multi");
+    let mut fixtures = std::fs::read_dir(&root)
+        .expect("read multi-TU fixtures")
+        .filter_map(|entry| entry.ok())
+        .filter(|entry| entry.path().is_dir())
+        .filter(|entry| {
+            c_sources(&entry.path()).into_iter().any(|source| {
+                std::fs::read_to_string(source)
+                    .is_ok_and(|fixture| support::filecheck::has_checks(&fixture, profile))
+            })
+        })
+        .map(|entry| entry.file_name().to_string_lossy().into_owned())
+        .collect::<Vec<_>>();
+    fixtures.sort();
+    fixtures
+}
+
+fn library_filecheck_fixtures(profile: support::filecheck::Profile) -> Vec<String> {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures.library");
+    let mut fixtures = std::fs::read_dir(&root)
+        .expect("read library fixtures")
+        .filter_map(|entry| entry.ok())
+        .filter(|entry| entry.path().join("src").is_dir())
+        .filter(|entry| {
+            c_sources(&entry.path().join("src"))
+                .into_iter()
+                .any(|source| {
+                    std::fs::read_to_string(source)
+                        .is_ok_and(|fixture| support::filecheck::has_checks(&fixture, profile))
+                })
+        })
+        .map(|entry| entry.file_name().to_string_lossy().into_owned())
+        .collect::<Vec<_>>();
+    fixtures.sort();
+    fixtures
+}
+
 /// Translate a multi-TU fixture into a Cargo crate, then diff the C (all
 /// units linked) against the Rust (the crate's binary). Returns the crate's
 /// `src/` directory of generated `.rs` modules for per-test structural
@@ -40,6 +114,13 @@ fn build_and_diff(name: &str) -> PathBuf {
     let rs_dir = work.join("rs");
     let _ = std::fs::remove_dir_all(&rs_dir);
     support::translate_project(&dir, &rs_dir).expect("translate project");
+    check_project_modules(
+        &dir,
+        &rs_dir.join("src"),
+        support::filecheck::Profile::active(),
+        &work.join("filecheck"),
+    )
+    .expect("check generated project modules");
 
     let rs_bin = support::compile_rs_project(&rs_dir).expect("compile Rust");
 
@@ -58,6 +139,44 @@ fn cross_tu_work_dir(name: &str) -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("target/cross-tu")
         .join(name)
+}
+
+#[test]
+fn generated_cross_tu_filecheck() {
+    for fixture in project_filecheck_fixtures(support::filecheck::Profile::active()) {
+        build_and_diff(&fixture);
+    }
+}
+
+#[test]
+fn generated_library_filecheck() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures.library");
+    let profile = support::filecheck::Profile::active();
+    for fixture in library_filecheck_fixtures(profile) {
+        let fixture_dir = root.join(&fixture);
+        let work = cross_tu_work_dir("generated-library-filecheck").join(&fixture);
+        let crate_dir = work.join("crate");
+        let _ = std::fs::remove_dir_all(&work);
+        let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+            .args(["translate-project", "--lib"])
+            .arg(&fixture_dir)
+            .arg(&crate_dir)
+            .env("SLATE_CLANG_ARGS", "-std=c23")
+            .output()
+            .expect("translate library FileCheck fixture");
+        assert!(
+            output.status.success(),
+            "library fixture {fixture} failed:\n{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        check_project_modules(
+            &fixture_dir.join("src"),
+            &crate_dir.join("src"),
+            profile,
+            &work.join("filecheck"),
+        )
+        .expect("check generated library modules");
+    }
 }
 
 #[test]
@@ -85,9 +204,13 @@ fn project_translation_defaults_to_the_active_target() {
     let out_dir = cross_tu_work_dir("host-only-project").join("rs");
     let _ = std::fs::remove_dir_all(&out_dir);
     support::translate_project(&dir, &out_dir).expect("translate host project");
-
-    let parse = std::fs::read_to_string(out_dir.join("src/parse.rs")).expect("read parse.rs");
-    assert!(!parse.contains("target_arch ="));
+    check_project_modules(
+        &dir,
+        &out_dir.join("src"),
+        support::filecheck::Profile::Lowering,
+        &cross_tu_work_dir("host-only-project").join("filecheck"),
+    )
+    .expect("check host project modules");
 }
 
 #[test]
@@ -108,8 +231,13 @@ fn raw_lower_skips_fixups_for_project_translation() {
         "raw translate-project failed:\n{}",
         String::from_utf8_lossy(&output.stderr)
     );
-    let math = std::fs::read_to_string(out_dir.join("src/math.rs")).expect("read math.rs");
-    assert!(math.contains("let mut __retval"));
+    check_project_modules(
+        &dir,
+        &out_dir.join("src"),
+        support::filecheck::Profile::Lowering,
+        &cross_tu_work_dir("raw-lower-project").join("filecheck"),
+    )
+    .expect("check raw project modules");
 }
 
 #[test]
@@ -227,13 +355,6 @@ fn library_project_creates_cargo_crate_without_main() {
     assert!(lib_rs.contains("pub mod math;"));
     assert!(lib_rs.contains("pub mod state;"));
 
-    let math_rs = std::fs::read_to_string(crate_dir.join("src/math.rs")).expect("read math.rs");
-    assert!(
-        math_rs.contains("slate_support::warning!(\"PROJECT_WARNING_TOKEN remains unexpanded\");")
-    );
-    assert!(math_rs.contains("#[unsafe(no_mangle)]\npub extern \"C\" fn square"));
-    assert!(math_rs.contains("use crate::types::shared_mode_t;"));
-    assert!(math_rs.contains("value.mode = shared_mode_t::SHARED_READY;"));
     let types_rs = std::fs::read_to_string(crate_dir.join("src/types.rs")).expect("read types.rs");
     assert!(types_rs.contains("pub enum shared_mode_t"));
     assert!(types_rs.contains("SHARED_READY = 1"));
@@ -313,27 +434,6 @@ fn library_project_resolves_hidden_visibility_cross_tu_callback() {
         output.status.success(),
         "translate-project --lib failed:\n{}",
         String::from_utf8_lossy(&output.stderr)
-    );
-
-    let handler_rs =
-        std::fs::read_to_string(crate_dir.join("src/handler.rs")).expect("read handler.rs");
-    assert!(
-        handler_rs.contains("fn add_ignore_b(a: i32, b: i32) -> i32"),
-        "add_ignore_b must keep both parameters -- its address is taken as a \
-         callback_fn in a sibling TU, so the signature is load-bearing even \
-         though `b` is unused in this function's own body:\n{handler_rs}"
-    );
-
-    let user_rs = std::fs::read_to_string(crate_dir.join("src/user.rs")).expect("read user.rs");
-    assert!(
-        user_rs.contains("use crate::handler::add_ignore_b;"),
-        "user.rs should import the real in-crate definition rather than \
-         re-declaring add_ignore_b as an external FFI stub:\n{user_rs}"
-    );
-    assert!(
-        !user_rs.contains("unsafe extern \"C\" {"),
-        "add_ignore_b/set_handler are both defined in this project -- \
-         hidden ELF visibility shouldn't force an opaque extern block:\n{user_rs}"
     );
 
     let check = std::process::Command::new("cargo")
@@ -627,11 +727,6 @@ fn uart_library_preserves_exported_volatile_io() {
         "translate-project --lib failed:\n{}",
         String::from_utf8_lossy(&output.stderr)
     );
-
-    let rust = std::fs::read_to_string(crate_dir.join("src/uart.rs")).expect("read uart.rs");
-    assert!(rust.contains("#[unsafe(no_mangle)]\npub extern \"C\" fn send_byte"));
-    assert!(rust.contains("std::ptr::read_volatile"));
-    assert!(rust.contains("std::ptr::write_volatile"));
 }
 
 #[test]
@@ -665,11 +760,6 @@ fn library_crate_links_generated_c_abi_shim_for_long_double_libc_call() {
     assert!(shim_c.contains("(long double)"));
     assert!(shim_c.contains("int strfroml(char *, size_t, const char *, long double);"));
 
-    let strfrom_rs =
-        std::fs::read_to_string(crate_dir.join("src/strfrom.rs")).expect("read strfrom.rs");
-    assert!(strfrom_rs.contains("fn __slate_strfroml__ri32_pi8_usize_pi8_f80("));
-    assert!(strfrom_rs.contains("unsafe { __slate_strfroml__ri32_pi8_usize_pi8_f80("));
-
     let run_tests = std::process::Command::new("cargo")
         .args(["test", "--quiet", "--tests", "--manifest-path"])
         .arg(crate_dir.join("Cargo.toml"))
@@ -685,31 +775,7 @@ fn library_crate_links_generated_c_abi_shim_for_long_double_libc_call() {
 
 #[test]
 fn cross_tu_functions() {
-    let rs_dir = build_and_diff("cross_tu");
-
-    // definitions must be split into modules, not aggregated.
-    let main_rs = std::fs::read_to_string(rs_dir.join("main.rs")).expect("read main.rs");
-    assert!(
-        main_rs.contains("mod math;"),
-        "root should declare sibling module"
-    );
-    assert!(
-        main_rs.contains("use crate::math::square;"),
-        "cross-TU prototype should import from sibling, not extern C"
-    );
-    assert!(
-        main_rs.contains("use crate::math::square;\nuse crate::math::cube;\n\n"),
-        "consecutive imports should form one block"
-    );
-    assert!(
-        !main_rs.contains("fn square"),
-        "definition must live in its own module, not the root"
-    );
-    let math_rs = std::fs::read_to_string(rs_dir.join("math.rs")).expect("read math.rs");
-    assert!(
-        math_rs.contains("#[unsafe(no_mangle)]\npub extern \"C\" fn square"),
-        "external-linkage sibling defs must be pub C ABI symbols"
-    );
+    build_and_diff("cross_tu");
 }
 
 #[test]
@@ -730,14 +796,7 @@ fn sibling_can_call_function_defined_in_root_translation_unit() {
 #[test]
 #[ignore = "rewrite passes disabled while lowering is the focus"]
 fn setjmp_unwind_abi_propagates_to_cross_module_callers() {
-    let rs_dir = build_and_diff("setjmp_cross_module_callback");
-
-    let check_rs = std::fs::read_to_string(rs_dir.join("check.rs")).expect("read check.rs");
-    assert!(check_rs.contains("pub extern \"C-unwind\" fn check"));
-    assert!(check_rs.contains("pub extern \"C-unwind\" fn other_check"));
-
-    let runner_rs = std::fs::read_to_string(rs_dir.join("runner.rs")).expect("read runner.rs");
-    assert!(runner_rs.contains("pub extern \"C-unwind\" fn fail_now"));
+    build_and_diff("setjmp_cross_module_callback");
 }
 
 #[test]
@@ -748,17 +807,6 @@ fn project_translation_shares_record_types() {
 #[test]
 fn same_named_local_structs_in_different_tus_stay_distinct() {
     let rs_dir = build_and_diff("local_struct_cross_file_collision");
-
-    let a_rs = std::fs::read_to_string(rs_dir.join("a.rs")).expect("read a.rs");
-    assert!(a_rs.contains("struct Item"));
-    assert!(a_rs.contains("value"));
-    assert!(a_rs.contains("weight"));
-
-    let b_rs = std::fs::read_to_string(rs_dir.join("b.rs")).expect("read b.rs");
-    assert!(b_rs.contains("struct Item"));
-    assert!(b_rs.contains("label"));
-    assert!(b_rs.contains("score"));
-
     let types_rs = std::fs::read_to_string(rs_dir.join("types.rs")).unwrap_or_default();
     assert!(
         !types_rs.contains("struct Item"),
@@ -889,122 +937,33 @@ fn project_translation_shares_function_pointer_types() {
 
 #[test]
 fn ctype_libc_fixup_stays_off_when_a_sibling_tu_changes_locale() {
-    let rs_dir = build_and_diff("ctype_locale");
-
-    // locale_setup.c's non-"C" setlocale call is invisible to main.c's own
-    // Program, so the ctype fixup must stay disabled project-wide rather than
-    // idiomizing toupper/tolower as if the C locale were guaranteed.
-    let main_rs = std::fs::read_to_string(rs_dir.join("main.rs")).expect("read main.rs");
-    assert!(main_rs.contains("unsafe { toupper("));
-    assert!(main_rs.contains("unsafe { tolower("));
+    build_and_diff("ctype_locale");
 }
 
 #[test]
 fn public_pointer_deref_functions_are_unsafe() {
-    let rs_dir = build_and_diff("unsafe_public");
-
-    let pointers_rs =
-        std::fs::read_to_string(rs_dir.join("pointers.rs")).expect("read pointers.rs");
-    assert!(pointers_rs.contains("pub unsafe extern \"C\" fn read_ptr"));
-
-    let main_rs = std::fs::read_to_string(rs_dir.join("main.rs")).expect("read main.rs");
-    assert!(main_rs.contains("unsafe { read_ptr("));
+    build_and_diff("unsafe_public");
 }
 
 #[test]
 fn address_taken_pointer_deref_function_stays_unsafe_across_tus() {
-    let rs_dir = build_and_diff("unsafe_deref_callback_cross_tu");
-
-    let handler_rs = std::fs::read_to_string(rs_dir.join("handler.rs")).expect("read handler.rs");
-    assert!(
-        handler_rs.contains("pub unsafe extern \"C\" fn deref_and_add"),
-        "a C callback that dereferences a raw pointer must remain unsafe across TUs: {handler_rs}"
-    );
-
-    let main_rs = std::fs::read_to_string(rs_dir.join("main.rs")).expect("read main.rs");
-    assert!(main_rs.contains("deref_and_add as *const ()"));
-    assert!(main_rs.contains("Option<unsafe extern \"C\" fn(*mut i32) -> i32>"));
+    build_and_diff("unsafe_deref_callback_cross_tu");
 }
 
 #[test]
 fn cross_tu_variadic_calls_are_unsafe() {
-    let rs_dir = build_and_diff("unsafe_variadic");
-
-    let helper_rs = std::fs::read_to_string(rs_dir.join("helper.rs")).expect("read helper.rs");
-    assert!(helper_rs.contains("pub unsafe extern \"C\" fn bump"));
-
-    let main_rs = std::fs::read_to_string(rs_dir.join("main.rs")).expect("read main.rs");
-    assert!(main_rs.contains("unsafe { bump("));
+    build_and_diff("unsafe_variadic");
 }
 
 #[test]
 fn cross_tu_static_linkage() {
-    let rs_dir = build_and_diff("static_linkage");
-
-    let main_rs = std::fs::read_to_string(rs_dir.join("main.rs")).expect("read main.rs");
-    assert!(
-        main_rs.contains("use crate::other::compute;"),
-        "external-linkage fn should import from its defining module"
-    );
-    assert!(
-        !main_rs.contains("pub fn local") && main_rs.contains("fn local"),
-        "internal-linkage fn must not be pub"
-    );
-    assert!(
-        !main_rs.contains("pub static mut base") && main_rs.contains("static mut base"),
-        "internal-linkage global must not be pub"
-    );
-
-    let other_rs = std::fs::read_to_string(rs_dir.join("other.rs")).expect("read other.rs");
-    assert!(
-        other_rs.contains("#[unsafe(no_mangle)]\npub extern \"C\" fn compute"),
-        "external-linkage fn must be exported as a pub C ABI symbol"
-    );
-    assert!(
-        !other_rs.contains("pub extern \"C\" fn local")
-            && !other_rs.contains("no_mangle)]\nfn local")
-            && other_rs.contains("fn local"),
-        "sibling's internal-linkage fn must not be externally exported"
-    );
-    assert!(
-        !other_rs.contains("no_mangle)]\nstatic mut base")
-            && !other_rs.contains("pub static mut base")
-            && other_rs.contains("static mut base"),
-        "sibling's internal-linkage global must not be externally exported"
-    );
+    build_and_diff("static_linkage");
 }
 
 #[test]
 fn cross_tu_globals() {
-    let rs_dir = build_and_diff("globals");
+    build_and_diff("globals");
     let work = cross_tu_work_dir("globals");
-
-    let main_rs = std::fs::read_to_string(rs_dir.join("main.rs")).expect("read main.rs");
-    assert!(
-        main_rs.contains("use crate::state::counter;"),
-        "extern global should import from its defining module, not extern C"
-    );
-    assert!(
-        !main_rs.contains("static mut counter"),
-        "extern global must not be redeclared as an extern static in the root"
-    );
-    let state_rs = std::fs::read_to_string(rs_dir.join("state.rs")).expect("read state.rs");
-    assert!(
-        state_rs.contains(
-            "#[unsafe(no_mangle)]\n#[unsafe(link_section = \".slate_data\")]\npub static mut counter"
-        ),
-        "the defining module must export the global as a stable C symbol"
-    );
-    assert!(
-        state_rs.contains(
-            "#[unsafe(no_mangle)]\n#[unsafe(link_section = \".slate_fn\")]\npub extern \"C\" fn bump"
-        ),
-        "the defining module must export external-linkage functions as stable C ABI symbols"
-    );
-    assert!(
-        state_rs.contains("pub static mut unreferenced_global"),
-        "an externally-linked global must survive unused_items pruning even with no in-project references"
-    );
     assert_binary_sections(&work.join("c_bin"), &[".slate_data", ".slate_fn"]);
     let rs_bin = support::compile_rs_project(&work.join("rs")).expect("compile Rust");
     assert_binary_sections(&rs_bin, &[".slate_data", ".slate_fn"]);
@@ -1012,27 +971,13 @@ fn cross_tu_globals() {
 
 #[test]
 fn cross_tu_thread_local_globals() {
-    let rs_dir = build_and_diff("thread_local");
-    let main_rs = std::fs::read_to_string(rs_dir.join("main.rs")).expect("read main.rs");
-    let state_rs = std::fs::read_to_string(rs_dir.join("state.rs")).expect("read state.rs");
-
-    assert!(main_rs.contains("use crate::state::shared_value;"));
-    assert!(state_rs.contains("#[thread_local]\npub static mut shared_value: i32 = 5;"));
+    build_and_diff("thread_local");
 }
 
 #[test]
 fn used_and_retain_attrs_preserve_dead_statics() {
-    let rs_dir = build_and_diff("used_retain");
+    build_and_diff("used_retain");
     let work = cross_tu_work_dir("used_retain");
-    let main_rs = std::fs::read_to_string(rs_dir.join("main.rs")).expect("read main.rs");
-
-    assert!(main_rs.contains("#![feature(used_with_arg)]"));
-    assert!(main_rs.contains("#[used]\nstatic mut used_only"));
-    assert!(main_rs.contains("#[used]\n#[used(linker)]\nstatic mut used_and_retained"));
-    assert!(
-        !main_rs.contains("retain_only"),
-        "retain-only dead static should match C and not be kept alive"
-    );
 
     let symbols = &["used_only", "used_and_retained"];
     assert_binary_symbols(&work.join("c_bin"), symbols);
@@ -1044,20 +989,7 @@ fn used_and_retain_attrs_preserve_dead_statics() {
 
 #[test]
 fn weak_linkage_attrs_emit_for_globals_and_functions() {
-    let rs_dir = build_and_diff("weak_linkage");
-
-    let weak_rs = std::fs::read_to_string(rs_dir.join("weak.rs")).expect("read weak.rs");
-    assert!(weak_rs.contains("#![feature(linkage)]"));
-    assert!(
-        weak_rs.contains("#[unsafe(no_mangle)]\n#[linkage = \"weak\"]\npub static mut weak_global"),
-        "weak global should be exported as a weak C symbol:\n{weak_rs}"
-    );
-    assert!(
-        weak_rs.contains(
-            "#[unsafe(no_mangle)]\n#[linkage = \"weak\"]\npub extern \"C\" fn fallback_value"
-        ),
-        "weak function should be exported as a weak C ABI symbol:\n{weak_rs}"
-    );
+    build_and_diff("weak_linkage");
 }
 
 #[test]
@@ -1124,57 +1056,18 @@ fn generated_weak_symbols_lose_to_strong_external_definitions() {
 
 #[test]
 fn gnu_symbol_pragmas_preserve_cross_tu_linkage() {
-    let rs_dir = build_and_diff("gnu_symbol_pragmas");
-    let symbols_rs = std::fs::read_to_string(rs_dir.join("symbols.rs")).expect("read symbols.rs");
-    let main_rs = std::fs::read_to_string(rs_dir.join("main.rs")).expect("read main.rs");
-
-    assert!(
-        symbols_rs.contains(".weak pragma_weak_alias\\n.set pragma_weak_alias, pragma_weak_target")
-    );
-    assert!(symbols_rs.contains("#[unsafe(no_mangle)]\npub extern \"C\" fn pragma_weak_target"));
-    assert!(symbols_rs.contains("#[unsafe(no_mangle)]\npub extern \"C\" fn pragma_actual"));
-    assert!(main_rs.contains(
-        "mod strong;\nmod symbols;\n\nuse crate::strong::pragma_weak_alias;\nuse crate::symbols::pragma_actual;\n\n"
-    ));
-    assert!(main_rs.contains("use crate::strong::pragma_weak_alias;"));
-    assert!(main_rs.contains("use crate::symbols::pragma_actual;"));
-    assert!(!main_rs.contains("pragma_renamed"));
+    build_and_diff("gnu_symbol_pragmas");
 }
 
 #[test]
 #[ignore = "rewrite passes disabled while lowering is the focus"]
 fn function_alias_exports_forwarding_wrapper() {
-    let rs_dir = build_and_diff("alias_function");
-    let main_rs = std::fs::read_to_string(rs_dir.join("main.rs")).expect("read main.rs");
-
-    assert!(main_rs.contains("#[unsafe(no_mangle)]\npub extern \"C\" fn alias_impl"));
-    assert!(
-        main_rs.contains("real_impl(_0)\n}"),
-        "alias wrapper should forward to real_impl:\n{main_rs}"
-    );
+    build_and_diff("alias_function");
 }
 
 #[test]
 fn visibility_attrs_lower_best_effort() {
-    let rs_dir = build_and_diff("visibility");
-    let main_rs = std::fs::read_to_string(rs_dir.join("main.rs")).expect("read main.rs");
-
-    assert!(main_rs.contains("#[unsafe(no_mangle)]\npub static mut default_global"));
-    assert!(main_rs.contains("#[unsafe(no_mangle)]\npub extern \"C\" fn default_fn"));
-    assert!(main_rs.contains("#[unsafe(no_mangle)]\npub static mut protected_global"));
-    assert!(main_rs.contains("#[unsafe(no_mangle)]\npub extern \"C\" fn protected_fn"));
-    assert!(
-        main_rs.contains("static mut hidden_global")
-            && !main_rs.contains("#[unsafe(no_mangle)]\npub static mut hidden_global")
-            && !main_rs.contains("pub static mut hidden_global"),
-        "hidden global should remain private:\n{main_rs}"
-    );
-    assert!(
-        main_rs.contains("fn hidden_fn")
-            && !main_rs.contains("#[unsafe(no_mangle)]\npub extern \"C\" fn hidden_fn")
-            && !main_rs.contains("pub extern \"C\" fn hidden_fn"),
-        "hidden function should remain private:\n{main_rs}"
-    );
+    build_and_diff("visibility");
 
     let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
         .arg("translate-project")
@@ -1197,37 +1090,5 @@ fn visibility_attrs_lower_best_effort() {
 
 #[test]
 fn visibility_pragma_stack_controls_rust_exports() {
-    let rs_dir = build_and_diff("visibility_pragma");
-    let main_rs = std::fs::read_to_string(rs_dir.join("main.rs")).expect("read main.rs");
-
-    for name in ["visible_before", "visible_inner", "visible_after"] {
-        assert!(
-            main_rs.contains(&format!("#[unsafe(no_mangle)]\npub extern \"C\" fn {name}")),
-            "visible symbol `{name}` should remain exported:\n{main_rs}"
-        );
-    }
-    for name in [
-        "visible_before_global",
-        "visible_inner_global",
-        "visible_after_global",
-    ] {
-        assert!(
-            main_rs.contains(&format!("#[unsafe(no_mangle)]\npub static mut {name}")),
-            "visible symbol `{name}` should remain exported:\n{main_rs}"
-        );
-    }
-    for name in ["hidden_outer", "hidden_again"] {
-        assert!(
-            main_rs.contains(&format!("fn {name}"))
-                && !main_rs.contains(&format!("pub extern \"C\" fn {name}")),
-            "hidden symbol `{name}` should remain private:\n{main_rs}"
-        );
-    }
-    for name in ["hidden_outer_global", "hidden_again_global"] {
-        assert!(
-            main_rs.contains(&format!("static mut {name}"))
-                && !main_rs.contains(&format!("pub static mut {name}")),
-            "hidden symbol `{name}` should remain private:\n{main_rs}"
-        );
-    }
+    build_and_diff("visibility_pragma");
 }

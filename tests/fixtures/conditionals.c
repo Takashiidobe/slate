@@ -35,3 +35,13 @@ int main(void) {
   printf("%d\n", label);
   return 0;
 }
+// REWRITES-LABEL: {{^}}fn classify(
+// REWRITES-DAG: if n < 0 {
+// REWRITES-DAG: if n == 0 {
+// REWRITES-NOT: {{^    \{$}}
+// REWRITES-NOT: {{^        \{$}}
+// REWRITES: {{^}}}
+// REWRITES-LABEL: {{^}}fn clamp_low(
+// REWRITES-DAG: if n < 10 {
+// REWRITES-NOT: {{^    \{$}}
+// REWRITES: {{^}}}

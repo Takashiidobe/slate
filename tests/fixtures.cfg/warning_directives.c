@@ -6,3 +6,6 @@
 #endif
 
 int main(void) { return 0; }
+// DIRECTIVES-DAG: WARNING_TOKEN \"quoted\" C:\\tmp
+// DIRECTIVES-DAG: #[cfg(feature = "slate_warning_feature")]
+// DIRECTIVES-DAG: #[deprecated(note = "selected warning")]

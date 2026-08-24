@@ -10,3 +10,7 @@ int main(void) {
   printf("%d %d\n", direct, via_cb);
   return 0;
 }
+// LOWERING-LABEL: {{^}}fn main() {
+// LOWERING-DAG: deref_and_add as *const ()
+// LOWERING-DAG: Option<unsafe extern "C" fn(*mut i32) -> i32>
+// LOWERING: {{^}}}

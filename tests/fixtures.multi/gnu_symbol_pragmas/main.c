@@ -10,3 +10,6 @@ int main(void) {
   printf("%d %d\n", pragma_weak_alias(29), pragma_renamed(13));
   return 0;
 }
+// LOWERING-DAG: use crate::strong::pragma_weak_alias;
+// LOWERING-DAG: use crate::symbols::pragma_actual;
+// LOWERING-NOT: pragma_renamed

@@ -12,3 +12,6 @@ int main(void) {
   }
   return 0;
 }
+// REWRITES-LABEL: {{^}}fn main() {
+// REWRITES-DAG: .is_ascii_alphabetic()
+// REWRITES: {{^}}}

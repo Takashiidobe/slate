@@ -62,3 +62,15 @@ int bionic_variadic_count(int count, ...) {
 }
 
 int main(void) { return 0; }
+// REWRITES-DAG: fn bionic_import(
+// REWRITES-DAG: _0: usize
+// REWRITES-DAG: _1: isize
+// REWRITES-DAG: _2: isize
+// REWRITES-DAG: _3: usize
+// REWRITES-DAG: _5: u32
+// REWRITES-DAG: #![feature(f128)]
+// REWRITES-DAG: _6: f128
+// REWRITES-DAG: next_arg::<i32>()
+// REWRITES-NOT: struct LongDouble
+// REWRITES-BIONIC-AARCH64-DAG: _4: u32
+// REWRITES-BIONIC-X86_64-DAG: _4: i32

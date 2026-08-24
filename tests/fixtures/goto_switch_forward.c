@@ -24,3 +24,10 @@ done:
   printf("%d\n", r);
   return 0;
 }
+// REWRITES-DAG: match x {
+// REWRITES-DAG: 1 => {
+// REWRITES-DAG: r = 20;
+// REWRITES-DAG: _ => {
+// REWRITES-DAG: r = 30;
+// REWRITES-NOT: __state0
+// REWRITES-NOT: __dispatch0

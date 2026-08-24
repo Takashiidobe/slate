@@ -12,3 +12,7 @@ int main(void) {
   free(x - 1);
   return 0;
 }
+// REWRITES-DAG: fn alloc() -> *mut i32
+// REWRITES-DAG: fn free(
+// REWRITES-DAG: unsafe { free(
+// REWRITES-NOT: Vec<i32>
