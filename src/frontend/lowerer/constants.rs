@@ -190,7 +190,9 @@ pub(super) fn fp_literal_expr(fp: String) -> Expr {
 }
 
 pub(super) fn fp_literal_expr_for_type(ty: Option<&Type>, fp: String) -> Expr {
-    if matches!(ty, Some(Type::LongDouble)) && !crate::cir::emit::uses_f64_long_double_abi() {
+    if matches!(ty, Some(Type::LongDouble))
+        && !crate::frontend::toolchain::uses_f64_long_double_abi()
+    {
         f80_literal_expr(&fp).unwrap_or_else(|| {
             let value = fp_literal_expr(fp);
             Expr::Call {

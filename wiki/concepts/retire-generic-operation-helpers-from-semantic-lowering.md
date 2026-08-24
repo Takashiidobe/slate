@@ -12,5 +12,10 @@ generated fields belong in `clang-ir`, not in the generated crate.
 
 Generic operations remain valid only in Slate's CIR normalization and
 flattening boundary. Generic type and attribute alias tables remain available
-for structural type and attribute resolution; they are not an alternate
-semantic operation model.
+on the typed module for structural resolution; the typed model does not retain
+the generic tree or raw function/global operations as an alternate semantic
+model.
+
+Slate's build script enforces this boundary across `frontend/lowerer.rs` and
+its submodules. Generic operation types, retained generic trees, and mnemonic
+dispatch fail the build if reintroduced there.

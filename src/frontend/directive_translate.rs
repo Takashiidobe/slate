@@ -4,7 +4,7 @@ use super::preprocess::{
 use super::{self as frontend, c_ast};
 use crate::backend;
 use crate::backend::rust_ast::{Attr, Cfg, Expr, Item, Program, TraitRef, Type};
-use crate::{cir, ctx};
+use crate::ctx;
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use thiserror::Error;
@@ -78,7 +78,7 @@ pub enum DirectiveError {
     Cir {
         path: PathBuf,
         #[source]
-        source: cir::ModuleError,
+        source: crate::frontend::cir_input::ModuleError,
     },
     #[error("load Clang AST for {path}: {source}")]
     Ast {
@@ -578,10 +578,13 @@ fn translate_one(path: &Path, clang_args: &[String]) -> Result<Translation, Dire
     })?;
     let mut frontend_args = clang_args.to_vec();
     frontend_args.extend_from_slice(input.extra_args());
-    let module = cir::emit_module(path, &frontend_args).map_err(|source| DirectiveError::Cir {
-        path: path.to_path_buf(),
-        source,
-    })?;
+    let module =
+        crate::frontend::cir_input::emit_module(path, &frontend_args).map_err(|source| {
+            DirectiveError::Cir {
+                path: path.to_path_buf(),
+                source,
+            }
+        })?;
     let unit = c_ast::parse_file_with_args(path, &frontend_args).map_err(|source| {
         DirectiveError::Ast {
             path: path.to_path_buf(),

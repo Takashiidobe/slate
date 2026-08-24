@@ -30,10 +30,10 @@ it has no separate operation-kind taxonomy.
 
 **Escape hatch for `goto`**: arbitrary `goto` (including Duff's-device-shaped
 jumps into nested scopes) doesn't fit the structured region model above.
-`cir::emit::emit_generic_with_args_flattened` is a second, opt-in emission
+`frontend::toolchain::emit_generic_with_args_flattened` is a second, opt-in emission
 path that runs `cir-opt --cir-flatten-cfg --cir-goto-solver`, producing a
 plain multi-block CFG (`cir.switch.flat`/`cir.brcond`/real `cir.br` edges)
-instead of the nested structured form, which `src/cir/flatten.rs` then turns
+instead of the nested structured form, which `frontend::cir_input` then turns
 into a `loop { match state { .. } }` dispatch. This is deliberately only
 invoked for functions that actually contain a `goto` — running it
 unconditionally would still be correct but would degrade every goto-free

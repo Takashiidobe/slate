@@ -73,13 +73,13 @@ pub enum PreprocessError {
     #[error("query predefined macros: {source}")]
     PredefinedMacros {
         #[source]
-        source: crate::cir::EmitError,
+        source: crate::frontend::toolchain::EmitError,
     },
     #[error("run preprocessing diagnostics for {path}: {source}")]
     Diagnostics {
         path: PathBuf,
         #[source]
-        source: crate::cir::EmitError,
+        source: crate::frontend::toolchain::EmitError,
     },
 }
 
@@ -928,7 +928,7 @@ fn collect_unmapped(expr: &PredExpr, out: &mut Vec<String>) {
 
 /// Convenience: query Clang's predefined macros for `clang_args` and record.
 pub fn record_file(source: &str, clang_args: &[String]) -> Result<Preprocessing, PreprocessError> {
-    let macros = crate::cir::emit::predefined_macros(clang_args)
+    let macros = crate::frontend::toolchain::predefined_macros(clang_args)
         .map_err(|source| PreprocessError::PredefinedMacros { source })?;
     Ok(record(source, &macros))
 }
@@ -944,11 +944,13 @@ pub fn record_translation_unit(
         .iter()
         .any(|directive| directive.name == DirectiveName::Error && directive.active.is_none())
     {
-        let (success, stderr) = crate::cir::emit::preprocess_diagnostics(path, clang_args)
-            .map_err(|source| PreprocessError::Diagnostics {
-                path: path.to_path_buf(),
-                source,
-            })?;
+        let (success, stderr) = crate::frontend::toolchain::preprocess_diagnostics(
+            path, clang_args,
+        )
+        .map_err(|source| PreprocessError::Diagnostics {
+            path: path.to_path_buf(),
+            source,
+        })?;
         let path = path
             .canonicalize()
             .unwrap_or_else(|_| path.to_path_buf())

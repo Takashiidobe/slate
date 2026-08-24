@@ -14,7 +14,7 @@ pub enum AstError {
     Target {
         path: PathBuf,
         #[source]
-        source: crate::cir::TargetError,
+        source: crate::frontend::toolchain::TargetError,
     },
     #[error("spawn {clang} for Clang AST dump of {path}: {source}")]
     Spawn {
@@ -361,18 +361,9 @@ struct PackAttribute {
     alignment: u32,
 }
 
-fn clang() -> String {
-    std::env::var("SLATE_CLANG").unwrap_or_else(|_| {
-        format!(
-            "{}/llvm-project/build-cir/bin/clang",
-            std::env::var("HOME").expect("HOME not set")
-        )
-    })
-}
-
 fn macro_dump_plugin() -> String {
     std::env::var("SLATE_MACRO_DUMP_PLUGIN").unwrap_or_else(|_| {
-        let clang = PathBuf::from(clang());
+        let clang = PathBuf::from(crate::frontend::toolchain::clang());
         clang
             .parent()
             .and_then(Path::parent)
@@ -546,12 +537,13 @@ fn run_clang_ast_dump(
     src: &Path,
     extra_args: &[String],
 ) -> Result<(String, PluginEvents), AstError> {
-    let clang = clang();
+    let clang = crate::frontend::toolchain::clang();
     let mut cmd = Command::new(&clang);
-    let target_args = crate::cir::emit::target_args().map_err(|source| AstError::Target {
-        path: src.to_path_buf(),
-        source,
-    })?;
+    let target_args =
+        crate::frontend::toolchain::target_args().map_err(|source| AstError::Target {
+            path: src.to_path_buf(),
+            source,
+        })?;
     cmd.args([
         "-std=gnu23",
         "-Xclang",
@@ -560,10 +552,10 @@ fn run_clang_ast_dump(
         "-fparse-all-comments",
     ])
     .arg(format!("-fplugin={}", macro_dump_plugin()));
-    if let Some(shim_dir) = crate::cir::emit::libc_shim_dir() {
+    if let Some(shim_dir) = crate::frontend::toolchain::libc_shim_dir() {
         for root in [
             Some(shim_dir),
-            crate::cir::emit::clang_resource_dir_include(),
+            crate::frontend::toolchain::clang_resource_dir_include(),
         ]
         .into_iter()
         .flatten()

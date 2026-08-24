@@ -9,7 +9,6 @@ use crate::backend::rust_ast::{
     RustValue, SelfKind, StdTrait, Stmt, StructDef, StructField, StructFields, SupportModule,
     TraitRef, Type, UnaryOp, UsedKind, Visibility,
 };
-use crate::cir::{Attr, CirType, Module};
 use crate::ctx::Ctx;
 use crate::frontend::c_ast::{
     CType, EnumConstRef, FloatingLiteralFact, FloatingLiteralLoc, LayoutQuery, Loc, MacroConst,
@@ -18,7 +17,9 @@ use crate::frontend::c_ast::{
 use crate::frontend::function_abi::repair_function_signature;
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 use clang_ir::ast::SourceLocation;
+use clang_ir::ast::{Attribute as Attr, Type as CirType};
 use clang_ir::enums::CmpOpKind;
+use clang_ir::model::Module;
 use clang_ir::model::{
     Function as CirFunction, Global as CirGlobal, GlobalLinkageKind, MemOrder, Op, VisibilityKind,
     instruction as inst,
@@ -94,7 +95,6 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
     let mut anon_records = anon_local_records(cir);
     let shim_records = shim_records_for_module(cir, c);
     let cir_record_names: BTreeSet<String> = cir
-        .generic
         .type_aliases
         .values()
         .filter_map(slate_record_name)
@@ -196,8 +196,8 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
     }
     let mut lowerer = Lowerer {
         ctx,
-        aliases: cir.generic.type_aliases.clone(),
-        attr_aliases: cir.generic.attr_aliases.clone(),
+        aliases: cir.type_aliases.clone(),
+        attr_aliases: cir.attr_aliases.clone(),
         call_bindings: c.call_bindings(),
         known_functions: c
             .call_bindings()
@@ -2864,7 +2864,7 @@ fn c_type_to_type(ty: &crate::frontend::c_ast::CType, va_list_boxed: bool) -> Ty
         },
         CType::Float { bits: 16 } => Type::Prim(Prim::F16),
         CType::Float { bits: 32 } => Type::Prim(Prim::F32),
-        CType::Float { bits: 80 } if crate::cir::emit::uses_f64_long_double_abi() => {
+        CType::Float { bits: 80 } if crate::frontend::toolchain::uses_f64_long_double_abi() => {
             Type::Prim(Prim::F64)
         }
         CType::Float { bits: 80 } => Type::LongDouble,
@@ -2933,14 +2933,16 @@ fn c_layout(
         CType::Void => Some(CLayout { size: 0, align: 1 }),
         CType::Bool => Some(CLayout { size: 1, align: 1 }),
         CType::Int { bits, .. } => scalar_layout(*bits),
-        CType::Float { bits: 80 } => Some(if crate::cir::emit::uses_f64_long_double_abi() {
-            CLayout { size: 8, align: 8 }
-        } else {
-            CLayout {
-                size: 16,
-                align: 16,
-            }
-        }),
+        CType::Float { bits: 80 } => {
+            Some(if crate::frontend::toolchain::uses_f64_long_double_abi() {
+                CLayout { size: 8, align: 8 }
+            } else {
+                CLayout {
+                    size: 16,
+                    align: 16,
+                }
+            })
+        }
         CType::Float { bits } => scalar_layout(*bits),
         CType::Ptr(_) | CType::FuncPtr { .. } => Some(CLayout { size: 8, align: 8 }),
         CType::Array(elem, Some(len)) => {
@@ -3066,7 +3068,7 @@ fn align_to(value: u64, align: u64) -> u64 {
 fn ctype_uses_long_double(ty: &crate::frontend::c_ast::CType) -> bool {
     use crate::frontend::c_ast::CType;
     match ty {
-        CType::Float { bits: 80 } => !crate::cir::emit::uses_f64_long_double_abi(),
+        CType::Float { bits: 80 } => !crate::frontend::toolchain::uses_f64_long_double_abi(),
         CType::Ptr(inner) | CType::Array(inner, _) => ctype_uses_long_double(inner),
         CType::FuncPtr { ret, params } => {
             ctype_uses_long_double(ret) || params.iter().any(ctype_uses_long_double)

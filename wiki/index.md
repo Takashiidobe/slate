@@ -35,3 +35,5 @@
 - [clang-ir type projection accessors](concepts/clang-ir-type-projection-accessors.md)
 - [Retire generic operation helpers from semantic lowering](concepts/retire-generic-operation-helpers-from-semantic-lowering.md)
 - [Lowerer phase file boundaries](concepts/lowerer-phase-file-boundaries.md)
+- [Reusable CIR normalization ownership](concepts/reusable-cir-normalization-ownership.md)
+- [Typed module alias ownership](concepts/typed-module-alias-ownership.md)
