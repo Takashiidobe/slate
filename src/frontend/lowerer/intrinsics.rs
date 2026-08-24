@@ -290,6 +290,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_eh_setjmp(&mut self, op: &inst::EhSetjmp) {
+        self.parent
+            .synthetic_externs
+            .entry("setjmp".into())
+            .or_insert_with(builtin_setjmp_extern_decl);
         let env = self.operand_expr(&op.env);
         let call = Self::unsafe_expr(Expr::Call {
             func: Box::new(Expr::Var("setjmp".into())),
@@ -300,6 +304,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_eh_longjmp(&mut self, op: &inst::EhLongjmp) {
+        self.parent
+            .synthetic_externs
+            .entry("longjmp".into())
+            .or_insert_with(builtin_longjmp_extern_decl);
         let env = self.operand_expr(&op.env);
         let call = Self::unsafe_expr(Expr::Call {
             func: Box::new(Expr::Var("longjmp".into())),
