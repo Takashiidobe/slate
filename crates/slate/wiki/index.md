@@ -37,3 +37,4 @@
 - [Lowerer phase file boundaries](concepts/lowerer-phase-file-boundaries.md)
 - [Reusable CIR normalization ownership](concepts/reusable-cir-normalization-ownership.md)
 - [Typed module alias ownership](concepts/typed-module-alias-ownership.md)
+- [model MSVC time and file status families](concepts/model-msvc-time-and-file-status-families.md)

@@ -87,7 +87,8 @@ missing Bionic declaration cannot silently resolve to glibc or musl.
 tracked public-header manifest is `libc-shim/msvc-basic-headers.txt` and covers
 `assert.h`, `ctype.h`, `errno.h`, `float.h`, `limits.h`, `signal.h`,
 `stdarg.h`, `stddef.h`, `stdint.h`, `stdio.h`, `stdlib.h`, `string.h`, and
-`time.h`.
+`time.h`, plus the UCRT `sys/stat.h`, `sys/timeb.h`, `sys/types.h`, and
+`sys/utime.h` extensions.
 
 The profile models LLP64: pointers, `size_t`, `ptrdiff_t`, `intptr_t`, and
 `uintptr_t` are 64-bit; `long` is 32-bit; `long long` is 64-bit; `wchar_t` is
@@ -101,6 +102,13 @@ and the small MSVC `signal.h` surface (`sig_atomic_t`, `SIGINT`/`SIGILL`/
 declarations that don't fit as a target branch inline in a shared header live
 under `libc-shim/bits/msvc/` (`errno.h`, `signal.h`, `stddef.h`, `time.h`),
 included from the corresponding top-level header.
+
+The time and file-status extensions model `__time32_t` and `__time64_t`, the
+three UCRT timespec records, all four `_stat` layouts, `_dev_t`/`_ino_t`/
+`_off_t`, the `_S_*` mode constants, and the explicit 32/64-bit time, stat,
+utime, and timeb function families. They deliberately omit POSIX stat fields,
+mode constants, and timestamp APIs. Secure variants and macro-selected aliases
+are separate surfaces.
 
 Fixtures under `tests/fixtures/msvc/` cross-compile against `libc-shim`, and
 (when `target/msvc-sysroot` is bootstrapped, see [msvc reference sysroot](msvc-reference-sysroot.md))
@@ -121,9 +129,9 @@ that reason.
 
 This milestone does not expose pthreads, Unix process APIs, ioctl, or Unix
 sockets. Including `pthread.h`, `unistd.h`, `sys/ioctl.h`, or `sys/socket.h`
-fails explicitly. Wide-character hosted APIs, locale, filesystem extensions,
-secure CRT extensions, Windows UM/WinRT APIs, library discovery, and linking
-are outside the basic profile and remain follow-up work.
+fails explicitly. Directory traversal and file discovery, secure CRT
+extensions, Windows UM/WinRT APIs, library discovery, and linking remain
+follow-up work.
 
 For safety across libcs:
 

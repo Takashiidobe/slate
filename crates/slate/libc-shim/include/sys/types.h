@@ -3,6 +3,12 @@
 
 #include <features.h>
 
+#if defined(__SLATE_LIBC_MSVC)
+
+#include <bits/msvc/types.h>
+
+#else
+
 #define __NEED_mode_t
 #define __NEED_pid_t
 #define __NEED_ssize_t
@@ -39,5 +45,7 @@
 #define __NEED_pthread_spinlock_t
 #define __NEED_pthread_key_t
 #include <bits/types.h>
+
+#endif
 
 #endif

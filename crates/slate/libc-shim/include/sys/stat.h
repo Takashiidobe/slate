@@ -3,6 +3,15 @@
 
 #include <features.h>
 
+#if defined(__SLATE_LIBC_MSVC)
+
+#define __NEED_wchar_t
+#include <bits/types.h>
+
+#include <bits/msvc/sys/stat.h>
+
+#else
+
 #define __NEED_dev_t
 #define __NEED_ino_t
 #define __NEED_mode_t
@@ -143,6 +152,8 @@ __REDIR(lstat, __lstat_time64);
 __REDIR(fstatat, __fstatat_time64);
 __REDIR(futimens, __futimens_time64);
 __REDIR(utimensat, __utimensat_time64);
+#endif
+
 #endif
 
 #endif

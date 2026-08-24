@@ -3,6 +3,10 @@
 
 #include <features.h>
 
+#if defined(__SLATE_LIBC_MSVC)
+#error "<utime.h> is unavailable for MSVC targets; use <sys/utime.h>"
+#endif
+
 #define __NEED_time_t
 #include <bits/types.h>
 
