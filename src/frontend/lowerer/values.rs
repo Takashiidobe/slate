@@ -373,9 +373,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 .slot_types
                 .get(operand)
                 .is_some_and(|slot_ty| matches!(slot_ty, Type::Array { .. }))
-                && cir_ptr_inner(ty).is_some_and(|inner| {
-                    parse_cir_array_type(inner).is_some() || parse_cir_vector_type(inner).is_some()
-                });
+                && ty
+                    .pointee()
+                    .is_some_and(|inner| inner.as_array().is_some() || inner.as_vector().is_some());
             let expr = if points_to_whole_aggregate {
                 Expr::AddrOf {
                     mutable: true,
@@ -493,6 +493,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn pointee_type(&self, ty: &CirType) -> Option<Type> {
-        cir_ptr_pointee(ty).map(|ty| self.parent.rust_type(ty))
+        ty.pointee().map(|ty| self.parent.rust_type(ty))
     }
 }

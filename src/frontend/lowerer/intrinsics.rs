@@ -362,7 +362,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_vec_insert(&mut self, op: &inst::VecInsert) {
-        let Some((_, len)) = parse_cir_vector_type(&op.result_ty) else {
+        let Some((_, len, _)) = op.result_ty.as_vector() else {
             self.lower_unsupported_value(&op.result, &op.result_ty, "cir.vec.insert");
             return;
         };
@@ -395,7 +395,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_vec_shuffle(&mut self, op: &inst::VecShuffle) {
-        let Some((_, len)) = parse_cir_vector_type(&op.result_ty) else {
+        let Some((_, len, _)) = op.result_ty.as_vector() else {
             self.lower_unsupported_value(&op.result, &op.result_ty, "cir.vec.shuffle");
             return;
         };
@@ -434,7 +434,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_vec_splat(&mut self, op: &inst::VecSplat) {
-        let Some((_, len)) = parse_cir_vector_type(&op.result_ty) else {
+        let Some((_, len, _)) = op.result_ty.as_vector() else {
             self.lower_unsupported_value(&op.result, &op.result_ty, "cir.vec.splat");
             return;
         };
@@ -447,7 +447,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_vec_cmp(&mut self, op: &inst::VecCmp) {
-        let Some((elem_ty, len)) = parse_cir_vector_type(&op.result_ty) else {
+        let Some((elem_ty, len, _)) = op.result_ty.as_vector() else {
             self.lower_unsupported_value(&op.result, &op.result_ty, "cir.vec.cmp");
             return;
         };

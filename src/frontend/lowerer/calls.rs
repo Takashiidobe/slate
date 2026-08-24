@@ -338,7 +338,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     Type::Prim(Prim::F128)
                 } else if is_long_double(ty) {
                     Type::LongDouble
-                } else if let Some(inner) = cir_ptr_inner(ty)
+                } else if let Some(inner) = ty.pointee()
                     && is_wrapped_long_double(inner)
                 {
                     Type::Ptr {
@@ -383,7 +383,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     "lq".to_string()
                 } else if is_long_double(ty) {
                     "f80".to_string()
-                } else if cir_ptr_inner(ty).is_some_and(is_wrapped_long_double) {
+                } else if ty.pointee().is_some_and(is_wrapped_long_double) {
                     "pf80".to_string()
                 } else {
                     long_double_shim_type_tag(param_ty)
@@ -421,7 +421,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .map(|(i, (arg, ty))| {
                 if is_quad_long_double(ty)
                     || is_long_double(ty)
-                    || cir_ptr_inner(ty).is_some_and(is_wrapped_long_double)
+                    || ty.pointee().is_some_and(is_wrapped_long_double)
                     || is_cir_function_pointer_type(ty)
                 {
                     arg.clone()

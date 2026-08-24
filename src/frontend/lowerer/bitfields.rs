@@ -28,91 +28,105 @@ struct MemberStorage {
 pub(super) fn collect_bitfield_storages(module: &Module) -> BitfieldStorages {
     let mut storages = BTreeMap::new();
     for function in &module.functions {
-        let Some(raw) = function.raw.as_ref() else {
+        let Some(body) = &function.body else {
             continue;
         };
         let mut members = BTreeMap::new();
-        collect_function_bitfields(&raw.regions, module, &mut members, &mut storages);
+        collect_function_bitfields(body, module, &mut members, &mut storages);
     }
     storages
 }
 
 fn collect_function_bitfields(
-    regions: &[Region],
+    body: &inst::Region,
     module: &Module,
     members: &mut BTreeMap<String, MemberStorage>,
     storages: &mut BitfieldStorages,
 ) {
     let aliases = &module.generic.type_aliases;
-    for region in regions {
-        for block in &region.blocks {
-            for op in &block.ops {
-                if op.mnemonic() == "get_member"
-                    && let Some(member) = member_storage(op, aliases)
-                {
-                    for (result, _) in &op.results {
-                        members.insert(result.clone(), member.clone());
-                    }
+    walk_region_ops(body, &mut |op| {
+        match op {
+            Op::GetMember(op) => {
+                if let Some(member) = member_storage(op, aliases) {
+                    members.insert(op.result.clone(), member);
                 }
-                if matches!(op.mnemonic(), "get_bitfield" | "set_bitfield")
-                    && let Some(ptr) = op.operands.first()
-                    && let Some(member) = members.get(ptr)
-                    && let Some((size, offset)) = bitfield_info(op, module)
-                    && let Some(result_ty) = op_result_type(op)
-                {
-                    let key = (member.record.clone(), member.index);
-                    let wrapper = format!(
-                        "__slate_bitfields::__SlateBitfield_{}_{}",
-                        member.record, member.index
-                    );
-                    let storage = storages.entry(key).or_insert_with(|| BitfieldStorage {
-                        wrapper,
-                        backing: member.backing.clone(),
-                        fields: BTreeMap::new(),
-                    });
-                    storage
-                        .fields
-                        .entry(member.field.clone())
-                        .or_insert_with(|| BitfieldField {
-                            name: member.field.clone(),
-                            ty: rust_type_with_aliases(result_ty, aliases, false),
-                            size,
-                            offset,
-                        });
-                }
-                collect_function_bitfields(&op.regions, module, members, storages);
             }
+            Op::GetBitfield(op) => collect_bitfield(
+                &op.addr,
+                &op.result_ty,
+                &op.bitfield_info,
+                module,
+                members,
+                storages,
+            ),
+            Op::SetBitfield(op) => collect_bitfield(
+                &op.addr,
+                &op.result_ty,
+                &op.bitfield_info,
+                module,
+                members,
+                storages,
+            ),
+            _ => {}
         }
-    }
+        true
+    });
 }
 
-fn resolve_type_alias<'a>(ty: &'a CirType, aliases: &'a BTreeMap<String, CirType>) -> &'a CirType {
-    let mut ty = ty;
-    let mut seen = BTreeSet::new();
-    while let CirType::Named(name) = ty {
-        if !seen.insert(name.clone()) {
-            break;
-        }
-        match aliases.get(name) {
-            Some(expanded) => ty = expanded,
-            None => break,
-        }
-    }
-    ty
+fn collect_bitfield(
+    ptr: &str,
+    result_ty: &CirType,
+    info: &Attr,
+    module: &Module,
+    members: &BTreeMap<String, MemberStorage>,
+    storages: &mut BitfieldStorages,
+) {
+    let Some(member) = members.get(ptr) else {
+        return;
+    };
+    let Some((size, offset)) = bitfield_info(info, module) else {
+        return;
+    };
+    let key = (member.record.clone(), member.index);
+    let wrapper = format!(
+        "__slate_bitfields::__SlateBitfield_{}_{}",
+        member.record, member.index
+    );
+    let storage = storages.entry(key).or_insert_with(|| BitfieldStorage {
+        wrapper,
+        backing: member.backing.clone(),
+        fields: BTreeMap::new(),
+    });
+    storage
+        .fields
+        .entry(member.field.clone())
+        .or_insert_with(|| BitfieldField {
+            name: member.field.clone(),
+            ty: rust_type_with_aliases(result_ty, &module.generic.type_aliases, false),
+            size,
+            offset,
+        });
 }
 
-fn member_storage(op: &Operation, aliases: &BTreeMap<String, CirType>) -> Option<MemberStorage> {
-    let record = op_operand_types(op)
-        .first()
-        .and_then(cir_ptr_pointee)
+fn member_storage(
+    op: &inst::GetMember,
+    aliases: &BTreeMap<String, CirType>,
+) -> Option<MemberStorage> {
+    let record = op
+        .addr_ty
+        .pointee()
         .map(|ty| resolve_type_alias(ty, aliases))
-        .and_then(cir_record_name)
+        .and_then(slate_record_name)
         .map(|name| sanitize_ident(name).into_string())?;
-    let index = aggregate_member_index(op)?;
-    let backing = op_result_type(op)
-        .and_then(cir_ptr_pointee)
+    let index = op
+        .index_attr
+        .as_int()
+        .and_then(|value| usize::try_from(value).ok())?;
+    let backing = op
+        .result_ty
+        .pointee()
         .map(|ty| rust_type_with_aliases(ty, aliases, false))?;
-    let field = sanitize_ident(attr_str(op, "name")?).into_string();
+    let field = sanitize_ident(&op.name).into_string();
     Some(MemberStorage {
         record,
         index,
@@ -121,8 +135,8 @@ fn member_storage(op: &Operation, aliases: &BTreeMap<String, CirType>) -> Option
     })
 }
 
-fn bitfield_info(op: &Operation, module: &Module) -> Option<(u32, u32)> {
-    match module.generic.resolve_attr(op.attr("bitfield_info")?) {
+fn bitfield_info(info: &Attr, module: &Module) -> Option<(u32, u32)> {
+    match module.generic.resolve_attr(info) {
         Attr::BitfieldInfo { size, offset, .. } => {
             Some((u32::try_from(*size).ok()?, u32::try_from(*offset).ok()?))
         }

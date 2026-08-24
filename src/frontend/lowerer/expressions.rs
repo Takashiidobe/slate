@@ -94,7 +94,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             MemberPtr {
                 base,
                 field: field.into(),
-                field_ty: cir_ptr_pointee(result_ty).map(|ty| self.parent.rust_type(ty)),
+                field_ty: result_ty.pointee().map(|ty| self.parent.rust_type(ty)),
                 unsafe_access,
                 bitfield_name: None,
                 field_is_trailing: false,

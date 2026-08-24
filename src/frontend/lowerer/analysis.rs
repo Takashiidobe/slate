@@ -16,11 +16,8 @@ pub(super) fn collect_lifecycle_hooks(
         if function.is_declaration() {
             continue;
         }
-        let Some(op) = function.raw.as_ref() else {
-            continue;
-        };
-        let is_ctor = op.attr("global_ctor_priority").is_some();
-        let is_dtor = op.attr("global_dtor_priority").is_some();
+        let is_ctor = function.ctor_priority.is_some();
+        let is_dtor = function.dtor_priority.is_some();
         if !is_ctor && !is_dtor {
             continue;
         }
@@ -40,16 +37,10 @@ pub(super) fn collect_lifecycle_hooks(
             continue;
         }
         if is_ctor {
-            ctors.push((
-                attr_int(op, "global_ctor_priority").unwrap_or(65535),
-                name.to_string(),
-            ));
+            ctors.push((function.ctor_priority.unwrap_or(65535), name.to_string()));
         }
         if is_dtor {
-            dtors.push((
-                attr_int(op, "global_dtor_priority").unwrap_or(65535),
-                name.to_string(),
-            ));
+            dtors.push((function.dtor_priority.unwrap_or(65535), name.to_string()));
         }
     }
     ctors.sort_by_key(|(prio, _)| *prio);
@@ -77,14 +68,6 @@ pub(super) fn hook_call_stmt(name: &str, unsafe_functions: &BTreeSet<String>) ->
         call
     };
     Stmt::Expr(call)
-}
-
-pub(super) fn region_ops(op: &Operation) -> Vec<&Operation> {
-    op.regions
-        .iter()
-        .flat_map(|region| region.blocks.iter())
-        .flat_map(|block| block.ops.iter())
-        .collect()
 }
 
 pub(super) fn cross_block_live_values(body: &inst::Region) -> BTreeSet<String> {
@@ -158,51 +141,39 @@ pub(super) fn collect_used_symbols(
         .collect()
 }
 
-pub(super) fn collect_region_ops_recursive<'a>(op: &'a Operation, out: &mut Vec<&'a Operation>) {
-    for child in region_ops(op) {
-        out.push(child);
-        collect_region_ops_recursive(child, out);
-    }
-}
-
 pub(super) fn enum_locals_requiring_integer_storage(
     declarations: &[crate::frontend::c_ast::LocalEnumDecl],
     enums: &BTreeMap<String, crate::frontend::c_ast::Enum>,
-    ops: &[&Operation],
+    body: &inst::Region,
 ) -> BTreeSet<String> {
     let declared: BTreeMap<_, _> = declarations
         .iter()
         .map(|declaration| (declaration.name.as_str(), declaration.enum_name.as_str()))
         .collect();
-    let slots: BTreeMap<_, _> = ops
+    let mut slots = BTreeMap::new();
+    let mut constants = BTreeMap::new();
+    let mut stores = Vec::new();
+    walk_region_ops(body, &mut |op| {
+        match op {
+            Op::Alloca(op) if declared.contains_key(op.name.as_str()) => {
+                slots.insert(op.addr.clone(), op.name.clone());
+            }
+            Op::Const(op) => {
+                if let Some(value) = op.value.as_int() {
+                    constants.insert(op.res.clone(), value);
+                }
+            }
+            Op::Store(op) => stores.push((op.value.clone(), op.addr.clone())),
+            _ => {}
+        }
+        true
+    });
+    stores
         .iter()
-        .filter(|op| op.mnemonic() == "alloca")
-        .filter_map(|op| {
-            let (result, _) = op.results.first()?;
-            let name = attr_str(op, "name")?;
-            declared
-                .contains_key(name)
-                .then_some((result.as_str(), name))
-        })
-        .collect();
-    let constants: BTreeMap<_, _> = ops
-        .iter()
-        .filter(|op| op.mnemonic() == "const")
-        .filter_map(|op| {
-            let (result, _) = op.results.first()?;
-            let value = op.attr("value").and_then(Attr::as_int)?;
-            Some((result.as_str(), value))
-        })
-        .collect();
-    ops.iter()
-        .filter(|op| op.mnemonic() == "store")
-        .filter_map(|op| {
-            let [value, slot, ..] = op.operands.as_slice() else {
-                return None;
-            };
-            let name = slots.get(slot.as_str())?;
-            let enum_name = declared.get(name)?;
-            let value = constants.get(value.as_str())?;
+        .filter_map(|(value, slot)| {
+            let name = slots.get(slot)?;
+            let enum_name = declared.get(name.as_str())?;
+            let value = constants.get(value)?;
             let enm = enums.get(*enum_name)?;
             (!enm
                 .variants
@@ -229,18 +200,20 @@ fn collect_global_view_symbols(attr: &Attr, out: &mut Vec<String>) {
 }
 
 pub(super) fn c_abi_function_targets(module: &Module) -> BTreeSet<String> {
-    let mut ops = Vec::new();
+    let mut targets = BTreeSet::new();
     for function in &module.functions {
-        if let Some(op) = function.raw.as_ref() {
-            collect_region_ops_recursive(op, &mut ops);
+        if let Some(body) = &function.body {
+            walk_region_ops(body, &mut |op| {
+                if let Op::GetGlobal(op) = op
+                    && is_cir_function_pointer_type(&op.addr_ty)
+                    && let Attr::SymbolRef(name) = &op.name
+                {
+                    targets.insert(name.trim_start_matches('@').trim_matches('"').to_string());
+                }
+                true
+            });
         }
     }
-    let mut targets: BTreeSet<String> = ops
-        .iter()
-        .filter(|op| op.mnemonic() == "get_global")
-        .filter(|op| op_result_type(op).is_some_and(is_cir_function_pointer_type))
-        .filter_map(|op| attr_symbol_ref(op, "name").map(str::to_string))
-        .collect();
     for init in module
         .globals
         .iter()
@@ -259,12 +232,6 @@ pub(super) fn module_requires_native_va_list(
     emit_pub: bool,
     aliases: &BTreeMap<String, CirType>,
 ) -> bool {
-    let mut ops = Vec::new();
-    for function in &module.functions {
-        if let Some(op) = function.raw.as_ref() {
-            collect_region_ops_recursive(op, &mut ops);
-        }
-    }
     let defined_functions: BTreeSet<&str> = module
         .functions
         .iter()
@@ -283,21 +250,26 @@ pub(super) fn module_requires_native_va_list(
                     .any(|(_, ty)| is_cir_va_list_type(ty, aliases));
             has_va_list
                 && (c_abi_functions.contains(&function.name)
-                    || (emit_pub && function.raw.as_ref().is_some_and(externally_exported)))
+                    || (emit_pub && typed_function_is_exported(function)))
         })
-        || ops.iter().any(|op| {
-            if op.mnemonic() == "call" {
-                attr_symbol_ref(op, "callee")
-                    .is_some_and(|callee| !defined_functions.contains(callee))
-                    && op_operand_types(op)
-                        .iter()
-                        .any(|ty| is_cir_va_list_type(ty, aliases))
-            } else {
-                false
+        || module.functions.iter().any(|function| {
+            let mut requires_native = false;
+            if let Some(body) = &function.body {
+                walk_region_ops(body, &mut |op| {
+                    if let Op::Call(call) = op
+                        && let Some(Attr::SymbolRef(callee)) = call.callee.as_ref()
+                        && !defined_functions
+                            .contains(callee.trim_start_matches('@').trim_matches('"'))
+                        && call
+                            .arg_types
+                            .iter()
+                            .any(|ty| is_cir_va_list_type(ty, aliases))
+                    {
+                        requires_native = true;
+                    }
+                    !requires_native
+                });
             }
+            requires_native
         })
-}
-
-pub(super) fn attr_str<'a>(op: &'a Operation, key: &str) -> Option<&'a str> {
-    op.attr(key).and_then(Attr::as_str)
 }
