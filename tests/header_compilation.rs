@@ -3,6 +3,7 @@ mod support;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use support::libc_shim::compile_test_program_with_args;
 use support::libc_shim::{Architecture, LibcVariant, TestConfig, compile_test_program};
 
 fn bionic_headers() -> Vec<String> {
@@ -40,6 +41,17 @@ fn macos_headers() -> Vec<String> {
     let manifest = Path::new(env!("CARGO_MANIFEST_DIR")).join("libc-shim/macos-basic-headers.txt");
     fs::read_to_string(manifest)
         .expect("read macOS header manifest")
+        .lines()
+        .filter(|line| !line.is_empty())
+        .map(str::to_string)
+        .collect()
+}
+
+fn macos_stdio_locale_headers() -> Vec<String> {
+    let manifest =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("libc-shim/macos-stdio-locale-headers.txt");
+    fs::read_to_string(manifest)
+        .expect("read macOS stdio/locale header manifest")
         .lines()
         .filter(|line| !line.is_empty())
         .map(str::to_string)
@@ -95,6 +107,32 @@ fn compile_xwin_header(header: &str, include_dirs: &[PathBuf; 2]) -> Result<(), 
         .arg(&include_dirs[0])
         .arg("-isystem")
         .arg(&include_dirs[1])
+        .arg("-o")
+        .arg(object)
+        .arg(source)
+        .output()
+        .map_err(|error| format!("spawn {}: {error}", clang().display()))?;
+    output
+        .status
+        .success()
+        .then_some(())
+        .ok_or_else(|| String::from_utf8_lossy(&output.stderr).into_owned())
+}
+
+fn compile_macos_sdk_header(header: &str, sdk: &Path) -> Result<(), String> {
+    let cache = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/test-cache");
+    fs::create_dir_all(&cache).map_err(|error| format!("create cache: {error}"))?;
+    let stem = header.replace(['/', '.'], "_");
+    let source = cache.join(format!("macos_header_{stem}.c"));
+    let object = cache.join(format!("macos_header_{stem}.o"));
+    fs::write(
+        &source,
+        format!("#include <{header}>\nint main(void) {{ return 0; }}\n"),
+    )
+    .map_err(|error| format!("write {}: {error}", source.display()))?;
+    let output = Command::new(clang())
+        .args(["-xc", "-c", "--target=arm64-apple-macos11.0", "-isysroot"])
+        .arg(sdk)
         .arg("-o")
         .arg(object)
         .arg(source)
@@ -195,6 +233,96 @@ fn macos_basic_header_manifest_compiles_for_aarch64() {
     let source = format!(
         "{includes}\n_Static_assert(sizeof(wchar_t) == 4, \"wchar_t\");\n_Static_assert(sizeof(long double) == 8, \"long double\");\n_Static_assert(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ == 110000, \"deployment\");\nint main(void) {{ return 0; }}\n"
     );
+    compile_test_program(&config, &source).unwrap();
+}
+
+#[test]
+fn macos_stdio_locale_header_manifest_compiles_for_aarch64() {
+    let headers = macos_stdio_locale_headers();
+    let config = TestConfig::new(Architecture::Aarch64, LibcVariant::Darwin);
+    let includes = headers
+        .iter()
+        .map(|header| format!("#include <{header}>\n"))
+        .collect::<String>();
+    let source = format!("{includes}\nint main(void) {{ return 0; }}\n");
+    compile_test_program(&config, &source).unwrap();
+
+    let sdk = std::env::var_os("SLATE_MACOS_SDK")
+        .filter(|path| !path.is_empty())
+        .map(PathBuf::from);
+    let failures = headers
+        .iter()
+        .filter_map(|header| {
+            let source = format!("#include <{header}>\nint main(void) {{ return 0; }}\n");
+            if let Err(error) = compile_test_program(&config, &source) {
+                return Some(format!("{header} against shim:\n{error}"));
+            }
+            if let Some(sdk) = &sdk
+                && let Err(error) = compile_macos_sdk_header(header, sdk)
+            {
+                return Some(format!("{header} against macOS SDK:\n{error}"));
+            }
+            None
+        })
+        .collect::<Vec<_>>();
+    assert!(
+        failures.is_empty(),
+        "macOS stdio/locale manifest headers failed standalone compilation:\n{}",
+        failures.join("\n\n")
+    );
+}
+
+#[test]
+fn macos_feature_modes_select_darwin_namespaces() {
+    let fixture =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/macos/feature_modes.c");
+    let source = fs::read_to_string(fixture).expect("read macOS feature mode fixture");
+    let config = TestConfig::new(Architecture::Aarch64, LibcVariant::Darwin);
+    for args in [
+        vec!["-DEXPECT_DARWIN_FULL"],
+        vec!["-D_POSIX_C_SOURCE=200112L", "-DEXPECT_POSIX_2001"],
+        vec!["-D_POSIX_C_SOURCE=200809L", "-DEXPECT_POSIX_2008"],
+        vec![
+            "-D_POSIX_C_SOURCE=200809L",
+            "-D_DARWIN_C_SOURCE",
+            "-DEXPECT_DARWIN_FULL",
+        ],
+    ] {
+        compile_test_program_with_args(&config, &source, &args).unwrap();
+    }
+}
+
+#[test]
+fn macos_redirect_fact_fixture_compiles() {
+    let fixture =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/macos/redirect_facts.c");
+    let source = fs::read_to_string(fixture).expect("read macOS redirect fixture");
+    let config = TestConfig::new(Architecture::Aarch64, LibcVariant::Darwin);
+    compile_test_program(&config, &source).unwrap();
+}
+
+#[test]
+fn macos_sdk_oracle_probes_or_skips_explicitly() {
+    let script = Path::new(env!("CARGO_MANIFEST_DIR")).join("tools/test-macos-sdk-oracle.sh");
+    let output = Command::new("bash")
+        .arg(script)
+        .output()
+        .expect("run macOS SDK oracle test");
+    assert!(
+        output.status.success(),
+        "macOS SDK oracle failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    if std::env::var_os("SLATE_MACOS_SDK").is_none() && !Path::new("/usr/bin/xcrun").is_file() {
+        assert!(String::from_utf8_lossy(&output.stdout).contains("SKIP macOS SDK oracle"));
+    }
+}
+
+#[test]
+fn macos_sdk_probe_fixture_compiles_against_shim() {
+    let fixture = Path::new(env!("CARGO_MANIFEST_DIR")).join("tools/probes/macos-libc.c");
+    let source = fs::read_to_string(fixture).expect("read macOS SDK probe fixture");
+    let config = TestConfig::new(Architecture::Aarch64, LibcVariant::Darwin);
     compile_test_program(&config, &source).unwrap();
 }
 

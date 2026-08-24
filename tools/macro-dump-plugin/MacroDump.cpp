@@ -54,6 +54,7 @@ bool isUnderRoot(StringRef Path, StringRef Root) {
 class ProvenanceState {
   std::vector<std::string> TrustedRoots;
   llvm::DenseMap<const FileEntry *, std::set<HeaderEvidence>> TrustedHeaders;
+  llvm::DenseMap<unsigned, std::vector<std::string>> Macros;
 
 public:
   explicit ProvenanceState(std::vector<std::string> TrustedRoots)
@@ -75,6 +76,17 @@ public:
   const std::set<HeaderEvidence> *headers(const FileEntry &File) const {
     auto It = TrustedHeaders.find(&File);
     return It == TrustedHeaders.end() ? nullptr : &It->second;
+  }
+
+  void recordMacro(unsigned Offset, StringRef Name) {
+    auto &Names = Macros[Offset];
+    if (!llvm::is_contained(Names, Name))
+      Names.push_back(Name.str());
+  }
+
+  const std::vector<std::string> *macros(unsigned Offset) const {
+    auto It = Macros.find(Offset);
+    return It == Macros.end() ? nullptr : &It->second;
   }
 };
 
@@ -116,6 +128,8 @@ public:
     SourceLocation Loc = Range.getBegin();
     if (!SM.isWrittenInMainFile(Loc))
       return;
+    State->recordMacro(SM.getFileOffset(Loc),
+                       MacroNameTok.getIdentifierInfo()->getName());
     llvm::json::Object Event{
         {"name", MacroNameTok.getIdentifierInfo()->getName().str()},
         {"file", SM.getFilename(Loc).str()},
@@ -241,12 +255,45 @@ class ProvenanceVisitor : public RecursiveASTVisitor<ProvenanceVisitor> {
            Decl.hasAttr<WeakRefAttr>();
   }
 
+  static std::string foreignName(const FunctionDecl &Decl) {
+    if (const auto *Attr = Decl.getAttr<AsmLabelAttr>())
+      return Attr->getLabel().str();
+    if (const auto *Attr = Decl.getAttr<AliasAttr>())
+      return Attr->getAliasee().str();
+    if (const auto *Attr = Decl.getAttr<WeakRefAttr>();
+        Attr && !Attr->getAliasee().empty())
+      return Attr->getAliasee().str();
+    return Decl.getNameAsString();
+  }
+
+  static llvm::json::Array availability(const FunctionDecl &Decl) {
+    llvm::json::Array Values;
+    for (const auto *Attr : Decl.specific_attrs<AvailabilityAttr>()) {
+      llvm::json::Object Value{
+          {"platform", Attr->getPlatform()->getName().str()},
+          {"unavailable", Attr->getUnavailable()},
+          {"strict", Attr->getStrict()},
+      };
+      if (!Attr->getIntroduced().empty())
+        Value["introduced"] = Attr->getIntroduced().getAsString();
+      if (!Attr->getDeprecated().empty())
+        Value["deprecated"] = Attr->getDeprecated().getAsString();
+      if (!Attr->getObsoleted().empty())
+        Value["obsoleted"] = Attr->getObsoleted().getAsString();
+      Values.push_back(std::move(Value));
+    }
+    return Values;
+  }
+
   llvm::json::Object
   declarationEvidence(const FunctionDecl &Decl,
                       const std::set<HeaderEvidence> &Headers) {
     SourceLocation Loc = SM.getExpansionLoc(Decl.getLocation());
     llvm::json::Object Out{{"definition", Decl.doesThisDeclarationHaveABody()},
                            {"symbol_override", changesSymbol(Decl)},
+                           {"foreign_name", foreignName(Decl)},
+                           {"weak_import", Decl.hasAttr<WeakImportAttr>()},
+                           {"availability", availability(Decl)},
                            {"canonical", Decl.isCanonicalDecl()},
                            {"type", Decl.getType().getAsString()},
                            {"headers", headerNames(Headers)}};
@@ -331,11 +378,15 @@ public:
     std::set<std::string> Reasons;
     llvm::json::Array Declarations;
     std::string Name;
+    std::string ForeignName;
+    bool WeakImport = false;
+    llvm::json::Array Availability;
 
     if (!Callee) {
       Reasons.insert("indirect_call");
     } else {
       Name = Callee->getNameAsString();
+      ForeignName = Name;
       bool HasTrustedDeclaration = false;
       bool HasUntrustedDefinition = false;
       bool HasSymbolOverride = false;
@@ -346,6 +397,12 @@ public:
         HasUntrustedDefinition |=
             Redecl->doesThisDeclarationHaveABody() && DeclHeaders.empty();
         HasSymbolOverride |= changesSymbol(*Redecl);
+        if (changesSymbol(*Redecl))
+          ForeignName = foreignName(*Redecl);
+        WeakImport |= Redecl->hasAttr<WeakImportAttr>();
+        llvm::json::Array DeclAvailability = availability(*Redecl);
+        for (llvm::json::Value &Value : DeclAvailability)
+          Availability.push_back(std::move(Value));
         Headers.insert(DeclHeaders.begin(), DeclHeaders.end());
         Declarations.push_back(declarationEvidence(*Redecl, DeclHeaders));
       }
@@ -361,10 +418,25 @@ public:
     for (const std::string &Reason : Reasons)
       ReasonValues.push_back(Reason);
     bool Trusted = Callee && Reasons.empty();
+    unsigned Offset = SM.getFileOffset(Loc);
+    llvm::json::Array SourceMacros;
+    std::string SourceName = Name;
+    if (const auto *Macros = State.macros(Offset)) {
+      for (const std::string &Macro : *Macros)
+        SourceMacros.push_back(Macro);
+      if (!Macros->empty())
+        SourceName = Macros->front();
+    }
     llvm::json::Object Event{
         {"name", Name},
+        {"source_name", SourceName},
+        {"foreign_name", ForeignName},
+        {"source_macros", std::move(SourceMacros)},
+        {"symbol_override", ForeignName != Name},
+        {"weak_import", WeakImport},
+        {"availability", std::move(Availability)},
         {"file", SM.getFilename(Loc).str()},
-        {"offset", static_cast<int64_t>(SM.getFileOffset(Loc))},
+        {"offset", static_cast<int64_t>(Offset)},
         {"direct", Callee != nullptr},
         {"provenance", Trusted ? "trusted_header" : "unknown"},
         {"headers", headerNames(Headers)},

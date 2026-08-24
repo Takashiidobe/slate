@@ -75,7 +75,9 @@ on stderr:
   characteristic.
 - `FUNCTION_PROVENANCE` records each main-file call site, its direct Clang
   declaration binding when one exists, canonical type, redeclaration evidence,
-  trusted system-header ancestry, and conservative rejection reasons.
+  trusted system-header ancestry, source macro spelling, resolved assembler or
+  alias name, weak-import state, availability versions, and conservative
+  rejection reasons.
 
 `trusted_header` means that the declaration chain reaches a physical header
 resolved by an angled include from a Clang system search path and has no

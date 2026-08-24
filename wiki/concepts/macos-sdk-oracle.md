@@ -11,6 +11,25 @@ ISO C surface. POSIX and Darwin extension headers are added only after their
 layouts, signatures, availability, and symbol identities are verified by the
 area tickets.
 
+The stdio, locale, wide-character, and multibyte declaration profile is
+tracked separately in `libc-shim/macos-stdio-locale-headers.txt`. Its fixture
+checks the public `__sFILE`, `fpos_t`, `mbstate_t`, `lconv`, locale handle,
+wide-character classification, standard-stream accessor, and Darwin locale
+constant ABI. Every manifest header compiles standalone against the shim and,
+when `SLATE_MACOS_SDK` is set, against the installed SDK.
+
+Run all SDK macro, preprocessing, AST, layout, assembly, availability, and
+object-symbol probes with:
+
+```bash
+tools/test-macos-sdk-oracle.sh
+```
+
+Run one layer with `tools/probe-macos-sdk.sh --mode <mode>`. Results are kept
+under `target/macos-oracle/probes/aarch64/macos-11.0`. The test prints an
+explicit skip reason and succeeds when neither `SLATE_MACOS_SDK` nor `xcrun`
+can locate an SDK.
+
 The installed macOS SDK is the ABI authority. On macOS it is discovered with
 `xcrun --sdk macosx --show-sdk-path`. On other hosts, set `SLATE_MACOS_SDK` to
 an existing `MacOSX.sdk` directory. The repository does not acquire, copy, or

@@ -268,6 +268,48 @@ fn compile_for_target(
     Ok(())
 }
 
+fn check_generated_rust_for_target(
+    name: &str,
+    target: &str,
+    rust: &str,
+    work_dir: &Path,
+) -> Result<(), String> {
+    let rustc = std::env::var("RUSTC").unwrap_or_else(|_| "rustc".into());
+    let libdir = Command::new(&rustc)
+        .args(["--print", "target-libdir", "--target", target])
+        .output()
+        .map_err(|error| format!("spawn {rustc}: {error}"))?;
+    if !libdir.status.success() {
+        return Err(String::from_utf8_lossy(&libdir.stderr).into_owned());
+    }
+    let libdir = PathBuf::from(String::from_utf8_lossy(&libdir.stdout).trim());
+    if !libdir.is_dir() {
+        eprintln!("skip  {name} Rust target check: {target} is not installed");
+        return Ok(());
+    }
+    std::fs::create_dir_all(work_dir)
+        .map_err(|error| format!("create {}: {error}", work_dir.display()))?;
+    let source = work_dir.join(format!("{name}.rs"));
+    let metadata = work_dir.join(format!("lib{name}.rmeta"));
+    std::fs::write(&source, rust)
+        .map_err(|error| format!("write {}: {error}", source.display()))?;
+    let output = Command::new(&rustc)
+        .args(["--edition=2024", "--crate-type=lib", "--emit=metadata"])
+        .arg("--target")
+        .arg(target)
+        .arg("-o")
+        .arg(metadata)
+        .arg(source)
+        .output()
+        .map_err(|error| format!("spawn {rustc}: {error}"))?;
+    output.status.success().then_some(()).ok_or_else(|| {
+        format!(
+            "generated Rust target check failed:\n{}",
+            String::from_utf8_lossy(&output.stderr)
+        )
+    })
+}
+
 fn run_cross_target_fixture(
     name: &str,
     flavor: FixtureFlavor,
@@ -332,12 +374,13 @@ fn run_cross_target_fixture(
         return Ok(());
     }
     if flavor == FixtureFlavor::Macos
-        && name == "fundamental_types"
+        && matches!(name, "fundamental_types" | "stdio_locale")
         && let Ok(sdk) = std::env::var("SLATE_MACOS_SDK")
         && !sdk.trim().is_empty()
     {
-        let object_file = Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("target/test-cache/cross_target_fixture_fundamental_types_macos_sdk.o");
+        let object_file = Path::new(env!("CARGO_MANIFEST_DIR")).join(format!(
+            "target/test-cache/cross_target_fixture_{name}_macos_sdk.o"
+        ));
         let output = Command::new(clang())
             .args(["-xc", "-c", "--target=arm64-apple-macos11.0", "-isysroot"])
             .arg(sdk)
@@ -361,6 +404,14 @@ fn run_cross_target_fixture(
         flavor.translation_target().unwrap(),
         (flavor == FixtureFlavor::Bionic).then_some("21"),
     )?;
+    if flavor == FixtureFlavor::Macos {
+        check_generated_rust_for_target(
+            name,
+            flavor.translation_target().unwrap(),
+            &rust,
+            &work_dir.join("target-check"),
+        )?;
+    }
     support::filecheck::check_generated_rust_with_prefixes(
         &fixture,
         &rust,

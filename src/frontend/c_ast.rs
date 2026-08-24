@@ -67,6 +67,24 @@ pub struct Unit {
     pub global_floating_literals: HashMap<String, Vec<FloatingLiteralFact>>,
     pub(crate) function_types: HashMap<String, String>,
     call_bindings: HashMap<Loc, CallBinding>,
+    call_symbol_facts: HashMap<Loc, CallSymbolFact>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CallSymbolFact {
+    pub source_name: String,
+    pub foreign_name: String,
+    pub weak_import: bool,
+    pub availability: Vec<AvailabilityFact>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AvailabilityFact {
+    pub platform: String,
+    pub introduced: Option<String>,
+    pub deprecated: Option<String>,
+    pub obsoleted: Option<String>,
+    pub unavailable: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -261,6 +279,10 @@ impl Unit {
         }
         bindings
     }
+
+    pub fn call_symbol_facts(&self) -> HashMap<Loc, CallSymbolFact> {
+        self.call_symbol_facts.clone()
+    }
 }
 
 fn collect_call_bindings_in_stmts(stmts: &[Stmt], out: &mut HashMap<Loc, CallBinding>) {
@@ -335,6 +357,7 @@ fn collect_call_bindings_in_expr(expr: &Expr, out: &mut HashMap<Loc, CallBinding
 struct CallFact {
     name: String,
     binding: CallBinding,
+    symbol: CallSymbolFact,
     loc: Option<Loc>,
 }
 
@@ -490,6 +513,43 @@ fn parse_plugin_events(stderr: &str) -> PluginEvents {
             .get("canonical_type")
             .and_then(Value::as_str)
             .map(str::to_string);
+        let source_name = event
+            .get("source_name")
+            .and_then(Value::as_str)
+            .unwrap_or(name)
+            .to_string();
+        let foreign_name = event
+            .get("foreign_name")
+            .and_then(Value::as_str)
+            .unwrap_or(name)
+            .to_string();
+        let availability = event
+            .get("availability")
+            .and_then(Value::as_array)
+            .into_iter()
+            .flatten()
+            .filter_map(|value| {
+                Some(AvailabilityFact {
+                    platform: value.get("platform")?.as_str()?.to_string(),
+                    introduced: value
+                        .get("introduced")
+                        .and_then(Value::as_str)
+                        .map(str::to_string),
+                    deprecated: value
+                        .get("deprecated")
+                        .and_then(Value::as_str)
+                        .map(str::to_string),
+                    obsoleted: value
+                        .get("obsoleted")
+                        .and_then(Value::as_str)
+                        .map(str::to_string),
+                    unavailable: value
+                        .get("unavailable")
+                        .and_then(Value::as_bool)
+                        .unwrap_or(false),
+                })
+            })
+            .collect();
         let binding = if event.get("direct").and_then(Value::as_bool) == Some(false) {
             CallBinding::Indirect
         } else {
@@ -518,6 +578,15 @@ fn parse_plugin_events(stderr: &str) -> PluginEvents {
             CallFact {
                 name: name.to_string(),
                 binding,
+                symbol: CallSymbolFact {
+                    source_name,
+                    foreign_name,
+                    weak_import: event
+                        .get("weak_import")
+                        .and_then(Value::as_bool)
+                        .unwrap_or(false),
+                    availability,
+                },
                 loc: None,
             },
         );
@@ -702,6 +771,11 @@ fn parse_json_with_record_roots(
         .values()
         .filter_map(|fact| Some((fact.loc?, fact.binding.clone())))
         .collect();
+    let call_symbol_facts = plugin_events
+        .calls
+        .values()
+        .filter_map(|fact| Some((fact.loc?, fact.symbol.clone())))
+        .collect();
     CALL_FACTS.with(|facts| *facts.borrow_mut() = plugin_events.calls);
     collect_functions(
         &root,
@@ -754,6 +828,7 @@ fn parse_json_with_record_roots(
         global_floating_literals,
         function_types,
         call_bindings,
+        call_symbol_facts,
     })
 }
 

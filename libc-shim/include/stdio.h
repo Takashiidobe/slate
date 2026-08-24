@@ -15,7 +15,8 @@
 #endif
 
 #if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
-    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||  \
+    defined(__SLATE_LIBC_DARWIN)
 #define __NEED_ssize_t
 #define __NEED_off_t
 #define __NEED_wchar_t
@@ -55,6 +56,8 @@
 
 #if defined(__SLATE_LIBC_DARWIN)
 typedef __fpos_t fpos_t;
+
+#include <bits/darwin/stdio.h>
 
 extern FILE *__stdinp;
 extern FILE *__stdoutp;
@@ -98,7 +101,13 @@ extern FILE *const stderr;
 #define stderr (stderr)
 #endif
 
+#if defined(__SLATE_LIBC_DARWIN) && defined(_DARWIN_C_SOURCE)
+FILE *fopen(const char *__restrict, const char *__restrict) __DARWIN_EXTSN(fopen);
+#elif defined(__SLATE_LIBC_DARWIN)
+FILE *fopen(const char *__restrict, const char *__restrict) __DARWIN_ALIAS(fopen);
+#else
 FILE *fopen(const char *__restrict, const char *__restrict);
+#endif
 FILE *freopen(const char *__restrict, const char *__restrict, FILE *__restrict);
 int   fclose(FILE *);
 
@@ -155,7 +164,8 @@ int vfscanf(FILE *__restrict, const char *__restrict, va_list);
 int vsscanf(const char *__restrict, const char *__restrict, va_list);
 
 #if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
-    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||  \
+    defined(__SLATE_LIBC_DARWIN)
 int vfwprintf(FILE *__restrict, const wchar_t *__restrict, va_list);
 int vswprintf(wchar_t *__restrict, size_t, const wchar_t *__restrict, va_list);
 int vwprintf(const wchar_t *__restrict, va_list);
@@ -173,7 +183,8 @@ char *tmpnam(char *);
 FILE *tmpfile(void);
 
 #if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
-    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+    defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||  \
+    defined(__SLATE_LIBC_DARWIN)
 FILE   *fmemopen(void *__restrict, size_t, const char *__restrict);
 FILE   *open_memstream(char **, size_t *);
 FILE   *fdopen(int, const char *);
@@ -195,11 +206,20 @@ ssize_t getdelim(char **__restrict, size_t *__restrict, int, FILE *__restrict);
 ssize_t getline(char **__restrict, size_t *__restrict, FILE *__restrict);
 int     renameat(int, const char *, int, const char *);
 char   *ctermid(char *);
+#if defined(__SLATE_LIBC_DARWIN)
+#define L_ctermid 1024
+#else
 #define L_ctermid 20
 #endif
+#endif
 
-#if defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+#if defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||  \
+    defined(__SLATE_LIBC_DARWIN)
+#if defined(__SLATE_LIBC_DARWIN)
+#define P_tmpdir "/var/tmp/"
+#else
 #define P_tmpdir "/tmp"
+#endif
 char *tempnam(const char *, const char *);
 #endif
 
@@ -222,6 +242,22 @@ int    putw(int, FILE *);
 char  *fgetln(FILE *, size_t *);
 int    asprintf(char **, const char *, ...);
 int    vasprintf(char **, const char *, va_list);
+#endif
+
+#if defined(__SLATE_LIBC_DARWIN)
+int         getw(FILE *);
+int         putw(int, FILE *);
+char       *fgetln(FILE *, size_t *);
+int         asprintf(char **__restrict, const char *__restrict, ...);
+int         vasprintf(char **__restrict, const char *__restrict, va_list);
+char       *ctermid_r(char *);
+const char *fmtcheck(const char *, const char *);
+int         fpurge(FILE *);
+void        setbuffer(FILE *, char *, int);
+int         setlinebuf(FILE *);
+FILE       *funopen(const void *, int (*)(void *, char *, int),
+                    int (*)(void *, const char *, int),
+                    fpos_t (*)(void *, fpos_t, int), int (*)(void *));
 #endif
 
 #ifdef _GNU_SOURCE
