@@ -2,8 +2,8 @@
 
 _created 2026-08-24_
 
-Generated-Rust shape expectations belong beside their C fixture. Use the raw
-snapshot to understand the lowering, then encode only the intended rewrite or
+Generated-Rust shape expectations belong beside their C fixture. Translate the
+fixture to inspect its raw output, then encode only the intended rewrite or
 lowering property rather than copying the old `contains` assertions.
 
 Global and function-scoped `DAG`/`NOT` assertions run independently, making
