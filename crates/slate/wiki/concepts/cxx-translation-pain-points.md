@@ -1,7 +1,10 @@
 # C++ translation pain points (pre-implementation scoping)
 
-> Exploratory scoping, not implemented. CIR doesn't support C++ yet (expected
-> to stabilize for it over the next year). This records what's already known
+> Exploratory scoping, not implemented. CIR's C++ support is uneven: some
+> constructs (exceptions — see
+> [cxx-exceptions-lowering.md](cxx-exceptions-lowering.md)) already lower to
+> detailed structured ops; general C++ support is otherwise still expected to
+> stabilize over the next year. This records what's already known
 > from probing `~/llvm-project/build-cir/bin/clang -Xclang -fclangir -Xclang
 > -emit-cir` and `-ast-dump` on small C++ snippets, so it isn't re-derived
 > from scratch when C++ support actually starts. See
@@ -284,7 +287,10 @@ changes control flow shape). Compare
 treats a related unwind-shaped C construct (`longjmp`) as
 `catch_unwind`/`panic!` rather than a raw FFI call — C++ exceptions are the
 same family of problem, at a larger scale (arbitrary destructor chains
-instead of a single jump target).
+instead of a single jump target). See
+[cxx-exceptions-lowering.md](cxx-exceptions-lowering.md) for the concrete
+CIR shapes (`cir.throw`/`cir.try`) and the planned panic-first,
+`Result`-rewrite-second sequencing.
 
 ## Multiple/virtual inheritance has no Rust equivalent
 

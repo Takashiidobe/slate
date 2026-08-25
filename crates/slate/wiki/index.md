@@ -19,7 +19,7 @@
 - [clang-ir typed migration](concepts/clang-ir-typed-migration.md)
 - [Typed-op function-body lowering](concepts/typed-op-lowering.md)
 - [gcc-torture clang-ir refactor loop](concepts/gcc-torture-clang-ir-refactor-loop.md)
-- [_Float16 and FENV-constrained float](concepts/float16-and-fenv.md)
+- [`_Float16` and FENV-constrained float](concepts/float16-and-fenv.md)
 - [va_list lowering](concepts/va-list-lowering.md)
 - [long-double-f80](concepts/long-double-f80.md)
 - [setjmp/longjmp lowering](concepts/setjmp-longjmp-lowering.md)
@@ -44,3 +44,4 @@
 - [ClangIR -emit-cir memory blowup on large, type-recursive TUs](concepts/clangir-emit-cir-memory-blowup.md)
 - [Bionic libc-shim ABI facts](concepts/android-bionic-libc-shim-abi.md)
 - [C++ translation pain points (pre-implementation scoping)](concepts/cxx-translation-pain-points.md)
+- [C++ exceptions lowering](concepts/cxx-exceptions-lowering.md)
