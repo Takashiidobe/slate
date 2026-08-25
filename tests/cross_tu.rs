@@ -408,7 +408,41 @@ fn library_project_creates_cargo_crate_without_main() {
     );
 }
 
-/// `-fvisibility=hidden` (real libexpat build flag) controls ELF dynamic-export
+#[test]
+fn library_project_shares_anonymous_union_member_across_types_module() {
+    let dir = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures.library")
+        .join("anon_union_member");
+    let work = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("target/cross-tu")
+        .join("library-anon-union-member");
+    let crate_dir = work.join("crate");
+    let _ = std::fs::remove_dir_all(&crate_dir);
+
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
+        .args(["translate-project", "--lib"])
+        .arg(&dir)
+        .arg(&crate_dir)
+        .output()
+        .expect("run slate translate-project --lib");
+    assert!(
+        output.status.success(),
+        "translate-project --lib failed:\n{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    let check = std::process::Command::new("cargo")
+        .args(["check", "--quiet", "--lib", "--manifest-path"])
+        .arg(crate_dir.join("Cargo.toml"))
+        .output()
+        .expect("cargo check generated lib crate");
+    assert!(
+        check.status.success(),
+        "generated lib crate should type-check:\n{}",
+        String::from_utf8_lossy(&check.stderr)
+    );
+}
+
 /// visibility only, not in-crate callability -- slate must not treat a hidden
 /// function as an opaque external and strip its "unused" parameter.
 #[test]

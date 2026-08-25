@@ -46,3 +46,4 @@
 - [C++ translation pain points (pre-implementation scoping)](concepts/cxx-translation-pain-points.md)
 - [C++ exceptions lowering](concepts/cxx-exceptions-lowering.md)
 - [C++ stdlib shim lowering](concepts/cxx-stdlib-shim-lowering.md)
+- [Hybrid C++ migration with residual fallback](concepts/cxx-hybrid-migration.md)

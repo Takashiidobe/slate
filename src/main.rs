@@ -326,6 +326,62 @@ fn records_have_same_shape(a: &c_ast::Record, b: &c_ast::Record) -> bool {
             .all(|(x, y)| x.name == y.name && x.ty == y.ty && x.bit_width == y.bit_width)
 }
 
+fn merge_record_into_shared(
+    record: c_ast::Record,
+    shared_records: &mut BTreeMap<String, c_ast::Record>,
+    record_shape_conflicts: &mut BTreeSet<String>,
+    referenced_record_types: &mut BTreeSet<String>,
+) {
+    collect_record_field_type_names(&record, referenced_record_types);
+    let key = rust_ident(&record.name);
+    match shared_records.get(&key) {
+        Some(existing) if !records_have_same_shape(existing, &record) => {
+            record_shape_conflicts.insert(key);
+        }
+        Some(_) => {}
+        None => {
+            shared_records.insert(key, record);
+        }
+    }
+}
+
+fn merge_shared_types_for_module(
+    module: &Module,
+    unit: &c_ast::Unit,
+    shared_enums: &mut BTreeMap<String, c_ast::Enum>,
+    shared_records: &mut BTreeMap<String, c_ast::Record>,
+    record_shape_conflicts: &mut BTreeSet<String>,
+    referenced_record_types: &mut BTreeSet<String>,
+) {
+    for enm in &unit.enums {
+        shared_enums
+            .entry(rust_ident(&enm.name))
+            .or_insert_with(|| enm.clone());
+    }
+    for record in &unit.records {
+        merge_record_into_shared(
+            record.clone(),
+            shared_records,
+            record_shape_conflicts,
+            referenced_record_types,
+        );
+    }
+    for record in frontend::anon_local_records(module) {
+        merge_record_into_shared(
+            record,
+            shared_records,
+            record_shape_conflicts,
+            referenced_record_types,
+        );
+    }
+    for record in frontend::shim_records_for_module(module, unit) {
+        collect_record_field_type_names(&record, referenced_record_types);
+        shared_records
+            .entry(rust_ident(&record.name))
+            .or_insert(record);
+    }
+}
+
 struct TargetVariant {
     cfg: rust_ast::Cfg,
     clang_args: Vec<String>,
@@ -946,30 +1002,14 @@ fn translate_project_lib_crate_with_manifest(
             .iter()
             .any(|name| name == "setlocale");
         let unit = cli_result(c_ast::parse_file_with_project_records(path, project_dir))?;
-        for enm in &unit.enums {
-            shared_enums
-                .entry(rust_ident(&enm.name))
-                .or_insert_with(|| enm.clone());
-        }
-        for record in &unit.records {
-            collect_record_field_type_names(record, &mut referenced_record_types);
-            let key = rust_ident(&record.name);
-            match shared_records.get(&key) {
-                Some(existing) if !records_have_same_shape(existing, record) => {
-                    record_shape_conflicts.insert(key);
-                }
-                Some(_) => {}
-                None => {
-                    shared_records.insert(key, record.clone());
-                }
-            }
-        }
-        for record in frontend::shim_records_for_module(&module, &unit) {
-            collect_record_field_type_names(&record, &mut referenced_record_types);
-            shared_records
-                .entry(rust_ident(&record.name))
-                .or_insert(record);
-        }
+        merge_shared_types_for_module(
+            &module,
+            &unit,
+            &mut shared_enums,
+            &mut shared_records,
+            &mut record_shape_conflicts,
+            &mut referenced_record_types,
+        );
         loaded_modules.push((stem.clone(), path.clone(), module, unit, warning_items));
     }
     for name in referenced_record_types {
@@ -1286,30 +1326,14 @@ fn translate_project_lib_crate_with_compile_commands(
             project_dir,
             &args,
         ))?;
-        for enm in &unit.enums {
-            shared_enums
-                .entry(rust_ident(&enm.name))
-                .or_insert_with(|| enm.clone());
-        }
-        for record in &unit.records {
-            collect_record_field_type_names(record, &mut referenced_record_types);
-            let key = rust_ident(&record.name);
-            match shared_records.get(&key) {
-                Some(existing) if !records_have_same_shape(existing, record) => {
-                    record_shape_conflicts.insert(key);
-                }
-                Some(_) => {}
-                None => {
-                    shared_records.insert(key, record.clone());
-                }
-            }
-        }
-        for record in frontend::shim_records_for_module(&module, &unit) {
-            collect_record_field_type_names(&record, &mut referenced_record_types);
-            shared_records
-                .entry(rust_ident(&record.name))
-                .or_insert(record);
-        }
+        merge_shared_types_for_module(
+            &module,
+            &unit,
+            &mut shared_enums,
+            &mut shared_records,
+            &mut record_shape_conflicts,
+            &mut referenced_record_types,
+        );
         loaded.push(LoadedLibraryVariant {
             cfg: cfg.clone(),
             stem,

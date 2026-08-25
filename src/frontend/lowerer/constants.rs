@@ -353,8 +353,10 @@ pub(super) fn sanitize_ident(s: &str) -> Ident {
     if out.is_empty() {
         return Ident::from("_tmp");
     }
-    // `crate`/`self`/`Self`/`super`/`_` can't be raw identifiers, so mangle them instead.
-    if matches!(out.as_str(), "crate" | "self" | "Self" | "super" | "_") {
+    if matches!(
+        out.as_str(),
+        "crate" | "self" | "Self" | "super" | "_" | "Ok" | "Err" | "Some" | "None"
+    ) {
         out.push('_');
     }
     Ident::from(out)

@@ -9,6 +9,10 @@
 > unmodeled C++ types: shim everything to real, linked C++ object code first,
 > idiomatize later, same "transliterate first, idiomatize later" shape as the
 > rest of this codebase.
+> [cxx-hybrid-migration.md](cxx-hybrid-migration.md) extends this raw fallback
+> into an incremental migration design: native Rust and residual C++
+> representations may coexist behind lazy bridges until whole-program facts
+> prove that the C++ shadow can be deleted.
 
 ## Why not reimplement, why not `cxx`
 
@@ -155,6 +159,10 @@ recovers native Rust types, not a surprise to debug later.
    replaces it with a real Rust type, deleting the shim calls for that
    recovered type/subgraph — gated by the whole-type-graph-cut constraint
    above.
+3. Hybrid migration may bridge across a remaining cut instead of treating it
+   as an absolute barrier. This costs recursive conversion and requires alias,
+   escape, identity, and synchronization preconditions; see
+   [cxx-hybrid-migration.md](cxx-hybrid-migration.md).
 
 ## Open questions (not yet resolved)
 
