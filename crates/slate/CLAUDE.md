@@ -45,7 +45,10 @@ This protocol applies when ending a Beads implementation workflow. It is subordi
 git status
 ```
 
-5. **Hand off** - Summarize changes, validation, issue status, and any blocked sync/commit/push step
+5. **Every change must have a corresponding log**: - create a new log
+   with `llog new` for every change made, summarizing the change, no
+   more than 30 lines.
+6. **Hand off** - Summarize changes, validation, issue status, and any blocked sync/commit/push step
 
 **Critical rules:**
 

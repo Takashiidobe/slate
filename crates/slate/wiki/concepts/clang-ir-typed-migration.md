@@ -1,11 +1,13 @@
 # clang-ir typed-CIR migration
 
-Tracked by epic `slate-cevu`. Moves slate's CIR handling off generic, raw-text
-`Operation`/`Attribute` matching and onto the `clang-ir` crate's typed AST
-(`ast::{Attribute, Type}`) and typed instruction model
-(`model::Instruction`/`model::Op`). Four phases; phases 1–2 landed, phase 2.5
-(instruction-passing shape) and phase 3 (fully-typed block/region traversal)
-are ongoing.
+Tracked by epic `slate-cevu` (phases 1–3 below) and completed by the
+follow-on `slate-jedr`/`slate-3hkk` epics (see "Completion" below). Moved
+slate's CIR handling off generic, raw-text `Operation`/`Attribute` matching
+and onto the `clang-ir` crate's typed AST (`ast::{Attribute, Type}`) and typed
+instruction model (`model::Instruction`/`model::Op`). As of `slate-jedr.5`/
+`slate-3hkk` landing, the migration is **done**: the frontend/lowerer no
+longer has any generic escape hatch at all, and a build-time gate enforces
+that going forward.
 
 ## Phase 1 — typed `Attribute`/`Type` layer
 
@@ -149,3 +151,61 @@ re-deriving from raw operand strings.
 per emission. `frontend::cir_input` parses that generic-form result directly;
 it performs a second flattened emission only when goto detection or Clang's
 dominance failure requires the selective CFG fallback.
+
+## Completion (`slate-jedr`, `slate-3hkk`)
+
+Phase 3's stated goal — `lower_*` helpers dropping `op` entirely — landed,
+then went further: the frontend/lowerer no longer imports or traverses
+generic `Operation` values or `Function`/`Global` raw escape hatches at all
+(`slate-jedr.5`). Linkage, visibility, aliases, sections, lifecycle
+priorities, `noreturn`, module assembly, call-operand types, and
+`get_member` base types all now come from clang-ir's typed model/generated
+ops. Generic operations remain **only** under `src/cir` normalization/
+flattening, and generic type/attribute alias resolution remains structural
+(not semantic) — those two are the deliberate, permanent boundary, not
+leftover migration debt.
+
+Follow-on work in the same pass:
+
+- **`slate-jedr.6`**: reorganized the lowerer by typed pipeline phase —
+  `module_index.rs` (TU indexing), `function_setup.rs` (per-function setup),
+  `dispatch.rs` (the single typed traversal), `record_analysis.rs` (anonymous
+  record discovery/reconciliation). `types.rs` now owns structural type
+  lowering only; `lowerer.rs` is state + module/global/record emission
+  coordination.
+- **`slate-3hkk.1`**: `frontend::toolchain`'s clang-ir `Toolchain` accepts
+  caller-supplied `cir-opt` flags while always adding generic-form/
+  debug-location flags; slate's own duplicate `cir-opt` subprocess/error
+  plumbing was deleted in favor of this API (see "cir-opt invocation
+  ownership" above).
+- **Typed module alias ownership**: `clang_ir::model::Module` gained
+  normalized type/attribute alias tables and alias-chain resolution; Slate's
+  semantic consumers no longer touch `Module::generic` for this.
+- **Compact typed model ownership**: `Module::generic` and `Function`/
+  `Global` raw operation clones were removed from clang-ir's default typed
+  model entirely. Generic parsing stays explicit and separate for slate's
+  selective flattening boundary; conversion preserves alias tables, typed
+  bodies, and metadata, keeping only genuinely-unconverted top-level ops in
+  `Module::other` (with test coverage proving typed functions/globals aren't
+  duplicated there).
+- **Frontend-owned Clang configuration**: slate's Clang/CIR tool paths,
+  `SLATE_*` environment policy, target and libc-shim arguments,
+  preprocessing queries, and CIR emission all moved under
+  `frontend::toolchain`; Clang AST extraction shares the same path/target
+  helpers instead of duplicating them. No slate policy moved into the
+  `clang-ir` crate itself.
+- **Removed the slate CIR facade**: selective goto/label detection,
+  flattened-function merging, and dominance-error fallback moved to
+  `frontend::cir_input`. `src/cir` and its facade exports were deleted
+  outright; the public API and CLI import clang-ir AST/model types directly.
+- **Fallible typed model conversion**: `clang-ir` typed `Module` conversion
+  now returns structured errors for missing/invalid function/global
+  attributes, an absent `builtin.module`, or `cir.*` ops that fail generated
+  schema conversion, with recursive validation so malformed body ops can't
+  silently become `Op::Other` — only genuinely-unknown non-CIR dialect
+  operations do.
+- **Build-time enforcement gate**: a regression gate over frontend lowering
+  rejects generic `Operation`/`GenericModule` access, retained `.generic`
+  trees, or mnemonic dispatch, so the boundary above can't silently regress.
+  Slate's obsolete `clang-ir-types` patch was removed — `clang-ir` is now the
+  sole, direct CIR dependency.
