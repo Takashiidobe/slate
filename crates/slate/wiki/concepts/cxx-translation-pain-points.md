@@ -321,3 +321,9 @@ concrete proposed mechanism (opaque blob + generated C++ wrapper per call
 site, every crossing goes through the wrapper) and its known limits
 (no-linkage/lambda types, build-flag propagation, idiomize-boundary
 sequencing).
+
+The shim need not be an all-or-nothing endpoint. See
+[cxx-hybrid-migration.md](cxx-hybrid-migration.md) for a possible migration
+path that retains unsupported functions as residual C++, bridges selected
+types into native Rust representations, and deletes unused C++ shadows through
+a later whole-program fixed-point pass.
