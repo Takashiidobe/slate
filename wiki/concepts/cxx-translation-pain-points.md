@@ -316,3 +316,8 @@ pipeline currently needs to emit.
 `std::string`, `std::vector`, `std::map`, iostream, etc. need a shim in the
 same shape as [libc-shim.md](libc-shim.md), just a much larger surface area
 — more of the same kind of work already done for libc, not a new mechanism.
+See [cxx-stdlib-shim-lowering.md](cxx-stdlib-shim-lowering.md) for the
+concrete proposed mechanism (opaque blob + generated C++ wrapper per call
+site, every crossing goes through the wrapper) and its known limits
+(no-linkage/lambda types, build-flag propagation, idiomize-boundary
+sequencing).
