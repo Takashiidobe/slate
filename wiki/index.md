@@ -47,3 +47,4 @@
 - [C++ exceptions lowering](concepts/cxx-exceptions-lowering.md)
 - [C++ stdlib shim lowering](concepts/cxx-stdlib-shim-lowering.md)
 - [Hybrid C++ migration with residual fallback](concepts/cxx-hybrid-migration.md)
+- [search_lsearch.c does not need issue 217687's fix](concepts/search-lsearch-c-does-not-need-issue-217687-s-fix.md)
