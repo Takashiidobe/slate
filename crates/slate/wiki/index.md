@@ -45,3 +45,4 @@
 - [Bionic libc-shim ABI facts](concepts/android-bionic-libc-shim-abi.md)
 - [C++ translation pain points (pre-implementation scoping)](concepts/cxx-translation-pain-points.md)
 - [C++ exceptions lowering](concepts/cxx-exceptions-lowering.md)
+- [C++ stdlib shim lowering](concepts/cxx-stdlib-shim-lowering.md)
