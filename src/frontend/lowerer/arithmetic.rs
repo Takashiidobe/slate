@@ -744,6 +744,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.materialize_expr(result, expr, result_ty);
     }
 
+    pub(super) fn lower_freeze(&mut self, op: &inst::Freeze) {
+        let value = self.operand_expr(&op.input);
+        self.materialize_expr(&op.result, value, Some(&op.result_ty));
+    }
+
     pub(super) fn lower_unary_method(
         &mut self,
         result: &str,

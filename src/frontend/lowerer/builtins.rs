@@ -1,6 +1,59 @@
 use super::*;
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
+    pub(super) fn lower_exp10(&mut self, op: &inst::Exp10) {
+        if let Some((elem_ty, len, _)) = CirType::as_vector(&op.result_ty) {
+            let src = self.operand_expr(&op.src);
+            let elems = (0..len)
+                .map(|i| self.exp10_call(elem_ty, vector_index_expr(src.clone(), i)))
+                .collect::<Option<Vec<_>>>();
+            let Some(elems) = elems else {
+                self.lower_unsupported_value(&op.result, &op.result_ty, "cir.exp10 type");
+                return;
+            };
+            self.materialize_expr(&op.result, Expr::ArrayLit(elems), Some(&op.result_ty));
+            return;
+        }
+        let value = self.operand_expr(&op.src);
+        let Some(call) = self.exp10_call(&op.result_ty, value) else {
+            self.lower_unsupported_value(&op.result, &op.result_ty, "cir.exp10 type");
+            return;
+        };
+        self.materialize_expr(&op.result, call, Some(&op.result_ty));
+    }
+
+    fn exp10_call(&mut self, elem_ty: &CirType, value: Expr) -> Option<Expr> {
+        let value_ty = self.parent.rust_type(elem_ty);
+        let symbol = match value_ty {
+            Type::Prim(Prim::F32) => "exp10f",
+            Type::Prim(Prim::F64) => "exp10",
+            _ => return None,
+        };
+        let shim = format!("__slate_builtin_{symbol}");
+        self.parent
+            .synthetic_externs
+            .entry(shim.clone())
+            .or_insert_with(|| ExternFnDecl {
+                attrs: vec![RustAttr::LinkName(symbol.into())],
+                name: shim.clone(),
+                identity: FunctionIdentity::Unknown,
+                declared_type: None,
+                params: vec![FnParam {
+                    name: "_0".into(),
+                    mutable: false,
+                    ty: value_ty.clone(),
+                }],
+                variadic: false,
+                ret: Some(value_ty),
+                safe: false,
+            });
+        Some(Self::unsafe_expr(Expr::Call {
+            binding: CallBinding::Generated,
+            func: Box::new(Expr::Var(shim.into())),
+            args: vec![value],
+        }))
+    }
+
     pub(super) fn lower_frexp(&mut self, op: &inst::Frexp) {
         let value_ty = self.parent.rust_type(&op.result_ty);
         let symbol = match value_ty {

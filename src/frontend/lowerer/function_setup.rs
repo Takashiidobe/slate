@@ -295,7 +295,9 @@ impl<'a> Lowerer<'a> {
         if function.cold {
             attrs.push(RustAttr::Cold);
         }
-        if self.always_inline_functions.contains(name) {
+        if self.always_inline_functions.contains(name)
+            && !self.target_feature_functions.contains_key(name)
+        {
             attrs.push(RustAttr::Inline(InlineHint::Always));
         }
         if self.noinline_functions.contains(name) {

@@ -14,7 +14,12 @@ int main(void) {
   double rem    = __builtin_fmod(d, e);
   long   rounded       = __builtin_lround(f);
   long long rounded_ll = __builtin_llround(f);
-  printf("%.3f %.3f %.3f %.3f %ld %lld\n", trig, logs, powers, rem, rounded,
-         rounded_ll);
+#if __has_builtin(__builtin_elementwise_exp10)
+  double exp10_val = __builtin_elementwise_exp10(2.0);
+#else
+  double exp10_val = __builtin_pow(10.0, 2.0);
+#endif
+  printf("%.3f %.3f %.3f %.3f %ld %lld %.3f\n", trig, logs, powers, rem,
+         rounded, rounded_ll, exp10_val);
   return 0;
 }
