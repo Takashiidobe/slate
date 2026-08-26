@@ -434,6 +434,65 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         );
     }
 
+    pub(super) fn lower_vec_masked_load(&mut self, op: &inst::VecMaskedLoad) {
+        let Some((elem_ty, len, _)) = op.result_ty.as_vector() else {
+            self.lower_unsupported_value(&op.result, &op.result_ty, "cir.vec.masked_load");
+            return;
+        };
+        let Some(mask_ty) = self.value_type(&op.mask).cloned() else {
+            self.lower_unsupported_value(&op.result, &op.result_ty, "cir.vec.masked_load mask");
+            return;
+        };
+        let Some((mask_elem_ty, _, _)) = mask_ty.as_vector() else {
+            self.lower_unsupported_value(&op.result, &op.result_ty, "cir.vec.masked_load mask");
+            return;
+        };
+        let mask_elem_rust_ty = self.parent.rust_type(mask_elem_ty);
+        let elem_rust_ty = self.parent.rust_type(elem_ty);
+        let addr = self.operand_expr(&op.addr);
+        let mask = self.operand_expr(&op.mask);
+        let pass_thru = self.operand_expr(&op.pass_thru);
+        let elems = (0..len)
+            .map(|i| {
+                let mask_lane = vector_index_expr(mask.clone(), i);
+                let Some((as_int, signed)) = bitint_to_int_expr(&mask_elem_rust_ty, mask_lane)
+                else {
+                    return Expr::Value(RustValue::Bool(false));
+                };
+                let zero = if signed {
+                    RustValue::I128(0)
+                } else {
+                    RustValue::U128(0)
+                };
+                let active = Expr::Binary {
+                    op: BinOp::Ne,
+                    lhs: Box::new(as_int),
+                    rhs: Box::new(Expr::Value(zero)),
+                };
+                let loaded = Self::unsafe_expr(Expr::Unary {
+                    op: UnaryOp::Deref,
+                    expr: Box::new(Expr::MethodCall {
+                        recv: Box::new(Expr::Cast {
+                            expr: Box::new(addr.clone()),
+                            ty: Type::Ptr {
+                                mutable: false,
+                                inner: Box::new(elem_rust_ty.clone()),
+                            },
+                        }),
+                        method: "add".into(),
+                        args: vec![Expr::Value(RustValue::Usize(i as usize))],
+                    }),
+                });
+                Expr::If {
+                    cond: Box::new(active),
+                    then_expr: Box::new(loaded),
+                    else_expr: Box::new(vector_index_expr(pass_thru.clone(), i)),
+                }
+            })
+            .collect();
+        self.materialize_expr(&op.result, Expr::ArrayLit(elems), Some(&op.result_ty));
+    }
+
     pub(super) fn lower_vec_shuffle_dynamic(&mut self, op: &inst::VecShuffleDynamic) {
         self.lower_unsupported_value(&op.result, &op.result_ty, "cir.vec.shuffle.dynamic");
     }

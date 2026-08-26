@@ -403,6 +403,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         },
                     );
                 }
+                Op::Exp10(value) => return self.lower_exp10(&value),
+                Op::Freeze(value) => return self.lower_freeze(&value),
                 Op::Log(value) => {
                     let fenv = fenv_is_constrained(&value.fenv);
                     return self.lower_fenv_unary(
@@ -1097,6 +1099,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 Op::VecShuffleDynamic(value) => return self.lower_vec_shuffle_dynamic(&value),
                 Op::VecSplat(value) => return self.lower_vec_splat(&value),
                 Op::VecCmp(value) => return self.lower_vec_cmp(&value),
+                Op::VecMaskedLoad(value) => return self.lower_vec_masked_load(&value),
                 Op::IsConstant(value) => return self.lower_is_constant(&value),
                 Op::Objsize(value) => return self.lower_objsize(&value),
                 Op::AtomicFetch(value) => return self.lower_atomic_fetch(&value),
