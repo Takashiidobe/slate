@@ -1,6 +1,53 @@
 use super::*;
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
+    pub(super) fn lower_clear_padding(&mut self, op: &inst::ClearPadding) {
+        let Attr::Array(ranges) = &op.padding else {
+            self.emit_todo("cir.clear_padding attribute");
+            return;
+        };
+        let base = Expr::Cast {
+            expr: Box::new(self.pointer_operand_expr(&op.arg)),
+            ty: Type::Ptr {
+                mutable: true,
+                inner: Box::new(Type::Prim(Prim::U8)),
+            },
+        };
+        for range in ranges {
+            let Attr::OffsetPair { start, end } = range else {
+                self.emit_todo("cir.clear_padding range");
+                return;
+            };
+            if start >= end {
+                continue;
+            }
+            for byte in start / 8..=(end - 1) / 8 {
+                let byte_start = byte * 8;
+                let first_bit = start.saturating_sub(byte_start).min(8);
+                let last_bit = end.saturating_sub(byte_start).min(8);
+                let clear = (((1u16 << last_bit) - 1) ^ ((1u16 << first_bit) - 1)) as u8;
+                let keep = !clear;
+                let ptr = Expr::MethodCall {
+                    recv: Box::new(base.clone()),
+                    method: "add".into(),
+                    args: vec![Expr::Value(RustValue::Usize(byte as usize))],
+                };
+                let place = Expr::Unary {
+                    op: UnaryOp::Deref,
+                    expr: Box::new(ptr),
+                };
+                self.push_unsafe_assign(
+                    place.clone(),
+                    Expr::Binary {
+                        op: BinOp::BitAnd,
+                        lhs: Box::new(place),
+                        rhs: Box::new(Expr::Value(RustValue::TypedUInt(keep as u128, Prim::U8))),
+                    },
+                );
+            }
+        }
+    }
+
     pub(super) fn lower_get_bitfield(&mut self, op: &inst::GetBitfield) {
         let (place, needs_unsafe) =
             if let Some((storage, field, needs_unsafe)) = self.bitfield_accessor(&op.addr, false) {

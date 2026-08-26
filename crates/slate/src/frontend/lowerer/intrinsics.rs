@@ -2,6 +2,16 @@ use super::memory::{bitint_vector_lane_bits, pack_bitint_vector_expr, packed_mas
 use super::*;
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
+    pub(super) fn lower_clear_cache(&mut self, op: &inst::ClearCache) {
+        self.lower_call_llvm_intrinsic(&inst::CallLlvmIntrinsic {
+            result: None,
+            result_ty: None,
+            intrinsic_name: "clear_cache".into(),
+            arg_ops: vec![op.begin.clone(), op.end.clone()],
+            loc: op.loc.clone(),
+        });
+    }
+
     pub(super) fn lower_asm(&mut self, op: &inst::Asm) {
         let operands: Vec<&str> = op
             .asm_operands

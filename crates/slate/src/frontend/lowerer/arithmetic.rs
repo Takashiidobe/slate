@@ -752,6 +752,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         method: &str,
     ) {
         let value = self.operand_expr(value);
+        if let Some((_, len, _)) = result_ty.and_then(CirType::as_vector) {
+            let elems = (0..len)
+                .map(|i| Expr::MethodCall {
+                    recv: Box::new(vector_index_expr(value.clone(), i)),
+                    method: method.into(),
+                    args: vec![],
+                })
+                .collect();
+            self.materialize_expr(result, Expr::ArrayLit(elems), result_ty);
+            return;
+        }
         let rust_ty = result_ty
             .map(|ty| self.parent.rust_type(ty))
             .unwrap_or(Type::Prim(Prim::F64));

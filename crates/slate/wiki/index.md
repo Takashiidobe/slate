@@ -48,3 +48,4 @@
 - [C++ stdlib shim lowering](concepts/cxx-stdlib-shim-lowering.md)
 - [Hybrid C++ migration with residual fallback](concepts/cxx-hybrid-migration.md)
 - [search_lsearch.c does not need issue 217687's fix](concepts/search-lsearch-c-does-not-need-issue-217687-s-fix.md)
+- [Implement six clang-ir-types lowerings for slate-3i0x](concepts/implement-six-clang-ir-types-lowerings-for-slate-3i0x.md)

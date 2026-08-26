@@ -1,6 +1,68 @@
 use super::*;
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
+    pub(super) fn lower_frexp(&mut self, op: &inst::Frexp) {
+        let value_ty = self.parent.rust_type(&op.result_ty);
+        let symbol = match value_ty {
+            Type::Prim(Prim::F32) => "frexpf",
+            Type::Prim(Prim::F64) => "frexp",
+            _ => {
+                self.lower_unsupported_value(&op.result, &op.result_ty, "cir.frexp type");
+                self.lower_unsupported_value(&op.exp, &op.exp_ty, "cir.frexp exponent");
+                return;
+            }
+        };
+        let exponent_ty = self.parent.rust_type(&op.exp_ty);
+        let shim = format!("__slate_builtin_{symbol}");
+        self.parent
+            .synthetic_externs
+            .entry(shim.clone())
+            .or_insert_with(|| ExternFnDecl {
+                attrs: vec![RustAttr::LinkName(symbol.into())],
+                name: shim.clone(),
+                identity: FunctionIdentity::Unknown,
+                declared_type: None,
+                params: vec![
+                    FnParam {
+                        name: "_0".into(),
+                        mutable: false,
+                        ty: value_ty.clone(),
+                    },
+                    FnParam {
+                        name: "_1".into(),
+                        mutable: false,
+                        ty: Type::Ptr {
+                            mutable: true,
+                            inner: Box::new(exponent_ty.clone()),
+                        },
+                    },
+                ],
+                variadic: false,
+                ret: Some(value_ty),
+                safe: false,
+            });
+        let exponent = self.next_temp();
+        self.push_stmt(Stmt::Let {
+            name: exponent.clone(),
+            mutable: true,
+            ty: Some(exponent_ty.clone()),
+            init: Some(self.parent.default_value_expr(&exponent_ty)),
+        });
+        let call = Self::unsafe_expr(Expr::Call {
+            binding: CallBinding::Generated,
+            func: Box::new(Expr::Var(shim.into())),
+            args: vec![
+                self.operand_expr(&op.src),
+                Expr::AddrOf {
+                    mutable: true,
+                    expr: Box::new(Expr::Var(exponent.clone().into())),
+                },
+            ],
+        });
+        self.materialize_expr(&op.result, call, Some(&op.result_ty));
+        self.materialize_expr(&op.exp, Expr::Var(exponent.into()), Some(&op.exp_ty));
+    }
+
     pub(super) fn lower_ffs(&mut self, result: &str, result_ty: Option<&CirType>, value: &str) {
         let ty = result_ty
             .map(|ty| self.parent.rust_type(ty))
