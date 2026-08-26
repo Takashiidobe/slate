@@ -355,6 +355,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         },
                     );
                 }
+                Op::Cosh(value) => {
+                    return self.lower_unary_method(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.src,
+                        "cosh",
+                    );
+                }
                 Op::Exp(value) => {
                     let fenv = fenv_is_constrained(&value.fenv);
                     return self.lower_fenv_unary(
@@ -475,6 +483,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         },
                     );
                 }
+                Op::Sinh(value) => {
+                    return self.lower_unary_method(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.src,
+                        "sinh",
+                    );
+                }
                 Op::Sqrt(value) => {
                     let fenv = fenv_is_constrained(&value.fenv);
                     return self.lower_fenv_unary(
@@ -503,6 +519,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         value.loc.as_ref(),
                         Known::Tan,
                         "tan",
+                    );
+                }
+                Op::Tanh(value) => {
+                    return self.lower_unary_method(
+                        &value.result,
+                        Some(&value.result_ty),
+                        &value.src,
+                        "tanh",
                     );
                 }
                 Op::Const(value) => return self.lower_const(&value),
@@ -534,6 +558,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 Op::Continue(_) => return self.lower_continue(),
                 Op::Store(value) => return self.lower_store(&value),
                 Op::Copy(value) => return self.lower_copy(&value),
+                Op::ClearPadding(value) => return self.lower_clear_padding(&value),
                 Op::Cast(value) => return self.lower_cast(&value),
                 Op::GetElement(value) => return self.lower_get_element(&value),
                 Op::PtrStride(value) => return self.lower_ptr_stride(&value),
@@ -902,6 +927,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     );
                 }
                 Op::Modf(value) => return self.lower_modf(&value),
+                Op::Frexp(value) => return self.lower_frexp(&value),
                 Op::Llrint(value) => {
                     return self.lower_unary_cast_method(
                         &value.result,
@@ -979,6 +1005,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     return self.lower_opaque_pointer(&value.result, &value.result_ty, false);
                 }
                 Op::Prefetch(_) => return,
+                Op::ClearCache(value) => return self.lower_clear_cache(&value),
                 Op::IsFpClass(value) => return self.lower_is_fp_class(&value),
                 Op::ComplexCreate(value) => {
                     return self.lower_complex_create(
