@@ -248,6 +248,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     pub(super) fn lower_copy(&mut self, op: &inst::Copy) {
         let dst = &op.dst;
         let src = &op.src;
+        if self.slot_types.get(dst).is_some_and(|ty| match ty {
+            Type::Array { len, .. } => *len == 0,
+            Type::Custom(name) => self
+                .parent
+                .records
+                .get(name)
+                .is_some_and(|record| record.fields.is_empty()),
+            _ => false,
+        }) {
+            return;
+        }
         let Some(value) = self.copy_source_value(dst, src) else {
             self.push_stmt(Stmt::Expr(Self::unsafe_expr(Expr::PtrCopy {
                 src: Box::new(self.pointer_operand_expr(src)),
