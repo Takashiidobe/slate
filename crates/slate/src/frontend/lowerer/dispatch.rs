@@ -271,6 +271,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         },
                     );
                 }
+                Op::Rotate(value) => return self.lower_rotate(&value),
                 Op::AddOverflow(value) => {
                     return self.lower_overflow_arith(
                         (

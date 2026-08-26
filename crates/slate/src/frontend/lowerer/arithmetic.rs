@@ -88,6 +88,22 @@ fn overflow_for_result_width(
 }
 
 impl<'a, 'b> FunctionLowerer<'a, 'b> {
+    pub(super) fn lower_rotate(&mut self, op: &inst::Rotate) {
+        self.materialize_expr(
+            &op.result,
+            Expr::MethodCall {
+                recv: Box::new(self.operand_expr(&op.input)),
+                method: if op.rotate_left {
+                    "rotate_left".into()
+                } else {
+                    "rotate_right".into()
+                },
+                args: vec![self.operand_expr(&op.amount)],
+            },
+            Some(&op.result_ty),
+        );
+    }
+
     pub(super) fn lower_cmp(&mut self, op: &inst::Cmp) {
         if fenv_is_constrained(&op.fenv)
             && let Some(bits) = self.value_type(&op.lhs).and_then(fenv_scalar_bits)
