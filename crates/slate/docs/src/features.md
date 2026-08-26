@@ -3,9 +3,17 @@
 Slate has full C23 support. If it doesn't support C23, it's a bug to be
 fixed.
 
+Checkbox markers:
+
+- `[x]` — supported, verified by a fixture under `tests/`.
+- `[ ]` — not yet audited; status unknown.
+- `[~]` — audited and confirmed unsupported, reason in parens. Do not
+  re-audit without new information; update the reason if the situation
+  changes.
+
 ## C89
 
-- [ ] Trigraphs
+- [x] Trigraphs (via `slate translate -std=gnu11 -trigraphs file.c`; not on by default under gnu23)
 - [x] Escape sequences
 - [x] Integer constants: decimal, octal, hexadecimal
 - [x] Floating constants
@@ -80,8 +88,8 @@ fixed.
 - [x] Declarations / functions
 - [x] Function prototypes
 - [x] Prototype parameter type checking
-- [ ] Old-style/K&R function declarations
-- [ ] Old-style/K&R function definitions
+- [x] Old-style/K&R function declarations (via `slate translate -std=gnu11 file.c`)
+- [x] Old-style/K&R function definitions (via `slate translate -std=gnu11 file.c`)
 - [x] Variadic functions via ...
 - [x] Array declarators
 - [x] Function-pointer declarators
@@ -179,8 +187,8 @@ fixed.
 - [x] `_Bool`
 - [x] long long
 - [x] unsigned long long
-- [ ] Extended signed integer types
-- [ ] Extended unsigned integer types
+- [~] Extended signed integer types (no compiler-provided extended-integer-type mechanism; `__int128` is a separate GNU builtin type)
+- [~] Extended unsigned integer types (same as signed)
 - [x] Revised integer conversion rules
 - [x] Signed integer division truncates toward zero
 - [x] Corresponding remainder semantics
@@ -189,7 +197,7 @@ fixed.
 - [x] float `_Complex`
 - [x] double `_Complex`
 - [x] long double `_Complex`
-- [ ] `_Imaginary` where supported by the standard's model
+- [~] `_Imaginary` where supported by the standard's model (clang never implements `_Imaginary`, in any mode)
 - [x] Complex literals through library macros/functions
 - [x] Complex arithmetic semantics
 - [x] Floating point
@@ -209,7 +217,7 @@ fixed.
 - [x] Variable-length arrays
 - [x] Variably-modified types
 - [x] VLA runtime sizeof
-- [ ] Function prototype [*] VLA notation
+- [x] Function prototype [*] VLA notation
 - [x] static inside array function parameters
 - [x] const/volatile/restrict inside array parameter brackets
 - [x] Flexible array members
@@ -241,7 +249,7 @@ fixed.
 
 ### C99 version / feature macros
 
-- [ ] `__STDC_VERSION__`== 199901L
+- [x] `__STDC_VERSION__`== 199901L (via `slate translate -std=gnu99 file.c`; defaults to gnu23)
 - [x] `__STDC_HOSTED__`
 - [x] `__STDC_IEC_559__`
 - [x] `__STDC_IEC_559_COMPLEX__`
@@ -359,15 +367,15 @@ fixed.
 - [x] Finer-grained evaluation/sequencing rules
 - [x] Temporary-object lifetime rules
 - [x] Updated effective-type / memory-model interactions
-- [ ] Analyzability
-- [ ] Analyzability specification
-- [ ] `__STDC_ANALYZABLE__` when supported
+- [~] Analyzability (Annex L; clang implements no analyzability guarantees)
+- [~] Analyzability specification (same as above)
+- [~] `__STDC_ANALYZABLE__` when supported (clang never defines this macro)
 - [x] Conditional feature macros
 - [x] `__STDC_NO_ATOMICS__`
 - [x] `__STDC_NO_THREADS__`
 - [x] `__STDC_NO_VLA__`
 - [x] `__STDC_NO_COMPLEX__`
-- [ ] `__STDC_VERSION__` == 201112L
+- [x] `__STDC_VERSION__` == 201112L (via `slate translate -std=gnu11 file.c`)
 
 ### C11 library
 
@@ -430,16 +438,16 @@ fixed.
 - [x] LDBL_DECIMAL_DIG
 - [x] \*\_TRUE_MIN
 - [x] \*\_HAS_SUBNORM
-- [ ] Annex K Support
-- [ ] `__STDC_LIB_EXT1__`, if implemented
-- [ ] Bounds-checking interfaces
-- [ ] \_s functions
-- [ ] runtime-constraint handlers removed
+- [~] Annex K Support (optional, not implemented by glibc/musl/bionic; POSIX `libc-shim` doesn't provide it — MSVC's own secure `_s` functions are separately supported, see below)
+- [~] `__STDC_LIB_EXT1__`, if implemented (clang never defines this; no Annex K interfaces to gate behind it)
+- [~] Bounds-checking interfaces (not provided on POSIX targets, see Annex K Support above)
+- [x] \_s functions (MSVC target only, see `libc-shim/bits/msvc/secure/`)
+- [~] runtime-constraint handlers removed (nothing to remove; Annex K constraint handlers were never modeled)
 - [x] gets() removed
 
 ## C17
 
-- [ ] `__STDC_VERSION__` == 201710L
+- [x] `__STDC_VERSION__` == 201710L (via `slate translate -std=gnu17 file.c`)
 - [x] All C11 features
 - [x] All applicable C11 defect-report corrections
 - [x] Updated atomic semantics
@@ -462,7 +470,7 @@ fixed.
 - [x] Bit-precise integer arithmetic
 - [x] Bit-precise integer constant suffix wb
 - [x] Bit-precise unsigned constant suffix uwb
-- [ ] Conditional decimal floating point
+- [~] Conditional decimal floating point (gated on `_Decimal*` types, unimplemented by clang — see Decimal types below)
 
 ### Decimal types
 
@@ -470,13 +478,13 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 
 (not supported for clang)?
 
-- [ ] `_Decimal32`
-- [ ] `_Decimal64`
-- [ ] `_Decimal128`
-- [ ] Decimal arithmetic
-- [ ] Decimal constants/suffixes
-- [ ] Decimal conversions
-- [ ] Decimal floating environment where advertised
+- [~] `_Decimal32` (clang has no DFP codegen support at all)
+- [~] `_Decimal64` (clang has no DFP codegen support at all)
+- [~] `_Decimal128` (clang has no DFP codegen support at all)
+- [~] Decimal arithmetic (depends on `_Decimal*` types)
+- [~] Decimal constants/suffixes (depends on `_Decimal*` types)
+- [~] Decimal conversions (depends on `_Decimal*` types)
+- [~] Decimal floating environment where advertised (depends on `_Decimal*` types)
 - [x] C23 integer representation
 - [x] Two's-complement signed integers are mandatory
 - [x] Sign-and-magnitude representation no longer supported
@@ -489,7 +497,7 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 - [x] Binary literals 0B...
 - [x] Digit separators ', e.g. 1'000'000
 - [x] Digit separators in integer constants
-- [ ] Digit separators in floating constants
+- [x] Digit separators in floating constants
 - [x] u8'…' UTF-8 character constants
 - [x] u8"…" has type char8_t[N]
 - [x] UTF-16 semantics required for u"…"
@@ -542,13 +550,13 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 - [x] Zero-initialization semantics for empty initializer
 - [x] Empty initialization of arrays
 - [x] Empty initialization of structures
-- [ ] Empty initialization of unions
-- [ ] C23 compound literals
-- [ ] Storage-class specifier on compound literal
-- [ ] static compound literal where allowed
-- [ ] register compound literal where allowed
-- [ ] thread_local compound literal where allowed
-- [ ] constexpr compound literal where allowed by the grammar/rules
+- [~] Empty initialization of unions (`U u = {};` only zeroes the first member's bytes, not the whole object; fails when a later member is larger, e.g. `union { int i; int j[4]; }` — tracked in `tests/fixtures.gcc-torture.unsupported/pr19687.c`)
+- [~] C23 compound literals (plain compound literals work, see C99 above; the C23 storage-class-specifier extension does not, see below)
+- [~] Storage-class specifier on compound literal (clang's parser rejects this syntax outright, verified through clang 22)
+- [~] static compound literal where allowed (same clang parser limitation)
+- [~] register compound literal where allowed (same clang parser limitation)
+- [~] thread_local compound literal where allowed (same clang parser limitation)
+- [~] constexpr compound literal where allowed by the grammar/rules (same clang parser limitation)
 - [x] C23 attributes
 - [x] General attribute system
 - [x] [[...]] syntax
@@ -633,18 +641,18 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 - [x] Basic #embed "file"
 - [x] Binary resource expansion
 - [x] limit(...)
-- [ ] prefix(...)
-- [ ] suffix(...)
-- [ ] if_empty(...)
-- [ ] implementation-defined/vendor embed parameters handled correctly
+- [x] prefix(...)
+- [x] suffix(...)
+- [x] if_empty(...)
+- [~] implementation-defined/vendor embed parameters handled correctly (no vendor-specific embed parameters are modeled; only the standard ones)
 - [x] `__has_embed` support where required by C23's preprocessing facilities
 - [x] C23 floating-point pragmas
 - [x] #pragma STDC FENV_ROUND
 - [x] #pragma STDC FENV_DEC_ROUND
-- [ ] Updated IEC 60559 feature detection
-- [ ] `__STDC_IEC_60559_BFP__`
-- [ ] `__STDC_IEC_60559_DFP__`
-- [ ] `__STDC_IEC_60559_COMPLEX__`
+- [~] Updated IEC 60559 feature detection (clang defines none of the C23 `__STDC_IEC_60559_*` macros, verified `-std=gnu23 -dM -E`)
+- [~] `__STDC_IEC_60559_BFP__` (clang never defines this)
+- [~] `__STDC_IEC_60559_DFP__` (clang never defines this; also gated on unimplemented DFP)
+- [~] `__STDC_IEC_60559_COMPLEX__` (clang never defines this)
 - [x] C23 version
 - [x] `__STDC_VERSION__` == 202311L
 
@@ -683,24 +691,24 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 - [x] c8rtomb
 - [x] atomic_char8_t
 - [x] ATOMIC_CHAR8_T_LOCK_FREE
-- [ ] Memory management
-- [ ] free_sized
-- [ ] free_aligned_sized
-- [ ] memalignment
-- [ ] Updated allocation/deallocation synchronization semantics
-- [ ] C23 realloc(ptr, 0) behavior
-- [ ] free_sized, free_aligned_sized, and memalignment are C23 additions.
+- [x] Memory management
+- [x] free_sized
+- [x] free_aligned_sized
+- [x] memalignment
+- [x] Updated allocation/deallocation synchronization semantics
+- [x] C23 realloc(ptr, 0) behavior
+- [x] free_sized, free_aligned_sized, and memalignment are C23 additions.
 - [x] Memory/string functions
 - [x] memset_explicit
 - [x] memccpy
 - [x] strdup
 - [x] strndup
-- [ ] qualifier-preserving memchr
-- [ ] qualifier-preserving strchr
-- [ ] qualifier-preserving strpbrk
-- [ ] qualifier-preserving strrchr
-- [ ] qualifier-preserving strstr
-- [ ] corresponding qualifier-preserving wide-character operations
+- [~] qualifier-preserving memchr (libc-shim uses the classic `const void *` -> `void *` signature)
+- [~] qualifier-preserving strchr (same as memchr)
+- [~] qualifier-preserving strpbrk (same as memchr)
+- [~] qualifier-preserving strrchr (same as memchr)
+- [~] qualifier-preserving strstr (same as memchr)
+- [~] corresponding qualifier-preserving wide-character operations (same as memchr)
 - [x] Program support
 - [x] unreachable()
 - [x] C23 provides unreachable through <stddef.h>.
@@ -712,30 +720,30 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 - [x] timespec_getres
 - [x] C23 strftime extensions
 - [x] C23 wcsftime extensions
-- [ ] updated time-related macros
-- [ ] asctime deprecated
-- [ ] ctime deprecated
+- [~] updated time-related macros (no C23 time.h macro deltas beyond what's already implemented were identified)
+- [~] asctime deprecated (not marked `[[deprecated]]` in `libc-shim/include/time.h`; adding it breaks `libc_test_api_supported_tests_compile`, which takes its address under `-Werror`)
+- [~] ctime deprecated (same as `asctime`)
 - [x] Formatted I/O
 - [x] Binary %b conversion
 - [x] wN length modifiers
 - [x] wfN length modifiers
-- [ ] H decimal-float length modifier
-- [ ] D decimal-float length modifier
-- [ ] DD decimal-float length modifier
+- [~] H decimal-float length modifier (gated on unimplemented DFP)
+- [~] D decimal-float length modifier (gated on unimplemented DFP)
+- [~] DD decimal-float length modifier (gated on unimplemented DFP)
 - [x] corresponding scanf-family support
 - [x] corresponding printf-family support
-- [ ] Floating point
-- [ ] New IEC 60559 binary functions where supported
-- [ ] Decimal math functions where DFP is supported
-- [ ] decimal dN function variants
-- [ ] quantizedN
-- [ ] samequantumdN
-- [ ] quantumdN
-- [ ] llquantexpdN
-- [ ] decimal encode/decode functions
+- [~] Floating point (see gaps below)
+- [~] New IEC 60559 binary functions where supported (`totalorder`, `getpayload`, `fromfp`/`ufromfp`, `setpayload`, `iseqsig`, etc. not declared in libc-shim math.h)
+- [~] Decimal math functions where DFP is supported (gated on unimplemented DFP)
+- [~] decimal dN function variants (gated on unimplemented DFP)
+- [~] quantizedN (gated on unimplemented DFP)
+- [~] samequantumdN (gated on unimplemented DFP)
+- [~] quantumdN (gated on unimplemented DFP)
+- [~] llquantexpdN (gated on unimplemented DFP)
+- [~] decimal encode/decode functions (gated on unimplemented DFP)
 - [x] floating-to-string formatting functions
 - [x] additional <float.h> macros
-- [ ] revised IEC 60559 feature macros
+- [~] revised IEC 60559 feature macros (see Updated IEC 60559 feature detection above — clang defines none of these)
 - [x] Integer limits
 - [x] Integer width macros
 - [x] CHAR_WIDTH
@@ -757,7 +765,7 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 - [x] `__STDC_VERSION_MATH_H__`
 - [x] `__STDC_VERSION_STDINT_H__`
 - [x] `__STDC_VERSION_STDLIB_H__`
-- [ ] `__STDC_VERSION_TGMATH_H__`
+- [x] `__STDC_VERSION_TGMATH_H__`
 - [x] `__STDC_VERSION_TIME_H__`
 - [x] `__STDC_VERSION_STDCKDINT_H__`
 - [x] `__STDC_VERSION_STDBIT_H__`
@@ -770,44 +778,41 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 - [x] Locally declared labels with `__label__`
 - [x] Label addresses with `&&label`
 - [x] Computed goto
-- [ ] Nested functions
-- [ ] Nested-function trampolines / static chains
+- [~] Nested functions (clang rejects nested function definitions entirely: "function definition is not allowed here")
+- [~] Nested-function trampolines / static chains (gated on nested functions, which clang doesn't support)
 - [x] Omitted middle operand of `?:`
 - [x] Case ranges
 - [x] `__typeof__`
 - [x] `__typeof_unqual__`
-- [ ] `__auto_type`
+- [x] `__auto_type`
 - [x] `__alignof__`
 - [x] `__int128`
 - [x] `unsigned __int128`
 - [x] `_Float16`
-- [ ] `_Float32` (unsupported by clang)
-- [ ] `_Float64` (unsupported by clang)
-- [ ] `_Float128` (unsupported by clang)
-- [ ] `_Float32x` (unsupported by clang)
-- [ ] `_Float64x` (unsupported by clang)
-- [ ] `_Float128x` (unsupported by clang)
-- [ ] `_Decimal32` (unsupported by clang)
-- [ ] `_Decimal64` (unsupported by clang)
-- [ ] `_Decimal128` (unsupported by clang)
-- [ ] GNU fixed-point types
-- [ ] GNU saturating fixed-point types
+- [~] `_Float32` (unsupported by clang)
+- [~] `_Float64` (unsupported by clang)
+- [~] `_Float128` (unsupported by clang)
+- [~] `_Float32x` (unsupported by clang)
+- [~] `_Float64x` (unsupported by clang)
+- [~] `_Float128x` (unsupported by clang)
+- [~] GNU fixed-point types (clang doesn't implement `_Fract`/`_Accum` at all: "unknown type name")
+- [~] GNU saturating fixed-point types (same — gated on unimplemented fixed-point types)
 - [x] `__real__`
 - [x] `__imag__`
-- [ ] VLA members in local structures
-- [ ] VLA members in local unions
-- [ ] Parameter forward declarations
+- [~] VLA members in local structures (clang: "fields must have a constant size ... will never be supported")
+- [~] VLA members in local unions (same clang limitation as structures)
+- [~] Parameter forward declarations (clang's parser doesn't accept `;`-separated forward parameter declarations at all)
 - [x] Zero-length arrays
-- [ ] Flexible array members in unions
-- [ ] Structures containing only a flexible array member
-- [ ] Nested flexible-array extensions
-- [ ] Static initialization of flexible arrays
+- [x] Flexible array members in unions
+- [x] Structures containing only a flexible array member
+- [x] Nested flexible-array extensions
+- [x] Static initialization of flexible arrays
 - [x] Empty structures
-- [ ] Union casts
-- [ ] Range designators
-- [ ] Historical `[index] value` initializer syntax
-- [ ] Historical `field: value` initializer syntax
-- [ ] Incomplete enum forward declarations
+- [~] Union casts (works with a runtime source value; fails as a compile-time constant initializer — CIR gap, tracked as slate-b4jj)
+- [x] Range designators
+- [x] Historical `[index] value` initializer syntax
+- [x] Historical `field: value` initializer syntax
+- [x] Incomplete enum forward declarations
 - [x] Basic `asm`
 - [x] `__asm__`
 - [x] Extended asm
@@ -828,9 +833,9 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 - [x] Top-level asm
 - [x] Target-specific asm constraints
 - [x] `__thread`
-- [ ] `extern __thread`
+- [x] `extern __thread`
 - [x] `static __thread`
-- [ ] GNU TLS models
+- [x] GNU TLS models (`tls_model` attribute is recognized and ignored; no observable-behavior equivalent needed)
 - [x] Named variadic macro arguments
 - [x] Omitted variadic macro arguments
 - [x] `, ##__VA_ARGS__` comma elision
@@ -845,11 +850,11 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 - [x] `#pragma GCC system_header`
 - [x] `#pragma GCC dependency`
 - [x] GNU macro push/pop pragmas
-- [ ] GNU visibility pragmas
+- [x] GNU visibility pragmas
 - [x] GNU weak pragmas
 - [x] GNU structure-layout pragmas
-- [ ] GNU function-specific optimization pragmas
-- [ ] GNU target-specific pragmas
+- [~] GNU function-specific optimization pragmas (`#pragma GCC optimize(...)` errors: "unsupported semantic directive")
+- [~] GNU target-specific pragmas (`#pragma GCC target(...)` errors: "unsupported semantic directive")
 - [x] `__GNUC__`
 - [x] `__GNUC_MINOR__`
 - [x] `__GNUC_PATCHLEVEL__`
@@ -860,20 +865,20 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 - [x] `__TIMESTAMP__`
 - [x] Target-specific predefined macros
 - [x] ABI-specific predefined macros
-- [ ] `$` in identifiers where supported
-- [ ] GNU extended escape handling
+- [x] `$` in identifiers where supported
+- [x] GNU extended escape handling
 - [x] `__FUNCTION__`
-- [ ] `__PRETTY_FUNCTION__`
+- [x] `__PRETTY_FUNCTION__`
 - [x] `__inline__`
 - [x] `__extension__`
 - [x] `__restrict__`
 - [x] Arithmetic on `void *`
-- [ ] `sizeof(void)` GNU semantics
+- [x] `sizeof(void)` GNU semantics
 - [x] Arithmetic on function pointers
-- [ ] `sizeof(function-type)` GNU semantics
-- [ ] GNU prototype / old-style definition compatibility rules
-- [ ] GNU array-pointer qualifier extensions
-- [ ] GNU qualified function-type extensions
+- [x] `sizeof(function-type)` GNU semantics
+- [x] GNU prototype / old-style definition compatibility rules (via `slate translate -std=gnu17 file.c`; clang accepts a non-prototype declaration followed by a K&R definition with only a deprecation warning)
+- [~] GNU array-pointer qualifier extensions (pointer-to-array locals initialized from `&array` fail to compile: `*mut [T;N]` vs. decayed `*mut T` mismatch, tracked as slate-n4e4)
+- [~] GNU qualified function-type extensions (clang itself doesn't parse cv-qualified function types in C mode: "expected ';' after top level declarator")
 
 # GNU Attributes
 
@@ -886,7 +891,7 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 - [x] Attributes on types
 - [x] Attributes on functions
 - [x] Attributes on variables
-- [ ] Attributes on labels
+- [x] Attributes on labels
 - [x] Attributes on statements
 
 ## Type and Layout Attributes
@@ -895,22 +900,22 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 - [x] `packed`
 - [x] `mode`
 - [x] `vector_size`
-- [ ] `transparent_union` (type attribute; not yet covered by the function-attribute diagnostic pass)
-- [ ] `warn_if_not_aligned` (type attribute; not yet covered by the function-attribute diagnostic pass)
-- [ ] `strict_flex_array` (field attribute; not yet covered by the function-attribute diagnostic pass)
-- [ ] `counted_by` (field attribute; not yet covered by the function-attribute diagnostic pass)
-- [ ] `hardbool` (type attribute; not yet covered by the function-attribute diagnostic pass)
+- [~] `transparent_union` (type attribute; not yet covered by the function-attribute diagnostic pass)
+- [~] `warn_if_not_aligned` (type attribute; not yet covered by the function-attribute diagnostic pass)
+- [~] `strict_flex_array` (field attribute; not yet covered by the function-attribute diagnostic pass)
+- [~] `counted_by` (field attribute; not yet covered by the function-attribute diagnostic pass)
+- [~] `hardbool` (type attribute; not yet covered by the function-attribute diagnostic pass)
 
 ## Function and Optimization Attributes
 
 - [x] `always_inline`
 - [x] `noinline`
-- [ ] `gnu_inline` (no Rust equivalent; parsed and diagnosed, not lowered)
-- [ ] `flatten` (no Rust equivalent; parsed and diagnosed, not lowered)
-- [ ] `hot` (no Rust equivalent; parsed and diagnosed, not lowered)
+- [~] `gnu_inline` (no Rust equivalent; parsed and diagnosed, not lowered)
+- [~] `flatten` (no Rust equivalent; parsed and diagnosed, not lowered)
+- [~] `hot` (no Rust equivalent; parsed and diagnosed, not lowered)
 - [x] `cold`
-- [ ] `pure` (no Rust equivalent; parsed and diagnosed, not lowered)
-- [ ] `const` (no Rust equivalent; parsed and diagnosed, not lowered)
+- [~] `pure` (no Rust equivalent; parsed and diagnosed, not lowered)
+- [~] `const` (no Rust equivalent; parsed and diagnosed, not lowered)
 - [x] `malloc`
 - [x] `alloc_size`
 - [x] `alloc_align`
@@ -918,21 +923,21 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 - [x] `returns_nonnull`
 - [x] `nonnull`
 - [x] `noreturn`
-- [ ] `nothrow` (no Rust equivalent; parsed and diagnosed, not lowered)
+- [~] `nothrow` (no Rust equivalent; parsed and diagnosed, not lowered)
 - [x] `warn_unused_result`
 - [x] `used`
 - [x] `unused`
 - [x] `retain`
-- [ ] `leaf` (no Rust equivalent; parsed and diagnosed, not lowered)
-- [ ] `noclone` (not recognized by our CIR-enabled Clang build; nothing to detect)
-- [ ] `no_icf` (not recognized by our CIR-enabled Clang build; nothing to detect)
-- [ ] `no_instrument_function` (no Rust equivalent; parsed and diagnosed, not lowered)
-- [ ] `no_profile_instrument_function` (no Rust equivalent; parsed and diagnosed, not lowered)
-- [ ] `no_sanitize` (no Rust equivalent; parsed and diagnosed, not lowered)
-- [ ] `optimize` (not recognized by our CIR-enabled Clang build; nothing to detect. Rust's unstable `#[optimize(speed|size)]` is a plausible partial match if a future Clang parses the GCC `-O`-level string form)
+- [~] `leaf` (no Rust equivalent; parsed and diagnosed, not lowered)
+- [~] `noclone` (not recognized by our CIR-enabled Clang build; nothing to detect)
+- [~] `no_icf` (not recognized by our CIR-enabled Clang build; nothing to detect)
+- [~] `no_instrument_function` (no Rust equivalent; parsed and diagnosed, not lowered)
+- [~] `no_profile_instrument_function` (no Rust equivalent; parsed and diagnosed, not lowered)
+- [~] `no_sanitize` (no Rust equivalent; parsed and diagnosed, not lowered)
+- [~] `optimize` (not recognized by our CIR-enabled Clang build; nothing to detect. Rust's unstable `#[optimize(speed|size)]` is a plausible partial match if a future Clang parses the GCC `-O`-level string form)
 - [x] `target`
-- [ ] `target_clones`
-- [ ] `target_version`
+- [~] `target_clones` (clang parses it, but CIR codegen errors: "Not Yet Implemented: getOrCreateCIRFunction: multi-version")
+- [~] `target_version` (not recognized by our CIR-enabled clang build on this target; nothing to detect)
 
 ## Linking and Object Attributes
 
@@ -941,34 +946,34 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 - [x] `weakref`
 - [x] `section`
 - [x] `visibility`
-- [ ] `externally_visible` (not recognized by our CIR-enabled Clang build; nothing to detect)
-- [ ] `ifunc` (no Rust equivalent; parsed and diagnosed, not lowered)
-- [ ] `noplt` (not recognized by our CIR-enabled Clang build; nothing to detect)
-- [ ] `common` (variable attribute; not yet covered by the function-attribute diagnostic pass)
-- [ ] `nocommon` (variable attribute; not yet covered by the function-attribute diagnostic pass)
+- [~] `externally_visible` (not recognized by our CIR-enabled Clang build; nothing to detect)
+- [~] `ifunc` (no Rust equivalent; parsed and diagnosed, not lowered)
+- [~] `noplt` (not recognized by our CIR-enabled Clang build; nothing to detect)
+- [~] `common` (variable attribute; not yet covered by the function-attribute diagnostic pass)
+- [~] `nocommon` (variable attribute; not yet covered by the function-attribute diagnostic pass)
 - [x] `constructor`
 - [x] `destructor`
 - [x] Constructor priority
 - [x] Destructor priority
-- [ ] `copy`
+- [~] `copy` (not recognized by our CIR-enabled clang build; nothing to detect)
 
 ## Diagnostic and Contract Attributes
 
 - [x] `deprecated`
-- [ ] `warning` (no Rust equivalent; parsed and diagnosed, not lowered. Clang's AST does not distinguish `warning` from `error` in its dump, so both are diagnosed under one `warning_or_error` fact)
-- [ ] `error` (no Rust equivalent; parsed and diagnosed, not lowered; see `warning` above)
-- [ ] `format` (no Rust equivalent; parsed and diagnosed, not lowered)
-- [ ] `format_arg` (no Rust equivalent; parsed and diagnosed, not lowered)
-- [ ] `access` (not recognized by our CIR-enabled Clang build; nothing to detect)
-- [ ] `null_terminated_string_arg` (not recognized by our CIR-enabled Clang build; nothing to detect)
-- [ ] `sentinel` (no Rust equivalent; parsed and diagnosed, not lowered)
+- [~] `warning` (no Rust equivalent; parsed and diagnosed, not lowered. Clang's AST does not distinguish `warning` from `error` in its dump, so both are diagnosed under one `warning_or_error` fact)
+- [~] `error` (no Rust equivalent; parsed and diagnosed, not lowered; see `warning` above)
+- [~] `format` (no Rust equivalent; parsed and diagnosed, not lowered)
+- [~] `format_arg` (no Rust equivalent; parsed and diagnosed, not lowered)
+- [~] `access` (not recognized by our CIR-enabled Clang build; nothing to detect)
+- [~] `null_terminated_string_arg` (not recognized by our CIR-enabled Clang build; nothing to detect)
+- [~] `sentinel` (no Rust equivalent; parsed and diagnosed, not lowered)
 
 ## Variable and Statement Attributes
 
-- [ ] `cleanup` (variable attribute; not yet covered by the function-attribute diagnostic pass)
-- [ ] `fallthrough` (statement attribute; not yet covered by the function-attribute diagnostic pass)
-- [ ] `assume` (statement attribute; not yet covered by the function-attribute diagnostic pass)
-- [ ] `musttail` (statement attribute, no Rust equivalent; not yet covered by the function-attribute diagnostic pass)
+- [~] `cleanup` (variable attribute; not yet covered by the function-attribute diagnostic pass)
+- [~] `fallthrough` (statement attribute; not yet covered by the function-attribute diagnostic pass)
+- [~] `assume` (statement attribute; not yet covered by the function-attribute diagnostic pass)
+- [~] `musttail` (statement attribute, no Rust equivalent; not yet covered by the function-attribute diagnostic pass)
 
 # GCC Builtins
 
@@ -1007,18 +1012,18 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 - [x] `__builtin_bswap16`
 - [x] `__builtin_bswap32`
 - [x] `__builtin_bswap64`
-- [ ] `__builtin_bswap128` where supported
+- [~] `__builtin_bswap128` where supported (clang doesn't implement it: "use of undeclared identifier")
 - [x] Signed overflow-checking builtins
 - [x] Unsigned overflow-checking builtins
 - [x] Generic overflow-checking builtins
-- [ ] Carry builtins
-- [ ] Borrow builtins
+- [x] Carry builtins
+- [x] Borrow builtins
 
 ## Stack and Frame Builtins
 
 - [x] `__builtin_alloca`
 - [x] `__builtin_alloca_with_align`
-- [ ] `__builtin_frame_address`
+- [~] `__builtin_frame_address` (lowers to a bogus constant pointer rather than the actual frame address — see `tests/fixtures.unsupported/gnu_builtins_core.c`)
 - [x] `__builtin_return_address`
 
 ## GNU Atomic Builtins
@@ -1058,23 +1063,23 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 
 ## Legacy GNU Atomic Builtins
 
-- [ ] `__sync_fetch_and_add`
-- [ ] `__sync_fetch_and_sub`
-- [ ] `__sync_fetch_and_or`
-- [ ] `__sync_fetch_and_and`
-- [ ] `__sync_fetch_and_xor`
-- [ ] `__sync_fetch_and_nand`
+- [x] `__sync_fetch_and_add`
+- [x] `__sync_fetch_and_sub`
+- [x] `__sync_fetch_and_or`
+- [x] `__sync_fetch_and_and`
+- [x] `__sync_fetch_and_xor`
+- [x] `__sync_fetch_and_nand`
 - [x] `__sync_add_and_fetch`
-- [ ] `__sync_sub_and_fetch`
-- [ ] `__sync_or_and_fetch`
-- [ ] `__sync_and_and_fetch`
-- [ ] `__sync_xor_and_fetch`
-- [ ] `__sync_nand_and_fetch`
-- [ ] `__sync_bool_compare_and_swap`
-- [ ] `__sync_val_compare_and_swap`
-- [ ] `__sync_lock_test_and_set`
-- [ ] `__sync_lock_release`
-- [ ] `__sync_synchronize`
+- [x] `__sync_sub_and_fetch`
+- [x] `__sync_or_and_fetch`
+- [x] `__sync_and_and_fetch`
+- [x] `__sync_xor_and_fetch`
+- [x] `__sync_nand_and_fetch`
+- [~] `__sync_bool_compare_and_swap` (CIR codegen: "unimplemented X86 builtin call: __sync_bool_compare_and_swap_4")
+- [~] `__sync_val_compare_and_swap` (same CIR gap as `__sync_bool_compare_and_swap`)
+- [~] `__sync_lock_test_and_set` (CIR codegen gap, same family as the compare-and-swap builtins)
+- [~] `__sync_lock_release` (CIR codegen gap, same family as the compare-and-swap builtins)
+- [x] `__sync_synchronize`
 
 ## Variadic ABI Builtins
 
@@ -1130,7 +1135,7 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 
 - [x] ISO C17 library interfaces
 - [ ] C11 defect-report corrections
-- [ ] No dedicated `_ISOC17_SOURCE` selector
+- [x] No dedicated `_ISOC17_SOURCE` selector (matches real glibc, which has no such macro either — C17 shares C11's feature-test gate)
 
 ## `_ISOC23_SOURCE`
 
@@ -1138,7 +1143,7 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 
 ## `_ISOC2X_SOURCE`
 
-- [ ] Legacy selector for developing C23 library interfaces
+- [~] Legacy selector for developing C23 library interfaces (`_ISOC2X_SOURCE` isn't in the `__GLIBC_USE_ISOC23` gate in `libc-shim/bits/glibc.h`, only `_ISOC23_SOURCE`/`_ISOC2Y_SOURCE`; moot in practice since slate always compiles as gnu23, which already implies the gate)
 
 # `_GNU_SOURCE` Library Extensions
 
@@ -1147,7 +1152,7 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 - [x] GNU allocation extensions
 - [x] `canonicalize_file_name`
 - [x] GNU malloc inspection interfaces
-- [ ] GNU malloc debugging interfaces
+- [~] GNU malloc debugging interfaces (`libc-shim/include/mcheck.h` is a stub: `#error "<mcheck.h> is not yet defined"`)
 
 ## String and Memory Functions
 
@@ -1157,10 +1162,10 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 - [x] `strchrnul`
 - [x] `strcasestr`
 - [x] `strverscmp`
-- [ ] `strfry`
+- [~] `strfry` (not declared anywhere in libc-shim)
 - [x] `memfrob`
-- [ ] `strdupa`
-- [ ] `strndupa`
+- [~] `strdupa` (declared in `libc-shim/include/string.h` as a plain function, but glibc only provides it as an alloca-based macro; linking fails with "undefined symbol: strdupa")
+- [~] `strndupa` (same gap as `strdupa` — no macro form, not a real linkable symbol)
 
 ## Formatted Output and Streams
 
@@ -1177,7 +1182,7 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 
 ## Program and Process Interfaces
 
-- [ ] `on_exit`
+- [~] `on_exit` (not declared anywhere in libc-shim)
 - [x] `secure_getenv`
 - [x] `get_current_dir_name`
 - [x] `execvpe`
@@ -1193,8 +1198,8 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 
 ## Error Reporting
 
-- [ ] `error`
-- [ ] `error_at_line`
+- [~] `error` (not declared anywhere in libc-shim)
+- [~] `error_at_line` (not declared anywhere in libc-shim)
 
 ## Sorting
 
@@ -1228,13 +1233,13 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 - [x] GNU dynamic-linker extensions
 - [x] GNU `dl*` extensions
 - [x] GNU symbol lookup extensions
-- [ ] GNU loader namespace extensions
+- [~] GNU loader namespace extensions (`dlmopen`/`Lmid_t` not declared anywhere in libc-shim)
 
 # `_DEFAULT_SOURCE`
 
 - [x] Default glibc extension namespace
 - [x] BSD-derived interfaces
-- [ ] SVID-derived interfaces
+- [x] SVID-derived interfaces (`bcopy`/`bzero`/`index`/`rindex`, `hcreate`/`hsearch` family, `drand48`, etc. all declared)
 - [ ] Historical miscellaneous interfaces
 
 # POSIX Feature-Test Levels
@@ -1268,15 +1273,15 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 
 - [x] `_TIME_BITS=64`
 - [x] `_TIME_BITS=64` interaction with `_FILE_OFFSET_BITS=64`
-- [ ] 64-bit `time_t` ABI mappings
+- [x] 64-bit `time_t` ABI mappings (extensive `__REDIR` table in `libc-shim/include/time.h`, e.g. `time` -> `__time64`, `mktime` -> `__mktime64`, etc.)
 
 # glibc Fortification
 
-- [ ] `_FORTIFY_SOURCE=1`
-- [ ] `_FORTIFY_SOURCE=2`
-- [ ] `_FORTIFY_SOURCE=3`
-- [ ] `__builtin_object_size` integration
-- [ ] `__builtin_dynamic_object_size` integration
-- [ ] Fortified `__*_chk` interfaces
-- [ ] Compile-time bounds diagnostics
-- [ ] Runtime bounds checking
+- [~] `_FORTIFY_SOURCE=1` (`libc-shim` never references `_FORTIFY_SOURCE`; defining it doesn't redirect e.g. `memcpy` to `__memcpy_chk` — verified with `slate translate`)
+- [~] `_FORTIFY_SOURCE=2` (same — no dispatch logic at all)
+- [~] `_FORTIFY_SOURCE=3` (same — no dispatch logic at all)
+- [~] `__builtin_object_size` integration (the builtin itself works, see GCC Builtins above, but nothing wires it into fortified libc calls)
+- [~] `__builtin_dynamic_object_size` integration (same as `__builtin_object_size`)
+- [~] Fortified `__*_chk` interfaces (the `_chk` builtins translate on their own, see `tests/fixtures.unsupported/gnu_builtins_memory.c`, but plain calls are never redirected to them)
+- [~] Compile-time bounds diagnostics (gated on the missing `_FORTIFY_SOURCE` dispatch above)
+- [~] Runtime bounds checking (gated on the missing `_FORTIFY_SOURCE` dispatch above)

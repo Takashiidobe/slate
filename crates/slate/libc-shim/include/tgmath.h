@@ -1,6 +1,8 @@
 #ifndef _SLATE_TGMATH_H
 #define _SLATE_TGMATH_H
 
+#define __STDC_VERSION_TGMATH_H__ 202311L
+
 /*
 the return types are only correct with gcc (__GNUC__)
 otherwise they are long double or long double complex

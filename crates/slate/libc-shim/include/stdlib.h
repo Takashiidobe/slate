@@ -55,6 +55,16 @@ void *realloc(void *ptr, size_t size);
 void *aligned_alloc(size_t alignment, size_t size);
 void  free_sized(void *ptr, size_t size);
 void  free_aligned_sized(void *ptr, size_t alignment, size_t size);
+
+static inline size_t memalignment(const void *p) {
+  __UINTPTR_TYPE__ v = (__UINTPTR_TYPE__)p;
+  size_t            align = 0;
+  while (v != 0 && (v & 1) == 0) {
+    v >>= 1;
+    align++;
+  }
+  return v == 0 ? 0 : ((size_t)1 << align);
+}
 #endif
 void  free(void *ptr);
 
