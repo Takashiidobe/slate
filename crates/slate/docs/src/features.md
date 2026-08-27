@@ -703,12 +703,12 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 - [x] memccpy
 - [x] strdup
 - [x] strndup
-- [~] qualifier-preserving memchr (libc-shim uses the classic `const void *` -> `void *` signature)
-- [~] qualifier-preserving strchr (same as memchr)
-- [~] qualifier-preserving strpbrk (same as memchr)
-- [~] qualifier-preserving strrchr (same as memchr)
-- [~] qualifier-preserving strstr (same as memchr)
-- [~] corresponding qualifier-preserving wide-character operations (same as memchr)
+- [x] qualifier-preserving memchr
+- [x] qualifier-preserving strchr
+- [x] qualifier-preserving strpbrk
+- [x] qualifier-preserving strrchr
+- [x] qualifier-preserving strstr
+- [x] corresponding qualifier-preserving wide-character operations
 - [x] Program support
 - [x] unreachable()
 - [x] C23 provides unreachable through <stddef.h>.

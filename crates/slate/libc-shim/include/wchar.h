@@ -129,6 +129,29 @@ wchar_t           *wmemset(wchar_t *, wchar_t, size_t);
 int                wprintf(const wchar_t *, ...);
 int                wscanf(const wchar_t *, ...);
 
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
+#define wcschr(s, c)                                                          \
+  _Generic((s),                                                               \
+      const wchar_t *: (const wchar_t *)(wcschr)((s), (c)),                  \
+      default: (wcschr)((s), (c)))
+#define wcsrchr(s, c)                                                         \
+  _Generic((s),                                                               \
+      const wchar_t *: (const wchar_t *)(wcsrchr)((s), (c)),                 \
+      default: (wcsrchr)((s), (c)))
+#define wcspbrk(s1, s2)                                                       \
+  _Generic((s1),                                                              \
+      const wchar_t *: (const wchar_t *)(wcspbrk)((s1), (s2)),               \
+      default: (wcspbrk)((s1), (s2)))
+#define wcsstr(haystack, needle)                                              \
+  _Generic((haystack),                                                        \
+      const wchar_t *: (const wchar_t *)(wcsstr)((haystack), (needle)),      \
+      default: (wcsstr)((haystack), (needle)))
+#define wmemchr(s, c, n)                                                      \
+  _Generic((s),                                                               \
+      const wchar_t *: (const wchar_t *)(wmemchr)((s), (c), (n)),            \
+      default: (wmemchr)((s), (c), (n)))
+#endif
+
 #if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
     defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||  \
     defined(__SLATE_LIBC_BIONIC) || defined(__SLATE_LIBC_DARWIN)
