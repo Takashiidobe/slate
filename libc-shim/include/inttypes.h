@@ -4,6 +4,10 @@
 #include <features.h>
 #include <stdint.h>
 
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
+#define __STDC_VERSION_INTTYPES_H__ 202311L
+#endif
+
 #define __NEED_wchar_t
 #include <bits/types.h>
 

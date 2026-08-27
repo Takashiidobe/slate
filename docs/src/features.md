@@ -350,6 +350,7 @@ Checkbox markers:
 - [x] Generic association lists
 - [x] default generic association
 - [x] Type-based selection semantics
+- [x] C23 `_Generic` with a type-name controlling operand
 - [x] Compile-time assertions
 - [x] \_Static_assert(expr, "message")
 - [x] Function properties
@@ -732,6 +733,14 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 - [~] DD decimal-float length modifier (gated on unimplemented DFP)
 - [x] corresponding scanf-family support
 - [x] corresponding printf-family support
+- [x] C23 `<fenv.h>` additions
+- [x] fesetexcept
+- [x] fesetexceptflag
+- [x] fetestexceptflag
+- [x] fegetmode
+- [x] fesetmode
+- [x] strfromd / strfromf / strfroml
+- [x] canonicalize / canonicalizef / canonicalizel
 - [~] Floating point (see gaps below)
 - [~] New IEC 60559 binary functions where supported (`totalorder`, `getpayload`, `fromfp`/`ufromfp`, `setpayload`, `iseqsig`, etc. not declared in libc-shim math.h)
 - [~] Decimal math functions where DFP is supported (gated on unimplemented DFP)
@@ -769,6 +778,25 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 - [x] `__STDC_VERSION_TIME_H__`
 - [x] `__STDC_VERSION_STDCKDINT_H__`
 - [x] `__STDC_VERSION_STDBIT_H__`
+- [x] `__STDC_VERSION_ASSERT_H__`
+- [x] `__STDC_VERSION_SETJMP_H__`
+- [x] `__STDC_VERSION_COMPLEX_H__`
+- [x] `__STDC_VERSION_STDIO_H__`
+- [x] `__STDC_VERSION_STDDEF_H__`
+- [x] `__STDC_VERSION_WCHAR_H__`
+- [x] `__STDC_VERSION_STRING_H__`
+- [x] `__STDC_VERSION_UCHAR_H__`
+- [x] `__STDC_VERSION_CTYPE_H__`
+- [x] `__STDC_VERSION_ERRNO_H__`
+- [x] `__STDC_VERSION_INTTYPES_H__`
+- [x] `__STDC_VERSION_LOCALE_H__`
+- [x] `__STDC_VERSION_SIGNAL_H__`
+- [x] `__STDC_VERSION_WCTYPE_H__`
+- [~] `__STDC_VERSION_STDATOMIC_H__` (`<stdatomic.h>` comes from clang's own builtin freestanding header, not `libc-shim`; upstream clang never defines this macro there)
+- [~] `__STDC_VERSION_STDBOOL_H__` (same as `<stdatomic.h>` above — clang builtin header, not ours to patch)
+- [~] `__STDC_VERSION_STDALIGN_H__` (same as `<stdatomic.h>` above)
+- [~] `__STDC_VERSION_STDNORETURN_H__` (same as `<stdatomic.h>` above)
+- [x] `ATOMIC_VAR_INIT` correctly available pre-C23 and removed at C23 (provided by clang's builtin `<stdatomic.h>`, gated on `__STDC_VERSION__`; deprecated under C17)
 
 # GNU extensions
 
@@ -1088,6 +1116,7 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 - [x] `__builtin_va_arg`
 - [x] `__builtin_va_end`
 - [x] `__builtin_va_copy`
+- [x] C23 single-argument `va_start(ap)`
 
 ## Library Recognition Builtins
 

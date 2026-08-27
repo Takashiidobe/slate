@@ -14,6 +14,8 @@
 
 #define C23_OPTIONAL(base, ...) ((base)__VA_OPT__(+(__VA_ARGS__)))
 
+#define C23_TYPE_KIND(T) _Generic(T, int: 1, double: 2, char *: 3, default: 4)
+
 #define C23_BRANCH_VALUE 1
 #if 0
 #define C23_ELIFDEF_VALUE 0
@@ -183,7 +185,9 @@ int main(void) {
       (unsigned char)utf8_text[0] + (unsigned char)utf8_text[1] +
       empty_struct.first + empty_array[0] + qualified_array[0] +
       qualified_array[2] + fixed_value + (int)(wide_value == C23_WIDE_VALUE) +
-      static_compound_value + C23_OPTIONAL(7) + C23_OPTIONAL(11, 13);
+      static_compound_value + C23_OPTIONAL(7) + C23_OPTIONAL(11, 13) +
+      C23_TYPE_KIND(int) + C23_TYPE_KIND(double) + C23_TYPE_KIND(char *) +
+      C23_TYPE_KIND(long);
 
   attribute_total    = c23_nodiscard_value();
   preprocessor_total = C23_ELIFDEF_VALUE + C23_ELIFNDEF_VALUE +

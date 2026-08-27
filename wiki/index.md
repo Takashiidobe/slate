@@ -51,3 +51,4 @@
 - [Implement six clang-ir-types lowerings for slate-3i0x](concepts/implement-six-clang-ir-types-lowerings-for-slate-3i0x.md)
 - [Audit docs/src/features.md checkboxes against real fixtures](concepts/audit-docs-src-features-md-checkboxes-against-real-fixtures.md)
 - [libc-shim: fill in easy features.md gaps](concepts/libc-shim-fill-in-easy-features-md-gaps.md)
+- [features.md audit: header version macros, C23 fenv/stdlib fns, ATOMIC_VAR_INIT](concepts/features-md-audit-header-version-macros-c23-fenv-stdlib-fns-atomic-var-init.md)
