@@ -578,6 +578,24 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }));
     }
 
+    pub(super) fn lower_frame_address(&mut self, op: &inst::FrameAddress) {
+        let probe = self.next_temp();
+        self.push_stmt(Stmt::Let {
+            name: probe.clone(),
+            mutable: true,
+            ty: Some(Type::Prim(Prim::U8)),
+            init: Some(Expr::Value(RustValue::TypedUInt(0, Prim::U8))),
+        });
+        let addr = Expr::Cast {
+            expr: Box::new(Expr::AddrOf {
+                mutable: true,
+                expr: Box::new(Expr::Var(probe.into())),
+            }),
+            ty: self.parent.rust_type(&op.result_ty),
+        };
+        self.materialize_expr(&op.result, addr, Some(&op.result_ty));
+    }
+
     pub(super) fn lower_opaque_pointer(
         &mut self,
         result: &str,
