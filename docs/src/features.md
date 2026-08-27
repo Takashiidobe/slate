@@ -24,40 +24,40 @@ Checkbox markers:
 - [x] Preprocessor object-like macros
 - [x] Preprocessor function-like macros
 - [x] Macro argument substitution
-- [x] Stringification operator #
-- [x] Token-pasting operator ##
-- [x] #include
-- [x] #define
-- [x] #undef
-- [x] #if
-- [x] #ifdef
-- [x] #ifndef
-- [x] #elif
-- [x] #else
-- [x] #endif
-- [x] defined
-- [x] #line
-- [x] #error
-- [x] #pragma
+- [x] Stringification operator `#`
+- [x] Token-pasting operator `##`
+- [x] `#include`
+- [x] `#define`
+- [x] `#undef`
+- [x] `#if`
+- [x] `#ifdef`
+- [x] `#ifndef`
+- [x] `#elif`
+- [x] `#else`
+- [x] `#endif`
+- [x] `defined`
+- [x] `#line`
+- [x] `#error`
+- [x] `#pragma`
 - [x] Predefined macros: `__LINE__`
 - [x] `__FILE__`
 - [x] `__DATE__`
 - [x] `__TIME__`
 - [x] `__STDC__`
 - [x] Types
-- [x] char
-- [x] signed char
-- [x] unsigned char
-- [x] short
-- [x] unsigned short
-- [x] int
-- [x] unsigned int
-- [x] long
-- [x] unsigned long
-- [x] float
-- [x] double
-- [x] long double
-- [x] void
+- [x] `char`
+- [x] `signed char`
+- [x] `unsigned char`
+- [x] `short`
+- [x] `unsigned short`
+- [x] `int`
+- [x] `unsigned int`
+- [x] `long`
+- [x] `unsigned long`
+- [x] `float`
+- [x] `double`
+- [x] `long double`
+- [x] `void`
 - [x] pointers
 - [x] arrays
 - [x] multidimensional arrays
@@ -66,19 +66,19 @@ Checkbox markers:
 - [x] unions
 - [x] enumerations
 - [x] bit-fields
-- [x] typedef
+- [x] `typedef`
 - [x] incomplete types
 - [x] compatible/composite types
 - [x] Type qualifiers
-- [x] const
-- [x] volatile
+- [x] `const`
+- [x] `volatile`
 - [x] qualified pointers
 - [x] qualifier propagation rules
 - [x] Storage / linkage
-- [x] auto
-- [x] register
-- [x] static
-- [x] extern
+- [x] `auto`
+- [x] `register`
+- [x] `static`
+- [x] `extern`
 - [x] automatic storage duration
 - [x] static storage duration
 - [x] external linkage
@@ -90,7 +90,7 @@ Checkbox markers:
 - [x] Prototype parameter type checking
 - [x] Old-style/K&R function declarations (via `slate translate -std=gnu11 file.c`)
 - [x] Old-style/K&R function definitions (via `slate translate -std=gnu11 file.c`)
-- [x] Variadic functions via ...
+- [x] Variadic functions via `...`
 - [x] Array declarators
 - [x] Function-pointer declarators
 - [x] Abstract declarators
@@ -106,7 +106,7 @@ Checkbox markers:
 - [x] Pointer comparison
 - [x] Structure/union member access
 - [x] Cast expressions
-- [x] sizeof
+- [x] `sizeof`
 - [x] Unary operators
 - [x] Arithmetic operators
 - [x] Relational/equality operators
@@ -114,62 +114,62 @@ Checkbox markers:
 - [x] Bitwise operators
 - [x] Shift operators
 - [x] Assignment operators
-- [x] Conditional ?:
+- [x] Conditional `?:`
 - [x] Comma operator
 - [x] Function calls
 - [x] Increment/decrement
 - [x] Statements
 - [x] Compound statements
-- [x] if
-- [x] else
-- [x] switch
-- [x] case
-- [x] default
-- [x] while
-- [x] do
-- [x] for
-- [x] goto
+- [x] `if`
+- [x] `else`
+- [x] `switch`
+- [x] `case`
+- [x] `default`
+- [x] `while`
+- [x] `do`
+- [x] `for`
+- [x] `goto`
 - [x] labels
-- [x] continue
-- [x] break
-- [x] return
+- [x] `continue`
+- [x] `break`
+- [x] `return`
 
 ### C89 library
 
-- [x] <assert.h>
-- [x] <ctype.h>
-- [x] <errno.h>
-- [x] <float.h>
-- [x] <limits.h>
-- [x] <locale.h>
-- [x] <math.h>
-- [x] <setjmp.h>
-- [x] <signal.h>
-- [x] <stdarg.h>
-- [x] <stddef.h>
-- [x] <stdio.h>
-- [x] <stdlib.h>
-- [x] <string.h>
-- [x] <time.h>
+- [x] `<assert.h>`
+- [x] `<ctype.h>`
+- [x] `<errno.h>`
+- [x] `<float.h>`
+- [x] `<limits.h>`
+- [x] `<locale.h>`
+- [x] `<math.h>`
+- [x] `<setjmp.h>`
+- [x] `<signal.h>`
+- [x] `<stdarg.h>`
+- [x] `<stddef.h>`
+- [x] `<stdio.h>`
+- [x] `<stdlib.h>`
+- [x] `<string.h>`
+- [x] `<time.h>`
 
 ## C95
 
-- [x] Digraph <: -> [
-- [x] Digraph :> -> ]
-- [x] Digraph <% -> {
-- [x] Digraph %> -> }
-- [x] Digraph %: -> #
-- [x] Digraph %:%: -> ##
+- [x] Digraph `<:` -> `[`
+- [x] Digraph `:>` -> `]`
+- [x] Digraph `<%` -> `{`
+- [x] Digraph `%>` -> `}`
+- [x] Digraph `%:` -> `#`
+- [x] Digraph `%:%:` -> `##`
 - [x] `__STDC_VERSION__`
 - [x] `__STDC_VERSION__` == 199409L
 
 ### Library
 
-- [x] <iso646.h>
-- [x] Alternative operator macros such as and, or, not, xor
-- [x] <wchar.h>
-- [x] <wctype.h>
-- [x] Expanded wchar_t support
+- [x] `<iso646.h>`
+- [x] Alternative operator macros such as `and`, `or`, `not`, `xor`
+- [x] `<wchar.h>`
+- [x] `<wctype.h>`
+- [x] Expanded `wchar_t` support
 - [x] Wide-character I/O
 - [x] Wide-string functions
 - [x] Multibyte <-> wide-character conversions
@@ -178,15 +178,15 @@ Checkbox markers:
 
 ## C99
 
-- [x] // line comments
-- [x] Universal character names \uXXXX
-- [x] Universal character names \UXXXXXXXX
+- [x] `//` line comments
+- [x] Universal character names `\uXXXX`
+- [x] Universal character names `\UXXXXXXXX`
 - [x] Universal character names in identifiers
 - [x] Increased minimum translation limits
 - [x] Integer / arithmetic types
 - [x] `_Bool`
-- [x] long long
-- [x] unsigned long long
+- [x] `long long`
+- [x] `unsigned long long`
 - [~] Extended signed integer types (no compiler-provided extended-integer-type mechanism; `__int128` is a separate GNU builtin type)
 - [~] Extended unsigned integer types (same as signed)
 - [x] Revised integer conversion rules
@@ -194,62 +194,62 @@ Checkbox markers:
 - [x] Corresponding remainder semantics
 - [x] Complex arithmetic
 - [x] `_Complex`
-- [x] float `_Complex`
-- [x] double `_Complex`
-- [x] long double `_Complex`
+- [x] `float _Complex`
+- [x] `double _Complex`
+- [x] `long double _Complex`
 - [~] `_Imaginary` where supported by the standard's model (clang never implements `_Imaginary`, in any mode)
 - [x] Complex literals through library macros/functions
 - [x] Complex arithmetic semantics
 - [x] Floating point
-- [x] Hexadecimal floating constants, e.g. 0x1.8p+2
-- [x] FLT_EVAL_METHOD
+- [x] Hexadecimal floating constants, e.g. `0x1.8p+2`
+- [x] `FLT_EVAL_METHOD`
 - [x] Floating-point environment semantics
 - [x] Floating-point contraction rules
 - [x] IEC 60559/IEEE-754 feature macros where applicable
 - [x] Qualifiers / declarations
-- [x] restrict
-- [x] Idempotent qualifiers, e.g. repeated const
-- [x] inline
+- [x] `restrict`
+- [x] Idempotent qualifiers, e.g. repeated `const`
+- [x] `inline`
 - [x] Mixed declarations and statements
-- [x] Declaration in for initializer
-- [x] for (int i = 0; ...)
+- [x] Declaration in `for` initializer
+- [x] `for (int i = 0; ...)`
 - [x] Arrays
 - [x] Variable-length arrays
 - [x] Variably-modified types
-- [x] VLA runtime sizeof
-- [x] Function prototype [*] VLA notation
-- [x] static inside array function parameters
-- [x] const/volatile/restrict inside array parameter brackets
+- [x] VLA runtime `sizeof`
+- [x] Function prototype `[*]` VLA notation
+- [x] `static` inside array function parameters
+- [x] `const`/`volatile`/`restrict` inside array parameter brackets
 - [x] Flexible array members
 - [x] Initialization
 - [x] Nonconstant initializers for automatic aggregate objects
-- [x] Array designated initializers [index] = value
-- [x] Structure designated initializers .member = value
+- [x] Array designated initializers `[index] = value`
+- [x] Structure designated initializers `.member = value`
 - [x] Nested designated initializers
-- [x] Compound literals (T){...}
+- [x] Compound literals `(T){...}`
 - [x] Enumerations
 - [x] Trailing comma in enumerator list
 - [x] Functions
 - [x] `__func__`
-- [x] Implicit return 0 from main
-- [x] C99 inline linkage semantics
+- [x] Implicit `return 0` from `main`
+- [x] C99 `inline` linkage semantics
 - [x] Removed C89 behavior
-- [x] Reject implicit int
+- [x] Reject implicit `int`
 - [x] Reject implicit function declarations
 
 ### Preprocessor
 
-- [x] Variadic macros ...
+- [x] Variadic macros `...`
 - [x] `__VA_ARGS__`
 - [x] Empty arguments to function-like macros
 - [x] `_Pragma`
-- [x] #pragma STDC FENV_ACCESS
-- [x] #pragma STDC FP_CONTRACT
-- [x] #pragma STDC CX_LIMITED_RANGE
+- [x] `#pragma STDC FENV_ACCESS`
+- [x] `#pragma STDC FP_CONTRACT`
+- [x] `#pragma STDC CX_LIMITED_RANGE`
 
 ### C99 version / feature macros
 
-- [x] `__STDC_VERSION__`== 199901L (via `slate translate -std=gnu99 file.c`; defaults to gnu23)
+- [x] `__STDC_VERSION__` == `199901L` (via `slate translate -std=gnu99 file.c`; defaults to `gnu23`)
 - [x] `__STDC_HOSTED__`
 - [x] `__STDC_IEC_559__`
 - [x] `__STDC_IEC_559_COMPLEX__`
@@ -259,64 +259,64 @@ Checkbox markers:
 
 #### Headers:
 
-- [x] <stdbool.h>
-- [x] <stdint.h>
-- [x] <inttypes.h>
-- [x] <complex.h>
-- [x] <fenv.h>
-- [x] <tgmath.h>
+- [x] `<stdbool.h>`
+- [x] `<stdint.h>`
+- [x] `<inttypes.h>`
+- [x] `<complex.h>`
+- [x] `<fenv.h>`
+- [x] `<tgmath.h>`
 - [x] Integer library
-- [x] int8_t, int16_t, etc. where exact-width types exist
-- [x] uint8_t, uint16_t, etc.
-- [x] int_leastN_t / uint_leastN_t
-- [x] int_fastN_t / uint_fastN_t
-- [x] intptr_t / uintptr_t where provided
-- [x] intmax_t
-- [x] uintmax_t
-- [x] INTN*\* / UINTN*\* limits
-- [x] PRI\* format macros
-- [x] SCN\* format macros
+- [x] `int8_t`, `int16_t`, etc. where exact-width types exist
+- [x] `uint8_t`, `uint16_t`, etc.
+- [x] `int_leastN_t` / `uint_leastN_t`
+- [x] `int_fastN_t` / `uint_fastN_t`
+- [x] `intptr_t` / `uintptr_t` where provided
+- [x] `intmax_t`
+- [x] `uintmax_t`
+- [x] `INTN_*` / `UINTN_*` limits
+- [x] `PRI*` format macros
+- [x] `SCN*` format macros
 - [x] General library additions
-- [x] llabs
-- [x] lldiv
-- [x] strtoll
-- [x] strtoull
-- [x] strtoimax
-- [x] strtoumax
-- [x] imaxabs
-- [x] imaxdiv
+- [x] `llabs`
+- [x] `lldiv`
+- [x] `strtoll`
+- [x] `strtoull`
+- [x] `strtoimax`
+- [x] `strtoumax`
+- [x] `imaxabs`
+- [x] `imaxdiv`
 - [x] `_Exit`
-- [x] va_copy
-- [x] snprintf
-- [x] vsnprintf
-- [x] isblank
-- [x] strtof
-- [x] strtold
+- [x] `va_copy`
+- [x] `snprintf`
+- [x] `vsnprintf`
+- [x] `isblank`
+- [x] `strtof`
+- [x] `strtold`
 - [x] Wide-character integer conversion counterparts
 
 #### Formatted I/O
 
-- [x] %a / %A hexadecimal floating format
-- [x] hh length modifier
-- [x] ll length modifier
-- [x] j length modifier
-- [x] z length modifier
-- [x] t length modifier
-- [x] C99 scanf/printf family extensions
+- [x] `%a` / `%A` hexadecimal floating format
+- [x] `hh` length modifier
+- [x] `ll` length modifier
+- [x] `j` length modifier
+- [x] `z` length modifier
+- [x] `t` length modifier
+- [x] C99 `scanf`/`printf` family extensions
 
 #### Math
 
-- [x] float variants of math functions
-- [x] long double variants
+- [x] `float` variants of math functions
+- [x] `long double` variants
 - [x] New C99 mathematical functions
-- [x] fma
-- [x] remainder / remquo
-- [x] nextafter / nexttoward
-- [x] classification macros such as isfinite
-- [x] comparison macros such as isgreater
+- [x] `fma`
+- [x] `remainder` / `remquo`
+- [x] `nextafter` / `nexttoward`
+- [x] classification macros such as `isfinite`
+- [x] comparison macros such as `isgreater`
 - [x] floating-point environment functions
 - [x] complex math functions
-- [x] <tgmath.h> type-generic dispatch
+- [x] `<tgmath.h>` type-generic dispatch
 
 ## C11
 
@@ -328,42 +328,42 @@ Checkbox markers:
 - [x] Data-race rules
 - [x] Happens-before rules
 - [x] Atomic objects
-- [x] \_Atomic(type)
-- [x] \_Atomic qualifier/specifier
+- [x] `_Atomic(type)`
+- [x] `_Atomic` qualifier/specifier
 - [x] Atomic initialization semantics
 - [x] Atomic load/store semantics
 - [x] Atomic read-modify-write semantics
 - [x] Memory-order model
 - [x] Thread-local storage
-- [x] \_Thread_local
-- [x] TLS with static
-- [x] TLS with extern
+- [x] `_Thread_local`
+- [x] TLS with `static`
+- [x] TLS with `extern`
 - [x] Thread storage duration
 - [x] Alignment
-- [x] \_Alignof
-- [x] \_Alignas
+- [x] `_Alignof`
+- [x] `_Alignas`
 - [x] Extended/over-alignment
 - [x] Fundamental alignment
 - [x] Valid alignment constraints
 - [x] Generic programming
-- [x] \_Generic
+- [x] `_Generic`
 - [x] Generic association lists
-- [x] default generic association
+- [x] `default` generic association
 - [x] Type-based selection semantics
 - [x] C23 `_Generic` with a type-name controlling operand
 - [x] Compile-time assertions
-- [x] \_Static_assert(expr, "message")
+- [x] `_Static_assert(expr, "message")`
 - [x] Function properties
-- [x] \_Noreturn
+- [x] `_Noreturn`
 - [x] Structures / unions
 - [x] Anonymous structure members
 - [x] Anonymous union members
 - [x] Unicode literals
-- [x] u'…'
-- [x] U'…'
-- [x] u8"…"
-- [x] u"…"
-- [x] U"…"
+- [x] `u'…'`
+- [x] `U'…'`
+- [x] `u8"…"`
+- [x] `u"…"`
+- [x] `U"…"`
 - [x] Expression / object semantic changes
 - [x] Finer-grained evaluation/sequencing rules
 - [x] Temporary-object lifetime rules
@@ -381,70 +381,70 @@ Checkbox markers:
 ### C11 library
 
 - [x] New headers
-- [x] <stdalign.h>
-- [x] <stdatomic.h>
-- [x] <stdnoreturn.h>
-- [x] <threads.h>
-- [x] <uchar.h>
+- [x] `<stdalign.h>`
+- [x] `<stdatomic.h>`
+- [x] `<stdnoreturn.h>`
+- [x] `<threads.h>`
+- [x] `<uchar.h>`
 - [x] Atomics library
 - [x] `atomic_*` typedefs
-- [x] atomic_init
-- [x] atomic_store
-- [x] atomic_load
-- [x] atomic_exchange
-- [x] atomic*compare_exchange*\*
-- [x] atomic_fetch_add
-- [x] atomic_fetch_sub
-- [x] atomic_fetch_or
-- [x] atomic_fetch_xor
-- [x] atomic_fetch_and
-- [x] atomic_flag
+- [x] `atomic_init`
+- [x] `atomic_store`
+- [x] `atomic_load`
+- [x] `atomic_exchange`
+- [x] `atomic_compare_exchange_*`
+- [x] `atomic_fetch_add`
+- [x] `atomic_fetch_sub`
+- [x] `atomic_fetch_or`
+- [x] `atomic_fetch_xor`
+- [x] `atomic_fetch_and`
+- [x] `atomic_flag`
 - [x] atomic fences
-- [x] memory*order*\*
+- [x] `memory_order_*`
 - [x] lock-free query facilities
 - [x] Threads library
-- [x] thrd_t
+- [x] `thrd_t`
 - [x] thread creation
 - [x] thread joining
 - [x] thread detaching
-- [x] thrd_current
-- [x] thrd_equal
-- [x] thrd_sleep
-- [x] mutexes mtx\_\*
-- [x] condition variables cnd\_\*
-- [x] thread-specific storage tss\_\*
-- [x] once_flag
-- [x] call_once
+- [x] `thrd_current`
+- [x] `thrd_equal`
+- [x] `thrd_sleep`
+- [x] mutexes `mtx_*`
+- [x] condition variables `cnd_*`
+- [x] thread-specific storage `tss_*`
+- [x] `once_flag`
+- [x] `call_once`
 - [x] Unicode
-- [x] char16_t
-- [x] char32_t
-- [x] mbrtoc16
-- [x] mbrtoc32
-- [x] c16rtomb
-- [x] c32rtomb
+- [x] `char16_t`
+- [x] `char32_t`
+- [x] `mbrtoc16`
+- [x] `mbrtoc32`
+- [x] `c16rtomb`
+- [x] `c32rtomb`
 - [x] Runtime / allocation
-- [x] aligned_alloc
-- [x] quick_exit
-- [x] at_quick_exit
-- [x] timespec
-- [x] timespec_get
-- [x] Exclusive "x" mode for fopen/freopen
-- [x] Thread-local errno
+- [x] `aligned_alloc`
+- [x] `quick_exit`
+- [x] `at_quick_exit`
+- [x] `timespec`
+- [x] `timespec_get`
+- [x] Exclusive `"x"` mode for `fopen`/`freopen`
+- [x] Thread-local `errno`
 - [x] Complex / floating support
-- [x] CMPLX
-- [x] CMPLXF
-- [x] CMPLXL
-- [x] FLT_DECIMAL_DIG
-- [x] DBL_DECIMAL_DIG
-- [x] LDBL_DECIMAL_DIG
-- [x] \*\_TRUE_MIN
-- [x] \*\_HAS_SUBNORM
+- [x] `CMPLX`
+- [x] `CMPLXF`
+- [x] `CMPLXL`
+- [x] `FLT_DECIMAL_DIG`
+- [x] `DBL_DECIMAL_DIG`
+- [x] `LDBL_DECIMAL_DIG`
+- [x] `*_TRUE_MIN`
+- [x] `*_HAS_SUBNORM`
 - [~] Annex K Support (optional, not implemented by glibc/musl/bionic; POSIX `libc-shim` doesn't provide it — MSVC's own secure `_s` functions are separately supported, see below)
 - [~] `__STDC_LIB_EXT1__`, if implemented (clang never defines this; no Annex K interfaces to gate behind it)
 - [~] Bounds-checking interfaces (not provided on POSIX targets, see Annex K Support above)
-- [x] \_s functions (MSVC target only, see `libc-shim/bits/msvc/secure/`)
+- [x] `_s` functions (MSVC target only, see `libc-shim/bits/msvc/secure/`)
 - [~] runtime-constraint handlers removed (nothing to remove; Annex K constraint handlers were never modeled)
-- [x] gets() removed
+- [x] `gets()` removed
 
 ## C17
 
@@ -466,11 +466,11 @@ Checkbox markers:
 - [x] signed `_BitInt(N)`
 - [x] unsigned `_BitInt(N)`
 - [x] Distinct type for each supported width
-- [x] BITINT_MAXWIDTH
+- [x] `BITINT_MAXWIDTH`
 - [x] Bit-precise integer promotions/conversions
 - [x] Bit-precise integer arithmetic
-- [x] Bit-precise integer constant suffix wb
-- [x] Bit-precise unsigned constant suffix uwb
+- [x] Bit-precise integer constant suffix `wb`
+- [x] Bit-precise unsigned constant suffix `uwb`
 - [~] Conditional decimal floating point (gated on `_Decimal*` types, unimplemented by clang — see Decimal types below)
 
 ### Decimal types
@@ -494,111 +494,111 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 
 ### C23 literals
 
-- [x] Binary literals 0b...
-- [x] Binary literals 0B...
-- [x] Digit separators ', e.g. 1'000'000
+- [x] Binary literals `0b...`
+- [x] Binary literals `0B...`
+- [x] Digit separators `'`, e.g. `1'000'000`
 - [x] Digit separators in integer constants
 - [x] Digit separators in floating constants
-- [x] u8'…' UTF-8 character constants
-- [x] u8"…" has type char8_t[N]
-- [x] UTF-16 semantics required for u"…"
-- [x] UTF-32 semantics required for U"…"
-- [x] char8_t is a typedef of unsigned char in <uchar.h>, and changing char[N] to char8_t[N].
+- [x] `u8'…'` UTF-8 character constants
+- [x] `u8"…"` has type `char8_t[N]`
+- [x] UTF-16 semantics required for `u"…"`
+- [x] UTF-32 semantics required for `U"…"`
+- [x] `char8_t` is a typedef of `unsigned char` in `<uchar.h>`, and changing `char[N]` to `char8_t[N]`.
 
 ### C23 keywords
 
-- [x] bool is a keyword
-- [x] true is a keyword
-- [x] false is a keyword
-- [x] alignas is a keyword
-- [x] alignof is a keyword
-- [x] static_assert is a keyword
-- [x] thread_local is a keyword
-- [x] constexpr is a keyword
-- [x] typeof
-- [x] typeof_unqual
-- [x] nullptr
-- [x] The underscore-prefixed historical forms remain relevant for compatibility, although \_Noreturn is deprecated.
-- [x] C23 nullptr
-- [x] nullptr null pointer constant
-- [x] nullptr_t
-- [x] Correct conversions from nullptr
-- [x] Correct comparisons involving nullptr
-- [x] \_Generic interaction with nullptr_t
+- [x] `bool` is a keyword
+- [x] `true` is a keyword
+- [x] `false` is a keyword
+- [x] `alignas` is a keyword
+- [x] `alignof` is a keyword
+- [x] `static_assert` is a keyword
+- [x] `thread_local` is a keyword
+- [x] `constexpr` is a keyword
+- [x] `typeof`
+- [x] `typeof_unqual`
+- [x] `nullptr`
+- [x] The underscore-prefixed historical forms remain relevant for compatibility, although `_Noreturn` is deprecated.
+- [x] C23 `nullptr`
+- [x] `nullptr` null pointer constant
+- [x] `nullptr_t`
+- [x] Correct conversions from `nullptr`
+- [x] Correct comparisons involving `nullptr`
+- [x] `_Generic` interaction with `nullptr_t`
 - [x] C23 type inference
-- [x] auto object type inference
+- [x] `auto` object type inference
 - [x] Inference from initializer
-- [x] Correct interaction between old storage-class use of auto and inferred-type use
+- [x] Correct interaction between old storage-class use of `auto` and inferred-type use
 - [x] Reject unsupported C++-style return-type inference
 - [x] Reject unsupported parameter type inference
-- [x] C23 typeof
-- [x] typeof(expression)
-- [x] typeof(type-name)
-- [x] typeof_unqual(expression)
-- [x] typeof_unqual(type-name)
-- [x] Qualifier-preserving typeof
-- [x] Qualifier-removing typeof_unqual
+- [x] C23 `typeof`
+- [x] `typeof(expression)`
+- [x] `typeof(type-name)`
+- [x] `typeof_unqual(expression)`
+- [x] `typeof_unqual(type-name)`
+- [x] Qualifier-preserving `typeof`
+- [x] Qualifier-removing `typeof_unqual`
 - [x] Unevaluated operand semantics where required
-- [x] C23 constexpr
-- [x] constexpr object declarations
+- [x] C23 `constexpr`
+- [x] `constexpr` object declarations
 - [x] Constant initialization requirements
 - [x] Compile-time value semantics
 - [x] Correct linkage/storage restrictions
 - [x] Use in integer constant expressions where permitted
 - [x] C23 initialization
-- [x] Empty initializer {}
-- [x] T x = {};
+- [x] Empty initializer `{}`
+- [x] `T x = {};`
 - [x] Zero-initialization semantics for empty initializer
 - [x] Empty initialization of arrays
 - [x] Empty initialization of structures
 - [~] Empty initialization of unions (`U u = {};` only zeroes the first member's bytes, not the whole object; fails when a later member is larger, e.g. `union { int i; int j[4]; }` — tracked in `tests/fixtures.gcc-torture.unsupported/pr19687.c`)
 - [~] C23 compound literals (plain compound literals work, see C99 above; the C23 storage-class-specifier extension does not, see below)
 - [~] Storage-class specifier on compound literal (clang's parser rejects this syntax outright, verified through clang 22)
-- [~] static compound literal where allowed (same clang parser limitation)
-- [~] register compound literal where allowed (same clang parser limitation)
-- [~] thread_local compound literal where allowed (same clang parser limitation)
-- [~] constexpr compound literal where allowed by the grammar/rules (same clang parser limitation)
+- [~] `static` compound literal where allowed (same clang parser limitation)
+- [~] `register` compound literal where allowed (same clang parser limitation)
+- [~] `thread_local` compound literal where allowed (same clang parser limitation)
+- [~] `constexpr` compound literal where allowed by the grammar/rules (same clang parser limitation)
 - [x] C23 attributes
 - [x] General attribute system
-- [x] [[...]] syntax
+- [x] `[[...]]` syntax
 - [x] Attribute namespaces
 - [x] Unknown attributes handled according to C23 rules
 - [x] Duplicate attributes
 - [x] Attribute placement rules
-- [x] \_\_has_c_attribute
+- [x] `__has_c_attribute`
 - [x] Standard attributes
-- [x] [[deprecated]]
-- [x] [[deprecated("reason")]]
-- [x] [[fallthrough]]
-- [x] [[maybe_unused]]
-- [x] [[maybe_unused]] on labels
-- [x] [[nodiscard]]
-- [x] [[nodiscard("reason")]]
-- [x] [[noreturn]]
-- [x] [[reproducible]]
-- [x] [[unsequenced]]
+- [x] `[[deprecated]]`
+- [x] `[[deprecated("reason")]]`
+- [x] `[[fallthrough]]`
+- [x] `[[maybe_unused]]`
+- [x] `[[maybe_unused]]` on labels
+- [x] `[[nodiscard]]`
+- [x] `[[nodiscard("reason")]]`
+- [x] `[[noreturn]]`
+- [x] `[[reproducible]]`
+- [x] `[[unsequenced]]`
 - [x] C23 static assertions
-- [x] static_assert(expr)
-- [x] static_assert(expr, "message")
-- [x] \_Static_assert(expr)
-- [x] static_assert no longer depends on <assert.h>
+- [x] `static_assert(expr)`
+- [x] `static_assert(expr, "message")`
+- [x] `_Static_assert(expr)`
+- [x] `static_assert` no longer depends on `<assert.h>`
 - [x] C23 function declarations
 - [x] Old-style/K&R function definitions removed
 - [x] Old-style function declarations without prototypes removed
-- [x] f() means a function with no parameters
+- [x] `f()` means a function with no parameters
 - [x] Unnamed parameters permitted in function definitions
 - [x] Relaxed variadic parameter lists
-- [x] void f(...); where permitted by C23
+- [x] `void f(...);` where permitted by C23
 - [x] Updated compatibility rules
 - [x] C23 labels / statements
 - [x] Label immediately before a declaration
-- [x] Label immediately before }
-- [x] [[maybe_unused]] label
+- [x] Label immediately before `}`
+- [x] `[[maybe_unused]]` label
 - [x] C23 arrays / qualifiers
-- [x] Array type and element type have consistent const qualification
-- [x] Array type and element type have consistent volatile qualification
+- [x] Array type and element type have consistent `const` qualification
+- [x] Array type and element type have consistent `volatile` qualification
 - [x] Pointer-to-array qualifier compatibility changes
-- [x] Updated \_Generic behavior resulting from array qualification rules
+- [x] Updated `_Generic` behavior resulting from array qualification rules
 - [x] C23 VLA / variably-modified types
 - [x] Variably-modified types are mandatory
 - [x] Allocated-storage VLA types are supported
@@ -609,9 +609,9 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 ## C23 enumerations
 
 - [x] Fixed underlying enum type
-- [x] enum E : unsigned char
+- [x] `enum E : unsigned char`
 - [x] Forward declaration where permitted with fixed type
-- [x] Enumerator values larger than int
+- [x] Enumerator values larger than `int`
 - [x] Improved selection of enumerator types
 - [x] Improved ordinary enumeration semantics
 
@@ -624,32 +624,32 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 
 ## C23 identifiers / Unicode
 
-- [x] Identifier rules based on Unicode Standard Annex #31
+- [x] Identifier rules based on Unicode Standard Annex `#31`
 - [x] Updated permitted Unicode identifier characters
 - [x] Correct normalization/identifier handling required by the standard
 
 ## C23 preprocessor
 
-- [x] #elifdef
-- [x] #elifndef
-- [x] #warning
+- [x] `#elifdef`
+- [x] `#elifndef`
+- [x] `#warning`
 - [x] `__has_include`
 - [x] `__has_c_attribute`
 - [x] `__VA_OPT__`
 - [x] Empty variadic macro argument handling
 - [x] Updated variadic macro replacement rules
-- [x] #embed
-- [x] Basic #embed "file"
+- [x] `#embed`
+- [x] Basic `#embed "file"`
 - [x] Binary resource expansion
-- [x] limit(...)
-- [x] prefix(...)
-- [x] suffix(...)
-- [x] if_empty(...)
+- [x] `limit(...)`
+- [x] `prefix(...)`
+- [x] `suffix(...)`
+- [x] `if_empty(...)`
 - [~] implementation-defined/vendor embed parameters handled correctly (no vendor-specific embed parameters are modeled; only the standard ones)
 - [x] `__has_embed` support where required by C23's preprocessing facilities
 - [x] C23 floating-point pragmas
-- [x] #pragma STDC FENV_ROUND
-- [x] #pragma STDC FENV_DEC_ROUND
+- [x] `#pragma STDC FENV_ROUND`
+- [x] `#pragma STDC FENV_DEC_ROUND`
 - [~] Updated IEC 60559 feature detection (clang defines none of the C23 `__STDC_IEC_60559_*` macros, verified `-std=gnu23 -dM -E`)
 - [~] `__STDC_IEC_60559_BFP__` (clang never defines this)
 - [~] `__STDC_IEC_60559_DFP__` (clang never defines this; also gated on unimplemented DFP)
@@ -661,16 +661,16 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 
 ## Headers
 
-- [x] <stdbit.h>
-- [x] <stdckdint.h>
+- [x] `<stdbit.h>`
+- [x] `<stdckdint.h>`
 - [x] Checked arithmetic
-- [x] ckd_add
-- [x] ckd_sub
-- [x] ckd_mul
+- [x] `ckd_add`
+- [x] `ckd_sub`
+- [x] `ckd_mul`
 - [x] Generic integer operand support
 - [x] Overflow reporting semantics
 - [x] Bit utilities
-- [x] Implement all appropriate signed/unsigned variants/macros in <stdbit.h>:
+- [x] Implement all appropriate signed/unsigned variants/macros in `<stdbit.h>`:
 - [x] leading-zero count
 - [x] leading-one count
 - [x] trailing-zero count
@@ -687,88 +687,88 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 - [x] bit ceil
 - [x] byte-order macros
 - [x] UTF-8 library support
-- [x] char8_t
-- [x] mbrtoc8
-- [x] c8rtomb
-- [x] atomic_char8_t
-- [x] ATOMIC_CHAR8_T_LOCK_FREE
+- [x] `char8_t`
+- [x] `mbrtoc8`
+- [x] `c8rtomb`
+- [x] `atomic_char8_t`
+- [x] `ATOMIC_CHAR8_T_LOCK_FREE`
 - [x] Memory management
-- [x] free_sized
-- [x] free_aligned_sized
-- [x] memalignment
+- [x] `free_sized`
+- [x] `free_aligned_sized`
+- [x] `memalignment`
 - [x] Updated allocation/deallocation synchronization semantics
-- [x] C23 realloc(ptr, 0) behavior
-- [x] free_sized, free_aligned_sized, and memalignment are C23 additions.
+- [x] C23 `realloc(ptr, 0)` behavior
+- [x] `free_sized`, `free_aligned_sized`, and `memalignment` are C23 additions.
 - [x] Memory/string functions
-- [x] memset_explicit
-- [x] memccpy
-- [x] strdup
-- [x] strndup
-- [x] qualifier-preserving memchr
-- [x] qualifier-preserving strchr
-- [x] qualifier-preserving strpbrk
-- [x] qualifier-preserving strrchr
-- [x] qualifier-preserving strstr
+- [x] `memset_explicit`
+- [x] `memccpy`
+- [x] `strdup`
+- [x] `strndup`
+- [x] qualifier-preserving `memchr`
+- [x] qualifier-preserving `strchr`
+- [x] qualifier-preserving `strpbrk`
+- [x] qualifier-preserving `strrchr`
+- [x] qualifier-preserving `strstr`
 - [x] corresponding qualifier-preserving wide-character operations
 - [x] Program support
-- [x] unreachable()
-- [x] C23 provides unreachable through <stddef.h>.
+- [x] `unreachable()`
+- [x] C23 provides `unreachable()` through `<stddef.h>`.
 
 #### Time
 
-- [x] gmtime_r
-- [x] localtime_r
-- [x] timespec_getres
-- [x] C23 strftime extensions
-- [x] C23 wcsftime extensions
-- [~] updated time-related macros (no C23 time.h macro deltas beyond what's already implemented were identified)
-- [x] asctime deprecated (gated to `__STDC_VERSION__ >= 202311L` so pre-C23 API probes aren't affected)
-- [x] ctime deprecated (same as `asctime`)
+- [x] `gmtime_r`
+- [x] `localtime_r`
+- [x] `timespec_getres`
+- [x] C23 `strftime` extensions
+- [x] C23 `wcsftime` extensions
+- [~] updated time-related macros (no C23 `time.h` macro deltas beyond what's already implemented were identified)
+- [x] `asctime` deprecated (gated to `__STDC_VERSION__ >= 202311L` so pre-C23 API probes aren't affected)
+- [x] `ctime` deprecated (same as `asctime`)
 - [x] Formatted I/O
-- [x] Binary %b conversion
-- [x] wN length modifiers
-- [x] wfN length modifiers
-- [~] H decimal-float length modifier (gated on unimplemented DFP)
-- [~] D decimal-float length modifier (gated on unimplemented DFP)
-- [~] DD decimal-float length modifier (gated on unimplemented DFP)
-- [x] corresponding scanf-family support
-- [x] corresponding printf-family support
+- [x] Binary `%b` conversion
+- [x] `wN` length modifiers
+- [x] `wfN` length modifiers
+- [~] `H` decimal-float length modifier (gated on unimplemented DFP)
+- [~] `D` decimal-float length modifier (gated on unimplemented DFP)
+- [~] `DD` decimal-float length modifier (gated on unimplemented DFP)
+- [x] corresponding `scanf`-family support
+- [x] corresponding `printf`-family support
 - [x] C23 `<fenv.h>` additions
-- [x] fesetexcept
-- [x] fesetexceptflag
-- [x] fetestexceptflag
-- [x] fegetmode
-- [x] fesetmode
-- [x] strfromd / strfromf / strfroml
-- [x] canonicalize / canonicalizef / canonicalizel
+- [x] `fesetexcept`
+- [x] `fesetexceptflag`
+- [x] `fetestexceptflag`
+- [x] `fegetmode`
+- [x] `fesetmode`
+- [x] `strfromd` / `strfromf` / `strfroml`
+- [x] `canonicalize` / `canonicalizef` / `canonicalizel`
 - [~] Floating point (see gaps below)
-- [~] New IEC 60559 binary functions where supported (`totalorder`, `getpayload`, `fromfp`/`ufromfp`, `setpayload`, `iseqsig`, etc. not declared in libc-shim math.h)
+- [~] New IEC 60559 binary functions where supported (`totalorder`, `getpayload`, `fromfp`/`ufromfp`, `setpayload`, `iseqsig`, etc. not declared in `libc-shim` `math.h`)
 - [~] Decimal math functions where DFP is supported (gated on unimplemented DFP)
-- [~] decimal dN function variants (gated on unimplemented DFP)
-- [~] quantizedN (gated on unimplemented DFP)
-- [~] samequantumdN (gated on unimplemented DFP)
-- [~] quantumdN (gated on unimplemented DFP)
-- [~] llquantexpdN (gated on unimplemented DFP)
+- [~] decimal `dN` function variants (gated on unimplemented DFP)
+- [~] `quantizedN` (gated on unimplemented DFP)
+- [~] `samequantumdN` (gated on unimplemented DFP)
+- [~] `quantumdN` (gated on unimplemented DFP)
+- [~] `llquantexpdN` (gated on unimplemented DFP)
 - [~] decimal encode/decode functions (gated on unimplemented DFP)
 - [x] floating-to-string formatting functions
-- [x] additional <float.h> macros
+- [x] additional `<float.h>` macros
 - [~] revised IEC 60559 feature macros (see Updated IEC 60559 feature detection above — clang defines none of these)
 - [x] Integer limits
 - [x] Integer width macros
-- [x] CHAR_WIDTH
-- [x] SCHAR_WIDTH
-- [x] UCHAR_WIDTH
-- [x] SHRT_WIDTH
-- [x] USHRT_WIDTH
-- [x] INT_WIDTH
-- [x] UINT_WIDTH
-- [x] LONG_WIDTH
-- [x] ULONG_WIDTH
-- [x] LLONG_WIDTH
-- [x] ULLONG_WIDTH
+- [x] `CHAR_WIDTH`
+- [x] `SCHAR_WIDTH`
+- [x] `UCHAR_WIDTH`
+- [x] `SHRT_WIDTH`
+- [x] `USHRT_WIDTH`
+- [x] `INT_WIDTH`
+- [x] `UINT_WIDTH`
+- [x] `LONG_WIDTH`
+- [x] `ULONG_WIDTH`
+- [x] `LLONG_WIDTH`
+- [x] `ULLONG_WIDTH`
 - [x] width macros for standard typedefs where specified
 - [x] exact-width integer rules updated
-- [x] [u]intN_t consistency with [u]int_leastN_t
+- [x] `[u]intN_t` consistency with `[u]int_leastN_t`
 - [x] Library version macros
 - [x] `__STDC_VERSION_FENV_H__`
 - [x] `__STDC_VERSION_MATH_H__`
