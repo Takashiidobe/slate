@@ -112,6 +112,83 @@ fact type gets folded into `Site`'s ordering and makes comparison expensive,
 that needs to be caught before landing this, not after — worth a note in
 whichever `slate-y0qs.3` PR does the work.
 
+## Representation decisions are unification, not local rewrites
+
+`slate-y0qs.4` (SCC-ordered call-graph worklist) is scoped today to
+`string_params`/`ptr_len` specifically, but it's an instance of a more
+general problem: any rewrite that changes a binding's Rust-side
+representation (raw pointer → `Box`, `char*` → `&str`, pointer+length →
+slice) requires every use of that binding, across function boundaries, to
+agree — that is a whole-program constraint-propagation problem, not a
+local peephole rewrite. The local worklist above (bounded by parent +
+def-use neighbor requeue) has no complexity guarantee for this shape; it
+needs its own phase, run to completion *before* the local worklist emits
+final AST:
+
+1. One representation variable per binding/parameter, valued over a small
+   fixed lattice (not an open-ended per-pass heuristic).
+2. "These bindings must share a representation" becomes a union-find
+   merge, not an `EditSet` mutation — near-O(n) amortized, an actual
+   complexity bound rather than "fast in practice."
+3. Solved once as an SCC-ordered call-graph fixed point (generalizing
+   `slate-y0qs.4` beyond its current two fact families): a callee's
+   decided representation only re-examines its direct callers.
+4. Monotonicity — each variable only moves forward through the lattice,
+   never back — bounds total revisits per binding at the lattice height,
+   which is small and fixed. This is the canonical-forms guarantee the
+   local worklist's "Open question" section flags as a risk (rewrite
+   oscillation), made structural here instead of a matcher-authoring rule.
+
+Only after this phase resolves does the local AST-to-AST worklist run, to
+emit the decided representations and do peephole cleanup — by that point
+no local rule needs another global round.
+
+### Pointer capability lattice (c2rust-derived)
+
+For pointer bindings specifically, the representation variable's lattice
+is four independent capability facts — `write`, `unique`, `free`,
+`offset` (does the pointer get advanced/indexed, not just dereferenced)
+— mapping to one resulting Rust pointer type, adapted from c2rust's
+analysis:
+
+| write | unique | free | offset | Resulting type |
+| :---: | :---: | :---: | :---: | --- |
+|   |   |   |   | `&T` |
+| x | x |   |   | `&mut T` |
+| x |   |   |   | `&Cell<T>` |
+|   | x | x |   | `Box<T>` |
+|   |   |   | x | `&[T]` |
+| x | x |   | x | `&mut [T]` |
+|   | x | x | x | `Box<[T]>` |
+
+Each capability is itself a fact collector in the existing sense
+(`facts.md`): computed once from `def_use`/`effects`/`heap_ownership`
+evidence per binding, looked up by ID, not re-derived per pass. The
+lattice gives inference a fixed, small join structure (16 raw
+combinations collapse to 7 target types) instead of open-ended
+heuristics per rewrite pass, and it composes with existing collectors —
+`free` is `heap_ownership`'s free-site evidence, `unique` is
+`borrow_alias`'s uniquely-mutated case, `offset` is whatever
+`array_element_pointer_origin`/`slice_index` already prove about indexed
+use. Escape hatch: if a call site can't accept the inferred pointer type
+(e.g. an external/opaque caller), fall back to an accessor returning the
+raw pointer at that site rather than blocking the whole binding's
+inference or forcing a global re-decision — matches the existing
+conservative-when-domain-incomplete policy in `fixups.md`.
+
+Pointers should carry capability facts beyond this table too (nullability,
+provenance/aliasing scope, ...) so later passes can make finer
+representation choices without re-deriving them from raw AST shape.
+
+## Benchmark target: libexpat
+
+`slate-wcf7` (sqlite amalgamation) is blocked on `slate-wcf7.2`, the CIR
+memory blowup on large single-TU macro-heavy files. Use libexpat instead
+as the non-trivial-codebase benchmark for this epic — start translating it
+now and track wall-clock as passes come back online and the worklist/
+unification phases land, rather than waiting on the sqlite epic to
+unblock before getting real signal on a real codebase.
+
 ## Related
 
 - [fixups.md](fixups.md) — the matcher/`EditSet` layer this reuses unchanged.

@@ -1,8 +1,3 @@
-#![allow(
-    dead_code,
-    reason = "rewrite passes are temporarily disabled while lowering is the focus"
-)]
-
 use std::collections::BTreeSet;
 
 use crate::backend::rust_ast::{AtomicType, Expr, Type};
