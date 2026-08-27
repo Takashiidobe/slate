@@ -33,6 +33,9 @@ static int gnu_environment_extensions(void) {
   total     += canonical != NULL && strcmp(canonical, current) == 0;
   free(directory);
   free(canonical);
+
+  total += strcmp(strdupa("slate"), "slate") == 0;
+  total += strcmp(strndupa("slate-truncated", 5), "slate") == 0;
   return total;
 }
 
