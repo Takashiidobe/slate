@@ -992,9 +992,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 Op::VaEnd(_) => return,
                 Op::EhSetjmp(value) => return self.lower_eh_setjmp(&value),
                 Op::EhLongjmp(value) => return self.lower_eh_longjmp(&value),
-                Op::FrameAddress(value) => {
-                    return self.lower_opaque_pointer(&value.result, &value.result_ty, true);
-                }
+                Op::FrameAddress(value) => return self.lower_frame_address(&value),
                 Op::Return(value) => return self.lower_return(&value),
                 Op::Yield(_) => return,
                 Op::ReturnAddress(value) => {

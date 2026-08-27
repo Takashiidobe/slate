@@ -67,8 +67,13 @@ size_t     strftime(char *__restrict, size_t, const char *__restrict,
                     const struct tm *__restrict);
 struct tm *gmtime(const time_t *);
 struct tm *localtime(const time_t *);
-char      *asctime(const struct tm *);
-char      *ctime(const time_t *);
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
+[[deprecated]] char *asctime(const struct tm *);
+[[deprecated]] char *ctime(const time_t *);
+#else
+char *asctime(const struct tm *);
+char *ctime(const time_t *);
+#endif
 int        timespec_get(struct timespec *, int);
 int        timespec_getres(struct timespec *, int);
 

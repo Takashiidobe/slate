@@ -721,8 +721,8 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 - [x] C23 strftime extensions
 - [x] C23 wcsftime extensions
 - [~] updated time-related macros (no C23 time.h macro deltas beyond what's already implemented were identified)
-- [~] asctime deprecated (not marked `[[deprecated]]` in `libc-shim/include/time.h`; adding it breaks `libc_test_api_supported_tests_compile`, which takes its address under `-Werror`)
-- [~] ctime deprecated (same as `asctime`)
+- [x] asctime deprecated (gated to `__STDC_VERSION__ >= 202311L` so pre-C23 API probes aren't affected)
+- [x] ctime deprecated (same as `asctime`)
 - [x] Formatted I/O
 - [x] Binary %b conversion
 - [x] wN length modifiers
@@ -1023,7 +1023,7 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 
 - [x] `__builtin_alloca`
 - [x] `__builtin_alloca_with_align`
-- [~] `__builtin_frame_address` (lowers to a bogus constant pointer rather than the actual frame address — see `tests/fixtures.unsupported/gnu_builtins_core.c`)
+- [x] `__builtin_frame_address` (lowers to the address of a real stack local in the current frame; see `tests/fixtures/gnu_frame_address.c` and `tests/fixtures.gcc-torture/frame-address.c`)
 - [x] `__builtin_return_address`
 
 ## GNU Atomic Builtins
