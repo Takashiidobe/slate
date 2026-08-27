@@ -1152,7 +1152,7 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 - [x] GNU allocation extensions
 - [x] `canonicalize_file_name`
 - [x] GNU malloc inspection interfaces
-- [~] GNU malloc debugging interfaces (`libc-shim/include/mcheck.h` is a stub: `#error "<mcheck.h> is not yet defined"`)
+- [x] GNU malloc debugging interfaces
 
 ## String and Memory Functions
 
@@ -1164,8 +1164,8 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 - [x] `strverscmp`
 - [~] `strfry` (not declared anywhere in libc-shim)
 - [x] `memfrob`
-- [~] `strdupa` (declared in `libc-shim/include/string.h` as a plain function, but glibc only provides it as an alloca-based macro; linking fails with "undefined symbol: strdupa")
-- [~] `strndupa` (same gap as `strdupa` — no macro form, not a real linkable symbol)
+- [x] `strdupa`
+- [x] `strndupa`
 
 ## Formatted Output and Streams
 
@@ -1182,7 +1182,7 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 
 ## Program and Process Interfaces
 
-- [~] `on_exit` (not declared anywhere in libc-shim)
+- [x] `on_exit`
 - [x] `secure_getenv`
 - [x] `get_current_dir_name`
 - [x] `execvpe`
@@ -1198,8 +1198,8 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 
 ## Error Reporting
 
-- [~] `error` (not declared anywhere in libc-shim)
-- [~] `error_at_line` (not declared anywhere in libc-shim)
+- [x] `error`
+- [x] `error_at_line`
 
 ## Sorting
 

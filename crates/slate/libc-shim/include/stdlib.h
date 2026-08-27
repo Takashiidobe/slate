@@ -164,6 +164,7 @@ void *valloc(size_t size);
 void *memalign(size_t alignment, size_t size);
 int   getloadavg(double loadavg[], int nelem);
 int   clearenv(void);
+int   on_exit(void (*function)(int, void *), void *arg);
 void *reallocarray(void *ptr, size_t nmemb, size_t size);
 void  qsort_r(void *base, size_t nmemb, size_t size,
               int (*compar)(const void *, const void *, void *), void *arg);

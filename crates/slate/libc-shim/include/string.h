@@ -92,7 +92,21 @@ void   explicit_bzero(void *, size_t);
 #endif
 
 #ifdef _GNU_SOURCE
-char       *strdupa(const char *x);
+#include <alloca.h>
+
+#define strdupa(s) strcpy((char *)alloca(strlen(s) + 1), (s))
+
+static inline char *__slate_strndupa_finish(void *buf, const char *s,
+                                             size_t len) {
+  char *out = (char *)buf;
+  memcpy(out, s, len);
+  out[len] = '\0';
+  return out;
+}
+#define strndupa(s, n)                                                       \
+  __slate_strndupa_finish(alloca(strnlen((s), (n)) + 1), (s),                \
+                           strnlen((s), (n)))
+
 int         strverscmp(const char *, const char *);
 char       *strchrnul(const char *, int);
 char       *strcasestr(const char *, const char *);
