@@ -3,6 +3,10 @@
 
 #include <features.h>
 
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
+#define __STDC_VERSION_SIGNAL_H__ 202311L
+#endif
+
 #if defined(__SLATE_LIBC_MSVC)
 
 #include <bits/msvc/signal.h>

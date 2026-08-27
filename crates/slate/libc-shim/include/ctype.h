@@ -1,6 +1,10 @@
 #ifndef _SLATE_CTYPE_H
 #define _SLATE_CTYPE_H
 
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
+#define __STDC_VERSION_CTYPE_H__ 202311L
+#endif
+
 #if defined(__SLATE_LIBC_MSVC)
 #include <features.h>
 #define __NEED_wint_t

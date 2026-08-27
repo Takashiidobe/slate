@@ -1,6 +1,10 @@
 #ifndef _SLATE_ERRNO_H
 #define _SLATE_ERRNO_H
 
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
+#define __STDC_VERSION_ERRNO_H__ 202311L
+#endif
+
 #if defined(__SLATE_LIBC_MSVC)
 #include <bits/msvc/errno.h>
 
