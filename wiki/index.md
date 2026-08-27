@@ -52,3 +52,4 @@
 - [Audit docs/src/features.md checkboxes against real fixtures](concepts/audit-docs-src-features-md-checkboxes-against-real-fixtures.md)
 - [libc-shim: fill in easy features.md gaps](concepts/libc-shim-fill-in-easy-features-md-gaps.md)
 - [features.md audit: header version macros, C23 fenv/stdlib fns, ATOMIC_VAR_INIT](concepts/features-md-audit-header-version-macros-c23-fenv-stdlib-fns-atomic-var-init.md)
+- [fix Ctz/Clz/Popcount width mismatch (slate-sto1)](concepts/fix-ctz-clz-popcount-width-mismatch-slate-sto1.md)
