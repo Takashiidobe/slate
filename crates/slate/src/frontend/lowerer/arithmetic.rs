@@ -790,10 +790,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 args: vec![value],
             }
         } else {
-            Expr::MethodCall {
+            let call = Expr::MethodCall {
                 recv: Box::new(value),
                 method: method.into(),
                 args: vec![],
+            };
+            if matches!(method, "trailing_zeros" | "leading_zeros" | "count_ones") {
+                Expr::Cast {
+                    expr: Box::new(call),
+                    ty: rust_ty.clone(),
+                }
+            } else {
+                call
             }
         };
         self.materialize_expr(result, expr, result_ty);
