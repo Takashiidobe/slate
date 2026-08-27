@@ -1329,6 +1329,87 @@ impl Expr {
         crate::backend::codegen::expr_to_string(self)
     }
 
+    pub fn reads_var(&self, name: &str) -> bool {
+        match self {
+            Expr::Var(v) => v.as_str() == name,
+            Expr::Value(_)
+            | Expr::Str(_)
+            | Expr::HexFloat(_)
+            | Expr::ByteStr(_)
+            | Expr::CStr(_)
+            | Expr::Path(_)
+            | Expr::AtomicFence { .. }
+            | Expr::Todo(_) => false,
+            Expr::Unary { expr, .. }
+            | Expr::Cast { expr, .. }
+            | Expr::Ref { expr, .. }
+            | Expr::AddrOf { expr, .. }
+            | Expr::Transmute { expr, .. } => expr.reads_var(name),
+            Expr::Block(block) | Expr::Unsafe(block) => {
+                block
+                    .stmts
+                    .iter()
+                    .any(|stmt| stmt_reads_var(&stmt.stmt, name))
+                    || block.tail.as_ref().is_some_and(|tail| tail.reads_var(name))
+            }
+            Expr::CopyNonoverlapping { src, dst, .. } => src.reads_var(name) || dst.reads_var(name),
+            Expr::PtrCopy {
+                src, dst, count, ..
+            } => src.reads_var(name) || dst.reads_var(name) || count.reads_var(name),
+            Expr::WriteBytes { dst, val, count } => {
+                dst.reads_var(name) || val.reads_var(name) || count.reads_var(name)
+            }
+            Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => {
+                place.ptr_expr().is_some_and(|ptr| ptr.reads_var(name))
+            }
+            Expr::AtomicStore { place, value, .. }
+            | Expr::AtomicFetch { place, value, .. }
+            | Expr::AtomicSwap { place, value, .. } => {
+                place.ptr_expr().is_some_and(|ptr| ptr.reads_var(name)) || value.reads_var(name)
+            }
+            Expr::AtomicNew { value, .. } => value.reads_var(name),
+            Expr::AtomicCompareExchange {
+                place,
+                expected,
+                desired,
+                ..
+            } => {
+                place.ptr_expr().is_some_and(|ptr| ptr.reads_var(name))
+                    || expected.reads_var(name)
+                    || desired.reads_var(name)
+            }
+            Expr::Binary { lhs, rhs, .. } => lhs.reads_var(name) || rhs.reads_var(name),
+            Expr::Range { start, end } => start.reads_var(name) || end.reads_var(name),
+            Expr::Call { func, args, .. } => {
+                func.reads_var(name) || args.iter().any(|arg| arg.reads_var(name))
+            }
+            Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
+                recv.reads_var(name) || args.iter().any(|arg| arg.reads_var(name))
+            }
+            Expr::Field { base, .. } | Expr::TupleField { base, .. } => base.reads_var(name),
+            Expr::ArrayPtr { array, .. } => array.reads_var(name),
+            Expr::Index { base, index } => base.reads_var(name) || index.reads_var(name),
+            Expr::StructLit { fields, .. } => fields.iter().any(|(_, value)| value.reads_var(name)),
+            Expr::TupleStructLit { fields, .. } | Expr::ArrayLit(fields) | Expr::VecLit(fields) => {
+                fields.iter().any(|elem| elem.reads_var(name))
+            }
+            Expr::ArrayRepeat { elem, .. } => elem.reads_var(name),
+            Expr::VecRepeat { elem, len } => elem.reads_var(name) || len.reads_var(name),
+            Expr::Closure { params, body } => {
+                !params.iter().any(|p| p.as_str() == name) && body.reads_var(name)
+            }
+            Expr::Macro { args, .. } => args.iter().any(|arg| arg.reads_var(name)),
+            Expr::Match { expr, arms } => {
+                expr.reads_var(name) || arms.iter().any(|arm| arm.value.reads_var(name))
+            }
+            Expr::If {
+                cond,
+                then_expr,
+                else_expr,
+            } => cond.reads_var(name) || then_expr.reads_var(name) || else_expr.reads_var(name),
+        }
+    }
+
     pub fn substitute_var(&mut self, name: &str, replacement: &Expr) -> bool {
         match self {
             Expr::Var(v) if v.as_str() == name => {
@@ -1508,6 +1589,92 @@ impl Expr {
                 let e = else_expr.substitute_var(name, replacement);
                 c || t || e
             }
+        }
+    }
+}
+
+fn stmt_reads_var(stmt: &Stmt, name: &str) -> bool {
+    match stmt {
+        Stmt::Let {
+            init: Some(expr), ..
+        } => expr.reads_var(name),
+        Stmt::Let { init: None, .. } => false,
+        Stmt::LetIf {
+            cond,
+            then_body,
+            then_value,
+            else_body,
+            else_value,
+            ..
+        } => {
+            cond.reads_var(name)
+                || then_body
+                    .iter()
+                    .any(|stmt| stmt_reads_var(&stmt.stmt, name))
+                || then_value.reads_var(name)
+                || else_body
+                    .iter()
+                    .any(|stmt| stmt_reads_var(&stmt.stmt, name))
+                || else_value.reads_var(name)
+        }
+        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
+            target.reads_var(name) || value.reads_var(name)
+        }
+        Stmt::InlineAsm(asm) => {
+            let mut found = false;
+            for operand in &asm.operands {
+                operand.visit_exprs(&mut |expr| {
+                    found |= expr.reads_var(name);
+                });
+            }
+            found
+        }
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => expr.reads_var(name),
+        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => false,
+        Stmt::For { iter, body, pat } => {
+            (pat != name && iter.reads_var(name))
+                || (pat != name && body.iter().any(|stmt| stmt_reads_var(&stmt.stmt, name)))
+        }
+        Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } | Stmt::Loop { body, .. } => {
+            body.iter().any(|stmt| stmt_reads_var(&stmt.stmt, name))
+        }
+        Stmt::Unsafe { body } => {
+            body.stmts
+                .iter()
+                .any(|stmt| stmt_reads_var(&stmt.stmt, name))
+                || body.tail.as_ref().is_some_and(|tail| tail.reads_var(name))
+        }
+        Stmt::If {
+            cond,
+            then_body,
+            else_body,
+        } => {
+            cond.reads_var(name)
+                || then_body
+                    .iter()
+                    .chain(else_body.iter())
+                    .any(|stmt| stmt_reads_var(&stmt.stmt, name))
+        }
+        Stmt::Match { expr, arms } => {
+            expr.reads_var(name)
+                || arms.iter().any(|arm| {
+                    matches!(&arm.pattern, Pattern::Guarded { cond, .. } if cond.reads_var(name))
+                        || arm.body.iter().any(|stmt| stmt_reads_var(&stmt.stmt, name))
+                })
+        }
+        Stmt::While { cond, body } => {
+            cond.reads_var(name)
+                || body
+                    .stmts
+                    .iter()
+                    .any(|stmt| stmt_reads_var(&stmt.stmt, name))
+                || body.tail.as_ref().is_some_and(|tail| tail.reads_var(name))
+        }
+        Stmt::Block(body) => {
+            body.stmts
+                .iter()
+                .any(|stmt| stmt_reads_var(&stmt.stmt, name))
+                || body.tail.as_ref().is_some_and(|tail| tail.reads_var(name))
         }
     }
 }

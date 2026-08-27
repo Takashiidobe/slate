@@ -121,6 +121,39 @@ impl NodeKind {
             | NodeKind::Continue(_) => Vec::new(),
         }
     }
+
+    pub(in crate::backend) fn child_lists(&self) -> Vec<&Vec<NodeId>> {
+        match self {
+            NodeKind::LetIf {
+                then_body,
+                else_body,
+                ..
+            } => vec![then_body, else_body],
+            NodeKind::Unsafe { stmts, .. }
+            | NodeKind::While { stmts, .. }
+            | NodeKind::Block { stmts, .. } => {
+                vec![stmts]
+            }
+            NodeKind::If {
+                then_body,
+                else_body,
+                ..
+            } => vec![then_body, else_body],
+            NodeKind::Loop { body, .. }
+            | NodeKind::For { body, .. }
+            | NodeKind::Scope { body }
+            | NodeKind::LabeledBlock { body, .. } => vec![body],
+            NodeKind::Match { arms, .. } => arms.iter().map(|arm| &arm.body).collect(),
+            NodeKind::Let { .. }
+            | NodeKind::Assign { .. }
+            | NodeKind::CompoundAssign { .. }
+            | NodeKind::InlineAsm(_)
+            | NodeKind::Expr(_)
+            | NodeKind::Return(_)
+            | NodeKind::Break(_)
+            | NodeKind::Continue(_) => Vec::new(),
+        }
+    }
 }
 
 struct Slot {
@@ -245,13 +278,15 @@ impl Arena {
 
 pub(in crate::backend) struct FunctionArena {
     pub(in crate::backend) arena: Arena,
-    pub(in crate::backend) roots: Vec<NodeId>,
+    pub(in crate::backend) root: NodeId,
 }
 
 pub(in crate::backend) fn build(body: Vec<IndentStmt>) -> FunctionArena {
     let mut arena = Arena::new();
-    let roots = build_stmts(&mut arena, None, body);
-    FunctionArena { arena, roots }
+    let root = arena.reserve(None);
+    let stmts = build_stmts(&mut arena, Some(root), body);
+    arena.fill(root, NodeKind::Block { stmts, tail: None });
+    FunctionArena { arena, root }
 }
 
 fn build_stmts(arena: &mut Arena, parent: Option<NodeId>, stmts: Vec<IndentStmt>) -> Vec<NodeId> {
@@ -356,9 +391,12 @@ fn build_stmt(arena: &mut Arena, parent: Option<NodeId>, stmt: Stmt) -> NodeId {
     id
 }
 
-pub(in crate::backend) fn reify(arena: &Arena, roots: &[NodeId]) -> Vec<IndentStmt> {
+pub(in crate::backend) fn reify(arena: &Arena, root: NodeId) -> Vec<IndentStmt> {
+    let Some(NodeKind::Block { stmts, .. }) = arena.get(root) else {
+        return Vec::new();
+    };
     let mut out = Vec::new();
-    reify_stmts(arena, roots, 0, &mut out);
+    reify_stmts(arena, stmts, 0, &mut out);
     out
 }
 
