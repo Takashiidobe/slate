@@ -50,13 +50,15 @@ static int c23_utf8(void) {
 }
 
 static int c23_memory(void) {
-  char  source[]       = "abcdef";
-  char  destination[8] = {};
-  char  secret[]       = "secret";
-  char *first_copy;
-  char *second_copy;
-  void *stop  = memccpy(destination, source, 'c', 6);
-  int   total = stop == destination + 3 && destination[2] == 'c';
+  char        source[]       = "abcdef";
+  char        destination[8] = {};
+  char        secret[]       = "secret";
+  char       *first_copy;
+  char       *second_copy;
+  const char *phrase = "hello world";
+  char        mutable_phrase[] = "hello world";
+  void       *stop  = memccpy(destination, source, 'c', 6);
+  int         total = stop == destination + 3 && destination[2] == 'c';
   memset_explicit(secret, 0, sizeof(secret));
   total       += secret[0] == 0 && secret[5] == 0;
   first_copy   = strdup("c23");
@@ -65,6 +67,14 @@ static int c23_memory(void) {
   total       += second_copy != nullptr && strcmp(second_copy, "lib") == 0;
   free(first_copy);
   free(second_copy);
+
+  const char *const_hit = strchr(phrase, 'w');
+  char       *mut_hit    = strchr(mutable_phrase, 'w');
+  total += const_hit != nullptr && mut_hit != nullptr;
+  total += memchr(phrase, 'o', 11) != nullptr;
+  total += memchr(mutable_phrase, 'o', 11) != nullptr;
+  total += strstr(phrase, "world") != nullptr;
+  total += strstr(mutable_phrase, "world") != nullptr;
   return total;
 }
 
@@ -84,6 +94,12 @@ static int c23_time(void) {
   total += strcmp(month, "January") == 0;
   total += wcsftime(wide_month, 32, L"%OB", &utc) == 7;
   total += wcscmp(wide_month, L"January") == 0;
+
+  const wchar_t *const_month = wide_month;
+  total += wcschr(const_month, L'n') != nullptr;
+  total += wcschr(wide_month, L'n') != nullptr;
+  total += wcsstr(const_month, L"Jan") != nullptr;
+  total += wcsstr(wide_month, L"Jan") != nullptr;
   return total;
 }
 

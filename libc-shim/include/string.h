@@ -20,6 +20,12 @@ void *memset_explicit(void *, int, size_t);
 #endif
 int   memcmp(const void *, const void *, size_t);
 void *memchr(const void *, int, size_t);
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
+#define memchr(s, c, n)                                                      \
+  _Generic((s),                                                              \
+      const void *: (const void *)(memchr)((s), (c), (n)),                   \
+      default: (memchr)((s), (c), (n)))
+#endif
 
 char *strcpy(char *__restrict, const char *__restrict);
 char *strncpy(char *__restrict, const char *__restrict, size_t);
@@ -35,11 +41,31 @@ size_t strxfrm(char *__restrict, const char *__restrict, size_t);
 
 char *strchr(const char *, int);
 char *strrchr(const char *, int);
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
+#define strchr(s, c)                                                         \
+  _Generic((s),                                                              \
+      const char *: (const char *)(strchr)((s), (c)),                       \
+      default: (strchr)((s), (c)))
+#define strrchr(s, c)                                                        \
+  _Generic((s),                                                              \
+      const char *: (const char *)(strrchr)((s), (c)),                      \
+      default: (strrchr)((s), (c)))
+#endif
 
 size_t strcspn(const char *, const char *);
 size_t strspn(const char *, const char *);
 char  *strpbrk(const char *, const char *);
 char  *strstr(const char *, const char *);
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
+#define strpbrk(s1, s2)                                                      \
+  _Generic((s1),                                                             \
+      const char *: (const char *)(strpbrk)((s1), (s2)),                    \
+      default: (strpbrk)((s1), (s2)))
+#define strstr(haystack, needle)                                             \
+  _Generic((haystack),                                                       \
+      const char *: (const char *)(strstr)((haystack), (needle)),           \
+      default: (strstr)((haystack), (needle)))
+#endif
 char  *strtok(char *__restrict, const char *__restrict);
 
 size_t strlen(const char *);
