@@ -49,9 +49,9 @@ fn apply_item(item: &mut Item, registry: &[Box<dyn NodeRule>]) {
 
 fn run_function(body: &mut Vec<IndentStmt>, registry: &[Box<dyn NodeRule>]) {
     let taken = std::mem::take(body);
-    let FunctionArena { mut arena, roots } = arena::build(taken);
+    let FunctionArena { mut arena, root } = arena::build(taken);
     run_worklist(&mut arena, registry);
-    *body = arena::reify(&arena, &roots);
+    *body = arena::reify(&arena, root);
 }
 
 fn run_worklist(arena: &mut Arena, registry: &[Box<dyn NodeRule>]) {
