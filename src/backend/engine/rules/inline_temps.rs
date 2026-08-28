@@ -1,15 +1,15 @@
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, NodeId, NodeKind};
-use crate::backend::rust_ast::{Expr, RustValue, Stmt, Type, UnaryOp};
+use crate::backend::rust_ast::{Expr, Ident, RustValue, Stmt, Type, UnaryOp};
 
 fn is_temp_name(name: &str) -> bool {
     name.strip_prefix("_v")
         .is_some_and(|rest| !rest.is_empty() && rest.bytes().all(|byte| byte.is_ascii_digit()))
 }
 
-fn expr_ident(expr: &Expr) -> Option<&str> {
+fn expr_ident(expr: &Expr) -> Option<Ident> {
     match expr {
-        Expr::Var(name) => Some(name.as_str()),
+        Expr::Var(name) => Some(*name),
         _ => None,
     }
 }
@@ -502,7 +502,7 @@ fn stmt_any_expr(stmt: &Stmt, pred: &mut dyn FnMut(&Expr) -> bool) -> bool {
     }
 }
 
-fn stmt_e_ident_count(stmt: &Stmt, name: &str) -> usize {
+fn stmt_e_ident_count(stmt: &Stmt, name: Ident) -> usize {
     match stmt {
         Stmt::Let { init, .. } => init.as_ref().map_or(0, |e| e_ident_count(e, name)),
         Stmt::LetIf {
@@ -615,9 +615,9 @@ fn is_obviously_pure_expr(expr: &Expr) -> bool {
     }
 }
 
-fn simple_macro_arg_uses_name(expr: &Expr, name: &str) -> bool {
+fn simple_macro_arg_uses_name(expr: &Expr, name: Ident) -> bool {
     match expr {
-        Expr::Var(var) => var.as_str() == name,
+        Expr::Var(var) => *var == name,
         Expr::Cast { expr, .. } | Expr::Unary { expr, .. } => {
             simple_macro_arg_uses_name(expr, name)
         }
@@ -625,7 +625,7 @@ fn simple_macro_arg_uses_name(expr: &Expr, name: &str) -> bool {
     }
 }
 
-fn simple_macro_arg_use_expr(expr: &Expr, name: &str) -> bool {
+fn simple_macro_arg_use_expr(expr: &Expr, name: Ident) -> bool {
     match expr {
         Expr::Macro { args, .. } => {
             args.iter().any(|arg| simple_macro_arg_uses_name(arg, name))
@@ -650,7 +650,7 @@ fn is_option_like_type(ty: &Type) -> bool {
     }
 }
 
-fn kind_own_ident_count(kind: &NodeKind, name: &str) -> usize {
+fn kind_own_ident_count(kind: &NodeKind, name: Ident) -> usize {
     match kind {
         NodeKind::Let { init, .. } => init.as_ref().map_or(0, |e| e_ident_count(e, name)),
         NodeKind::LetIf {
@@ -689,9 +689,9 @@ fn kind_own_ident_count(kind: &NodeKind, name: &str) -> usize {
     }
 }
 
-fn e_ident_count(expr: &Expr, name: &str) -> usize {
+fn e_ident_count(expr: &Expr, name: Ident) -> usize {
     match expr {
-        Expr::Var(v) => usize::from(v.as_str() == name),
+        Expr::Var(v) => usize::from(*v == name),
         Expr::Value(_)
         | Expr::Str(_)
         | Expr::HexFloat(_)
@@ -785,7 +785,7 @@ fn e_ident_count(expr: &Expr, name: &str) -> usize {
     }
 }
 
-fn node_ident_count(arena: &Arena, id: NodeId, name: &str) -> usize {
+fn node_ident_count(arena: &Arena, id: NodeId, name: Ident) -> usize {
     let Some(kind) = arena.get(id) else {
         return 0;
     };
@@ -905,21 +905,21 @@ fn node_expr_any(arena: &Arena, id: NodeId, pred: &mut dyn FnMut(&Expr) -> bool)
             .any(|&child| node_expr_any(arena, child, pred))
 }
 
-fn is_receiver_use(arena: &Arena, id: NodeId, name: &str) -> bool {
+fn is_receiver_use(arena: &Arena, id: NodeId, name: Ident) -> bool {
     node_expr_any(arena, id, &mut |expr| {
         let receiver = match expr {
             Expr::MethodCall { recv, .. } | Expr::MethodCallGeneric { recv, .. } => Some(&**recv),
             Expr::Field { base, .. } | Expr::TupleField { base, .. } => Some(&**base),
             _ => None,
         };
-        matches!(receiver, Some(Expr::Var(value)) if value.as_str() == name)
+        matches!(receiver, Some(Expr::Var(value)) if *value == name)
     })
 }
 
 fn is_option_receiver_use(
     arena: &Arena,
     id: NodeId,
-    name: &str,
+    name: Ident,
     ty: Option<&Type>,
     init: &Expr,
 ) -> bool {
@@ -932,7 +932,7 @@ fn is_option_receiver_use(
             Expr::MethodCall { recv, method, args }
                 if matches!(method.as_str(), "is_some" | "is_none" | "unwrap")
                     && args.is_empty()
-                    && matches!(&**recv, Expr::Var(value) if value.as_str() == name)
+                    && matches!(&**recv, Expr::Var(value) if *value == name)
         )
     })
 }
@@ -954,7 +954,7 @@ fn macro_arg_alias_conflict(arena: &Arena, id: NodeId, root: &str) -> bool {
     })
 }
 
-fn immediate_effectful_consumer(arena: &Arena, id: NodeId, name: &str) -> bool {
+fn immediate_effectful_consumer(arena: &Arena, id: NodeId, name: Ident) -> bool {
     match arena.get(id) {
         Some(NodeKind::Assign { target, value })
         | Some(NodeKind::CompoundAssign { target, value, .. }) => {
@@ -969,7 +969,7 @@ fn immediate_effectful_consumer(arena: &Arena, id: NodeId, name: &str) -> bool {
     }
 }
 
-fn immediate_atomic_result_consumer(arena: &Arena, id: NodeId, name: &str) -> bool {
+fn immediate_atomic_result_consumer(arena: &Arena, id: NodeId, name: Ident) -> bool {
     match arena.get(id) {
         Some(NodeKind::Let {
             init: Some(init), ..
@@ -978,13 +978,13 @@ fn immediate_atomic_result_consumer(arena: &Arena, id: NodeId, name: &str) -> bo
     }
 }
 
-fn early_effectful_consumer(arena: &Arena, id: NodeId, name: &str) -> bool {
+fn early_effectful_consumer(arena: &Arena, id: NodeId, name: Ident) -> bool {
     match arena.get(id) {
         Some(NodeKind::Assign { target, value }) => {
             matches!(target, Expr::Var(t) if t.as_str() == "__retval")
-                && matches!(value, Expr::Var(v) if v.as_str() == name)
+                && matches!(value, Expr::Var(v) if *v == name)
         }
-        Some(NodeKind::Return(Some(expr))) => matches!(expr, Expr::Var(v) if v.as_str() == name),
+        Some(NodeKind::Return(Some(expr))) => matches!(expr, Expr::Var(v) if *v == name),
         _ => false,
     }
 }
@@ -1007,7 +1007,7 @@ fn expr_is_type_anchored(expr: &Expr) -> bool {
     }
 }
 
-fn is_top_level_use(arena: &Arena, id: NodeId, name: &str) -> bool {
+fn is_top_level_use(arena: &Arena, id: NodeId, name: Ident) -> bool {
     match arena.get(id) {
         Some(NodeKind::Let {
             init: Some(init), ..
@@ -1031,7 +1031,7 @@ struct Found {
     consumer_id: NodeId,
 }
 
-fn locate_consumer(arena: &Arena, decl_id: NodeId, name: &str) -> Option<Found> {
+fn locate_consumer(arena: &Arena, decl_id: NodeId, name: Ident) -> Option<Found> {
     let parent = arena.parent(decl_id)?;
     let lists = arena.get(parent)?.child_lists();
     for (list_index, list) in lists.iter().enumerate() {
@@ -1069,7 +1069,8 @@ fn is_movable_pure_temp(arena: &Arena, id: NodeId) -> bool {
             init: Some(init),
             ..
         }) => {
-            is_temp_name(name) && classify_purity(init, expr_effects(init)) == Purity::MovablePure
+            is_temp_name(name.as_str())
+                && classify_purity(init, expr_effects(init)) == Purity::MovablePure
         }
         _ => false,
     }
@@ -1134,7 +1135,7 @@ fn kind_own_substitute_var(kind: &mut NodeKind, name: &str, replacement: &Expr) 
         }
         NodeKind::If { cond, .. } => cond.substitute_var(name, replacement),
         NodeKind::For { iter, pat, .. } => {
-            if pat == name {
+            if pat.as_str() == name {
                 false
             } else {
                 iter.substitute_var(name, replacement)
@@ -1165,7 +1166,7 @@ impl NodeRule for EarlyInlineTemps {
                 mutable: false,
                 init: Some(_),
                 ..
-            }) if is_temp_name(name)
+            }) if is_temp_name(name.as_str())
         )
     }
 
@@ -1179,19 +1180,19 @@ impl NodeRule for EarlyInlineTemps {
         else {
             return false;
         };
-        if !is_temp_name(name) {
+        if !is_temp_name(name.as_str()) {
             return false;
         }
-        let name = name.clone();
+        let name = *name;
         let ty = ty.clone();
         let init = init.clone();
 
         let root = function_root(arena, id);
-        if node_ident_count(arena, root, &name) != 1 {
+        if node_ident_count(arena, root, name) != 1 {
             return false;
         }
 
-        let Some(found) = locate_consumer(arena, id, &name) else {
+        let Some(found) = locate_consumer(arena, id, name) else {
             return false;
         };
 
@@ -1216,27 +1217,27 @@ impl NodeRule for EarlyInlineTemps {
             }
         } else {
             let effectful_branch = producer_purity == Purity::Effectful
-                && immediate_effectful_consumer(arena, found.consumer_id, &name);
+                && immediate_effectful_consumer(arena, found.consumer_id, name);
             let atomic_branch = is_atomic_result(&init, producer_effects)
-                && immediate_atomic_result_consumer(arena, found.consumer_id, &name);
+                && immediate_atomic_result_consumer(arena, found.consumer_id, name);
             if !(adjacent && (effectful_branch || atomic_branch)) {
                 return false;
             }
         }
 
         if producer_effects.is_effectful()
-            && !early_effectful_consumer(arena, found.consumer_id, &name)
+            && !early_effectful_consumer(arena, found.consumer_id, name)
         {
             return false;
         }
 
         let allowed_receiver =
-            is_option_receiver_use(arena, found.consumer_id, &name, ty.as_ref(), &init);
+            is_option_receiver_use(arena, found.consumer_id, name, ty.as_ref(), &init);
         let consumer_effects = node_effects(arena, found.consumer_id);
         if consumer_effects.has_call() && !allowed_receiver {
             return false;
         }
-        if is_receiver_use(arena, found.consumer_id, &name) && !allowed_receiver {
+        if is_receiver_use(arena, found.consumer_id, name) && !allowed_receiver {
             return false;
         }
         if let Some(root) = root_var(&init)
@@ -1245,11 +1246,11 @@ impl NodeRule for EarlyInlineTemps {
             return false;
         }
 
-        if !expr_is_type_anchored(&init) && !is_top_level_use(arena, found.consumer_id, &name) {
+        if !expr_is_type_anchored(&init) && !is_top_level_use(arena, found.consumer_id, name) {
             return false;
         }
 
-        if !node_substitute_var(arena, found.consumer_id, &name, &init) {
+        if !node_substitute_var(arena, found.consumer_id, name.as_str(), &init) {
             return false;
         }
 

@@ -1,6 +1,6 @@
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, NodeId, NodeKind};
-use crate::backend::rust_ast::{Expr, Pattern, RustValue, UnaryOp};
+use crate::backend::rust_ast::{Expr, Ident, Pattern, RustValue, UnaryOp};
 
 fn expr_is_zero(expr: &Expr) -> bool {
     match expr {
@@ -45,13 +45,14 @@ fn expr_is_pure_and_closed(expr: &Expr) -> bool {
     }
 }
 
-fn kind_reads_var(kind: &NodeKind, name: &str) -> bool {
+fn kind_reads_var(kind: &NodeKind, name: Ident) -> bool {
+    let name_str = name.as_str();
     match kind {
         NodeKind::Let {
             name: declared,
             init,
             ..
-        } => declared == name || init.as_ref().is_some_and(|expr| expr.reads_var(name)),
+        } => *declared == name || init.as_ref().is_some_and(|expr| expr.reads_var(name_str)),
         NodeKind::LetIf {
             name: declared,
             cond,
@@ -59,41 +60,41 @@ fn kind_reads_var(kind: &NodeKind, name: &str) -> bool {
             else_value,
             ..
         } => {
-            declared == name
-                || cond.reads_var(name)
-                || then_value.reads_var(name)
-                || else_value.reads_var(name)
+            *declared == name
+                || cond.reads_var(name_str)
+                || then_value.reads_var(name_str)
+                || else_value.reads_var(name_str)
         }
         NodeKind::Assign { target, value } | NodeKind::CompoundAssign { target, value, .. } => {
-            target.reads_var(name) || value.reads_var(name)
+            target.reads_var(name_str) || value.reads_var(name_str)
         }
         NodeKind::InlineAsm(asm) => {
             let mut found = false;
             for operand in &asm.operands {
-                operand.visit_exprs(&mut |expr| found |= expr.reads_var(name));
+                operand.visit_exprs(&mut |expr| found |= expr.reads_var(name_str));
             }
             found
         }
-        NodeKind::Expr(expr) => expr.reads_var(name),
-        NodeKind::Return(expr) => expr.as_ref().is_some_and(|expr| expr.reads_var(name)),
+        NodeKind::Expr(expr) => expr.reads_var(name_str),
+        NodeKind::Return(expr) => expr.as_ref().is_some_and(|expr| expr.reads_var(name_str)),
         NodeKind::Unsafe { tail, .. } | NodeKind::Block { tail, .. } => {
-            tail.as_ref().is_some_and(|tail| tail.reads_var(name))
+            tail.as_ref().is_some_and(|tail| tail.reads_var(name_str))
         }
         NodeKind::While { cond, tail, .. } => {
-            cond.reads_var(name) || tail.as_ref().is_some_and(|tail| tail.reads_var(name))
+            cond.reads_var(name_str) || tail.as_ref().is_some_and(|tail| tail.reads_var(name_str))
         }
-        NodeKind::If { cond, .. } => cond.reads_var(name),
-        NodeKind::For { pat, iter, .. } => pat == name || iter.reads_var(name),
+        NodeKind::If { cond, .. } => cond.reads_var(name_str),
+        NodeKind::For { pat, iter, .. } => *pat == name || iter.reads_var(name_str),
         NodeKind::Loop { .. } | NodeKind::Scope { .. } | NodeKind::LabeledBlock { .. } => false,
-        NodeKind::Match { expr, arms } => expr.reads_var(name)
+        NodeKind::Match { expr, arms } => expr.reads_var(name_str)
             || arms.iter().any(
-                |arm| matches!(&arm.pattern, Pattern::Guarded { cond, .. } if cond.reads_var(name)),
+                |arm| matches!(&arm.pattern, Pattern::Guarded { cond, .. } if cond.reads_var(name_str)),
             ),
         NodeKind::Break(_) | NodeKind::Continue(_) => false,
     }
 }
 
-fn node_touches_name(arena: &Arena, id: NodeId, name: &str) -> bool {
+fn node_touches_name(arena: &Arena, id: NodeId, name: Ident) -> bool {
     let Some(kind) = arena.get(id) else {
         return false;
     };
@@ -104,10 +105,10 @@ fn node_touches_name(arena: &Arena, id: NodeId, name: &str) -> bool {
         })
 }
 
-fn qualifying_write_value<'a>(arena: &'a Arena, id: NodeId, name: &str) -> Option<&'a Expr> {
+fn qualifying_write_value(arena: &Arena, id: NodeId, name: Ident) -> Option<&Expr> {
     match arena.get(id)? {
-        NodeKind::Assign { target, value } => (matches!(target, Expr::Var(v) if v.as_str() == name)
-            && !value.reads_var(name))
+        NodeKind::Assign { target, value } => (matches!(target, Expr::Var(v) if *v == name)
+            && !value.reads_var(name.as_str()))
         .then_some(value),
         _ => None,
     }
@@ -123,7 +124,7 @@ fn intervening_ok(arena: &Arena, intervening: &[NodeId], value: &Expr) -> bool {
             return false;
         }
         if let NodeKind::Let { name: declared, .. } = kind
-            && value.reads_var(declared)
+            && value.reads_var(declared.as_str())
         {
             return false;
         }
@@ -138,7 +139,7 @@ struct Found {
     write_id: NodeId,
 }
 
-fn locate(arena: &Arena, decl_id: NodeId, name: &str) -> Option<Found> {
+fn locate(arena: &Arena, decl_id: NodeId, name: Ident) -> Option<Found> {
     let parent = arena.parent(decl_id)?;
     let lists = arena.get(parent)?.child_lists();
     for (list_index, list) in lists.iter().enumerate() {
@@ -199,8 +200,8 @@ impl NodeRule for ZeroInitFold {
         if !expr_is_zero(init) {
             return false;
         }
-        let name = name.clone();
-        let Some(found) = locate(arena, id, &name) else {
+        let name = *name;
+        let Some(found) = locate(arena, id, name) else {
             return false;
         };
         let Some(mut write_kind) = arena.take(found.write_id) else {
