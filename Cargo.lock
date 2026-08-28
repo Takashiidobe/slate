@@ -480,6 +480,7 @@ dependencies = [
  "libc",
  "mimalloc",
  "ordered-float",
+ "rayon",
  "rustc_apfloat",
  "salsa",
  "serde",
