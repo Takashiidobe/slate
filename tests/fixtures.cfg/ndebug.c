@@ -12,5 +12,5 @@ int main(void) {
 }
 // DIRECTIVES-DAG: #[cfg(not(debug_assertions))]
 // DIRECTIVES-DAG: #[cfg(debug_assertions)]
-// DIRECTIVES-DAG: let _v{{[0-9]+}}: i32 = 0;
-// DIRECTIVES-DAG: let _v{{[0-9]+}}: i32 = 1;
+// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = }}0;
+// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = }}1;

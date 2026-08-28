@@ -12,5 +12,5 @@ int main(void) {
 }
 // DIRECTIVES-DAG: #[cfg(feature = "my_feature")]
 // DIRECTIVES-DAG: #[cfg(not(feature = "my_feature"))]
-// DIRECTIVES-DAG: let _v{{[0-9]+}}: i32 = 10;
-// DIRECTIVES-DAG: let _v{{[0-9]+}}: i32 = 20;
+// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = }}10;
+// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = }}20;

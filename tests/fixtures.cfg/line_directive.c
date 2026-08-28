@@ -10,5 +10,5 @@ int expected_line(void) { return 704; }
 int main(void) { return line_value() == expected_line() ? 0 : 1; }
 // DIRECTIVES-DAG: #[cfg(feature = "line_feature")]
 // DIRECTIVES-DAG: #[cfg(not(feature = "line_feature"))]
-// DIRECTIVES-DAG: let _v{{[0-9]+}}: i32 = 701;
-// DIRECTIVES-DAG: let _v{{[0-9]+}}: i32 = 704;
+// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = }}701;
+// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = }}704;
