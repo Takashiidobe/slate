@@ -58,3 +58,4 @@ superseded each one for what actually applies now.
 - [Salsa Migration](historical/salsa-migration.md) -- superseded by
   [Rewrite engine v2](concepts/rewrite-engine-v2.md), which dropped salsa
   for hand-rolled fact caches.
+- [fix pointer capability lattice: U-widening and W-on-ownership gaps](concepts/fix-pointer-capability-lattice-u-widening-and-w-on-ownership-gaps.md)
