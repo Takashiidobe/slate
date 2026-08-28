@@ -1,11 +1,18 @@
 # Rewrite engine v2: ground-up replacement for src/backend/query + salsa
 
-**Status: decided, not started. This is a handoff spec for whichever agent
-picks up `slate-y0qs.3` next.** Read this whole document before touching
-code. It records a real decision made after measuring the incremental
-approach and finding it insufficient -- don't re-litigate the "should we
-rewrite from scratch" question without re-reading the "Rejected: retrofit the
-existing engine" section below; that ground has already been covered.
+**Status: in progress, ~6/65 passes ported. This is a handoff spec for
+whichever agent picks up `slate-y0qs.3` next.** Read this whole document
+before touching code. It records a real decision made after measuring the
+incremental approach and finding it insufficient -- don't re-litigate the
+"should we rewrite from scratch" question without re-reading the "Rejected:
+retrofit the existing engine" section below; that ground has already been
+covered.
+
+**Porting one more pass? Read
+[pass-porting-workflow.md](pass-porting-workflow.md) first** -- it's the
+per-session fast path (which pass to pick, how to port, how to verify, how to
+benchmark) layered on top of the architecture this document specifies. This
+document is the *what*/*why*; that one is the *how*, session to session.
 
 ## The mandate
 
@@ -268,7 +275,12 @@ Also holds, and needs explicit attention, not just "run the suite and see":
 
 Measured this session, libexpat (21 TUs,
 `~/c-corpus/libexpat/expat/build/compile_commands.json`), same machine,
-`SLATE_FIXUP_TIMING=1 translate-project --lib`:
+`SLATE_FIXUP_TIMING=1 translate-project --lib` (that env var was old-engine-only
+instrumentation and is a no-op against the new engine -- confirmed absent from
+`src/` entirely as of 2026-08-28; wrap the binary invocation in wall-clock
+timing instead, e.g. `date +%s.%N` before/after, and note the actual CLI shape
+is `translate-project --lib --compile-commands <file> <project_dir> <crate_dir>`,
+not a bare `--lib <dir>`):
 
 | state | wall time |
 | --- | --- |
@@ -317,11 +329,14 @@ the remaining 63.
   with the reasoning above for why).
 - [passes.md](passes.md) -- the pass catalog to port semantics from.
 - [facts.md](facts.md) -- the fact catalog to port algorithms from.
-- [salsa-migration.md](salsa-migration.md) -- history of why salsa was
-  adopted in the first place; useful background for why this is a real
-  reversal and not just churn, but its "Query-performance patterns" hotspot
-  section (BTreeMap-indexed lookups, not `iter().find()` scans) is still
-  good advice for the hand-rolled fact cache too.
+- [pass-porting-workflow.md](pass-porting-workflow.md) -- the per-session
+  fast path for picking, porting, verifying, and benchmarking one more pass;
+  read that instead of re-deriving the same steps from scratch each time.
+- [salsa-migration.md](../historical/salsa-migration.md) -- history of why
+  salsa was adopted in the first place; useful background for why this is a
+  real reversal and not just churn, but its "Query-performance patterns"
+  hotspot section (BTreeMap-indexed lookups, not `iter().find()` scans) is
+  still good advice for the hand-rolled fact cache too.
 - `slate-y0qs` -- epic tracking this; `slate-y0qs.3` is the in-progress
   child this document is the handoff for. `slate-y0qs.4` (SCC-ordered
   call-graph worklist) is the separate interprocedural phase referenced

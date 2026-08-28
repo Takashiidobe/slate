@@ -62,7 +62,7 @@ cir.try {
 
 - Catch clauses are a list, each tagged with an RTTI `#cir.global_view`,
   matched in source order — multiple `catch` blocks on one `try` show up as
-  multiple `catch [type ...] (...)  { ... }` regions on the same `cir.try`.
+  multiple `catch (type name) { ... }`-shaped regions on the same `cir.try`.
 - `unwind` is the "no clause matched" landing pad: exactly a rethrow,
   `cir.resume` on the same `!cir.eh_token` the catch regions took as an
   argument.
@@ -83,7 +83,7 @@ hand-rolled reimplementation.
 | CIR op | Rust raw-lowering target |
 |---|---|
 | `cir.alloc.exception` + ctor call + `cir.throw` | construct the payload value, `std::panic::panic_any(payload)` |
-| `cir.try { A } catch [T1](...) {B1} catch [T2](...) {B2} unwind {resume}` | `match std::panic::catch_unwind(AssertUnwindSafe(\|\| A)) { Ok(v) => v, Err(p) => if let Some(e) = p.downcast_ref::<T1>() { B1 } else if let Some(e) = p.downcast_ref::<T2>() { B2 } else { std::panic::resume_unwind(p) } }` |
+| `cir.try { A } catch T1(...) {B1} catch T2(...) {B2} unwind {resume}` | `match std::panic::catch_unwind(AssertUnwindSafe(\|\| A)) { Ok(v) => v, Err(p) => if let Some(e) = p.downcast_ref::<T1>() { B1 } else if let Some(e) = p.downcast_ref::<T2>() { B2 } else { std::panic::resume_unwind(p) } }` |
 | `cir.resume` (unwind clause, no match) | `std::panic::resume_unwind(payload)` — direct 1:1 |
 | destructor named in `cir.throw`'s third operand | free: the payload is a real Rust value, `Drop` fires on unwind automatically, no fixup needed |
 | locals live across the `try` body at an unwind point (`cir.scope`/`cir.cleanup.scope` nesting) | ordinary Rust `Drop` on those locals, same as any other scope exit — no special-cased cleanup codegen needed as long as they're real owned Rust values |

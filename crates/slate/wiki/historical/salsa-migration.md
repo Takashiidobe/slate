@@ -3,11 +3,11 @@
 Tracked by the `slate-kby1` epic, **complete**. This doc is a historical
 record of the migration's motivation and plan, kept for context on why the
 architecture looks the way it does; for the current design see
-[facts.md](facts.md) (facts layer) and [fixups.md](fixups.md) (rule-authoring
+[facts.md](../concepts/facts.md) (facts layer) and [fixups.md](../concepts/fixups.md) (rule-authoring
 contract). Scope, per the epic: only `src/backend/facts/` (`FixupFacts` and its
 collectors) and `query::QueryContext`'s internals moved to salsa.
 `EditSets`/`Plan<E: EditTarget>`/matchers/recipes — the whole rewriting layer
-described in [fixups.md](fixups.md) — stayed as they were. Rule-authoring
+described in [fixups.md](../concepts/fixups.md) — stayed as they were. Rule-authoring
 ergonomics (`case.fact(|query| query.method(handle))`) didn't change either;
 only what runs behind `QueryContext`'s methods did.
 

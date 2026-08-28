@@ -12,6 +12,7 @@ pub(super) fn registry() -> Vec<Box<dyn NodeRule>> {
         Box::new(singleton_scopes::WhileLoopUnwrap),
         Box::new(singleton_scopes::DoWhileLoopUnwrap),
         Box::new(singleton_scopes::SingletonUnwrap),
+        Box::new(inline_temps::LateInlineTemps),
         Box::new(libc_exit::LibcExit),
     ]
 }

@@ -100,7 +100,7 @@ Three separate decisions, not one:
    `DefUseFact` via `SalsaFacts::def_use`. Prerequisite: these lookups must
    already be `BTreeMap`-indexed, not `iter().find()` linear scans — see the
    "Query-performance patterns" section of
-   [salsa-migration.md](salsa-migration.md), which flags this exact shape as
+   [salsa-migration.md](../historical/salsa-migration.md), which flags this exact shape as
    a recurring hotspot. The worklist calls this per touched site repeatedly,
    so unindexed lookups here would reintroduce the quadratic cost the
    worklist is meant to remove.
@@ -194,7 +194,7 @@ unblock before getting real signal on a real codebase.
 - [fixups.md](fixups.md) — the matcher/`EditSet` layer this reuses unchanged.
 - [facts.md](facts.md) — `def_use` and the `BTreeMap`-indexing pattern the
   neighbor requeue depends on.
-- [salsa-migration.md](salsa-migration.md) — why facts are already
+- [salsa-migration.md](../historical/salsa-migration.md) — why facts are already
   incremental, and the "Query-performance patterns" hotspot section.
 - `slate-y0qs` — epic tracking this; `slate-y0qs.1`–`.4` are the sequenced
   children (profile first, then `set_program` fix, then this worklist

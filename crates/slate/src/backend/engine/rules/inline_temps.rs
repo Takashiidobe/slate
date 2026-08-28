@@ -1,6 +1,6 @@
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, NodeId, NodeKind, NodeKindTag};
-use crate::backend::rust_ast::{Expr, Ident, RustValue, Stmt, Type, UnaryOp};
+use crate::backend::rust_ast::{Expr, Ident, Prim, RustValue, Stmt, Type, UnaryOp};
 
 fn is_temp_name(name: &str) -> bool {
     name.strip_prefix("_v")
@@ -1147,6 +1147,130 @@ fn kind_own_substitute_var(kind: &mut NodeKind, name: &str, replacement: &Expr) 
     }
 }
 
+fn contains_integer_literal(expr: &Expr) -> bool {
+    match expr {
+        Expr::Value(RustValue::I64(_) | RustValue::I128(_) | RustValue::Usize(_)) => true,
+        Expr::Unary { expr, .. } | Expr::Cast { expr, .. } => contains_integer_literal(expr),
+        Expr::Binary { lhs, rhs, .. } => {
+            contains_integer_literal(lhs) || contains_integer_literal(rhs)
+        }
+        Expr::Index { base, .. } => contains_integer_literal(base),
+        _ => false,
+    }
+}
+
+fn type_stable_arg_init(init: &Expr, ty: Option<&Type>) -> bool {
+    match init {
+        Expr::Var(_) | Expr::Cast { .. } => true,
+        Expr::Unary { .. } => ty.is_some(),
+        Expr::Binary { .. } => ty.is_some() && !contains_integer_literal(init),
+        Expr::Index { .. } => ty.is_some(),
+        Expr::Block(block) | Expr::Unsafe(block) if block.stmts.is_empty() => block
+            .tail
+            .as_deref()
+            .is_some_and(|tail| type_stable_arg_init(tail, ty)),
+        Expr::Value(RustValue::I64(_)) => matches!(ty, Some(Type::Prim(Prim::I32))),
+        Expr::Value(RustValue::Bool(_)) => true,
+        _ => false,
+    }
+}
+
+fn call_arg_uses_name(expr: &Expr, name: Ident) -> bool {
+    match expr {
+        Expr::Var(var) => *var == name,
+        Expr::Cast { expr, .. } => call_arg_uses_name(expr, name),
+        Expr::Block(block) | Expr::Unsafe(block) if block.stmts.is_empty() => block
+            .tail
+            .as_deref()
+            .is_some_and(|tail| call_arg_uses_name(tail, name)),
+        _ => false,
+    }
+}
+
+fn call_or_macro_arg_use_expr(expr: &Expr, name: Ident) -> bool {
+    match expr {
+        Expr::Call { args, .. } | Expr::Macro { args, .. } => {
+            args.iter().any(|arg| call_arg_uses_name(arg, name))
+        }
+        Expr::MethodCall { args, .. } | Expr::MethodCallGeneric { args, .. } => {
+            args.iter().any(|arg| e_ident_count(arg, name) > 0)
+        }
+        Expr::Block(block) | Expr::Unsafe(block) => block
+            .tail
+            .as_deref()
+            .is_some_and(|tail| call_or_macro_arg_use_expr(tail, name)),
+        Expr::Cast { expr, .. } => call_or_macro_arg_use_expr(expr, name),
+        _ => false,
+    }
+}
+
+fn kind_call_or_macro_arg_use(kind: &NodeKind, name: Ident) -> bool {
+    match kind {
+        NodeKind::Let {
+            init: Some(init), ..
+        } => call_or_macro_arg_use_expr(init, name),
+        NodeKind::Assign { target, value } | NodeKind::CompoundAssign { target, value, .. } => {
+            call_or_macro_arg_use_expr(target, name) || call_or_macro_arg_use_expr(value, name)
+        }
+        NodeKind::Expr(expr) => call_or_macro_arg_use_expr(expr, name),
+        NodeKind::Return(Some(expr)) => call_or_macro_arg_use_expr(expr, name),
+        _ => false,
+    }
+}
+
+fn method_arg_use_expr(expr: &Expr, name: Ident) -> bool {
+    match expr {
+        Expr::MethodCall { args, .. } | Expr::MethodCallGeneric { args, .. } => {
+            args.iter().any(|arg| e_ident_count(arg, name) > 0)
+        }
+        Expr::Block(block) | Expr::Unsafe(block) => block
+            .tail
+            .as_deref()
+            .is_some_and(|tail| method_arg_use_expr(tail, name)),
+        Expr::Cast { expr, .. } => method_arg_use_expr(expr, name),
+        _ => false,
+    }
+}
+
+fn kind_method_arg_use(kind: &NodeKind, name: Ident) -> bool {
+    match kind {
+        NodeKind::Let {
+            init: Some(init), ..
+        } => method_arg_use_expr(init, name),
+        NodeKind::Assign { target, value } | NodeKind::CompoundAssign { target, value, .. } => {
+            method_arg_use_expr(target, name) || method_arg_use_expr(value, name)
+        }
+        NodeKind::Expr(expr) => method_arg_use_expr(expr, name),
+        NodeKind::Return(Some(expr)) => method_arg_use_expr(expr, name),
+        _ => false,
+    }
+}
+
+fn kind_simple_macro_arg_use(kind: &NodeKind, name: Ident) -> bool {
+    match kind {
+        NodeKind::Expr(expr) => simple_macro_arg_use_expr(expr, name),
+        NodeKind::Return(Some(expr)) => simple_macro_arg_use_expr(expr, name),
+        _ => false,
+    }
+}
+
+fn is_allowed_argument_use(
+    kind: &NodeKind,
+    name: Ident,
+    ty: Option<&Type>,
+    init: &Expr,
+    effects: Effects,
+    adjacent: bool,
+) -> bool {
+    if effects.is_effectful() {
+        return adjacent && kind_simple_macro_arg_use(kind, name);
+    }
+    if kind_method_arg_use(kind, name) && contains_integer_literal(init) {
+        return false;
+    }
+    type_stable_arg_init(init, ty) && kind_call_or_macro_arg_use(kind, name)
+}
+
 pub(in crate::backend::engine) struct EarlyInlineTemps;
 
 impl NodeRule for EarlyInlineTemps {
@@ -1239,6 +1363,133 @@ impl NodeRule for EarlyInlineTemps {
             is_option_receiver_use(arena, found.consumer_id, name, ty.as_ref(), &init);
         let consumer_effects = node_effects(arena, found.consumer_id);
         if consumer_effects.has_call() && !allowed_receiver {
+            return false;
+        }
+        if is_receiver_use(arena, found.consumer_id, name) && !allowed_receiver {
+            return false;
+        }
+        if let Some(root) = root_var(&init)
+            && macro_arg_alias_conflict(arena, found.consumer_id, root)
+        {
+            return false;
+        }
+
+        if !expr_is_type_anchored(&init) && !is_top_level_use(arena, found.consumer_id, name) {
+            return false;
+        }
+
+        if !node_substitute_var(arena, found.consumer_id, name.as_str(), &init) {
+            return false;
+        }
+        arena.touch_subtree(found.consumer_id);
+
+        let _ = arena.take(id);
+        if let Some(parent_kind) = arena.get_mut(found.parent)
+            && let Some(list) = parent_kind.child_lists_mut().get_mut(found.list_index)
+        {
+            list.remove(found.decl_pos);
+        }
+        true
+    }
+}
+
+pub(in crate::backend::engine) struct LateInlineTemps;
+
+impl NodeRule for LateInlineTemps {
+    fn name(&self) -> &'static str {
+        "inline_temps::late"
+    }
+
+    fn priority(&self) -> u32 {
+        41
+    }
+
+    fn kinds(&self) -> &'static [NodeKindTag] {
+        &[NodeKindTag::Let]
+    }
+
+    fn matches(&self, arena: &Arena, id: NodeId) -> bool {
+        matches!(
+            arena.get(id),
+            Some(NodeKind::Let {
+                name,
+                mutable: false,
+                init: Some(_),
+                ..
+            }) if is_temp_name(name.as_str())
+        )
+    }
+
+    fn apply(&self, arena: &mut Arena, id: NodeId) -> bool {
+        let Some(NodeKind::Let {
+            name,
+            mutable: false,
+            init: Some(init),
+            ty,
+        }) = arena.get(id)
+        else {
+            return false;
+        };
+        if !is_temp_name(name.as_str()) {
+            return false;
+        }
+        let name = *name;
+        let ty = ty.clone();
+        let init = init.clone();
+
+        let root = function_root(arena, id);
+        if node_ident_count(arena, root, name) != 1 {
+            return false;
+        }
+
+        let Some(found) = locate_consumer(arena, id, name) else {
+            return false;
+        };
+
+        let producer_effects = expr_effects(&init);
+        let producer_purity = classify_purity(&init, producer_effects);
+        let adjacent = found.consumer_pos == found.decl_pos + 1;
+
+        if producer_purity == Purity::MovablePure {
+            let Some(parent_kind) = arena.get(found.parent) else {
+                return false;
+            };
+            let lists = parent_kind.child_lists();
+            let Some(list) = lists.get(found.list_index) else {
+                return false;
+            };
+            let intervening = &list[found.decl_pos + 1..found.consumer_pos];
+            if !intervening
+                .iter()
+                .all(|&sibling| is_movable_pure_temp(arena, sibling))
+            {
+                return false;
+            }
+        } else {
+            let effectful_branch = producer_purity == Purity::Effectful
+                && immediate_effectful_consumer(arena, found.consumer_id, name);
+            let atomic_branch = is_atomic_result(&init, producer_effects)
+                && immediate_atomic_result_consumer(arena, found.consumer_id, name);
+            if !(adjacent && (effectful_branch || atomic_branch)) {
+                return false;
+            }
+        }
+
+        let allowed_receiver =
+            is_option_receiver_use(arena, found.consumer_id, name, ty.as_ref(), &init);
+        let Some(consumer_kind) = arena.get(found.consumer_id) else {
+            return false;
+        };
+        let allowed_argument = is_allowed_argument_use(
+            consumer_kind,
+            name,
+            ty.as_ref(),
+            &init,
+            producer_effects,
+            adjacent,
+        );
+        let consumer_effects = node_effects(arena, found.consumer_id);
+        if consumer_effects.has_call() && !(allowed_receiver || allowed_argument) {
             return false;
         }
         if is_receiver_use(arena, found.consumer_id, name) && !allowed_receiver {
