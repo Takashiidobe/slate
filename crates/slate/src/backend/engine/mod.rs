@@ -65,6 +65,7 @@ impl RuleRegistry {
 
 pub(in crate::backend) fn apply(program: &mut Program) {
     crate::backend::interproc::string_params::run(program);
+    crate::backend::interproc::pointer_lattice::apply(program);
 
     let registry = RuleRegistry::build(rules::registry());
     for item in &mut program.items {
