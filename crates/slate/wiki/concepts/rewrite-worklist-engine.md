@@ -145,6 +145,11 @@ no local rule needs another global round.
 
 ### Pointer capability lattice (c2rust-derived)
 
+Superseded by [pointer-capability-lattice.md](pointer-capability-lattice.md),
+which extends this table (drops `Box<[T]>`, adds `&str`/`String`/
+`Option<...>`) and documents the implemented `src/backend/interproc/
+pointer_lattice.rs` solve. Kept here for the original proposal history.
+
 For pointer bindings specifically, the representation variable's lattice
 is four independent capability facts — `write`, `unique`, `free`,
 `offset` (does the pointer get advanced/indexed, not just dereferenced)

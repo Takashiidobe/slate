@@ -20,6 +20,7 @@
 - [gcc-torture clang-ir refactor loop](concepts/gcc-torture-clang-ir-refactor-loop.md)
 - [`_Float16` and FENV-constrained float](concepts/float16-and-fenv.md)
 - [va_list lowering](concepts/va-list-lowering.md)
+- [Pointer capability lattice](concepts/pointer-capability-lattice.md)
 - [long-double-f80](concepts/long-double-f80.md)
 - [setjmp/longjmp lowering](concepts/setjmp-longjmp-lowering.md)
 - [predicate tokenizer no longer collapses #if conditions to opaque](concepts/predicate-tokenizer-no-longer-collapses-if-conditions-to-opaque.md)
