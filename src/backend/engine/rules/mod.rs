@@ -1,5 +1,6 @@
 mod inline_temps;
 mod libc_exit;
+mod raw_ptr_alias;
 mod singleton_scopes;
 mod zero_init;
 
@@ -9,6 +10,7 @@ pub(super) fn registry() -> Vec<Box<dyn NodeRule>> {
     vec![
         Box::new(inline_temps::EarlyInlineTemps),
         Box::new(zero_init::ZeroInitFold),
+        Box::new(raw_ptr_alias::RawPtrAliasElide),
         Box::new(singleton_scopes::WhileLoopUnwrap),
         Box::new(singleton_scopes::DoWhileLoopUnwrap),
         Box::new(singleton_scopes::SingletonUnwrap),

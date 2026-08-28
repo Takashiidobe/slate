@@ -1372,6 +1372,18 @@ impl Stmt {
     pub fn substitute_var(&mut self, name: &str, replacement: &Expr) -> bool {
         stmt_substitute_var(self, name, replacement)
     }
+
+    pub fn collect_vars(&self, out: &mut Vec<Ident>) {
+        stmt_collect_vars(self, out)
+    }
+
+    pub fn collect_calls<'a>(&'a self, out: &mut Vec<(&'a Ident, &'a [Expr])>) {
+        stmt_collect_calls(self, out)
+    }
+
+    pub fn reads_var(&self, name: &str) -> bool {
+        stmt_reads_var(self, name)
+    }
 }
 
 impl Expr {
@@ -1610,6 +1622,142 @@ impl Expr {
                 cond.collect_vars(out);
                 then_expr.collect_vars(out);
                 else_expr.collect_vars(out);
+            }
+        }
+    }
+
+    pub fn collect_calls<'a>(&'a self, out: &mut Vec<(&'a Ident, &'a [Expr])>) {
+        if let Expr::Call { func, args, .. } = self
+            && let Expr::Var(callee) = &**func
+        {
+            out.push((callee, args));
+        }
+        match self {
+            Expr::Var(_)
+            | Expr::Value(_)
+            | Expr::Str(_)
+            | Expr::HexFloat(_)
+            | Expr::ByteStr(_)
+            | Expr::CStr(_)
+            | Expr::Path(_)
+            | Expr::AtomicFence { .. }
+            | Expr::Todo(_) => {}
+            Expr::Unary { expr, .. }
+            | Expr::Cast { expr, .. }
+            | Expr::Ref { expr, .. }
+            | Expr::AddrOf { expr, .. }
+            | Expr::Transmute { expr, .. } => expr.collect_calls(out),
+            Expr::Block(block) | Expr::Unsafe(block) => {
+                for stmt in &block.stmts {
+                    stmt_collect_calls(&stmt.stmt, out);
+                }
+                if let Some(tail) = &block.tail {
+                    tail.collect_calls(out);
+                }
+            }
+            Expr::CopyNonoverlapping { src, dst, .. } => {
+                src.collect_calls(out);
+                dst.collect_calls(out);
+            }
+            Expr::PtrCopy {
+                src, dst, count, ..
+            } => {
+                src.collect_calls(out);
+                dst.collect_calls(out);
+                count.collect_calls(out);
+            }
+            Expr::WriteBytes { dst, val, count } => {
+                dst.collect_calls(out);
+                val.collect_calls(out);
+                count.collect_calls(out);
+            }
+            Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => {
+                if let Some(ptr) = place.ptr_expr() {
+                    ptr.collect_calls(out);
+                }
+            }
+            Expr::AtomicStore { place, value, .. }
+            | Expr::AtomicFetch { place, value, .. }
+            | Expr::AtomicSwap { place, value, .. } => {
+                if let Some(ptr) = place.ptr_expr() {
+                    ptr.collect_calls(out);
+                }
+                value.collect_calls(out);
+            }
+            Expr::AtomicNew { value, .. } => value.collect_calls(out),
+            Expr::AtomicCompareExchange {
+                place,
+                expected,
+                desired,
+                ..
+            } => {
+                if let Some(ptr) = place.ptr_expr() {
+                    ptr.collect_calls(out);
+                }
+                expected.collect_calls(out);
+                desired.collect_calls(out);
+            }
+            Expr::Binary { lhs, rhs, .. } => {
+                lhs.collect_calls(out);
+                rhs.collect_calls(out);
+            }
+            Expr::Range { start, end } => {
+                start.collect_calls(out);
+                end.collect_calls(out);
+            }
+            Expr::Call { func, args, .. } => {
+                func.collect_calls(out);
+                for arg in args {
+                    arg.collect_calls(out);
+                }
+            }
+            Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
+                recv.collect_calls(out);
+                for arg in args {
+                    arg.collect_calls(out);
+                }
+            }
+            Expr::Field { base, .. } | Expr::TupleField { base, .. } => base.collect_calls(out),
+            Expr::ArrayPtr { array, .. } => array.collect_calls(out),
+            Expr::Index { base, index } => {
+                base.collect_calls(out);
+                index.collect_calls(out);
+            }
+            Expr::StructLit { fields, .. } => {
+                for (_, value) in fields {
+                    value.collect_calls(out);
+                }
+            }
+            Expr::TupleStructLit { fields, .. } | Expr::ArrayLit(fields) | Expr::VecLit(fields) => {
+                for elem in fields {
+                    elem.collect_calls(out);
+                }
+            }
+            Expr::ArrayRepeat { elem, .. } => elem.collect_calls(out),
+            Expr::VecRepeat { elem, len } => {
+                elem.collect_calls(out);
+                len.collect_calls(out);
+            }
+            Expr::Closure { body, .. } => body.collect_calls(out),
+            Expr::Macro { args, .. } => {
+                for arg in args {
+                    arg.collect_calls(out);
+                }
+            }
+            Expr::Match { expr, arms } => {
+                expr.collect_calls(out);
+                for arm in arms {
+                    arm.value.collect_calls(out);
+                }
+            }
+            Expr::If {
+                cond,
+                then_expr,
+                else_expr,
+            } => {
+                cond.collect_calls(out);
+                then_expr.collect_calls(out);
+                else_expr.collect_calls(out);
             }
         }
     }
@@ -1879,6 +2027,97 @@ fn stmt_reads_var(stmt: &Stmt, name: &str) -> bool {
                 .iter()
                 .any(|stmt| stmt_reads_var(&stmt.stmt, name))
                 || body.tail.as_ref().is_some_and(|tail| tail.reads_var(name))
+        }
+    }
+}
+
+fn stmt_collect_calls<'a>(stmt: &'a Stmt, out: &mut Vec<(&'a Ident, &'a [Expr])>) {
+    match stmt {
+        Stmt::Let {
+            init: Some(expr), ..
+        } => expr.collect_calls(out),
+        Stmt::Let { init: None, .. } => {}
+        Stmt::LetIf {
+            cond,
+            then_body,
+            then_value,
+            else_body,
+            else_value,
+            ..
+        } => {
+            cond.collect_calls(out);
+            for stmt in then_body {
+                stmt_collect_calls(&stmt.stmt, out);
+            }
+            then_value.collect_calls(out);
+            for stmt in else_body {
+                stmt_collect_calls(&stmt.stmt, out);
+            }
+            else_value.collect_calls(out);
+        }
+        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
+            target.collect_calls(out);
+            value.collect_calls(out);
+        }
+        Stmt::InlineAsm(_) => {}
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => expr.collect_calls(out),
+        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => {}
+        Stmt::For { iter, body, .. } => {
+            iter.collect_calls(out);
+            for stmt in body {
+                stmt_collect_calls(&stmt.stmt, out);
+            }
+        }
+        Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } | Stmt::Loop { body, .. } => {
+            for stmt in body {
+                stmt_collect_calls(&stmt.stmt, out);
+            }
+        }
+        Stmt::Unsafe { body } => {
+            for stmt in &body.stmts {
+                stmt_collect_calls(&stmt.stmt, out);
+            }
+            if let Some(tail) = &body.tail {
+                tail.collect_calls(out);
+            }
+        }
+        Stmt::If {
+            cond,
+            then_body,
+            else_body,
+        } => {
+            cond.collect_calls(out);
+            for stmt in then_body.iter().chain(else_body.iter()) {
+                stmt_collect_calls(&stmt.stmt, out);
+            }
+        }
+        Stmt::Match { expr, arms } => {
+            expr.collect_calls(out);
+            for arm in arms {
+                if let Pattern::Guarded { cond, .. } = &arm.pattern {
+                    cond.collect_calls(out);
+                }
+                for stmt in &arm.body {
+                    stmt_collect_calls(&stmt.stmt, out);
+                }
+            }
+        }
+        Stmt::While { cond, body } => {
+            cond.collect_calls(out);
+            for stmt in &body.stmts {
+                stmt_collect_calls(&stmt.stmt, out);
+            }
+            if let Some(tail) = &body.tail {
+                tail.collect_calls(out);
+            }
+        }
+        Stmt::Block(body) => {
+            for stmt in &body.stmts {
+                stmt_collect_calls(&stmt.stmt, out);
+            }
+            if let Some(tail) = &body.tail {
+                tail.collect_calls(out);
+            }
         }
     }
 }
