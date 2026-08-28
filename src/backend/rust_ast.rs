@@ -1475,6 +1475,145 @@ impl Expr {
         }
     }
 
+    pub fn collect_vars(&self, out: &mut Vec<Ident>) {
+        match self {
+            Expr::Var(v) => out.push(*v),
+            Expr::Value(_)
+            | Expr::Str(_)
+            | Expr::HexFloat(_)
+            | Expr::ByteStr(_)
+            | Expr::CStr(_)
+            | Expr::Path(_)
+            | Expr::AtomicFence { .. }
+            | Expr::Todo(_) => {}
+            Expr::Unary { expr, .. }
+            | Expr::Cast { expr, .. }
+            | Expr::Ref { expr, .. }
+            | Expr::AddrOf { expr, .. }
+            | Expr::Transmute { expr, .. } => expr.collect_vars(out),
+            Expr::Block(block) | Expr::Unsafe(block) => {
+                for stmt in &block.stmts {
+                    stmt_collect_vars(&stmt.stmt, out);
+                }
+                if let Some(tail) = &block.tail {
+                    tail.collect_vars(out);
+                }
+            }
+            Expr::CopyNonoverlapping { src, dst, .. } => {
+                src.collect_vars(out);
+                dst.collect_vars(out);
+            }
+            Expr::PtrCopy {
+                src, dst, count, ..
+            } => {
+                src.collect_vars(out);
+                dst.collect_vars(out);
+                count.collect_vars(out);
+            }
+            Expr::WriteBytes { dst, val, count } => {
+                dst.collect_vars(out);
+                val.collect_vars(out);
+                count.collect_vars(out);
+            }
+            Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => {
+                if let Some(ptr) = place.ptr_expr() {
+                    ptr.collect_vars(out);
+                }
+            }
+            Expr::AtomicStore { place, value, .. }
+            | Expr::AtomicFetch { place, value, .. }
+            | Expr::AtomicSwap { place, value, .. } => {
+                if let Some(ptr) = place.ptr_expr() {
+                    ptr.collect_vars(out);
+                }
+                value.collect_vars(out);
+            }
+            Expr::AtomicNew { value, .. } => value.collect_vars(out),
+            Expr::AtomicCompareExchange {
+                place,
+                expected,
+                desired,
+                ..
+            } => {
+                if let Some(ptr) = place.ptr_expr() {
+                    ptr.collect_vars(out);
+                }
+                expected.collect_vars(out);
+                desired.collect_vars(out);
+            }
+            Expr::Binary { lhs, rhs, .. } => {
+                lhs.collect_vars(out);
+                rhs.collect_vars(out);
+            }
+            Expr::Range { start, end } => {
+                start.collect_vars(out);
+                end.collect_vars(out);
+            }
+            Expr::Call { func, args, .. } => {
+                func.collect_vars(out);
+                for arg in args {
+                    arg.collect_vars(out);
+                }
+            }
+            Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
+                recv.collect_vars(out);
+                for arg in args {
+                    arg.collect_vars(out);
+                }
+            }
+            Expr::Field { base, .. } | Expr::TupleField { base, .. } => base.collect_vars(out),
+            Expr::ArrayPtr { array, .. } => array.collect_vars(out),
+            Expr::Index { base, index } => {
+                base.collect_vars(out);
+                index.collect_vars(out);
+            }
+            Expr::StructLit { fields, .. } => {
+                for (_, value) in fields {
+                    value.collect_vars(out);
+                }
+            }
+            Expr::TupleStructLit { fields, .. } | Expr::ArrayLit(fields) | Expr::VecLit(fields) => {
+                for elem in fields {
+                    elem.collect_vars(out);
+                }
+            }
+            Expr::ArrayRepeat { elem, .. } => elem.collect_vars(out),
+            Expr::VecRepeat { elem, len } => {
+                elem.collect_vars(out);
+                len.collect_vars(out);
+            }
+            Expr::Closure { params, body } => {
+                let mut inner = Vec::new();
+                body.collect_vars(&mut inner);
+                out.extend(
+                    inner
+                        .into_iter()
+                        .filter(|v| !params.iter().any(|p| p.as_str() == v.as_str())),
+                );
+            }
+            Expr::Macro { args, .. } => {
+                for arg in args {
+                    arg.collect_vars(out);
+                }
+            }
+            Expr::Match { expr, arms } => {
+                expr.collect_vars(out);
+                for arm in arms {
+                    arm.value.collect_vars(out);
+                }
+            }
+            Expr::If {
+                cond,
+                then_expr,
+                else_expr,
+            } => {
+                cond.collect_vars(out);
+                then_expr.collect_vars(out);
+                else_expr.collect_vars(out);
+            }
+        }
+    }
+
     pub fn substitute_var(&mut self, name: &str, replacement: &Expr) -> bool {
         match self {
             Expr::Var(v) if v.as_str() == name => {
@@ -1740,6 +1879,103 @@ fn stmt_reads_var(stmt: &Stmt, name: &str) -> bool {
                 .iter()
                 .any(|stmt| stmt_reads_var(&stmt.stmt, name))
                 || body.tail.as_ref().is_some_and(|tail| tail.reads_var(name))
+        }
+    }
+}
+
+fn stmt_collect_vars(stmt: &Stmt, out: &mut Vec<Ident>) {
+    match stmt {
+        Stmt::Let {
+            init: Some(expr), ..
+        } => expr.collect_vars(out),
+        Stmt::Let { init: None, .. } => {}
+        Stmt::LetIf {
+            cond,
+            then_body,
+            then_value,
+            else_body,
+            else_value,
+            ..
+        } => {
+            cond.collect_vars(out);
+            for stmt in then_body {
+                stmt_collect_vars(&stmt.stmt, out);
+            }
+            then_value.collect_vars(out);
+            for stmt in else_body {
+                stmt_collect_vars(&stmt.stmt, out);
+            }
+            else_value.collect_vars(out);
+        }
+        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
+            target.collect_vars(out);
+            value.collect_vars(out);
+        }
+        Stmt::InlineAsm(asm) => {
+            for operand in &asm.operands {
+                operand.visit_exprs(&mut |expr| expr.collect_vars(out));
+            }
+        }
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => expr.collect_vars(out),
+        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => {}
+        Stmt::For { iter, body, pat } => {
+            iter.collect_vars(out);
+            let mut inner = Vec::new();
+            for stmt in body {
+                stmt_collect_vars(&stmt.stmt, &mut inner);
+            }
+            out.extend(inner.into_iter().filter(|v| v.as_str() != pat.as_str()));
+        }
+        Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } | Stmt::Loop { body, .. } => {
+            for stmt in body {
+                stmt_collect_vars(&stmt.stmt, out);
+            }
+        }
+        Stmt::Unsafe { body } => {
+            for stmt in &body.stmts {
+                stmt_collect_vars(&stmt.stmt, out);
+            }
+            if let Some(tail) = &body.tail {
+                tail.collect_vars(out);
+            }
+        }
+        Stmt::If {
+            cond,
+            then_body,
+            else_body,
+        } => {
+            cond.collect_vars(out);
+            for stmt in then_body.iter().chain(else_body.iter()) {
+                stmt_collect_vars(&stmt.stmt, out);
+            }
+        }
+        Stmt::Match { expr, arms } => {
+            expr.collect_vars(out);
+            for arm in arms {
+                if let Pattern::Guarded { cond, .. } = &arm.pattern {
+                    cond.collect_vars(out);
+                }
+                for stmt in &arm.body {
+                    stmt_collect_vars(&stmt.stmt, out);
+                }
+            }
+        }
+        Stmt::While { cond, body } => {
+            cond.collect_vars(out);
+            for stmt in &body.stmts {
+                stmt_collect_vars(&stmt.stmt, out);
+            }
+            if let Some(tail) = &body.tail {
+                tail.collect_vars(out);
+            }
+        }
+        Stmt::Block(body) => {
+            for stmt in &body.stmts {
+                stmt_collect_vars(&stmt.stmt, out);
+            }
+            if let Some(tail) = &body.tail {
+                tail.collect_vars(out);
+            }
         }
     }
 }

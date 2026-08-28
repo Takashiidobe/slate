@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::backend::rust_ast::{Expr, Ident, IndentStmt, InlineAsm, Label, Pattern, Stmt};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -15,6 +17,32 @@ impl NodeId {
 pub(in crate::backend) struct MatchArmNode {
     pub(in crate::backend) pattern: Pattern,
     pub(in crate::backend) body: Vec<NodeId>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub(in crate::backend) enum NodeKindTag {
+    Let,
+    LetIf,
+    Assign,
+    CompoundAssign,
+    InlineAsm,
+    Expr,
+    Return,
+    Unsafe,
+    If,
+    Loop,
+    For,
+    Scope,
+    LabeledBlock,
+    Match,
+    Break,
+    Continue,
+    While,
+    Block,
+}
+
+impl NodeKindTag {
+    pub(in crate::backend) const COUNT: usize = 18;
 }
 
 pub(in crate::backend) enum NodeKind {
@@ -89,6 +117,37 @@ pub(in crate::backend) enum NodeKind {
 }
 
 impl NodeKind {
+    pub(in crate::backend) fn tag(&self) -> NodeKindTag {
+        match self {
+            NodeKind::Let { .. } => NodeKindTag::Let,
+            NodeKind::LetIf { .. } => NodeKindTag::LetIf,
+            NodeKind::Assign { .. } => NodeKindTag::Assign,
+            NodeKind::CompoundAssign { .. } => NodeKindTag::CompoundAssign,
+            NodeKind::InlineAsm(_) => NodeKindTag::InlineAsm,
+            NodeKind::Expr(_) => NodeKindTag::Expr,
+            NodeKind::Return(_) => NodeKindTag::Return,
+            NodeKind::Unsafe { .. } => NodeKindTag::Unsafe,
+            NodeKind::If { .. } => NodeKindTag::If,
+            NodeKind::Loop { .. } => NodeKindTag::Loop,
+            NodeKind::For { .. } => NodeKindTag::For,
+            NodeKind::Scope { .. } => NodeKindTag::Scope,
+            NodeKind::LabeledBlock { .. } => NodeKindTag::LabeledBlock,
+            NodeKind::Match { .. } => NodeKindTag::Match,
+            NodeKind::Break(_) => NodeKindTag::Break,
+            NodeKind::Continue(_) => NodeKindTag::Continue,
+            NodeKind::While { .. } => NodeKindTag::While,
+            NodeKind::Block { .. } => NodeKindTag::Block,
+        }
+    }
+
+    pub(in crate::backend) fn declared_name(&self) -> Option<Ident> {
+        match self {
+            NodeKind::Let { name, .. } | NodeKind::LetIf { name, .. } => Some(*name),
+            NodeKind::For { pat, .. } => Some(*pat),
+            _ => None,
+        }
+    }
+
     pub(in crate::backend) fn child_lists_mut(&mut self) -> Vec<&mut Vec<NodeId>> {
         match self {
             NodeKind::LetIf {
@@ -156,15 +215,70 @@ impl NodeKind {
     }
 }
 
+fn own_reads(kind: &NodeKind) -> Vec<Ident> {
+    let mut out = Vec::new();
+    match kind {
+        NodeKind::Let { init, .. } => {
+            if let Some(init) = init {
+                init.collect_vars(&mut out);
+            }
+        }
+        NodeKind::LetIf {
+            cond,
+            then_value,
+            else_value,
+            ..
+        } => {
+            cond.collect_vars(&mut out);
+            then_value.collect_vars(&mut out);
+            else_value.collect_vars(&mut out);
+        }
+        NodeKind::Assign { target, value } | NodeKind::CompoundAssign { target, value, .. } => {
+            target.collect_vars(&mut out);
+            value.collect_vars(&mut out);
+        }
+        NodeKind::InlineAsm(asm) => {
+            for operand in &asm.operands {
+                operand.visit_exprs(&mut |expr| expr.collect_vars(&mut out));
+            }
+        }
+        NodeKind::Expr(expr) => expr.collect_vars(&mut out),
+        NodeKind::Return(expr) => {
+            if let Some(expr) = expr {
+                expr.collect_vars(&mut out);
+            }
+        }
+        NodeKind::Unsafe { tail, .. } | NodeKind::Block { tail, .. } => {
+            if let Some(tail) = tail.as_deref() {
+                tail.collect_vars(&mut out);
+            }
+        }
+        NodeKind::While { cond, tail, .. } => {
+            cond.collect_vars(&mut out);
+            if let Some(tail) = tail.as_deref() {
+                tail.collect_vars(&mut out);
+            }
+        }
+        NodeKind::If { cond, .. } => cond.collect_vars(&mut out),
+        NodeKind::For { iter, .. } => iter.collect_vars(&mut out),
+        NodeKind::Loop { .. } | NodeKind::Scope { .. } | NodeKind::LabeledBlock { .. } => {}
+        NodeKind::Match { expr, .. } => expr.collect_vars(&mut out),
+        NodeKind::Break(_) | NodeKind::Continue(_) => {}
+    }
+    out
+}
+
 struct Slot {
     generation: u32,
     parent: Option<NodeId>,
     kind: Option<NodeKind>,
+    reads: Vec<Ident>,
 }
 
 pub(in crate::backend) struct Arena {
     slots: Vec<Slot>,
     free: Vec<u32>,
+    def_uses: HashMap<Ident, Vec<NodeId>>,
 }
 
 impl Arena {
@@ -172,6 +286,7 @@ impl Arena {
         Self {
             slots: Vec::new(),
             free: Vec::new(),
+            def_uses: HashMap::new(),
         }
     }
 
@@ -180,6 +295,7 @@ impl Arena {
             let slot = &mut self.slots[index as usize];
             slot.parent = parent;
             slot.kind = None;
+            debug_assert!(slot.reads.is_empty());
             NodeId {
                 index,
                 generation: slot.generation,
@@ -190,6 +306,7 @@ impl Arena {
                 generation: 0,
                 parent,
                 kind: None,
+                reads: Vec::new(),
             });
             NodeId {
                 index,
@@ -200,6 +317,46 @@ impl Arena {
 
     fn fill(&mut self, id: NodeId, kind: NodeKind) {
         self.slots[id.index as usize].kind = Some(kind);
+        self.touch(id);
+    }
+
+    pub(in crate::backend) fn touch(&mut self, id: NodeId) {
+        let Some(slot) = self.slots.get(id.index as usize) else {
+            return;
+        };
+        if slot.generation != id.generation {
+            return;
+        }
+        let new_reads = slot.kind.as_ref().map(own_reads).unwrap_or_default();
+        let slot = &mut self.slots[id.index as usize];
+        let old_reads = std::mem::replace(&mut slot.reads, new_reads.clone());
+        for name in &old_reads {
+            if !new_reads.contains(name)
+                && let Some(readers) = self.def_uses.get_mut(name)
+            {
+                readers.retain(|&reader| reader != id);
+            }
+        }
+        for name in &new_reads {
+            if !old_reads.contains(name) {
+                self.def_uses.entry(*name).or_default().push(id);
+            }
+        }
+    }
+
+    pub(in crate::backend) fn touch_subtree(&mut self, id: NodeId) {
+        self.touch(id);
+        let children: Vec<NodeId> = self
+            .get(id)
+            .map(|kind| kind.child_lists().into_iter().flatten().copied().collect())
+            .unwrap_or_default();
+        for child in children {
+            self.touch_subtree(child);
+        }
+    }
+
+    pub(in crate::backend) fn def_use_neighbors(&self, name: Ident) -> &[NodeId] {
+        self.def_uses.get(&name).map(Vec::as_slice).unwrap_or(&[])
     }
 
     pub(in crate::backend) fn get(&self, id: NodeId) -> Option<&NodeKind> {
@@ -236,6 +393,13 @@ impl Arena {
         if slot.generation != id.generation {
             return None;
         }
+        let old_reads = std::mem::take(&mut slot.reads);
+        for name in &old_reads {
+            if let Some(readers) = self.def_uses.get_mut(name) {
+                readers.retain(|&reader| reader != id);
+            }
+        }
+        let slot = &mut self.slots[id.index as usize];
         let kind = slot.kind.take();
         slot.generation += 1;
         slot.parent = None;

@@ -56,3 +56,4 @@
 - [Rewrite engine v2: ground-up replacement for src/backend/query + salsa](concepts/rewrite-engine-v2.md)
 - [rewrite engine v2: slice 3 (EarlyInlineTemps ported)](concepts/rewrite-engine-v2-slice-3-earlyinlinetemps-ported.md)
 - [Parallelize per-TU frontend fan-out (slate-9an4.1/.2)](concepts/parallelize-per-tu-frontend-fan-out-slate-9an4-1-2.md)
+- [Def-use edges in the rewrite arena](concepts/def-use-edges-in-the-rewrite-arena.md)

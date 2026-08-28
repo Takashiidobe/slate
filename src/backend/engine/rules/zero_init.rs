@@ -1,5 +1,5 @@
 use crate::backend::engine::NodeRule;
-use crate::backend::engine::arena::{Arena, NodeId, NodeKind};
+use crate::backend::engine::arena::{Arena, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::{Expr, Ident, Pattern, RustValue, UnaryOp};
 
 fn expr_is_zero(expr: &Expr) -> bool {
@@ -173,6 +173,10 @@ impl NodeRule for ZeroInitFold {
 
     fn priority(&self) -> u32 {
         5
+    }
+
+    fn kinds(&self) -> &'static [NodeKindTag] {
+        &[NodeKindTag::Let]
     }
 
     fn matches(&self, arena: &Arena, id: NodeId) -> bool {
