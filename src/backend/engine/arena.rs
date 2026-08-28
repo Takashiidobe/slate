@@ -304,6 +304,7 @@ pub(in crate::backend) struct Arena {
     slots: Vec<Slot>,
     free: Vec<u32>,
     def_uses: HashMap<Ident, Vec<NodeId>>,
+    param_types: HashMap<Ident, crate::backend::rust_ast::Type>,
 }
 
 impl Arena {
@@ -312,7 +313,15 @@ impl Arena {
             slots: Vec::new(),
             free: Vec::new(),
             def_uses: HashMap::new(),
+            param_types: HashMap::new(),
         }
+    }
+
+    pub(in crate::backend) fn param_type(
+        &self,
+        name: Ident,
+    ) -> Option<&crate::backend::rust_ast::Type> {
+        self.param_types.get(&name)
     }
 
     fn reserve(&mut self, parent: Option<NodeId>) -> NodeId {
@@ -470,8 +479,16 @@ pub(in crate::backend) struct FunctionArena {
     pub(in crate::backend) root: NodeId,
 }
 
-pub(in crate::backend) fn build(body: Vec<IndentStmt>) -> FunctionArena {
+pub(in crate::backend) fn build(
+    body: Vec<IndentStmt>,
+    params: &[crate::backend::rust_ast::FnParam],
+) -> FunctionArena {
     let mut arena = Arena::new();
+    for param in params {
+        arena
+            .param_types
+            .insert(Ident::new(&param.name), param.ty.clone());
+    }
     let root = arena.reserve(None);
     let stmts = build_stmts(&mut arena, Some(root), body);
     arena.fill(root, NodeKind::Block { stmts, tail: None });
