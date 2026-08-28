@@ -16,6 +16,8 @@ pub(in crate::backend) trait NodeRule {
 const EDIT_BUDGET: usize = 200_000;
 
 pub(in crate::backend) fn apply(program: &mut Program) {
+    crate::backend::interproc::string_params::run(program);
+
     let mut registry = rules::registry();
     registry.sort_by_key(|rule| rule.priority());
     for item in &mut program.items {

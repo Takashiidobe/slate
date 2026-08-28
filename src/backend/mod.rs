@@ -1,5 +1,6 @@
 pub mod codegen;
 mod engine;
+mod interproc;
 pub mod rust_ast;
 pub mod trace;
 
