@@ -1226,6 +1226,44 @@ fn compile_command_args(command: &compile_commands::CompileCommand) -> Result<Ve
     Ok(args)
 }
 
+fn load_library_variant(
+    path: &Path,
+    project_dir: &Path,
+    cfg: &rust_ast::Cfg,
+    command: &compile_commands::CompileCommand,
+    context: &str,
+) -> Result<LoadedLibraryVariant, String> {
+    let stem = path
+        .file_stem()
+        .and_then(|stem| stem.to_str())
+        .map(rust_ident)
+        .ok_or_else(|| format!("bad file stem: {}", path.display()))?;
+    let args = compile_command_args(command)?;
+    let (source, _raw) = preprocess::read_source(path)
+        .map_err(|error| format!("read {}: {error}", path.display()))?;
+    let pp = cli_result(preprocess::record_translation_unit(path, &source, &args))?;
+    reject_active_unsupported(&pp, context)?;
+    let warning_items = project_warning_items(
+        &pp,
+        context,
+        directive_translate::WarningBackend::SupportMacro,
+    )?;
+    let module = cli_result(frontend::cir_input::emit_module(path, &args))?;
+    let unit = cli_result(c_ast::parse_file_with_project_records_and_args(
+        path,
+        project_dir,
+        &args,
+    ))?;
+    Ok(LoadedLibraryVariant {
+        cfg: cfg.clone(),
+        stem,
+        path: path.to_path_buf(),
+        module,
+        unit,
+        warning_items,
+    })
+}
+
 fn translate_project_lib_crate_with_compile_commands(
     project_dir: &Path,
     crate_dir: &Path,
@@ -1279,69 +1317,52 @@ fn translate_project_lib_crate_with_compile_commands(
     let mut referenced_record_types = BTreeSet::new();
     let mut uses_slate_support = false;
     for ((path, cfg), command) in &command_map {
-        let stem = path
-            .file_stem()
-            .and_then(|stem| stem.to_str())
-            .map(rust_ident)
-            .ok_or_else(|| format!("bad file stem: {}", path.display()))?;
-        let args = compile_command_args(command)?;
-        let (source, _raw) = preprocess::read_source(path)
-            .map_err(|error| format!("read {}: {error}", path.display()))?;
-        let pp = cli_result(preprocess::record_translation_unit(path, &source, &args))?;
-        reject_active_unsupported(&pp, "translate-project --lib --compile-commands")?;
-        let warning_items = project_warning_items(
-            &pp,
+        let loaded_variant = load_library_variant(
+            path,
+            project_dir,
+            cfg,
+            command,
             "translate-project --lib --compile-commands",
-            directive_translate::WarningBackend::SupportMacro,
         )?;
-        uses_slate_support |= !warning_items.is_empty();
-        let module = cli_result(frontend::cir_input::emit_module(path, &args))?;
+        uses_slate_support |= !loaded_variant.warning_items.is_empty();
         let variant_facts = facts.entry(cfg.clone()).or_default();
-        for symbol in frontend::defined_functions(&module) {
-            variant_facts.defined.insert(symbol, stem.clone());
+        for symbol in frontend::defined_functions(&loaded_variant.module) {
+            variant_facts
+                .defined
+                .insert(symbol, loaded_variant.stem.clone());
         }
-        for symbol in frontend::defined_globals(&module) {
-            variant_facts.defined_globals.insert(symbol, stem.clone());
+        for symbol in frontend::defined_globals(&loaded_variant.module) {
+            variant_facts
+                .defined_globals
+                .insert(symbol, loaded_variant.stem.clone());
         }
         variant_facts
             .unsafe_functions
-            .extend(frontend::unsafe_defined_functions(&module));
+            .extend(frontend::unsafe_defined_functions(&loaded_variant.module));
         variant_facts
             .address_taken_functions
-            .extend(frontend::address_taken_functions(&module));
+            .extend(frontend::address_taken_functions(&loaded_variant.module));
         variant_facts
             .crate_features
-            .extend(frontend::required_features(&module));
+            .extend(frontend::required_features(&loaded_variant.module));
         variant_facts
             .cross_referenced_functions
-            .extend(frontend::declared_functions(&module));
+            .extend(frontend::declared_functions(&loaded_variant.module));
         variant_facts
             .cross_referenced_globals
-            .extend(frontend::declared_globals(&module));
-        variant_facts.has_setlocale |= frontend::declared_functions(&module)
+            .extend(frontend::declared_globals(&loaded_variant.module));
+        variant_facts.has_setlocale |= frontend::declared_functions(&loaded_variant.module)
             .iter()
             .any(|name| name == "setlocale");
-        let unit = cli_result(c_ast::parse_file_with_project_records_and_args(
-            path,
-            project_dir,
-            &args,
-        ))?;
         merge_shared_types_for_module(
-            &module,
-            &unit,
+            &loaded_variant.module,
+            &loaded_variant.unit,
             &mut shared_enums,
             &mut shared_records,
             &mut record_shape_conflicts,
             &mut referenced_record_types,
         );
-        loaded.push(LoadedLibraryVariant {
-            cfg: cfg.clone(),
-            stem,
-            path: path.clone(),
-            module,
-            unit,
-            warning_items,
-        });
+        loaded.push(loaded_variant);
     }
     for name in referenced_record_types {
         shared_records.entry(name.clone()).or_insert(c_ast::Record {
