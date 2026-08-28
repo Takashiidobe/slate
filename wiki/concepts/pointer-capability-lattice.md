@@ -19,19 +19,41 @@ string-shaped usage is observed).
 Core (unlike c2rust, no `Box<[T]>` — owned+indexed always resolves to
 `Vec<T>`; a `Vec<T>` that's never resized is exactly as correct as
 `Box<[T]>` for differential testing, so the `GROW` fact this would otherwise
-need is dropped from the lattice entirely):
+need is dropped from the lattice entirely).
+
+This is exhaustive over all 16 `(W, U, F, O)` combinations, not a sparse
+table with an implicit catch-all — `U` only gates ownership (paired with
+`F`) and exclusivity (paired with `W`); it never blocks the plain
+`&T`/`&[T]` rows. `W` never blocks the ownership rows either — writing
+through something you own doesn't revoke ownership:
 
 ```
  W   U   F   O  │  Resulting type
 ────────────────┼──────────────────
- .   .   .   .  │  &T
- x   x   .   .  │  &mut T
- x   .   .   .  │  &Cell<T>
  .   x   x   .  │  Box<T>
- .   .   .   x  │  &[T]
- x   x   .   x  │  &mut [T]
+ x   x   x   .  │  Box<T>          (write-through doesn't revoke ownership)
  .   x   x   x  │  Vec<T>
+ x   x   x   x  │  Vec<T>          (write-through doesn't revoke ownership)
+ .   .   x   .  │  *const T        (freed but not proven unique — can't own)
+ .   .   x   x  │  *const T
+ x   .   x   .  │  *mut T
+ x   .   x   x  │  *mut T
+ x   .   .   .  │  &Cell<T>
+ x   .   .   x  │  *mut T          (aliased + mutable + offset: no safe shape)
+ x   x   .   .  │  &mut T
+ x   x   .   x  │  &mut [T]
+ .   .   .   .  │  &T
+ .   x   .   .  │  &T              (U alone doesn't change this)
+ .   .   .   x  │  &[T]
+ .   x   .   x  │  &[T]            (U alone doesn't change this)
 ```
+
+An earlier version of this table only listed 7 rows and used an implicit
+catch-all for the rest, which — combined with `U` defaulting to `true`
+until disproven — meant the *common* case (a plain pointer with no
+aliasing evidence yet) missed the `&T`/`&[T]` rows, and any owned buffer
+that was ever written (i.e. almost all of them) missed `Box<T>`/`Vec<T>`.
+See `wiki/log/2026-08-28-12-38.md` for the session that found this.
 
 String specialization (modifier over the buffer rows, `T` in `{u8, char}`,
 gated on `S`):

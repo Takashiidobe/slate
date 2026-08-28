@@ -129,21 +129,23 @@ impl PointerFact {
                 nullable: self.nullable,
             };
         }
-        let base = match (self.write, self.unique, self.free, self.offset) {
-            (false, false, false, false) => ResolvedPtrType::Ref,
-            (true, true, false, false) => ResolvedPtrType::RefMut,
-            (true, false, false, false) => ResolvedPtrType::RefCell,
-            (false, true, true, false) => ResolvedPtrType::Owned,
-            (false, false, false, true) => ResolvedPtrType::Slice,
-            (true, true, false, true) => ResolvedPtrType::SliceMut,
-            (false, true, true, true) => ResolvedPtrType::Vec,
-            _ => {
-                if self.write {
-                    ResolvedPtrType::RawMut
-                } else {
-                    ResolvedPtrType::RawConst
-                }
+        let raw = || {
+            if self.write {
+                ResolvedPtrType::RawMut
+            } else {
+                ResolvedPtrType::RawConst
             }
+        };
+        let base = match (self.write, self.unique, self.free, self.offset) {
+            (_, true, true, false) => ResolvedPtrType::Owned,
+            (_, true, true, true) => ResolvedPtrType::Vec,
+            (_, false, true, _) => raw(),
+            (true, false, false, false) => ResolvedPtrType::RefCell,
+            (true, false, false, true) => raw(),
+            (true, true, false, false) => ResolvedPtrType::RefMut,
+            (true, true, false, true) => ResolvedPtrType::SliceMut,
+            (false, _, false, false) => ResolvedPtrType::Ref,
+            (false, _, false, true) => ResolvedPtrType::Slice,
         };
         Representation {
             base: self.specialize_string(base),
@@ -157,7 +159,7 @@ impl PointerFact {
         }
         match base {
             ResolvedPtrType::Slice => ResolvedPtrType::Str,
-            ResolvedPtrType::Vec => ResolvedPtrType::StringOwned,
+            ResolvedPtrType::Vec if !self.write => ResolvedPtrType::StringOwned,
             other => other,
         }
     }
