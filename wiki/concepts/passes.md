@@ -241,8 +241,7 @@ path.
 A feature expands baseline C coverage. Examples: structs, arrays, pointer
 arithmetic, new arithmetic operators, globals, `if`, `switch`.
 
-See [adding-features.md](adding-features.md) for the step-by-step workflow. The
-short version is: add a C fixture under `tests/fixtures/`, inspect CIR and Clang
+The workflow: add a C fixture under `tests/fixtures/`, inspect CIR and Clang
 AST as needed, implement conservative baseline lowering, and run the test suite.
 Ignored generated fixture trees are refreshed manually only when requested.
 
@@ -251,10 +250,8 @@ Ignored generated fixture trees are refreshed manually only when requested.
 A fixup improves already-correct Rust. Examples: `printf -> println!`,
 collapsing retval temps, inlining single-use temps, or recovering `for` loops.
 
-See [adding-features.md](adding-features.md) for the split between baseline
-language work and fixups, and [fixups.md](fixups.md) for the AST-to-AST pass
-recipe. A fixup must start from generated Rust that already passes
-differential testing.
+See [fixups.md](fixups.md) for the AST-to-AST pass recipe. A fixup must start
+from generated Rust that already passes differential testing.
 
 For `printf -> println!`, only rewrite when the callee is known, the format
 argument is a constant C string, every format specifier is supported, and Rust

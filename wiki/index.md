@@ -6,7 +6,6 @@
 - [Lowerer internals](concepts/lowerer-internals.md)
 - [Passes](concepts/passes.md)
 - [Writing a Query-Driven Fixup](concepts/writing-a-query-driven-fixup.md)
-- [Salsa Migration](concepts/salsa-migration.md)
 - [libc-shim](concepts/libc-shim.md)
 - [gcc-torture triage](concepts/gcc-torture-triage.md)
 - [Android NDK oracle](concepts/android-ndk-oracle.md)
@@ -24,7 +23,6 @@
 - [long-double-f80](concepts/long-double-f80.md)
 - [setjmp/longjmp lowering](concepts/setjmp-longjmp-lowering.md)
 - [predicate tokenizer no longer collapses #if conditions to opaque](concepts/predicate-tokenizer-no-longer-collapses-if-conditions-to-opaque.md)
-- [clangir function pointer const-qualifier drop bug](concepts/clangir-function-pointer-const-qualifier-drop-bug.md)
 - [libc-test functional harness: admission and companion-file vendoring](concepts/libc-test-functional-harness.md)
 - [Directive-driven differential fixtures use profile-scoped FileCheck](concepts/directive-driven-differential-fixtures-use-profile-scoped-filecheck.md)
 - [Port differential source assertions to fixture FileCheck](concepts/port-differential-source-assertions-to-fixture-filecheck.md)
@@ -47,13 +45,15 @@
 - [C++ exceptions lowering](concepts/cxx-exceptions-lowering.md)
 - [C++ stdlib shim lowering](concepts/cxx-stdlib-shim-lowering.md)
 - [Hybrid C++ migration with residual fallback](concepts/cxx-hybrid-migration.md)
-- [search_lsearch.c does not need issue 217687's fix](concepts/search-lsearch-c-does-not-need-issue-217687-s-fix.md)
-- [Implement six clang-ir-types lowerings for slate-3i0x](concepts/implement-six-clang-ir-types-lowerings-for-slate-3i0x.md)
-- [Audit docs/src/features.md checkboxes against real fixtures](concepts/audit-docs-src-features-md-checkboxes-against-real-fixtures.md)
-- [libc-shim: fill in easy features.md gaps](concepts/libc-shim-fill-in-easy-features-md-gaps.md)
-- [features.md audit: header version macros, C23 fenv/stdlib fns, ATOMIC_VAR_INIT](concepts/features-md-audit-header-version-macros-c23-fenv-stdlib-fns-atomic-var-init.md)
-- [fix Ctz/Clz/Popcount width mismatch (slate-sto1)](concepts/fix-ctz-clz-popcount-width-mismatch-slate-sto1.md)
 - [Rewrite engine v2: ground-up replacement for src/backend/query + salsa](concepts/rewrite-engine-v2.md)
-- [rewrite engine v2: slice 3 (EarlyInlineTemps ported)](concepts/rewrite-engine-v2-slice-3-earlyinlinetemps-ported.md)
-- [Parallelize per-TU frontend fan-out (slate-9an4.1/.2)](concepts/parallelize-per-tu-frontend-fan-out-slate-9an4-1-2.md)
-- [Def-use edges in the rewrite arena](concepts/def-use-edges-in-the-rewrite-arena.md)
+- [Porting a pass to the worklist engine (slate-y0qs.3 fast path)](concepts/pass-porting-workflow.md)
+
+## Historical
+
+Point-in-time design records for decisions that have since been superseded.
+Kept for context, not as current guidance -- see the concept doc that
+superseded each one for what actually applies now.
+
+- [Salsa Migration](historical/salsa-migration.md) -- superseded by
+  [Rewrite engine v2](concepts/rewrite-engine-v2.md), which dropped salsa
+  for hand-rolled fact caches.

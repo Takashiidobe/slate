@@ -11,8 +11,8 @@ decompilation. (See [architecture.md](architecture.md) for more details)
 faithful Rust it can — `unsafe`, `libc`-backed, temp-heavy — and correctness is
 the only bar, checked by differential testing. Idiomatic, safer Rust is then
 recovered by an independently-verified ladder of fixup passes (see
-[idiomatization.md](idiomatization.md)); each fixup is optional in spirit, so
-disabling any one of them still leaves correct Rust.
+[passes.md](passes.md)); each fixup is optional in spirit, so disabling any
+one of them still leaves correct Rust.
 
 ## Current state
 
