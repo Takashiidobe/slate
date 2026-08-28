@@ -935,6 +935,58 @@ fn translate_project_lib_crate(project_dir: &Path, crate_dir: &Path) -> Result<S
     translate_project_lib_crate_with_manifest(project_dir, crate_dir, None)
 }
 
+struct ProjectModule {
+    stem: String,
+    path: PathBuf,
+    module: Module,
+    unit: c_ast::Unit,
+    warning_items: Vec<rust_ast::Item>,
+}
+
+fn load_project_module(
+    path: &Path,
+    project_dir: &Path,
+    stem: &str,
+    context: &str,
+) -> Result<ProjectModule, String> {
+    let (source, _raw) =
+        preprocess::read_source(path).map_err(|e| format!("read {}: {e}", path.display()))?;
+    let pp = cli_result(preprocess::record_file(&source, &[]))?;
+    reject_active_unsupported(&pp, context)?;
+    let warning_items = project_warning_items(
+        &pp,
+        context,
+        directive_translate::WarningBackend::SupportMacro,
+    )?;
+    let module = cli_result(frontend::cir_input::emit_module(path, &[]))?;
+    let unit = cli_result(c_ast::parse_file_with_project_records(path, project_dir))?;
+    Ok(ProjectModule {
+        stem: stem.to_string(),
+        path: path.to_path_buf(),
+        module,
+        unit,
+        warning_items,
+    })
+}
+
+fn load_project_modules_parallel(
+    modules: &[(String, PathBuf)],
+    project_dir: &Path,
+    context: &str,
+) -> Result<Vec<ProjectModule>, String> {
+    let pool = rayon::ThreadPoolBuilder::new()
+        .num_threads(slate_job_count())
+        .build()
+        .map_err(|error| format!("build worker pool: {error}"))?;
+    let results: Vec<Result<ProjectModule, String>> = pool.install(|| {
+        modules
+            .par_iter()
+            .map(|(stem, path)| load_project_module(path, project_dir, stem, context))
+            .collect()
+    });
+    results.into_iter().collect()
+}
+
 fn translate_project_lib_crate_with_manifest(
     project_dir: &Path,
     crate_dir: &Path,
@@ -976,18 +1028,15 @@ fn translate_project_lib_crate_with_manifest(
     let mut cross_referenced_functions: BTreeSet<String> = BTreeSet::new();
     let mut cross_referenced_globals: BTreeSet<String> = BTreeSet::new();
     let mut address_taken_functions: BTreeSet<String> = BTreeSet::new();
-    for (stem, path) in &modules {
-        let (source, _raw) =
-            preprocess::read_source(path).map_err(|e| format!("read {}: {e}", path.display()))?;
-        let pp = cli_result(preprocess::record_file(&source, &[]))?;
-        reject_active_unsupported(&pp, "translate-project --lib")?;
-        let warning_items = project_warning_items(
-            &pp,
-            "translate-project --lib",
-            directive_translate::WarningBackend::SupportMacro,
-        )?;
+    for loaded in load_project_modules_parallel(&modules, project_dir, "translate-project --lib")? {
+        let ProjectModule {
+            stem,
+            path,
+            module,
+            unit,
+            warning_items,
+        } = loaded;
         uses_slate_support |= !warning_items.is_empty();
-        let module = cli_result(frontend::cir_input::emit_module(path, &[]))?;
         for sym in frontend::defined_functions(&module) {
             defined.insert(sym, stem.clone());
         }
@@ -1002,7 +1051,6 @@ fn translate_project_lib_crate_with_manifest(
         has_setlocale |= frontend::declared_functions(&module)
             .iter()
             .any(|name| name == "setlocale");
-        let unit = cli_result(c_ast::parse_file_with_project_records(path, project_dir))?;
         merge_shared_types_for_module(
             &module,
             &unit,
@@ -1011,7 +1059,7 @@ fn translate_project_lib_crate_with_manifest(
             &mut record_shape_conflicts,
             &mut referenced_record_types,
         );
-        loaded_modules.push((stem.clone(), path.clone(), module, unit, warning_items));
+        loaded_modules.push((stem, path, module, unit, warning_items));
     }
     for name in referenced_record_types {
         shared_records.entry(name.clone()).or_insert(c_ast::Record {
@@ -1612,6 +1660,47 @@ fn translate_project(dir: &Path, out_dir: &Path) -> Result<String, String> {
     translate_project_with_targets(dir, out_dir, &[])
 }
 
+struct ProjectFactModule {
+    stem: String,
+    module: Module,
+    unit: c_ast::Unit,
+    anon_records: Vec<c_ast::Record>,
+}
+
+fn load_project_fact_module(
+    path: &Path,
+    dir: &Path,
+    stem: &str,
+) -> Result<ProjectFactModule, String> {
+    reject_active_unsupported_file(path, "translate-project")?;
+    let module = cli_result(frontend::cir_input::emit_module(path, &[]))?;
+    let unit = cli_result(c_ast::parse_file_with_project_records(path, dir))?;
+    let anon_records = frontend::anon_local_records(&module);
+    Ok(ProjectFactModule {
+        stem: stem.to_string(),
+        module,
+        unit,
+        anon_records,
+    })
+}
+
+fn load_project_fact_modules_parallel(
+    modules: &[(String, PathBuf)],
+    dir: &Path,
+) -> Result<Vec<ProjectFactModule>, String> {
+    let pool = rayon::ThreadPoolBuilder::new()
+        .num_threads(slate_job_count())
+        .build()
+        .map_err(|error| format!("build worker pool: {error}"))?;
+    let results: Vec<Result<ProjectFactModule, String>> = pool.install(|| {
+        modules
+            .par_iter()
+            .map(|(stem, path)| load_project_fact_module(path, dir, stem))
+            .collect()
+    });
+    results.into_iter().collect()
+}
+
 fn translate_project_with_targets(
     dir: &Path,
     crate_dir: &Path,
@@ -1632,9 +1721,13 @@ fn translate_project_with_targets(
     let mut record_occurrences: BTreeMap<String, (c_ast::Record, usize)> = BTreeMap::new();
     let mut record_shape_conflicts: BTreeSet<String> = BTreeSet::new();
     let mut enum_occurrences: BTreeMap<String, (c_ast::Enum, usize)> = BTreeMap::new();
-    for (stem, path) in &modules {
-        reject_active_unsupported_file(path, "translate-project")?;
-        let module = cli_result(frontend::cir_input::emit_module(path, &[]))?;
+    for fact_module in load_project_fact_modules_parallel(&modules, dir)? {
+        let ProjectFactModule {
+            stem,
+            module,
+            unit,
+            anon_records,
+        } = fact_module;
         for sym in frontend::defined_functions(&module) {
             if sym == "main" {
                 root = Some(stem.clone());
@@ -1653,7 +1746,6 @@ fn translate_project_with_targets(
         has_setlocale |= frontend::declared_functions(&module)
             .iter()
             .any(|name| name == "setlocale");
-        let unit = cli_result(c_ast::parse_file_with_project_records(path, dir))?;
         let mut seen_enums = BTreeSet::new();
         for enm in &unit.enums {
             let name = rust_ident(&enm.name);
@@ -1665,7 +1757,6 @@ fn translate_project_with_targets(
             }
         }
         let mut seen_records = BTreeSet::new();
-        let anon_records = frontend::anon_local_records(&module);
         for record in unit.records.iter().chain(anon_records.iter()) {
             let name = rust_ident(&record.name);
             if seen_records.insert(name.clone()) {
@@ -1894,6 +1985,62 @@ fn translate_project_with_targets(
 /// Translate a directory of `.c` files into a Cargo crate under `crate_dir`,
 /// using per-file compiler arguments from a compile commands database
 /// instead of directory scanning and a shared clang invocation.
+struct CommandFactModule {
+    stem: String,
+    module: Module,
+    unit: c_ast::Unit,
+}
+
+fn load_command_fact_module(
+    stem: &str,
+    path: &Path,
+    project_dir: &Path,
+    primary: &compile_commands::CompileCommand,
+    context: &str,
+) -> Result<CommandFactModule, String> {
+    let args = compile_command_args(primary)?;
+    let (source, _raw) =
+        preprocess::read_source(path).map_err(|e| format!("read {}: {e}", path.display()))?;
+    let pp = cli_result(preprocess::record_translation_unit(path, &source, &args))?;
+    reject_active_unsupported(&pp, context)?;
+    let module = cli_result(frontend::cir_input::emit_module(path, &args))?;
+    let unit = cli_result(c_ast::parse_file_with_project_records_and_args(
+        path,
+        project_dir,
+        &args,
+    ))?;
+    Ok(CommandFactModule {
+        stem: stem.to_string(),
+        module,
+        unit,
+    })
+}
+
+fn load_command_fact_modules_parallel(
+    modules: &[(String, PathBuf)],
+    variants_by_path: &BTreeMap<PathBuf, Vec<(rust_ast::Cfg, compile_commands::CompileCommand)>>,
+    project_dir: &Path,
+    context: &str,
+) -> Result<Vec<CommandFactModule>, String> {
+    let pool = rayon::ThreadPoolBuilder::new()
+        .num_threads(slate_job_count())
+        .build()
+        .map_err(|error| format!("build worker pool: {error}"))?;
+    let results: Vec<Result<CommandFactModule, String>> = pool.install(|| {
+        modules
+            .par_iter()
+            .map(|(stem, path)| {
+                let variants = variants_by_path
+                    .get(path)
+                    .expect("module has a compile command variant");
+                let (_, primary) = &variants[0];
+                load_command_fact_module(stem, path, project_dir, primary, context)
+            })
+            .collect()
+    });
+    results.into_iter().collect()
+}
+
 fn translate_project_with_compile_commands(
     project_dir: &Path,
     crate_dir: &Path,
@@ -1960,17 +2107,13 @@ fn translate_project_with_compile_commands(
     let mut record_occurrences: BTreeMap<String, (c_ast::Record, usize)> = BTreeMap::new();
     let mut record_shape_conflicts: BTreeSet<String> = BTreeSet::new();
     let mut enum_occurrences: BTreeMap<String, (c_ast::Enum, usize)> = BTreeMap::new();
-    for (stem, path) in &modules {
-        let variants = variants_by_path
-            .get(path)
-            .expect("module has a compile command variant");
-        let (_, primary) = &variants[0];
-        let args = compile_command_args(primary)?;
-        let (source, _raw) =
-            preprocess::read_source(path).map_err(|e| format!("read {}: {e}", path.display()))?;
-        let pp = cli_result(preprocess::record_translation_unit(path, &source, &args))?;
-        reject_active_unsupported(&pp, "translate-project --compile-commands")?;
-        let module = cli_result(frontend::cir_input::emit_module(path, &args))?;
+    for fact_module in load_command_fact_modules_parallel(
+        &modules,
+        &variants_by_path,
+        project_dir,
+        "translate-project --compile-commands",
+    )? {
+        let CommandFactModule { stem, module, unit } = fact_module;
         for sym in frontend::defined_functions(&module) {
             if sym == "main" {
                 root = Some(stem.clone());
@@ -1989,11 +2132,6 @@ fn translate_project_with_compile_commands(
         has_setlocale |= frontend::declared_functions(&module)
             .iter()
             .any(|name| name == "setlocale");
-        let unit = cli_result(c_ast::parse_file_with_project_records_and_args(
-            path,
-            project_dir,
-            &args,
-        ))?;
         let mut seen_enums = BTreeSet::new();
         for enm in &unit.enums {
             let name = rust_ident(&enm.name);
