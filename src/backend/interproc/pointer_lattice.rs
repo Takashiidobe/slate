@@ -7,6 +7,14 @@ use crate::backend::rust_ast::{
 };
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 
+fn source_var(expr: &Expr) -> Option<Ident> {
+    match expr {
+        Expr::Var(v) => Some(*v),
+        Expr::Cast { expr, .. } => source_var(expr),
+        _ => None,
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub(in crate::backend) struct PointerBinding {
     pub function: String,
@@ -118,7 +126,7 @@ impl PointerFact {
     }
 
     pub(in crate::backend) fn resolved(&self) -> Representation {
-        if self.escape {
+        if self.escape && !(self.unique && self.free) {
             let base = if self.write {
                 ResolvedPtrType::RawMut
             } else {
@@ -398,7 +406,7 @@ impl ClassifyCtx<'_> {
     }
 
     fn try_alias(&mut self, name: &str, source_expr: &Expr) -> bool {
-        let Expr::Var(source) = source_expr else {
+        let Some(source) = source_var(source_expr) else {
             return false;
         };
         let Some(canonical) = self.canonical_of(source.as_str()) else {
@@ -411,6 +419,16 @@ impl ClassifyCtx<'_> {
             self.observe(&canonical, PointerFact::disprove_unique);
         }
         true
+    }
+
+    fn observe_write_target(&mut self, expr: &Expr) {
+        if let Some(name) = source_var(expr)
+            && let Some(canonical) = self.canonical_of(name.as_str())
+        {
+            self.observe(&canonical, PointerFact::observe_write);
+        } else {
+            self.expr(expr);
+        }
     }
 
     fn body(&mut self, body: &[crate::backend::rust_ast::IndentStmt]) {
@@ -651,17 +669,17 @@ impl ClassifyCtx<'_> {
             Expr::Block(block) | Expr::Unsafe(block) => self.block(block),
             Expr::CopyNonoverlapping { src, dst, .. } => {
                 self.expr(src);
-                self.expr(dst);
+                self.observe_write_target(dst);
             }
             Expr::PtrCopy {
                 src, dst, count, ..
             } => {
                 self.expr(src);
-                self.expr(dst);
+                self.observe_write_target(dst);
                 self.expr(count);
             }
             Expr::WriteBytes { dst, val, count } => {
-                self.expr(dst);
+                self.observe_write_target(dst);
                 self.expr(val);
                 self.expr(count);
             }
