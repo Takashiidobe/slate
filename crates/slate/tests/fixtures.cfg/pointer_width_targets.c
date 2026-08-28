@@ -15,6 +15,6 @@ int main(void) {
 // DIRECTIVES-DAG: #[cfg(target_pointer_width = "64")]
 // DIRECTIVES-DAG: #[cfg(target_pointer_width = "32")]
 // DIRECTIVES-DAG: #[cfg(not(any(target_pointer_width = "64", target_pointer_width = "32")))]
-// DIRECTIVES-DAG: let _v{{[0-9]+}}: i32 = 64;
-// DIRECTIVES-DAG: let _v{{[0-9]+}}: i32 = 32;
-// DIRECTIVES-DAG: let _v{{[0-9]+}}: i32 = 0;
+// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = }}64;
+// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = }}32;
+// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = }}0;

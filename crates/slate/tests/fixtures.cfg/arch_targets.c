@@ -39,14 +39,14 @@ int main(void) {
 // DIRECTIVES-DAG: #[cfg(target_arch = "riscv64")]
 // DIRECTIVES-DAG: #[cfg(target_arch = "riscv32")]
 // DIRECTIVES-DAG: #[cfg(not(any(target_arch = "x86_64", target_arch = "x86", target_arch = "aarch64", target_arch = "arm", target_arch = "powerpc64", target_arch = "powerpc", target_arch = "wasm64", target_arch = "wasm32", target_arch = "riscv64", target_arch = "riscv32")))]
-// DIRECTIVES-DAG: let _v{{[0-9]+}}: i32 = 64;
-// DIRECTIVES-DAG: let _v{{[0-9]+}}: i32 = 86;
-// DIRECTIVES-DAG: let _v{{[0-9]+}}: i32 = 128;
-// DIRECTIVES-DAG: let _v{{[0-9]+}}: i32 = 32;
-// DIRECTIVES-DAG: let _v{{[0-9]+}}: i32 = 640;
-// DIRECTIVES-DAG: let _v{{[0-9]+}}: i32 = 320;
-// DIRECTIVES-DAG: let _v{{[0-9]+}}: i32 = 6400;
-// DIRECTIVES-DAG: let _v{{[0-9]+}}: i32 = 3200;
-// DIRECTIVES-DAG: let _v{{[0-9]+}}: i32 = 645;
-// DIRECTIVES-DAG: let _v{{[0-9]+}}: i32 = 325;
-// DIRECTIVES-DAG: let _v{{[0-9]+}}: i32 = 0;
+// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = }}64;
+// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = }}86;
+// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = }}128;
+// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = }}32;
+// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = }}640;
+// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = }}320;
+// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = }}6400;
+// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = }}3200;
+// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = }}645;
+// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = }}325;
+// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = }}0;
