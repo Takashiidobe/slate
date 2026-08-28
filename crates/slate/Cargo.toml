@@ -17,6 +17,7 @@ triplers = { version = "0.1.1", path = "vendor/triplers" }
 mimalloc = "0.1.52"
 rustc_apfloat = "0.2.3"
 unicode-ident = "1"
+rayon = "1.12"
 clang-ir = { path = "../clang-ir/clang-ir" }
 
 [profile.test]

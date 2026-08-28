@@ -1,5 +1,6 @@
 use clang_ir::ast::Type as CirType;
 use clang_ir::model::Module;
+use rayon::prelude::*;
 use slate::backend::{self, codegen, rust_ast};
 use slate::frontend::{self, c_ast, c_shim, directive_translate, preprocess};
 use slate::{api, compile_commands, ctx};
@@ -1264,6 +1265,39 @@ fn load_library_variant(
     })
 }
 
+fn slate_job_count() -> usize {
+    if let Some(value) = std::env::var_os("SLATE_JOBS")
+        && let Some(parsed) = value.to_str().and_then(|value| value.parse::<usize>().ok())
+    {
+        return parsed.max(1);
+    }
+    let cores = std::thread::available_parallelism()
+        .map(std::num::NonZeroUsize::get)
+        .unwrap_or(1);
+    (cores / 2).max(1)
+}
+
+fn load_library_variants_parallel(
+    command_map: &BTreeMap<(PathBuf, rust_ast::Cfg), compile_commands::CompileCommand>,
+    project_dir: &Path,
+    context: &str,
+) -> Result<Vec<LoadedLibraryVariant>, String> {
+    let pool = rayon::ThreadPoolBuilder::new()
+        .num_threads(slate_job_count())
+        .build()
+        .map_err(|error| format!("build worker pool: {error}"))?;
+    let entries: Vec<_> = command_map.iter().collect();
+    let results: Vec<Result<LoadedLibraryVariant, String>> = pool.install(|| {
+        entries
+            .par_iter()
+            .map(|((path, cfg), command)| {
+                load_library_variant(path, project_dir, cfg, command, context)
+            })
+            .collect()
+    });
+    results.into_iter().collect()
+}
+
 fn translate_project_lib_crate_with_compile_commands(
     project_dir: &Path,
     crate_dir: &Path,
@@ -1316,16 +1350,14 @@ fn translate_project_lib_crate_with_compile_commands(
     let mut shared_enums = BTreeMap::new();
     let mut referenced_record_types = BTreeSet::new();
     let mut uses_slate_support = false;
-    for ((path, cfg), command) in &command_map {
-        let loaded_variant = load_library_variant(
-            path,
-            project_dir,
-            cfg,
-            command,
-            "translate-project --lib --compile-commands",
-        )?;
+    let loaded_variants = load_library_variants_parallel(
+        &command_map,
+        project_dir,
+        "translate-project --lib --compile-commands",
+    )?;
+    for loaded_variant in loaded_variants {
         uses_slate_support |= !loaded_variant.warning_items.is_empty();
-        let variant_facts = facts.entry(cfg.clone()).or_default();
+        let variant_facts = facts.entry(loaded_variant.cfg.clone()).or_default();
         for symbol in frontend::defined_functions(&loaded_variant.module) {
             variant_facts
                 .defined
