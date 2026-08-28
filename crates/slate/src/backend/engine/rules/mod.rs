@@ -1,4 +1,5 @@
 mod inline_temps;
+mod libc_exit;
 mod singleton_scopes;
 mod zero_init;
 
@@ -11,5 +12,6 @@ pub(super) fn registry() -> Vec<Box<dyn NodeRule>> {
         Box::new(singleton_scopes::WhileLoopUnwrap),
         Box::new(singleton_scopes::DoWhileLoopUnwrap),
         Box::new(singleton_scopes::SingletonUnwrap),
+        Box::new(libc_exit::LibcExit),
     ]
 }

@@ -148,6 +148,16 @@ impl NodeKind {
         }
     }
 
+    pub(in crate::backend) fn call_anchor(&self) -> Option<Ident> {
+        match self {
+            NodeKind::Expr(expr) | NodeKind::Return(Some(expr)) => expr_call_anchor(expr),
+            NodeKind::Let {
+                init: Some(expr), ..
+            } => expr_call_anchor(expr),
+            _ => None,
+        }
+    }
+
     pub(in crate::backend) fn child_lists_mut(&mut self) -> Vec<&mut Vec<NodeId>> {
         match self {
             NodeKind::LetIf {
@@ -212,6 +222,21 @@ impl NodeKind {
             | NodeKind::Break(_)
             | NodeKind::Continue(_) => Vec::new(),
         }
+    }
+}
+
+fn expr_call_anchor(expr: &Expr) -> Option<Ident> {
+    match expr {
+        Expr::Call { func, .. } => match func.as_ref() {
+            Expr::Var(name) => Some(*name),
+            Expr::Path(path) => path.segments.last().copied(),
+            _ => None,
+        },
+        Expr::Cast { expr, .. } => expr_call_anchor(expr),
+        Expr::Unsafe(block) | Expr::Block(block) if block.stmts.is_empty() => {
+            block.tail.as_deref().and_then(expr_call_anchor)
+        }
+        _ => None,
     }
 }
 

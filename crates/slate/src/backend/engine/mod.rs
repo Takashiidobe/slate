@@ -2,14 +2,17 @@ mod arena;
 mod rules;
 
 use arena::{Arena, FunctionArena, NodeId, NodeKindTag};
-use std::collections::BTreeSet;
+use std::collections::{BTreeSet, HashMap};
 
-use crate::backend::rust_ast::{IndentStmt, Item, Program};
+use crate::backend::rust_ast::{Ident, IndentStmt, Item, Program};
 
 pub(in crate::backend) trait NodeRule {
     fn name(&self) -> &'static str;
     fn priority(&self) -> u32;
     fn kinds(&self) -> &'static [NodeKindTag];
+    fn call_anchor(&self) -> Option<Ident> {
+        None
+    }
     fn matches(&self, arena: &Arena, id: NodeId) -> bool;
     fn apply(&self, arena: &mut Arena, id: NodeId) -> bool;
 }
@@ -19,24 +22,44 @@ const EDIT_BUDGET: usize = 200_000;
 struct RuleRegistry {
     rules: Vec<Box<dyn NodeRule>>,
     by_kind: [Vec<u32>; NodeKindTag::COUNT],
+    by_anchor: HashMap<(NodeKindTag, Ident), Vec<u32>>,
 }
 
 impl RuleRegistry {
     fn build(mut rules: Vec<Box<dyn NodeRule>>) -> Self {
         rules.sort_by_key(|rule| rule.priority());
         let mut by_kind: [Vec<u32>; NodeKindTag::COUNT] = std::array::from_fn(|_| Vec::new());
+        let mut by_anchor: HashMap<(NodeKindTag, Ident), Vec<u32>> = HashMap::new();
         for (index, rule) in rules.iter().enumerate() {
             for &kind in rule.kinds() {
-                by_kind[kind as usize].push(index as u32);
+                match rule.call_anchor() {
+                    Some(anchor) => by_anchor
+                        .entry((kind, anchor))
+                        .or_default()
+                        .push(index as u32),
+                    None => by_kind[kind as usize].push(index as u32),
+                }
             }
         }
-        Self { rules, by_kind }
+        Self {
+            rules,
+            by_kind,
+            by_anchor,
+        }
     }
 
-    fn candidates(&self, kind: NodeKindTag) -> impl Iterator<Item = &dyn NodeRule> {
-        self.by_kind[kind as usize]
-            .iter()
-            .map(move |&index| self.rules[index as usize].as_ref())
+    fn candidates(&self, kind: NodeKindTag, call_anchor: Option<Ident>) -> Vec<&dyn NodeRule> {
+        let mut indices: Vec<u32> = self.by_kind[kind as usize].clone();
+        if let Some(anchor) = call_anchor
+            && let Some(anchored) = self.by_anchor.get(&(kind, anchor))
+        {
+            indices.extend_from_slice(anchored);
+            indices.sort_unstable();
+        }
+        indices
+            .into_iter()
+            .map(|index| self.rules[index as usize].as_ref())
+            .collect()
     }
 }
 
@@ -97,7 +120,8 @@ fn run_worklist(arena: &mut Arena, registry: &RuleRegistry) {
             .map(|name| arena.def_use_neighbors(name).to_vec())
             .unwrap_or_default();
         let candidates: Vec<&dyn NodeRule> = registry
-            .candidates(kind.tag())
+            .candidates(kind.tag(), kind.call_anchor())
+            .into_iter()
             .filter(|rule| rule.matches(arena, id))
             .collect();
         for rule in candidates {
