@@ -79,29 +79,77 @@ fn kind_only_deref_uses(kind: &NodeKind, name: Ident) -> bool {
     }
 }
 
-fn pure_rename_target(kind: &NodeKind, name: Ident) -> Option<Ident> {
+fn bare_replacement(arena: &Arena, source: Ident, declared_ty: &Type) -> Option<Expr> {
+    let Type::Ptr {
+        inner: ptr_inner, ..
+    } = declared_ty
+    else {
+        return None;
+    };
+    let Some(Type::Ref {
+        mutable: true,
+        inner: ref_inner,
+    }) = arena.param_type(source)
+    else {
+        return None;
+    };
+    (ref_inner.as_ref() == ptr_inner.as_ref()).then_some(Expr::Var(source))
+}
+
+fn is_bare_rebind_of(kind: &NodeKind, name: Ident) -> bool {
+    matches!(
+        kind,
+        NodeKind::Assign { target: Expr::Var(v), .. }
+        | NodeKind::CompoundAssign { target: Expr::Var(v), .. }
+        if *v == name
+    )
+}
+
+fn is_single_assignment(arena: &Arena, name: Ident, except: NodeId) -> bool {
+    arena.def_use_neighbors(name).iter().all(|&neighbor| {
+        neighbor == except
+            || !arena
+                .get(neighbor)
+                .is_some_and(|kind| is_bare_rebind_of(kind, name))
+    })
+}
+
+fn pure_rename_target(arena: &Arena, kind: &NodeKind, id: NodeId, name: Ident) -> Option<Ident> {
     match kind {
         NodeKind::Let {
             name: temp,
             init: Some(Expr::Var(v)),
             ..
         } if *v == name => Some(*temp),
+        NodeKind::Assign {
+            target: Expr::Var(temp),
+            value: Expr::Var(v),
+        } if *v == name && is_single_assignment(arena, *temp, id) => Some(*temp),
         _ => None,
     }
 }
 
-fn all_uses_deref_transitively(arena: &Arena, name: Ident, visited: &mut Vec<Ident>) -> bool {
+fn all_uses_deref_transitively(
+    arena: &Arena,
+    name: Ident,
+    except: Option<NodeId>,
+    visited: &mut Vec<Ident>,
+) -> bool {
     if visited.contains(&name) {
         return false;
     }
     visited.push(name);
     arena.def_use_neighbors(name).iter().all(|&neighbor| {
+        if Some(neighbor) == except {
+            return true;
+        }
         let Some(kind) = arena.get(neighbor) else {
             return true;
         };
         kind_only_deref_uses(kind, name)
-            || pure_rename_target(kind, name)
-                .is_some_and(|temp| all_uses_deref_transitively(arena, temp, visited))
+            || pure_rename_target(arena, kind, neighbor, name).is_some_and(|temp| {
+                all_uses_deref_transitively(arena, temp, Some(neighbor), visited)
+            })
     })
 }
 
@@ -218,7 +266,7 @@ impl NodeRule for RawPtrAliasElide {
         let Some(NodeKind::Let {
             name,
             mutable: true,
-            ty: Some(Type::Ptr { .. }),
+            ty: Some(ty @ Type::Ptr { .. }),
             init: Some(init),
         }) = arena.get(id)
         else {
@@ -231,9 +279,9 @@ impl NodeRule for RawPtrAliasElide {
         if name == source {
             return false;
         }
-        let replacement = init.clone();
+        let replacement = bare_replacement(arena, source, ty).unwrap_or_else(|| init.clone());
 
-        if !all_uses_deref_transitively(arena, name, &mut Vec::new()) {
+        if !all_uses_deref_transitively(arena, name, None, &mut Vec::new()) {
             return false;
         }
 

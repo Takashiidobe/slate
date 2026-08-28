@@ -4,7 +4,7 @@ mod rules;
 use arena::{Arena, FunctionArena, NodeId, NodeKindTag};
 use std::collections::{BTreeSet, HashMap};
 
-use crate::backend::rust_ast::{Ident, IndentStmt, Item, Program};
+use crate::backend::rust_ast::{FnParam, Ident, IndentStmt, Item, Program};
 
 pub(in crate::backend) trait NodeRule {
     fn name(&self) -> &'static str;
@@ -75,7 +75,7 @@ pub(in crate::backend) fn apply(program: &mut Program) {
 
 fn apply_item(item: &mut Item, registry: &RuleRegistry) {
     match item {
-        Item::Fn(func) => run_function(&mut func.body, registry),
+        Item::Fn(func) => run_function(&mut func.body, &func.params, registry),
         Item::InlineMod { items, .. } => {
             for item in items {
                 apply_item(item, registry);
@@ -88,7 +88,7 @@ fn apply_item(item: &mut Item, registry: &RuleRegistry) {
                         continue;
                     };
                     let mut body = std::mem::take(&mut block.stmts);
-                    run_function(&mut body, registry);
+                    run_function(&mut body, &method.params, registry);
                     block.stmts = body;
                 }
             }
@@ -97,9 +97,9 @@ fn apply_item(item: &mut Item, registry: &RuleRegistry) {
     }
 }
 
-fn run_function(body: &mut Vec<IndentStmt>, registry: &RuleRegistry) {
+fn run_function(body: &mut Vec<IndentStmt>, params: &[FnParam], registry: &RuleRegistry) {
     let taken = std::mem::take(body);
-    let FunctionArena { mut arena, root } = arena::build(taken);
+    let FunctionArena { mut arena, root } = arena::build(taken, params);
     run_worklist(&mut arena, registry);
     *body = arena::reify(&arena, root);
 }
