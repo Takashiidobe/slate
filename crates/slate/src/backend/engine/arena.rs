@@ -1,4 +1,4 @@
-use crate::backend::rust_ast::{Expr, IndentStmt, InlineAsm, Label, Pattern, Stmt};
+use crate::backend::rust_ast::{Expr, Ident, IndentStmt, InlineAsm, Label, Pattern, Stmt};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(in crate::backend) struct NodeId {
@@ -19,13 +19,13 @@ pub(in crate::backend) struct MatchArmNode {
 
 pub(in crate::backend) enum NodeKind {
     Let {
-        name: String,
+        name: Ident,
         mutable: bool,
         ty: Option<crate::backend::rust_ast::Type>,
         init: Option<Expr>,
     },
     LetIf {
-        name: String,
+        name: Ident,
         mutable: bool,
         ty: Option<crate::backend::rust_ast::Type>,
         cond: Expr,
@@ -60,7 +60,7 @@ pub(in crate::backend) enum NodeKind {
         body: Vec<NodeId>,
     },
     For {
-        pat: String,
+        pat: Ident,
         iter: Expr,
         body: Vec<NodeId>,
     },
@@ -305,7 +305,7 @@ fn build_stmt(arena: &mut Arena, parent: Option<NodeId>, stmt: Stmt) -> NodeId {
             ty,
             init,
         } => NodeKind::Let {
-            name,
+            name: name.into(),
             mutable,
             ty,
             init,
@@ -320,7 +320,7 @@ fn build_stmt(arena: &mut Arena, parent: Option<NodeId>, stmt: Stmt) -> NodeId {
             else_body,
             else_value,
         } => NodeKind::LetIf {
-            name,
+            name: name.into(),
             mutable,
             ty,
             cond,
@@ -354,7 +354,7 @@ fn build_stmt(arena: &mut Arena, parent: Option<NodeId>, stmt: Stmt) -> NodeId {
             body: build_stmts(arena, Some(id), body),
         },
         Stmt::For { pat, iter, body } => NodeKind::For {
-            pat,
+            pat: pat.into(),
             iter,
             body: build_stmts(arena, Some(id), body),
         },
@@ -423,7 +423,7 @@ fn reify_stmt(arena: &Arena, id: NodeId, depth: usize, out: &mut Vec<IndentStmt>
             ty,
             init,
         } => Stmt::Let {
-            name: name.clone(),
+            name: name.as_str().to_string(),
             mutable: *mutable,
             ty: ty.clone(),
             init: init.clone(),
@@ -438,7 +438,7 @@ fn reify_stmt(arena: &Arena, id: NodeId, depth: usize, out: &mut Vec<IndentStmt>
             else_body,
             else_value,
         } => Stmt::LetIf {
-            name: name.clone(),
+            name: name.as_str().to_string(),
             mutable: *mutable,
             ty: ty.clone(),
             cond: cond.clone(),
@@ -479,7 +479,7 @@ fn reify_stmt(arena: &Arena, id: NodeId, depth: usize, out: &mut Vec<IndentStmt>
             body: reify_nested(arena, body, depth + 1),
         },
         NodeKind::For { pat, iter, body } => Stmt::For {
-            pat: pat.clone(),
+            pat: pat.as_str().to_string(),
             iter: iter.clone(),
             body: reify_nested(arena, body, depth + 1),
         },

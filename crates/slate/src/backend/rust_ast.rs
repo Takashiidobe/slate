@@ -788,20 +788,85 @@ impl From<bool> for RustValue {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct Ident(String);
+mod ident_intern {
+    use std::collections::HashSet;
+    use std::sync::{Mutex, OnceLock};
+
+    #[derive(Debug, Clone, Copy, Eq)]
+    pub(super) struct Symbol(&'static str);
+
+    impl Symbol {
+        pub(super) fn as_str(self) -> &'static str {
+            self.0
+        }
+    }
+
+    impl PartialEq for Symbol {
+        fn eq(&self, other: &Self) -> bool {
+            std::ptr::eq(self.0, other.0)
+        }
+    }
+
+    impl std::hash::Hash for Symbol {
+        fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+            self.0.as_ptr().hash(state);
+        }
+    }
+
+    fn table() -> &'static Mutex<HashSet<&'static str>> {
+        static TABLE: OnceLock<Mutex<HashSet<&'static str>>> = OnceLock::new();
+        TABLE.get_or_init(|| Mutex::new(HashSet::new()))
+    }
+
+    pub(super) fn intern(s: &str) -> Symbol {
+        let mut t = table().lock().unwrap();
+        if let Some(&existing) = t.get(s) {
+            return Symbol(existing);
+        }
+        let leaked: &'static str = Box::leak(s.to_owned().into_boxed_str());
+        t.insert(leaked);
+        Symbol(leaked)
+    }
+}
+
+#[derive(Debug, Clone, Copy, Eq)]
+pub struct Ident(ident_intern::Symbol);
 
 impl Ident {
     pub fn new(s: impl Into<String>) -> Self {
-        Self(s.into())
+        Self(ident_intern::intern(&s.into()))
     }
 
     pub fn as_str(&self) -> &str {
-        &self.0
+        self.0.as_str()
     }
 
     pub fn into_string(self) -> String {
-        self.0
+        self.as_str().to_string()
+    }
+}
+
+impl PartialEq for Ident {
+    fn eq(&self, other: &Self) -> bool {
+        self.0 == other.0
+    }
+}
+
+impl std::hash::Hash for Ident {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.0.hash(state);
+    }
+}
+
+impl PartialOrd for Ident {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for Ident {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.as_str().cmp(other.as_str())
     }
 }
 
