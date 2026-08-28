@@ -1,7 +1,7 @@
 mod arena;
 mod rules;
 
-use arena::{Arena, FunctionArena, NodeId};
+use arena::{Arena, FunctionArena, NodeId, NodeKindTag};
 use std::collections::BTreeSet;
 
 use crate::backend::rust_ast::{IndentStmt, Item, Program};
@@ -9,23 +9,47 @@ use crate::backend::rust_ast::{IndentStmt, Item, Program};
 pub(in crate::backend) trait NodeRule {
     fn name(&self) -> &'static str;
     fn priority(&self) -> u32;
+    fn kinds(&self) -> &'static [NodeKindTag];
     fn matches(&self, arena: &Arena, id: NodeId) -> bool;
     fn apply(&self, arena: &mut Arena, id: NodeId) -> bool;
 }
 
 const EDIT_BUDGET: usize = 200_000;
 
+struct RuleRegistry {
+    rules: Vec<Box<dyn NodeRule>>,
+    by_kind: [Vec<u32>; NodeKindTag::COUNT],
+}
+
+impl RuleRegistry {
+    fn build(mut rules: Vec<Box<dyn NodeRule>>) -> Self {
+        rules.sort_by_key(|rule| rule.priority());
+        let mut by_kind: [Vec<u32>; NodeKindTag::COUNT] = std::array::from_fn(|_| Vec::new());
+        for (index, rule) in rules.iter().enumerate() {
+            for &kind in rule.kinds() {
+                by_kind[kind as usize].push(index as u32);
+            }
+        }
+        Self { rules, by_kind }
+    }
+
+    fn candidates(&self, kind: NodeKindTag) -> impl Iterator<Item = &dyn NodeRule> {
+        self.by_kind[kind as usize]
+            .iter()
+            .map(move |&index| self.rules[index as usize].as_ref())
+    }
+}
+
 pub(in crate::backend) fn apply(program: &mut Program) {
     crate::backend::interproc::string_params::run(program);
 
-    let mut registry = rules::registry();
-    registry.sort_by_key(|rule| rule.priority());
+    let registry = RuleRegistry::build(rules::registry());
     for item in &mut program.items {
         apply_item(item, &registry);
     }
 }
 
-fn apply_item(item: &mut Item, registry: &[Box<dyn NodeRule>]) {
+fn apply_item(item: &mut Item, registry: &RuleRegistry) {
     match item {
         Item::Fn(func) => run_function(&mut func.body, registry),
         Item::InlineMod { items, .. } => {
@@ -49,14 +73,14 @@ fn apply_item(item: &mut Item, registry: &[Box<dyn NodeRule>]) {
     }
 }
 
-fn run_function(body: &mut Vec<IndentStmt>, registry: &[Box<dyn NodeRule>]) {
+fn run_function(body: &mut Vec<IndentStmt>, registry: &RuleRegistry) {
     let taken = std::mem::take(body);
     let FunctionArena { mut arena, root } = arena::build(taken);
     run_worklist(&mut arena, registry);
     *body = arena::reify(&arena, root);
 }
 
-fn run_worklist(arena: &mut Arena, registry: &[Box<dyn NodeRule>]) {
+fn run_worklist(arena: &mut Arena, registry: &RuleRegistry) {
     let mut worklist: BTreeSet<u32> = arena.live_ids().iter().map(|id| id.index()).collect();
     let mut edits = 0usize;
 
@@ -65,8 +89,15 @@ fn run_worklist(arena: &mut Arena, registry: &[Box<dyn NodeRule>]) {
         let Some(id) = arena.resolve(index) else {
             continue;
         };
-        let candidates: Vec<&Box<dyn NodeRule>> = registry
-            .iter()
+        let Some(kind) = arena.get(id) else {
+            continue;
+        };
+        let def_use_targets: Vec<NodeId> = kind
+            .declared_name()
+            .map(|name| arena.def_use_neighbors(name).to_vec())
+            .unwrap_or_default();
+        let candidates: Vec<&dyn NodeRule> = registry
+            .candidates(kind.tag())
             .filter(|rule| rule.matches(arena, id))
             .collect();
         for rule in candidates {
@@ -77,11 +108,17 @@ fn run_worklist(arena: &mut Arena, registry: &[Box<dyn NodeRule>]) {
                     "rewrite worklist exceeded {EDIT_BUDGET} edits (rule={}); likely oscillation, not slow convergence",
                     rule.name()
                 );
+                arena.touch(id);
                 if let Some(resolved) = arena.resolve(index) {
                     worklist.insert(resolved.index());
                 }
                 if let Some(parent) = arena.parent(id) {
                     worklist.insert(parent.index());
+                }
+                for &neighbor in &def_use_targets {
+                    if arena.get(neighbor).is_some() {
+                        worklist.insert(neighbor.index());
+                    }
                 }
                 break;
             }

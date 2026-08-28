@@ -1,5 +1,5 @@
 use crate::backend::engine::NodeRule;
-use crate::backend::engine::arena::{Arena, NodeId, NodeKind};
+use crate::backend::engine::arena::{Arena, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::{Expr, Ident, RustValue, Stmt, Type, UnaryOp};
 
 fn is_temp_name(name: &str) -> bool {
@@ -1158,6 +1158,10 @@ impl NodeRule for EarlyInlineTemps {
         3
     }
 
+    fn kinds(&self) -> &'static [NodeKindTag] {
+        &[NodeKindTag::Let]
+    }
+
     fn matches(&self, arena: &Arena, id: NodeId) -> bool {
         matches!(
             arena.get(id),
@@ -1253,6 +1257,7 @@ impl NodeRule for EarlyInlineTemps {
         if !node_substitute_var(arena, found.consumer_id, name.as_str(), &init) {
             return false;
         }
+        arena.touch_subtree(found.consumer_id);
 
         let _ = arena.take(id);
         if let Some(parent_kind) = arena.get_mut(found.parent)

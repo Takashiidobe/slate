@@ -1,5 +1,5 @@
 use crate::backend::engine::NodeRule;
-use crate::backend::engine::arena::{Arena, NodeId, NodeKind};
+use crate::backend::engine::arena::{Arena, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::{Expr, UnaryOp};
 
 fn is_scope(arena: &Arena, id: NodeId) -> bool {
@@ -78,6 +78,10 @@ impl NodeRule for WhileLoopUnwrap {
         10
     }
 
+    fn kinds(&self) -> &'static [NodeKindTag] {
+        &[NodeKindTag::Loop]
+    }
+
     fn matches(&self, arena: &Arena, id: NodeId) -> bool {
         let Some(NodeKind::Loop { body, .. }) = arena.get(id) else {
             return false;
@@ -104,6 +108,10 @@ impl NodeRule for DoWhileLoopUnwrap {
         11
     }
 
+    fn kinds(&self) -> &'static [NodeKindTag] {
+        &[NodeKindTag::Loop]
+    }
+
     fn matches(&self, arena: &Arena, id: NodeId) -> bool {
         let Some(NodeKind::Loop { body, .. }) = arena.get(id) else {
             return false;
@@ -128,6 +136,10 @@ impl NodeRule for SingletonUnwrap {
 
     fn priority(&self) -> u32 {
         12
+    }
+
+    fn kinds(&self) -> &'static [NodeKindTag] {
+        &[NodeKindTag::Scope]
     }
 
     fn matches(&self, arena: &Arena, id: NodeId) -> bool {
