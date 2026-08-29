@@ -10,7 +10,6 @@ serde = "1"
 serde_json = { version = "1", features = ["unbounded_depth"] }
 serde_stacker = "0.1"
 shlex = "2"
-salsa = "0.28"
 thiserror = "2.0.19"
 ordered-float = "5.3.0"
 triplers = { version = "0.1.1", path = "vendor/triplers" }

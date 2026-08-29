@@ -69,3 +69,4 @@ superseded each one for what actually applies now.
 - [Fix length-lattice multi-buffer asymmetry (by_callee/accepted single-candidate bug)](concepts/fix-length-lattice-multi-buffer-asymmetry-by-callee-accepted-single-candidate-bug.md)
 - [Local libc table: strcmp via Ordering, mem* via intrinsic, dead-let drop](concepts/local-libc-table-strcmp-via-ordering-mem-via-intrinsic-dead-let-drop.md)
 - [memcmp libc rewrite + byte-array slice lifting; ctype backed out for locale](concepts/memcmp-libc-rewrite-byte-array-slice-lifting-ctype-backed-out-for-locale.md)
+- [Remove retired backend facts and Salsa](concepts/remove-retired-backend-facts-and-salsa.md)
