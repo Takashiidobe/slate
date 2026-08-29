@@ -435,7 +435,7 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
-// LOWERING-NEXT: struct anon_struct {
+// LOWERING-NEXT: struct {{anon_struct[0-9A-Za-z_]*}} {
 // LOWERING-NEXT:     __slate_anon_0: u64,
 // LOWERING-NEXT:     __slate_anon_1: i32,
 // LOWERING-NEXT: }
@@ -525,8 +525,8 @@ int main(void) {
 // LOWERING-NEXT:     return _v6;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn c11_make_temporary(arg3: i32) -> anon_struct {
-// LOWERING-NEXT:     let mut coerce: anon_struct = anon_struct { __slate_anon_0: 0, __slate_anon_1: 0 };
+// LOWERING-NEXT: fn c11_make_temporary(arg3: i32) -> {{anon_struct[0-9A-Za-z_]*}} {
+// LOWERING-NEXT:     let mut coerce: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: 0, __slate_anon_1: 0 };
 // LOWERING-NEXT:     let mut base: i32 = 0;
 // LOWERING-NEXT:     let mut __retval: C11Temporary = C11Temporary { values: [0; 3] };
 // LOWERING-NEXT:     base = arg3;
@@ -556,7 +556,7 @@ int main(void) {
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         *_v13 = _v12;
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let _v14: anon_struct = coerce;
+// LOWERING-NEXT:     let _v14: {{anon_struct[0-9A-Za-z_]*}} = coerce;
 // LOWERING-NEXT:     return _v14;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
@@ -628,7 +628,7 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut coerce: anon_struct = anon_struct { __slate_anon_0: 0, __slate_anon_1: 0 };
+// LOWERING-NEXT:     let mut coerce: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: 0, __slate_anon_1: 0 };
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut utf16_character: u16 = 0;
 // LOWERING-NEXT:     let mut utf32_character: u32 = 0;
@@ -770,7 +770,7 @@ int main(void) {
 // LOWERING-NEXT:     evaluation_total = _v69;
 // LOWERING-NEXT:     let _v70: i64 = 1;
 // LOWERING-NEXT:     let _v71: i32 = 43;
-// LOWERING-NEXT:     let _v72: anon_struct = c11_make_temporary(_v71);
+// LOWERING-NEXT:     let _v72: {{anon_struct[0-9A-Za-z_]*}} = c11_make_temporary(_v71);
 // LOWERING-NEXT:     coerce = _v72;
 // LOWERING-NEXT:     let _v73: *mut C11Temporary = std::ptr::addr_of_mut!(coerce) as *mut C11Temporary;
 // LOWERING-NEXT:     let _v74: C11Temporary = unsafe { *_v73 };
@@ -1361,7 +1361,7 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
-// REWRITES-NEXT: struct anon_struct {
+// REWRITES-NEXT: struct {{anon_struct[0-9A-Za-z_]*}} {
 // REWRITES-NEXT:     __slate_anon_0: u64,
 // REWRITES-NEXT:     __slate_anon_1: i32,
 // REWRITES-NEXT: }
@@ -1444,8 +1444,8 @@ int main(void) {
 // REWRITES-NEXT: return __retval;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn c11_make_temporary(arg3: i32) -> anon_struct {
-// REWRITES-NEXT: let mut coerce: anon_struct = anon_struct { __slate_anon_0: 0, __slate_anon_1: 0 };
+// REWRITES-NEXT: fn c11_make_temporary(arg3: i32) -> {{anon_struct[0-9A-Za-z_]*}} {
+// REWRITES-NEXT: let mut coerce: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: 0, __slate_anon_1: 0 };
 // REWRITES-NEXT: let mut base: i32 = arg3;
 // REWRITES-NEXT: let mut __retval: C11Temporary = C11Temporary { values: [0; 3] };
 // REWRITES-NEXT: let _v0: *mut i32 = std::ptr::addr_of_mut!(__retval.values) as *mut i32;
@@ -1522,7 +1522,7 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut coerce: anon_struct = anon_struct { __slate_anon_0: 0, __slate_anon_1: 0 };
+// REWRITES-NEXT: let mut coerce: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: 0, __slate_anon_1: 0 };
 // REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut utf16_character: u16 = 0;
 // REWRITES-NEXT: let mut utf32_character: u32 = 0;

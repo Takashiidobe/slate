@@ -120,7 +120,7 @@ pub(super) fn required_record_defs(
         .iter()
         .filter_map(|(alias, ty)| {
             let name =
-                lowered_record_name(slate_record_name(ty).or_else(|| alias.strip_prefix("rec_"))?)?;
+                lowered_record_name(&canonical_alias_record_name(alias, ty, &cir.type_aliases)?)?;
             let kind = match ty {
                 CirType::Struct { .. } => RecordKind::Struct,
                 CirType::Union { .. } => RecordKind::Union,

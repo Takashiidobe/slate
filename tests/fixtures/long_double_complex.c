@@ -187,7 +187,7 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
-// LOWERING-NEXT: struct anon_struct {
+// LOWERING-NEXT: struct {{anon_struct[0-9A-Za-z_]*}} {
 // LOWERING-NEXT:     __slate_anon_0: LongDouble,
 // LOWERING-NEXT:     __slate_anon_1: LongDouble,
 // LOWERING-NEXT: }
@@ -200,23 +200,23 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const i8, ...) -> i32;
 // LOWERING-NEXT:     fn cabsl(_0: *mut num_complex::Complex<LongDouble>) -> LongDouble;
 // LOWERING-NEXT:     fn cargl(_0: *mut num_complex::Complex<LongDouble>) -> LongDouble;
-// LOWERING-NEXT:     fn cprojl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// LOWERING-NEXT:     fn csqrtl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// LOWERING-NEXT:     fn cexpl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// LOWERING-NEXT:     fn clogl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// LOWERING-NEXT:     fn cpowl(_0: *mut num_complex::Complex<LongDouble>, _1: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// LOWERING-NEXT:     fn csinl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// LOWERING-NEXT:     fn ccosl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// LOWERING-NEXT:     fn ctanl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// LOWERING-NEXT:     fn casinl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// LOWERING-NEXT:     fn cacosl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// LOWERING-NEXT:     fn catanl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// LOWERING-NEXT:     fn csinhl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// LOWERING-NEXT:     fn ccoshl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// LOWERING-NEXT:     fn ctanhl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// LOWERING-NEXT:     fn casinhl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// LOWERING-NEXT:     fn cacoshl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// LOWERING-NEXT:     fn catanhl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
+// LOWERING-NEXT:     fn cprojl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn csqrtl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn cexpl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn clogl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn cpowl(_0: *mut num_complex::Complex<LongDouble>, _1: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn csinl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn ccosl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn ctanl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn casinl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn cacosl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn catanl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn csinhl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn ccoshl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn ctanhl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn casinhl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn cacoshl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn catanhl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn print_lc(arg2: *mut i8, arg3: *mut num_complex::Complex<LongDouble>) {
@@ -235,7 +235,7 @@ int main(void) {
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn mix_complex(arg0: *mut num_complex::Complex<LongDouble>, arg1: *mut num_complex::Complex<LongDouble>) -> anon_struct {
+// LOWERING-NEXT: fn mix_complex(arg0: *mut num_complex::Complex<LongDouble>, arg1: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}} {
 // LOWERING-NEXT:     let mut coerce: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
 // LOWERING-NEXT:     let _v0: num_complex::Complex<LongDouble> = unsafe { *arg1 };
 // LOWERING-NEXT:     let _v1: num_complex::Complex<LongDouble> = unsafe { *arg0 };
@@ -265,13 +265,13 @@ int main(void) {
 // LOWERING-NEXT:     __retval = _v17;
 // LOWERING-NEXT:     let _v18: num_complex::Complex<LongDouble> = __retval;
 // LOWERING-NEXT:     coerce = _v18;
-// LOWERING-NEXT:     let _v19: *mut anon_struct = std::ptr::addr_of_mut!(coerce) as *mut anon_struct;
-// LOWERING-NEXT:     let _v20: anon_struct = unsafe { *_v19 };
+// LOWERING-NEXT:     let _v19: *mut {{anon_struct[0-9A-Za-z_]*}} = std::ptr::addr_of_mut!(coerce) as *mut {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     let _v20: {{anon_struct[0-9A-Za-z_]*}} = unsafe { *_v19 };
 // LOWERING-NEXT:     return _v20;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn check_arithmetic() {
-// LOWERING-NEXT:     let mut coerce: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// LOWERING-NEXT:     let mut coerce: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
 // LOWERING-NEXT:     let mut a: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
 // LOWERING-NEXT:     let mut b: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
 // LOWERING-NEXT:     let mut coerce2: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
@@ -471,7 +471,7 @@ int main(void) {
 // LOWERING-NEXT:     byval10 = _v109;
 // LOWERING-NEXT:     let mut byval11: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
 // LOWERING-NEXT:     byval11 = _v110;
-// LOWERING-NEXT:     let _v111: anon_struct = mix_complex(std::ptr::addr_of_mut!(byval10), std::ptr::addr_of_mut!(byval11));
+// LOWERING-NEXT:     let _v111: {{anon_struct[0-9A-Za-z_]*}} = mix_complex(std::ptr::addr_of_mut!(byval10), std::ptr::addr_of_mut!(byval11));
 // LOWERING-NEXT:     coerce = _v111;
 // LOWERING-NEXT:     let _v112: *mut num_complex::Complex<LongDouble> = std::ptr::addr_of_mut!(coerce) as *mut num_complex::Complex<LongDouble>;
 // LOWERING-NEXT:     let _v113: num_complex::Complex<LongDouble> = unsafe { *_v112 };
@@ -631,23 +631,23 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn check_stdlib_functions() {
-// LOWERING-NEXT:     let mut coerce: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// LOWERING-NEXT:     let mut coerce2: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// LOWERING-NEXT:     let mut coerce3: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// LOWERING-NEXT:     let mut coerce4: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// LOWERING-NEXT:     let mut coerce5: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// LOWERING-NEXT:     let mut coerce6: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// LOWERING-NEXT:     let mut coerce7: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// LOWERING-NEXT:     let mut coerce8: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// LOWERING-NEXT:     let mut coerce9: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// LOWERING-NEXT:     let mut coerce10: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// LOWERING-NEXT:     let mut coerce11: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// LOWERING-NEXT:     let mut coerce12: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// LOWERING-NEXT:     let mut coerce13: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// LOWERING-NEXT:     let mut coerce14: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// LOWERING-NEXT:     let mut coerce15: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// LOWERING-NEXT:     let mut coerce16: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// LOWERING-NEXT:     let mut coerce17: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// LOWERING-NEXT:     let mut coerce: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// LOWERING-NEXT:     let mut coerce2: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// LOWERING-NEXT:     let mut coerce3: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// LOWERING-NEXT:     let mut coerce4: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// LOWERING-NEXT:     let mut coerce5: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// LOWERING-NEXT:     let mut coerce6: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// LOWERING-NEXT:     let mut coerce7: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// LOWERING-NEXT:     let mut coerce8: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// LOWERING-NEXT:     let mut coerce9: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// LOWERING-NEXT:     let mut coerce10: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// LOWERING-NEXT:     let mut coerce11: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// LOWERING-NEXT:     let mut coerce12: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// LOWERING-NEXT:     let mut coerce13: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// LOWERING-NEXT:     let mut coerce14: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// LOWERING-NEXT:     let mut coerce15: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// LOWERING-NEXT:     let mut coerce16: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// LOWERING-NEXT:     let mut coerce17: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
 // LOWERING-NEXT:     let mut z: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
 // LOWERING-NEXT:     let mut coerce18: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
 // LOWERING-NEXT:     let mut coerce19: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
@@ -722,7 +722,7 @@ int main(void) {
 // LOWERING-NEXT:     let _v20: num_complex::Complex<LongDouble> = coerce21;
 // LOWERING-NEXT:     let mut byval4: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
 // LOWERING-NEXT:     byval4 = _v20;
-// LOWERING-NEXT:     let _v21: anon_struct = unsafe { __slate_cprojl__rcf80_pcf80(std::ptr::addr_of_mut!(byval4) as *mut num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     let _v21: {{anon_struct[0-9A-Za-z_]*}} = unsafe { __slate_cprojl__rcf80_pcf80(std::ptr::addr_of_mut!(byval4) as *mut num_complex::Complex<LongDouble>) };
 // LOWERING-NEXT:     coerce17 = _v21;
 // LOWERING-NEXT:     let _v22: *mut num_complex::Complex<LongDouble> = std::ptr::addr_of_mut!(coerce17) as *mut num_complex::Complex<LongDouble>;
 // LOWERING-NEXT:     let _v23: num_complex::Complex<LongDouble> = unsafe { *_v22 };
@@ -737,7 +737,7 @@ int main(void) {
 // LOWERING-NEXT:     let _v27: num_complex::Complex<LongDouble> = coerce23;
 // LOWERING-NEXT:     let mut byval6: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
 // LOWERING-NEXT:     byval6 = _v27;
-// LOWERING-NEXT:     let _v28: anon_struct = unsafe { __slate_csqrtl__rcf80_pcf80(std::ptr::addr_of_mut!(byval6) as *mut num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     let _v28: {{anon_struct[0-9A-Za-z_]*}} = unsafe { __slate_csqrtl__rcf80_pcf80(std::ptr::addr_of_mut!(byval6) as *mut num_complex::Complex<LongDouble>) };
 // LOWERING-NEXT:     coerce16 = _v28;
 // LOWERING-NEXT:     let _v29: *mut num_complex::Complex<LongDouble> = std::ptr::addr_of_mut!(coerce16) as *mut num_complex::Complex<LongDouble>;
 // LOWERING-NEXT:     let _v30: num_complex::Complex<LongDouble> = unsafe { *_v29 };
@@ -752,7 +752,7 @@ int main(void) {
 // LOWERING-NEXT:     let _v34: num_complex::Complex<LongDouble> = coerce25;
 // LOWERING-NEXT:     let mut byval8: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
 // LOWERING-NEXT:     byval8 = _v34;
-// LOWERING-NEXT:     let _v35: anon_struct = unsafe { __slate_cexpl__rcf80_pcf80(std::ptr::addr_of_mut!(byval8) as *mut num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     let _v35: {{anon_struct[0-9A-Za-z_]*}} = unsafe { __slate_cexpl__rcf80_pcf80(std::ptr::addr_of_mut!(byval8) as *mut num_complex::Complex<LongDouble>) };
 // LOWERING-NEXT:     coerce15 = _v35;
 // LOWERING-NEXT:     let _v36: *mut num_complex::Complex<LongDouble> = std::ptr::addr_of_mut!(coerce15) as *mut num_complex::Complex<LongDouble>;
 // LOWERING-NEXT:     let _v37: num_complex::Complex<LongDouble> = unsafe { *_v36 };
@@ -767,7 +767,7 @@ int main(void) {
 // LOWERING-NEXT:     let _v41: num_complex::Complex<LongDouble> = coerce27;
 // LOWERING-NEXT:     let mut byval10: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
 // LOWERING-NEXT:     byval10 = _v41;
-// LOWERING-NEXT:     let _v42: anon_struct = unsafe { __slate_clogl__rcf80_pcf80(std::ptr::addr_of_mut!(byval10) as *mut num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     let _v42: {{anon_struct[0-9A-Za-z_]*}} = unsafe { __slate_clogl__rcf80_pcf80(std::ptr::addr_of_mut!(byval10) as *mut num_complex::Complex<LongDouble>) };
 // LOWERING-NEXT:     coerce14 = _v42;
 // LOWERING-NEXT:     let _v43: *mut num_complex::Complex<LongDouble> = std::ptr::addr_of_mut!(coerce14) as *mut num_complex::Complex<LongDouble>;
 // LOWERING-NEXT:     let _v44: num_complex::Complex<LongDouble> = unsafe { *_v43 };
@@ -787,7 +787,7 @@ int main(void) {
 // LOWERING-NEXT:     byval12 = _v49;
 // LOWERING-NEXT:     let mut byval13: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
 // LOWERING-NEXT:     byval13 = _v50;
-// LOWERING-NEXT:     let _v51: anon_struct = unsafe { __slate_cpowl__rcf80_pcf80_pcf80(std::ptr::addr_of_mut!(byval12) as *mut num_complex::Complex<LongDouble>, std::ptr::addr_of_mut!(byval13) as *mut num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     let _v51: {{anon_struct[0-9A-Za-z_]*}} = unsafe { __slate_cpowl__rcf80_pcf80_pcf80(std::ptr::addr_of_mut!(byval12) as *mut num_complex::Complex<LongDouble>, std::ptr::addr_of_mut!(byval13) as *mut num_complex::Complex<LongDouble>) };
 // LOWERING-NEXT:     coerce13 = _v51;
 // LOWERING-NEXT:     let _v52: *mut num_complex::Complex<LongDouble> = std::ptr::addr_of_mut!(coerce13) as *mut num_complex::Complex<LongDouble>;
 // LOWERING-NEXT:     let _v53: num_complex::Complex<LongDouble> = unsafe { *_v52 };
@@ -802,7 +802,7 @@ int main(void) {
 // LOWERING-NEXT:     let _v57: num_complex::Complex<LongDouble> = coerce32;
 // LOWERING-NEXT:     let mut byval15: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
 // LOWERING-NEXT:     byval15 = _v57;
-// LOWERING-NEXT:     let _v58: anon_struct = unsafe { __slate_csinl__rcf80_pcf80(std::ptr::addr_of_mut!(byval15) as *mut num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     let _v58: {{anon_struct[0-9A-Za-z_]*}} = unsafe { __slate_csinl__rcf80_pcf80(std::ptr::addr_of_mut!(byval15) as *mut num_complex::Complex<LongDouble>) };
 // LOWERING-NEXT:     coerce12 = _v58;
 // LOWERING-NEXT:     let _v59: *mut num_complex::Complex<LongDouble> = std::ptr::addr_of_mut!(coerce12) as *mut num_complex::Complex<LongDouble>;
 // LOWERING-NEXT:     let _v60: num_complex::Complex<LongDouble> = unsafe { *_v59 };
@@ -817,7 +817,7 @@ int main(void) {
 // LOWERING-NEXT:     let _v64: num_complex::Complex<LongDouble> = coerce34;
 // LOWERING-NEXT:     let mut byval17: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
 // LOWERING-NEXT:     byval17 = _v64;
-// LOWERING-NEXT:     let _v65: anon_struct = unsafe { __slate_ccosl__rcf80_pcf80(std::ptr::addr_of_mut!(byval17) as *mut num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     let _v65: {{anon_struct[0-9A-Za-z_]*}} = unsafe { __slate_ccosl__rcf80_pcf80(std::ptr::addr_of_mut!(byval17) as *mut num_complex::Complex<LongDouble>) };
 // LOWERING-NEXT:     coerce11 = _v65;
 // LOWERING-NEXT:     let _v66: *mut num_complex::Complex<LongDouble> = std::ptr::addr_of_mut!(coerce11) as *mut num_complex::Complex<LongDouble>;
 // LOWERING-NEXT:     let _v67: num_complex::Complex<LongDouble> = unsafe { *_v66 };
@@ -832,7 +832,7 @@ int main(void) {
 // LOWERING-NEXT:     let _v71: num_complex::Complex<LongDouble> = coerce36;
 // LOWERING-NEXT:     let mut byval19: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
 // LOWERING-NEXT:     byval19 = _v71;
-// LOWERING-NEXT:     let _v72: anon_struct = unsafe { __slate_ctanl__rcf80_pcf80(std::ptr::addr_of_mut!(byval19) as *mut num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     let _v72: {{anon_struct[0-9A-Za-z_]*}} = unsafe { __slate_ctanl__rcf80_pcf80(std::ptr::addr_of_mut!(byval19) as *mut num_complex::Complex<LongDouble>) };
 // LOWERING-NEXT:     coerce10 = _v72;
 // LOWERING-NEXT:     let _v73: *mut num_complex::Complex<LongDouble> = std::ptr::addr_of_mut!(coerce10) as *mut num_complex::Complex<LongDouble>;
 // LOWERING-NEXT:     let _v74: num_complex::Complex<LongDouble> = unsafe { *_v73 };
@@ -847,7 +847,7 @@ int main(void) {
 // LOWERING-NEXT:     let _v78: num_complex::Complex<LongDouble> = coerce38;
 // LOWERING-NEXT:     let mut byval21: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
 // LOWERING-NEXT:     byval21 = _v78;
-// LOWERING-NEXT:     let _v79: anon_struct = unsafe { __slate_casinl__rcf80_pcf80(std::ptr::addr_of_mut!(byval21) as *mut num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     let _v79: {{anon_struct[0-9A-Za-z_]*}} = unsafe { __slate_casinl__rcf80_pcf80(std::ptr::addr_of_mut!(byval21) as *mut num_complex::Complex<LongDouble>) };
 // LOWERING-NEXT:     coerce9 = _v79;
 // LOWERING-NEXT:     let _v80: *mut num_complex::Complex<LongDouble> = std::ptr::addr_of_mut!(coerce9) as *mut num_complex::Complex<LongDouble>;
 // LOWERING-NEXT:     let _v81: num_complex::Complex<LongDouble> = unsafe { *_v80 };
@@ -862,7 +862,7 @@ int main(void) {
 // LOWERING-NEXT:     let _v85: num_complex::Complex<LongDouble> = coerce40;
 // LOWERING-NEXT:     let mut byval23: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
 // LOWERING-NEXT:     byval23 = _v85;
-// LOWERING-NEXT:     let _v86: anon_struct = unsafe { __slate_cacosl__rcf80_pcf80(std::ptr::addr_of_mut!(byval23) as *mut num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     let _v86: {{anon_struct[0-9A-Za-z_]*}} = unsafe { __slate_cacosl__rcf80_pcf80(std::ptr::addr_of_mut!(byval23) as *mut num_complex::Complex<LongDouble>) };
 // LOWERING-NEXT:     coerce8 = _v86;
 // LOWERING-NEXT:     let _v87: *mut num_complex::Complex<LongDouble> = std::ptr::addr_of_mut!(coerce8) as *mut num_complex::Complex<LongDouble>;
 // LOWERING-NEXT:     let _v88: num_complex::Complex<LongDouble> = unsafe { *_v87 };
@@ -877,7 +877,7 @@ int main(void) {
 // LOWERING-NEXT:     let _v92: num_complex::Complex<LongDouble> = coerce42;
 // LOWERING-NEXT:     let mut byval25: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
 // LOWERING-NEXT:     byval25 = _v92;
-// LOWERING-NEXT:     let _v93: anon_struct = unsafe { __slate_catanl__rcf80_pcf80(std::ptr::addr_of_mut!(byval25) as *mut num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     let _v93: {{anon_struct[0-9A-Za-z_]*}} = unsafe { __slate_catanl__rcf80_pcf80(std::ptr::addr_of_mut!(byval25) as *mut num_complex::Complex<LongDouble>) };
 // LOWERING-NEXT:     coerce7 = _v93;
 // LOWERING-NEXT:     let _v94: *mut num_complex::Complex<LongDouble> = std::ptr::addr_of_mut!(coerce7) as *mut num_complex::Complex<LongDouble>;
 // LOWERING-NEXT:     let _v95: num_complex::Complex<LongDouble> = unsafe { *_v94 };
@@ -892,7 +892,7 @@ int main(void) {
 // LOWERING-NEXT:     let _v99: num_complex::Complex<LongDouble> = coerce44;
 // LOWERING-NEXT:     let mut byval27: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
 // LOWERING-NEXT:     byval27 = _v99;
-// LOWERING-NEXT:     let _v100: anon_struct = unsafe { __slate_csinhl__rcf80_pcf80(std::ptr::addr_of_mut!(byval27) as *mut num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     let _v100: {{anon_struct[0-9A-Za-z_]*}} = unsafe { __slate_csinhl__rcf80_pcf80(std::ptr::addr_of_mut!(byval27) as *mut num_complex::Complex<LongDouble>) };
 // LOWERING-NEXT:     coerce6 = _v100;
 // LOWERING-NEXT:     let _v101: *mut num_complex::Complex<LongDouble> = std::ptr::addr_of_mut!(coerce6) as *mut num_complex::Complex<LongDouble>;
 // LOWERING-NEXT:     let _v102: num_complex::Complex<LongDouble> = unsafe { *_v101 };
@@ -907,7 +907,7 @@ int main(void) {
 // LOWERING-NEXT:     let _v106: num_complex::Complex<LongDouble> = coerce46;
 // LOWERING-NEXT:     let mut byval29: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
 // LOWERING-NEXT:     byval29 = _v106;
-// LOWERING-NEXT:     let _v107: anon_struct = unsafe { __slate_ccoshl__rcf80_pcf80(std::ptr::addr_of_mut!(byval29) as *mut num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     let _v107: {{anon_struct[0-9A-Za-z_]*}} = unsafe { __slate_ccoshl__rcf80_pcf80(std::ptr::addr_of_mut!(byval29) as *mut num_complex::Complex<LongDouble>) };
 // LOWERING-NEXT:     coerce5 = _v107;
 // LOWERING-NEXT:     let _v108: *mut num_complex::Complex<LongDouble> = std::ptr::addr_of_mut!(coerce5) as *mut num_complex::Complex<LongDouble>;
 // LOWERING-NEXT:     let _v109: num_complex::Complex<LongDouble> = unsafe { *_v108 };
@@ -922,7 +922,7 @@ int main(void) {
 // LOWERING-NEXT:     let _v113: num_complex::Complex<LongDouble> = coerce48;
 // LOWERING-NEXT:     let mut byval31: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
 // LOWERING-NEXT:     byval31 = _v113;
-// LOWERING-NEXT:     let _v114: anon_struct = unsafe { __slate_ctanhl__rcf80_pcf80(std::ptr::addr_of_mut!(byval31) as *mut num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     let _v114: {{anon_struct[0-9A-Za-z_]*}} = unsafe { __slate_ctanhl__rcf80_pcf80(std::ptr::addr_of_mut!(byval31) as *mut num_complex::Complex<LongDouble>) };
 // LOWERING-NEXT:     coerce4 = _v114;
 // LOWERING-NEXT:     let _v115: *mut num_complex::Complex<LongDouble> = std::ptr::addr_of_mut!(coerce4) as *mut num_complex::Complex<LongDouble>;
 // LOWERING-NEXT:     let _v116: num_complex::Complex<LongDouble> = unsafe { *_v115 };
@@ -937,7 +937,7 @@ int main(void) {
 // LOWERING-NEXT:     let _v120: num_complex::Complex<LongDouble> = coerce50;
 // LOWERING-NEXT:     let mut byval33: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
 // LOWERING-NEXT:     byval33 = _v120;
-// LOWERING-NEXT:     let _v121: anon_struct = unsafe { __slate_casinhl__rcf80_pcf80(std::ptr::addr_of_mut!(byval33) as *mut num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     let _v121: {{anon_struct[0-9A-Za-z_]*}} = unsafe { __slate_casinhl__rcf80_pcf80(std::ptr::addr_of_mut!(byval33) as *mut num_complex::Complex<LongDouble>) };
 // LOWERING-NEXT:     coerce3 = _v121;
 // LOWERING-NEXT:     let _v122: *mut num_complex::Complex<LongDouble> = std::ptr::addr_of_mut!(coerce3) as *mut num_complex::Complex<LongDouble>;
 // LOWERING-NEXT:     let _v123: num_complex::Complex<LongDouble> = unsafe { *_v122 };
@@ -952,7 +952,7 @@ int main(void) {
 // LOWERING-NEXT:     let _v127: num_complex::Complex<LongDouble> = coerce52;
 // LOWERING-NEXT:     let mut byval35: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
 // LOWERING-NEXT:     byval35 = _v127;
-// LOWERING-NEXT:     let _v128: anon_struct = unsafe { __slate_cacoshl__rcf80_pcf80(std::ptr::addr_of_mut!(byval35) as *mut num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     let _v128: {{anon_struct[0-9A-Za-z_]*}} = unsafe { __slate_cacoshl__rcf80_pcf80(std::ptr::addr_of_mut!(byval35) as *mut num_complex::Complex<LongDouble>) };
 // LOWERING-NEXT:     coerce2 = _v128;
 // LOWERING-NEXT:     let _v129: *mut num_complex::Complex<LongDouble> = std::ptr::addr_of_mut!(coerce2) as *mut num_complex::Complex<LongDouble>;
 // LOWERING-NEXT:     let _v130: num_complex::Complex<LongDouble> = unsafe { *_v129 };
@@ -967,7 +967,7 @@ int main(void) {
 // LOWERING-NEXT:     let _v134: num_complex::Complex<LongDouble> = coerce54;
 // LOWERING-NEXT:     let mut byval37: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
 // LOWERING-NEXT:     byval37 = _v134;
-// LOWERING-NEXT:     let _v135: anon_struct = unsafe { __slate_catanhl__rcf80_pcf80(std::ptr::addr_of_mut!(byval37) as *mut num_complex::Complex<LongDouble>) };
+// LOWERING-NEXT:     let _v135: {{anon_struct[0-9A-Za-z_]*}} = unsafe { __slate_catanhl__rcf80_pcf80(std::ptr::addr_of_mut!(byval37) as *mut num_complex::Complex<LongDouble>) };
 // LOWERING-NEXT:     coerce = _v135;
 // LOWERING-NEXT:     let _v136: *mut num_complex::Complex<LongDouble> = std::ptr::addr_of_mut!(coerce) as *mut num_complex::Complex<LongDouble>;
 // LOWERING-NEXT:     let _v137: num_complex::Complex<LongDouble> = unsafe { *_v136 };
@@ -1000,26 +1000,26 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
 // LOWERING-NEXT:     fn __slate_cabsl__rf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_cacoshl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// LOWERING-NEXT:     fn __slate_cacosl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
+// LOWERING-NEXT:     fn __slate_cacoshl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn __slate_cacosl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
 // LOWERING-NEXT:     fn __slate_cargl__rf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> LongDouble;
-// LOWERING-NEXT:     fn __slate_casinhl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// LOWERING-NEXT:     fn __slate_casinl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// LOWERING-NEXT:     fn __slate_catanhl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// LOWERING-NEXT:     fn __slate_catanl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// LOWERING-NEXT:     fn __slate_ccoshl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// LOWERING-NEXT:     fn __slate_ccosl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// LOWERING-NEXT:     fn __slate_cexpl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
+// LOWERING-NEXT:     fn __slate_casinhl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn __slate_casinl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn __slate_catanhl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn __slate_catanl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn __slate_ccoshl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn __slate_ccosl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn __slate_cexpl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
 // LOWERING-NEXT:     safe fn __slate_cf80_div(a: num_complex::Complex<LongDouble>, b: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
 // LOWERING-NEXT:     safe fn __slate_cf80_mul(a: num_complex::Complex<LongDouble>, b: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
-// LOWERING-NEXT:     fn __slate_clogl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// LOWERING-NEXT:     fn __slate_cpowl__rcf80_pcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>, _1: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// LOWERING-NEXT:     fn __slate_cprojl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// LOWERING-NEXT:     fn __slate_csinhl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// LOWERING-NEXT:     fn __slate_csinl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// LOWERING-NEXT:     fn __slate_csqrtl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// LOWERING-NEXT:     fn __slate_ctanhl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// LOWERING-NEXT:     fn __slate_ctanl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
+// LOWERING-NEXT:     fn __slate_clogl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn __slate_cpowl__rcf80_pcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>, _1: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn __slate_cprojl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn __slate_csinhl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn __slate_csinl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn __slate_csqrtl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn __slate_ctanhl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// LOWERING-NEXT:     fn __slate_ctanl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
 // LOWERING-NEXT:     safe fn __slate_f80_abs(a: LongDouble) -> LongDouble;
 // LOWERING-NEXT:     safe fn __slate_f80_add(a: LongDouble, b: LongDouble) -> LongDouble;
 // LOWERING-NEXT:     safe fn __slate_f80_ceil(a: LongDouble) -> LongDouble;
@@ -1150,7 +1150,7 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
-// REWRITES-NEXT: struct anon_struct {
+// REWRITES-NEXT: struct {{anon_struct[0-9A-Za-z_]*}} {
 // REWRITES-NEXT:     __slate_anon_0: LongDouble,
 // REWRITES-NEXT:     __slate_anon_1: LongDouble,
 // REWRITES-NEXT: }
@@ -1163,23 +1163,23 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
 // REWRITES-NEXT:     fn cabsl(_0: *mut num_complex::Complex<LongDouble>) -> LongDouble;
 // REWRITES-NEXT:     fn cargl(_0: *mut num_complex::Complex<LongDouble>) -> LongDouble;
-// REWRITES-NEXT:     fn cprojl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// REWRITES-NEXT:     fn csqrtl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// REWRITES-NEXT:     fn cexpl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// REWRITES-NEXT:     fn clogl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// REWRITES-NEXT:     fn cpowl(_0: *mut num_complex::Complex<LongDouble>, _1: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// REWRITES-NEXT:     fn csinl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// REWRITES-NEXT:     fn ccosl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// REWRITES-NEXT:     fn ctanl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// REWRITES-NEXT:     fn casinl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// REWRITES-NEXT:     fn cacosl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// REWRITES-NEXT:     fn catanl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// REWRITES-NEXT:     fn csinhl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// REWRITES-NEXT:     fn ccoshl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// REWRITES-NEXT:     fn ctanhl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// REWRITES-NEXT:     fn casinhl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// REWRITES-NEXT:     fn cacoshl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// REWRITES-NEXT:     fn catanhl(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
+// REWRITES-NEXT:     fn cprojl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn csqrtl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn cexpl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn clogl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn cpowl(_0: *mut num_complex::Complex<LongDouble>, _1: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn csinl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn ccosl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn ctanl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn casinl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn cacosl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn catanl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn csinhl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn ccoshl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn ctanhl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn casinhl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn cacoshl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn catanhl(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn print_lc(arg2: *mut i8, arg3: &num_complex::Complex<LongDouble>) {
@@ -1195,7 +1195,7 @@ int main(void) {
 // REWRITES-NEXT: return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn mix_complex(arg0: &num_complex::Complex<LongDouble>, arg1: &num_complex::Complex<LongDouble>) -> anon_struct {
+// REWRITES-NEXT: fn mix_complex(arg0: &num_complex::Complex<LongDouble>, arg1: &num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}} {
 // REWRITES-NEXT: let mut coerce: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
 // REWRITES-NEXT: let _v0: num_complex::Complex<LongDouble> = unsafe { *(arg1 as *const num_complex::Complex<LongDouble>) };
 // REWRITES-NEXT: let _v1: num_complex::Complex<LongDouble> = unsafe { *(arg0 as *const num_complex::Complex<LongDouble>) };
@@ -1212,12 +1212,12 @@ int main(void) {
 // REWRITES-NEXT: let _v12: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
 // REWRITES-NEXT: __retval = num_complex::Complex { re: _v11.re * _v12, im: _v11.im * _v12 };
 // REWRITES-NEXT: coerce = __retval;
-// REWRITES-NEXT: let _v19: *mut anon_struct = std::ptr::addr_of_mut!(coerce) as *mut anon_struct;
+// REWRITES-NEXT: let _v19: *mut {{anon_struct[0-9A-Za-z_]*}} = std::ptr::addr_of_mut!(coerce) as *mut {{anon_struct[0-9A-Za-z_]*}};
 // REWRITES-NEXT: return unsafe { *_v19 };
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn check_arithmetic() {
-// REWRITES-NEXT: let mut coerce: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// REWRITES-NEXT: let mut coerce: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
 // REWRITES-NEXT: let mut a: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
 // REWRITES-NEXT: let mut b: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
 // REWRITES-NEXT: let mut coerce2: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
@@ -1487,23 +1487,23 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn check_stdlib_functions() {
-// REWRITES-NEXT: let mut coerce: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// REWRITES-NEXT: let mut coerce2: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// REWRITES-NEXT: let mut coerce3: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// REWRITES-NEXT: let mut coerce4: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// REWRITES-NEXT: let mut coerce5: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// REWRITES-NEXT: let mut coerce6: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// REWRITES-NEXT: let mut coerce7: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// REWRITES-NEXT: let mut coerce8: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// REWRITES-NEXT: let mut coerce9: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// REWRITES-NEXT: let mut coerce10: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// REWRITES-NEXT: let mut coerce11: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// REWRITES-NEXT: let mut coerce12: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// REWRITES-NEXT: let mut coerce13: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// REWRITES-NEXT: let mut coerce14: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// REWRITES-NEXT: let mut coerce15: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// REWRITES-NEXT: let mut coerce16: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
-// REWRITES-NEXT: let mut coerce17: anon_struct = anon_struct { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// REWRITES-NEXT: let mut coerce: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// REWRITES-NEXT: let mut coerce2: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// REWRITES-NEXT: let mut coerce3: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// REWRITES-NEXT: let mut coerce4: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// REWRITES-NEXT: let mut coerce5: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// REWRITES-NEXT: let mut coerce6: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// REWRITES-NEXT: let mut coerce7: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// REWRITES-NEXT: let mut coerce8: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// REWRITES-NEXT: let mut coerce9: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// REWRITES-NEXT: let mut coerce10: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// REWRITES-NEXT: let mut coerce11: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// REWRITES-NEXT: let mut coerce12: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// REWRITES-NEXT: let mut coerce13: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// REWRITES-NEXT: let mut coerce14: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// REWRITES-NEXT: let mut coerce15: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// REWRITES-NEXT: let mut coerce16: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
+// REWRITES-NEXT: let mut coerce17: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: LongDouble([0; 10]), __slate_anon_1: LongDouble([0; 10]) };
 // REWRITES-NEXT: let mut z: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
 // REWRITES-NEXT: let mut coerce18: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
 // REWRITES-NEXT: let mut coerce19: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
@@ -1757,26 +1757,26 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
 // REWRITES-NEXT:     fn __slate_cabsl__rf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> LongDouble;
-// REWRITES-NEXT:     fn __slate_cacoshl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// REWRITES-NEXT:     fn __slate_cacosl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
+// REWRITES-NEXT:     fn __slate_cacoshl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn __slate_cacosl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
 // REWRITES-NEXT:     fn __slate_cargl__rf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> LongDouble;
-// REWRITES-NEXT:     fn __slate_casinhl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// REWRITES-NEXT:     fn __slate_casinl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// REWRITES-NEXT:     fn __slate_catanhl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// REWRITES-NEXT:     fn __slate_catanl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// REWRITES-NEXT:     fn __slate_ccoshl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// REWRITES-NEXT:     fn __slate_ccosl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// REWRITES-NEXT:     fn __slate_cexpl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
+// REWRITES-NEXT:     fn __slate_casinhl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn __slate_casinl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn __slate_catanhl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn __slate_catanl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn __slate_ccoshl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn __slate_ccosl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn __slate_cexpl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
 // REWRITES-NEXT:     safe fn __slate_cf80_div(a: num_complex::Complex<LongDouble>, b: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
 // REWRITES-NEXT:     safe fn __slate_cf80_mul(a: num_complex::Complex<LongDouble>, b: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
-// REWRITES-NEXT:     fn __slate_clogl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// REWRITES-NEXT:     fn __slate_cpowl__rcf80_pcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>, _1: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// REWRITES-NEXT:     fn __slate_cprojl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// REWRITES-NEXT:     fn __slate_csinhl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// REWRITES-NEXT:     fn __slate_csinl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// REWRITES-NEXT:     fn __slate_csqrtl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// REWRITES-NEXT:     fn __slate_ctanhl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
-// REWRITES-NEXT:     fn __slate_ctanl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> anon_struct;
+// REWRITES-NEXT:     fn __slate_clogl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn __slate_cpowl__rcf80_pcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>, _1: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn __slate_cprojl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn __slate_csinhl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn __slate_csinl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn __slate_csqrtl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn __slate_ctanhl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
+// REWRITES-NEXT:     fn __slate_ctanl__rcf80_pcf80(_0: *mut num_complex::Complex<LongDouble>) -> {{anon_struct[0-9A-Za-z_]*}};
 // REWRITES-NEXT:     safe fn __slate_f80_abs(a: LongDouble) -> LongDouble;
 // REWRITES-NEXT:     safe fn __slate_f80_add(a: LongDouble, b: LongDouble) -> LongDouble;
 // REWRITES-NEXT:     safe fn __slate_f80_ceil(a: LongDouble) -> LongDouble;

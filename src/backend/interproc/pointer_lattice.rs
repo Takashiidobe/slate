@@ -15,6 +15,24 @@ fn source_var(expr: &Expr) -> Option<Ident> {
     }
 }
 
+fn frame_field_key(expr: &Expr) -> Option<String> {
+    if let Expr::TupleField { base, index } = expr
+        && let Expr::Var(base) = &**base
+        && base.as_str().starts_with("__slate_alloca_frame")
+    {
+        return Some(format!("{}.{index}", base.as_str()));
+    }
+    None
+}
+
+fn place_key(expr: &Expr) -> Option<String> {
+    match expr {
+        Expr::Var(v) => Some(v.to_string()),
+        Expr::Cast { expr, .. } => place_key(expr),
+        _ => frame_field_key(expr),
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub(in crate::backend) struct PointerBinding {
     pub function: String,
@@ -633,7 +651,7 @@ impl ClassifyCtx<'_> {
     }
 
     fn try_alias(&mut self, name: &str, source_expr: &Expr) -> bool {
-        let Some(source) = source_var(source_expr) else {
+        let Some(source) = place_key(source_expr) else {
             return false;
         };
         let Some(canonical) = self.canonical_of(source.as_str()) else {
@@ -768,6 +786,16 @@ impl ClassifyCtx<'_> {
                     {
                         self.expr(value);
                     }
+                } else if let Some(key) = frame_field_key(target) {
+                    match source_var(value).and_then(|s| self.canonical_of(s.as_str())) {
+                        Some(canonical) => {
+                            self.tracked.insert(key, canonical);
+                        }
+                        None => {
+                            self.tracked.remove(&key);
+                            self.expr(value);
+                        }
+                    }
                 } else {
                     self.place(target, true);
                     self.expr(value);
@@ -829,8 +857,8 @@ impl ClassifyCtx<'_> {
                 op: crate::backend::rust_ast::UnaryOp::Deref,
                 expr,
             } => {
-                if let Expr::Var(name) = &**expr
-                    && let Some(canonical) = self.canonical_of(name.as_str())
+                if let Some(key) = place_key(expr)
+                    && let Some(canonical) = self.canonical_of(key.as_str())
                 {
                     if is_write {
                         self.observe(&canonical, PointerFact::observe_write);

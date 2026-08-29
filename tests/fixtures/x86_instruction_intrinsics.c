@@ -28,7 +28,7 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
-// LOWERING-NEXT: struct anon_struct {
+// LOWERING-NEXT: struct {{anon_struct[0-9A-Za-z_]*}} {
 // LOWERING-NEXT:     __slate_anon_0: u64,
 // LOWERING-NEXT:     __slate_anon_1: u32,
 // LOWERING-NEXT: }
@@ -143,7 +143,7 @@ int main(void) {
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         unsafe { __slate_intrinsic_x86_sse2_mfence_bb861e7376322ce() };
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let _v3: anon_struct = unsafe { __slate_intrinsic_x86_rdtscp_a57815630f0a5a97() };
+// LOWERING-NEXT:     let _v3: {{anon_struct[0-9A-Za-z_]*}} = unsafe { __slate_intrinsic_x86_rdtscp_a57815630f0a5a97() };
 // LOWERING-NEXT:     let _v4: u32 = _v3.__slate_anon_1;
 // LOWERING-NEXT:     auxiliary = _v4;
 // LOWERING-NEXT:     let _v5: u64 = _v3.__slate_anon_0;
@@ -172,7 +172,7 @@ int main(void) {
 // LOWERING-NEXT:     #[link_name = "llvm.x86.rdtsc"]
 // LOWERING-NEXT:     fn __slate_intrinsic_x86_rdtsc_319a3f94c908d021() -> u64;
 // LOWERING-NEXT:     #[link_name = "llvm.x86.rdtscp"]
-// LOWERING-NEXT:     fn __slate_intrinsic_x86_rdtscp_a57815630f0a5a97() -> anon_struct;
+// LOWERING-NEXT:     fn __slate_intrinsic_x86_rdtscp_a57815630f0a5a97() -> {{anon_struct[0-9A-Za-z_]*}};
 // LOWERING-NEXT:     #[link_name = "llvm.x86.sse2.lfence"]
 // LOWERING-NEXT:     fn __slate_intrinsic_x86_sse2_lfence_b6f7983e420a3939();
 // LOWERING-NEXT:     #[link_name = "llvm.x86.sse2.mfence"]
@@ -200,7 +200,7 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
-// REWRITES-NEXT: struct anon_struct {
+// REWRITES-NEXT: struct {{anon_struct[0-9A-Za-z_]*}} {
 // REWRITES-NEXT:     __slate_anon_0: u64,
 // REWRITES-NEXT:     __slate_anon_1: u32,
 // REWRITES-NEXT: }
@@ -279,7 +279,7 @@ int main(void) {
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         unsafe { __slate_intrinsic_x86_sse2_mfence_bb861e7376322ce() };
 // REWRITES-NEXT: }
-// REWRITES-NEXT: let _v3: anon_struct = unsafe { __slate_intrinsic_x86_rdtscp_a57815630f0a5a97() };
+// REWRITES-NEXT: let _v3: {{anon_struct[0-9A-Za-z_]*}} = unsafe { __slate_intrinsic_x86_rdtscp_a57815630f0a5a97() };
 // REWRITES-NEXT: auxiliary = _v3.__slate_anon_1;
 // REWRITES-NEXT: second = _v3.__slate_anon_0;
 // REWRITES-NEXT: unsafe {
@@ -299,7 +299,7 @@ int main(void) {
 // REWRITES-NEXT:     #[link_name = "llvm.x86.rdtsc"]
 // REWRITES-NEXT:     fn __slate_intrinsic_x86_rdtsc_319a3f94c908d021() -> u64;
 // REWRITES-NEXT:     #[link_name = "llvm.x86.rdtscp"]
-// REWRITES-NEXT:     fn __slate_intrinsic_x86_rdtscp_a57815630f0a5a97() -> anon_struct;
+// REWRITES-NEXT:     fn __slate_intrinsic_x86_rdtscp_a57815630f0a5a97() -> {{anon_struct[0-9A-Za-z_]*}};
 // REWRITES-NEXT:     #[link_name = "llvm.x86.sse2.lfence"]
 // REWRITES-NEXT:     fn __slate_intrinsic_x86_sse2_lfence_b6f7983e420a3939();
 // REWRITES-NEXT:     #[link_name = "llvm.x86.sse2.mfence"]

@@ -46,7 +46,7 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
-// LOWERING-NEXT: struct anon_struct {
+// LOWERING-NEXT: struct {{anon_struct[0-9A-Za-z_]*}} {
 // LOWERING-NEXT:     __slate_anon_0: i32,
 // LOWERING-NEXT:     __slate_anon_1: i32,
 // LOWERING-NEXT: }
@@ -126,7 +126,7 @@ int main(void) {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut left: i32 = 0;
 // LOWERING-NEXT:     let mut right: i32 = 0;
-// LOWERING-NEXT:     let mut __asm_result: anon_struct = anon_struct { __slate_anon_0: 0, __slate_anon_1: 0 };
+// LOWERING-NEXT:     let mut __asm_result: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: 0, __slate_anon_1: 0 };
 // LOWERING-NEXT:     let _v0: i32;
 // LOWERING-NEXT:     let _v1: i32;
 // LOWERING-NEXT:     unsafe {
@@ -169,7 +169,7 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
-// REWRITES-NEXT: struct anon_struct {
+// REWRITES-NEXT: struct {{anon_struct[0-9A-Za-z_]*}} {
 // REWRITES-NEXT:     __slate_anon_0: i32,
 // REWRITES-NEXT:     __slate_anon_1: i32,
 // REWRITES-NEXT: }
@@ -242,7 +242,7 @@ int main(void) {
 // REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut left: i32 = 0;
 // REWRITES-NEXT: let mut right: i32 = 0;
-// REWRITES-NEXT: let mut __asm_result: anon_struct = anon_struct { __slate_anon_0: 0, __slate_anon_1: 0 };
+// REWRITES-NEXT: let mut __asm_result: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: 0, __slate_anon_1: 0 };
 // REWRITES-NEXT: let _v0: i32;
 // REWRITES-NEXT: let _v1: i32;
 // REWRITES-NEXT: unsafe {

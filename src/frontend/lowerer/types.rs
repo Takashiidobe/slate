@@ -47,12 +47,26 @@ pub(super) fn rust_type_with_aliases(
             match aliases.get(name).or_else(|| aliases.get(alias_name)) {
                 Some(
                     CirType::Struct {
-                        name: record_name, ..
+                        name: record_name,
+                        members,
+                        ..
                     }
                     | CirType::Union {
-                        name: record_name, ..
+                        name: record_name,
+                        members,
+                        ..
                     },
-                ) => record_struct_type(record_name.as_deref(), name.strip_prefix("rec_")),
+                ) => {
+                    let alias_key = name.strip_prefix("rec_");
+                    if record_name.is_none()
+                        && alias_key.is_some_and(is_abi_coercion_record_name)
+                        && let Some(members) = members
+                    {
+                        Type::Custom(abi_coercion_canonical_name(members, aliases))
+                    } else {
+                        record_struct_type(record_name.as_deref(), alias_key)
+                    }
+                }
                 Some(expanded) => rust_type_with_aliases(expanded, aliases, va_list_boxed),
                 None if alias_name.starts_with("rec_") => {
                     record_struct_type(None, alias_name.strip_prefix("rec_"))
@@ -496,8 +510,59 @@ pub(super) fn is_complex_long_double_coercion_type(
 }
 
 pub(super) fn is_abi_coercion_record_name(name: &str) -> bool {
-    name.strip_prefix("anon_struct")
-        .is_some_and(|suffix| suffix.chars().all(|c| c.is_ascii_digit()))
+    name.strip_prefix("anon_struct").is_some_and(|suffix| {
+        suffix.is_empty() || suffix.starts_with('_') || suffix.chars().all(|c| c.is_ascii_digit())
+    })
+}
+
+fn ctype_abi_sig(ty: &crate::frontend::c_ast::CType) -> String {
+    use crate::frontend::c_ast::CType;
+    match ty {
+        CType::Int { signed, bits } => format!("{}{bits}", if *signed { "i" } else { "u" }),
+        CType::Float { bits } => format!("f{bits}"),
+        CType::Bool => "b".to_string(),
+        CType::Ptr(_) | CType::FuncPtr { .. } => "p".to_string(),
+        CType::Array(inner, len) => format!("a{}x{}", len.unwrap_or(0), ctype_abi_sig(inner)),
+        CType::Void => "v".to_string(),
+        CType::Record(name) => format!("r{}", sanitize_ident(name).into_string()),
+        CType::Enum(name) => format!("e{}", sanitize_ident(name).into_string()),
+    }
+}
+
+pub(super) fn abi_coercion_canonical_name(
+    members: &[CirType],
+    aliases: &BTreeMap<String, CirType>,
+) -> String {
+    let mut name = String::from("anon_struct");
+    for member in members {
+        name.push('_');
+        name.push_str(&ctype_abi_sig(&cir_type_to_ctype(member, aliases)));
+    }
+    name
+}
+
+pub(super) fn canonical_alias_record_name(
+    alias_key: &str,
+    ty: &CirType,
+    aliases: &BTreeMap<String, CirType>,
+) -> Option<String> {
+    if let Some(name) = slate_record_name(ty) {
+        return Some(name.to_string());
+    }
+    let stripped = alias_key.strip_prefix("rec_")?;
+    if is_abi_coercion_record_name(stripped)
+        && let CirType::Struct {
+            members: Some(members),
+            ..
+        }
+        | CirType::Union {
+            members: Some(members),
+            ..
+        } = ty
+    {
+        return Some(abi_coercion_canonical_name(members, aliases));
+    }
+    Some(stripped.to_string())
 }
 
 pub(super) fn is_void_ptr_type(ty: &Type) -> bool {
