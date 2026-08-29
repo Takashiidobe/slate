@@ -280,6 +280,37 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         value
     }
 
+    pub(super) fn named_function_coerced_to(
+        &self,
+        operand: &str,
+        target_ty: &Type,
+    ) -> Option<Expr> {
+        let Some(Val::Global(fn_name)) = self.values.get(operand).cloned() else {
+            return None;
+        };
+        if self.parent.strings.contains_key(&fn_name) {
+            return None;
+        }
+        let target = self
+            .parent
+            .long_double_callback_trampolines
+            .get(&fn_name)
+            .cloned()
+            .unwrap_or(fn_name);
+        let raw_ptr = Type::Ptr {
+            mutable: false,
+            inner: Box::new(Type::Unit),
+        };
+        Some(Expr::Transmute {
+            from: raw_ptr.clone(),
+            to: target_ty.clone(),
+            expr: Box::new(Expr::Cast {
+                expr: Box::new(Expr::Var(sanitize_ident(&target))),
+                ty: raw_ptr,
+            }),
+        })
+    }
+
     pub(super) fn function_pointer_operand_expr(&self, operand: &str) -> Expr {
         if self.function_pointer_null_values.contains(operand) {
             return Expr::Value(RustValue::None);

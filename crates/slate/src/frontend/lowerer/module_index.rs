@@ -182,14 +182,26 @@ pub(super) fn required_record_defs(
     required
 }
 
+fn collect_referenced_record_names<'a>(ty: &'a CirType, out: &mut BTreeSet<&'a str>) {
+    if let Some(name) = slate_record_name(ty) {
+        out.insert(name);
+    }
+    if let Some((element, _)) = ty.as_array() {
+        collect_referenced_record_names(element, out);
+    }
+    if let Some(pointee) = ty.pointee() {
+        collect_referenced_record_names(pointee, out);
+    }
+}
+
 pub fn shim_records_for_module(cir: &Module, c: &Unit) -> Vec<crate::frontend::c_ast::Record> {
-    let referenced: BTreeSet<&str> = cir
-        .type_aliases
-        .values()
-        .filter_map(slate_record_name)
-        .collect();
+    let mut referenced: BTreeSet<&str> = BTreeSet::new();
+    for ty in cir.type_aliases.values() {
+        collect_referenced_record_names(ty, &mut referenced);
+    }
     c.named_header_records
         .iter()
+        .chain(&c.anonymous_header_records)
         .filter(|&record| referenced.contains(record.name.as_str()))
         .cloned()
         .collect()
