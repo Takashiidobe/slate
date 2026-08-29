@@ -136,18 +136,26 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 && matches!(self.values.get(&op.lhs), Some(Val::Global(_)))
                 && matches!(self.values.get(&op.rhs), Some(Val::Global(_)))
         });
-        let operand = |this: &Self, value: &str, ty: Option<&CirType>| {
-            if concrete_function_symbols {
-                this.function_pointer_byte_operand_expr(value)
-            } else {
-                ty.map_or_else(
-                    || this.operand_expr(value),
-                    |ty| this.call_arg_expr(value, ty),
-                )
-            }
-        };
-        let lhs = operand(self, &op.lhs, lhs_ty);
-        let rhs = operand(self, &op.rhs, rhs_ty);
+        let operand =
+            |this: &Self, value: &str, ty: Option<&CirType>, counterpart: Option<&CirType>| {
+                if concrete_function_symbols {
+                    this.function_pointer_byte_operand_expr(value)
+                } else if let Some(target) = counterpart
+                    .filter(|c| is_cir_function_pointer_type(c))
+                    .filter(|_| ty.is_some_and(is_cir_function_pointer_type))
+                    .map(|c| this.parent.rust_type(c))
+                    .and_then(|target_ty| this.named_function_coerced_to(value, &target_ty))
+                {
+                    target
+                } else {
+                    ty.map_or_else(
+                        || this.operand_expr(value),
+                        |ty| this.call_arg_expr(value, ty),
+                    )
+                }
+            };
+        let lhs = operand(self, &op.lhs, lhs_ty, rhs_ty);
+        let rhs = operand(self, &op.rhs, rhs_ty, lhs_ty);
         let expr = match op.kind {
             CmpOpKind::One => Expr::Binary {
                 op: BinOp::Or,
