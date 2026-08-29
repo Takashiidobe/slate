@@ -36,36 +36,68 @@ Paired `@rewrite` comments select a C source region whose rewritten Rust lines
 become unordered `REWRITES-DAG` checks:
 
 ```c
-// @rewrite
+// @rewrite-begin
 printf("%d\n", value);
-// @rewrite
+// @rewrite-end
 ```
 
 Paired `@rewrite-not` comments select raw-lowering lines removed by rewriting:
 
 ```c
-// @rewrite-not
+// @rewrite-not-begin
 value = left + right;
-// @rewrite-not
+// @rewrite-not-end
 ```
+
+`@lowering` and `@lowering-not` are symmetric. `@lowering` emits unordered
+checks from raw-lowered Rust. `@lowering-not` emits rewritten lines absent from
+the raw-lowered region:
+
+```c
+// @lowering-begin
+raw_value = left * right;
+// @lowering-end
+// @lowering-not-begin
+fused_value = left + right;
+// @lowering-not-end
+```
+
+Different annotation kinds may be properly nested to select the same source
+region for multiple profiles:
+
+```c
+// @lowering-begin
+// @rewrite-begin
+shared_value = left + right;
+// @rewrite-end
+// @lowering-end
+```
+
+Each pair receives a distinct sentinel ID. Nested sentinel wrappers are removed
+from every enclosing capture, so neither profile generates checks for the
+instrumentation itself. Regions must close in reverse opening order; crossed
+annotations are rejected.
 
 The updater replaces these comments with unique inline-assembly sentinels in a
 temporary sibling source file. It translates that copy with and without
 rewrites, extracts the sentinel-bounded Rust, and writes checks into the
-original fixture. `@rewrite-not` emits only raw lines absent from the rewritten
-region. When annotations are present, full-output lowering checks are omitted.
+original fixture. Negative annotations emit only lines from the opposite
+profile that are absent from the selected profile. Profiles without annotations
+are omitted instead of receiving full-output checks.
 
 Generated patterns treat compiler-assigned identities as anonymous FileCheck
 regexes. CIR values such as `_v17`, ABI coercion records such as
 `anon_struct_i32_i32`, anonymous records such as `anon_2`, source-location
 record names, alloca frames, and structured-CFG state/dispatch names are not
 pinned to their current number. Temporary-shaped text inside Rust string
-literals remains literal. `@rewrite-not` compares these normalized patterns,
-so renumbering alone is not mistaken for a removed line.
+literals remains literal. Negative annotations compare these normalized
+patterns, so renumbering alone is not mistaken for a removed line.
 
-Markers must be standalone `//` or `/* */` comments and must be paired without
-nesting. Both sentinels must remain reachable through the same structured path,
-so a region must not end with `return`, `break`, `continue`, or `goto`.
+Markers must be standalone `//` or `/* */` comments with explicit `-begin` and
+`-end` suffixes. Different annotation kinds may nest, but the same kind cannot
+be opened twice and regions cannot cross. Both sentinels must remain reachable
+through the same structured path, so a region must not end with `return`,
+`break`, `continue`, or `goto`.
 
 Embedded NUL bytes in generated Rust are emitted as `{{\\x00}}` regexes so
 the C fixture remains a text file.

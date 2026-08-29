@@ -1,6 +1,3 @@
-[test-groups]
-cross-tu = { max-threads = 1 }
-
 [profile.libc]
 default-filter = '''
   binary_id(=slate::libc_shim_suite)
@@ -32,10 +29,6 @@ default-filter = '''
   + test(libc_test_functional_supported_tests_match_c)
   + test(stdlib_coverage)
 '''
-
-[[profile.default.overrides]]
-filter = 'binary_id(=slate::cross_tu)'
-test-group = 'cross-tu'
 
 [[profile.default.overrides]]
 filter = 'test(serial_temp_chain_translates_within_a_bounded_time)'

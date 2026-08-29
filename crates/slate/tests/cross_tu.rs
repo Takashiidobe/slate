@@ -102,9 +102,14 @@ fn library_filecheck_fixtures(profile: support::filecheck::Profile) -> Vec<Strin
 /// `src/` directory of generated `.rs` modules for per-test structural
 /// assertions.
 fn build_and_diff(name: &str) -> PathBuf {
+    build_and_diff_in(Path::new(""), name)
+}
+
+fn build_and_diff_in(scope: &Path, name: &str) -> PathBuf {
     let dir = fixture_dir(name);
     let work = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("target/cross-tu")
+        .join(scope)
         .join(name);
     std::fs::create_dir_all(&work).expect("create work dir");
 
@@ -144,7 +149,7 @@ fn cross_tu_work_dir(name: &str) -> PathBuf {
 #[test]
 fn generated_cross_tu_filecheck() {
     for fixture in project_filecheck_fixtures(support::filecheck::Profile::active()) {
-        build_and_diff(&fixture);
+        build_and_diff_in(Path::new("generated-cross-tu-filecheck"), &fixture);
     }
 }
 
