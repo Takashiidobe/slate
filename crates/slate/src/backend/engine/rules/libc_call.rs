@@ -22,6 +22,28 @@ impl CallCtx<'_> {
         self.resolve_lifted(self.args.get(i)?, want, 0)
     }
 
+    pub(super) fn const_str_arg(&self, i: usize) -> Option<String> {
+        self.resolve_const_str(self.args.get(i)?, 0)
+    }
+
+    fn resolve_const_str(&self, expr: &Expr, depth: usize) -> Option<String> {
+        if depth > 8 {
+            return None;
+        }
+        let peeled = peel_ptr_view(expr);
+        if let Some(literal) = const_str_literal(peeled) {
+            return Some(literal);
+        }
+        let Expr::Var(name) = peeled else {
+            return None;
+        };
+        let ty = self.var_type(*name)?;
+        if is_raw_ptr(&ty) && !self.is_reassigned(*name) {
+            return self.resolve_const_str(&self.var_init(*name)?, depth + 1);
+        }
+        None
+    }
+
     fn resolve_lifted(&self, expr: &Expr, want: fn(&Type) -> bool, depth: usize) -> Option<Expr> {
         if depth > 8 {
             return None;
@@ -251,6 +273,43 @@ fn mem_cmp(ctx: &CallCtx) -> Option<Expr> {
     ))
 }
 
+fn c_atoi_prefix(s: &str) -> i128 {
+    let t = s.trim_start();
+    let b = t.as_bytes();
+    let mut end = 0;
+    if end < b.len() && matches!(b[end], b'+' | b'-') {
+        end += 1;
+    }
+    let digits_start = end;
+    while end < b.len() && b[end].is_ascii_digit() {
+        end += 1;
+    }
+    if end == digits_start {
+        return 0;
+    }
+    t[..end].parse::<i128>().unwrap_or(0)
+}
+
+fn saturate_int(v: i128, prim: Prim) -> i128 {
+    match prim {
+        Prim::I32 => v.clamp(i32::MIN as i128, i32::MAX as i128),
+        Prim::I64 => v.clamp(i64::MIN as i128, i64::MAX as i128),
+        _ => v,
+    }
+}
+
+fn fold_atoi(ctx: &CallCtx, prim: Prim) -> Option<Expr> {
+    let lit = ctx.const_str_arg(0)?;
+    let value = saturate_int(c_atoi_prefix(&lit), prim);
+    Some(Expr::Value(RustValue::TypedInt(value, prim)))
+}
+
+fn fold_atof(ctx: &CallCtx) -> Option<Expr> {
+    let lit = ctx.const_str_arg(0)?;
+    let value = lit.trim().parse::<f64>().ok().filter(|v| v.is_finite())?;
+    Some(Expr::Value(RustValue::from(value)))
+}
+
 fn free_call(path: &[&str], args: Vec<Expr>) -> Expr {
     Expr::Call {
         binding: CallBinding::Generated,
@@ -462,6 +521,10 @@ pub(super) fn rules() -> Vec<Box<dyn NodeRule>> {
             let b = ctx.lifted_arg(1, is_byte_str_or_slice)?;
             Some(cast(method_call(a, "cmp", vec![b]), Type::Prim(Prim::I32)))
         }),
+        libc_call(Known::Atoi, |ctx| fold_atoi(ctx, Prim::I32)),
+        libc_call(Known::Atol, |ctx| fold_atoi(ctx, Prim::I64)),
+        libc_call(Known::Atoll, |ctx| fold_atoi(ctx, Prim::I64)),
+        libc_call(Known::Atof, fold_atof),
         libc_call(Known::MemCpy, |ctx| mem_copy(ctx, false)),
         libc_call(Known::MemMove, |ctx| mem_copy(ctx, true)),
         libc_call(Known::MemSet, mem_set),
