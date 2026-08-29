@@ -62,3 +62,4 @@ superseded each one for what actually applies now.
 - [length_lattice: internal slice view for companion-param buffer reads](concepts/length-lattice-internal-slice-view-for-companion-param-buffer-reads.md)
 - [Gate Owned pointer bridging on heap provenance (y0qs.4.9)](concepts/gate-owned-pointer-bridging-on-heap-provenance-y0qs-4-9.md)
 - [ptr_len signature worklist with canonical forwarding](concepts/ptr-len-signature-worklist-with-canonical-forwarding.md)
+- [ptr_len owned Vec signature lifting](concepts/ptr-len-owned-vec-signature-lifting.md)

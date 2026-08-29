@@ -10,7 +10,20 @@ use crate::function_identity::CallBinding;
 pub(in crate::backend) struct Pairing {
     len_param: String,
     idx_name: String,
-    mutable: bool,
+    kind: BufferKind,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum BufferKind {
+    Shared,
+    Mutable,
+    Owned,
+}
+
+impl BufferKind {
+    fn mutable(self) -> bool {
+        self != Self::Shared
+    }
 }
 
 pub(in crate::backend) fn compute(
@@ -33,7 +46,7 @@ pub(in crate::backend) fn apply(
     let lifted = apply_signature_lifts(program, &pairings, facts);
     let remaining = pairings
         .into_iter()
-        .filter(|(binding, _)| !lifted.contains(binding))
+        .filter(|(binding, pairing)| !lifted.contains(binding) && pairing.kind != BufferKind::Owned)
         .collect();
     apply_items(&mut program.items, &remaining);
 }
@@ -46,7 +59,7 @@ struct SignatureCandidate {
     len_param: String,
     ptr_index: usize,
     len_index: usize,
-    mutable: bool,
+    kind: BufferKind,
     elem_ty: Type,
     seeded: bool,
     len_reads: usize,
@@ -111,10 +124,11 @@ fn apply_signature_lifts(
     if std::env::var_os("SLATE_PTR_LEN_DEBUG").is_some() {
         for (id, candidate) in candidates.iter().enumerate() {
             eprintln!(
-                "ptr_len[{id}] {}::({}, {}) elem={:?} seed={} reads={} forwarded={} active={}",
+                "ptr_len[{id}] {}::({}, {}) kind={:?} elem={:?} seed={} reads={} forwarded={} active={}",
                 candidate.function,
                 candidate.ptr_param,
                 candidate.len_param,
+                candidate.kind,
                 candidate.elem_ty,
                 candidate.seeded,
                 candidate.len_reads,
@@ -213,9 +227,10 @@ fn signature_candidates(
             let Some(fact) = facts.get(&binding) else {
                 continue;
             };
-            let mutable = match fact.resolved().base {
-                ResolvedPtrType::Slice => false,
-                ResolvedPtrType::SliceMut => true,
+            let kind = match fact.resolved().base {
+                ResolvedPtrType::Slice => BufferKind::Shared,
+                ResolvedPtrType::SliceMut => BufferKind::Mutable,
+                ResolvedPtrType::Vec => BufferKind::Owned,
                 _ => continue,
             };
             for (len_index, len_param) in f.params.iter().enumerate() {
@@ -236,7 +251,7 @@ fn signature_candidates(
                     len_param: len_param.name.clone(),
                     ptr_index,
                     len_index,
-                    mutable,
+                    kind,
                     elem_ty: (**inner).clone(),
                     seeded,
                     len_reads: count_var_reads(&f.body, &len_local),
@@ -286,7 +301,10 @@ fn signature_call_sites(
                     .get(caller.as_str())
                     .into_iter()
                     .flatten()
-                    .find(|&&source| forwarded_pair(ptr_arg, len_arg, &candidates[source], &defs))
+                    .find(|&&source| {
+                        candidates[source].kind == candidate.kind
+                            && forwarded_pair(ptr_arg, len_arg, &candidates[source], &defs)
+                    })
                     .copied()
                     .map(CallProof::Forwarded)
             });
@@ -535,6 +553,78 @@ fn collect_value_defs_into(body: &[IndentStmt], out: &mut BTreeMap<String, Expr>
     }
 }
 
+fn remove_owned_frees(
+    body: &mut Vec<IndentStmt>,
+    candidate: &SignatureCandidate,
+    defs: &BTreeMap<String, Expr>,
+) {
+    body.retain_mut(|indent| {
+        if owned_free_arg(&indent.stmt)
+            .and_then(|arg| canonical_var(arg, defs))
+            .as_deref()
+            == Some(candidate.ptr_param.as_str())
+        {
+            return false;
+        }
+        remove_owned_frees_stmt(&mut indent.stmt, candidate, defs);
+        true
+    });
+}
+
+fn owned_free_arg(stmt: &Stmt) -> Option<&Expr> {
+    let Stmt::Expr(expr) = stmt else {
+        return None;
+    };
+    free_expr_arg(expr)
+}
+
+fn free_expr_arg(expr: &Expr) -> Option<&Expr> {
+    match expr {
+        Expr::Unsafe(block) if block.stmts.is_empty() => {
+            block.tail.as_deref().and_then(free_expr_arg)
+        }
+        Expr::Call { func, args, .. } if matches!(&**func, Expr::Var(name) if name.as_str() == "free") => {
+            matches!(args.as_slice(), [_]).then(|| &args[0])
+        }
+        _ => None,
+    }
+}
+
+fn remove_owned_frees_stmt(
+    stmt: &mut Stmt,
+    candidate: &SignatureCandidate,
+    defs: &BTreeMap<String, Expr>,
+) {
+    match stmt {
+        Stmt::LetIf {
+            then_body,
+            else_body,
+            ..
+        }
+        | Stmt::If {
+            then_body,
+            else_body,
+            ..
+        } => {
+            remove_owned_frees(then_body, candidate, defs);
+            remove_owned_frees(else_body, candidate, defs);
+        }
+        Stmt::Loop { body, .. }
+        | Stmt::For { body, .. }
+        | Stmt::Scope { body }
+        | Stmt::LabeledBlock { body, .. } => remove_owned_frees(body, candidate, defs),
+        Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
+            remove_owned_frees(&mut body.stmts, candidate, defs)
+        }
+        Stmt::Match { arms, .. } => {
+            for arm in arms {
+                remove_owned_frees(&mut arm.body, candidate, defs);
+            }
+        }
+        _ => {}
+    }
+}
+
 fn apply_signature_items(
     items: &mut [Item],
     accepted: &BTreeMap<String, SignatureCandidate>,
@@ -559,9 +649,13 @@ fn apply_signature_fn(
     proofs: &mut BTreeMap<(String, String), VecDeque<CallProof>>,
 ) {
     if let Some(candidate) = accepted.get(&f.name) {
+        if candidate.kind == BufferKind::Owned {
+            let defs = collect_value_defs(&f.body);
+            remove_owned_frees(&mut f.body, candidate, &defs);
+        }
         let raw = Expr::MethodCall {
             recv: Box::new(Expr::Var(Ident::new(candidate.ptr_param.as_str()))),
-            method: if candidate.mutable {
+            method: if candidate.kind.mutable() {
                 "as_mut_ptr"
             } else {
                 "as_ptr"
@@ -581,10 +675,17 @@ fn apply_signature_fn(
             indent.stmt.substitute_var(&candidate.ptr_param, &raw);
             indent.stmt.substitute_var(&candidate.len_param, &len);
         }
-        f.params[candidate.ptr_index].ty = Type::Ref {
-            mutable: candidate.mutable,
-            inner: Box::new(Type::Slice(Box::new(candidate.elem_ty.clone()))),
+        f.params[candidate.ptr_index].ty = match candidate.kind {
+            BufferKind::Shared | BufferKind::Mutable => Type::Ref {
+                mutable: candidate.kind == BufferKind::Mutable,
+                inner: Box::new(Type::Slice(Box::new(candidate.elem_ty.clone()))),
+            },
+            BufferKind::Owned => Type::Generic {
+                name: "Vec".to_string(),
+                args: vec![candidate.elem_ty.clone()],
+            },
         };
+        f.params[candidate.ptr_index].mutable = candidate.kind == BufferKind::Owned;
         f.params.remove(candidate.len_index);
     }
     for indent in &mut f.body {
@@ -696,7 +797,7 @@ fn rewrite_signature_expr(
                 return;
             };
             args[candidate.ptr_index] = match proof {
-                CallProof::Exact => slice_bridge(ptr_arg, len_arg, candidate),
+                CallProof::Exact => buffer_bridge(ptr_arg, len_arg, candidate),
                 CallProof::Forwarded(source) => {
                     Expr::Var(Ident::new(candidates[source].ptr_param.as_str()))
                 }
@@ -745,36 +846,29 @@ fn rewrite_signature_expr(
     }
 }
 
-fn slice_bridge(ptr: Expr, len: Expr, candidate: &SignatureCandidate) -> Expr {
+fn buffer_bridge(ptr: Expr, len: Expr, candidate: &SignatureCandidate) -> Expr {
+    let ptr = Expr::Cast {
+        expr: Box::new(ptr),
+        ty: Type::Ptr {
+            mutable: candidate.kind.mutable(),
+            inner: Box::new(candidate.elem_ty.clone()),
+        },
+    };
+    let len = Expr::Cast {
+        expr: Box::new(len),
+        ty: Type::Prim(Prim::Usize),
+    };
+    let (path, args) = match candidate.kind {
+        BufferKind::Shared => (vec!["std", "slice", "from_raw_parts"], vec![ptr, len]),
+        BufferKind::Mutable => (vec!["std", "slice", "from_raw_parts_mut"], vec![ptr, len]),
+        BufferKind::Owned => (vec!["Vec", "from_raw_parts"], vec![ptr, len.clone(), len]),
+    };
     Expr::Unsafe(Box::new(Block {
         stmts: Vec::new(),
         tail: Some(Box::new(Expr::Call {
             binding: CallBinding::Generated,
-            func: Box::new(Expr::Path(Path::new(
-                [
-                    "std",
-                    "slice",
-                    if candidate.mutable {
-                        "from_raw_parts_mut"
-                    } else {
-                        "from_raw_parts"
-                    },
-                ]
-                .map(Ident::from),
-            ))),
-            args: vec![
-                Expr::Cast {
-                    expr: Box::new(ptr),
-                    ty: Type::Ptr {
-                        mutable: candidate.mutable,
-                        inner: Box::new(candidate.elem_ty.clone()),
-                    },
-                },
-                Expr::Cast {
-                    expr: Box::new(len),
-                    ty: Type::Prim(Prim::Usize),
-                },
-            ],
+            func: Box::new(Expr::Path(Path::new(path.into_iter().map(Ident::from)))),
+            args,
         })),
     }))
 }
@@ -831,8 +925,17 @@ fn collect_fn(
     let local_name_of = |param: &str| -> String {
         shadow_local_name(&f.body, param).unwrap_or_else(|| param.to_string())
     };
+    let has_owned = f.params.iter().any(|param| {
+        facts
+            .get(&PointerBinding {
+                function: f.name.clone(),
+                name: param.name.clone(),
+            })
+            .is_some_and(|fact| fact.resolved().base == ResolvedPtrType::Vec)
+    });
+    let calls_free = !has_owned || body_calls_free(&f.body);
 
-    let buffer_ptrs: Vec<(String, String, bool)> = f
+    let buffer_ptrs: Vec<(String, String, BufferKind)> = f
         .params
         .iter()
         .filter(|p| matches!(p.ty, Type::Ptr { .. }))
@@ -844,20 +947,25 @@ fn collect_fn(
             facts.get(&binding).is_some_and(|fact| {
                 matches!(
                     fact.resolved().base,
-                    ResolvedPtrType::Slice | ResolvedPtrType::SliceMut
+                    ResolvedPtrType::Slice | ResolvedPtrType::SliceMut | ResolvedPtrType::Vec
                 )
             })
         })
-        .map(|p| {
+        .filter_map(|p| {
             let binding = PointerBinding {
                 function: f.name.clone(),
                 name: p.name.clone(),
             };
-            (
-                p.name.clone(),
-                local_name_of(&p.name),
-                facts[&binding].resolved().base == ResolvedPtrType::SliceMut,
-            )
+            let kind = match facts[&binding].resolved().base {
+                ResolvedPtrType::Slice => BufferKind::Shared,
+                ResolvedPtrType::SliceMut => BufferKind::Mutable,
+                ResolvedPtrType::Vec => BufferKind::Owned,
+                _ => unreachable!("filtered above"),
+            };
+            if kind == BufferKind::Owned && !calls_free {
+                return None;
+            }
+            Some((p.name.clone(), local_name_of(&p.name), kind))
         })
         .collect();
     if buffer_ptrs.is_empty() {
@@ -886,7 +994,7 @@ fn collect_fn(
         return;
     }
 
-    for (ptr_param, ptr_local, mutable) in &buffer_ptrs {
+    for (ptr_param, ptr_local, kind) in &buffer_ptrs {
         for (len_param, len_local) in &int_params {
             if ptr_param == len_param {
                 continue;
@@ -917,7 +1025,7 @@ fn collect_fn(
             }
             let temp_names = matched_offset_temps(&f.body, &let_exprs, ptr_local, &idx_name);
             let writes = is_written_through(&f.body, &temp_names);
-            if temp_names.is_empty() || (writes && !mutable) {
+            if temp_names.is_empty() || (writes && !kind.mutable()) {
                 continue;
             }
             out.insert(
@@ -928,11 +1036,19 @@ fn collect_fn(
                 Pairing {
                     len_param: len_param.clone(),
                     idx_name,
-                    mutable: *mutable,
+                    kind: *kind,
                 },
             );
         }
     }
+}
+
+fn body_calls_free(body: &[IndentStmt]) -> bool {
+    let mut calls = Vec::new();
+    for indent in body {
+        indent.stmt.collect_calls(&mut calls);
+    }
+    calls.iter().any(|(callee, _)| callee.as_str() == "free")
 }
 
 fn shadow_local_name(body: &[IndentStmt], param: &str) -> Option<String> {
@@ -1051,7 +1167,7 @@ fn apply_view(f: &mut FnDef, ptr_name: &str, elem_ty: &Type, pairing: &Pairing) 
                         [
                             "std",
                             "slice",
-                            if pairing.mutable {
+                            if pairing.kind.mutable() {
                                 "from_raw_parts_mut"
                             } else {
                                 "from_raw_parts"
@@ -1063,7 +1179,7 @@ fn apply_view(f: &mut FnDef, ptr_name: &str, elem_ty: &Type, pairing: &Pairing) 
                         Expr::Cast {
                             expr: Box::new(Expr::Var(Ident::new(ptr_name))),
                             ty: Type::Ptr {
-                                mutable: pairing.mutable,
+                                mutable: pairing.kind.mutable(),
                                 inner: Box::new(elem_ty.clone()),
                             },
                         },
