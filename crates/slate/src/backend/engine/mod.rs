@@ -1,4 +1,5 @@
 mod arena;
+mod prelude;
 mod rules;
 
 use arena::{Arena, FunctionArena, NodeId, NodeKindTag};
@@ -71,6 +72,7 @@ pub(in crate::backend) fn apply(program: &mut Program) {
     for item in &mut program.items {
         apply_item(item, &registry);
     }
+    prelude::inject(program);
 }
 
 fn apply_item(item: &mut Item, registry: &RuleRegistry) {

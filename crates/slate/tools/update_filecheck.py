@@ -47,6 +47,12 @@ def remove_generated_block(source, prefix):
     return pattern.sub("", source, count=1)
 
 
+def has_handwritten_block(source, prefix):
+    outside = remove_generated_block(source, prefix)
+    directive = re.compile(rf"^\s*//\s*{prefix.upper()}(?:-[A-Z0-9_-]+)?:", re.M)
+    return bool(directive.search(outside))
+
+
 def insert_generated_blocks(source, blocks):
     lines = source.splitlines()
     directive = re.compile(r"^\s*//\s*(?:COMMON|LOWERING|REWRITES)(?:-[A-Z0-9_-]+)?:")
@@ -110,13 +116,20 @@ def update_path(path, profiles, in_place, target_mode):
     updated = source
     blocks = []
     for profile, command, environment in profiles:
+        if has_handwritten_block(updated, profile):
+            print(
+                f"skip: {path}: handwritten {profile} directives present; leaving block untouched",
+                file=sys.stderr,
+            )
+            continue
         updated = remove_generated_block(updated, profile)
         rust = normalize_source_paths(translate_output(path, command, environment), path)
         checks = render_checks(rust, profile)
         if not checks:
             raise RuntimeError(f"{path}: generated Rust contains no functions")
         blocks.append(generated_block(checks, profile))
-    updated = insert_generated_blocks(updated, blocks)
+    if blocks:
+        updated = insert_generated_blocks(updated, blocks)
     if in_place:
         path.write_text(updated)
     else:
