@@ -3,6 +3,7 @@ use std::collections::{BTreeMap, BTreeSet, VecDeque};
 use crate::backend::interproc::pointer_lattice::{PointerBinding, PointerFact, ResolvedPtrType};
 use crate::backend::rust_ast::{
     BinOp, Block, Expr, FnDef, Ident, IndentStmt, Item, Path, Prim, Program, Stmt, Type, UnaryOp,
+    Visibility,
 };
 use crate::function_identity::CallBinding;
 
@@ -55,6 +56,7 @@ pub(in crate::backend) fn apply(
         apply_items(&mut program.items, &remaining);
     }
     apply_const_length(program, facts);
+    apply_return_buffers(program);
 }
 
 #[derive(Clone)]
@@ -2650,4 +2652,427 @@ fn const_bridge(ptr: Expr, candidate: &ConstCandidate) -> Expr {
             args: vec![ptr, len],
         })),
     }))
+}
+
+struct ReturnBufferLift {
+    function: String,
+    elem_ty: Type,
+    count: Expr,
+}
+
+fn apply_return_buffers(program: &mut Program) {
+    let lifts = {
+        let fn_defs = collect_fn_defs(&program.items);
+        return_buffer_candidates(&fn_defs)
+    };
+    if lifts.is_empty() {
+        return;
+    }
+    let by_fn: BTreeMap<String, &ReturnBufferLift> = lifts
+        .iter()
+        .map(|lift| (lift.function.clone(), lift))
+        .collect();
+    retype_return_items(&mut program.items, &by_fn);
+    let elems: BTreeMap<String, Type> = lifts
+        .iter()
+        .map(|lift| (lift.function.clone(), lift.elem_ty.clone()))
+        .collect();
+    for item in &mut program.items {
+        rewrite_return_call_item(item, &elems);
+    }
+}
+
+fn return_buffer_candidates(fn_defs: &BTreeMap<String, &FnDef>) -> Vec<ReturnBufferLift> {
+    let mut out = Vec::new();
+    for (name, f) in fn_defs {
+        if f.unsafe_ || f.abi.is_some() || !matches!(f.vis, Visibility::Private) {
+            continue;
+        }
+        let Some(Type::Ptr { inner, .. }) = &f.ret else {
+            continue;
+        };
+        let elem_ty = (**inner).clone();
+        if primitive_size(&elem_ty).is_none() {
+            continue;
+        }
+        if body_calls_free(&f.body) {
+            continue;
+        }
+        let defs = collect_value_defs(&f.body);
+        let params: BTreeSet<&str> = f.params.iter().map(|p| p.name.as_str()).collect();
+        let mut returns = Vec::new();
+        collect_returns(&f.body, &mut returns);
+        if returns.is_empty() {
+            continue;
+        }
+        let mut count: Option<Expr> = None;
+        let mut ok = true;
+        for ret in returns {
+            let Some(c) = returned_malloc_count(ret, &f.body, &defs, &elem_ty, &params) else {
+                ok = false;
+                break;
+            };
+            match &count {
+                None => count = Some(c),
+                Some(prev) if *prev != c => {
+                    ok = false;
+                    break;
+                }
+                _ => {}
+            }
+        }
+        if !ok {
+            continue;
+        }
+        out.push(ReturnBufferLift {
+            function: name.clone(),
+            elem_ty,
+            count: count.expect("returns non-empty"),
+        });
+    }
+    out
+}
+
+fn collect_returns<'a>(body: &'a [IndentStmt], out: &mut Vec<&'a Expr>) {
+    for indent in body {
+        collect_returns_stmt(&indent.stmt, out);
+    }
+}
+
+fn collect_returns_stmt<'a>(stmt: &'a Stmt, out: &mut Vec<&'a Expr>) {
+    match stmt {
+        Stmt::Return(Some(expr)) => out.push(expr),
+        Stmt::LetIf {
+            then_body,
+            else_body,
+            ..
+        }
+        | Stmt::If {
+            then_body,
+            else_body,
+            ..
+        } => {
+            collect_returns(then_body, out);
+            collect_returns(else_body, out);
+        }
+        Stmt::Loop { body, .. }
+        | Stmt::For { body, .. }
+        | Stmt::Scope { body }
+        | Stmt::LabeledBlock { body, .. } => collect_returns(body, out),
+        Stmt::Match { arms, .. } => {
+            for arm in arms {
+                collect_returns(&arm.body, out);
+            }
+        }
+        Stmt::While { body, .. } | Stmt::Unsafe { body } | Stmt::Block(body) => {
+            collect_returns(&body.stmts, out)
+        }
+        _ => {}
+    }
+}
+
+fn returned_malloc_count(
+    ret: &Expr,
+    body: &[IndentStmt],
+    defs: &BTreeMap<String, Expr>,
+    elem_ty: &Type,
+    params: &BTreeSet<&str>,
+) -> Option<Expr> {
+    let call = resolve_to_malloc(ret, body, defs, 0)?;
+    let Expr::Call { args, .. } = call else {
+        return None;
+    };
+    let [size] = args.as_slice() else {
+        return None;
+    };
+    let elem_size = primitive_size(elem_ty)?;
+    let resolved = resolved_expr(size, defs, 0);
+    let Expr::Binary {
+        op: BinOp::Mul,
+        lhs,
+        rhs,
+    } = peel_value(&resolved)
+    else {
+        return None;
+    };
+    let count = if resolved_integer(rhs, defs, 0) == Some(elem_size) {
+        (**lhs).clone()
+    } else if resolved_integer(lhs, defs, 0) == Some(elem_size) {
+        (**rhs).clone()
+    } else {
+        return None;
+    };
+    let mut vars = Vec::new();
+    count.collect_vars(&mut vars);
+    if !vars.iter().all(|v| params.contains(v.as_str())) {
+        return None;
+    }
+    Some(count)
+}
+
+fn resolve_to_malloc<'a>(
+    expr: &'a Expr,
+    body: &[IndentStmt],
+    defs: &'a BTreeMap<String, Expr>,
+    depth: usize,
+) -> Option<&'a Expr> {
+    if depth > 32 {
+        return None;
+    }
+    match peel_value(expr) {
+        Expr::Var(name) => {
+            if assigned_more_than_once(body, name.as_str()) {
+                return None;
+            }
+            resolve_to_malloc(defs.get(name.as_str())?, body, defs, depth + 1)
+        }
+        call @ Expr::Call { func, .. } if is_malloc(func) => Some(call),
+        _ => None,
+    }
+}
+
+fn box_slice_type(elem_ty: &Type) -> Type {
+    Type::Generic {
+        name: "Box".to_string(),
+        args: vec![Type::Slice(Box::new(elem_ty.clone()))],
+    }
+}
+
+fn retype_return_items(items: &mut [Item], by_fn: &BTreeMap<String, &ReturnBufferLift>) {
+    for item in items {
+        match item {
+            Item::Fn(f) => {
+                if let Some(lift) = by_fn.get(&f.name) {
+                    f.ret = Some(box_slice_type(&lift.elem_ty));
+                    for indent in &mut f.body {
+                        wrap_returns_stmt(&mut indent.stmt, &lift.elem_ty, &lift.count);
+                    }
+                }
+            }
+            Item::InlineMod { items, .. } => retype_return_items(items, by_fn),
+            _ => {}
+        }
+    }
+}
+
+fn wrap_returns_stmt(stmt: &mut Stmt, elem_ty: &Type, count: &Expr) {
+    match stmt {
+        Stmt::Return(Some(expr)) => {
+            let inner = std::mem::replace(expr, Expr::Var(Ident::new("__slate_placeholder")));
+            *expr = box_from_raw(inner, elem_ty, count);
+        }
+        Stmt::LetIf {
+            then_body,
+            else_body,
+            ..
+        }
+        | Stmt::If {
+            then_body,
+            else_body,
+            ..
+        } => {
+            for indent in then_body.iter_mut().chain(else_body.iter_mut()) {
+                wrap_returns_stmt(&mut indent.stmt, elem_ty, count);
+            }
+        }
+        Stmt::Loop { body, .. }
+        | Stmt::For { body, .. }
+        | Stmt::Scope { body }
+        | Stmt::LabeledBlock { body, .. } => {
+            for indent in body {
+                wrap_returns_stmt(&mut indent.stmt, elem_ty, count);
+            }
+        }
+        Stmt::Match { arms, .. } => {
+            for arm in arms {
+                for indent in &mut arm.body {
+                    wrap_returns_stmt(&mut indent.stmt, elem_ty, count);
+                }
+            }
+        }
+        Stmt::While { body, .. } | Stmt::Unsafe { body } | Stmt::Block(body) => {
+            for indent in &mut body.stmts {
+                wrap_returns_stmt(&mut indent.stmt, elem_ty, count);
+            }
+        }
+        _ => {}
+    }
+}
+
+fn box_from_raw(ptr: Expr, elem_ty: &Type, count: &Expr) -> Expr {
+    let raw = Expr::Cast {
+        expr: Box::new(ptr),
+        ty: Type::Ptr {
+            mutable: true,
+            inner: Box::new(elem_ty.clone()),
+        },
+    };
+    let len = Expr::Cast {
+        expr: Box::new(count.clone()),
+        ty: Type::Prim(Prim::Usize),
+    };
+    let slice = Expr::Call {
+        binding: CallBinding::Generated,
+        func: Box::new(Expr::Path(Path::new(
+            ["std", "slice", "from_raw_parts_mut"].map(Ident::from),
+        ))),
+        args: vec![raw, len],
+    };
+    Expr::Unsafe(Box::new(Block {
+        stmts: Vec::new(),
+        tail: Some(Box::new(Expr::Call {
+            binding: CallBinding::Generated,
+            func: Box::new(Expr::Path(Path::new(["Box", "from_raw"].map(Ident::from)))),
+            args: vec![slice],
+        })),
+    }))
+}
+
+fn rewrite_return_call_item(item: &mut Item, elems: &BTreeMap<String, Type>) {
+    match item {
+        Item::Fn(f) => {
+            for indent in &mut f.body {
+                rewrite_return_call_stmt(&mut indent.stmt, elems);
+            }
+        }
+        Item::InlineMod { items, .. } => {
+            for item in items {
+                rewrite_return_call_item(item, elems);
+            }
+        }
+        _ => {}
+    }
+}
+
+fn rewrite_return_call_stmt(stmt: &mut Stmt, elems: &BTreeMap<String, Type>) {
+    match stmt {
+        Stmt::Let {
+            init: Some(expr), ..
+        } => rewrite_return_call_expr(expr, elems),
+        Stmt::Let { init: None, .. }
+        | Stmt::Return(None)
+        | Stmt::Break(_)
+        | Stmt::Continue(_)
+        | Stmt::InlineAsm(_) => {}
+        Stmt::LetIf {
+            cond,
+            then_body,
+            then_value,
+            else_body,
+            else_value,
+            ..
+        } => {
+            rewrite_return_call_expr(cond, elems);
+            for indent in then_body.iter_mut().chain(else_body.iter_mut()) {
+                rewrite_return_call_stmt(&mut indent.stmt, elems);
+            }
+            rewrite_return_call_expr(then_value, elems);
+            rewrite_return_call_expr(else_value, elems);
+        }
+        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
+            rewrite_return_call_expr(target, elems);
+            rewrite_return_call_expr(value, elems);
+        }
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => rewrite_return_call_expr(expr, elems),
+        Stmt::If {
+            cond,
+            then_body,
+            else_body,
+        } => {
+            rewrite_return_call_expr(cond, elems);
+            for indent in then_body.iter_mut().chain(else_body.iter_mut()) {
+                rewrite_return_call_stmt(&mut indent.stmt, elems);
+            }
+        }
+        Stmt::Loop { body, .. }
+        | Stmt::For { body, .. }
+        | Stmt::Scope { body }
+        | Stmt::LabeledBlock { body, .. } => {
+            for indent in body {
+                rewrite_return_call_stmt(&mut indent.stmt, elems);
+            }
+        }
+        Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
+            for indent in &mut body.stmts {
+                rewrite_return_call_stmt(&mut indent.stmt, elems);
+            }
+            if let Some(tail) = &mut body.tail {
+                rewrite_return_call_expr(tail, elems);
+            }
+        }
+        Stmt::Match { expr, arms } => {
+            rewrite_return_call_expr(expr, elems);
+            for arm in arms {
+                for indent in &mut arm.body {
+                    rewrite_return_call_stmt(&mut indent.stmt, elems);
+                }
+            }
+        }
+    }
+}
+
+fn rewrite_return_call_expr(expr: &mut Expr, elems: &BTreeMap<String, Type>) {
+    match expr {
+        Expr::Call { func, args, .. } => {
+            rewrite_return_call_expr(func, elems);
+            for arg in args.iter_mut() {
+                rewrite_return_call_expr(arg, elems);
+            }
+            if let Expr::Var(callee) = &**func
+                && let Some(elem_ty) = elems.get(callee.as_str())
+            {
+                let call = std::mem::replace(expr, Expr::Var(Ident::new("__slate_placeholder")));
+                *expr = box_into_raw(call, elem_ty);
+            }
+        }
+        Expr::Unary { expr, .. }
+        | Expr::Cast { expr, .. }
+        | Expr::Ref { expr, .. }
+        | Expr::AddrOf { expr, .. }
+        | Expr::Transmute { expr, .. } => rewrite_return_call_expr(expr, elems),
+        Expr::Block(block) | Expr::Unsafe(block) => {
+            for indent in &mut block.stmts {
+                rewrite_return_call_stmt(&mut indent.stmt, elems);
+            }
+            if let Some(tail) = &mut block.tail {
+                rewrite_return_call_expr(tail, elems);
+            }
+        }
+        Expr::Binary { lhs, rhs, .. }
+        | Expr::Range {
+            start: lhs,
+            end: rhs,
+        } => {
+            rewrite_return_call_expr(lhs, elems);
+            rewrite_return_call_expr(rhs, elems);
+        }
+        Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
+            rewrite_return_call_expr(recv, elems);
+            for arg in args {
+                rewrite_return_call_expr(arg, elems);
+            }
+        }
+        Expr::Index { base, index } => {
+            rewrite_return_call_expr(base, elems);
+            rewrite_return_call_expr(index, elems);
+        }
+        Expr::Field { base, .. }
+        | Expr::TupleField { base, .. }
+        | Expr::ArrayPtr { array: base, .. } => rewrite_return_call_expr(base, elems),
+        _ => {}
+    }
+}
+
+fn box_into_raw(call: Expr, elem_ty: &Type) -> Expr {
+    let into_raw = Expr::Call {
+        binding: CallBinding::Generated,
+        func: Box::new(Expr::Path(Path::new(["Box", "into_raw"].map(Ident::from)))),
+        args: vec![call],
+    };
+    Expr::MethodCallGeneric {
+        recv: Box::new(into_raw),
+        method: "cast".to_string(),
+        type_args: vec![elem_ty.clone()],
+        args: Vec::new(),
+    }
 }
