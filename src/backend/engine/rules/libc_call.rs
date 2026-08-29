@@ -310,6 +310,26 @@ fn fold_atof(ctx: &CallCtx) -> Option<Expr> {
     Some(Expr::Value(RustValue::from(value)))
 }
 
+fn const_i8_ptr() -> Type {
+    Type::Ptr {
+        mutable: false,
+        inner: Box::new(Type::Prim(Prim::I8)),
+    }
+}
+
+fn ato_helper(ctx: &CallCtx, name: &str) -> Option<Expr> {
+    let arg = ctx.args().first()?.clone();
+    let arg = match &arg {
+        Expr::Cast { ty, .. } if *ty == const_i8_ptr() => arg,
+        _ => cast(arg, const_i8_ptr()),
+    };
+    Some(Expr::Call {
+        binding: CallBinding::Generated,
+        func: Box::new(Expr::Var(name.into())),
+        args: vec![arg],
+    })
+}
+
 fn free_call(path: &[&str], args: Vec<Expr>) -> Expr {
     Expr::Call {
         binding: CallBinding::Generated,
@@ -521,9 +541,15 @@ pub(super) fn rules() -> Vec<Box<dyn NodeRule>> {
             let b = ctx.lifted_arg(1, is_byte_str_or_slice)?;
             Some(cast(method_call(a, "cmp", vec![b]), Type::Prim(Prim::I32)))
         }),
-        libc_call(Known::Atoi, |ctx| fold_atoi(ctx, Prim::I32)),
-        libc_call(Known::Atol, |ctx| fold_atoi(ctx, Prim::I64)),
-        libc_call(Known::Atoll, |ctx| fold_atoi(ctx, Prim::I64)),
+        libc_call(Known::Atoi, |ctx| {
+            fold_atoi(ctx, Prim::I32).or_else(|| ato_helper(ctx, "__slate_atoi"))
+        }),
+        libc_call(Known::Atol, |ctx| {
+            fold_atoi(ctx, Prim::I64).or_else(|| ato_helper(ctx, "__slate_atol"))
+        }),
+        libc_call(Known::Atoll, |ctx| {
+            fold_atoi(ctx, Prim::I64).or_else(|| ato_helper(ctx, "__slate_atol"))
+        }),
         libc_call(Known::Atof, fold_atof),
         libc_call(Known::MemCpy, |ctx| mem_copy(ctx, false)),
         libc_call(Known::MemMove, |ctx| mem_copy(ctx, true)),
