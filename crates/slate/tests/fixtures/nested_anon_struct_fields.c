@@ -29,22 +29,22 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
-// LOWERING-NEXT: union _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_anon_struct_fields_c_5_3_ {
-// LOWERING-NEXT:     alias: _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_anon_struct_fields_c_6_5_,
-// LOWERING-NEXT:     tag: _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_anon_struct_fields_c_9_5_,
+// LOWERING-NEXT: union _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_{{anon_struct[0-9A-Za-z_]*}}_fields_c_5_3_ {
+// LOWERING-NEXT:     alias: _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_{{anon_struct[0-9A-Za-z_]*}}_fields_c_6_5_,
+// LOWERING-NEXT:     tag: _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_{{anon_struct[0-9A-Za-z_]*}}_fields_c_9_5_,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
-// LOWERING-NEXT: struct _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_anon_struct_fields_c_6_5_ {
+// LOWERING-NEXT: struct _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_{{anon_struct[0-9A-Za-z_]*}}_fields_c_6_5_ {
 // LOWERING-NEXT:     value: *mut i8,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
-// LOWERING-NEXT: struct _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_anon_struct_fields_c_9_5_ {
+// LOWERING-NEXT: struct _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_{{anon_struct[0-9A-Za-z_]*}}_fields_c_9_5_ {
 // LOWERING-NEXT:     handle: *mut i8,
 // LOWERING-NEXT:     suffix: *mut i8,
 // LOWERING-NEXT: }
@@ -77,7 +77,7 @@ int main(void) {
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: struct event {
 // LOWERING-NEXT:     r#type: i32,
-// LOWERING-NEXT:     data: _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_anon_struct_fields_c_5_3_,
+// LOWERING-NEXT:     data: _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_{{anon_struct[0-9A-Za-z_]*}}_fields_c_5_3_,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-EMPTY:
@@ -87,7 +87,7 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut e: event = event { r#type: 0, data: _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_anon_struct_fields_c_5_3_ { alias: _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_anon_struct_fields_c_6_5_ { value: std::ptr::null_mut() } } };
+// LOWERING-NEXT:     let mut e: event = event { r#type: 0, data: _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_{{anon_struct[0-9A-Za-z_]*}}_fields_c_5_3_ { alias: _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_{{anon_struct[0-9A-Za-z_]*}}_fields_c_6_5_ { value: std::ptr::null_mut() } } };
 // LOWERING-NEXT:     let mut h: [i8; 2] = [0; 2];
 // LOWERING-NEXT:     let mut s: [i8; 2] = [0; 2];
 // LOWERING-NEXT:     let _v0: i32 = 0;
@@ -122,22 +122,22 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
-// REWRITES-NEXT: union _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_anon_struct_fields_c_5_3_ {
-// REWRITES-NEXT:     alias: _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_anon_struct_fields_c_6_5_,
-// REWRITES-NEXT:     tag: _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_anon_struct_fields_c_9_5_,
+// REWRITES-NEXT: union _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_{{anon_struct[0-9A-Za-z_]*}}_fields_c_5_3_ {
+// REWRITES-NEXT:     alias: _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_{{anon_struct[0-9A-Za-z_]*}}_fields_c_6_5_,
+// REWRITES-NEXT:     tag: _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_{{anon_struct[0-9A-Za-z_]*}}_fields_c_9_5_,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
-// REWRITES-NEXT: struct _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_anon_struct_fields_c_6_5_ {
+// REWRITES-NEXT: struct _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_{{anon_struct[0-9A-Za-z_]*}}_fields_c_6_5_ {
 // REWRITES-NEXT:     value: *mut i8,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
-// REWRITES-NEXT: struct _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_anon_struct_fields_c_9_5_ {
+// REWRITES-NEXT: struct _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_{{anon_struct[0-9A-Za-z_]*}}_fields_c_9_5_ {
 // REWRITES-NEXT:     handle: *mut i8,
 // REWRITES-NEXT:     suffix: *mut i8,
 // REWRITES-NEXT: }
@@ -170,7 +170,7 @@ int main(void) {
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: struct event {
 // REWRITES-NEXT:     r#type: i32,
-// REWRITES-NEXT:     data: _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_anon_struct_fields_c_5_3_,
+// REWRITES-NEXT:     data: _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_{{anon_struct[0-9A-Za-z_]*}}_fields_c_5_3_,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-EMPTY:
@@ -180,7 +180,7 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut e: event = event { r#type: 0, data: _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_anon_struct_fields_c_5_3_ { alias: _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_anon_struct_fields_c_6_5_ { value: std::ptr::null_mut() } } };
+// REWRITES-NEXT: let mut e: event = event { r#type: 0, data: _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_{{anon_struct[0-9A-Za-z_]*}}_fields_c_5_3_ { alias: _unnamed_at__home_takashi_Projects_slate_tests_fixtures_nested_{{anon_struct[0-9A-Za-z_]*}}_fields_c_6_5_ { value: std::ptr::null_mut() } } };
 // REWRITES-NEXT: let mut h: [i8; 2] = [0; 2];
 // REWRITES-NEXT: let mut s: [i8; 2] = [0; 2];
 // REWRITES-NEXT: __retval = 0;

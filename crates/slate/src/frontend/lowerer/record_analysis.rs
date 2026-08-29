@@ -175,6 +175,10 @@ fn normalize_record_shape(ty: &crate::frontend::c_ast::CType) -> crate::frontend
             ret: Box::new(normalize_record_shape(ret)),
             params: params.iter().map(normalize_record_shape).collect(),
         },
+        CType::Enum(_) | CType::Int { .. } => CType::Int {
+            signed: false,
+            bits: 0,
+        },
         other => other.clone(),
     }
 }
@@ -342,7 +346,14 @@ pub fn anon_local_records(module: &Module) -> Vec<crate::frontend::c_ast::Record
             }) => (name, members, member_kinds, true),
             _ => continue,
         };
-        let Some(name) = name.as_deref().or_else(|| key.strip_prefix("rec_")) else {
+        let Some(name) = name.as_deref().map(String::from).or_else(|| {
+            let stripped = key.strip_prefix("rec_")?;
+            Some(if super::types::is_abi_coercion_record_name(stripped) {
+                super::types::abi_coercion_canonical_name(members, &module.type_aliases)
+            } else {
+                stripped.to_string()
+            })
+        }) else {
             continue;
         };
         let fields = members

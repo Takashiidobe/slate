@@ -162,7 +162,7 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
-// LOWERING-NEXT: struct anon_struct {
+// LOWERING-NEXT: struct {{anon_struct[0-9A-Za-z_]*}} {
 // LOWERING-NEXT:     __slate_anon_0: *mut core::ffi::c_void,
 // LOWERING-NEXT:     __slate_anon_1: *mut core::ffi::c_void,
 // LOWERING-NEXT: }
@@ -693,7 +693,7 @@ int main(void) {
 // LOWERING-NEXT:     let _v10: u32 = ACTION::ENTER as u32;
 // LOWERING-NEXT:     let _v11: entry = inserted;
 // LOWERING-NEXT:     coerce2 = _v11;
-// LOWERING-NEXT:     let _v12: *mut anon_struct = std::ptr::addr_of_mut!(coerce2) as *mut anon_struct;
+// LOWERING-NEXT:     let _v12: *mut {{anon_struct[0-9A-Za-z_]*}} = std::ptr::addr_of_mut!(coerce2) as *mut {{anon_struct[0-9A-Za-z_]*}};
 // LOWERING-NEXT:     let _v13: *mut core::ffi::c_void = unsafe { (*_v12).__slate_anon_0 };
 // LOWERING-NEXT:     let _v14: *mut core::ffi::c_void = unsafe { (*_v12).__slate_anon_1 };
 // LOWERING-NEXT:     let _v15: i32 = unsafe { hsearch_r(_v13 as *mut core::ffi::c_void, _v14 as *mut core::ffi::c_void, _v10 as u32, std::ptr::addr_of_mut!(found) as *mut *mut entry, std::ptr::addr_of_mut!(table) as *mut hsearch_data) };
@@ -706,7 +706,7 @@ int main(void) {
 // LOWERING-NEXT:     let _v21: u32 = ACTION::FIND as u32;
 // LOWERING-NEXT:     let _v22: entry = query;
 // LOWERING-NEXT:     coerce = _v22;
-// LOWERING-NEXT:     let _v23: *mut anon_struct = std::ptr::addr_of_mut!(coerce) as *mut anon_struct;
+// LOWERING-NEXT:     let _v23: *mut {{anon_struct[0-9A-Za-z_]*}} = std::ptr::addr_of_mut!(coerce) as *mut {{anon_struct[0-9A-Za-z_]*}};
 // LOWERING-NEXT:     let _v24: *mut core::ffi::c_void = unsafe { (*_v23).__slate_anon_0 };
 // LOWERING-NEXT:     let _v25: *mut core::ffi::c_void = unsafe { (*_v23).__slate_anon_1 };
 // LOWERING-NEXT:     let _v26: i32 = unsafe { hsearch_r(_v24 as *mut core::ffi::c_void, _v25 as *mut core::ffi::c_void, _v21 as u32, std::ptr::addr_of_mut!(found) as *mut *mut entry, std::ptr::addr_of_mut!(table) as *mut hsearch_data) };
