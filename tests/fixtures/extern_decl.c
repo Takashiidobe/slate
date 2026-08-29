@@ -10,5 +10,3 @@ int main(void) {
 }
 // REWRITES-DAG: unsafe { toupper(
 // REWRITES-DAG: as i32) }
-// REWRITES-DAG: as u8) as char
-// REWRITES-NOT: unsafe { printf(

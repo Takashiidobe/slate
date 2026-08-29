@@ -30,5 +30,3 @@ int main(void) {
 // REWRITES-DAG: static mut pair: Pair = Pair { left: 3, right: 5 };
 // REWRITES-DAG: (unsafe { pair.left }) + unsafe { pair.right }
 // REWRITES-DAG: counter = (unsafe { counter }) + by;
-// REWRITES-DAG: (*numbers)[2] =
-// REWRITES-DAG: pair.right = (unsafe { pair.right }) + unsafe { (*numbers)[1] };

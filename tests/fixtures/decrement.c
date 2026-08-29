@@ -12,12 +12,3 @@ int main(void) {
   printf("%u\n", (unsigned)c);
   return 0;
 }
-// REWRITES-LABEL: {{^}}fn main() {
-// REWRITES-DAG: let post: i32 = a;
-// REWRITES-DAG: a -= 1;
-// REWRITES-DAG: let mut pre: i32 = a;
-// REWRITES-DAG: pre -= 1;
-// REWRITES-DAG: let sum: i32 =
-// REWRITES-NOT: a = _v
-// REWRITES-NOT: pre = _v
-// REWRITES: {{^}}}

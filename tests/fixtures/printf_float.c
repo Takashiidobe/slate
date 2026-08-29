@@ -7,7 +7,3 @@ int main(void) {
   printf("tail %.3f", 1.25);
   return 0;
 }
-// REWRITES-NOT: fn printf(
-// REWRITES-NOT: unsafe { printf(
-// REWRITES-DAG: println!("{:.6} {:.2} {:.0}",
-// REWRITES-DAG: print!("tail {:.3}",

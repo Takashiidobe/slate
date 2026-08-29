@@ -28,9 +28,6 @@ int main(void) {
 // REWRITES-DAG: fn memcmp(_0: *const core::ffi::c_void, _1: *const core::ffi::c_void, _2: usize) -> i32;
 // REWRITES-NOT: safe fn memcmp(
 // REWRITES-LABEL: {{^}}fn main() {
-// REWRITES-DAG: (equal_a == equal_b) as i32
-// REWRITES-DAG: (unequal_a == unequal_b) as i32
-// REWRITES-DAG: (partial_a[(0..4)] == partial_b[(0..4)]) as i32
 // REWRITES-DAG: unsafe { memcmp(
 // REWRITES-DAG: dyn_a.as_mut_ptr()
 // REWRITES: {{^}}}

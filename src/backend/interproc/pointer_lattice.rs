@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 
 use crate::backend::interproc::{self, CallGraph};
 use crate::backend::rust_ast::{
-    Block, Expr, FnDef, Ident, IndentStmt, Item, Path, Prim, Program, RustValue, Stmt, Type,
+    BinOp, Block, Expr, FnDef, Ident, IndentStmt, Item, Path, Prim, Program, RustValue, Stmt, Type,
     UnaryOp, Visibility,
 };
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
@@ -618,10 +618,7 @@ impl ClassifyCtx<'_> {
                 }
             }
             Expr::Binary { op, lhs, rhs } => {
-                if matches!(
-                    op,
-                    crate::backend::rust_ast::BinOp::Eq | crate::backend::rust_ast::BinOp::Ne
-                ) {
+                if matches!(op, BinOp::Eq | BinOp::Ne) {
                     self.observe_null_compare(lhs, rhs);
                     self.observe_null_compare(rhs, lhs);
                 }

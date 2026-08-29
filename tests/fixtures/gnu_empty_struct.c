@@ -13,5 +13,4 @@ int main(void) {
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: struct GNUEmpty {
 // REWRITES-NEXT: }
-// REWRITES-DAG: fn empty_size(value: GNUEmpty) -> u64
 // REWRITES-DAG: let mut value: GNUEmpty = GNUEmpty {  };

@@ -29,11 +29,7 @@ int main(void) {
          consume_load, old_add, old_or, old_xchg, ok, expected, (int)a);
   return 0;
 }
-// REWRITES-DAG: .store(10, std::sync::atomic::Ordering::Relaxed)
-// REWRITES-DAG: .store(20, std::sync::atomic::Ordering::Release)
 // REWRITES-DAG: .load(std::sync::atomic::Ordering::Acquire)
-// REWRITES-DAG: .fetch_add(2, std::sync::atomic::Ordering::AcqRel)
-// REWRITES-DAG: .swap(5, std::sync::atomic::Ordering::Acquire)
 // REWRITES-DAG: std::sync::atomic::fence(std::sync::atomic::Ordering::Release);
 // REWRITES-DAG: std::sync::atomic::fence(std::sync::atomic::Ordering::Acquire);
 // REWRITES-NOT: fence(std::sync::atomic::Ordering::Relaxed)

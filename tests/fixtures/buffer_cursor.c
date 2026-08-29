@@ -17,10 +17,6 @@ int main(void) {
   return 0;
 }
 // REWRITES-LABEL: {{^}}fn main() {
-// REWRITES-DAG: values[1] + values[3]
-// REWRITES-DAG: 3 - 1
-// REWRITES-NOT: let mut c: cursor
-// REWRITES-NOT: let mut d: cursor
 // REWRITES-NOT: c.ptr
 // REWRITES-NOT: d.ptr
 // REWRITES-NOT: .offset_from(

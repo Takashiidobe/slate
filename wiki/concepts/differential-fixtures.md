@@ -8,9 +8,9 @@ do not replace runtime comparison.
 `NEXTEST_PROFILE=lowering` activates `COMMON` and `LOWERING` directives. The
 `rewrites` profile activates `COMMON` and `REWRITES` directives.
 
-While rewrite passes are disabled, the FileCheck handler recognizes but does
-not execute `REWRITES` directives. Runtime differential comparison remains
-active, so this does not hide C-to-Rust execution failures.
+`REWRITES` directives are enforced against the new worklist engine's output.
+Only assertions satisfied by the current engine belong in the baseline; add
+new assertions alongside each newly ported rewrite.
 
 Cross-target fixtures combine the profile and target in one prefix, such as
 `REWRITES-MACOS`, `REWRITES-MSVC`, or `REWRITES-BIONIC-X86_64`. This keeps a

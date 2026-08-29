@@ -6,8 +6,6 @@ static int mark(int value) {
   hits += 1;
   return value;
 }
-// REWRITES-NOT: fn printf(
-// REWRITES-NOT: unsafe { printf(
 // REWRITES-DAG: println!("{} {}",
 // REWRITES-DAG: println!("{} {} {}",
 

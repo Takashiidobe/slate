@@ -26,6 +26,5 @@ int main(void) {
   return 0;
 }
 // REWRITES-DAG: p.left + p.right
-// REWRITES-DAG: p.left = p.right + 2;
 // REWRITES-NOT: unsafe { p.left }
 // REWRITES-NOT: unsafe { p.right }

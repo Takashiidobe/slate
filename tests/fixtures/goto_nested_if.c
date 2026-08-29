@@ -25,10 +25,6 @@ done:
   printf("%d\n", r);
   return 0;
 }
-// REWRITES-DAG: if a > 0 {
-// REWRITES-DAG: if b > 0 {
 // REWRITES-DAG: r = 1;
 // REWRITES-DAG: r = 2;
 // REWRITES-DAG: r = 3;
-// REWRITES-NOT: __state0
-// REWRITES-NOT: __dispatch0

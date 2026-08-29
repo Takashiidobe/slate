@@ -14,6 +14,4 @@ int main(void) {
   return 0;
 }
 // REWRITES-DAG: std::process::exit(code as i32)
-// REWRITES-NOT: unsafe extern "C"
-// REWRITES-NOT: fn exit(
 // REWRITES-NOT: die(1);

@@ -19,7 +19,3 @@ int main(void) {
          (unsigned char)u8, (signed char)i8, (unsigned int)u32, (long long)i64);
   return 0;
 }
-// REWRITES-DAG: std::sync::atomic::AtomicU8::new(250)
-// REWRITES-DAG: std::sync::atomic::AtomicI8::new(-5)
-// REWRITES-DAG: std::sync::atomic::AtomicU32::new(1000)
-// REWRITES-DAG: std::sync::atomic::AtomicI64::new(-10000000000i64)

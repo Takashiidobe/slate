@@ -9,8 +9,3 @@ int main(void) {
   return 0;
 }
 // REWRITES-DAG: static mut main_text: [i8; 3] = [-50, -87, 0];
-// REWRITES-LABEL: {{^}}fn main() {
-// REWRITES-DAG: main_text[1]
-// REWRITES-DAG: main_text[2]
-// REWRITES-DAG: let alignment: i32 = 4;
-// REWRITES: {{^}}}

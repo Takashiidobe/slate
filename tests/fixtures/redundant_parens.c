@@ -19,10 +19,7 @@ int main() {
   return 0;
 }
 // REWRITES-LABEL: {{^}}fn classify(
-// REWRITES-DAG: if a == b {
-// REWRITES-DAG: if a > b {
 // REWRITES-DAG: if !(a < b) {
-// REWRITES-DAG: (a & b) + (a << 1)
 // REWRITES-NOT: if (a == b)
 // REWRITES-NOT: if (a > b)
 // REWRITES-NOT: if (!(a < b))

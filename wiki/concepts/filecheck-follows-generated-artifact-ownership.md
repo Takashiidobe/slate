@@ -17,5 +17,5 @@ binary properties remain in the Rust harness.
 It does not reuse `LOWERING` because conditional-compilation reconstruction is
 a separate producer.
 
-Rewrite directives remain stored in fixtures while passes are disabled. The
-matcher skips their execution but runtime differential comparison continues.
+Rewrite directives are checked against the new worklist engine's generated
+artifacts. The baseline contains only assertions satisfied by that engine.

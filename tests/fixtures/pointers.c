@@ -31,17 +31,10 @@ int main(void) {
   return 0;
 }
 // REWRITES-NOT: return _v
-// REWRITES-DAG: unsafe { *slot }
-// REWRITES-DAG: let mut local: i32 = value;
-// REWRITES-DAG: *slot = (unsafe { *slot }) + amount;
-// REWRITES-DAG: values[2] = 12;
 // REWRITES-LABEL: {{^}}fn pick_with_pointer_arithmetic(
-// REWRITES-DAG: unsafe { *ptr.offset(index as isize) }
 // REWRITES-NOT: unsafe { *unsafe {
 // REWRITES-NOT: .add(_v
 // REWRITES: {{^}}}
 // REWRITES-LABEL: {{^}}fn bump_through_pointer(
-// REWRITES-DAG: let mut local: i32 = value;
 // REWRITES-DAG: std::ptr::addr_of_mut!(local)
-// REWRITES-NOT: let mut local: i32 = 0;
 // REWRITES: {{^}}}

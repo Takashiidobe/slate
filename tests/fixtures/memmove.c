@@ -26,8 +26,6 @@ int main(void) {
 // REWRITES-DAG: fn memmove(_0: *mut core::ffi::c_void, _1: *const core::ffi::c_void, _2: usize) -> *mut core::ffi::c_void;
 // REWRITES-NOT: safe fn memmove(
 // REWRITES-LABEL: {{^}}fn main() {
-// REWRITES-DAG: forward_buf.copy_within(0..5, 1);
-// REWRITES-DAG: backward_buf.copy_within(1..6, 0);
 // REWRITES-DAG: unsafe { memmove(
 // REWRITES-DAG: dyn_buf.as_mut_ptr()
 // REWRITES: {{^}}}

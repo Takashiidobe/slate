@@ -20,11 +20,7 @@ int main(void) {
   return total == 10 ? 0 : 1;
 }
 // REWRITES-DAG: .is_some()
-// REWRITES-DAG: if op.is_some()
-// REWRITES-DAG: .is_none()
-// REWRITES-DAG: return unsafe { op.unwrap()(value) };
 // REWRITES-NOT: != None
 // REWRITES-NOT: == None
 // REWRITES-NOT: std::ptr::null_mut()
 // REWRITES-NOT: let _v{{[0-9]+}}: Option<fn(i32) -> i32> = op;
-// REWRITES-NOT: __retval

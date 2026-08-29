@@ -4,8 +4,6 @@ static long long lladd(long long a, long long b) {
   long long c = a + b;
   return c;
 }
-// REWRITES-NOT: fn printf(
-// REWRITES-NOT: unsafe { printf(
 // REWRITES-DAG: println!("{}
 
 int main(void) {

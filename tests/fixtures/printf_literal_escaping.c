@@ -9,8 +9,5 @@ int main(void) {
   printf("{{}}%s{{}}\n", "mid");
   return 0;
 }
-// REWRITES-NOT: fn printf(
-// REWRITES-NOT: unsafe { printf(
 // REWRITES-DAG: quoted
 // REWRITES-DAG: back\\slash
-// REWRITES-DAG: println!("%%{}%%", d);

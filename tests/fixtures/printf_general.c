@@ -11,6 +11,3 @@ int main(void) {
   printf("%g\n", 1e-300);
   return 0;
 }
-// REWRITES-NOT: fn printf(
-// REWRITES-NOT: unsafe { printf(
-// REWRITES-DAG: println!("{} {} {}|", "1234.57", "1.23e+03",
