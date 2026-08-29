@@ -152,6 +152,15 @@ pub(super) fn is_byte_str_or_slice(ty: &Type) -> bool {
     }
 }
 
+fn is_u8_slice(ty: &Type) -> bool {
+    match ty {
+        Type::Slice(inner) => is_u8(inner),
+        Type::Ref { inner, .. } => is_u8_slice(inner),
+        Type::Generic { name, args } => name == "Vec" && args.first().is_some_and(is_u8),
+        _ => false,
+    }
+}
+
 fn method_call(recv: Expr, method: &str, args: Vec<Expr>) -> Expr {
     Expr::MethodCall {
         recv: Box::new(recv),
@@ -215,6 +224,31 @@ fn mem_set(ctx: &CallCtx) -> Option<Expr> {
         count: Box::new(cast(len.clone(), Type::Prim(Prim::Usize))),
     };
     Some(returning_dst(ctx, effect, dst))
+}
+
+fn slice_to(expr: Expr, len: Expr) -> Expr {
+    Expr::Index {
+        base: Box::new(expr),
+        index: Box::new(Expr::Range {
+            start: Box::new(Expr::Value(RustValue::Usize(0))),
+            end: Box::new(cast(len, Type::Prim(Prim::Usize))),
+        }),
+    }
+}
+
+fn mem_cmp(ctx: &CallCtx) -> Option<Expr> {
+    let a = ctx.lifted_arg(0, is_u8_slice)?;
+    let b = ctx.lifted_arg(1, is_u8_slice)?;
+    let len = ctx.args().get(2)?.clone();
+    let lhs = slice_to(a, len.clone());
+    let rhs = Expr::Ref {
+        mutable: false,
+        expr: Box::new(slice_to(b, len)),
+    };
+    Some(cast(
+        method_call(lhs, "cmp", vec![rhs]),
+        Type::Prim(Prim::I32),
+    ))
 }
 
 fn free_call(path: &[&str], args: Vec<Expr>) -> Expr {
@@ -431,5 +465,6 @@ pub(super) fn rules() -> Vec<Box<dyn NodeRule>> {
         libc_call(Known::MemCpy, |ctx| mem_copy(ctx, false)),
         libc_call(Known::MemMove, |ctx| mem_copy(ctx, true)),
         libc_call(Known::MemSet, mem_set),
+        libc_call(Known::MemCmp, mem_cmp),
     ]
 }

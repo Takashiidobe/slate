@@ -68,3 +68,4 @@ superseded each one for what actually applies now.
 - [Local libc-call rewrite table with multi-hop lifted-arg chase](concepts/local-libc-call-rewrite-table-with-multi-hop-lifted-arg-chase.md)
 - [Fix length-lattice multi-buffer asymmetry (by_callee/accepted single-candidate bug)](concepts/fix-length-lattice-multi-buffer-asymmetry-by-callee-accepted-single-candidate-bug.md)
 - [Local libc table: strcmp via Ordering, mem* via intrinsic, dead-let drop](concepts/local-libc-table-strcmp-via-ordering-mem-via-intrinsic-dead-let-drop.md)
+- [memcmp libc rewrite + byte-array slice lifting; ctype backed out for locale](concepts/memcmp-libc-rewrite-byte-array-slice-lifting-ctype-backed-out-for-locale.md)
