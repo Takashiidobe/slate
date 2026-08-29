@@ -17,6 +17,24 @@ static int *make8(void) {
   return p;
 }
 
+static int *make_raw(int n) {
+  int *p = malloc(n * sizeof(int));
+  for (int i = 0; i < n; i++) {
+    p[i] = i + 1;
+  }
+  return p;
+}
+
+static int read_first(int *p) { return p[0]; }
+
+static int *make_shadow(int n) {
+  int *p = malloc(n * sizeof(int));
+  p[0] = 9;
+  return p;
+}
+
+static void custom_free(void *p) { (void)p; }
+
 static int *maybe(int n) {
   if (n < 0) {
     return NULL;
@@ -43,21 +61,39 @@ int main(void) {
   // @rewrite-begin
   int *a = allocfree(3);
   // @rewrite-end
-  printf("%d %d %d %d\n", q[3], r[7], (int)(m != NULL), (int)(a != NULL));
+  int *raw = make_raw(2);
+  int *raw2 = make_raw(2);
+  printf("%d %d %d %d %d %d\n", q[3], r[7], (int)(m != NULL),
+         (int)(a != NULL), read_first(raw), raw2[1]);
   free(q);
   free(r);
   if (m) {
     free(m);
   }
   free(a);
+  free(raw);
+  free(raw2);
+  {
+    void (*free)(void *) = custom_free;
+    int *shadow = make_shadow(1);
+    free(shadow);
+  }
   return 0;
 }
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = 4;
-// REWRITES-DAG: q = Box::into_raw(make({{_v[0-9]+}})).cast::<i32>();
-// REWRITES-DAG: r = Box::into_raw(make8()).cast::<i32>();
+// REWRITES-DAG: let mut q: Box<[i32]> = make({{_v[0-9]+}});
+// REWRITES-DAG: let mut r: Box<[i32]> = make8();
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = 2;
 // REWRITES-DAG: m = maybe({{_v[0-9]+}});
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = 3;
 // REWRITES-DAG: a = allocfree({{_v[0-9]+}});
+// REWRITES-DAG: raw = Box::into_raw(make_raw({{_v[0-9]+}})).cast::<i32>();
+// REWRITES-DAG: raw2 = Box::into_raw(make_raw({{_v[0-9]+}})).cast::<i32>();
+// REWRITES-DAG: shadow = Box::into_raw(make_shadow({{_v[0-9]+}})).cast::<i32>();
+// REWRITES-DAG: let {{_v[0-9]+}}: *mut i32 = q.as_mut_ptr();
+// REWRITES-DAG: let {{_v[0-9]+}}: *mut i32 = r.as_mut_ptr();
+// REWRITES-DAG: free((raw as *mut core::ffi::c_void) as *mut core::ffi::c_void)
+// REWRITES-NOT: free((q as *mut core::ffi::c_void) as *mut core::ffi::c_void)
+// REWRITES-NOT: free((r as *mut core::ffi::c_void) as *mut core::ffi::c_void)
 // SLATE-FILECHECK-END rewrites

@@ -43,7 +43,7 @@ _Noreturn void _Exit(int status);
 _Noreturn void quick_exit(int status);
 _Noreturn void abort(void);
 #if !defined(__SLATE_LIBC_MSVC)
-_Noreturn void abort_with_reason(const char *restrict reason);
+_Noreturn void abort_with_reason(const char *__restrict reason);
 #endif
 int            atexit(void (*func)(void));
 int            at_quick_exit(void (*func)(void));
@@ -56,7 +56,7 @@ void *aligned_alloc(size_t alignment, size_t size);
 void  free_sized(void *ptr, size_t size);
 void  free_aligned_sized(void *ptr, size_t alignment, size_t size);
 
-static inline size_t memalignment(const void *p) {
+static __inline size_t memalignment(const void *p) {
   __UINTPTR_TYPE__ v = (__UINTPTR_TYPE__)p;
   size_t            align = 0;
   while (v != 0 && (v & 1) == 0) {
@@ -79,21 +79,21 @@ int         atoi(const char *nptr);
 long        atol(const char *nptr);
 long long   atoll(const char *nptr);
 double      atof(const char *nptr);
-double      strtod(const char *restrict nptr, char **restrict endptr);
-float       strtof(const char *restrict nptr, char **restrict endptr);
-long double strtold(const char *restrict nptr, char **restrict endptr);
+double      strtod(const char *__restrict nptr, char **__restrict endptr);
+float       strtof(const char *__restrict nptr, char **__restrict endptr);
+long double strtold(const char *__restrict nptr, char **__restrict endptr);
 #if !defined(__SLATE_LIBC_MSVC)
-int         strfromd(char *restrict s, size_t n, const char *restrict format,
+int         strfromd(char *__restrict s, size_t n, const char *__restrict format,
                      double fp);
-int strfromf(char *restrict s, size_t n, const char *restrict format, float fp);
-int strfroml(char *restrict s, size_t n, const char *restrict format,
+int strfromf(char *__restrict s, size_t n, const char *__restrict format, float fp);
+int strfroml(char *__restrict s, size_t n, const char *__restrict format,
              long double fp);
 #endif
-long strtol(const char *restrict nptr, char **restrict endptr, int base);
-unsigned long strtoul(const char *restrict nptr, char **restrict endptr,
+long strtol(const char *__restrict nptr, char **__restrict endptr, int base);
+unsigned long strtoul(const char *__restrict nptr, char **__restrict endptr,
                       int base);
-long long strtoll(const char *restrict nptr, char **restrict endptr, int base);
-unsigned long long strtoull(const char *restrict nptr, char **restrict endptr,
+long long strtoll(const char *__restrict nptr, char **__restrict endptr, int base);
+unsigned long long strtoull(const char *__restrict nptr, char **__restrict endptr,
                             int base);
 
 int  rand(void);
@@ -108,10 +108,10 @@ void *bsearch(const void *key, const void *base, size_t nmemb, size_t size,
               int (*compar)(const void *, const void *));
 
 int    mblen(const char *s, size_t n);
-int    mbtowc(wchar_t *restrict pwc, const char *restrict s, size_t n);
+int    mbtowc(wchar_t *__restrict pwc, const char *__restrict s, size_t n);
 int    wctomb(char *s, wchar_t wc);
-size_t mbstowcs(wchar_t *restrict dst, const char *restrict src, size_t len);
-size_t wcstombs(char *restrict dst, const wchar_t *restrict src, size_t len);
+size_t mbstowcs(wchar_t *__restrict dst, const char *__restrict src, size_t len);
+size_t wcstombs(char *__restrict dst, const wchar_t *__restrict src, size_t len);
 
 #if !defined(__SLATE_LIBC_MSVC)
 size_t __ctype_get_mb_cur_max(void);
@@ -131,7 +131,7 @@ int   rand_r(unsigned int *seed);
 #endif
 
 #if defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
-char  *realpath(const char *restrict path, char *restrict resolved_path);
+char  *realpath(const char *__restrict path, char *__restrict resolved_path);
 long   random(void);
 void   srandom(unsigned int seed);
 char  *initstate(unsigned int seed, char *state, size_t size);
@@ -178,11 +178,11 @@ char *gcvt(double number, int ndigit, char *buf);
 char *secure_getenv(const char *name);
 char *canonicalize_file_name(const char *name);
 struct __locale_struct;
-float       strtof_l(const char *restrict nptr, char **restrict endptr,
+float       strtof_l(const char *__restrict nptr, char **__restrict endptr,
                      struct __locale_struct *locale);
-double      strtod_l(const char *restrict nptr, char **restrict endptr,
+double      strtod_l(const char *__restrict nptr, char **__restrict endptr,
                      struct __locale_struct *locale);
-long double strtold_l(const char *restrict nptr, char **restrict endptr,
+long double strtold_l(const char *__restrict nptr, char **__restrict endptr,
                       struct __locale_struct *locale);
 #endif
 

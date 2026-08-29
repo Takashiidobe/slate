@@ -134,7 +134,7 @@ struct ether_arp {
 #define arp_pln ea_hdr.ar_pln
 #define arp_op  ea_hdr.ar_op
 
-static inline void __ether_map_ip_multicast(const void *ipaddr,
+static __inline void __ether_map_ip_multicast(const void *ipaddr,
                                             uint8_t     enaddr[6]) {
   const unsigned char *ip = ipaddr;
 
