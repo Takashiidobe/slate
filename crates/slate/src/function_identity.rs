@@ -35,6 +35,7 @@ pub enum Known {
     SPrintf,
     SNPrintf,
     Exit,
+    Abort,
     Puts,
     FOpen,
     FPuts,
@@ -113,6 +114,7 @@ impl Known {
             Self::SPrintf => "sprintf",
             Self::SNPrintf => "snprintf",
             Self::Exit => "exit",
+            Self::Abort => "abort",
             Self::Puts => "puts",
             Self::FOpen => "fopen",
             Self::FPuts => "fputs",
@@ -169,6 +171,7 @@ impl Known {
             | Self::StrTod
             | Self::StrFromL
             | Self::Exit
+            | Self::Abort
             | Self::Qsort
             | Self::Bsearch => "stdlib.h",
             Self::MemCpy
@@ -268,6 +271,7 @@ impl Known {
             "sprintf" => (Self::SPrintf, "stdio.h"),
             "snprintf" => (Self::SNPrintf, "stdio.h"),
             "exit" => (Self::Exit, "stdlib.h"),
+            "abort" => (Self::Abort, "stdlib.h"),
             "puts" => (Self::Puts, "stdio.h"),
             "fopen" => (Self::FOpen, "stdio.h"),
             "fputs" => (Self::FPuts, "stdio.h"),
