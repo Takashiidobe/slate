@@ -46,15 +46,15 @@ pub(in crate::backend) fn apply(
     facts: &BTreeMap<PointerBinding, PointerFact>,
 ) {
     let pairings = compute(program, facts);
-    if pairings.is_empty() {
-        return;
+    if !pairings.is_empty() {
+        let lifted = apply_signature_lifts(program, &pairings, facts);
+        let remaining = pairings
+            .into_iter()
+            .filter(|(binding, pairing)| !lifted.contains(binding) && !pairing.kind.owned())
+            .collect();
+        apply_items(&mut program.items, &remaining);
     }
-    let lifted = apply_signature_lifts(program, &pairings, facts);
-    let remaining = pairings
-        .into_iter()
-        .filter(|(binding, pairing)| !lifted.contains(binding) && !pairing.kind.owned())
-        .collect();
-    apply_items(&mut program.items, &remaining);
+    apply_const_length(program, facts);
 }
 
 #[derive(Clone)]
@@ -2198,4 +2198,456 @@ fn peeled_offset_call(expr: &Expr) -> Option<(&str, &Expr)> {
         Expr::Cast { expr, .. } => peeled_offset_call(expr),
         _ => None,
     }
+}
+
+struct ConstCandidate {
+    function: String,
+    ptr_param: String,
+    ptr_index: usize,
+    elem_ty: Type,
+    kind: BufferKind,
+    raw_mutable: bool,
+    bound: u64,
+}
+
+fn apply_const_length(program: &mut Program, facts: &BTreeMap<PointerBinding, PointerFact>) {
+    let candidates = {
+        let fn_defs = collect_fn_defs(&program.items);
+        const_candidates(&fn_defs, facts)
+    };
+    if candidates.is_empty() {
+        return;
+    }
+    let global_arrays = collect_global_arrays(&program.items);
+    let accepted = const_accepted(&program.items, &candidates, &global_arrays);
+    if accepted.is_empty() {
+        return;
+    }
+    retype_const_items(&mut program.items, &accepted);
+    rewrite_const_call_items(&mut program.items, &accepted);
+}
+
+fn const_candidates(
+    fn_defs: &BTreeMap<String, &FnDef>,
+    facts: &BTreeMap<PointerBinding, PointerFact>,
+) -> Vec<ConstCandidate> {
+    let mut out = Vec::new();
+    for (function, f) in fn_defs {
+        let let_exprs = collect_let_exprs(&f.body);
+        let value_defs = collect_value_defs(&f.body);
+        let mut bound_pairs = Vec::new();
+        collect_loop_bounds(&f.body, &let_exprs, &mut bound_pairs);
+        let mut idx_bounds: BTreeMap<String, u64> = BTreeMap::new();
+        for (idx, len_name) in &bound_pairs {
+            let Some(n) =
+                resolved_integer(&Expr::Var(Ident::new(len_name.as_str())), &value_defs, 0)
+            else {
+                continue;
+            };
+            idx_bounds
+                .entry(idx.clone())
+                .and_modify(|cur| *cur = (*cur).min(n))
+                .or_insert(n);
+        }
+        if idx_bounds.is_empty() {
+            continue;
+        }
+        let mut offsets = Vec::new();
+        for indent in &f.body {
+            indent.stmt.collect_offset_calls(&mut offsets);
+        }
+        for (ptr_index, param) in f.params.iter().enumerate() {
+            let Type::Ptr {
+                inner,
+                mutable: raw_mutable,
+            } = &param.ty
+            else {
+                continue;
+            };
+            let binding = PointerBinding {
+                function: function.clone(),
+                name: param.name.clone(),
+            };
+            let Some(fact) = facts.get(&binding) else {
+                continue;
+            };
+            let kind = match fact.resolved().base {
+                ResolvedPtrType::Slice => BufferKind::Shared,
+                ResolvedPtrType::SliceMut => BufferKind::Mutable,
+                _ => continue,
+            };
+            let ptr_local =
+                shadow_local_name(&f.body, &param.name).unwrap_or_else(|| param.name.clone());
+            if assigned_more_than_once(&f.body, &ptr_local) {
+                continue;
+            }
+            let ptr_offsets: Vec<&Expr> = offsets
+                .iter()
+                .filter(|(recv, _, _)| resolve_var(&let_exprs, recv.as_str()) == ptr_local.as_str())
+                .map(|(_, _, index)| *index)
+                .collect();
+            if ptr_offsets.is_empty() {
+                continue;
+            }
+            let mut bound = 0u64;
+            let mut ok = true;
+            for index in ptr_offsets {
+                let Some(var) = peeled_var(index) else {
+                    ok = false;
+                    break;
+                };
+                let idx = resolve_var(&let_exprs, var);
+                let Some(n) = idx_bounds.get(idx) else {
+                    ok = false;
+                    break;
+                };
+                bound = bound.max(*n);
+            }
+            if !ok || bound == 0 {
+                continue;
+            }
+            out.push(ConstCandidate {
+                function: function.clone(),
+                ptr_param: param.name.clone(),
+                ptr_index,
+                elem_ty: (**inner).clone(),
+                kind,
+                raw_mutable: *raw_mutable,
+                bound,
+            });
+        }
+    }
+    out
+}
+
+fn const_accepted(
+    items: &[Item],
+    candidates: &[ConstCandidate],
+    global_arrays: &ArrayCatalog,
+) -> BTreeMap<String, Vec<ConstCandidate>> {
+    let by_callee: BTreeMap<&str, Vec<usize>> =
+        candidates
+            .iter()
+            .enumerate()
+            .fold(BTreeMap::new(), |mut map, (id, candidate)| {
+                map.entry(candidate.function.as_str()).or_default().push(id);
+                map
+            });
+    let mut call_counts = vec![0usize; candidates.len()];
+    let mut proven = vec![true; candidates.len()];
+    let mut callers = Vec::new();
+    collect_fn_bodies(items, &mut callers);
+    for f in &callers {
+        let defs = collect_value_defs(&f.body);
+        let mut arrays = global_arrays.clone();
+        collect_local_arrays(&f.body, &mut arrays);
+        let mut calls = Vec::new();
+        for indent in &f.body {
+            indent.stmt.collect_calls(&mut calls);
+        }
+        for (callee, args) in calls {
+            let Some(ids) = by_callee.get(callee.as_str()) else {
+                continue;
+            };
+            for &id in ids {
+                let candidate = &candidates[id];
+                call_counts[id] += 1;
+                let ok = args.get(candidate.ptr_index).is_some_and(|ptr_arg| {
+                    source_len_at_least(
+                        ptr_arg,
+                        &defs,
+                        &arrays,
+                        &candidate.elem_ty,
+                        candidate.bound,
+                    )
+                });
+                proven[id] &= ok;
+            }
+        }
+    }
+    let mut out: BTreeMap<String, Vec<ConstCandidate>> = BTreeMap::new();
+    for (id, candidate) in candidates.iter().enumerate() {
+        if call_counts[id] == 0 || !proven[id] {
+            continue;
+        }
+        out.entry(candidate.function.clone())
+            .or_default()
+            .push(ConstCandidate {
+                function: candidate.function.clone(),
+                ptr_param: candidate.ptr_param.clone(),
+                ptr_index: candidate.ptr_index,
+                elem_ty: candidate.elem_ty.clone(),
+                kind: candidate.kind,
+                raw_mutable: candidate.raw_mutable,
+                bound: candidate.bound,
+            });
+    }
+    out
+}
+
+fn collect_fn_bodies<'a>(items: &'a [Item], out: &mut Vec<&'a FnDef>) {
+    for item in items {
+        match item {
+            Item::Fn(f) => out.push(f),
+            Item::InlineMod { items, .. } => collect_fn_bodies(items, out),
+            _ => {}
+        }
+    }
+}
+
+fn source_len_at_least(
+    ptr_arg: &Expr,
+    defs: &BTreeMap<String, Expr>,
+    arrays: &ArrayCatalog,
+    elem_ty: &Type,
+    need: u64,
+) -> bool {
+    if let Some(root) = array_root_name(ptr_arg, defs, arrays, 0)
+        && let Some(source) = arrays.get(&root)
+    {
+        return source.elem_ty == *elem_ty && source.len >= need;
+    }
+    let Some(name) = canonical_var(ptr_arg, defs) else {
+        return false;
+    };
+    let Some(source) = defs.get(&name) else {
+        return false;
+    };
+    let Expr::Call { func, args, .. } = peel_value(source) else {
+        return false;
+    };
+    if !is_malloc(func) {
+        return false;
+    }
+    let [size] = args.as_slice() else {
+        return false;
+    };
+    let Some(elem_size) = primitive_size(elem_ty) else {
+        return false;
+    };
+    if let Some(total) = resolved_integer(size, defs, 0) {
+        return total >= need.saturating_mul(elem_size);
+    }
+    let resolved_size = resolved_expr(size, defs, 0);
+    let Expr::Binary {
+        op: BinOp::Mul,
+        lhs,
+        rhs,
+    } = peel_value(&resolved_size)
+    else {
+        return false;
+    };
+    (resolved_integer(rhs, defs, 0) == Some(elem_size)
+        && resolved_integer(lhs, defs, 0).is_some_and(|k| k >= need))
+        || (resolved_integer(lhs, defs, 0) == Some(elem_size)
+            && resolved_integer(rhs, defs, 0).is_some_and(|k| k >= need))
+}
+
+fn retype_const_items(items: &mut [Item], accepted: &BTreeMap<String, Vec<ConstCandidate>>) {
+    for item in items {
+        match item {
+            Item::Fn(f) => {
+                if let Some(cands) = accepted.get(&f.name) {
+                    retype_const_fn(f, cands);
+                }
+            }
+            Item::InlineMod { items, .. } => retype_const_items(items, accepted),
+            _ => {}
+        }
+    }
+}
+
+fn retype_const_fn(f: &mut FnDef, cands: &[ConstCandidate]) {
+    for candidate in cands {
+        let raw = Expr::Cast {
+            expr: Box::new(Expr::MethodCall {
+                recv: Box::new(Expr::Var(Ident::new(candidate.ptr_param.as_str()))),
+                method: if candidate.kind.mutable() {
+                    "as_mut_ptr"
+                } else {
+                    "as_ptr"
+                }
+                .to_string(),
+                args: Vec::new(),
+            }),
+            ty: Type::Ptr {
+                mutable: candidate.raw_mutable,
+                inner: Box::new(candidate.elem_ty.clone()),
+            },
+        };
+        for indent in &mut f.body {
+            indent.stmt.substitute_var(&candidate.ptr_param, &raw);
+        }
+        f.params[candidate.ptr_index].ty = Type::Ref {
+            mutable: candidate.kind.mutable(),
+            inner: Box::new(Type::Slice(Box::new(candidate.elem_ty.clone()))),
+        };
+        f.params[candidate.ptr_index].mutable = false;
+    }
+}
+
+fn rewrite_const_call_items(items: &mut [Item], accepted: &BTreeMap<String, Vec<ConstCandidate>>) {
+    for item in items {
+        match item {
+            Item::Fn(f) => {
+                for indent in &mut f.body {
+                    rewrite_const_call_stmt(&mut indent.stmt, accepted);
+                }
+            }
+            Item::InlineMod { items, .. } => rewrite_const_call_items(items, accepted),
+            _ => {}
+        }
+    }
+}
+
+fn rewrite_const_call_stmt(stmt: &mut Stmt, accepted: &BTreeMap<String, Vec<ConstCandidate>>) {
+    match stmt {
+        Stmt::Let {
+            init: Some(expr), ..
+        } => rewrite_const_call_expr(expr, accepted),
+        Stmt::Let { init: None, .. }
+        | Stmt::Return(None)
+        | Stmt::Break(_)
+        | Stmt::Continue(_)
+        | Stmt::InlineAsm(_) => {}
+        Stmt::LetIf {
+            cond,
+            then_body,
+            then_value,
+            else_body,
+            else_value,
+            ..
+        } => {
+            rewrite_const_call_expr(cond, accepted);
+            for indent in then_body.iter_mut().chain(else_body.iter_mut()) {
+                rewrite_const_call_stmt(&mut indent.stmt, accepted);
+            }
+            rewrite_const_call_expr(then_value, accepted);
+            rewrite_const_call_expr(else_value, accepted);
+        }
+        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
+            rewrite_const_call_expr(target, accepted);
+            rewrite_const_call_expr(value, accepted);
+        }
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => rewrite_const_call_expr(expr, accepted),
+        Stmt::If {
+            cond,
+            then_body,
+            else_body,
+        } => {
+            rewrite_const_call_expr(cond, accepted);
+            for indent in then_body.iter_mut().chain(else_body.iter_mut()) {
+                rewrite_const_call_stmt(&mut indent.stmt, accepted);
+            }
+        }
+        Stmt::Loop { body, .. }
+        | Stmt::For { body, .. }
+        | Stmt::Scope { body }
+        | Stmt::LabeledBlock { body, .. } => {
+            for indent in body {
+                rewrite_const_call_stmt(&mut indent.stmt, accepted);
+            }
+        }
+        Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
+            for indent in &mut body.stmts {
+                rewrite_const_call_stmt(&mut indent.stmt, accepted);
+            }
+            if let Some(tail) = &mut body.tail {
+                rewrite_const_call_expr(tail, accepted);
+            }
+        }
+        Stmt::Match { expr, arms } => {
+            rewrite_const_call_expr(expr, accepted);
+            for arm in arms {
+                for indent in &mut arm.body {
+                    rewrite_const_call_stmt(&mut indent.stmt, accepted);
+                }
+            }
+        }
+    }
+}
+
+fn rewrite_const_call_expr(expr: &mut Expr, accepted: &BTreeMap<String, Vec<ConstCandidate>>) {
+    match expr {
+        Expr::Call { func, args, .. } => {
+            rewrite_const_call_expr(func, accepted);
+            for arg in args.iter_mut() {
+                rewrite_const_call_expr(arg, accepted);
+            }
+            let Expr::Var(callee) = &**func else {
+                return;
+            };
+            let Some(cands) = accepted.get(callee.as_str()) else {
+                return;
+            };
+            for candidate in cands {
+                if let Some(arg) = args.get_mut(candidate.ptr_index) {
+                    *arg = const_bridge(arg.clone(), candidate);
+                }
+            }
+        }
+        Expr::Unary { expr, .. }
+        | Expr::Cast { expr, .. }
+        | Expr::Ref { expr, .. }
+        | Expr::AddrOf { expr, .. }
+        | Expr::Transmute { expr, .. } => rewrite_const_call_expr(expr, accepted),
+        Expr::Block(block) | Expr::Unsafe(block) => {
+            for indent in &mut block.stmts {
+                rewrite_const_call_stmt(&mut indent.stmt, accepted);
+            }
+            if let Some(tail) = &mut block.tail {
+                rewrite_const_call_expr(tail, accepted);
+            }
+        }
+        Expr::Binary { lhs, rhs, .. }
+        | Expr::Range {
+            start: lhs,
+            end: rhs,
+        } => {
+            rewrite_const_call_expr(lhs, accepted);
+            rewrite_const_call_expr(rhs, accepted);
+        }
+        Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
+            rewrite_const_call_expr(recv, accepted);
+            for arg in args {
+                rewrite_const_call_expr(arg, accepted);
+            }
+        }
+        Expr::Index { base, index } => {
+            rewrite_const_call_expr(base, accepted);
+            rewrite_const_call_expr(index, accepted);
+        }
+        Expr::Field { base, .. }
+        | Expr::TupleField { base, .. }
+        | Expr::ArrayPtr { array: base, .. } => rewrite_const_call_expr(base, accepted),
+        _ => {}
+    }
+}
+
+fn const_bridge(ptr: Expr, candidate: &ConstCandidate) -> Expr {
+    let ptr = Expr::Cast {
+        expr: Box::new(ptr),
+        ty: Type::Ptr {
+            mutable: candidate.kind.mutable(),
+            inner: Box::new(candidate.elem_ty.clone()),
+        },
+    };
+    let len = Expr::Value(crate::backend::rust_ast::RustValue::Usize(
+        candidate.bound as usize,
+    ));
+    let method = if candidate.kind.mutable() {
+        "from_raw_parts_mut"
+    } else {
+        "from_raw_parts"
+    };
+    Expr::Unsafe(Box::new(Block {
+        stmts: Vec::new(),
+        tail: Some(Box::new(Expr::Call {
+            binding: CallBinding::Generated,
+            func: Box::new(Expr::Path(Path::new(
+                ["std", "slice", method].map(Ident::from),
+            ))),
+            args: vec![ptr, len],
+        })),
+    }))
 }

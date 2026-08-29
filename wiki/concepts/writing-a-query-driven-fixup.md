@@ -86,7 +86,10 @@ This is the concrete checklist — every file a new pass touches, in order:
 1. **Fixture first.** Add a C-only file under `tests/fixtures/` that exercises
    the shape you're recovering, before writing any rewrite code. Confirm
    today's baseline output with `cargo run -- translate tests/fixtures/<name>.c`
-   so you know what you're changing.
+   so you know what you're changing. Scaffold the FileCheck blocks with the
+   `@rewrite-begin`/`@lowering-begin` region directives plus
+   `tools/update_filecheck.py --in-place` rather than by hand — see
+   [differential fixtures](differential-fixtures.md)'s region-scoped section.
 2. **Facts, if you need new ones.** If the rewrite needs information not
    already exposed by `QueryContext`, add a collector under
    `src/backend/facts/` (facts.md's "Adding a fact"), then a `QueryContext`

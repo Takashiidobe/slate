@@ -15,6 +15,59 @@ int main(void) {
   return 0;
 }
 // SLATE-FILECHECK-BEGIN lowering
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES: #![feature(c_variadic)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn sum_items(arg0: &[i32], arg1: i32, arg2: i32) -> i32 {
+// REWRITES-NEXT: let mut items: *mut i32 = arg0.as_ptr() as *mut i32;
+// REWRITES-NEXT: let mut printable: i32 = arg1;
+// REWRITES-NEXT: let mut length: i32 = arg2;
+// REWRITES-NEXT: let mut __retval: i32 = 0;
+// REWRITES-NEXT: let mut total: i32 = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"this is another number: %d %d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, printable, length) };
+// REWRITES-NEXT: total = 0;
+// REWRITES-NEXT: {
+// REWRITES-NEXT:         let mut i: i32 = 0;
+// REWRITES-NEXT:         i = 0;
+// REWRITES-NEXT:         loop {
+// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = 4;
+// REWRITES-NEXT:                     if !(i < {{_v[0-9]+}}) {
+// REWRITES-NEXT:                                     break;
+// REWRITES-NEXT:                     }
+// REWRITES-NEXT:                     {
+// REWRITES-NEXT:                                     let {{_v[0-9]+}}: *mut i32 = items;
+// REWRITES-NEXT:                                     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
+// REWRITES-NEXT:                                     total = total + unsafe { *{{_v[0-9]+}} };
+// REWRITES-NEXT:                     }
+// REWRITES-NEXT:                     i = i + 1;
+// REWRITES-NEXT:         }
+// REWRITES-NEXT: }
+// REWRITES-NEXT: __retval = total;
+// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: let mut __retval: i32 = 0;
+// REWRITES-NEXT: let mut values: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
+// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: *values = [2, 4, 6, 8];
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = values.as_mut_ptr() as *mut i32;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 5;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 4;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = sum_items(unsafe { std::slice::from_raw_parts({{_v[0-9]+}} as *const i32, 4usize) }, {{_v[0-9]+}}, {{_v[0-9]+}});
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: }
+// SLATE-FILECHECK-END rewrites
+
 // LOWERING: #![feature(c_variadic)]
 // LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
@@ -87,56 +140,3 @@ int main(void) {
 // LOWERING-NEXT:     std::process::exit(_v8 as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
-
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
-// REWRITES-EMPTY:
-// REWRITES-NEXT: unsafe extern "C" {
-// REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn sum_items(arg0: *mut i32, arg1: i32, arg2: i32) -> i32 {
-// REWRITES-NEXT: let mut items: *mut i32 = arg0;
-// REWRITES-NEXT: let mut printable: i32 = arg1;
-// REWRITES-NEXT: let mut length: i32 = arg2;
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut total: i32 = 0;
-// REWRITES-NEXT: let _v0: *mut i8 = b"this is another number: %d %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v3: i32 = unsafe { printf(_v0 as *const i8, printable, length) };
-// REWRITES-NEXT: total = 0;
-// REWRITES-NEXT: {
-// REWRITES-NEXT:         let mut i: i32 = 0;
-// REWRITES-NEXT:         i = 0;
-// REWRITES-NEXT:         loop {
-// REWRITES-NEXT:                     let _v7: i32 = 4;
-// REWRITES-NEXT:                     if !(i < _v7) {
-// REWRITES-NEXT:                                     break;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     {
-// REWRITES-NEXT:                                     let _v11: *mut i32 = items;
-// REWRITES-NEXT:                                     let _v12: *mut i32 = unsafe { _v11.offset((i as i64) as isize) };
-// REWRITES-NEXT:                                     total = total + unsafe { *_v12 };
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     i = i + 1;
-// REWRITES-NEXT:         }
-// REWRITES-NEXT: }
-// REWRITES-NEXT: __retval = total;
-// REWRITES-NEXT: return __retval;
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut values: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: *values = [2, 4, 6, 8];
-// REWRITES-NEXT: let _v1: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v2: *mut i32 = values.as_mut_ptr() as *mut i32;
-// REWRITES-NEXT: let _v3: i32 = 5;
-// REWRITES-NEXT: let _v4: i32 = 4;
-// REWRITES-NEXT: let _v5: i32 = sum_items(_v2, _v3, _v4);
-// REWRITES-NEXT: let _v6: i32 = unsafe { printf(_v1 as *const i8, _v5) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
-// REWRITES-NEXT: }
-// SLATE-FILECHECK-END rewrites
