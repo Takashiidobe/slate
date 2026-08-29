@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 use crate::backend::interproc::{self, CallGraph};
 use crate::backend::rust_ast::{
@@ -202,6 +202,19 @@ struct CallSite {
     caller_binding: String,
 }
 
+struct ReturnCallSite {
+    caller: String,
+    callee: String,
+    param_index: usize,
+    result_binding: String,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+struct ReturnAlias {
+    param_index: usize,
+    elem_is_byte: bool,
+}
+
 pub(in crate::backend) fn solve(program: &Program) -> BTreeMap<PointerBinding, PointerFact> {
     let fn_defs = collect_fn_defs(&program.items);
     let candidates: BTreeMap<String, Candidate> = fn_defs
@@ -212,13 +225,17 @@ pub(in crate::backend) fn solve(program: &Program) -> BTreeMap<PointerBinding, P
         return BTreeMap::new();
     }
 
+    let return_aliases = collect_return_aliases(&fn_defs, &candidates);
+
     let mut facts: BTreeMap<PointerBinding, PointerFact> = BTreeMap::new();
     let mut call_sites: Vec<CallSite> = Vec::new();
-    for (name, candidate) in &candidates {
-        let f = fn_defs[name];
-        let (local, sites) = classify_function(name, f, candidate, &candidates);
+    let mut return_sites: Vec<ReturnCallSite> = Vec::new();
+    for (name, f) in &fn_defs {
+        let (local, sites, local_return_sites) =
+            classify_function(name, f, candidates.get(name), &candidates, &return_aliases);
         facts.extend(local);
         call_sites.extend(sites);
+        return_sites.extend(local_return_sites);
     }
 
     let mut outbound: BTreeMap<String, Vec<&CallSite>> = BTreeMap::new();
@@ -226,8 +243,11 @@ pub(in crate::backend) fn solve(program: &Program) -> BTreeMap<PointerBinding, P
         outbound.entry(site.caller.clone()).or_default().push(site);
     }
 
-    let mut graph = CallGraph::new(candidates.keys().cloned());
+    let mut graph = CallGraph::new(fn_defs.keys().cloned());
     for site in &call_sites {
+        graph.add_edge(&site.caller, &site.callee);
+    }
+    for site in &return_sites {
         graph.add_edge(&site.caller, &site.callee);
     }
     let order = interproc::scc_order(&graph);
@@ -268,6 +288,29 @@ pub(in crate::backend) fn solve(program: &Program) -> BTreeMap<PointerBinding, P
             };
             if let Some(callee_fact) = facts.get_mut(&callee_binding) {
                 changed |= callee_fact.merge_evidence_from(&caller_fact);
+            }
+        }
+        for site in &return_sites {
+            if site.caller != name && site.callee != name {
+                continue;
+            }
+            let result_binding = PointerBinding {
+                function: site.caller.clone(),
+                name: site.result_binding.clone(),
+            };
+            let callee_binding = PointerBinding {
+                function: site.callee.clone(),
+                name: callee_param_name(&fn_defs, &site.callee, site.param_index),
+            };
+            if let Some(result_fact) = facts.get(&result_binding).cloned()
+                && let Some(callee_fact) = facts.get_mut(&callee_binding)
+            {
+                changed |= callee_fact.merge_evidence_from(&result_fact);
+            }
+            if let Some(callee_fact) = facts.get(&callee_binding).cloned()
+                && let Some(result_fact) = facts.get_mut(&result_binding)
+            {
+                changed |= result_fact.merge_evidence_from(&callee_fact);
             }
         }
         changed
@@ -341,22 +384,199 @@ fn elem_is_byte(ty: &Type) -> bool {
     }
 }
 
+fn collect_return_aliases(
+    fn_defs: &BTreeMap<String, &FnDef>,
+    candidates: &BTreeMap<String, Candidate>,
+) -> BTreeMap<String, ReturnAlias> {
+    let mut aliases = BTreeMap::new();
+    loop {
+        let mut changed = false;
+        for (name, candidate) in candidates {
+            if aliases.contains_key(name) {
+                continue;
+            }
+            if let Some(alias) = return_alias_for(fn_defs[name], candidate, &aliases) {
+                aliases.insert(name.clone(), alias);
+                changed = true;
+            }
+        }
+        if !changed {
+            return aliases;
+        }
+    }
+}
+
+fn return_alias_for(
+    f: &FnDef,
+    candidate: &Candidate,
+    return_aliases: &BTreeMap<String, ReturnAlias>,
+) -> Option<ReturnAlias> {
+    let mut assignments: BTreeMap<String, Vec<Expr>> = BTreeMap::new();
+    collect_assignments(&f.body, &mut assignments);
+    let mut returns = Vec::new();
+    collect_return_exprs(&f.body, &mut returns);
+    let aliases: Vec<ReturnAlias> = candidate
+        .param_indices
+        .iter()
+        .filter_map(|&param_index| {
+            let param = &f.params[param_index];
+            let mut tracked = BTreeSet::from([param.name.clone()]);
+            loop {
+                let before = tracked.len();
+                for (name, values) in &assignments {
+                    let has_alias = values.iter().any(|value| {
+                        return_source_var(value, return_aliases)
+                            .is_some_and(|source| tracked.contains(source.as_str()))
+                    });
+                    let compatible = values.iter().all(|value| {
+                        is_null_like(value)
+                            || return_source_var(value, return_aliases)
+                                .is_some_and(|source| tracked.contains(source.as_str()))
+                    });
+                    if has_alias && compatible {
+                        tracked.insert(name.clone());
+                    }
+                }
+                if tracked.len() == before {
+                    break;
+                }
+            }
+            (!returns.is_empty()
+                && returns.iter().all(|expr| {
+                    return_source_var(expr, return_aliases)
+                        .is_some_and(|name| tracked.contains(name.as_str()))
+                }))
+            .then_some(ReturnAlias {
+                param_index,
+                elem_is_byte: elem_is_byte(&param.ty),
+            })
+        })
+        .collect();
+    let [alias] = aliases.as_slice() else {
+        return None;
+    };
+    Some(*alias)
+}
+
+fn return_source_var(expr: &Expr, return_aliases: &BTreeMap<String, ReturnAlias>) -> Option<Ident> {
+    if let Some(source) = source_var(expr) {
+        return Some(source);
+    }
+    let Expr::Call { func, args, .. } = peel_cast(peel_unsafe_tail(expr)) else {
+        return None;
+    };
+    let Expr::Var(callee) = &**func else {
+        return None;
+    };
+    let alias = return_aliases.get(callee.as_str())?;
+    return_source_var(args.get(alias.param_index)?, return_aliases)
+}
+
+fn collect_assignments(body: &[IndentStmt], out: &mut BTreeMap<String, Vec<Expr>>) {
+    for indent in body {
+        match &indent.stmt {
+            Stmt::Let {
+                name,
+                init: Some(init),
+                ..
+            } => out.entry(name.clone()).or_default().push(init.clone()),
+            Stmt::Assign {
+                target: Expr::Var(name),
+                value,
+            } => out
+                .entry(name.as_str().to_string())
+                .or_default()
+                .push(value.clone()),
+            _ => {}
+        }
+        match &indent.stmt {
+            Stmt::LetIf {
+                then_body,
+                else_body,
+                ..
+            }
+            | Stmt::If {
+                then_body,
+                else_body,
+                ..
+            } => {
+                collect_assignments(then_body, out);
+                collect_assignments(else_body, out);
+            }
+            Stmt::Loop { body, .. }
+            | Stmt::For { body, .. }
+            | Stmt::Scope { body }
+            | Stmt::LabeledBlock { body, .. } => collect_assignments(body, out),
+            Stmt::Match { arms, .. } => {
+                for arm in arms {
+                    collect_assignments(&arm.body, out);
+                }
+            }
+            Stmt::While { body, .. } | Stmt::Unsafe { body } | Stmt::Block(body) => {
+                collect_assignments(&body.stmts, out)
+            }
+            _ => {}
+        }
+    }
+}
+
+fn collect_return_exprs(body: &[IndentStmt], out: &mut Vec<Expr>) {
+    for indent in body {
+        match &indent.stmt {
+            Stmt::Return(Some(expr)) => out.push(expr.clone()),
+            Stmt::LetIf {
+                then_body,
+                else_body,
+                ..
+            }
+            | Stmt::If {
+                then_body,
+                else_body,
+                ..
+            } => {
+                collect_return_exprs(then_body, out);
+                collect_return_exprs(else_body, out);
+            }
+            Stmt::Loop { body, .. }
+            | Stmt::For { body, .. }
+            | Stmt::Scope { body }
+            | Stmt::LabeledBlock { body, .. } => collect_return_exprs(body, out),
+            Stmt::Match { arms, .. } => {
+                for arm in arms {
+                    collect_return_exprs(&arm.body, out);
+                }
+            }
+            Stmt::While { body, .. } | Stmt::Unsafe { body } | Stmt::Block(body) => {
+                collect_return_exprs(&body.stmts, out)
+            }
+            _ => {}
+        }
+    }
+}
+
 fn classify_function(
     name: &str,
     f: &FnDef,
-    candidate: &Candidate,
+    candidate: Option<&Candidate>,
     candidates: &BTreeMap<String, Candidate>,
-) -> (BTreeMap<PointerBinding, PointerFact>, Vec<CallSite>) {
+    return_aliases: &BTreeMap<String, ReturnAlias>,
+) -> (
+    BTreeMap<PointerBinding, PointerFact>,
+    Vec<CallSite>,
+    Vec<ReturnCallSite>,
+) {
     let mut facts = BTreeMap::new();
     let mut tracked: BTreeMap<String, String> = BTreeMap::new();
-    for &index in &candidate.param_indices {
-        let param = &f.params[index];
-        let binding = PointerBinding {
-            function: name.to_string(),
-            name: param.name.clone(),
-        };
-        facts.insert(binding, PointerFact::new(elem_is_byte(&param.ty)));
-        tracked.insert(param.name.clone(), param.name.clone());
+    if let Some(candidate) = candidate {
+        for &index in &candidate.param_indices {
+            let param = &f.params[index];
+            let binding = PointerBinding {
+                function: name.to_string(),
+                name: param.name.clone(),
+            };
+            facts.insert(binding, PointerFact::new(elem_is_byte(&param.ty)));
+            tracked.insert(param.name.clone(), param.name.clone());
+        }
     }
 
     let mut var_uses = Vec::new();
@@ -369,24 +589,31 @@ fn classify_function(
     }
 
     let mut sites = Vec::new();
+    let mut return_sites = Vec::new();
     let mut ctx = ClassifyCtx {
         function: name,
         candidates,
+        return_aliases,
+        has_return_alias: return_aliases.contains_key(name),
         facts: &mut facts,
         tracked: &mut tracked,
         sites: &mut sites,
+        return_sites: &mut return_sites,
         use_counts: &use_counts,
     };
     ctx.body(&f.body);
-    (facts, sites)
+    (facts, sites, return_sites)
 }
 
 struct ClassifyCtx<'a> {
     function: &'a str,
     candidates: &'a BTreeMap<String, Candidate>,
+    return_aliases: &'a BTreeMap<String, ReturnAlias>,
+    has_return_alias: bool,
     facts: &'a mut BTreeMap<PointerBinding, PointerFact>,
     tracked: &'a mut BTreeMap<String, String>,
     sites: &'a mut Vec<CallSite>,
+    return_sites: &'a mut Vec<ReturnCallSite>,
     use_counts: &'a BTreeMap<String, usize>,
 }
 
@@ -445,6 +672,42 @@ impl ClassifyCtx<'_> {
         true
     }
 
+    fn try_return_call_alias(&mut self, name: &str, source_expr: &Expr) -> bool {
+        if self.canonical_of(name).is_some() {
+            return false;
+        }
+        let Expr::Call {
+            func,
+            args,
+            binding,
+        } = peel_cast(peel_unsafe_tail(source_expr))
+        else {
+            return false;
+        };
+        let Expr::Var(callee) = &**func else {
+            return false;
+        };
+        let Some(alias) = self.return_aliases.get(callee.as_str()).copied() else {
+            return false;
+        };
+        self.call(func, args, binding);
+        let binding = PointerBinding {
+            function: self.function.to_string(),
+            name: name.to_string(),
+        };
+        self.facts
+            .entry(binding)
+            .or_insert_with(|| PointerFact::new(alias.elem_is_byte));
+        self.tracked.insert(name.to_string(), name.to_string());
+        self.return_sites.push(ReturnCallSite {
+            caller: self.function.to_string(),
+            callee: callee.as_str().to_string(),
+            param_index: alias.param_index,
+            result_binding: name.to_string(),
+        });
+        true
+    }
+
     fn observe_write_target(&mut self, expr: &Expr) {
         if let Some(name) = source_var(expr)
             && let Some(canonical) = self.canonical_of(name.as_str())
@@ -475,7 +738,10 @@ impl ClassifyCtx<'_> {
                 init: Some(init),
                 ..
             } => {
-                if !self.try_alias(name, init) && !self.try_offset_alias(name, init) {
+                if !self.try_alias(name, init)
+                    && !self.try_offset_alias(name, init)
+                    && !self.try_return_call_alias(name, init)
+                {
                     self.expr(init);
                 }
             }
@@ -498,6 +764,7 @@ impl ClassifyCtx<'_> {
                 if let Expr::Var(name) = target {
                     if !self.try_alias(name.as_str(), value)
                         && !self.try_offset_alias(name.as_str(), value)
+                        && !self.try_return_call_alias(name.as_str(), value)
                     {
                         self.expr(value);
                     }
@@ -516,7 +783,9 @@ impl ClassifyCtx<'_> {
                 if let Expr::Var(name) = expr
                     && let Some(canonical) = self.canonical_of(name.as_str())
                 {
-                    self.observe(&canonical, PointerFact::observe_escape);
+                    if !self.has_return_alias {
+                        self.observe(&canonical, PointerFact::observe_escape);
+                    }
                 } else {
                     self.expr(expr);
                 }
@@ -1052,12 +1321,12 @@ fn collect_heap_locals_stmt(stmt: &Stmt, out: &mut std::collections::BTreeSet<St
 
 fn arg_is_provably_bridgeable(
     arg: &Expr,
-    own: Option<&BTreeMap<String, LiftPlan>>,
+    bridgeable_aliases: &BTreeSet<String>,
     heap_locals: &std::collections::BTreeSet<String>,
     plan: &LiftPlan,
 ) -> bool {
     if let Expr::Var(name) = arg
-        && own.is_some_and(|own| own.contains_key(name.as_str()))
+        && bridgeable_aliases.contains(name.as_str())
     {
         return true;
     }
@@ -1065,6 +1334,36 @@ fn arg_is_provably_bridgeable(
         return matches!(peel_cast(arg), Expr::Var(name) if heap_locals.contains(name.as_str()));
     }
     matches!(peel_cast(arg), Expr::AddrOf { .. } | Expr::Ref { .. })
+}
+
+fn collect_bridgeable_aliases(
+    body: &[IndentStmt],
+    own: Option<&BTreeMap<String, LiftPlan>>,
+) -> BTreeSet<String> {
+    let mut aliases: BTreeSet<String> = own
+        .into_iter()
+        .flat_map(|plans| plans.keys().cloned())
+        .collect();
+    let mut assignments = BTreeMap::new();
+    collect_assignments(body, &mut assignments);
+    loop {
+        let before = aliases.len();
+        for (name, values) in &assignments {
+            let has_alias = values.iter().any(|value| {
+                source_var(value).is_some_and(|source| aliases.contains(source.as_str()))
+            });
+            let compatible = values.iter().all(|value| {
+                is_null_like(value)
+                    || source_var(value).is_some_and(|source| aliases.contains(source.as_str()))
+            });
+            if has_alias && compatible {
+                aliases.insert(name.clone());
+            }
+        }
+        if aliases.len() == before {
+            return aliases;
+        }
+    }
 }
 
 fn validate_plans(
@@ -1085,6 +1384,7 @@ fn validate_plans(
         let empty_locals = std::collections::BTreeSet::new();
         for_each_fn_body(items, &mut |caller_name, body| {
             let own = plans.get(caller_name);
+            let bridgeable_aliases = collect_bridgeable_aliases(body, own);
             let heap_locals = heap_locals_by_fn.get(caller_name).unwrap_or(&empty_locals);
             let mut calls = Vec::new();
             for indent in body {
@@ -1105,7 +1405,7 @@ fn validate_plans(
                     let Some(plan) = callee_plans.get(pname) else {
                         continue;
                     };
-                    if !arg_is_provably_bridgeable(arg, own, heap_locals, plan) {
+                    if !arg_is_provably_bridgeable(arg, &bridgeable_aliases, heap_locals, plan) {
                         invalid.push((callee.to_string(), pname.clone()));
                     }
                 }

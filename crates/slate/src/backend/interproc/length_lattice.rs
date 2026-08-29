@@ -86,6 +86,39 @@ struct CallSiteProof {
     proof: Option<CallProof>,
 }
 
+#[derive(Clone, PartialEq, Eq)]
+struct ArraySource {
+    elem_ty: Type,
+    len: u64,
+}
+
+#[derive(Clone, Default)]
+struct ArrayCatalog {
+    sources: BTreeMap<String, ArraySource>,
+    ambiguous: BTreeSet<String>,
+}
+
+impl ArrayCatalog {
+    fn insert(&mut self, name: String, source: ArraySource) {
+        if self.ambiguous.contains(&name) {
+            return;
+        }
+        if self.sources.remove(&name).is_some() {
+            self.ambiguous.insert(name);
+        } else {
+            self.sources.insert(name, source);
+        }
+    }
+
+    fn contains_key(&self, name: &str) -> bool {
+        self.sources.contains_key(name)
+    }
+
+    fn get(&self, name: &str) -> Option<&ArraySource> {
+        self.sources.get(name)
+    }
+}
+
 fn apply_signature_lifts(
     program: &mut Program,
     pairings: &BTreeMap<PointerBinding, Pairing>,
@@ -93,11 +126,12 @@ fn apply_signature_lifts(
 ) -> BTreeSet<PointerBinding> {
     let (candidates, sites) = {
         let fn_defs = collect_fn_defs(&program.items);
+        let global_arrays = collect_global_arrays(&program.items);
         let candidates = signature_candidates(&fn_defs, pairings, facts);
         if candidates.is_empty() {
             return BTreeSet::new();
         }
-        let sites = signature_call_sites(&fn_defs, &candidates);
+        let sites = signature_call_sites(&fn_defs, &candidates, &global_arrays);
         (candidates, sites)
     };
 
@@ -218,6 +252,42 @@ fn collect_fn_defs_into<'a>(items: &'a [Item], out: &mut BTreeMap<String, &'a Fn
     }
 }
 
+fn collect_global_arrays(items: &[Item]) -> ArrayCatalog {
+    let mut out = ArrayCatalog::default();
+    collect_global_arrays_into(items, &mut out);
+    out
+}
+
+fn collect_global_arrays_into(items: &[Item], out: &mut ArrayCatalog) {
+    for item in items {
+        match item {
+            Item::Static { name, ty, .. } | Item::Const { name, ty, .. } => {
+                if let Some(source) = array_source(ty) {
+                    out.insert(name.clone(), source);
+                }
+            }
+            Item::InlineMod { items, .. } => collect_global_arrays_into(items, out),
+            _ => {}
+        }
+    }
+}
+
+fn array_source(ty: &Type) -> Option<ArraySource> {
+    match ty {
+        Type::Array { elem, len } => Some(ArraySource {
+            elem_ty: (**elem).clone(),
+            len: *len,
+        }),
+        Type::Generic { name, args }
+            if name == "aligned::Aligned"
+                && let [_, inner] = args.as_slice() =>
+        {
+            array_source(inner)
+        }
+        _ => None,
+    }
+}
+
 fn signature_candidates(
     fn_defs: &BTreeMap<String, &FnDef>,
     pairings: &BTreeMap<PointerBinding, Pairing>,
@@ -283,6 +353,7 @@ fn signature_candidates(
 fn signature_call_sites(
     fn_defs: &BTreeMap<String, &FnDef>,
     candidates: &[SignatureCandidate],
+    global_arrays: &ArrayCatalog,
 ) -> Vec<CallSiteProof> {
     let by_callee: BTreeMap<&str, Vec<usize>> =
         candidates
@@ -303,6 +374,8 @@ fn signature_call_sites(
     let mut out = Vec::new();
     for (caller, f) in fn_defs {
         let defs = collect_value_defs(&f.body);
+        let mut arrays = global_arrays.clone();
+        collect_local_arrays(&f.body, &mut arrays);
         let mut calls = Vec::new();
         for indent in &f.body {
             indent.stmt.collect_calls(&mut calls);
@@ -315,20 +388,24 @@ fn signature_call_sites(
                 let candidate = &candidates[target];
                 let proof = call_args(args, candidate).and_then(|(ptr_arg, len_arg)| {
                     let exact = match candidate.kind {
+                        BufferKind::Shared | BufferKind::Mutable => {
+                            exact_allocation_pair(ptr_arg, len_arg, &candidate.elem_ty, &defs)
+                                || exact_array_pair(
+                                    ptr_arg,
+                                    len_arg,
+                                    &candidate.elem_ty,
+                                    &defs,
+                                    &arrays,
+                                )
+                        }
+                        BufferKind::Owned => {
+                            exact_allocation_pair(ptr_arg, len_arg, &candidate.elem_ty, &defs)
+                        }
                         BufferKind::Str => exact_utf8_array_pair(ptr_arg, len_arg, &defs),
                         BufferKind::StringOwned => {
                             exact_allocation_pair(ptr_arg, len_arg, &candidate.elem_ty, &defs)
                                 && utf8_owned_fill_proof(
                                     &f.body, ptr_arg, len_arg, &defs, &by_callee,
-                                )
-                        }
-                        _ => {
-                            exact_allocation_pair(ptr_arg, len_arg, &candidate.elem_ty, &defs)
-                                || exact_byte_array_pair(
-                                    ptr_arg,
-                                    len_arg,
-                                    &candidate.elem_ty,
-                                    &defs,
                                 )
                         }
                     };
@@ -430,23 +507,50 @@ fn exact_allocation_pair(
         || (same_value(rhs, len_arg, defs) && resolved_integer(lhs, defs, 0) == Some(elem_size))
 }
 
-fn exact_byte_array_pair(
+fn exact_array_pair(
     ptr_arg: &Expr,
     len_arg: &Expr,
     elem_ty: &Type,
     defs: &BTreeMap<String, Expr>,
+    arrays: &ArrayCatalog,
 ) -> bool {
-    if primitive_size(elem_ty) != Some(1) {
+    let Some(len) = resolved_integer(len_arg, defs, 0) else {
         return false;
+    };
+    let Some(root) = array_root_name(ptr_arg, defs, arrays, 0) else {
+        return false;
+    };
+    arrays
+        .get(&root)
+        .is_some_and(|source| source.len == len && source.elem_ty == *elem_ty)
+}
+
+fn array_root_name(
+    expr: &Expr,
+    defs: &BTreeMap<String, Expr>,
+    arrays: &ArrayCatalog,
+    depth: usize,
+) -> Option<String> {
+    if depth > 32 {
+        return None;
     }
-    let Some(len) = resolved_integer(len_arg, defs, 0).and_then(|len| usize::try_from(len).ok())
-    else {
-        return false;
-    };
-    let Some(bytes) = resolved_byte_array(ptr_arg, defs, 0) else {
-        return false;
-    };
-    len <= bytes.len()
+    match peel_value(expr) {
+        Expr::Var(name) if arrays.contains_key(name.as_str()) => Some(name.to_string()),
+        Expr::Var(name) => array_root_name(defs.get(name.as_str())?, defs, arrays, depth + 1),
+        Expr::ArrayPtr { array, .. } => array_root_name(array, defs, arrays, depth + 1),
+        Expr::MethodCall { recv, method, args }
+            if args.is_empty() && matches!(method.as_str(), "as_ptr" | "as_mut_ptr") =>
+        {
+            array_root_name(recv, defs, arrays, depth + 1)
+        }
+        Expr::MethodCallGeneric {
+            recv, method, args, ..
+        } if args.is_empty() && method == "cast" => array_root_name(recv, defs, arrays, depth + 1),
+        Expr::AddrOf { expr, .. } | Expr::Ref { expr, .. } => {
+            array_root_name(expr, defs, arrays, depth + 1)
+        }
+        _ => None,
+    }
 }
 
 fn exact_utf8_array_pair(ptr_arg: &Expr, len_arg: &Expr, defs: &BTreeMap<String, Expr>) -> bool {
@@ -753,6 +857,52 @@ fn collect_value_defs(body: &[IndentStmt]) -> BTreeMap<String, Expr> {
     let mut out = BTreeMap::new();
     collect_value_defs_into(body, &mut out);
     out
+}
+
+fn collect_local_arrays(body: &[IndentStmt], out: &mut ArrayCatalog) {
+    for indent in body {
+        match &indent.stmt {
+            Stmt::Let {
+                name, ty: Some(ty), ..
+            }
+            | Stmt::LetIf {
+                name, ty: Some(ty), ..
+            } => {
+                if let Some(source) = array_source(ty) {
+                    out.insert(name.clone(), source);
+                }
+            }
+            _ => {}
+        }
+        match &indent.stmt {
+            Stmt::LetIf {
+                then_body,
+                else_body,
+                ..
+            }
+            | Stmt::If {
+                then_body,
+                else_body,
+                ..
+            } => {
+                collect_local_arrays(then_body, out);
+                collect_local_arrays(else_body, out);
+            }
+            Stmt::Loop { body, .. }
+            | Stmt::For { body, .. }
+            | Stmt::Scope { body }
+            | Stmt::LabeledBlock { body, .. } => collect_local_arrays(body, out),
+            Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
+                collect_local_arrays(&body.stmts, out)
+            }
+            Stmt::Match { arms, .. } => {
+                for arm in arms {
+                    collect_local_arrays(&arm.body, out);
+                }
+            }
+            _ => {}
+        }
+    }
 }
 
 fn collect_value_defs_into(body: &[IndentStmt], out: &mut BTreeMap<String, Expr>) {

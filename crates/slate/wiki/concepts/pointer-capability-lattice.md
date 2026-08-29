@@ -200,11 +200,16 @@ Both directions are the same bit-wise join/meet (`PointerFact::
 merge_evidence_from`), applied per call site inside `recompute(name)` for
 whichever endpoint (`name`) the worklist is currently visiting — each call
 site's merge is symmetric and idempotent, so it's safe for both the caller's
-and the callee's `recompute` to independently re-apply it. Local
-(intraprocedural) evidence is computed exactly once, up front
-(`classify_function`), since — with return-value aliasing out of scope for
-now (`slate-y0qs.4.3`) — it never depends on any other function's facts;
-only the cross-call joins iterate.
+and the callee's `recompute` to independently re-apply it.
+
+Return aliases add a second edge shape. An intraprocedural summary records
+when every return path aliases exactly one pointer parameter, including
+null-initialized return temporaries and forwarding calls through another
+summarized function. A known call result gets a synthetic local fact, and
+the worklist merges that fact bidirectionally with the returned parameter.
+This lets result uses in the caller inform the callee without treating the
+callee's proven return as `ESCAPE`. Returns that can select between multiple
+parameters remain unsummarized and raw.
 
 ## Status
 
@@ -213,14 +218,15 @@ only the cross-call joins iterate.
 `Owned` rows only (see above for why `Cell`/`Buffer` are excluded from
 `lift_kind()`). Verified via three differential fixtures:
 `tests/fixtures/pointer_lattice.c` (all three lifted shapes — `&mut T`,
-`&T`, `Box<T>` — in one program) plus the two `ptr_lattice_*` regression
-fixtures from earlier bug-fix sessions. Known gaps, each tracked as its own
-follow-up rather than half-implemented here: return-value aliasing
-(`slate-y0qs.4.3`), `&mut str` (`slate-y0qs.4.4`), broader
-`Known`-libc-function semantics (`slate-y0qs.4.5`) — `classify_call_arg`
-currently only models `free`/`memcpy`/`memmove`/`memset`/the `str*` family
-and defaults every other call conservatively to `ESCAPE` — and the
-`Buffer`-kind rows (`slate-y0qs.4.8`).
+`&T`, `Box<T>` — in one program), `pointer_return_alias.c` (direct,
+forwarded, const, mutable, and ambiguous return aliases), plus the two
+`ptr_lattice_*` regression fixtures from earlier bug-fix sessions. Known
+gaps, each tracked as its own follow-up rather than half-implemented here:
+`&mut str` (`slate-y0qs.4.4`), broader `Known`-libc-function semantics
+(`slate-y0qs.4.5`) — `classify_call_arg` currently only models
+`free`/`memcpy`/`memmove`/`memset`/the `str*` family and defaults every other
+call conservatively to `ESCAPE` — and the `Buffer`-kind rows
+(`slate-y0qs.4.8`).
 
 One latent soundness gap surfaced while implementing `Owned`, not yet
 filed as its own bead: the interprocedural `FREE` taint can over-approximate

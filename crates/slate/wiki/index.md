@@ -58,15 +58,12 @@ superseded each one for what actually applies now.
 - [Salsa Migration](historical/salsa-migration.md) -- superseded by
   [Rewrite engine v2](concepts/rewrite-engine-v2.md), which dropped salsa
   for hand-rolled fact caches.
-- [fix pointer capability lattice: U-widening and W-on-ownership gaps](concepts/fix-pointer-capability-lattice-u-widening-and-w-on-ownership-gaps.md)
-- [length_lattice: internal slice view for companion-param buffer reads](concepts/length-lattice-internal-slice-view-for-companion-param-buffer-reads.md)
-- [Gate Owned pointer bridging on heap provenance (y0qs.4.9)](concepts/gate-owned-pointer-bridging-on-heap-provenance-y0qs-4-9.md)
 - [ptr_len signature worklist with canonical forwarding](concepts/ptr-len-signature-worklist-with-canonical-forwarding.md)
 - [ptr_len owned Vec signature lifting](concepts/ptr-len-owned-vec-signature-lifting.md)
-- [StringOwned signature lift with UTF-8 content gate (y0qs.4.4)](concepts/stringowned-signature-lift-with-utf-8-content-gate-y0qs-4-4.md)
 - [Re-enable rewrite FileCheck for worklist baseline](concepts/re-enable-rewrite-filecheck-for-worklist-baseline.md)
 - [Local libc-call rewrite table with multi-hop lifted-arg chase](concepts/local-libc-call-rewrite-table-with-multi-hop-lifted-arg-chase.md)
 - [Fix length-lattice multi-buffer asymmetry (by_callee/accepted single-candidate bug)](concepts/fix-length-lattice-multi-buffer-asymmetry-by-callee-accepted-single-candidate-bug.md)
 - [Local libc table: strcmp via Ordering, mem* via intrinsic, dead-let drop](concepts/local-libc-table-strcmp-via-ordering-mem-via-intrinsic-dead-let-drop.md)
 - [memcmp libc rewrite + byte-array slice lifting; ctype backed out for locale](concepts/memcmp-libc-rewrite-byte-array-slice-lifting-ctype-backed-out-for-locale.md)
 - [Remove retired backend facts and Salsa](concepts/remove-retired-backend-facts-and-salsa.md)
+- [Bridge fixed arrays into pointer length signatures](concepts/bridge-fixed-arrays-into-pointer-length-signatures.md)
