@@ -26,6 +26,8 @@ pub enum Known {
     StrCSpn,
     Atoi,
     Atol,
+    Atoll,
+    Atof,
     StrTol,
     StrToul,
     StrTod,
@@ -105,6 +107,8 @@ impl Known {
             Self::StrCSpn => "strcspn",
             Self::Atoi => "atoi",
             Self::Atol => "atol",
+            Self::Atoll => "atoll",
+            Self::Atof => "atof",
             Self::StrTol => "strtol",
             Self::StrToul => "strtoul",
             Self::StrTod => "strtod",
@@ -166,6 +170,8 @@ impl Known {
             | Self::Free
             | Self::Atoi
             | Self::Atol
+            | Self::Atoll
+            | Self::Atof
             | Self::StrTol
             | Self::StrToul
             | Self::StrTod
@@ -262,6 +268,8 @@ impl Known {
             "strcspn" => (Self::StrCSpn, "string.h"),
             "atoi" => (Self::Atoi, "stdlib.h"),
             "atol" => (Self::Atol, "stdlib.h"),
+            "atoll" => (Self::Atoll, "stdlib.h"),
+            "atof" => (Self::Atof, "stdlib.h"),
             "strtol" => (Self::StrTol, "stdlib.h"),
             "strtoul" => (Self::StrToul, "stdlib.h"),
             "strtod" => (Self::StrTod, "stdlib.h"),

@@ -70,3 +70,4 @@ superseded each one for what actually applies now.
 - [prototype FileCheck updater](concepts/prototype-filecheck-updater.md)
 - [Skip unavailable target FileCheck generation](concepts/skip-unavailable-target-filecheck-generation.md)
 - [Fix four differential failures exposed by FileCheck generation](concepts/fix-four-differential-failures-exposed-by-filecheck-generation.md)
+- [atoi/atol/atoll/atof const-fold lift (Tier A)](concepts/atoi-atol-atoll-atof-const-fold-lift-tier-a.md)
