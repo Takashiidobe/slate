@@ -67,8 +67,17 @@ gated on `S`):
 
 `&mut [T] → &mut str` is deliberately **not** in this table — `S` alone
 doesn't prove every write preserves UTF-8 validity (an arbitrary byte write
-breaks it even on an otherwise string-shaped buffer). Tracked separately as
-`slate-y0qs.4.4`.
+breaks it even on an otherwise string-shaped buffer).
+
+`S` alone is likewise insufficient for the `Vec<T> → String` row: the
+consumer (`length_lattice::utf8_owned_fill_proof`, `slate-y0qs.4.4`) only
+lifts `StringOwned` when it can prove the buffer's content is valid UTF-8 at
+the malloc call site (single `memcpy` from a UTF-8 literal over `[0,len)`, one
+ownership-transfer call, no other writes); otherwise it falls back to a raw
+pointer. `specialize_string` still keeps its `!write` guard so a callee that
+mutates the buffer stays `Vec`, since callee writes aren't yet proven
+char-safe — replacing that guard with a per-write validity fact
+(`toupper`/`tolower`/literal sources) is the remaining part of `4.4`.
 
 Evaluation order: `E` first (short-circuits to `*mut T`/`*const T` by `W`,
 skipping everything else) → core table → `S` (buffer rows only) → `N` wraps

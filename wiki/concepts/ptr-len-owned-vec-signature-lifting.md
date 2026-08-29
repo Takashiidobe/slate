@@ -22,5 +22,10 @@ expensive loop/offset scans. Forwarding-only Vec functions are discovered by
 the candidate dependency graph after a terminal seed exists. This keeps the
 libexpat fast path cheap when no Vec lift is available.
 
-String representations remain disabled. `slate-y0qs.4.4` must prove UTF-8 or
-character validity before `Str` or `StringOwned` can be emitted soundly.
+`StringOwned` (`char*` → `String`) now lifts under `slate-y0qs.4.4`, gated on
+a UTF-8 content proof at the malloc call site (`utf8_owned_fill_proof`): the
+buffer must be filled by exactly one `memcpy`/`memmove` from a literal that is
+valid UTF-8 over `[0,len)`, handed to exactly one ownership-transfer call, and
+never otherwise written. Absent that proof the binding falls back to a raw
+pointer (the `Str` reject precedent). `&mut [T]` → `&mut str` is still not
+emitted — a per-write char-safety fact is future work.

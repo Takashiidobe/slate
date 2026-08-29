@@ -308,10 +308,13 @@ fn signature_call_sites(
             };
             let candidate = &candidates[target];
             let proof = call_args(args, candidate).and_then(|(ptr_arg, len_arg)| {
-                let exact = if candidate.kind == BufferKind::Str {
-                    exact_utf8_array_pair(ptr_arg, len_arg, &defs)
-                } else {
-                    exact_allocation_pair(ptr_arg, len_arg, &candidate.elem_ty, &defs)
+                let exact = match candidate.kind {
+                    BufferKind::Str => exact_utf8_array_pair(ptr_arg, len_arg, &defs),
+                    BufferKind::StringOwned => {
+                        exact_allocation_pair(ptr_arg, len_arg, &candidate.elem_ty, &defs)
+                            && utf8_owned_fill_proof(&f.body, ptr_arg, len_arg, &defs, &by_callee)
+                    }
+                    _ => exact_allocation_pair(ptr_arg, len_arg, &candidate.elem_ty, &defs),
                 };
                 if exact {
                     return Some(CallProof::Exact);
@@ -431,6 +434,149 @@ fn exact_utf8_array_pair(ptr_arg: &Expr, len_arg: &Expr, defs: &BTreeMap<String,
         .position(|byte| *byte == 0)
         .unwrap_or(bytes.len());
     len <= payload_len && std::str::from_utf8(&bytes[..len]).is_ok()
+}
+
+fn utf8_owned_fill_proof(
+    body: &[IndentStmt],
+    ptr_arg: &Expr,
+    len_arg: &Expr,
+    defs: &BTreeMap<String, Expr>,
+    candidate_fns: &BTreeMap<&str, usize>,
+) -> bool {
+    let Some(ptr_canon) = canonical_var(ptr_arg, defs) else {
+        return false;
+    };
+    let Some(len) = resolved_integer(len_arg, defs, 0).and_then(|len| usize::try_from(len).ok())
+    else {
+        return false;
+    };
+
+    let mut calls = Vec::new();
+    for indent in body {
+        indent.stmt.collect_calls(&mut calls);
+    }
+    let mut valid_fills = 0usize;
+    let mut transfers = 0usize;
+    for &(callee, args) in &calls {
+        let touches = args
+            .iter()
+            .any(|arg| canonical_var(arg, defs).as_deref() == Some(ptr_canon.as_str()));
+        if !touches {
+            continue;
+        }
+        match callee.as_str() {
+            "memcpy" | "memmove" => {
+                let [dst, src, count] = args else {
+                    return false;
+                };
+                if canonical_var(dst, defs).as_deref() != Some(ptr_canon.as_str()) {
+                    return false;
+                }
+                let Some(fill_len) =
+                    resolved_integer(count, defs, 0).and_then(|len| usize::try_from(len).ok())
+                else {
+                    return false;
+                };
+                let Some(bytes) = resolved_byte_array(src, defs, 0) else {
+                    return false;
+                };
+                if fill_len != len
+                    || bytes.len() < len
+                    || std::str::from_utf8(&bytes[..len]).is_err()
+                {
+                    return false;
+                }
+                valid_fills += 1;
+            }
+            other if candidate_fns.contains_key(other) => transfers += 1,
+            _ => return false,
+        }
+    }
+
+    valid_fills == 1 && transfers == 1 && !body_writes_ptr(body, &ptr_canon, defs)
+}
+
+fn body_writes_ptr(body: &[IndentStmt], ptr_canon: &str, defs: &BTreeMap<String, Expr>) -> bool {
+    let mut offset_lets = Vec::new();
+    collect_offset_lets(body, &mut offset_lets);
+    let offset_recv: BTreeMap<&str, &str> = offset_lets
+        .iter()
+        .map(|(temp, recv, _)| (temp.as_str(), recv.as_str()))
+        .collect();
+    let mut targets = Vec::new();
+    collect_write_bases(body, &mut targets);
+    targets
+        .into_iter()
+        .any(|base| write_root(base, &offset_recv, defs) == ptr_canon)
+}
+
+fn write_root(
+    base: &str,
+    offset_recv: &BTreeMap<&str, &str>,
+    defs: &BTreeMap<String, Expr>,
+) -> String {
+    let mut cur = base.to_string();
+    for _ in 0..64 {
+        if let Some(recv) = offset_recv.get(cur.as_str()) {
+            cur = (*recv).to_string();
+            continue;
+        }
+        match canonical_var(&Expr::Var(Ident::new(cur.as_str())), defs) {
+            Some(canon) if canon != cur => cur = canon,
+            _ => break,
+        }
+    }
+    cur
+}
+
+fn collect_write_bases<'a>(body: &'a [IndentStmt], out: &mut Vec<&'a str>) {
+    for indent in body {
+        collect_write_bases_stmt(&indent.stmt, out);
+    }
+}
+
+fn collect_write_bases_stmt<'a>(stmt: &'a Stmt, out: &mut Vec<&'a str>) {
+    let base_of = |target: &'a Expr| -> Option<&'a str> {
+        match peel_cast(target) {
+            Expr::Unary {
+                op: UnaryOp::Deref,
+                expr,
+            } => peeled_var(expr),
+            Expr::Index { base, .. } => peeled_var(base),
+            _ => None,
+        }
+    };
+    match stmt {
+        Stmt::Assign { target, .. } | Stmt::CompoundAssign { target, .. } => {
+            out.extend(base_of(target));
+        }
+        Stmt::LetIf {
+            then_body,
+            else_body,
+            ..
+        }
+        | Stmt::If {
+            then_body,
+            else_body,
+            ..
+        } => {
+            collect_write_bases(then_body, out);
+            collect_write_bases(else_body, out);
+        }
+        Stmt::Loop { body, .. }
+        | Stmt::Scope { body }
+        | Stmt::LabeledBlock { body, .. }
+        | Stmt::For { body, .. } => collect_write_bases(body, out),
+        Stmt::Match { arms, .. } => {
+            for arm in arms {
+                collect_write_bases(&arm.body, out);
+            }
+        }
+        Stmt::While { body, .. } | Stmt::Unsafe { body } | Stmt::Block(body) => {
+            collect_write_bases(&body.stmts, out)
+        }
+        _ => {}
+    }
 }
 
 fn resolved_byte_array(
@@ -718,7 +864,7 @@ fn apply_signature_fn(
     proofs: &mut BTreeMap<(String, String), VecDeque<CallProof>>,
 ) {
     if let Some(candidate) = accepted.get(&f.name) {
-        if candidate.kind == BufferKind::Owned {
+        if candidate.kind.owned() {
             let defs = collect_value_defs(&f.body);
             remove_owned_frees(&mut f.body, candidate, &defs);
         }
@@ -764,9 +910,9 @@ fn apply_signature_fn(
                 mutable: false,
                 inner: Box::new(Type::Str),
             },
-            BufferKind::StringOwned => todo!(),
+            BufferKind::StringOwned => Type::Custom("String".to_string()),
         };
-        f.params[candidate.ptr_index].mutable = candidate.kind == BufferKind::Owned;
+        f.params[candidate.ptr_index].mutable = candidate.kind.owned();
         f.params.remove(candidate.len_index);
     }
     for indent in &mut f.body {
@@ -959,11 +1105,16 @@ fn buffer_bridge(ptr: Expr, len: Expr, candidate: &SignatureCandidate) -> Expr {
             })),
         }));
     }
+    let elem_ty = if candidate.kind == BufferKind::StringOwned {
+        Type::Prim(Prim::U8)
+    } else {
+        candidate.elem_ty.clone()
+    };
     let ptr = Expr::Cast {
         expr: Box::new(ptr),
         ty: Type::Ptr {
             mutable: candidate.kind.mutable(),
-            inner: Box::new(candidate.elem_ty.clone()),
+            inner: Box::new(elem_ty),
         },
     };
     let len = Expr::Cast {
@@ -974,8 +1125,11 @@ fn buffer_bridge(ptr: Expr, len: Expr, candidate: &SignatureCandidate) -> Expr {
         BufferKind::Shared => (vec!["std", "slice", "from_raw_parts"], vec![ptr, len]),
         BufferKind::Mutable => (vec!["std", "slice", "from_raw_parts_mut"], vec![ptr, len]),
         BufferKind::Owned => (vec!["Vec", "from_raw_parts"], vec![ptr, len.clone(), len]),
+        BufferKind::StringOwned => (
+            vec!["String", "from_raw_parts"],
+            vec![ptr, len.clone(), len],
+        ),
         BufferKind::Str => unreachable!("handled above"),
-        BufferKind::StringOwned => todo!(),
     };
     Expr::Unsafe(Box::new(Block {
         stmts: Vec::new(),
@@ -1045,7 +1199,12 @@ fn collect_fn(
                 function: f.name.clone(),
                 name: param.name.clone(),
             })
-            .is_some_and(|fact| fact.resolved().base == ResolvedPtrType::Vec)
+            .is_some_and(|fact| {
+                matches!(
+                    fact.resolved().base,
+                    ResolvedPtrType::Vec | ResolvedPtrType::StringOwned
+                )
+            })
     });
     let calls_free = !has_owned || body_calls_free(&f.body);
 
@@ -1065,6 +1224,7 @@ fn collect_fn(
                         | ResolvedPtrType::SliceMut
                         | ResolvedPtrType::Vec
                         | ResolvedPtrType::Str
+                        | ResolvedPtrType::StringOwned
                 )
             })
         })
@@ -1078,9 +1238,10 @@ fn collect_fn(
                 ResolvedPtrType::SliceMut => BufferKind::Mutable,
                 ResolvedPtrType::Vec => BufferKind::Owned,
                 ResolvedPtrType::Str => BufferKind::Str,
+                ResolvedPtrType::StringOwned => BufferKind::StringOwned,
                 _ => unreachable!("filtered above"),
             };
-            if kind == BufferKind::Owned && !calls_free {
+            if kind.owned() && !calls_free {
                 return None;
             }
             Some((p.name.clone(), local_name_of(&p.name), kind))
