@@ -10,8 +10,6 @@ int main(void) {
   just_free(x);
   return 0;
 }
-// REWRITES-DAG: fn just_free(arg0: *mut i32)
-// REWRITES-DAG: fn free(
-// REWRITES-DAG: unsafe { free((p as *mut core::ffi::c_void) as *mut core::ffi::c_void) };
-// REWRITES-DAG: just_free(x);
-// REWRITES-NOT: Box<i32>
+// REWRITES-DAG: fn just_free(mut arg0: Box<i32>)
+// REWRITES-DAG: just_free(unsafe { Box::from_raw(
+// REWRITES-NOT: unsafe { free(

@@ -16,7 +16,6 @@ int main(void) {
   printf("%d\n", use_and_free(y));
   return 0;
 }
-// REWRITES-DAG: fn use_and_free(arg0: *mut i32)
+// REWRITES-DAG: fn use_and_free(mut arg0: Box<i32>) -> i32
 // REWRITES-DAG: unsafe { touch(y) };
-// REWRITES-DAG: unsafe { free((y as *mut core::ffi::c_void) as *mut core::ffi::c_void) };
-// REWRITES-NOT: Box<i32>
+// REWRITES-NOT: unsafe { free(

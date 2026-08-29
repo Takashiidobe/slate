@@ -109,24 +109,66 @@ pipeline (`rewrite-engine-v2.md`'s whole-Program interproc phase runs
    call). The fact only needs to answer "what type does this binding
    resolve to," not "where are its uses" — that's the next phase's job.
 
-2. **Local consumption** (`slate-y0qs.4.2`, not yet implemented) runs
-   inside the per-function arena worklist. It looks up each decl node's
-   `PointerBinding` in the solved table (`O(1)`/`O(log n)`, never re-derives
-   it), rewrites the declared type, and uses `arena.def_use_neighbors`
-   (already indexed, no scan) to find that specific function's use sites and
-   insert `.as_ptr()`/`.as_mut_ptr()`/`.as_bytes()` fallback accessors where
-   the use doesn't yet conform. A second rule matches those accessor call
-   sites directly (tier-2 dispatch on the method name — the existing
-   worklist only ever hands this rule exactly those sites, no filtering
-   needed) and deletes the accessor once the surrounding use can take the
-   lifted type. Existing pointer-shaped passes (`ptr_len`, `slice_index`,
-   `array_element_pointer_origin`, `buffer_cursor`, `nullable_pointer`)
-   become consumers of this shape instead of independent per-pass
-   heuristics.
+2. **Local consumption** (`slate-y0qs.4.2`, implemented) turned out not to
+   run inside the per-function arena worklist as originally planned here.
+   Instead it's a whole-`Program` AST rewrite (`pointer_lattice::apply()`),
+   run at the same interproc stage as `solve()` itself, right before the
+   arena/`NodeRule` pipeline starts (`engine::apply()`,
+   `src/backend/engine/mod.rs:67-68`). It looks up each candidate param's
+   `PointerBinding` in the solved table, retypes the declared param, and
+   walks the function body converting uses (derefs stay bare for `&T`/
+   `&mut T`/`Box<T>` since Rust's own `Deref`/`DerefMut` cover them; a
+   `.as_ptr()`/`.as_mut_ptr()`-shaped raw-pointer fallback is synthesized
+   at call sites that still need a raw pointer). There's no separate
+   accessor-*cleanup* rule as originally envisioned — the decision of
+   "does this call site need a raw pointer or can it take the lifted type
+   directly" (`callee_accepts_directly`) is made once, at rewrite time,
+   instead of inserted-then-deleted in two passes.
 
-Requeueing when an accessor gets deleted needs no new machinery — it's the
-same structural-parent + def-use-neighbor requeue every other ported rule
-already gets from `run_worklist` (`engine/mod.rs:106-149`).
+`lift_kind()` currently produces two of the four `LiftKind`s:
+
+- `Scalar` (`&T`/`&mut T`, the `Ref`/`RefMut` rows) — pure accessor
+  insertion, no allocation semantics.
+- `Owned` (`Box<T>`, the `Owned` row) — the harder case. Bridges a raw
+  pointer into `Box<T>` at call sites via `unsafe { Box::from_raw(...) }`
+  (gated to bare-`Var` args only in `arg_is_provably_bridgeable`, not
+  arbitrary exprs, to keep the shape predictable), and — critically —
+  deletes the C `free()` call that justified the `FREE` bit in the first
+  place (`is_owned_free_stmt`/`collect_owned_aliases`), relying on `Box`'s
+  own `Drop` instead. Skipping that deletion would double-free: the
+  lifted `Box<T>` frees on scope exit *and* the untouched `free()` call
+  would free the same allocation again. `collect_owned_aliases` exists
+  because CIR routinely hoists parameter derefs through an intermediate
+  local (`let mut y: *mut i32 = arg0; ...; free(y);`) rather than
+  dereferencing the param directly — the `free()` call's argument has to
+  be traced back through that alias to the lifted binding, not just
+  matched by name.
+
+`Cell` and `Buffer` are deliberately **not** produced by `lift_kind()`:
+
+- `Cell` (`&Cell<T>`, the `RefCell` row): implemented in `to_raw_pointer_as`
+  and the rewrite side (`.get()`/`.set()` synthesis), but never wired up.
+  Session decision: `RefCell` only saves you the `unsafe` keyword at the
+  deref site — every raw-pointer-needing use still falls back to
+  `.as_ptr()`, which is exactly as unsafe-shaped as the raw pointer it
+  replaces. The `UNIQUE`-disproving signal that gates this row
+  (`ClassifyCtx::try_alias`'s use-count heuristic) is also unreliable in
+  practice — hand constructing a case that disproves `unique` without
+  disproving it in ways that reflect real aliasing took real effort in
+  this session and still didn't reliably fire. Not worth the added
+  decl-site/call-site/free-alias machinery for a row whose only payoff is
+  cosmetic. Revisit only if a real corpus shows this row firing often and
+  usefully.
+- `Buffer` (`&[T]`/`&mut [T]`/`&str`/`Vec<T>`/`String`, the `Slice`/
+  `SliceMut`/`Str`/`Vec`/`StringOwned` rows): needs call-site
+  slice-*length* bridging (associating a length expression/parameter with
+  the pointer at every call site and use site) that doesn't exist yet —
+  a structurally different, larger piece of work than accessor insertion.
+  Tracked as `slate-y0qs.4.8`.
+
+Requeueing/accessor-cleanup machinery from the original two-`NodeRule` plan
+turned out unnecessary given the whole-Program-rewrite shape that actually
+shipped — there's nothing to requeue since there's no arena at this stage.
 
 ## Interprocedural propagation
 
@@ -157,15 +199,34 @@ only the cross-call joins iterate.
 
 ## Status
 
-`solve()` is implemented and compiles clean (`cargo check --lib`), but has
-no caller yet — it's a pure analysis function. Wiring it into
-`engine::apply()` and writing the two consuming `NodeRule`s is
-`slate-y0qs.4.2`. Known gaps, each tracked as its own follow-up rather than
-half-implemented here: return-value aliasing (`slate-y0qs.4.3`), `&mut str`
-(`slate-y0qs.4.4`), and broader `Known`-libc-function semantics
-(`slate-y0qs.4.5`) — `classify_call_arg` currently only models
-`free`/`memcpy`/`memmove`/`memset`/the `str*` family and defaults every
-other call conservatively to `ESCAPE`.
+`solve()` and `apply()` are both implemented and wired into
+`engine::apply()` (`slate-y0qs.4.2`). `apply()` lifts the `Scalar` and
+`Owned` rows only (see above for why `Cell`/`Buffer` are excluded from
+`lift_kind()`). Verified via three differential fixtures:
+`tests/fixtures/pointer_lattice.c` (all three lifted shapes — `&mut T`,
+`&T`, `Box<T>` — in one program) plus the two `ptr_lattice_*` regression
+fixtures from earlier bug-fix sessions. Known gaps, each tracked as its own
+follow-up rather than half-implemented here: return-value aliasing
+(`slate-y0qs.4.3`), `&mut str` (`slate-y0qs.4.4`), broader
+`Known`-libc-function semantics (`slate-y0qs.4.5`) — `classify_call_arg`
+currently only models `free`/`memcpy`/`memmove`/`memset`/the `str*` family
+and defaults every other call conservatively to `ESCAPE` — and the
+`Buffer`-kind rows (`slate-y0qs.4.8`).
+
+One latent soundness gap surfaced while implementing `Owned`, not yet
+filed as its own bead: the interprocedural `FREE` taint can over-approximate
+across a *shared* helper. If function `h(int *q)` is called from two
+different callers, and only one of them later frees the pointer it passed
+in, `solve()`'s bidirectional merge taints `h`'s own parameter fact with
+`FREE` regardless of which call site produced it — there's no per-call-site
+attribution once the bit is merged. In this session's testing this was
+caught, not exploited: `validate_plans`'s bare-`Var`-only bridging
+requirement for `Owned` rejected the one call site (a non-`Var` address-of
+argument) that would have produced an actual unsound `Box::from_raw` on a
+stack address. That's incidental protection from an unrelated
+conservatism, not a designed guarantee — a shared helper called only via
+bare-`Var` args from both an owning and a non-owning context would not be
+caught the same way.
 
 ## Related
 

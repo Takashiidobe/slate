@@ -1,3 +1,4 @@
+pub(in crate::backend) mod length_lattice;
 pub(in crate::backend) mod pointer_lattice;
 pub(in crate::backend) mod string_params;
 
