@@ -1,5 +1,5 @@
 mod inline_temps;
-mod libc_exit;
+mod libc_call;
 mod raw_ptr_alias;
 mod singleton_scopes;
 mod zero_init;
@@ -7,7 +7,7 @@ mod zero_init;
 use super::NodeRule;
 
 pub(super) fn registry() -> Vec<Box<dyn NodeRule>> {
-    vec![
+    let mut rules: Vec<Box<dyn NodeRule>> = vec![
         Box::new(inline_temps::EarlyInlineTemps),
         Box::new(zero_init::ZeroInitFold),
         Box::new(raw_ptr_alias::RawPtrAliasElide),
@@ -15,6 +15,7 @@ pub(super) fn registry() -> Vec<Box<dyn NodeRule>> {
         Box::new(singleton_scopes::DoWhileLoopUnwrap),
         Box::new(singleton_scopes::SingletonUnwrap),
         Box::new(inline_temps::LateInlineTemps),
-        Box::new(libc_exit::LibcExit),
-    ]
+    ];
+    rules.extend(libc_call::rules());
+    rules
 }
