@@ -257,8 +257,24 @@ pub(in crate::backend) fn solve(program: &Program) -> BTreeMap<PointerBinding, P
     }
 
     let mut outbound: BTreeMap<String, Vec<&CallSite>> = BTreeMap::new();
+    let mut inbound: BTreeMap<String, Vec<&CallSite>> = BTreeMap::new();
     for site in &call_sites {
         outbound.entry(site.caller.clone()).or_default().push(site);
+        inbound.entry(site.callee.clone()).or_default().push(site);
+    }
+
+    let mut return_incident: BTreeMap<String, Vec<&ReturnCallSite>> = BTreeMap::new();
+    for site in &return_sites {
+        return_incident
+            .entry(site.caller.clone())
+            .or_default()
+            .push(site);
+        if site.callee != site.caller {
+            return_incident
+                .entry(site.callee.clone())
+                .or_default()
+                .push(site);
+        }
     }
 
     let mut graph = CallGraph::new(fn_defs.keys().cloned());
@@ -269,11 +285,12 @@ pub(in crate::backend) fn solve(program: &Program) -> BTreeMap<PointerBinding, P
         graph.add_edge(&site.caller, &site.callee);
     }
     let order = interproc::scc_order(&graph);
-    let empty: Vec<&CallSite> = Vec::new();
+    let empty_calls: Vec<&CallSite> = Vec::new();
+    let empty_returns: Vec<&ReturnCallSite> = Vec::new();
 
     interproc::run_worklist(&graph, &order, |name| {
         let mut changed = false;
-        for site in outbound.get(name).unwrap_or(&empty) {
+        for site in outbound.get(name).unwrap_or(&empty_calls) {
             let callee_binding = PointerBinding {
                 function: site.callee.clone(),
                 name: callee_param_name(&fn_defs, &site.callee, site.arg_index),
@@ -289,10 +306,7 @@ pub(in crate::backend) fn solve(program: &Program) -> BTreeMap<PointerBinding, P
                 changed |= caller_fact.merge_evidence_from(&callee_fact);
             }
         }
-        for site in &call_sites {
-            if site.callee != name {
-                continue;
-            }
+        for site in inbound.get(name).unwrap_or(&empty_calls) {
             let caller_binding = PointerBinding {
                 function: site.caller.clone(),
                 name: site.caller_binding.clone(),
@@ -308,10 +322,7 @@ pub(in crate::backend) fn solve(program: &Program) -> BTreeMap<PointerBinding, P
                 changed |= callee_fact.merge_evidence_from(&caller_fact);
             }
         }
-        for site in &return_sites {
-            if site.caller != name && site.callee != name {
-                continue;
-            }
+        for site in return_incident.get(name).unwrap_or(&empty_returns) {
             let result_binding = PointerBinding {
                 function: site.caller.clone(),
                 name: site.result_binding.clone(),
