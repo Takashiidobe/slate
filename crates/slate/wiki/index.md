@@ -67,3 +67,6 @@ superseded each one for what actually applies now.
 - [memcmp libc rewrite + byte-array slice lifting; ctype backed out for locale](concepts/memcmp-libc-rewrite-byte-array-slice-lifting-ctype-backed-out-for-locale.md)
 - [Remove retired backend facts and Salsa](concepts/remove-retired-backend-facts-and-salsa.md)
 - [Bridge fixed arrays into pointer length signatures](concepts/bridge-fixed-arrays-into-pointer-length-signatures.md)
+- [prototype FileCheck updater](concepts/prototype-filecheck-updater.md)
+- [Skip unavailable target FileCheck generation](concepts/skip-unavailable-target-filecheck-generation.md)
+- [Fix four differential failures exposed by FileCheck generation](concepts/fix-four-differential-failures-exposed-by-filecheck-generation.md)

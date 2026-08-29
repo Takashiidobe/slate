@@ -19,3 +19,94 @@ int main(void) {
   printf("%d %x %d\n", p.a, p.b, p.c);
   return 0;
 }
+// SLATE-FILECHECK-BEGIN lowering
+// LOWERING: #![feature(c_variadic)]
+// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-EMPTY:
+// LOWERING-NEXT: #[repr(C, packed)]
+// LOWERING-NEXT: #[derive(Clone, Copy)]
+// LOWERING-NEXT: struct Packed {
+// LOWERING-NEXT:     a: i8,
+// LOWERING-NEXT:     b: i32,
+// LOWERING-NEXT:     c: i8,
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-EMPTY:
+// LOWERING-NEXT: unsafe extern "C" {
+// LOWERING-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let mut __retval: i32 = 0;
+// LOWERING-NEXT:     let mut p: Packed = Packed { a: 0, b: 0, c: 0 };
+// LOWERING-NEXT:     let _v0: i32 = 0;
+// LOWERING-NEXT:     __retval = _v0;
+// LOWERING-NEXT:     let _v1: i8 = 1;
+// LOWERING-NEXT:     p.a = _v1;
+// LOWERING-NEXT:     let _v2: i32 = 287454020;
+// LOWERING-NEXT:     p.b = _v2;
+// LOWERING-NEXT:     let _v3: i8 = 2;
+// LOWERING-NEXT:     p.c = _v3;
+// LOWERING-NEXT:     let _v4: *mut i8 = b"%zu %zu\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let _v5: u64 = std::mem::size_of::<Packed>() as u64;
+// LOWERING-NEXT:     let _v6: u64 = std::mem::align_of::<Packed>() as u64;
+// LOWERING-NEXT:     let _v7: i32 = unsafe { printf(_v4 as *const i8, _v5, _v6) };
+// LOWERING-NEXT:     let _v8: *mut i8 = b"%zu %zu %zu\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let _v9: u64 = std::mem::offset_of!(Packed, a) as u64;
+// LOWERING-NEXT:     let _v10: u64 = std::mem::offset_of!(Packed, b) as u64;
+// LOWERING-NEXT:     let _v11: u64 = std::mem::offset_of!(Packed, c) as u64;
+// LOWERING-NEXT:     let _v12: i32 = unsafe { printf(_v8 as *const i8, _v9, _v10, _v11) };
+// LOWERING-NEXT:     let _v13: *mut i8 = b"%d %x %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let _v14: i8 = p.a;
+// LOWERING-NEXT:     let _v15: i32 = _v14 as i32;
+// LOWERING-NEXT:     let _v16: i32 = p.b;
+// LOWERING-NEXT:     let _v17: i8 = p.c;
+// LOWERING-NEXT:     let _v18: i32 = _v17 as i32;
+// LOWERING-NEXT:     let _v19: i32 = unsafe { printf(_v13 as *const i8, _v15, _v16, _v18) };
+// LOWERING-NEXT:     let _v20: i32 = 0;
+// LOWERING-NEXT:     __retval = _v20;
+// LOWERING-NEXT:     let _v21: i32 = __retval;
+// LOWERING-NEXT:     std::process::exit(_v21 as i32);
+// LOWERING-NEXT: }
+// SLATE-FILECHECK-END lowering
+
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES: #![feature(c_variadic)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[repr(C, packed)]
+// REWRITES-NEXT: #[derive(Clone, Copy)]
+// REWRITES-NEXT: struct Packed {
+// REWRITES-NEXT:     a: i8,
+// REWRITES-NEXT:     b: i32,
+// REWRITES-NEXT:     c: i8,
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: let mut __retval: i32 = 0;
+// REWRITES-NEXT: let mut p: Packed = Packed { a: 0, b: 0, c: 0 };
+// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: p.a = 1;
+// REWRITES-NEXT: p.b = 287454020;
+// REWRITES-NEXT: p.c = 2;
+// REWRITES-NEXT: let _v4: *mut i8 = b"%zu %zu\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let _v5: u64 = std::mem::size_of::<Packed>() as u64;
+// REWRITES-NEXT: let _v6: u64 = std::mem::align_of::<Packed>() as u64;
+// REWRITES-NEXT: let _v7: i32 = unsafe { printf(_v4 as *const i8, _v5, _v6) };
+// REWRITES-NEXT: let _v8: *mut i8 = b"%zu %zu %zu\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let _v9: u64 = std::mem::offset_of!(Packed, a) as u64;
+// REWRITES-NEXT: let _v10: u64 = std::mem::offset_of!(Packed, b) as u64;
+// REWRITES-NEXT: let _v11: u64 = std::mem::offset_of!(Packed, c) as u64;
+// REWRITES-NEXT: let _v12: i32 = unsafe { printf(_v8 as *const i8, _v9, _v10, _v11) };
+// REWRITES-NEXT: let _v13: *mut i8 = b"%d %x %d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let _v16: i32 = p.b;
+// REWRITES-NEXT: let _v19: i32 = unsafe { printf(_v13 as *const i8, p.a as i32, _v16, p.c as i32) };
+// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: }
+// SLATE-FILECHECK-END rewrites

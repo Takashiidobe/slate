@@ -33,3 +33,223 @@ int main(void) {
   printf("%d %d\n", count_null_pairs(), count_true_flags());
   return 0;
 }
+// SLATE-FILECHECK-BEGIN lowering
+// LOWERING: #![feature(c_variadic)]
+// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-EMPTY:
+// LOWERING-NEXT: #[repr(C)]
+// LOWERING-NEXT: #[derive(Clone, Copy)]
+// LOWERING-NEXT: struct pair {
+// LOWERING-NEXT:     name: *mut i8,
+// LOWERING-NEXT:     value: *mut i8,
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-EMPTY:
+// LOWERING-NEXT: unsafe extern "C" {
+// LOWERING-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn count_null_pairs() -> i32 {
+// LOWERING-NEXT:     let mut __retval: i32 = 0;
+// LOWERING-NEXT:     let mut pairs: aligned::Aligned<aligned::A16, [pair; 1]> = aligned::Aligned([pair { name: std::ptr::null_mut(), value: std::ptr::null_mut() }; 1]);
+// LOWERING-NEXT:     let mut total: i32 = 0;
+// LOWERING-NEXT:     *pairs = [pair { name: std::ptr::null_mut(), value: std::ptr::null_mut() }; 1];
+// LOWERING-NEXT:     let _v0: i32 = 0;
+// LOWERING-NEXT:     total = _v0;
+// LOWERING-NEXT:     {
+// LOWERING-NEXT:         let mut i: i32 = 0;
+// LOWERING-NEXT:         let _v1: i32 = 0;
+// LOWERING-NEXT:         i = _v1;
+// LOWERING-NEXT:         loop {
+// LOWERING-NEXT:             let _v2: i32 = i;
+// LOWERING-NEXT:             let _v3: i32 = 1;
+// LOWERING-NEXT:             let _v4: bool = _v2 < _v3;
+// LOWERING-NEXT:             if !_v4 {
+// LOWERING-NEXT:                 break;
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:             {
+// LOWERING-NEXT:                 {
+// LOWERING-NEXT:                     let _v5: i32 = i;
+// LOWERING-NEXT:                     let _v6: i64 = _v5 as i64;
+// LOWERING-NEXT:                     let _v7: *mut i8 = pairs[(_v6 as usize)].name;
+// LOWERING-NEXT:                     let _v8: *mut i8 = std::ptr::null_mut();
+// LOWERING-NEXT:                     let _v9: bool = _v7 == _v8;
+// LOWERING-NEXT:                     let _v10: bool = if _v9 {
+// LOWERING-NEXT:                         let _v11: i32 = i;
+// LOWERING-NEXT:                         let _v12: i64 = _v11 as i64;
+// LOWERING-NEXT:                         let _v13: *mut i8 = pairs[(_v12 as usize)].value;
+// LOWERING-NEXT:                         let _v14: *mut i8 = std::ptr::null_mut();
+// LOWERING-NEXT:                         let _v15: bool = _v13 == _v14;
+// LOWERING-NEXT:                         _v15
+// LOWERING-NEXT:                     } else {
+// LOWERING-NEXT:                         let _v16: bool = false;
+// LOWERING-NEXT:                         _v16
+// LOWERING-NEXT:                     };
+// LOWERING-NEXT:                     if _v10 {
+// LOWERING-NEXT:                         let _v17: i32 = total;
+// LOWERING-NEXT:                         let _v18: i32 = _v17 + 1;
+// LOWERING-NEXT:                         total = _v18;
+// LOWERING-NEXT:                     }
+// LOWERING-NEXT:                 }
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:             let _v19: i32 = i;
+// LOWERING-NEXT:             let _v20: i32 = _v19 + 1;
+// LOWERING-NEXT:             i = _v20;
+// LOWERING-NEXT:         }
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     let _v21: i32 = total;
+// LOWERING-NEXT:     __retval = _v21;
+// LOWERING-NEXT:     let _v22: i32 = __retval;
+// LOWERING-NEXT:     return _v22;
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn count_true_flags() -> i32 {
+// LOWERING-NEXT:     let mut __retval: i32 = 0;
+// LOWERING-NEXT:     let mut values: [bool; 2] = [false; 2];
+// LOWERING-NEXT:     let mut total: i32 = 0;
+// LOWERING-NEXT:     values = [true, false];
+// LOWERING-NEXT:     let _v0: i32 = 0;
+// LOWERING-NEXT:     total = _v0;
+// LOWERING-NEXT:     {
+// LOWERING-NEXT:         let mut i: u64 = 0;
+// LOWERING-NEXT:         let _v1: u64 = 0;
+// LOWERING-NEXT:         i = _v1;
+// LOWERING-NEXT:         loop {
+// LOWERING-NEXT:             let _v2: u64 = i;
+// LOWERING-NEXT:             let _v3: u64 = 2;
+// LOWERING-NEXT:             let _v4: u64 = 1;
+// LOWERING-NEXT:             let _v5: u64 = _v3 / _v4;
+// LOWERING-NEXT:             let _v6: bool = _v2 < _v5;
+// LOWERING-NEXT:             if !_v6 {
+// LOWERING-NEXT:                 break;
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:             {
+// LOWERING-NEXT:                 {
+// LOWERING-NEXT:                     let _v7: u64 = i;
+// LOWERING-NEXT:                     let _v8: bool = values[(_v7 as usize)];
+// LOWERING-NEXT:                     if _v8 {
+// LOWERING-NEXT:                         let _v9: i32 = total;
+// LOWERING-NEXT:                         let _v10: i32 = _v9 + 1;
+// LOWERING-NEXT:                         total = _v10;
+// LOWERING-NEXT:                     }
+// LOWERING-NEXT:                 }
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:             let _v11: u64 = i;
+// LOWERING-NEXT:             let _v12: u64 = _v11 + 1;
+// LOWERING-NEXT:             i = _v12;
+// LOWERING-NEXT:         }
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     let _v13: i32 = total;
+// LOWERING-NEXT:     __retval = _v13;
+// LOWERING-NEXT:     let _v14: i32 = __retval;
+// LOWERING-NEXT:     return _v14;
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let mut __retval: i32 = 0;
+// LOWERING-NEXT:     let _v0: i32 = 0;
+// LOWERING-NEXT:     __retval = _v0;
+// LOWERING-NEXT:     let _v1: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let _v2: i32 = count_null_pairs();
+// LOWERING-NEXT:     let _v3: i32 = count_true_flags();
+// LOWERING-NEXT:     let _v4: i32 = unsafe { printf(_v1 as *const i8, _v2, _v3) };
+// LOWERING-NEXT:     let _v5: i32 = 0;
+// LOWERING-NEXT:     __retval = _v5;
+// LOWERING-NEXT:     let _v6: i32 = __retval;
+// LOWERING-NEXT:     std::process::exit(_v6 as i32);
+// LOWERING-NEXT: }
+// SLATE-FILECHECK-END lowering
+
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES: #![feature(c_variadic)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[repr(C)]
+// REWRITES-NEXT: #[derive(Clone, Copy)]
+// REWRITES-NEXT: struct pair {
+// REWRITES-NEXT:     name: *mut i8,
+// REWRITES-NEXT:     value: *mut i8,
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn count_null_pairs() -> i32 {
+// REWRITES-NEXT: let mut __retval: i32 = 0;
+// REWRITES-NEXT: let mut pairs: aligned::Aligned<aligned::A16, [pair; 1]> = aligned::Aligned([pair { name: std::ptr::null_mut(), value: std::ptr::null_mut() }; 1]);
+// REWRITES-NEXT: let mut total: i32 = 0;
+// REWRITES-NEXT: *pairs = [pair { name: std::ptr::null_mut(), value: std::ptr::null_mut() }; 1];
+// REWRITES-NEXT: total = 0;
+// REWRITES-NEXT: {
+// REWRITES-NEXT:         let mut i: i32 = 0;
+// REWRITES-NEXT:         i = 0;
+// REWRITES-NEXT:         loop {
+// REWRITES-NEXT:                     let _v3: i32 = 1;
+// REWRITES-NEXT:                     if !(i < _v3) {
+// REWRITES-NEXT:                                     break;
+// REWRITES-NEXT:                     }
+// REWRITES-NEXT:                     {
+// REWRITES-NEXT:                                     {
+// REWRITES-NEXT:                                                         let _v8: *mut i8 = std::ptr::null_mut();
+// REWRITES-NEXT:                                                         let _v10: bool = if pairs[((i as i64) as usize)].name == _v8 {
+// REWRITES-NEXT:                                                                                 let _v14: *mut i8 = std::ptr::null_mut();
+// REWRITES-NEXT:                                                                                 let _v15: bool = pairs[((i as i64) as usize)].value == _v14;
+// REWRITES-NEXT:                                                             _v15
+// REWRITES-NEXT:                                                         } else {
+// REWRITES-NEXT:                                                                                 let _v16: bool = false;
+// REWRITES-NEXT:                                                             _v16
+// REWRITES-NEXT:                                                         };
+// REWRITES-NEXT:                                                         if _v10 {
+// REWRITES-NEXT:                                                                                 total = total + 1;
+// REWRITES-NEXT:                                                         }
+// REWRITES-NEXT:                                     }
+// REWRITES-NEXT:                     }
+// REWRITES-NEXT:                     i = i + 1;
+// REWRITES-NEXT:         }
+// REWRITES-NEXT: }
+// REWRITES-NEXT: __retval = total;
+// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn count_true_flags() -> i32 {
+// REWRITES-NEXT: let mut __retval: i32 = 0;
+// REWRITES-NEXT: let mut values: [bool; 2] = [false; 2];
+// REWRITES-NEXT: let mut total: i32 = 0;
+// REWRITES-NEXT: values = [true, false];
+// REWRITES-NEXT: total = 0;
+// REWRITES-NEXT: {
+// REWRITES-NEXT:         let mut i: u64 = 0;
+// REWRITES-NEXT:         i = 0;
+// REWRITES-NEXT:         loop {
+// REWRITES-NEXT:                     let _v3: u64 = 2;
+// REWRITES-NEXT:                     let _v4: u64 = 1;
+// REWRITES-NEXT:                     if !(i < _v3 / _v4) {
+// REWRITES-NEXT:                                     break;
+// REWRITES-NEXT:                     }
+// REWRITES-NEXT:                     {
+// REWRITES-NEXT:                                     {
+// REWRITES-NEXT:                                                         if values[(i as usize)] {
+// REWRITES-NEXT:                                                                                 total = total + 1;
+// REWRITES-NEXT:                                                         }
+// REWRITES-NEXT:                                     }
+// REWRITES-NEXT:                     }
+// REWRITES-NEXT:                     i = i + 1;
+// REWRITES-NEXT:         }
+// REWRITES-NEXT: }
+// REWRITES-NEXT: __retval = total;
+// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: let mut __retval: i32 = 0;
+// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let _v1: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let _v2: i32 = count_null_pairs();
+// REWRITES-NEXT: let _v3: i32 = count_true_flags();
+// REWRITES-NEXT: let _v4: i32 = unsafe { printf(_v1 as *const i8, _v2, _v3) };
+// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: }
+// SLATE-FILECHECK-END rewrites

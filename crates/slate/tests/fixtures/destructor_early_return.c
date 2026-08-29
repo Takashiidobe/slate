@@ -12,3 +12,98 @@ int main(int argc, char **argv) {
   printf("main ran\n");
   return 0;
 }
+// SLATE-FILECHECK-BEGIN lowering
+// LOWERING: #![feature(c_variadic)]
+// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-EMPTY:
+// LOWERING-NEXT: unsafe extern "C" {
+// LOWERING-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn cleanup() {
+// LOWERING-NEXT:     let _v0: *mut i8 = b"destructor ran\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let _v1: i32 = unsafe { printf(_v0 as *const i8) };
+// LOWERING-NEXT:     return;
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let mut __slate_argv_storage: Vec<std::ffi::CString> = std::env::args().map(|arg| std::ffi::CString::new(arg).unwrap()).collect();
+// LOWERING-NEXT:     let mut __slate_argv_ptrs: Vec<*mut i8> = __slate_argv_storage.iter().map(|arg| arg.as_ptr() as *mut i8).collect();
+// LOWERING-NEXT:     __slate_argv_ptrs.push(std::ptr::null_mut());
+// LOWERING-NEXT:     let arg0: i32 = __slate_argv_storage.len() as i32;
+// LOWERING-NEXT:     let arg1: *mut *mut i8 = __slate_argv_ptrs.as_mut_ptr();
+// LOWERING-NEXT:     let mut argc: i32 = 0;
+// LOWERING-NEXT:     let mut argv: *mut *mut i8 = std::ptr::null_mut();
+// LOWERING-NEXT:     let mut __retval: i32 = 0;
+// LOWERING-NEXT:     argc = arg0;
+// LOWERING-NEXT:     argv = arg1;
+// LOWERING-NEXT:     let _v0: i32 = 0;
+// LOWERING-NEXT:     __retval = _v0;
+// LOWERING-NEXT:     {
+// LOWERING-NEXT:         let _v1: i32 = argc;
+// LOWERING-NEXT:         let _v2: i32 = 1;
+// LOWERING-NEXT:         let _v3: bool = _v1 == _v2;
+// LOWERING-NEXT:         if _v3 {
+// LOWERING-NEXT:             let _v4: *mut i8 = b"early exit\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let _v5: i32 = unsafe { printf(_v4 as *const i8) };
+// LOWERING-NEXT:             let _v6: i32 = 7;
+// LOWERING-NEXT:             __retval = _v6;
+// LOWERING-NEXT:             let _v7: i32 = __retval;
+// LOWERING-NEXT:             cleanup();
+// LOWERING-NEXT:             std::process::exit(_v7 as i32);
+// LOWERING-NEXT:         }
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     let _v8: *mut i8 = b"main ran\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let _v9: i32 = unsafe { printf(_v8 as *const i8) };
+// LOWERING-NEXT:     let _v10: i32 = 0;
+// LOWERING-NEXT:     __retval = _v10;
+// LOWERING-NEXT:     let _v11: i32 = __retval;
+// LOWERING-NEXT:     cleanup();
+// LOWERING-NEXT:     std::process::exit(_v11 as i32);
+// LOWERING-NEXT: }
+// SLATE-FILECHECK-END lowering
+
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES: #![feature(c_variadic)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn cleanup() {
+// REWRITES-NEXT: let _v0: *mut i8 = b"destructor ran\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let _v1: i32 = unsafe { printf(_v0 as *const i8) };
+// REWRITES-NEXT: return;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: let mut __slate_argv_storage: Vec<std::ffi::CString> = std::env::args().map(|arg| std::ffi::CString::new(arg).unwrap()).collect();
+// REWRITES-NEXT: let mut __slate_argv_ptrs: Vec<*mut i8> = __slate_argv_storage.iter().map(|arg| arg.as_ptr() as *mut i8).collect();
+// REWRITES-NEXT: __slate_argv_ptrs.push(std::ptr::null_mut());
+// REWRITES-NEXT: let arg0: i32 = __slate_argv_storage.len() as i32;
+// REWRITES-NEXT: let arg1: *mut *mut i8 = __slate_argv_ptrs.as_mut_ptr();
+// REWRITES-NEXT: let mut argc: i32 = arg0;
+// REWRITES-NEXT: let mut argv: *mut *mut i8 = arg1;
+// REWRITES-NEXT: let mut __retval: i32 = 0;
+// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: {
+// REWRITES-NEXT:         let _v2: i32 = 1;
+// REWRITES-NEXT:         let _v3: bool = argc == _v2;
+// REWRITES-NEXT:         if _v3 {
+// REWRITES-NEXT:                     let _v4: *mut i8 = b"early exit\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:                     let _v5: i32 = unsafe { printf(_v4 as *const i8) };
+// REWRITES-NEXT:                     __retval = 7;
+// REWRITES-NEXT:                     let _v7: i32 = __retval;
+// REWRITES-NEXT:                     cleanup();
+// REWRITES-NEXT:                     std::process::exit(_v7 as i32);
+// REWRITES-NEXT:         }
+// REWRITES-NEXT: }
+// REWRITES-NEXT: let _v8: *mut i8 = b"main ran\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let _v9: i32 = unsafe { printf(_v8 as *const i8) };
+// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let _v11: i32 = __retval;
+// REWRITES-NEXT: cleanup();
+// REWRITES-NEXT: std::process::exit(_v11 as i32);
+// REWRITES-NEXT: }
+// SLATE-FILECHECK-END rewrites

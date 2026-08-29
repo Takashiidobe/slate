@@ -29,3 +29,178 @@ int main(void) {
   free(suite.tests);
   return 0;
 }
+// SLATE-FILECHECK-BEGIN lowering
+// LOWERING: #![feature(c_variadic)]
+// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-EMPTY:
+// LOWERING-NEXT: #[repr(C)]
+// LOWERING-NEXT: #[derive(Clone, Copy)]
+// LOWERING-NEXT: struct suite_t {
+// LOWERING-NEXT:     tests: *mut Option<unsafe extern "C" fn()>,
+// LOWERING-NEXT:     ntests: i32,
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-EMPTY:
+// LOWERING-NEXT: static mut last_ran: i32 = -1;
+// LOWERING-EMPTY:
+// LOWERING-NEXT: unsafe extern "C" {
+// LOWERING-NEXT:     fn malloc(_0: usize) -> *mut core::ffi::c_void;
+// LOWERING-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// LOWERING-NEXT:     fn free(_0: *mut core::ffi::c_void);
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: extern "C" fn test_a() {
+// LOWERING-NEXT:     let _v0: i32 = 0;
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         last_ran = _v0;
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     return;
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: extern "C" fn test_b() {
+// LOWERING-NEXT:     let _v0: i32 = 1;
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         last_ran = _v0;
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     return;
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let mut __retval: i32 = 0;
+// LOWERING-NEXT:     let mut suite: suite_t = suite_t { tests: std::ptr::null_mut(), ntests: 0 };
+// LOWERING-NEXT:     let _v0: i32 = 0;
+// LOWERING-NEXT:     __retval = _v0;
+// LOWERING-NEXT:     let _v1: u64 = 2;
+// LOWERING-NEXT:     let _v2: u64 = 8;
+// LOWERING-NEXT:     let _v3: u64 = _v1 * _v2;
+// LOWERING-NEXT:     let _v4: *mut core::ffi::c_void = unsafe { malloc(_v3 as usize) };
+// LOWERING-NEXT:     let _v5: *mut Option<unsafe extern "C" fn()> = _v4 as *mut Option<unsafe extern "C" fn()>;
+// LOWERING-NEXT:     suite.tests = _v5;
+// LOWERING-NEXT:     let _v6: i64 = 0;
+// LOWERING-NEXT:     let _v7: *mut Option<unsafe extern "C" fn()> = suite.tests;
+// LOWERING-NEXT:     let _v8: *mut Option<unsafe extern "C" fn()> = unsafe { _v7.add(0) };
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         *_v8 = Some(test_a);
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     let _v9: i64 = 1;
+// LOWERING-NEXT:     let _v10: *mut Option<unsafe extern "C" fn()> = suite.tests;
+// LOWERING-NEXT:     let _v11: *mut Option<unsafe extern "C" fn()> = unsafe { _v10.add(1) };
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         *_v11 = Some(test_b);
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     let _v12: i32 = 2;
+// LOWERING-NEXT:     suite.ntests = _v12;
+// LOWERING-NEXT:     {
+// LOWERING-NEXT:         let mut i: i32 = 0;
+// LOWERING-NEXT:         let _v13: i32 = 0;
+// LOWERING-NEXT:         i = _v13;
+// LOWERING-NEXT:         loop {
+// LOWERING-NEXT:             let _v14: i32 = i;
+// LOWERING-NEXT:             let _v15: i32 = suite.ntests;
+// LOWERING-NEXT:             let _v16: bool = _v14 < _v15;
+// LOWERING-NEXT:             if !_v16 {
+// LOWERING-NEXT:                 break;
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:             {
+// LOWERING-NEXT:                 let _v17: i32 = i;
+// LOWERING-NEXT:                 let _v18: i64 = _v17 as i64;
+// LOWERING-NEXT:                 let _v19: *mut Option<unsafe extern "C" fn()> = suite.tests;
+// LOWERING-NEXT:                 let _v20: *mut Option<unsafe extern "C" fn()> = unsafe { _v19.offset(_v18 as isize) };
+// LOWERING-NEXT:                 let _v21: Option<unsafe extern "C" fn()> = unsafe { *_v20 };
+// LOWERING-NEXT:                 unsafe { _v21.unwrap()() };
+// LOWERING-NEXT:                 let _v22: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:                 let _v23: i32 = unsafe { last_ran };
+// LOWERING-NEXT:                 let _v24: i32 = unsafe { printf(_v22 as *const i8, _v23) };
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:             let _v25: i32 = i;
+// LOWERING-NEXT:             let _v26: i32 = _v25 + 1;
+// LOWERING-NEXT:             i = _v26;
+// LOWERING-NEXT:         }
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     let _v27: *mut Option<unsafe extern "C" fn()> = suite.tests;
+// LOWERING-NEXT:     let _v28: *mut core::ffi::c_void = _v27 as *mut core::ffi::c_void;
+// LOWERING-NEXT:     unsafe { free(_v28 as *mut core::ffi::c_void) };
+// LOWERING-NEXT:     let _v29: i32 = 0;
+// LOWERING-NEXT:     __retval = _v29;
+// LOWERING-NEXT:     let _v30: i32 = __retval;
+// LOWERING-NEXT:     std::process::exit(_v30 as i32);
+// LOWERING-NEXT: }
+// SLATE-FILECHECK-END lowering
+
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES: #![feature(c_variadic)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[repr(C)]
+// REWRITES-NEXT: #[derive(Clone, Copy)]
+// REWRITES-NEXT: struct suite_t {
+// REWRITES-NEXT:     tests: *mut Option<unsafe extern "C" fn()>,
+// REWRITES-NEXT:     ntests: i32,
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-EMPTY:
+// REWRITES-NEXT: static mut last_ran: i32 = -1;
+// REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn malloc(_0: usize) -> *mut core::ffi::c_void;
+// REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// REWRITES-NEXT:     fn free(_0: *mut core::ffi::c_void);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: extern "C" fn test_a() {
+// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:         last_ran = 0;
+// REWRITES-NEXT: }
+// REWRITES-NEXT: return;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: extern "C" fn test_b() {
+// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:         last_ran = 1;
+// REWRITES-NEXT: }
+// REWRITES-NEXT: return;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: let mut __retval: i32 = 0;
+// REWRITES-NEXT: let mut suite: suite_t = suite_t { tests: std::ptr::null_mut(), ntests: 0 };
+// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let _v1: u64 = 2;
+// REWRITES-NEXT: let _v2: u64 = 8;
+// REWRITES-NEXT: let _v4: *mut core::ffi::c_void = unsafe { malloc((_v1 * _v2) as usize) };
+// REWRITES-NEXT: suite.tests = _v4 as *mut Option<unsafe extern "C" fn()>;
+// REWRITES-NEXT: let _v6: i64 = 0;
+// REWRITES-NEXT: let _v7: *mut Option<unsafe extern "C" fn()> = suite.tests;
+// REWRITES-NEXT: let _v8: *mut Option<unsafe extern "C" fn()> = unsafe { _v7.add(0) };
+// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:         *_v8 = Some(test_a);
+// REWRITES-NEXT: }
+// REWRITES-NEXT: let _v9: i64 = 1;
+// REWRITES-NEXT: let _v10: *mut Option<unsafe extern "C" fn()> = suite.tests;
+// REWRITES-NEXT: let _v11: *mut Option<unsafe extern "C" fn()> = unsafe { _v10.add(1) };
+// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:         *_v11 = Some(test_b);
+// REWRITES-NEXT: }
+// REWRITES-NEXT: suite.ntests = 2;
+// REWRITES-NEXT: {
+// REWRITES-NEXT:         let mut i: i32 = 0;
+// REWRITES-NEXT:         i = 0;
+// REWRITES-NEXT:         loop {
+// REWRITES-NEXT:                     if !(i < suite.ntests) {
+// REWRITES-NEXT:                                     break;
+// REWRITES-NEXT:                     }
+// REWRITES-NEXT:                     {
+// REWRITES-NEXT:                                     let _v19: *mut Option<unsafe extern "C" fn()> = suite.tests;
+// REWRITES-NEXT:                                     let _v20: *mut Option<unsafe extern "C" fn()> = unsafe { _v19.offset((i as i64) as isize) };
+// REWRITES-NEXT:                                     unsafe { unsafe { *_v20 }.unwrap()() };
+// REWRITES-NEXT:                                     let _v22: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:                                     let _v24: i32 = unsafe { printf(_v22 as *const i8, unsafe { last_ran }) };
+// REWRITES-NEXT:                     }
+// REWRITES-NEXT:                     i = i + 1;
+// REWRITES-NEXT:         }
+// REWRITES-NEXT: }
+// REWRITES-NEXT: unsafe { free((suite.tests as *mut core::ffi::c_void) as *mut core::ffi::c_void) };
+// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: }
+// SLATE-FILECHECK-END rewrites
