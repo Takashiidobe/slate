@@ -122,7 +122,7 @@ void   explicit_bzero(void *, size_t);
 
 #define strdupa(s) strcpy((char *)alloca(strlen(s) + 1), (s))
 
-static inline char *__slate_strndupa_finish(void *buf, const char *s,
+static __inline char *__slate_strndupa_finish(void *buf, const char *s,
                                              size_t len) {
   char *out = (char *)buf;
   memcpy(out, s, len);

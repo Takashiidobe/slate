@@ -94,7 +94,7 @@ struct __slate_pthread_cleanup_frame {
   int   __do_it;
 };
 
-static inline void
+static __inline void
 __slate_pthread_cleanup_routine(struct __slate_pthread_cleanup_frame *__frame) {
   if (__frame->__do_it)
     __frame->__cancel_routine(__frame->__cancel_arg);

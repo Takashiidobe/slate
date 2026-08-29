@@ -593,7 +593,6 @@ fn emit_generic_with_args_and_cir_opt_flags(
         "-std=gnu23",
         "-Xclang",
         "-disable-llvm-passes",
-        "-S",
         "-o",
         "-",
     ])

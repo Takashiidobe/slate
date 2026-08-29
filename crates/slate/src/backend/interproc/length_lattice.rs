@@ -5,7 +5,7 @@ use crate::backend::rust_ast::{
     BinOp, Block, Expr, FnDef, Ident, IndentStmt, Item, Path, Prim, Program, Stmt, Type, UnaryOp,
     Visibility,
 };
-use crate::function_identity::CallBinding;
+use crate::function_identity::{CallBinding, Known};
 
 #[derive(Clone)]
 pub(in crate::backend) struct Pairing {
@@ -475,10 +475,10 @@ fn exact_allocation_pair(
             defs.get(&len_name)
         );
     }
-    let Expr::Call { func, args, .. } = peel_value(source) else {
+    let call @ Expr::Call { args, .. } = peel_value(source) else {
         return false;
     };
-    if !is_malloc(func) {
+    if !is_malloc_call(call) {
         return false;
     }
     let [size] = args.as_slice() else {
@@ -770,15 +770,11 @@ fn resolved_expr(expr: &Expr, defs: &BTreeMap<String, Expr>, depth: usize) -> Ex
     }
 }
 
-fn is_malloc(expr: &Expr) -> bool {
-    match peel_value(expr) {
-        Expr::Var(name) => name.as_str() == "malloc",
-        Expr::Path(path) => path
-            .segments
-            .last()
-            .is_some_and(|name| name.as_str() == "malloc"),
-        _ => false,
-    }
+fn is_malloc_call(expr: &Expr) -> bool {
+    matches!(
+        peel_value(expr),
+        Expr::Call { binding, .. } if binding.known() == Some(Known::Malloc)
+    )
 }
 
 fn primitive_size(ty: &Type) -> Option<u64> {
@@ -986,7 +982,7 @@ fn free_expr_arg(expr: &Expr) -> Option<&Expr> {
         Expr::Unsafe(block) if block.stmts.is_empty() => {
             block.tail.as_deref().and_then(free_expr_arg)
         }
-        Expr::Call { func, args, .. } if matches!(&**func, Expr::Var(name) if name.as_str() == "free") => {
+        Expr::Call { args, binding, .. } if binding.known() == Some(Known::Free) => {
             matches!(args.as_slice(), [_]).then(|| &args[0])
         }
         _ => None,
@@ -2415,10 +2411,10 @@ fn source_len_at_least(
     let Some(source) = defs.get(&name) else {
         return false;
     };
-    let Expr::Call { func, args, .. } = peel_value(source) else {
+    let call @ Expr::Call { args, .. } = peel_value(source) else {
         return false;
     };
-    if !is_malloc(func) {
+    if !is_malloc_call(call) {
         return false;
     }
     let [size] = args.as_slice() else {
@@ -2660,6 +2656,17 @@ struct ReturnBufferLift {
     count: Expr,
 }
 
+#[derive(Clone)]
+struct ReturnRetentionPlan {
+    caller: String,
+    callee: String,
+    binding: String,
+    elem_ty: Type,
+    call: Expr,
+    call_temps: BTreeSet<String>,
+    base_aliases: BTreeSet<String>,
+}
+
 fn apply_return_buffers(program: &mut Program) {
     let lifts = {
         let fn_defs = collect_fn_defs(&program.items);
@@ -2672,13 +2679,593 @@ fn apply_return_buffers(program: &mut Program) {
         .iter()
         .map(|lift| (lift.function.clone(), lift))
         .collect();
-    retype_return_items(&mut program.items, &by_fn);
     let elems: BTreeMap<String, Type> = lifts
         .iter()
         .map(|lift| (lift.function.clone(), lift.elem_ty.clone()))
         .collect();
+    let (retained, retained_callees) = return_retention_plans(program, &elems);
+    retype_return_items(&mut program.items, &by_fn);
+    apply_return_retention(&mut program.items, &retained);
+    let raw_elems: BTreeMap<String, Type> = elems
+        .into_iter()
+        .filter(|(name, _)| !retained_callees.contains(name))
+        .collect();
     for item in &mut program.items {
-        rewrite_return_call_item(item, &elems);
+        rewrite_return_call_item(item, &raw_elems);
+    }
+}
+
+fn return_retention_plans(
+    program: &Program,
+    elems: &BTreeMap<String, Type>,
+) -> (Vec<ReturnRetentionPlan>, BTreeSet<String>) {
+    let mut call_counts = BTreeMap::<String, usize>::new();
+    let mut plans = Vec::new();
+    collect_return_retention_items(&program.items, elems, &mut call_counts, &mut plans);
+    let mut plan_counts = BTreeMap::<String, usize>::new();
+    for plan in &plans {
+        *plan_counts.entry(plan.callee.clone()).or_default() += 1;
+    }
+    if std::env::var_os("SLATE_PTR_LEN_DEBUG").is_some() {
+        eprintln!("return retention calls={call_counts:?} plans={plan_counts:?}");
+    }
+    let accepted: BTreeSet<String> = call_counts
+        .into_iter()
+        .filter_map(|(callee, count)| {
+            (count > 0 && plan_counts.get(&callee) == Some(&count)).then_some(callee)
+        })
+        .collect();
+    plans.retain(|plan| accepted.contains(&plan.callee));
+    (plans, accepted)
+}
+
+fn collect_return_retention_items(
+    items: &[Item],
+    elems: &BTreeMap<String, Type>,
+    call_counts: &mut BTreeMap<String, usize>,
+    plans: &mut Vec<ReturnRetentionPlan>,
+) {
+    for item in items {
+        match item {
+            Item::Fn(f) => {
+                let mut calls = Vec::new();
+                for indent in &f.body {
+                    indent.stmt.collect_calls(&mut calls);
+                }
+                for (callee, _) in calls {
+                    if elems.contains_key(callee.as_str()) {
+                        *call_counts.entry(callee.to_string()).or_default() += 1;
+                    }
+                }
+                collect_return_retention_body(&f.body, &f.name, &f.body, elems, plans);
+            }
+            Item::InlineMod { items, .. } => {
+                collect_return_retention_items(items, elems, call_counts, plans)
+            }
+            _ => {}
+        }
+    }
+}
+
+fn collect_return_retention_body(
+    body: &[IndentStmt],
+    caller: &str,
+    function_body: &[IndentStmt],
+    elems: &BTreeMap<String, Type>,
+    plans: &mut Vec<ReturnRetentionPlan>,
+) {
+    for (decl_pos, indent) in body.iter().enumerate() {
+        let Stmt::Let {
+            name,
+            ty: Some(Type::Ptr { inner, .. }),
+            init: Some(init),
+            ..
+        } = &indent.stmt
+        else {
+            continue;
+        };
+        if !is_zero_pointer(init) || count_assigns(function_body, name) != 1 {
+            continue;
+        }
+        let Some((assign_pos, value)) =
+            body[decl_pos + 1..]
+                .iter()
+                .enumerate()
+                .find_map(|(offset, indent)| match &indent.stmt {
+                    Stmt::Assign {
+                        target: Expr::Var(target),
+                        value,
+                    } if target.as_str() == name => Some((decl_pos + 1 + offset, value)),
+                    _ => None,
+                })
+        else {
+            continue;
+        };
+        let mut call_temps = BTreeSet::new();
+        let Some((callee, call)) = resolve_retained_call(
+            value,
+            &body[..assign_pos],
+            function_body,
+            elems,
+            &mut call_temps,
+            0,
+        ) else {
+            continue;
+        };
+        let Some(elem_ty) = elems.get(&callee) else {
+            continue;
+        };
+        if **inner != *elem_ty {
+            continue;
+        }
+        let Some(base_aliases) = retained_use_domain(function_body, name, &callee, &call_temps)
+        else {
+            continue;
+        };
+        plans.push(ReturnRetentionPlan {
+            caller: caller.to_string(),
+            callee,
+            binding: name.clone(),
+            elem_ty: elem_ty.clone(),
+            call,
+            call_temps,
+            base_aliases,
+        });
+    }
+    for indent in body {
+        match &indent.stmt {
+            Stmt::LetIf {
+                then_body,
+                else_body,
+                ..
+            }
+            | Stmt::If {
+                then_body,
+                else_body,
+                ..
+            } => {
+                collect_return_retention_body(then_body, caller, function_body, elems, plans);
+                collect_return_retention_body(else_body, caller, function_body, elems, plans);
+            }
+            Stmt::Loop { body, .. }
+            | Stmt::For { body, .. }
+            | Stmt::Scope { body }
+            | Stmt::LabeledBlock { body, .. } => {
+                collect_return_retention_body(body, caller, function_body, elems, plans)
+            }
+            Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
+                collect_return_retention_body(&body.stmts, caller, function_body, elems, plans)
+            }
+            Stmt::Match { arms, .. } => {
+                for arm in arms {
+                    collect_return_retention_body(&arm.body, caller, function_body, elems, plans);
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
+fn is_zero_pointer(expr: &Expr) -> bool {
+    matches!(
+        peel_value(expr),
+        Expr::Value(crate::backend::rust_ast::RustValue::NullPtr)
+    )
+}
+
+fn resolve_retained_call(
+    expr: &Expr,
+    prior: &[IndentStmt],
+    function_body: &[IndentStmt],
+    elems: &BTreeMap<String, Type>,
+    temps: &mut BTreeSet<String>,
+    depth: usize,
+) -> Option<(String, Expr)> {
+    if depth > 32 {
+        return None;
+    }
+    match peel_value(expr) {
+        call @ Expr::Call { func, .. } => {
+            let Expr::Var(callee) = &**func else {
+                return None;
+            };
+            elems
+                .contains_key(callee.as_str())
+                .then(|| (callee.to_string(), call.clone()))
+        }
+        Expr::Var(name)
+            if count_var_reads(function_body, name.as_str()) == 1
+                && count_assigns(function_body, name.as_str()) == 0 =>
+        {
+            let init = prior.iter().rev().find_map(|indent| match &indent.stmt {
+                Stmt::Let {
+                    name: candidate,
+                    init: Some(init),
+                    ..
+                } if candidate == name.as_str() => Some(init),
+                _ => None,
+            })?;
+            temps.insert(name.to_string());
+            resolve_retained_call(init, prior, function_body, elems, temps, depth + 1)
+        }
+        _ => None,
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum RetainedAliasKind {
+    Base,
+    Offset,
+}
+
+fn retained_use_domain(
+    body: &[IndentStmt],
+    binding: &str,
+    callee: &str,
+    call_temps: &BTreeSet<String>,
+) -> Option<BTreeSet<String>> {
+    let mut aliases = BTreeMap::from([(binding.to_string(), RetainedAliasKind::Base)]);
+    loop {
+        let before = aliases.len();
+        collect_retained_aliases(body, &mut aliases);
+        if aliases.len() == before {
+            break;
+        }
+    }
+    let base_aliases: BTreeSet<String> = aliases
+        .iter()
+        .filter_map(|(name, kind)| (*kind == RetainedAliasKind::Base).then_some(name.clone()))
+        .collect();
+    let mut frees = 0usize;
+    let safe = retained_stmts_safe(
+        body,
+        binding,
+        callee,
+        call_temps,
+        &aliases,
+        &base_aliases,
+        &mut frees,
+    );
+    if std::env::var_os("SLATE_PTR_LEN_DEBUG").is_some() {
+        eprintln!(
+            "return retention {callee}:{binding} aliases={aliases:?} safe={safe} frees={frees}"
+        );
+    }
+    if !safe || frees != 1 {
+        return None;
+    }
+    Some(base_aliases)
+}
+
+fn collect_retained_aliases(
+    body: &[IndentStmt],
+    aliases: &mut BTreeMap<String, RetainedAliasKind>,
+) {
+    for indent in body {
+        if let Stmt::Let {
+            name,
+            ty: Some(Type::Ptr { .. }),
+            init: Some(init),
+            ..
+        } = &indent.stmt
+            && let Some(kind) = retained_pointer_origin(init, aliases)
+        {
+            aliases.insert(name.clone(), kind);
+        }
+        match &indent.stmt {
+            Stmt::LetIf {
+                then_body,
+                else_body,
+                ..
+            }
+            | Stmt::If {
+                then_body,
+                else_body,
+                ..
+            } => {
+                collect_retained_aliases(then_body, aliases);
+                collect_retained_aliases(else_body, aliases);
+            }
+            Stmt::Loop { body, .. }
+            | Stmt::For { body, .. }
+            | Stmt::Scope { body }
+            | Stmt::LabeledBlock { body, .. } => collect_retained_aliases(body, aliases),
+            Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
+                collect_retained_aliases(&body.stmts, aliases)
+            }
+            Stmt::Match { arms, .. } => {
+                for arm in arms {
+                    collect_retained_aliases(&arm.body, aliases);
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
+fn retained_pointer_origin(
+    expr: &Expr,
+    aliases: &BTreeMap<String, RetainedAliasKind>,
+) -> Option<RetainedAliasKind> {
+    match expr {
+        Expr::Var(name) => aliases.get(name.as_str()).copied(),
+        Expr::Cast { expr, .. } | Expr::Transmute { expr, .. } => {
+            retained_pointer_origin(expr, aliases)
+        }
+        Expr::Block(block) | Expr::Unsafe(block)
+            if block.stmts.is_empty() && block.tail.is_some() =>
+        {
+            retained_pointer_origin(block.tail.as_deref().expect("checked above"), aliases)
+        }
+        Expr::MethodCall { recv, method, .. } | Expr::MethodCallGeneric { recv, method, .. }
+            if matches!(method.as_str(), "add" | "offset" | "wrapping_add") =>
+        {
+            retained_pointer_origin(recv, aliases).map(|_| RetainedAliasKind::Offset)
+        }
+        _ => None,
+    }
+}
+
+fn retained_stmts_safe(
+    body: &[IndentStmt],
+    binding: &str,
+    callee: &str,
+    call_temps: &BTreeSet<String>,
+    aliases: &BTreeMap<String, RetainedAliasKind>,
+    base_aliases: &BTreeSet<String>,
+    frees: &mut usize,
+) -> bool {
+    for indent in body {
+        if !retained_stmt_safe(
+            &indent.stmt,
+            binding,
+            callee,
+            call_temps,
+            aliases,
+            base_aliases,
+            frees,
+        ) {
+            if std::env::var_os("SLATE_PTR_LEN_DEBUG").is_some() {
+                eprintln!("return retention rejected: {:#?}", indent.stmt);
+            }
+            return false;
+        }
+    }
+    true
+}
+
+fn retained_stmt_safe(
+    stmt: &Stmt,
+    binding: &str,
+    callee: &str,
+    call_temps: &BTreeSet<String>,
+    aliases: &BTreeMap<String, RetainedAliasKind>,
+    base_aliases: &BTreeSet<String>,
+    frees: &mut usize,
+) -> bool {
+    if let Some(arg) = retained_free_arg(stmt) {
+        let is_match = peeled_var(arg).is_some_and(|root| base_aliases.contains(root));
+        if is_match {
+            *frees += 1;
+        }
+        return is_match || !expr_reads_alias(arg, aliases);
+    }
+    match stmt {
+        Stmt::Let { name, init, .. } if name == binding => init
+            .as_ref()
+            .is_none_or(|expr| !expr_reads_alias(expr, aliases)),
+        Stmt::Let { name, init, .. } if call_temps.contains(name) => init
+            .as_ref()
+            .is_some_and(|expr| {
+                direct_call_name(expr) == Some(callee)
+                    || matches!(peel_value(expr), Expr::Var(temp) if call_temps.contains(temp.as_str()))
+            }),
+        Stmt::Let {
+            name,
+            ty: Some(Type::Ptr { .. }),
+            init: Some(init),
+            ..
+        } if aliases.contains_key(name) => retained_pointer_origin(init, aliases).is_some(),
+        Stmt::Let {
+            init: Some(init), ..
+        } => retained_value_safe(init, aliases),
+        Stmt::Let { init: None, .. } => true,
+        Stmt::Assign {
+            target: Expr::Var(name),
+            value,
+        } if name.as_str() == binding => {
+            direct_call_name(value) == Some(callee)
+                || matches!(peel_value(value), Expr::Var(temp) if call_temps.contains(temp.as_str()))
+        }
+        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
+            retained_value_safe(target, aliases) && retained_value_safe(value, aliases)
+        }
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => retained_value_safe(expr, aliases),
+        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => true,
+        Stmt::LetIf {
+            cond,
+            then_body,
+            then_value,
+            else_body,
+            else_value,
+            ..
+        } => {
+            retained_value_safe(cond, aliases)
+                && retained_stmts_safe(
+                    then_body,
+                    binding,
+                    callee,
+                    call_temps,
+                    aliases,
+                    base_aliases,
+                    frees,
+                )
+                && retained_value_safe(then_value, aliases)
+                && retained_stmts_safe(
+                    else_body,
+                    binding,
+                    callee,
+                    call_temps,
+                    aliases,
+                    base_aliases,
+                    frees,
+                )
+                && retained_value_safe(else_value, aliases)
+        }
+        Stmt::If {
+            cond,
+            then_body,
+            else_body,
+        } => {
+            retained_value_safe(cond, aliases)
+                && retained_stmts_safe(
+                    then_body,
+                    binding,
+                    callee,
+                    call_temps,
+                    aliases,
+                    base_aliases,
+                    frees,
+                )
+                && retained_stmts_safe(
+                    else_body,
+                    binding,
+                    callee,
+                    call_temps,
+                    aliases,
+                    base_aliases,
+                    frees,
+                )
+        }
+        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+            retained_stmts_safe(
+                body,
+                binding,
+                callee,
+                call_temps,
+                aliases,
+                base_aliases,
+                frees,
+            )
+        }
+        Stmt::For { iter, body, .. } => {
+            retained_value_safe(iter, aliases)
+                && retained_stmts_safe(
+                    body,
+                    binding,
+                    callee,
+                    call_temps,
+                    aliases,
+                    base_aliases,
+                    frees,
+                )
+        }
+        Stmt::Unsafe { body } | Stmt::Block(body) => {
+            retained_stmts_safe(
+                &body.stmts,
+                binding,
+                callee,
+                call_temps,
+                aliases,
+                base_aliases,
+                frees,
+            ) && body
+                .tail
+                .as_deref()
+                .is_none_or(|expr| retained_value_safe(expr, aliases))
+        }
+        Stmt::While { cond, body } => {
+            retained_value_safe(cond, aliases)
+                && retained_stmts_safe(
+                    &body.stmts,
+                    binding,
+                    callee,
+                    call_temps,
+                    aliases,
+                    base_aliases,
+                    frees,
+                )
+                && body
+                    .tail
+                    .as_deref()
+                    .is_none_or(|expr| retained_value_safe(expr, aliases))
+        }
+        Stmt::Match { expr, arms } => {
+            retained_value_safe(expr, aliases)
+                && arms.iter().all(|arm| {
+                    retained_stmts_safe(
+                        &arm.body,
+                        binding,
+                        callee,
+                        call_temps,
+                        aliases,
+                        base_aliases,
+                        frees,
+                    )
+                })
+        }
+        Stmt::InlineAsm(asm) => {
+            let mut safe = true;
+            for operand in &asm.operands {
+                operand.visit_exprs(&mut |expr| safe &= !expr_reads_alias(expr, aliases));
+            }
+            safe
+        }
+    }
+}
+
+fn retained_free_arg(stmt: &Stmt) -> Option<&Expr> {
+    match stmt {
+        Stmt::Expr(expr) => free_expr_arg(expr),
+        Stmt::Unsafe { body } => {
+            body.tail
+                .as_deref()
+                .and_then(free_expr_arg)
+                .or_else(|| match body.stmts.as_slice() {
+                    [indent] => retained_free_arg(&indent.stmt),
+                    _ => None,
+                })
+        }
+        _ => None,
+    }
+}
+
+fn direct_call_name(expr: &Expr) -> Option<&str> {
+    let Expr::Call { func, .. } = peel_value(expr) else {
+        return None;
+    };
+    let Expr::Var(name) = &**func else {
+        return None;
+    };
+    Some(name.as_str())
+}
+
+fn retained_value_safe(expr: &Expr, aliases: &BTreeMap<String, RetainedAliasKind>) -> bool {
+    !expr_reads_alias(expr, aliases) || retained_deref_root(expr, aliases).is_some()
+}
+
+fn expr_reads_alias(expr: &Expr, aliases: &BTreeMap<String, RetainedAliasKind>) -> bool {
+    aliases.keys().any(|name| expr.reads_var(name))
+}
+
+fn retained_deref_root(
+    expr: &Expr,
+    aliases: &BTreeMap<String, RetainedAliasKind>,
+) -> Option<RetainedAliasKind> {
+    match expr {
+        Expr::Cast { expr, .. } | Expr::Transmute { expr, .. } => {
+            retained_deref_root(expr, aliases)
+        }
+        Expr::Block(block) | Expr::Unsafe(block)
+            if block.stmts.is_empty() && block.tail.is_some() =>
+        {
+            retained_deref_root(block.tail.as_deref().expect("checked above"), aliases)
+        }
+        Expr::Unary {
+            op: UnaryOp::Deref,
+            expr,
+        } => retained_pointer_origin(expr, aliases),
+        _ => None,
     }
 }
 
@@ -2826,7 +3413,7 @@ fn resolve_to_malloc<'a>(
             }
             resolve_to_malloc(defs.get(name.as_str())?, body, defs, depth + 1)
         }
-        call @ Expr::Call { func, .. } if is_malloc(func) => Some(call),
+        call @ Expr::Call { .. } if is_malloc_call(call) => Some(call),
         _ => None,
     }
 }
@@ -2836,6 +3423,195 @@ fn box_slice_type(elem_ty: &Type) -> Type {
         name: "Box".to_string(),
         args: vec![Type::Slice(Box::new(elem_ty.clone()))],
     }
+}
+
+fn apply_return_retention(items: &mut [Item], plans: &[ReturnRetentionPlan]) {
+    for item in items {
+        match item {
+            Item::Fn(f) => {
+                for plan in plans.iter().filter(|plan| plan.caller == f.name) {
+                    remove_retained_frees(&mut f.body, &plan.base_aliases);
+                    retain_call_binding(&mut f.body, plan);
+                    let raw = Expr::MethodCall {
+                        recv: Box::new(Expr::Var(Ident::new(plan.binding.as_str()))),
+                        method: "as_mut_ptr".to_string(),
+                        args: Vec::new(),
+                    };
+                    for indent in &mut f.body {
+                        indent.stmt.substitute_var(&plan.binding, &raw);
+                    }
+                    let aliases = plan
+                        .base_aliases
+                        .iter()
+                        .filter(|name| *name != &plan.binding)
+                        .cloned()
+                        .collect();
+                    remove_unused_retained_aliases(&mut f.body, &aliases);
+                }
+            }
+            Item::InlineMod { items, .. } => apply_return_retention(items, plans),
+            _ => {}
+        }
+    }
+}
+
+fn remove_unused_retained_aliases(body: &mut Vec<IndentStmt>, base_aliases: &BTreeSet<String>) {
+    loop {
+        let unused: BTreeSet<String> = base_aliases
+            .iter()
+            .filter(|name| count_var_reads(body, name) == 0)
+            .cloned()
+            .collect();
+        if unused.is_empty() {
+            return;
+        }
+        let before = body.len();
+        body.retain(
+            |indent| !matches!(&indent.stmt, Stmt::Let { name, .. } if unused.contains(name)),
+        );
+        for indent in body.iter_mut() {
+            remove_unused_retained_aliases_stmt(&mut indent.stmt, &unused);
+        }
+        if body.len() == before
+            && !body.iter().any(|indent| {
+                unused
+                    .iter()
+                    .any(|name| indent.stmt.reads_var(name.as_str()))
+            })
+        {
+            return;
+        }
+    }
+}
+
+fn remove_unused_retained_aliases_stmt(stmt: &mut Stmt, unused: &BTreeSet<String>) {
+    match stmt {
+        Stmt::LetIf {
+            then_body,
+            else_body,
+            ..
+        }
+        | Stmt::If {
+            then_body,
+            else_body,
+            ..
+        } => {
+            remove_unused_retained_aliases(then_body, unused);
+            remove_unused_retained_aliases(else_body, unused);
+        }
+        Stmt::Loop { body, .. }
+        | Stmt::For { body, .. }
+        | Stmt::Scope { body }
+        | Stmt::LabeledBlock { body, .. } => remove_unused_retained_aliases(body, unused),
+        Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
+            remove_unused_retained_aliases(&mut body.stmts, unused)
+        }
+        Stmt::Match { arms, .. } => {
+            for arm in arms {
+                remove_unused_retained_aliases(&mut arm.body, unused);
+            }
+        }
+        _ => {}
+    }
+}
+
+fn remove_retained_frees(body: &mut Vec<IndentStmt>, base_aliases: &BTreeSet<String>) {
+    body.retain_mut(|indent| {
+        if retained_free_arg(&indent.stmt)
+            .and_then(peeled_var)
+            .is_some_and(|root| base_aliases.contains(root))
+        {
+            return false;
+        }
+        remove_retained_frees_stmt(&mut indent.stmt, base_aliases);
+        true
+    });
+}
+
+fn remove_retained_frees_stmt(stmt: &mut Stmt, base_aliases: &BTreeSet<String>) {
+    match stmt {
+        Stmt::LetIf {
+            then_body,
+            else_body,
+            ..
+        }
+        | Stmt::If {
+            then_body,
+            else_body,
+            ..
+        } => {
+            remove_retained_frees(then_body, base_aliases);
+            remove_retained_frees(else_body, base_aliases);
+        }
+        Stmt::Loop { body, .. }
+        | Stmt::For { body, .. }
+        | Stmt::Scope { body }
+        | Stmt::LabeledBlock { body, .. } => remove_retained_frees(body, base_aliases),
+        Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
+            remove_retained_frees(&mut body.stmts, base_aliases)
+        }
+        Stmt::Match { arms, .. } => {
+            for arm in arms {
+                remove_retained_frees(&mut arm.body, base_aliases);
+            }
+        }
+        _ => {}
+    }
+}
+
+fn retain_call_binding(body: &mut Vec<IndentStmt>, plan: &ReturnRetentionPlan) -> bool {
+    let has_decl = body
+        .iter()
+        .any(|indent| matches!(&indent.stmt, Stmt::Let { name, .. } if name == &plan.binding));
+    let has_assign = body.iter().any(|indent| {
+        matches!(&indent.stmt, Stmt::Assign { target: Expr::Var(name), .. } if name.as_str() == plan.binding)
+    });
+    if has_decl && has_assign {
+        body.retain(|indent| {
+            !matches!(&indent.stmt, Stmt::Let { name, .. } if name == &plan.binding || plan.call_temps.contains(name))
+        });
+        for indent in body.iter_mut() {
+            if matches!(&indent.stmt, Stmt::Assign { target: Expr::Var(name), .. } if name.as_str() == plan.binding)
+            {
+                indent.stmt = Stmt::Let {
+                    name: plan.binding.clone(),
+                    mutable: true,
+                    ty: Some(box_slice_type(&plan.elem_ty)),
+                    init: Some(plan.call.clone()),
+                };
+                return true;
+            }
+        }
+    }
+    for indent in body {
+        let changed = match &mut indent.stmt {
+            Stmt::LetIf {
+                then_body,
+                else_body,
+                ..
+            }
+            | Stmt::If {
+                then_body,
+                else_body,
+                ..
+            } => retain_call_binding(then_body, plan) || retain_call_binding(else_body, plan),
+            Stmt::Loop { body, .. }
+            | Stmt::For { body, .. }
+            | Stmt::Scope { body }
+            | Stmt::LabeledBlock { body, .. } => retain_call_binding(body, plan),
+            Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
+                retain_call_binding(&mut body.stmts, plan)
+            }
+            Stmt::Match { arms, .. } => arms
+                .iter_mut()
+                .any(|arm| retain_call_binding(&mut arm.body, plan)),
+            _ => false,
+        };
+        if changed {
+            return true;
+        }
+    }
+    false
 }
 
 fn retype_return_items(items: &mut [Item], by_fn: &BTreeMap<String, &ReturnBufferLift>) {
