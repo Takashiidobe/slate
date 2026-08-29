@@ -1,6 +1,8 @@
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, NodeId, NodeKind, NodeKindTag};
-use crate::backend::rust_ast::{Block, Expr, Ident, IndentStmt, Path, Prim, RustValue, Stmt, Type};
+use crate::backend::rust_ast::{
+    BinOp, Block, Expr, Ident, IndentStmt, Path, Prim, RustValue, Stmt, Type, UnaryOp,
+};
 use crate::function_identity::{CallBinding, Known};
 
 pub(super) struct CallCtx<'a> {
@@ -183,6 +185,15 @@ fn is_u8_slice(ty: &Type) -> bool {
     }
 }
 
+fn is_string(ty: &Type) -> bool {
+    match ty {
+        Type::Str => true,
+        Type::Ref { inner, .. } => matches!(**inner, Type::Str),
+        Type::Generic { name, .. } => name == "String",
+        _ => false,
+    }
+}
+
 fn method_call(recv: Expr, method: &str, args: Vec<Expr>) -> Expr {
     Expr::MethodCall {
         recv: Box::new(recv),
@@ -256,6 +267,91 @@ fn slice_to(expr: Expr, len: Expr) -> Expr {
             end: Box::new(cast(len, Type::Prim(Prim::Usize))),
         }),
     }
+}
+
+fn lifted_bytes(ctx: &CallCtx, i: usize) -> Option<Expr> {
+    ctx.lifted_arg(i, is_string)
+        .map(|arg| method_call(arg, "as_bytes", Vec::new()))
+        .or_else(|| ctx.lifted_arg(i, is_u8_slice))
+}
+
+fn c_string_len(bytes: Expr, bound: Option<Expr>) -> Expr {
+    let byte = Ident::new("__slate_byte");
+    let is_nul = Expr::Binary {
+        op: BinOp::Eq,
+        lhs: Box::new(Expr::Unary {
+            op: UnaryOp::Deref,
+            expr: Box::new(Expr::Var(byte)),
+        }),
+        rhs: Box::new(Expr::Value(RustValue::TypedUInt(0, Prim::U8))),
+    };
+    let position = method_call(
+        method_call(bytes.clone(), "iter", Vec::new()),
+        "position",
+        vec![Expr::Closure {
+            params: vec![byte],
+            body: Box::new(is_nul),
+        }],
+    );
+    let len = method_call(
+        position,
+        "unwrap_or",
+        vec![method_call(bytes, "len", Vec::new())],
+    );
+    match bound {
+        Some(bound) => method_call(len, "min", vec![cast(bound, Type::Prim(Prim::Usize))]),
+        None => len,
+    }
+}
+
+fn str_n_cmp(ctx: &CallCtx) -> Option<Expr> {
+    let a = lifted_bytes(ctx, 0)?;
+    let b = lifted_bytes(ctx, 1)?;
+    let bound = ctx.args().get(2)?.clone();
+    let lhs = slice_to(a.clone(), c_string_len(a, Some(bound.clone())));
+    let rhs = Expr::Ref {
+        mutable: false,
+        expr: Box::new(slice_to(b.clone(), c_string_len(b, Some(bound)))),
+    };
+    Some(cast(
+        method_call(lhs, "cmp", vec![rhs]),
+        Type::Prim(Prim::I32),
+    ))
+}
+
+fn str_n_len(ctx: &CallCtx) -> Option<Expr> {
+    let bytes = lifted_bytes(ctx, 0)?;
+    Some(c_string_len(bytes, Some(ctx.args().get(1)?.clone())))
+}
+
+fn str_span(ctx: &CallCtx, accepted: bool) -> Option<Expr> {
+    let input = lifted_bytes(ctx, 0)?;
+    let set = lifted_bytes(ctx, 1)?;
+    let input = slice_to(input.clone(), c_string_len(input, None));
+    let set = slice_to(set.clone(), c_string_len(set, None));
+    let byte = Ident::new("__slate_byte");
+    let contains = method_call(set, "contains", vec![Expr::Var(byte)]);
+    let stop = if accepted {
+        Expr::Unary {
+            op: UnaryOp::Not,
+            expr: Box::new(contains),
+        }
+    } else {
+        contains
+    };
+    let position = method_call(
+        method_call(input.clone(), "iter", Vec::new()),
+        "position",
+        vec![Expr::Closure {
+            params: vec![byte],
+            body: Box::new(stop),
+        }],
+    );
+    Some(method_call(
+        position,
+        "unwrap_or",
+        vec![method_call(input, "len", Vec::new())],
+    ))
 }
 
 fn mem_cmp(ctx: &CallCtx) -> Option<Expr> {
@@ -541,6 +637,10 @@ pub(super) fn rules() -> Vec<Box<dyn NodeRule>> {
             let b = ctx.lifted_arg(1, is_byte_str_or_slice)?;
             Some(cast(method_call(a, "cmp", vec![b]), Type::Prim(Prim::I32)))
         }),
+        libc_call(Known::StrNCmp, str_n_cmp),
+        libc_call(Known::StrNLen, str_n_len),
+        libc_call(Known::StrSpn, |ctx| str_span(ctx, true)),
+        libc_call(Known::StrCSpn, |ctx| str_span(ctx, false)),
         libc_call(Known::Atoi, |ctx| {
             fold_atoi(ctx, Prim::I32).or_else(|| ato_helper(ctx, "__slate_atoi"))
         }),

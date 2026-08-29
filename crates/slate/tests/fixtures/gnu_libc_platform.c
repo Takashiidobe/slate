@@ -1063,14 +1063,14 @@ int main(void) {
 // REWRITES-NEXT: total = total + ((_v78 == _v79) as i32);
 // REWRITES-NEXT: let _v84: *mut i8 = b"slate-truncated\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let _v85: u64 = 5;
-// REWRITES-NEXT: let _v86: u64 = (unsafe { strnlen(_v84 as *const i8, _v85 as usize) }) as u64;
+// REWRITES-NEXT: let _v86: u64 = (unsafe { "slate-truncated".as_bytes().iter().position(|__slate_byte| *__slate_byte == 0u8).unwrap_or("slate-truncated".as_bytes().len()).min((_v85 as usize) as usize) }) as u64;
 // REWRITES-NEXT: let _v87: u64 = 1;
 // REWRITES-NEXT: let mut bi_alloca2: Vec<u8> = vec![0; (_v86 + _v87) as usize];
 // REWRITES-NEXT: let _v89: *mut core::ffi::c_void = bi_alloca2.as_mut_ptr() as *mut core::ffi::c_void;
 // REWRITES-NEXT: let _v90: *mut i8 = b"slate-truncated\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let _v91: *mut i8 = b"slate-truncated\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let _v92: u64 = 5;
-// REWRITES-NEXT: let _v93: u64 = (unsafe { strnlen(_v91 as *const i8, _v92 as usize) }) as u64;
+// REWRITES-NEXT: let _v93: u64 = (unsafe { "slate-truncated".as_bytes().iter().position(|__slate_byte| *__slate_byte == 0u8).unwrap_or("slate-truncated".as_bytes().len()).min((_v92 as usize) as usize) }) as u64;
 // REWRITES-NEXT: let _v94: *mut i8 = __slate_strndupa_finish(_v89 as *mut core::ffi::c_void, _v90, _v93);
 // REWRITES-NEXT: let _v95: *mut i8 = b"slate\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let _v96: i32 = unsafe { strcmp(_v94 as *const i8, _v95 as *const i8) };

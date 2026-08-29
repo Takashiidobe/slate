@@ -810,6 +810,7 @@ fn is_supported_libc_str_fn(name: &str) -> bool {
     matches!(
         name,
         "strlen"
+            | "strnlen"
             | "strcmp"
             | "strncmp"
             | "memcmp"
