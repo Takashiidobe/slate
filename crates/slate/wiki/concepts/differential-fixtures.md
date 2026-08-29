@@ -62,3 +62,33 @@ tests, diagnostics, or binary symbols stay in the Rust project harness.
 `translate-directives` fixtures use `DIRECTIVES` prefixes against that
 command's stdout. Those checks are separate from lowering and rewrite profile
 selection because conditional-compilation reconstruction is its own producer.
+
+## Region-scoped generation with `@begin`/`@end` directives
+
+Prefer scaffolding the FileCheck blocks with `tools/update_filecheck.py` over
+hand-writing them. Wrap the C statements whose generated Rust you want to assert
+in comment directives, then let the tool emit the `SLATE-FILECHECK-BEGIN/END`
+blocks. See `tests/fixtures/global_bool.c` and the `buffer_const_bound*`
+fixtures for the pattern:
+
+```c
+// @lowering-begin
+// @rewrite-begin
+int r = sum_fixed(arr);
+// @rewrite-end
+// @lowering-end
+```
+
+`@lowering-begin`/`@lowering-end` scope the `LOWERING` block, `@rewrite-begin`/
+`@rewrite-end` the `REWRITES` block; the `-not` variants (`@rewrite-not-begin`,
+etc.) assert the region's pre-rewrite text is *absent* after fixups. Regions
+must nest, not cross. Generate or refresh in place with:
+
+```bash
+python3 tools/update_filecheck.py --in-place tests/fixtures/<name>.c
+```
+
+Scope the region to the smallest observable of the change — for a
+signature/call-site lift, wrapping the call statement is enough, since the
+bridged call only appears once the lift fires. Re-run the tool whenever the
+generated output legitimately changes so the checked-in block stays in sync.
