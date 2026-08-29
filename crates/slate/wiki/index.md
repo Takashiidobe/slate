@@ -63,3 +63,4 @@ superseded each one for what actually applies now.
 - [Gate Owned pointer bridging on heap provenance (y0qs.4.9)](concepts/gate-owned-pointer-bridging-on-heap-provenance-y0qs-4-9.md)
 - [ptr_len signature worklist with canonical forwarding](concepts/ptr-len-signature-worklist-with-canonical-forwarding.md)
 - [ptr_len owned Vec signature lifting](concepts/ptr-len-owned-vec-signature-lifting.md)
+- [StringOwned signature lift with UTF-8 content gate (y0qs.4.4)](concepts/stringowned-signature-lift-with-utf-8-content-gate-y0qs-4-4.md)
