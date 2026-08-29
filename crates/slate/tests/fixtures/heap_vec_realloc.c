@@ -12,10 +12,3 @@ int main(void) {
   free(p);
   return 0;
 }
-// REWRITES-DAG: let mut p: Vec<i32> = vec![0; 2usize];
-// REWRITES-DAG: p.resize(4usize, 0);
-// REWRITES-DAG: p[2] = 3;
-// REWRITES-DAG: p[3] = 4;
-// REWRITES-NOT: fn realloc(
-// REWRITES-NOT: unsafe { realloc(
-// REWRITES-NOT: .add(

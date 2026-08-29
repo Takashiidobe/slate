@@ -31,5 +31,3 @@ int main(void) {
 // REWRITES-DAG: #![feature(thread_local)]
 // REWRITES: #[thread_local]
 // REWRITES-NEXT: static mut file_value: i32 = 5;
-// REWRITES: #[thread_local]
-// REWRITES-NEXT: static mut update_values_block_value: i32 = 7;

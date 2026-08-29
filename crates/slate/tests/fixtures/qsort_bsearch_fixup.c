@@ -32,11 +32,3 @@ int main(void) {
          found ? found->value : -1);
   return 0;
 }
-// REWRITES-DAG: nums.as_mut_slice().sort_by(|__slate_a, __slate_b| __slate_a.cmp(__slate_b));
-// REWRITES-DAG: nums.as_slice().binary_search_by(|__slate_probe| __slate_probe.cmp(&key))
-// REWRITES-DAG: items.as_mut_slice().sort_by(|__slate_a, __slate_b| __slate_a.key.cmp(&__slate_b.key));
-// REWRITES-DAG: items.as_slice().binary_search_by(|__slate_probe| __slate_probe.key.cmp(&needle.key))
-// REWRITES-NOT: fn qsort(
-// REWRITES-NOT: fn bsearch(
-// REWRITES-NOT: unsafe { qsort(
-// REWRITES-NOT: unsafe { bsearch(

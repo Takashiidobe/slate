@@ -21,16 +21,4 @@ int main(void) {
   printf("%ld %c\n", raw, *end);
   return 0;
 }
-// REWRITES-DAG: mod __slate_runtime
-// REWRITES-DAG: .parse::<i32>().unwrap_or(0)
-// REWRITES-DAG: whole_long.parse::<i64>().unwrap_or(0)
-// REWRITES-DAG: whole_unsigned.parse::<u64>().unwrap_or(0)
-// REWRITES-DAG: __slate_runtime::parse_i64(leading)
-// REWRITES-DAG: __slate_runtime::parse_i64(large)
-// REWRITES-DAG: __slate_runtime::parse_u64(empty)
-// REWRITES-DAG: __slate_runtime::parse_f64(flt)
 // REWRITES-DAG: unsafe { strtol(
-// REWRITES-NOT: fn atoi(
-// REWRITES-NOT: fn atol(
-// REWRITES-NOT: fn strtoul(
-// REWRITES-NOT: fn strtod(

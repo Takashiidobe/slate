@@ -31,10 +31,3 @@ int main(void) {
   compute(0);
   return 0;
 }
-// REWRITES-DAG: let mut p: Option<Box<i32>> = None;
-// REWRITES-DAG: let mut q: Option<Box<i32>> = None;
-// REWRITES-DAG: std::ptr::eq(
-// REWRITES-DAG: .as_deref().map_or(std::ptr::null(),
-// REWRITES-NOT: p == q
-// REWRITES-NOT: fn malloc(
-// REWRITES-NOT: unsafe

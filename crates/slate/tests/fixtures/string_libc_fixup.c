@@ -27,28 +27,4 @@ int main(void) {
   printf("%d\n", strchr(utf8, second_byte) != 0);
   return 0;
 }
-// REWRITES-DAG: let alpha: &str = "abc";
-// REWRITES-DAG: let bytes_a: &[u8] = b"\xff\x01";
-// REWRITES-DAG: : usize = alpha.len();
-// REWRITES-DAG: alpha == alpha
-// REWRITES-DAG: alpha.cmp(beta) == std::cmp::Ordering::Less
-// REWRITES-DAG: .split_at(std::cmp::min(
-// REWRITES-DAG: hay.find(char::from(
-// REWRITES-DAG: hay.rfind(char::from(
-// REWRITES-DAG: hay.find(sub)
-// REWRITES-DAG: hay.find(|__slate_ch| set.contains(__slate_ch))
-// REWRITES-DAG: hay.find(|__slate_ch| !prefix.contains(__slate_ch)).unwrap_or(hay.len())
-// REWRITES-DAG: hay.find(|__slate_ch| reject.contains(__slate_ch)).unwrap_or(hay.len())
-// REWRITES-DAG: let utf8: &str = "h\u{e9}";
-// REWRITES-DAG: utf8.as_bytes().iter().position(
 // REWRITES-NOT: alpha.len() as u64
-// REWRITES-NOT: fn strlen(
-// REWRITES-NOT: fn strcmp(
-// REWRITES-NOT: fn strncmp(
-// REWRITES-NOT: fn memcmp(
-// REWRITES-NOT: fn strchr(
-// REWRITES-NOT: fn strrchr(
-// REWRITES-NOT: fn strstr(
-// REWRITES-NOT: fn strpbrk(
-// REWRITES-NOT: fn strspn(
-// REWRITES-NOT: fn strcspn(

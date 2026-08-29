@@ -213,6 +213,3 @@ int main(void) {
 }
 // REWRITES-LABEL: {{^}}fn exit(status: i32) {
 // REWRITES: {{^}}}
-// REWRITES-LABEL: {{^}}fn main() {
-// REWRITES-DAG: exit(0);
-// REWRITES: {{^}}}

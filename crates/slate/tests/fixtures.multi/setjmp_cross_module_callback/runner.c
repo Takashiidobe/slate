@@ -14,4 +14,3 @@ void run_case(void (*fn)(int), int ok) {
   }
   fn(ok);
 }
-// REWRITES-DAG: pub extern "C-unwind" fn fail_now

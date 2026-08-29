@@ -13,16 +13,25 @@ fn work_dir(name: &str) -> std::path::PathBuf {
 }
 
 #[test]
-fn skips_rewrite_checks_while_rewrites_are_disabled() {
+fn enforces_rewrite_checks() {
     assert!(has_checks(
         "// REWRITES: rewritten_output\n",
         Profile::Rewrites
     ));
+    assert!(
+        check_generated_rust(
+            "// REWRITES: rewritten_output\n",
+            "raw_lowering_output\n",
+            Profile::Rewrites,
+            &work_dir("enforced-rewrites-failure"),
+        )
+        .is_err()
+    );
     check_generated_rust(
         "// REWRITES: rewritten_output\n",
-        "raw_lowering_output\n",
+        "rewritten_output\n",
         Profile::Rewrites,
-        &work_dir("disabled-rewrites"),
+        &work_dir("enforced-rewrites-success"),
     )
     .unwrap();
 }

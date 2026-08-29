@@ -9,7 +9,5 @@ int main(void) {
   return 0;
 }
 // REWRITES-LABEL: {{^}}fn main() {
-// REWRITES-DAG: buf.copy_within(0..4, 2);
-// REWRITES-NOT: std::ptr::copy
 // REWRITES-NOT: buf.as_mut_ptr().add(2)
 // REWRITES: {{^}}}

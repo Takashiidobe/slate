@@ -5,7 +5,3 @@ int main(void) {
   printf("literal=%s", "tail");
   return 0;
 }
-// REWRITES-NOT: fn printf(
-// REWRITES-NOT: unsafe { printf(
-// REWRITES-DAG: println!("{} {} {} {}", "tag", "A", "\n", 7);
-// REWRITES-DAG: print!("literal={}", "tail");

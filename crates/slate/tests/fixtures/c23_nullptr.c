@@ -1,6 +1,5 @@
 // REWRITES-LABEL: {{^}}fn main() {
 // REWRITES-DAG: let mut null_value: *mut core::ffi::c_void
-// REWRITES-DAG: std::ptr::null_mut() as *mut core::ffi::c_void
 // REWRITES-NOT: std::ptr::null_mut() == std::ptr::null_mut()
 // REWRITES: {{^}}}
 

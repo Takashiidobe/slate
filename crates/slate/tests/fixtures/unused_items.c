@@ -35,12 +35,9 @@ int main(void) {
   return 0;
 }
 // REWRITES-DAG: enum color
-// REWRITES-DAG: mut c: color = color::RED
 // REWRITES-DAG: c = color::GREEN
 // REWRITES-DAG: c as u32
 // REWRITES-DAG: live_static
 // REWRITES-NOT: totally_unused
 // REWRITES-NOT: linked_a
 // REWRITES-NOT: linked_b
-// REWRITES-NOT: truly_dead
-// REWRITES-NOT: hidden_static

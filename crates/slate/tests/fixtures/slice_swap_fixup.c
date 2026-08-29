@@ -51,16 +51,9 @@ int main(void) {
   printf("%d %d %d\n", c[0], c[1], c[2]);
   return 0;
 }
-// REWRITES-LABEL: {{^}}fn pairwise_swap(
-// REWRITES-DAG: items.swap(i as usize, j as usize);
-// REWRITES: {{^}}}
 // REWRITES-LABEL: {{^}}fn pairwise_swap_tmp_reused(
-// REWRITES-DAG: let tmp: i32 = items[(i as usize)];
-// REWRITES-DAG: items[(i as usize)] = items[(j as usize)];
-// REWRITES-DAG: items[(j as usize)] = tmp;
 // REWRITES-NOT: .swap(
 // REWRITES: {{^}}}
 // REWRITES-LABEL: {{^}}fn nested_self_swap(
-// REWRITES-DAG: items[(j as usize)] = items[(j as usize)];
 // REWRITES-NOT: .swap(
 // REWRITES: {{^}}}

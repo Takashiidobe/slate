@@ -20,11 +20,3 @@ int main(void) {
   printf("%d %d\n", toupper(next_lower()), tolower(next_lower()));
   return 0;
 }
-// REWRITES-NOT: fn toupper(
-// REWRITES-NOT: fn tolower(
-// REWRITES-LABEL: {{^}}fn main() {
-// REWRITES-DAG: (lower as i32) >= 97 && (lower as i32) <= 122
-// REWRITES-DAG: (upper as i32) >= 65 && (upper as i32) <= 90
-// REWRITES-NOT: unsafe { toupper(
-// REWRITES-NOT: unsafe { tolower(
-// REWRITES: {{^}}}

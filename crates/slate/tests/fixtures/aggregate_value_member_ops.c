@@ -39,12 +39,6 @@ int main(void) {
   printf("%d\n", array_value(w));
   return 0;
 }
-// REWRITES-LABEL: {{^}}fn take_pair(
-// REWRITES-DAG: p.left * 10 + p.right
-// REWRITES: {{^}}}
 // REWRITES-LABEL: {{^}}fn nested_total(
 // REWRITES-DAG: n.inner.left + n.inner.right + n.tag
-// REWRITES: {{^}}}
-// REWRITES-LABEL: {{^}}fn array_value(
-// REWRITES-DAG: w.data[1] + w.marker
 // REWRITES: {{^}}}

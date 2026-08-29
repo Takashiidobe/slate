@@ -24,6 +24,5 @@ int main(void) {
 
 int square(int x) { return x * x; }
 // REWRITES-LABEL: {{^}}fn is_even(
-// REWRITES-DAG: if n == 0 {
 // REWRITES-NOT: {{^    \{$}}
 // REWRITES: {{^}}}

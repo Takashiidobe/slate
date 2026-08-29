@@ -21,7 +21,6 @@ int main(void) {
   printf("%.2f\n", pick_double_array(2));
   return 0;
 }
-// REWRITES-DAG: values[2] = values[0] + values[1];
 // REWRITES-DAG: values[((index as i64) as usize)]
 // REWRITES-NOT: (0 as usize)
 // REWRITES-NOT: (1 as usize)

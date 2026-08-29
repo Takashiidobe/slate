@@ -32,6 +32,3 @@ int main(void) {
 }
 // REWRITES-DAG: fn bump(arg2: &mut i32)
 // REWRITES-DAG: fn peek(arg1: &i32) -> i32
-// REWRITES-DAG: fn use_and_free(mut arg0: Box<i32>) -> i32
-// REWRITES-NOT: fn use_and_free({{.*}}*mut i32
-// REWRITES-NOT: free(

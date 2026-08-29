@@ -49,9 +49,6 @@ pub fn check_generated_rust_with_prefixes(
     prefixes: &[&str],
     work_dir: &Path,
 ) -> Result<(), String> {
-    if profile == Profile::Rewrites {
-        return Ok(());
-    }
     let groups = check_groups(fixture, profile, prefixes)?;
     if groups.is_empty() {
         return Ok(());

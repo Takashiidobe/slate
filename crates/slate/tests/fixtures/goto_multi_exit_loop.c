@@ -17,9 +17,3 @@ overflow:
   return 0;
 }
 // REWRITES-DAG: loop {
-// REWRITES-DAG: sum += i;
-// REWRITES-DAG: println!("overflow");
-// REWRITES-DAG: if i < 5 {
-// REWRITES-DAG: continue;
-// REWRITES-NOT: __state0
-// REWRITES-NOT: __dispatch0

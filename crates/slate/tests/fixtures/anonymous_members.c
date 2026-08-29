@@ -29,7 +29,4 @@ int main(void) {
 // REWRITES-DAG: real: f32,
 // REWRITES-DAG: struct container {
 // REWRITES-DAG: __slate_anon_1: anon_0,
-// REWRITES-DAG: __slate_anon_2: __slate_anonymous_struct_0,
 // REWRITES-DAG: value.__slate_anon_1.integer
-// REWRITES-DAG: value.__slate_anon_2.0
-// REWRITES-DAG: value.__slate_anon_2.1

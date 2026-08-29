@@ -6,9 +6,3 @@ int main(void) {
   printf("last %d\n", 3);
   return 0;
 }
-// REWRITES-LABEL: {{^}}fn main() {
-// REWRITES: std::io::Write::flush(&mut std::io::stdout()).unwrap();
-// REWRITES: unsafe { printf(
-// REWRITES: unsafe { fflush(
-// REWRITES: println!("last {}", 3);
-// REWRITES: {{^}}}

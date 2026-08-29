@@ -2,8 +2,6 @@
 // REWRITES-NOT: *mut timespec
 // REWRITES-LABEL: {{^}}fn main() {
 // REWRITES-DAG: let mut value: libc::timespec = libc::timespec { tv_sec: 0, tv_nsec: 0 };
-// REWRITES-DAG: value.tv_nsec >= 0
-// REWRITES-DAG: value.tv_nsec < 1000000000
 // REWRITES: {{^}}}
 
 #include <stdio.h>

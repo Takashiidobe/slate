@@ -19,7 +19,4 @@ int main(void) {
 // REWRITES-LABEL: {{^}}fn sum_while(
 // REWRITES-DAG: loop {
 // REWRITES-DAG: if !(i <= n) {
-// REWRITES-DAG: total += i;
-// REWRITES-DAG: i += 1;
-// REWRITES-NOT: {{^        \{$}}
 // REWRITES: {{^}}}

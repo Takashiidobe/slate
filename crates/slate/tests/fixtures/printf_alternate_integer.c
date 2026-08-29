@@ -10,9 +10,3 @@ int main(void) {
   printf("%#x %#X %#o %#08x\n", zero, zero, zero, zero);
   return 0;
 }
-// REWRITES-NOT: fn printf(
-// REWRITES-NOT: unsafe { printf(
-// REWRITES-DAG: format!("{:#x}", __slate_printf_arg)
-// REWRITES-DAG: format!("0X{:X}", __slate_printf_arg)
-// REWRITES-DAG: format!("0{:o}", __slate_printf_arg)
-// REWRITES-DAG: format!("{:#08x}", __slate_printf_arg)

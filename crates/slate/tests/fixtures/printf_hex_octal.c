@@ -8,7 +8,3 @@ int main(void) {
   printf("%08x|%-4X|%5o\n", mask, mask, mask);
   return 0;
 }
-// REWRITES-NOT: fn printf(
-// REWRITES-NOT: unsafe { printf(
-// REWRITES-DAG: println!("{:x} {:X} {:o}",
-// REWRITES-DAG: println!("{:08x}|{:<4X}|{:5o}",

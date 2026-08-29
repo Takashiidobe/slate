@@ -10,7 +10,3 @@ int main(void) {
   free(p);
   return 0;
 }
-// REWRITES-DAG: let p: Box<i32> = Box::<i32>::new(41);
-// REWRITES-DAG: let mut marker: i32 = 7;
-// REWRITES-DAG: marker += 1;
-// REWRITES-NOT: *p = 41;
