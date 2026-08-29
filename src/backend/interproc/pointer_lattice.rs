@@ -421,6 +421,30 @@ impl ClassifyCtx<'_> {
         true
     }
 
+    fn try_offset_alias(&mut self, name: &str, source_expr: &Expr) -> bool {
+        let Expr::MethodCall { recv, method, args } = peel_unsafe_tail(source_expr) else {
+            return false;
+        };
+        if !matches!(
+            method.as_str(),
+            "add" | "offset" | "wrapping_add" | "sub" | "wrapping_sub"
+        ) {
+            return false;
+        }
+        let Expr::Var(recv_name) = &**recv else {
+            return false;
+        };
+        let Some(canonical) = self.canonical_of(recv_name.as_str()) else {
+            return false;
+        };
+        self.tracked.insert(name.to_string(), canonical.clone());
+        self.observe(&canonical, PointerFact::observe_offset);
+        for arg in args {
+            self.expr(arg);
+        }
+        true
+    }
+
     fn observe_write_target(&mut self, expr: &Expr) {
         if let Some(name) = source_var(expr)
             && let Some(canonical) = self.canonical_of(name.as_str())
@@ -451,7 +475,7 @@ impl ClassifyCtx<'_> {
                 init: Some(init),
                 ..
             } => {
-                if !self.try_alias(name, init) {
+                if !self.try_alias(name, init) && !self.try_offset_alias(name, init) {
                     self.expr(init);
                 }
             }
@@ -472,7 +496,9 @@ impl ClassifyCtx<'_> {
             }
             Stmt::Assign { target, value } => {
                 if let Expr::Var(name) = target {
-                    if !self.try_alias(name.as_str(), value) {
+                    if !self.try_alias(name.as_str(), value)
+                        && !self.try_offset_alias(name.as_str(), value)
+                    {
                         self.expr(value);
                     }
                 } else {
@@ -799,6 +825,16 @@ fn is_temp_name(name: &str) -> bool {
 fn peel_cast(expr: &Expr) -> &Expr {
     match expr {
         Expr::Cast { expr, .. } => peel_cast(expr),
+        other => other,
+    }
+}
+
+fn peel_unsafe_tail(expr: &Expr) -> &Expr {
+    match expr {
+        Expr::Unsafe(block) if block.stmts.is_empty() => match &block.tail {
+            Some(tail) => peel_unsafe_tail(tail),
+            None => expr,
+        },
         other => other,
     }
 }
