@@ -11,6 +11,7 @@ pub enum Known {
     MemSet,
     MemChr,
     StrLen,
+    StrNLen,
     StrCpy,
     StrCat,
     StrNCpy,
@@ -92,6 +93,7 @@ impl Known {
             Self::MemSet => "memset",
             Self::MemChr => "memchr",
             Self::StrLen => "strlen",
+            Self::StrNLen => "strnlen",
             Self::StrCpy => "strcpy",
             Self::StrCat => "strcat",
             Self::StrNCpy => "strncpy",
@@ -185,6 +187,7 @@ impl Known {
             | Self::MemSet
             | Self::MemChr
             | Self::StrLen
+            | Self::StrNLen
             | Self::StrCpy
             | Self::StrCat
             | Self::StrNCpy
@@ -253,6 +256,7 @@ impl Known {
             "memset" => (Self::MemSet, "string.h"),
             "memchr" => (Self::MemChr, "string.h"),
             "strlen" => (Self::StrLen, "string.h"),
+            "strnlen" => (Self::StrNLen, "string.h"),
             "strcpy" => (Self::StrCpy, "string.h"),
             "strcat" => (Self::StrCat, "string.h"),
             "strncpy" => (Self::StrNCpy, "string.h"),
