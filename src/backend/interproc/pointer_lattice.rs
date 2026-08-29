@@ -951,9 +951,76 @@ fn for_each_fn_body<'a>(items: &'a [Item], f: &mut impl FnMut(&'a str, &'a [Inde
     }
 }
 
+fn is_heap_alloc_call(expr: &Expr) -> bool {
+    matches!(
+        peel_cast(expr),
+        Expr::Call {
+            binding: CallBinding::Direct {
+                identity: FunctionIdentity::Known(Known::Malloc | Known::Calloc | Known::Realloc),
+                ..
+            },
+            ..
+        }
+    )
+}
+
+fn collect_heap_locals(body: &[IndentStmt], out: &mut std::collections::BTreeSet<String>) {
+    for indent in body {
+        collect_heap_locals_stmt(&indent.stmt, out);
+    }
+}
+
+fn collect_heap_locals_stmt(stmt: &Stmt, out: &mut std::collections::BTreeSet<String>) {
+    match stmt {
+        Stmt::Let {
+            name,
+            init: Some(init),
+            ..
+        } if is_heap_alloc_call(init) => {
+            out.insert(name.clone());
+        }
+        Stmt::Assign {
+            target: Expr::Var(name),
+            value,
+        } if is_heap_alloc_call(value) => {
+            out.insert(name.as_str().to_string());
+        }
+        _ => {}
+    }
+    match stmt {
+        Stmt::LetIf {
+            then_body,
+            else_body,
+            ..
+        }
+        | Stmt::If {
+            then_body,
+            else_body,
+            ..
+        } => {
+            collect_heap_locals(then_body, out);
+            collect_heap_locals(else_body, out);
+        }
+        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+            collect_heap_locals(body, out);
+        }
+        Stmt::For { body, .. } => collect_heap_locals(body, out),
+        Stmt::Match { arms, .. } => {
+            for arm in arms {
+                collect_heap_locals(&arm.body, out);
+            }
+        }
+        Stmt::While { body, .. } => collect_heap_locals(&body.stmts, out),
+        Stmt::Unsafe { body } => collect_heap_locals(&body.stmts, out),
+        Stmt::Block(block) => collect_heap_locals(&block.stmts, out),
+        _ => {}
+    }
+}
+
 fn arg_is_provably_bridgeable(
     arg: &Expr,
     own: Option<&BTreeMap<String, LiftPlan>>,
+    heap_locals: &std::collections::BTreeSet<String>,
     plan: &LiftPlan,
 ) -> bool {
     if let Expr::Var(name) = arg
@@ -962,7 +1029,7 @@ fn arg_is_provably_bridgeable(
         return true;
     }
     if plan.kind == LiftKind::Owned {
-        return matches!(peel_cast(arg), Expr::Var(_));
+        return matches!(peel_cast(arg), Expr::Var(name) if heap_locals.contains(name.as_str()));
     }
     matches!(peel_cast(arg), Expr::AddrOf { .. } | Expr::Ref { .. })
 }
@@ -972,10 +1039,20 @@ fn validate_plans(
     plans: &mut BTreeMap<String, BTreeMap<String, LiftPlan>>,
     param_names: &BTreeMap<String, Vec<String>>,
 ) {
+    let mut heap_locals_by_fn: BTreeMap<String, std::collections::BTreeSet<String>> =
+        BTreeMap::new();
+    for_each_fn_body(items, &mut |caller_name, body| {
+        let mut locals = std::collections::BTreeSet::new();
+        collect_heap_locals(body, &mut locals);
+        heap_locals_by_fn.insert(caller_name.to_string(), locals);
+    });
+
     loop {
         let mut invalid: Vec<(String, String)> = Vec::new();
+        let empty_locals = std::collections::BTreeSet::new();
         for_each_fn_body(items, &mut |caller_name, body| {
             let own = plans.get(caller_name);
+            let heap_locals = heap_locals_by_fn.get(caller_name).unwrap_or(&empty_locals);
             let mut calls = Vec::new();
             for indent in body {
                 indent.stmt.collect_calls(&mut calls);
@@ -995,7 +1072,7 @@ fn validate_plans(
                     let Some(plan) = callee_plans.get(pname) else {
                         continue;
                     };
-                    if !arg_is_provably_bridgeable(arg, own, plan) {
+                    if !arg_is_provably_bridgeable(arg, own, heap_locals, plan) {
                         invalid.push((callee.to_string(), pname.clone()));
                     }
                 }

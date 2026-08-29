@@ -60,3 +60,4 @@ superseded each one for what actually applies now.
   for hand-rolled fact caches.
 - [fix pointer capability lattice: U-widening and W-on-ownership gaps](concepts/fix-pointer-capability-lattice-u-widening-and-w-on-ownership-gaps.md)
 - [length_lattice: internal slice view for companion-param buffer reads](concepts/length-lattice-internal-slice-view-for-companion-param-buffer-reads.md)
+- [Gate Owned pointer bridging on heap provenance (y0qs.4.9)](concepts/gate-owned-pointer-bridging-on-heap-provenance-y0qs-4-9.md)
