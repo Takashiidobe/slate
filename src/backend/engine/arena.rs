@@ -150,7 +150,10 @@ impl NodeKind {
 
     pub(in crate::backend) fn call_anchor(&self) -> Option<Ident> {
         match self {
-            NodeKind::Expr(expr) | NodeKind::Return(Some(expr)) => expr_call_anchor(expr),
+            NodeKind::Expr(expr)
+            | NodeKind::Return(Some(expr))
+            | NodeKind::Assign { value: expr, .. }
+            | NodeKind::CompoundAssign { value: expr, .. } => expr_call_anchor(expr),
             NodeKind::Let {
                 init: Some(expr), ..
             } => expr_call_anchor(expr),
@@ -304,6 +307,7 @@ pub(in crate::backend) struct Arena {
     slots: Vec<Slot>,
     free: Vec<u32>,
     def_uses: HashMap<Ident, Vec<NodeId>>,
+    defs: HashMap<Ident, NodeId>,
     param_types: HashMap<Ident, crate::backend::rust_ast::Type>,
 }
 
@@ -313,8 +317,13 @@ impl Arena {
             slots: Vec::new(),
             free: Vec::new(),
             def_uses: HashMap::new(),
+            defs: HashMap::new(),
             param_types: HashMap::new(),
         }
+    }
+
+    pub(in crate::backend) fn definition(&self, name: Ident) -> Option<NodeId> {
+        self.defs.get(&name).copied()
     }
 
     pub(in crate::backend) fn param_type(
@@ -350,7 +359,27 @@ impl Arena {
     }
 
     fn fill(&mut self, id: NodeId, kind: NodeKind) {
+        if let Some(name) = kind.declared_name() {
+            self.defs.insert(name, id);
+        }
         self.slots[id.index as usize].kind = Some(kind);
+        self.touch(id);
+    }
+
+    pub(in crate::backend) fn set_kind(&mut self, id: NodeId, kind: NodeKind) {
+        if let Some(name) = self.get(id).and_then(NodeKind::declared_name)
+            && self.defs.get(&name) == Some(&id)
+        {
+            self.defs.remove(&name);
+        }
+        if let Some(name) = kind.declared_name() {
+            self.defs.insert(name, id);
+        }
+        if let Some(slot) = self.slots.get_mut(id.index as usize)
+            && slot.generation == id.generation
+        {
+            slot.kind = Some(kind);
+        }
         self.touch(id);
     }
 
@@ -438,6 +467,11 @@ impl Arena {
         slot.generation += 1;
         slot.parent = None;
         self.free.push(id.index);
+        if let Some(name) = kind.as_ref().and_then(NodeKind::declared_name)
+            && self.defs.get(&name) == Some(&id)
+        {
+            self.defs.remove(&name);
+        }
         kind
     }
 

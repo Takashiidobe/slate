@@ -1,50 +1,320 @@
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, NodeId, NodeKind, NodeKindTag};
-use crate::backend::rust_ast::{Expr, Ident, Path};
+use crate::backend::rust_ast::{Block, Expr, Ident, IndentStmt, Path, Prim, RustValue, Stmt, Type};
 use crate::function_identity::{CallBinding, Known};
 
-pub(super) enum ArgSpec {
-    Passthrough,
-    #[expect(
-        dead_code,
-        reason = "arg-transform extension point; first reordering/inserting libc idiom pending"
-    )]
-    Custom(fn(&[Expr]) -> Option<Vec<Expr>>),
+pub(super) struct CallCtx<'a> {
+    arena: &'a Arena,
+    args: &'a [Expr],
+    discards_result: bool,
 }
 
-impl ArgSpec {
-    fn transform(&self, args: &[Expr]) -> Option<Vec<Expr>> {
-        match self {
-            ArgSpec::Passthrough => Some(args.to_vec()),
-            ArgSpec::Custom(f) => f(args),
+impl CallCtx<'_> {
+    pub(super) fn args(&self) -> &[Expr] {
+        self.args
+    }
+
+    pub(super) fn discards_result(&self) -> bool {
+        self.discards_result
+    }
+
+    pub(super) fn lifted_arg(&self, i: usize, want: fn(&Type) -> bool) -> Option<Expr> {
+        self.resolve_lifted(self.args.get(i)?, want, 0)
+    }
+
+    fn resolve_lifted(&self, expr: &Expr, want: fn(&Type) -> bool, depth: usize) -> Option<Expr> {
+        if depth > 8 {
+            return None;
         }
+        let peeled = peel_ptr_view(expr);
+        if let Some(literal) = const_str_literal(peeled)
+            && want(&ref_str())
+        {
+            return Some(Expr::Str(literal));
+        }
+        let Expr::Var(name) = peeled else {
+            return None;
+        };
+        let ty = self.var_type(*name)?;
+        if want(&ty) {
+            return Some(Expr::Var(*name));
+        }
+        if is_raw_ptr(&ty) && !self.is_reassigned(*name) {
+            return self.resolve_lifted(&self.var_init(*name)?, want, depth + 1);
+        }
+        None
+    }
+
+    fn var_type(&self, name: Ident) -> Option<Type> {
+        if let Some(ty) = self.arena.param_type(name) {
+            return Some(ty.clone());
+        }
+        match self.arena.get(self.arena.definition(name)?)? {
+            NodeKind::Let { ty: Some(ty), .. } => Some(ty.clone()),
+            _ => None,
+        }
+    }
+
+    fn var_init(&self, name: Ident) -> Option<Expr> {
+        match self.arena.get(self.arena.definition(name)?)? {
+            NodeKind::Let {
+                init: Some(init), ..
+            } => Some(init.clone()),
+            _ => None,
+        }
+    }
+
+    fn is_reassigned(&self, name: Ident) -> bool {
+        self.arena
+            .def_use_neighbors(name)
+            .iter()
+            .any(|&id| match self.arena.get(id) {
+                Some(NodeKind::Assign { target, .. })
+                | Some(NodeKind::CompoundAssign { target, .. }) => {
+                    assign_root_var(target) == Some(name)
+                }
+                _ => false,
+            })
     }
 }
 
+fn peel_ptr_view(expr: &Expr) -> &Expr {
+    match expr {
+        Expr::Cast { expr, .. } => peel_ptr_view(expr),
+        Expr::MethodCall { recv, method, args }
+            if args.is_empty() && (method == "as_ptr" || method == "as_mut_ptr") =>
+        {
+            peel_ptr_view(recv)
+        }
+        Expr::Unsafe(block) | Expr::Block(block)
+            if block.stmts.is_empty() && block.tail.is_some() =>
+        {
+            peel_ptr_view(block.tail.as_deref().unwrap())
+        }
+        other => other,
+    }
+}
+
+fn assign_root_var(expr: &Expr) -> Option<Ident> {
+    match expr {
+        Expr::Var(name) => Some(*name),
+        Expr::Unary { expr, .. }
+        | Expr::Field { base: expr, .. }
+        | Expr::Index { base: expr, .. } => assign_root_var(expr),
+        _ => None,
+    }
+}
+
+fn is_raw_ptr(ty: &Type) -> bool {
+    matches!(ty, Type::Ptr { .. })
+}
+
+fn ref_str() -> Type {
+    Type::Ref {
+        mutable: false,
+        inner: Box::new(Type::Str),
+    }
+}
+
+fn const_str_literal(expr: &Expr) -> Option<String> {
+    match expr {
+        Expr::Str(s) => Some(s.clone()),
+        Expr::CStr(bytes) => String::from_utf8(bytes.clone()).ok(),
+        Expr::ByteStr(bytes) => {
+            String::from_utf8(bytes.strip_suffix(&[0]).unwrap_or(bytes).to_vec()).ok()
+        }
+        _ => None,
+    }
+}
+
+pub(super) fn is_str_or_slice(ty: &Type) -> bool {
+    match ty {
+        Type::Str | Type::Slice(_) => true,
+        Type::Ref { inner, .. } => matches!(**inner, Type::Str | Type::Slice(_)),
+        Type::Generic { name, .. } => name == "String" || name == "Vec",
+        _ => false,
+    }
+}
+
+fn is_u8(ty: &Type) -> bool {
+    matches!(ty, Type::Prim(Prim::U8))
+}
+
+pub(super) fn is_byte_str_or_slice(ty: &Type) -> bool {
+    match ty {
+        Type::Str => true,
+        Type::Slice(inner) => is_u8(inner),
+        Type::Ref { inner, .. } => is_byte_str_or_slice(inner),
+        Type::Generic { name, args } => {
+            name == "String" || (name == "Vec" && args.first().is_some_and(is_u8))
+        }
+        _ => false,
+    }
+}
+
+fn method_call(recv: Expr, method: &str, args: Vec<Expr>) -> Expr {
+    Expr::MethodCall {
+        recv: Box::new(recv),
+        method: method.to_string(),
+        args,
+    }
+}
+
+fn cast(expr: Expr, ty: Type) -> Expr {
+    Expr::Cast {
+        expr: Box::new(expr),
+        ty,
+    }
+}
+
+fn byte_ptr(mutable: bool) -> Type {
+    Type::Ptr {
+        mutable,
+        inner: Box::new(Type::Prim(Prim::U8)),
+    }
+}
+
+fn block_then(effect: Expr, value: Expr) -> Expr {
+    Expr::Block(Box::new(Block {
+        stmts: vec![IndentStmt {
+            depth: 0,
+            stmt: Stmt::Expr(effect),
+        }],
+        tail: Some(Box::new(value)),
+    }))
+}
+
+fn returning_dst(ctx: &CallCtx, effect: Expr, dst: &Expr) -> Expr {
+    if ctx.discards_result() {
+        effect
+    } else {
+        block_then(effect, dst.clone())
+    }
+}
+
+fn mem_copy(ctx: &CallCtx, overlapping: bool) -> Option<Expr> {
+    let [dst, src, len] = ctx.args() else {
+        return None;
+    };
+    let effect = Expr::PtrCopy {
+        src: Box::new(cast(src.clone(), byte_ptr(false))),
+        dst: Box::new(cast(dst.clone(), byte_ptr(true))),
+        count: Box::new(cast(len.clone(), Type::Prim(Prim::Usize))),
+        overlapping,
+    };
+    Some(returning_dst(ctx, effect, dst))
+}
+
+fn mem_set(ctx: &CallCtx) -> Option<Expr> {
+    let [dst, val, len] = ctx.args() else {
+        return None;
+    };
+    let effect = Expr::WriteBytes {
+        dst: Box::new(cast(dst.clone(), byte_ptr(true))),
+        val: Box::new(cast(val.clone(), Type::Prim(Prim::U8))),
+        count: Box::new(cast(len.clone(), Type::Prim(Prim::Usize))),
+    };
+    Some(returning_dst(ctx, effect, dst))
+}
+
+fn free_call(path: &[&str], args: Vec<Expr>) -> Expr {
+    Expr::Call {
+        binding: CallBinding::Generated,
+        func: Box::new(Expr::Path(Path::new(path.iter().copied().map(Ident::from)))),
+        args,
+    }
+}
+
+type Build = Box<dyn Fn(&CallCtx) -> Option<Expr>>;
+
 pub(super) struct LibcCall {
     known: Known,
-    rust_path: &'static [&'static str],
-    args: ArgSpec,
+    build: Build,
 }
 
 pub(super) fn libc_call(
     known: Known,
-    rust_path: &'static [&'static str],
-    args: ArgSpec,
+    build: impl Fn(&CallCtx) -> Option<Expr> + 'static,
 ) -> Box<dyn NodeRule> {
     Box::new(LibcCall {
         known,
-        rust_path,
-        args,
+        build: Box::new(build),
     })
 }
 
-fn as_known_call(expr: &Expr, known: Known) -> Option<&[Expr]> {
-    let call = match expr {
-        Expr::Unsafe(block) if block.stmts.is_empty() => block.tail.as_deref()?,
+fn call_slot(kind: &NodeKind) -> Option<&Expr> {
+    match kind {
+        NodeKind::Expr(expr)
+        | NodeKind::Return(Some(expr))
+        | NodeKind::Assign { value: expr, .. }
+        | NodeKind::CompoundAssign { value: expr, .. } => Some(expr),
+        NodeKind::Let {
+            init: Some(expr), ..
+        } => Some(expr),
+        _ => None,
+    }
+}
+
+fn call_slot_mut(kind: &mut NodeKind) -> Option<&mut Expr> {
+    match kind {
+        NodeKind::Expr(expr)
+        | NodeKind::Return(Some(expr))
+        | NodeKind::Assign { value: expr, .. }
+        | NodeKind::CompoundAssign { value: expr, .. } => Some(expr),
+        NodeKind::Let {
+            init: Some(expr), ..
+        } => Some(expr),
+        _ => None,
+    }
+}
+
+fn peel_call_head(expr: &Expr) -> &Expr {
+    match expr {
+        Expr::Cast { expr, .. } => peel_call_head(expr),
+        Expr::Unsafe(block) | Expr::Block(block)
+            if block.stmts.is_empty() && block.tail.is_some() =>
+        {
+            peel_call_head(block.tail.as_deref().unwrap())
+        }
         other => other,
+    }
+}
+
+enum PeelStep {
+    Cast,
+    Wrap,
+    Stop,
+}
+
+fn peel_call_head_mut(expr: &mut Expr) -> &mut Expr {
+    let step = match &*expr {
+        Expr::Cast { .. } => PeelStep::Cast,
+        Expr::Unsafe(block) | Expr::Block(block)
+            if block.stmts.is_empty() && block.tail.is_some() =>
+        {
+            PeelStep::Wrap
+        }
+        _ => PeelStep::Stop,
     };
-    match call {
+    match step {
+        PeelStep::Cast => {
+            let Expr::Cast { expr, .. } = expr else {
+                unreachable!()
+            };
+            peel_call_head_mut(expr)
+        }
+        PeelStep::Wrap => {
+            let (Expr::Unsafe(block) | Expr::Block(block)) = expr else {
+                unreachable!()
+            };
+            peel_call_head_mut(block.tail.as_deref_mut().unwrap())
+        }
+        PeelStep::Stop => expr,
+    }
+}
+
+fn known_call_args(expr: &Expr, known: Known) -> Option<&[Expr]> {
+    match peel_call_head(expr) {
         Expr::Call { binding, args, .. } if binding.known() == Some(known) => Some(args),
         _ => None,
     }
@@ -60,7 +330,13 @@ impl NodeRule for LibcCall {
     }
 
     fn kinds(&self) -> &'static [NodeKindTag] {
-        &[NodeKindTag::Expr]
+        &[
+            NodeKindTag::Expr,
+            NodeKindTag::Let,
+            NodeKindTag::Return,
+            NodeKindTag::Assign,
+            NodeKindTag::CompoundAssign,
+        ]
     }
 
     fn call_anchor(&self) -> Option<Ident> {
@@ -68,41 +344,92 @@ impl NodeRule for LibcCall {
     }
 
     fn matches(&self, arena: &Arena, id: NodeId) -> bool {
-        matches!(arena.get(id), Some(NodeKind::Expr(expr)) if as_known_call(expr, self.known).is_some())
+        let Some(kind) = arena.get(id) else {
+            return false;
+        };
+        let Some(slot) = call_slot(kind) else {
+            return false;
+        };
+        let Some(args) = known_call_args(slot, self.known) else {
+            return false;
+        };
+        let ctx = CallCtx {
+            arena,
+            args,
+            discards_result: node_discards_result(arena, kind),
+        };
+        (self.build)(&ctx).is_some()
     }
 
     fn apply(&self, arena: &mut Arena, id: NodeId) -> bool {
-        let Some(NodeKind::Expr(expr)) = arena.get_mut(id) else {
+        let Some(kind) = arena.get(id) else {
             return false;
         };
-        let Some(args) = as_known_call(expr, self.known) else {
+        let Some(slot) = call_slot(kind) else {
             return false;
         };
-        let Some(args) = self.args.transform(args) else {
+        let Some(args) = known_call_args(slot, self.known) else {
             return false;
         };
-        *expr = Expr::Call {
-            binding: CallBinding::Generated,
-            func: Box::new(Expr::Path(Path::new(
-                self.rust_path.iter().copied().map(Ident::from),
-            ))),
-            args,
+        let args = args.to_vec();
+        let discards_result = node_discards_result(arena, kind);
+        let ctx = CallCtx {
+            arena,
+            args: &args,
+            discards_result,
         };
+        let Some(replacement) = (self.build)(&ctx) else {
+            return false;
+        };
+        let Some(kind) = arena.get_mut(id) else {
+            return false;
+        };
+        let Some(slot) = call_slot_mut(kind) else {
+            return false;
+        };
+        *peel_call_head_mut(slot) = replacement;
+        if let NodeKind::Let {
+            init: Some(init), ..
+        } = kind
+            && discards_result
+        {
+            let init = std::mem::replace(init, Expr::Value(RustValue::I64(0)));
+            arena.set_kind(id, NodeKind::Expr(init));
+        }
         true
+    }
+}
+
+fn node_discards_result(arena: &Arena, kind: &NodeKind) -> bool {
+    match kind {
+        NodeKind::Expr(_) => true,
+        NodeKind::Let { name, .. } => arena.def_use_neighbors(*name).is_empty(),
+        _ => false,
     }
 }
 
 pub(super) fn rules() -> Vec<Box<dyn NodeRule>> {
     vec![
-        libc_call(
-            Known::Exit,
-            &["std", "process", "exit"],
-            ArgSpec::Passthrough,
-        ),
-        libc_call(
-            Known::Abort,
-            &["std", "process", "abort"],
-            ArgSpec::Passthrough,
-        ),
+        libc_call(Known::Exit, |ctx| {
+            Some(free_call(&["std", "process", "exit"], ctx.args().to_vec()))
+        }),
+        libc_call(Known::Abort, |ctx| {
+            Some(free_call(&["std", "process", "abort"], ctx.args().to_vec()))
+        }),
+        libc_call(Known::StrLen, |ctx| {
+            Some(method_call(
+                ctx.lifted_arg(0, is_str_or_slice)?,
+                "len",
+                Vec::new(),
+            ))
+        }),
+        libc_call(Known::StrCmp, |ctx| {
+            let a = ctx.lifted_arg(0, is_byte_str_or_slice)?;
+            let b = ctx.lifted_arg(1, is_byte_str_or_slice)?;
+            Some(cast(method_call(a, "cmp", vec![b]), Type::Prim(Prim::I32)))
+        }),
+        libc_call(Known::MemCpy, |ctx| mem_copy(ctx, false)),
+        libc_call(Known::MemMove, |ctx| mem_copy(ctx, true)),
+        libc_call(Known::MemSet, mem_set),
     ]
 }

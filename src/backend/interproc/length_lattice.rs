@@ -175,12 +175,14 @@ fn apply_signature_lifts(
         return lifted;
     }
 
-    let accepted: BTreeMap<String, SignatureCandidate> = candidates
+    let accepted: BTreeMap<String, Vec<usize>> = candidates
         .iter()
         .enumerate()
         .filter(|(id, _)| active[*id])
-        .map(|(_, candidate)| (candidate.function.clone(), candidate.clone()))
-        .collect();
+        .fold(BTreeMap::new(), |mut map, (id, candidate)| {
+            map.entry(candidate.function.clone()).or_default().push(id);
+            map
+        });
     let mut proofs: BTreeMap<(String, String), VecDeque<CallProof>> = BTreeMap::new();
     for site in sites {
         if !active[site.target] {
@@ -282,11 +284,14 @@ fn signature_call_sites(
     fn_defs: &BTreeMap<String, &FnDef>,
     candidates: &[SignatureCandidate],
 ) -> Vec<CallSiteProof> {
-    let by_callee: BTreeMap<&str, usize> = candidates
-        .iter()
-        .enumerate()
-        .map(|(id, candidate)| (candidate.function.as_str(), id))
-        .collect();
+    let by_callee: BTreeMap<&str, Vec<usize>> =
+        candidates
+            .iter()
+            .enumerate()
+            .fold(BTreeMap::new(), |mut map, (id, candidate)| {
+                map.entry(candidate.function.as_str()).or_default().push(id);
+                map
+            });
     let by_caller: BTreeMap<&str, Vec<usize>> =
         candidates
             .iter()
@@ -303,39 +308,43 @@ fn signature_call_sites(
             indent.stmt.collect_calls(&mut calls);
         }
         for (callee, args) in calls {
-            let Some(&target) = by_callee.get(callee.as_str()) else {
+            let Some(targets) = by_callee.get(callee.as_str()) else {
                 continue;
             };
-            let candidate = &candidates[target];
-            let proof = call_args(args, candidate).and_then(|(ptr_arg, len_arg)| {
-                let exact = match candidate.kind {
-                    BufferKind::Str => exact_utf8_array_pair(ptr_arg, len_arg, &defs),
-                    BufferKind::StringOwned => {
-                        exact_allocation_pair(ptr_arg, len_arg, &candidate.elem_ty, &defs)
-                            && utf8_owned_fill_proof(&f.body, ptr_arg, len_arg, &defs, &by_callee)
+            for &target in targets {
+                let candidate = &candidates[target];
+                let proof = call_args(args, candidate).and_then(|(ptr_arg, len_arg)| {
+                    let exact = match candidate.kind {
+                        BufferKind::Str => exact_utf8_array_pair(ptr_arg, len_arg, &defs),
+                        BufferKind::StringOwned => {
+                            exact_allocation_pair(ptr_arg, len_arg, &candidate.elem_ty, &defs)
+                                && utf8_owned_fill_proof(
+                                    &f.body, ptr_arg, len_arg, &defs, &by_callee,
+                                )
+                        }
+                        _ => exact_allocation_pair(ptr_arg, len_arg, &candidate.elem_ty, &defs),
+                    };
+                    if exact {
+                        return Some(CallProof::Exact);
                     }
-                    _ => exact_allocation_pair(ptr_arg, len_arg, &candidate.elem_ty, &defs),
-                };
-                if exact {
-                    return Some(CallProof::Exact);
-                }
-                by_caller
-                    .get(caller.as_str())
-                    .into_iter()
-                    .flatten()
-                    .find(|&&source| {
-                        candidates[source].kind == candidate.kind
-                            && forwarded_pair(ptr_arg, len_arg, &candidates[source], &defs)
-                    })
-                    .copied()
-                    .map(CallProof::Forwarded)
-            });
-            out.push(CallSiteProof {
-                caller: caller.clone(),
-                callee: callee.to_string(),
-                target,
-                proof,
-            });
+                    by_caller
+                        .get(caller.as_str())
+                        .into_iter()
+                        .flatten()
+                        .find(|&&source| {
+                            candidates[source].kind == candidate.kind
+                                && forwarded_pair(ptr_arg, len_arg, &candidates[source], &defs)
+                        })
+                        .copied()
+                        .map(CallProof::Forwarded)
+                });
+                out.push(CallSiteProof {
+                    caller: caller.clone(),
+                    callee: callee.to_string(),
+                    target,
+                    proof,
+                });
+            }
         }
     }
     out
@@ -441,7 +450,7 @@ fn utf8_owned_fill_proof(
     ptr_arg: &Expr,
     len_arg: &Expr,
     defs: &BTreeMap<String, Expr>,
-    candidate_fns: &BTreeMap<&str, usize>,
+    candidate_fns: &BTreeMap<&str, Vec<usize>>,
 ) -> bool {
     let Some(ptr_canon) = canonical_var(ptr_arg, defs) else {
         return false;
@@ -842,7 +851,7 @@ fn remove_owned_frees_stmt(
 
 fn apply_signature_items(
     items: &mut [Item],
-    accepted: &BTreeMap<String, SignatureCandidate>,
+    accepted: &BTreeMap<String, Vec<usize>>,
     candidates: &[SignatureCandidate],
     proofs: &mut BTreeMap<(String, String), VecDeque<CallProof>>,
 ) {
@@ -859,61 +868,69 @@ fn apply_signature_items(
 
 fn apply_signature_fn(
     f: &mut FnDef,
-    accepted: &BTreeMap<String, SignatureCandidate>,
+    accepted: &BTreeMap<String, Vec<usize>>,
     candidates: &[SignatureCandidate],
     proofs: &mut BTreeMap<(String, String), VecDeque<CallProof>>,
 ) {
-    if let Some(candidate) = accepted.get(&f.name) {
-        if candidate.kind.owned() {
-            let defs = collect_value_defs(&f.body);
-            remove_owned_frees(&mut f.body, candidate, &defs);
-        }
-        let raw = Expr::MethodCall {
-            recv: Box::new(Expr::Var(Ident::new(candidate.ptr_param.as_str()))),
-            method: if candidate.kind.mutable() {
-                "as_mut_ptr"
-            } else {
-                "as_ptr"
+    if let Some(ids) = accepted.get(&f.name) {
+        let mut len_indices = Vec::new();
+        for &id in ids {
+            let candidate = &candidates[id];
+            if candidate.kind.owned() {
+                let defs = collect_value_defs(&f.body);
+                remove_owned_frees(&mut f.body, candidate, &defs);
             }
-            .to_string(),
-            args: Vec::new(),
-        };
-        let raw = Expr::Cast {
-            expr: Box::new(raw),
-            ty: Type::Ptr {
-                mutable: candidate.raw_mutable,
-                inner: Box::new(candidate.elem_ty.clone()),
-            },
-        };
-        let len = Expr::Cast {
-            expr: Box::new(Expr::MethodCall {
+            let raw = Expr::MethodCall {
                 recv: Box::new(Expr::Var(Ident::new(candidate.ptr_param.as_str()))),
-                method: "len".to_string(),
+                method: if candidate.kind.mutable() {
+                    "as_mut_ptr"
+                } else {
+                    "as_ptr"
+                }
+                .to_string(),
                 args: Vec::new(),
-            }),
-            ty: f.params[candidate.len_index].ty.clone(),
-        };
-        for indent in &mut f.body {
-            indent.stmt.substitute_var(&candidate.ptr_param, &raw);
-            indent.stmt.substitute_var(&candidate.len_param, &len);
+            };
+            let raw = Expr::Cast {
+                expr: Box::new(raw),
+                ty: Type::Ptr {
+                    mutable: candidate.raw_mutable,
+                    inner: Box::new(candidate.elem_ty.clone()),
+                },
+            };
+            let len = Expr::Cast {
+                expr: Box::new(Expr::MethodCall {
+                    recv: Box::new(Expr::Var(Ident::new(candidate.ptr_param.as_str()))),
+                    method: "len".to_string(),
+                    args: Vec::new(),
+                }),
+                ty: f.params[candidate.len_index].ty.clone(),
+            };
+            for indent in &mut f.body {
+                indent.stmt.substitute_var(&candidate.ptr_param, &raw);
+                indent.stmt.substitute_var(&candidate.len_param, &len);
+            }
+            f.params[candidate.ptr_index].ty = match candidate.kind {
+                BufferKind::Shared | BufferKind::Mutable => Type::Ref {
+                    mutable: candidate.kind == BufferKind::Mutable,
+                    inner: Box::new(Type::Slice(Box::new(candidate.elem_ty.clone()))),
+                },
+                BufferKind::Owned => Type::Generic {
+                    name: "Vec".to_string(),
+                    args: vec![candidate.elem_ty.clone()],
+                },
+                BufferKind::Str => Type::Ref {
+                    mutable: false,
+                    inner: Box::new(Type::Str),
+                },
+                BufferKind::StringOwned => Type::Custom("String".to_string()),
+            };
+            f.params[candidate.ptr_index].mutable = candidate.kind.owned();
+            len_indices.push(candidate.len_index);
         }
-        f.params[candidate.ptr_index].ty = match candidate.kind {
-            BufferKind::Shared | BufferKind::Mutable => Type::Ref {
-                mutable: candidate.kind == BufferKind::Mutable,
-                inner: Box::new(Type::Slice(Box::new(candidate.elem_ty.clone()))),
-            },
-            BufferKind::Owned => Type::Generic {
-                name: "Vec".to_string(),
-                args: vec![candidate.elem_ty.clone()],
-            },
-            BufferKind::Str => Type::Ref {
-                mutable: false,
-                inner: Box::new(Type::Str),
-            },
-            BufferKind::StringOwned => Type::Custom("String".to_string()),
-        };
-        f.params[candidate.ptr_index].mutable = candidate.kind.owned();
-        f.params.remove(candidate.len_index);
+        len_indices.sort_unstable();
+        for len_index in len_indices.into_iter().rev() {
+            f.params.remove(len_index);
+        }
     }
     for indent in &mut f.body {
         rewrite_signature_stmt(&mut indent.stmt, &f.name, accepted, candidates, proofs);
@@ -923,7 +940,7 @@ fn apply_signature_fn(
 fn rewrite_signature_stmt(
     stmt: &mut Stmt,
     caller: &str,
-    accepted: &BTreeMap<String, SignatureCandidate>,
+    accepted: &BTreeMap<String, Vec<usize>>,
     candidates: &[SignatureCandidate],
     proofs: &mut BTreeMap<(String, String), VecDeque<CallProof>>,
 ) {
@@ -995,7 +1012,7 @@ fn rewrite_signature_stmt(
 fn rewrite_signature_expr(
     expr: &mut Expr,
     caller: &str,
-    accepted: &BTreeMap<String, SignatureCandidate>,
+    accepted: &BTreeMap<String, Vec<usize>>,
     candidates: &[SignatureCandidate],
     proofs: &mut BTreeMap<(String, String), VecDeque<CallProof>>,
 ) {
@@ -1008,28 +1025,41 @@ fn rewrite_signature_expr(
             let Expr::Var(callee) = &**func else {
                 return;
             };
-            let Some(candidate) = accepted.get(callee.as_str()) else {
+            let Some(ids) = accepted.get(callee.as_str()) else {
                 return;
             };
-            let Some(proof) = proofs
-                .get_mut(&(caller.to_string(), callee.to_string()))
-                .and_then(VecDeque::pop_front)
-            else {
+            let Some(queue) = proofs.get_mut(&(caller.to_string(), callee.to_string())) else {
                 return;
             };
-            let Some(ptr_arg) = args.get(candidate.ptr_index).cloned() else {
-                return;
-            };
-            let Some(len_arg) = args.get(candidate.len_index).cloned() else {
-                return;
-            };
-            args[candidate.ptr_index] = match proof {
-                CallProof::Exact => buffer_bridge(ptr_arg, len_arg, candidate),
-                CallProof::Forwarded(source) => {
-                    Expr::Var(Ident::new(candidates[source].ptr_param.as_str()))
-                }
-            };
-            args.remove(candidate.len_index);
+            let mut bridges = Vec::new();
+            let mut len_indices = Vec::new();
+            for &id in ids {
+                let candidate = &candidates[id];
+                let Some(proof) = queue.pop_front() else {
+                    return;
+                };
+                let Some(ptr_arg) = args.get(candidate.ptr_index).cloned() else {
+                    return;
+                };
+                let Some(len_arg) = args.get(candidate.len_index).cloned() else {
+                    return;
+                };
+                let bridge = match proof {
+                    CallProof::Exact => buffer_bridge(ptr_arg, len_arg, candidate),
+                    CallProof::Forwarded(source) => {
+                        Expr::Var(Ident::new(candidates[source].ptr_param.as_str()))
+                    }
+                };
+                bridges.push((candidate.ptr_index, bridge));
+                len_indices.push(candidate.len_index);
+            }
+            for (ptr_index, bridge) in bridges {
+                args[ptr_index] = bridge;
+            }
+            len_indices.sort_unstable();
+            for len_index in len_indices.into_iter().rev() {
+                args.remove(len_index);
+            }
         }
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }

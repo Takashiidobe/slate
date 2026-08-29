@@ -31,6 +31,6 @@ int main(void) {
 // REWRITES-DAG: fn memset(_0: *mut core::ffi::c_void, _1: i32, _2: usize) -> *mut core::ffi::c_void;
 // REWRITES-NOT: safe fn memset(
 // REWRITES-LABEL: {{^}}fn main() {
-// REWRITES-DAG: unsafe { memset(
+// REWRITES-DAG: std::ptr::write_bytes(
 // REWRITES-DAG: dynamic_buf.as_mut_ptr()
 // REWRITES: {{^}}}
