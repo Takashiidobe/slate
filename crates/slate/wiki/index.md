@@ -65,3 +65,6 @@ superseded each one for what actually applies now.
 - [ptr_len owned Vec signature lifting](concepts/ptr-len-owned-vec-signature-lifting.md)
 - [StringOwned signature lift with UTF-8 content gate (y0qs.4.4)](concepts/stringowned-signature-lift-with-utf-8-content-gate-y0qs-4-4.md)
 - [Re-enable rewrite FileCheck for worklist baseline](concepts/re-enable-rewrite-filecheck-for-worklist-baseline.md)
+- [Local libc-call rewrite table with multi-hop lifted-arg chase](concepts/local-libc-call-rewrite-table-with-multi-hop-lifted-arg-chase.md)
+- [Fix length-lattice multi-buffer asymmetry (by_callee/accepted single-candidate bug)](concepts/fix-length-lattice-multi-buffer-asymmetry-by-callee-accepted-single-candidate-bug.md)
+- [Local libc table: strcmp via Ordering, mem* via intrinsic, dead-let drop](concepts/local-libc-table-strcmp-via-ordering-mem-via-intrinsic-dead-let-drop.md)
