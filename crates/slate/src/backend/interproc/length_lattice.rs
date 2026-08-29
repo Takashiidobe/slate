@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 use crate::backend::interproc::pointer_lattice::{PointerBinding, PointerFact, ResolvedPtrType};
 use crate::backend::rust_ast::{
@@ -6,9 +6,11 @@ use crate::backend::rust_ast::{
 };
 use crate::function_identity::CallBinding;
 
+#[derive(Clone)]
 pub(in crate::backend) struct Pairing {
     len_param: String,
     idx_name: String,
+    mutable: bool,
 }
 
 pub(in crate::backend) fn compute(
@@ -28,7 +30,753 @@ pub(in crate::backend) fn apply(
     if pairings.is_empty() {
         return;
     }
-    apply_items(&mut program.items, &pairings);
+    let lifted = apply_signature_lifts(program, &pairings, facts);
+    let remaining = pairings
+        .into_iter()
+        .filter(|(binding, _)| !lifted.contains(binding))
+        .collect();
+    apply_items(&mut program.items, &remaining);
+}
+
+#[derive(Clone)]
+struct SignatureCandidate {
+    binding: PointerBinding,
+    function: String,
+    ptr_param: String,
+    len_param: String,
+    ptr_index: usize,
+    len_index: usize,
+    mutable: bool,
+    elem_ty: Type,
+    seeded: bool,
+    len_reads: usize,
+    stable: bool,
+}
+
+#[derive(Debug, Clone, Copy)]
+enum CallProof {
+    Exact,
+    Forwarded(usize),
+}
+
+struct CallSiteProof {
+    caller: String,
+    callee: String,
+    target: usize,
+    proof: Option<CallProof>,
+}
+
+fn apply_signature_lifts(
+    program: &mut Program,
+    pairings: &BTreeMap<PointerBinding, Pairing>,
+    facts: &BTreeMap<PointerBinding, PointerFact>,
+) -> BTreeSet<PointerBinding> {
+    let (candidates, sites) = {
+        let fn_defs = collect_fn_defs(&program.items);
+        let candidates = signature_candidates(&fn_defs, pairings, facts);
+        if candidates.is_empty() {
+            return BTreeSet::new();
+        }
+        let sites = signature_call_sites(&fn_defs, &candidates);
+        (candidates, sites)
+    };
+
+    let mut active = vec![true; candidates.len()];
+    let mut call_counts = vec![0usize; candidates.len()];
+    let mut forwarded_counts = vec![0usize; candidates.len()];
+    let mut dependents = vec![Vec::new(); candidates.len()];
+    for site in &sites {
+        call_counts[site.target] += 1;
+        match site.proof {
+            Some(CallProof::Exact) => {}
+            Some(CallProof::Forwarded(source)) => {
+                forwarded_counts[source] += 1;
+                dependents[source].push(site.target);
+            }
+            None => active[site.target] = false,
+        }
+    }
+    for (id, candidate) in candidates.iter().enumerate() {
+        let forwarding_only = forwarded_counts[id] > 0
+            && candidate.len_reads == forwarded_counts[id]
+            && candidate.stable;
+        active[id] &= candidate.seeded || forwarding_only;
+    }
+    for (id, count) in call_counts.into_iter().enumerate() {
+        if count == 0 {
+            active[id] = false;
+        }
+    }
+
+    if std::env::var_os("SLATE_PTR_LEN_DEBUG").is_some() {
+        for (id, candidate) in candidates.iter().enumerate() {
+            eprintln!(
+                "ptr_len[{id}] {}::({}, {}) elem={:?} seed={} reads={} forwarded={} active={}",
+                candidate.function,
+                candidate.ptr_param,
+                candidate.len_param,
+                candidate.elem_ty,
+                candidate.seeded,
+                candidate.len_reads,
+                forwarded_counts[id],
+                active[id]
+            );
+        }
+        for site in &sites {
+            eprintln!(
+                "ptr_len call {} -> {} target={} proof={:?}",
+                site.caller, site.callee, site.target, site.proof
+            );
+        }
+    }
+
+    let mut queue: VecDeque<usize> = active
+        .iter()
+        .enumerate()
+        .filter_map(|(id, active)| (!active).then_some(id))
+        .collect();
+    while let Some(source) = queue.pop_front() {
+        for &target in &dependents[source] {
+            if active[target] {
+                active[target] = false;
+                queue.push_back(target);
+            }
+        }
+    }
+
+    let lifted: BTreeSet<PointerBinding> = candidates
+        .iter()
+        .enumerate()
+        .filter(|(id, _)| active[*id])
+        .map(|(_, candidate)| candidate.binding.clone())
+        .collect();
+    if lifted.is_empty() {
+        return lifted;
+    }
+
+    let accepted: BTreeMap<String, SignatureCandidate> = candidates
+        .iter()
+        .enumerate()
+        .filter(|(id, _)| active[*id])
+        .map(|(_, candidate)| (candidate.function.clone(), candidate.clone()))
+        .collect();
+    let mut proofs: BTreeMap<(String, String), VecDeque<CallProof>> = BTreeMap::new();
+    for site in sites {
+        if !active[site.target] {
+            continue;
+        }
+        let Some(proof) = site.proof else {
+            continue;
+        };
+        proofs
+            .entry((site.caller, site.callee))
+            .or_default()
+            .push_back(proof);
+    }
+    apply_signature_items(&mut program.items, &accepted, &candidates, &mut proofs);
+    lifted
+}
+
+fn collect_fn_defs(items: &[Item]) -> BTreeMap<String, &FnDef> {
+    let mut out = BTreeMap::new();
+    collect_fn_defs_into(items, &mut out);
+    out
+}
+
+fn collect_fn_defs_into<'a>(items: &'a [Item], out: &mut BTreeMap<String, &'a FnDef>) {
+    for item in items {
+        match item {
+            Item::Fn(f) => {
+                out.insert(f.name.clone(), f);
+            }
+            Item::InlineMod { items, .. } => collect_fn_defs_into(items, out),
+            _ => {}
+        }
+    }
+}
+
+fn signature_candidates(
+    fn_defs: &BTreeMap<String, &FnDef>,
+    pairings: &BTreeMap<PointerBinding, Pairing>,
+    facts: &BTreeMap<PointerBinding, PointerFact>,
+) -> Vec<SignatureCandidate> {
+    let mut out = Vec::new();
+    for (function, f) in fn_defs {
+        for (ptr_index, ptr_param) in f.params.iter().enumerate() {
+            let Type::Ptr { inner, .. } = &ptr_param.ty else {
+                continue;
+            };
+            let binding = PointerBinding {
+                function: function.clone(),
+                name: ptr_param.name.clone(),
+            };
+            let Some(fact) = facts.get(&binding) else {
+                continue;
+            };
+            let mutable = match fact.resolved().base {
+                ResolvedPtrType::Slice => false,
+                ResolvedPtrType::SliceMut => true,
+                _ => continue,
+            };
+            for (len_index, len_param) in f.params.iter().enumerate() {
+                if ptr_index == len_index || !is_integer_type(&len_param.ty) {
+                    continue;
+                }
+                let ptr_local = shadow_local_name(&f.body, &ptr_param.name)
+                    .unwrap_or_else(|| ptr_param.name.clone());
+                let len_local = shadow_local_name(&f.body, &len_param.name)
+                    .unwrap_or_else(|| len_param.name.clone());
+                let seeded = pairings
+                    .get(&binding)
+                    .is_some_and(|pairing| pairing.len_param == len_param.name);
+                out.push(SignatureCandidate {
+                    binding: binding.clone(),
+                    function: function.clone(),
+                    ptr_param: ptr_param.name.clone(),
+                    len_param: len_param.name.clone(),
+                    ptr_index,
+                    len_index,
+                    mutable,
+                    elem_ty: (**inner).clone(),
+                    seeded,
+                    len_reads: count_var_reads(&f.body, &len_local),
+                    stable: !assigned_more_than_once(&f.body, &ptr_local)
+                        && !assigned_more_than_once(&f.body, &len_local),
+                });
+            }
+        }
+    }
+    out
+}
+
+fn signature_call_sites(
+    fn_defs: &BTreeMap<String, &FnDef>,
+    candidates: &[SignatureCandidate],
+) -> Vec<CallSiteProof> {
+    let by_callee: BTreeMap<&str, usize> = candidates
+        .iter()
+        .enumerate()
+        .map(|(id, candidate)| (candidate.function.as_str(), id))
+        .collect();
+    let by_caller: BTreeMap<&str, Vec<usize>> =
+        candidates
+            .iter()
+            .enumerate()
+            .fold(BTreeMap::new(), |mut map, (id, candidate)| {
+                map.entry(candidate.function.as_str()).or_default().push(id);
+                map
+            });
+    let mut out = Vec::new();
+    for (caller, f) in fn_defs {
+        let defs = collect_value_defs(&f.body);
+        let mut calls = Vec::new();
+        for indent in &f.body {
+            indent.stmt.collect_calls(&mut calls);
+        }
+        for (callee, args) in calls {
+            let Some(&target) = by_callee.get(callee.as_str()) else {
+                continue;
+            };
+            let candidate = &candidates[target];
+            let proof = call_args(args, candidate).and_then(|(ptr_arg, len_arg)| {
+                if exact_allocation_pair(ptr_arg, len_arg, &candidate.elem_ty, &defs) {
+                    return Some(CallProof::Exact);
+                }
+                by_caller
+                    .get(caller.as_str())
+                    .into_iter()
+                    .flatten()
+                    .find(|&&source| forwarded_pair(ptr_arg, len_arg, &candidates[source], &defs))
+                    .copied()
+                    .map(CallProof::Forwarded)
+            });
+            out.push(CallSiteProof {
+                caller: caller.clone(),
+                callee: callee.to_string(),
+                target,
+                proof,
+            });
+        }
+    }
+    out
+}
+
+fn call_args<'a>(args: &'a [Expr], candidate: &SignatureCandidate) -> Option<(&'a Expr, &'a Expr)> {
+    Some((
+        args.get(candidate.ptr_index)?,
+        args.get(candidate.len_index)?,
+    ))
+}
+
+fn forwarded_pair(
+    ptr_arg: &Expr,
+    len_arg: &Expr,
+    source: &SignatureCandidate,
+    defs: &BTreeMap<String, Expr>,
+) -> bool {
+    canonical_var(ptr_arg, defs).as_deref() == Some(source.ptr_param.as_str())
+        && canonical_var(len_arg, defs).as_deref() == Some(source.len_param.as_str())
+}
+
+fn exact_allocation_pair(
+    ptr_arg: &Expr,
+    len_arg: &Expr,
+    elem_ty: &Type,
+    defs: &BTreeMap<String, Expr>,
+) -> bool {
+    let Some(len_name) = canonical_var(len_arg, defs) else {
+        return false;
+    };
+    let Some(ptr_name) = canonical_var(ptr_arg, defs) else {
+        return false;
+    };
+    let Some(source) = defs.get(&ptr_name) else {
+        return false;
+    };
+    if std::env::var_os("SLATE_PTR_LEN_DEBUG").is_some() {
+        eprintln!(
+            "ptr_len exact ptr={ptr_name} len={len_name} len_source={:?} source={source:?}",
+            defs.get(&len_name)
+        );
+    }
+    let Expr::Call { func, args, .. } = peel_value(source) else {
+        return false;
+    };
+    if !is_malloc(func) {
+        return false;
+    }
+    let [size] = args.as_slice() else {
+        return false;
+    };
+    let Some(elem_size) = primitive_size(elem_ty) else {
+        return false;
+    };
+    let resolved_size = resolved_expr(size, defs, 0);
+    let Expr::Binary {
+        op: BinOp::Mul,
+        lhs,
+        rhs,
+    } = peel_value(&resolved_size)
+    else {
+        return false;
+    };
+    if std::env::var_os("SLATE_PTR_LEN_DEBUG").is_some() {
+        eprintln!(
+            "ptr_len size lhs={lhs:?} canon={:?} rhs={rhs:?} canon={:?} lhs_int={:?} rhs_int={:?}",
+            canonical_var(lhs, defs),
+            canonical_var(rhs, defs),
+            resolved_integer(lhs, defs, 0),
+            resolved_integer(rhs, defs, 0)
+        );
+    }
+    (same_value(lhs, len_arg, defs) && resolved_integer(rhs, defs, 0) == Some(elem_size))
+        || (same_value(rhs, len_arg, defs) && resolved_integer(lhs, defs, 0) == Some(elem_size))
+}
+
+fn same_value(lhs: &Expr, rhs: &Expr, defs: &BTreeMap<String, Expr>) -> bool {
+    resolved_expr(lhs, defs, 0) == resolved_expr(rhs, defs, 0)
+}
+
+fn resolved_expr(expr: &Expr, defs: &BTreeMap<String, Expr>, depth: usize) -> Expr {
+    if depth > 32 {
+        return expr.clone();
+    }
+    match peel_value(expr) {
+        Expr::Var(name) => defs
+            .get(name.as_str())
+            .map(|value| resolved_expr(value, defs, depth + 1))
+            .unwrap_or_else(|| expr.clone()),
+        Expr::Binary { op, lhs, rhs } => Expr::Binary {
+            op: *op,
+            lhs: Box::new(resolved_expr(lhs, defs, depth + 1)),
+            rhs: Box::new(resolved_expr(rhs, defs, depth + 1)),
+        },
+        other => other.clone(),
+    }
+}
+
+fn is_malloc(expr: &Expr) -> bool {
+    match peel_value(expr) {
+        Expr::Var(name) => name.as_str() == "malloc",
+        Expr::Path(path) => path
+            .segments
+            .last()
+            .is_some_and(|name| name.as_str() == "malloc"),
+        _ => false,
+    }
+}
+
+fn primitive_size(ty: &Type) -> Option<u64> {
+    match ty {
+        Type::Prim(Prim::I8 | Prim::U8) => Some(1),
+        Type::Prim(Prim::I16 | Prim::U16 | Prim::F16) => Some(2),
+        Type::Prim(Prim::I32 | Prim::U32 | Prim::F32) => Some(4),
+        Type::Prim(Prim::I64 | Prim::U64 | Prim::F64) => Some(8),
+        Type::Prim(Prim::I128 | Prim::U128 | Prim::F128) => Some(16),
+        _ => None,
+    }
+}
+
+fn canonical_var(expr: &Expr, defs: &BTreeMap<String, Expr>) -> Option<String> {
+    let Expr::Var(name) = peel_value(expr) else {
+        return None;
+    };
+    let mut current = name.as_str();
+    for _ in 0..32 {
+        let Some(next) = defs.get(current) else {
+            break;
+        };
+        let Expr::Var(next) = peel_value(next) else {
+            break;
+        };
+        if next.as_str() == current {
+            break;
+        }
+        current = next.as_str();
+    }
+    Some(current.to_string())
+}
+
+fn resolved_integer(expr: &Expr, defs: &BTreeMap<String, Expr>, depth: usize) -> Option<u64> {
+    if depth > 32 {
+        return None;
+    }
+    if let Some(value) = integer_value(peel_value(expr)) {
+        return Some(value);
+    }
+    let Expr::Var(name) = peel_value(expr) else {
+        return None;
+    };
+    resolved_integer(defs.get(name.as_str())?, defs, depth + 1)
+}
+
+fn integer_value(expr: &Expr) -> Option<u64> {
+    match expr {
+        Expr::Value(crate::backend::rust_ast::RustValue::I64(value)) => u64::try_from(*value).ok(),
+        Expr::Value(crate::backend::rust_ast::RustValue::I128(value)) => u64::try_from(*value).ok(),
+        Expr::Value(crate::backend::rust_ast::RustValue::Usize(value)) => {
+            u64::try_from(*value).ok()
+        }
+        Expr::Value(crate::backend::rust_ast::RustValue::U128(value)) => u64::try_from(*value).ok(),
+        Expr::Value(crate::backend::rust_ast::RustValue::TypedInt(value, _)) => {
+            u64::try_from(*value).ok()
+        }
+        Expr::Value(crate::backend::rust_ast::RustValue::TypedUInt(value, _)) => {
+            u64::try_from(*value).ok()
+        }
+        _ => None,
+    }
+}
+
+fn peel_value(expr: &Expr) -> &Expr {
+    match expr {
+        Expr::Cast { expr, .. } | Expr::Transmute { expr, .. } => peel_value(expr),
+        Expr::Block(block) | Expr::Unsafe(block)
+            if block.stmts.is_empty() && block.tail.is_some() =>
+        {
+            peel_value(block.tail.as_deref().expect("checked above"))
+        }
+        _ => expr,
+    }
+}
+
+fn collect_value_defs(body: &[IndentStmt]) -> BTreeMap<String, Expr> {
+    let mut out = BTreeMap::new();
+    collect_value_defs_into(body, &mut out);
+    out
+}
+
+fn collect_value_defs_into(body: &[IndentStmt], out: &mut BTreeMap<String, Expr>) {
+    for indent in body {
+        match &indent.stmt {
+            Stmt::Let {
+                name,
+                init: Some(init),
+                ..
+            } => {
+                out.insert(name.clone(), init.clone());
+            }
+            Stmt::Assign {
+                target: Expr::Var(name),
+                value,
+            } => {
+                out.insert(name.to_string(), value.clone());
+            }
+            _ => {}
+        }
+        match &indent.stmt {
+            Stmt::LetIf {
+                then_body,
+                else_body,
+                ..
+            }
+            | Stmt::If {
+                then_body,
+                else_body,
+                ..
+            } => {
+                collect_value_defs_into(then_body, out);
+                collect_value_defs_into(else_body, out);
+            }
+            Stmt::Loop { body, .. }
+            | Stmt::For { body, .. }
+            | Stmt::Scope { body }
+            | Stmt::LabeledBlock { body, .. } => collect_value_defs_into(body, out),
+            Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
+                collect_value_defs_into(&body.stmts, out)
+            }
+            Stmt::Match { arms, .. } => {
+                for arm in arms {
+                    collect_value_defs_into(&arm.body, out);
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
+fn apply_signature_items(
+    items: &mut [Item],
+    accepted: &BTreeMap<String, SignatureCandidate>,
+    candidates: &[SignatureCandidate],
+    proofs: &mut BTreeMap<(String, String), VecDeque<CallProof>>,
+) {
+    for item in items {
+        match item {
+            Item::Fn(f) => apply_signature_fn(f, accepted, candidates, proofs),
+            Item::InlineMod { items, .. } => {
+                apply_signature_items(items, accepted, candidates, proofs)
+            }
+            _ => {}
+        }
+    }
+}
+
+fn apply_signature_fn(
+    f: &mut FnDef,
+    accepted: &BTreeMap<String, SignatureCandidate>,
+    candidates: &[SignatureCandidate],
+    proofs: &mut BTreeMap<(String, String), VecDeque<CallProof>>,
+) {
+    if let Some(candidate) = accepted.get(&f.name) {
+        let raw = Expr::MethodCall {
+            recv: Box::new(Expr::Var(Ident::new(candidate.ptr_param.as_str()))),
+            method: if candidate.mutable {
+                "as_mut_ptr"
+            } else {
+                "as_ptr"
+            }
+            .to_string(),
+            args: Vec::new(),
+        };
+        let len = Expr::Cast {
+            expr: Box::new(Expr::MethodCall {
+                recv: Box::new(Expr::Var(Ident::new(candidate.ptr_param.as_str()))),
+                method: "len".to_string(),
+                args: Vec::new(),
+            }),
+            ty: f.params[candidate.len_index].ty.clone(),
+        };
+        for indent in &mut f.body {
+            indent.stmt.substitute_var(&candidate.ptr_param, &raw);
+            indent.stmt.substitute_var(&candidate.len_param, &len);
+        }
+        f.params[candidate.ptr_index].ty = Type::Ref {
+            mutable: candidate.mutable,
+            inner: Box::new(Type::Slice(Box::new(candidate.elem_ty.clone()))),
+        };
+        f.params.remove(candidate.len_index);
+    }
+    for indent in &mut f.body {
+        rewrite_signature_stmt(&mut indent.stmt, &f.name, accepted, candidates, proofs);
+    }
+}
+
+fn rewrite_signature_stmt(
+    stmt: &mut Stmt,
+    caller: &str,
+    accepted: &BTreeMap<String, SignatureCandidate>,
+    candidates: &[SignatureCandidate],
+    proofs: &mut BTreeMap<(String, String), VecDeque<CallProof>>,
+) {
+    match stmt {
+        Stmt::Let {
+            init: Some(expr), ..
+        } => rewrite_signature_expr(expr, caller, accepted, candidates, proofs),
+        Stmt::Let { init: None, .. } => {}
+        Stmt::LetIf {
+            cond,
+            then_body,
+            then_value,
+            else_body,
+            else_value,
+            ..
+        } => {
+            rewrite_signature_expr(cond, caller, accepted, candidates, proofs);
+            for indent in then_body.iter_mut().chain(else_body.iter_mut()) {
+                rewrite_signature_stmt(&mut indent.stmt, caller, accepted, candidates, proofs);
+            }
+            rewrite_signature_expr(then_value, caller, accepted, candidates, proofs);
+            rewrite_signature_expr(else_value, caller, accepted, candidates, proofs);
+        }
+        Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
+            rewrite_signature_expr(target, caller, accepted, candidates, proofs);
+            rewrite_signature_expr(value, caller, accepted, candidates, proofs);
+        }
+        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => {
+            rewrite_signature_expr(expr, caller, accepted, candidates, proofs)
+        }
+        Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) | Stmt::InlineAsm(_) => {}
+        Stmt::If {
+            cond,
+            then_body,
+            else_body,
+        } => {
+            rewrite_signature_expr(cond, caller, accepted, candidates, proofs);
+            for indent in then_body.iter_mut().chain(else_body.iter_mut()) {
+                rewrite_signature_stmt(&mut indent.stmt, caller, accepted, candidates, proofs);
+            }
+        }
+        Stmt::Loop { body, .. }
+        | Stmt::For { body, .. }
+        | Stmt::Scope { body }
+        | Stmt::LabeledBlock { body, .. } => {
+            for indent in body {
+                rewrite_signature_stmt(&mut indent.stmt, caller, accepted, candidates, proofs);
+            }
+        }
+        Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
+            for indent in &mut body.stmts {
+                rewrite_signature_stmt(&mut indent.stmt, caller, accepted, candidates, proofs);
+            }
+            if let Some(tail) = &mut body.tail {
+                rewrite_signature_expr(tail, caller, accepted, candidates, proofs);
+            }
+        }
+        Stmt::Match { expr, arms } => {
+            rewrite_signature_expr(expr, caller, accepted, candidates, proofs);
+            for arm in arms {
+                for indent in &mut arm.body {
+                    rewrite_signature_stmt(&mut indent.stmt, caller, accepted, candidates, proofs);
+                }
+            }
+        }
+    }
+}
+
+fn rewrite_signature_expr(
+    expr: &mut Expr,
+    caller: &str,
+    accepted: &BTreeMap<String, SignatureCandidate>,
+    candidates: &[SignatureCandidate],
+    proofs: &mut BTreeMap<(String, String), VecDeque<CallProof>>,
+) {
+    match expr {
+        Expr::Call { func, args, .. } => {
+            rewrite_signature_expr(func, caller, accepted, candidates, proofs);
+            for arg in args.iter_mut() {
+                rewrite_signature_expr(arg, caller, accepted, candidates, proofs);
+            }
+            let Expr::Var(callee) = &**func else {
+                return;
+            };
+            let Some(candidate) = accepted.get(callee.as_str()) else {
+                return;
+            };
+            let Some(proof) = proofs
+                .get_mut(&(caller.to_string(), callee.to_string()))
+                .and_then(VecDeque::pop_front)
+            else {
+                return;
+            };
+            let Some(ptr_arg) = args.get(candidate.ptr_index).cloned() else {
+                return;
+            };
+            let Some(len_arg) = args.get(candidate.len_index).cloned() else {
+                return;
+            };
+            args[candidate.ptr_index] = match proof {
+                CallProof::Exact => slice_bridge(ptr_arg, len_arg, candidate),
+                CallProof::Forwarded(source) => {
+                    Expr::Var(Ident::new(candidates[source].ptr_param.as_str()))
+                }
+            };
+            args.remove(candidate.len_index);
+        }
+        Expr::Unary { expr, .. }
+        | Expr::Cast { expr, .. }
+        | Expr::Ref { expr, .. }
+        | Expr::AddrOf { expr, .. }
+        | Expr::Transmute { expr, .. } => {
+            rewrite_signature_expr(expr, caller, accepted, candidates, proofs)
+        }
+        Expr::Block(block) | Expr::Unsafe(block) => {
+            for indent in &mut block.stmts {
+                rewrite_signature_stmt(&mut indent.stmt, caller, accepted, candidates, proofs);
+            }
+            if let Some(tail) = &mut block.tail {
+                rewrite_signature_expr(tail, caller, accepted, candidates, proofs);
+            }
+        }
+        Expr::Binary { lhs, rhs, .. }
+        | Expr::Range {
+            start: lhs,
+            end: rhs,
+        } => {
+            rewrite_signature_expr(lhs, caller, accepted, candidates, proofs);
+            rewrite_signature_expr(rhs, caller, accepted, candidates, proofs);
+        }
+        Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
+            rewrite_signature_expr(recv, caller, accepted, candidates, proofs);
+            for arg in args {
+                rewrite_signature_expr(arg, caller, accepted, candidates, proofs);
+            }
+        }
+        Expr::Index { base, index } => {
+            rewrite_signature_expr(base, caller, accepted, candidates, proofs);
+            rewrite_signature_expr(index, caller, accepted, candidates, proofs);
+        }
+        Expr::Field { base, .. }
+        | Expr::TupleField { base, .. }
+        | Expr::ArrayPtr { array: base, .. } => {
+            rewrite_signature_expr(base, caller, accepted, candidates, proofs)
+        }
+        _ => {}
+    }
+}
+
+fn slice_bridge(ptr: Expr, len: Expr, candidate: &SignatureCandidate) -> Expr {
+    Expr::Unsafe(Box::new(Block {
+        stmts: Vec::new(),
+        tail: Some(Box::new(Expr::Call {
+            binding: CallBinding::Generated,
+            func: Box::new(Expr::Path(Path::new(
+                [
+                    "std",
+                    "slice",
+                    if candidate.mutable {
+                        "from_raw_parts_mut"
+                    } else {
+                        "from_raw_parts"
+                    },
+                ]
+                .map(Ident::from),
+            ))),
+            args: vec![
+                Expr::Cast {
+                    expr: Box::new(ptr),
+                    ty: Type::Ptr {
+                        mutable: candidate.mutable,
+                        inner: Box::new(candidate.elem_ty.clone()),
+                    },
+                },
+                Expr::Cast {
+                    expr: Box::new(len),
+                    ty: Type::Prim(Prim::Usize),
+                },
+            ],
+        })),
+    }))
 }
 
 fn collect_items(
@@ -84,7 +832,7 @@ fn collect_fn(
         shadow_local_name(&f.body, param).unwrap_or_else(|| param.to_string())
     };
 
-    let buffer_ptrs: Vec<(String, String)> = f
+    let buffer_ptrs: Vec<(String, String, bool)> = f
         .params
         .iter()
         .filter(|p| matches!(p.ty, Type::Ptr { .. }))
@@ -93,11 +841,24 @@ fn collect_fn(
                 function: f.name.clone(),
                 name: p.name.clone(),
             };
-            facts
-                .get(&binding)
-                .is_some_and(|fact| fact.resolved().base == ResolvedPtrType::Slice)
+            facts.get(&binding).is_some_and(|fact| {
+                matches!(
+                    fact.resolved().base,
+                    ResolvedPtrType::Slice | ResolvedPtrType::SliceMut
+                )
+            })
         })
-        .map(|p| (p.name.clone(), local_name_of(&p.name)))
+        .map(|p| {
+            let binding = PointerBinding {
+                function: f.name.clone(),
+                name: p.name.clone(),
+            };
+            (
+                p.name.clone(),
+                local_name_of(&p.name),
+                facts[&binding].resolved().base == ResolvedPtrType::SliceMut,
+            )
+        })
         .collect();
     if buffer_ptrs.is_empty() {
         return;
@@ -125,7 +886,7 @@ fn collect_fn(
         return;
     }
 
-    for (ptr_param, ptr_local) in &buffer_ptrs {
+    for (ptr_param, ptr_local, mutable) in &buffer_ptrs {
         for (len_param, len_local) in &int_params {
             if ptr_param == len_param {
                 continue;
@@ -155,7 +916,8 @@ fn collect_fn(
                 continue;
             }
             let temp_names = matched_offset_temps(&f.body, &let_exprs, ptr_local, &idx_name);
-            if temp_names.is_empty() || is_written_through(&f.body, &temp_names) {
+            let writes = is_written_through(&f.body, &temp_names);
+            if temp_names.is_empty() || (writes && !mutable) {
                 continue;
             }
             out.insert(
@@ -166,6 +928,7 @@ fn collect_fn(
                 Pairing {
                     len_param: len_param.clone(),
                     idx_name,
+                    mutable: *mutable,
                 },
             );
         }
@@ -285,13 +1048,22 @@ fn apply_view(f: &mut FnDef, ptr_name: &str, elem_ty: &Type, pairing: &Pairing) 
                 tail: Some(Box::new(Expr::Call {
                     binding: CallBinding::Generated,
                     func: Box::new(Expr::Path(Path::new(
-                        ["std", "slice", "from_raw_parts"].map(Ident::from),
+                        [
+                            "std",
+                            "slice",
+                            if pairing.mutable {
+                                "from_raw_parts_mut"
+                            } else {
+                                "from_raw_parts"
+                            },
+                        ]
+                        .map(Ident::from),
                     ))),
                     args: vec![
                         Expr::Cast {
                             expr: Box::new(Expr::Var(Ident::new(ptr_name))),
                             ty: Type::Ptr {
-                                mutable: false,
+                                mutable: pairing.mutable,
                                 inner: Box::new(elem_ty.clone()),
                             },
                         },
