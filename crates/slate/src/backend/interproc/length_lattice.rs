@@ -322,7 +322,15 @@ fn signature_call_sites(
                                     &f.body, ptr_arg, len_arg, &defs, &by_callee,
                                 )
                         }
-                        _ => exact_allocation_pair(ptr_arg, len_arg, &candidate.elem_ty, &defs),
+                        _ => {
+                            exact_allocation_pair(ptr_arg, len_arg, &candidate.elem_ty, &defs)
+                                || exact_byte_array_pair(
+                                    ptr_arg,
+                                    len_arg,
+                                    &candidate.elem_ty,
+                                    &defs,
+                                )
+                        }
                     };
                     if exact {
                         return Some(CallProof::Exact);
@@ -420,6 +428,25 @@ fn exact_allocation_pair(
     }
     (same_value(lhs, len_arg, defs) && resolved_integer(rhs, defs, 0) == Some(elem_size))
         || (same_value(rhs, len_arg, defs) && resolved_integer(lhs, defs, 0) == Some(elem_size))
+}
+
+fn exact_byte_array_pair(
+    ptr_arg: &Expr,
+    len_arg: &Expr,
+    elem_ty: &Type,
+    defs: &BTreeMap<String, Expr>,
+) -> bool {
+    if primitive_size(elem_ty) != Some(1) {
+        return false;
+    }
+    let Some(len) = resolved_integer(len_arg, defs, 0).and_then(|len| usize::try_from(len).ok())
+    else {
+        return false;
+    };
+    let Some(bytes) = resolved_byte_array(ptr_arg, defs, 0) else {
+        return false;
+    };
+    len <= bytes.len()
 }
 
 fn exact_utf8_array_pair(ptr_arg: &Expr, len_arg: &Expr, defs: &BTreeMap<String, Expr>) -> bool {
