@@ -201,6 +201,8 @@ pub(super) fn fp_literal_expr_for_type(ty: Option<&Type>, fp: String) -> Expr {
                 args: vec![value],
             }
         })
+    } else if matches!(ty, Some(Type::Prim(Prim::F128))) {
+        Expr::HexFloat(format!("{fp}f128"))
     } else {
         fp_literal_expr(fp)
     }

@@ -180,7 +180,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             Expr::Transmute {
                 from: Type::Ptr {
                     mutable: false,
-                    inner: Box::new(Type::Unit),
+                    inner: Box::new(Type::Prim(Prim::U8)),
                 },
                 to: self.parent.rust_type(&op.result_ty),
                 expr: Box::new(stride_expr),
@@ -389,6 +389,48 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 },
                 Some(result_ty),
             );
+            return;
+        }
+        if is_wrapped_long_double(result_ty)
+            && let Some((wide, signed)) = bitint_to_int_expr(&src_rust_ty, self.operand_expr(src))
+        {
+            self.materialize_expr(
+                result,
+                Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
+                    func: Box::new(Expr::Var(
+                        if signed {
+                            "__slate_f80_from_i128"
+                        } else {
+                            "__slate_f80_from_u128"
+                        }
+                        .into(),
+                    )),
+                    args: vec![wide],
+                },
+                Some(result_ty),
+            );
+            return;
+        }
+        if is_wrapped_long_double(src_ty)
+            && let Some((name, ..)) = bitint_generic_parts(&result_rust_ty)
+        {
+            let signed = name == "bitint::BInt";
+            let wide = Expr::Call {
+                binding: crate::function_identity::CallBinding::Generated,
+                func: Box::new(Expr::Var(
+                    if signed {
+                        "__slate_f80_to_i128"
+                    } else {
+                        "__slate_f80_to_u128"
+                    }
+                    .into(),
+                )),
+                args: vec![self.operand_expr(src)],
+            };
+            let value = bitint_from_int_expr(&result_rust_ty, wide, signed)
+                .expect("checked bitint result type");
+            self.materialize_expr(result, value, Some(result_ty));
             return;
         }
         if is_wrapped_long_double(result_ty) && !is_long_double(src_ty) {

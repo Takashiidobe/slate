@@ -2573,7 +2573,7 @@ impl __SlateVaArgs {
                 };
                 self.global_view_init_expr(symbol, &indices, ty)
             }
-            Attr::Float { text, .. } => {
+            Attr::Float { text, .. } | Attr::CirFloat { value: text, .. } => {
                 Some(fp_literal_expr_for_type(Some(ty), fp_text_value(text)?))
             }
             _ => scalar_attr_expr(attr),

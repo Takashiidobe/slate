@@ -177,6 +177,18 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 expr: Box::new(value),
                 ty: result_ty,
             };
+        } else if self
+            .member_ptrs
+            .get(ptr)
+            .and_then(|member| member.field_ty.as_ref())
+            .or_else(|| self.slot_types.get(ptr))
+            .is_some_and(|value_ty| self.parent.type_is_enum_ptr(value_ty))
+            && matches!(result_ty, Type::Ptr { .. })
+        {
+            value = Expr::Cast {
+                expr: Box::new(value),
+                ty: result_ty,
+            };
         }
         self.materialize_expr(result, value, Some(&op.result_ty));
     }
