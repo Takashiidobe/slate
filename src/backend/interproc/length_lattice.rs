@@ -18,11 +18,17 @@ enum BufferKind {
     Shared,
     Mutable,
     Owned,
+    Str,
+    StringOwned,
 }
 
 impl BufferKind {
     fn mutable(self) -> bool {
-        self != Self::Shared
+        matches!(self, Self::Mutable | Self::Owned | Self::StringOwned)
+    }
+
+    fn owned(self) -> bool {
+        matches!(self, Self::Owned | Self::StringOwned)
     }
 }
 
@@ -46,7 +52,7 @@ pub(in crate::backend) fn apply(
     let lifted = apply_signature_lifts(program, &pairings, facts);
     let remaining = pairings
         .into_iter()
-        .filter(|(binding, pairing)| !lifted.contains(binding) && pairing.kind != BufferKind::Owned)
+        .filter(|(binding, pairing)| !lifted.contains(binding) && !pairing.kind.owned())
         .collect();
     apply_items(&mut program.items, &remaining);
 }
@@ -61,6 +67,7 @@ struct SignatureCandidate {
     len_index: usize,
     kind: BufferKind,
     elem_ty: Type,
+    raw_mutable: bool,
     seeded: bool,
     len_reads: usize,
     stable: bool,
@@ -217,7 +224,11 @@ fn signature_candidates(
     let mut out = Vec::new();
     for (function, f) in fn_defs {
         for (ptr_index, ptr_param) in f.params.iter().enumerate() {
-            let Type::Ptr { inner, .. } = &ptr_param.ty else {
+            let Type::Ptr {
+                mutable: raw_mutable,
+                inner,
+            } = &ptr_param.ty
+            else {
                 continue;
             };
             let binding = PointerBinding {
@@ -231,6 +242,8 @@ fn signature_candidates(
                 ResolvedPtrType::Slice => BufferKind::Shared,
                 ResolvedPtrType::SliceMut => BufferKind::Mutable,
                 ResolvedPtrType::Vec => BufferKind::Owned,
+                ResolvedPtrType::Str => BufferKind::Str,
+                ResolvedPtrType::StringOwned => BufferKind::StringOwned,
                 _ => continue,
             };
             for (len_index, len_param) in f.params.iter().enumerate() {
@@ -253,6 +266,7 @@ fn signature_candidates(
                     len_index,
                     kind,
                     elem_ty: (**inner).clone(),
+                    raw_mutable: *raw_mutable,
                     seeded,
                     len_reads: count_var_reads(&f.body, &len_local),
                     stable: !assigned_more_than_once(&f.body, &ptr_local)
@@ -294,7 +308,12 @@ fn signature_call_sites(
             };
             let candidate = &candidates[target];
             let proof = call_args(args, candidate).and_then(|(ptr_arg, len_arg)| {
-                if exact_allocation_pair(ptr_arg, len_arg, &candidate.elem_ty, &defs) {
+                let exact = if candidate.kind == BufferKind::Str {
+                    exact_utf8_array_pair(ptr_arg, len_arg, &defs)
+                } else {
+                    exact_allocation_pair(ptr_arg, len_arg, &candidate.elem_ty, &defs)
+                };
+                if exact {
                     return Some(CallProof::Exact);
                 }
                 by_caller
@@ -389,6 +408,56 @@ fn exact_allocation_pair(
     }
     (same_value(lhs, len_arg, defs) && resolved_integer(rhs, defs, 0) == Some(elem_size))
         || (same_value(rhs, len_arg, defs) && resolved_integer(lhs, defs, 0) == Some(elem_size))
+}
+
+fn exact_utf8_array_pair(ptr_arg: &Expr, len_arg: &Expr, defs: &BTreeMap<String, Expr>) -> bool {
+    if std::env::var_os("SLATE_PTR_LEN_DEBUG").is_some() {
+        eprintln!(
+            "ptr_len utf8 ptr={ptr_arg:?} len={len_arg:?} ptr_root={:?} ptr_source={:?} len_value={:?}",
+            canonical_var(ptr_arg, defs),
+            canonical_var(ptr_arg, defs).and_then(|name| defs.get(&name)),
+            resolved_integer(len_arg, defs, 0)
+        );
+    }
+    let Some(len) = resolved_integer(len_arg, defs, 0).and_then(|len| usize::try_from(len).ok())
+    else {
+        return false;
+    };
+    let Some(bytes) = resolved_byte_array(ptr_arg, defs, 0) else {
+        return false;
+    };
+    let payload_len = bytes
+        .iter()
+        .position(|byte| *byte == 0)
+        .unwrap_or(bytes.len());
+    len <= payload_len && std::str::from_utf8(&bytes[..len]).is_ok()
+}
+
+fn resolved_byte_array(
+    expr: &Expr,
+    defs: &BTreeMap<String, Expr>,
+    depth: usize,
+) -> Option<Vec<u8>> {
+    if depth > 32 {
+        return None;
+    }
+    match peel_value(expr) {
+        Expr::Var(name) => resolved_byte_array(defs.get(name.as_str())?, defs, depth + 1),
+        Expr::ArrayPtr { array, .. } => resolved_byte_array(array, defs, depth + 1),
+        Expr::MethodCall { recv, method, args }
+            if args.is_empty() && matches!(method.as_str(), "as_ptr" | "as_mut_ptr") =>
+        {
+            resolved_byte_array(recv, defs, depth + 1)
+        }
+        Expr::ArrayLit(values) => values
+            .iter()
+            .map(|value| {
+                resolved_integer(value, defs, depth + 1).and_then(|value| u8::try_from(value).ok())
+            })
+            .collect(),
+        Expr::ByteStr(bytes) | Expr::CStr(bytes) => Some(bytes.clone()),
+        _ => None,
+    }
 }
 
 fn same_value(lhs: &Expr, rhs: &Expr, defs: &BTreeMap<String, Expr>) -> bool {
@@ -663,6 +732,13 @@ fn apply_signature_fn(
             .to_string(),
             args: Vec::new(),
         };
+        let raw = Expr::Cast {
+            expr: Box::new(raw),
+            ty: Type::Ptr {
+                mutable: candidate.raw_mutable,
+                inner: Box::new(candidate.elem_ty.clone()),
+            },
+        };
         let len = Expr::Cast {
             expr: Box::new(Expr::MethodCall {
                 recv: Box::new(Expr::Var(Ident::new(candidate.ptr_param.as_str()))),
@@ -684,6 +760,11 @@ fn apply_signature_fn(
                 name: "Vec".to_string(),
                 args: vec![candidate.elem_ty.clone()],
             },
+            BufferKind::Str => Type::Ref {
+                mutable: false,
+                inner: Box::new(Type::Str),
+            },
+            BufferKind::StringOwned => todo!(),
         };
         f.params[candidate.ptr_index].mutable = candidate.kind == BufferKind::Owned;
         f.params.remove(candidate.len_index);
@@ -847,6 +928,37 @@ fn rewrite_signature_expr(
 }
 
 fn buffer_bridge(ptr: Expr, len: Expr, candidate: &SignatureCandidate) -> Expr {
+    if candidate.kind == BufferKind::Str {
+        let bytes = Expr::Call {
+            binding: CallBinding::Generated,
+            func: Box::new(Expr::Path(Path::new(
+                ["std", "slice", "from_raw_parts"].map(Ident::from),
+            ))),
+            args: vec![
+                Expr::Cast {
+                    expr: Box::new(ptr),
+                    ty: Type::Ptr {
+                        mutable: false,
+                        inner: Box::new(Type::Prim(Prim::U8)),
+                    },
+                },
+                Expr::Cast {
+                    expr: Box::new(len),
+                    ty: Type::Prim(Prim::Usize),
+                },
+            ],
+        };
+        return Expr::Unsafe(Box::new(Block {
+            stmts: Vec::new(),
+            tail: Some(Box::new(Expr::Call {
+                binding: CallBinding::Generated,
+                func: Box::new(Expr::Path(Path::new(
+                    ["std", "str", "from_utf8_unchecked"].map(Ident::from),
+                ))),
+                args: vec![bytes],
+            })),
+        }));
+    }
     let ptr = Expr::Cast {
         expr: Box::new(ptr),
         ty: Type::Ptr {
@@ -862,6 +974,8 @@ fn buffer_bridge(ptr: Expr, len: Expr, candidate: &SignatureCandidate) -> Expr {
         BufferKind::Shared => (vec!["std", "slice", "from_raw_parts"], vec![ptr, len]),
         BufferKind::Mutable => (vec!["std", "slice", "from_raw_parts_mut"], vec![ptr, len]),
         BufferKind::Owned => (vec!["Vec", "from_raw_parts"], vec![ptr, len.clone(), len]),
+        BufferKind::Str => unreachable!("handled above"),
+        BufferKind::StringOwned => todo!(),
     };
     Expr::Unsafe(Box::new(Block {
         stmts: Vec::new(),
@@ -947,7 +1061,10 @@ fn collect_fn(
             facts.get(&binding).is_some_and(|fact| {
                 matches!(
                     fact.resolved().base,
-                    ResolvedPtrType::Slice | ResolvedPtrType::SliceMut | ResolvedPtrType::Vec
+                    ResolvedPtrType::Slice
+                        | ResolvedPtrType::SliceMut
+                        | ResolvedPtrType::Vec
+                        | ResolvedPtrType::Str
                 )
             })
         })
@@ -960,6 +1077,7 @@ fn collect_fn(
                 ResolvedPtrType::Slice => BufferKind::Shared,
                 ResolvedPtrType::SliceMut => BufferKind::Mutable,
                 ResolvedPtrType::Vec => BufferKind::Owned,
+                ResolvedPtrType::Str => BufferKind::Str,
                 _ => unreachable!("filtered above"),
             };
             if kind == BufferKind::Owned && !calls_free {
