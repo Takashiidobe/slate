@@ -2,8 +2,8 @@ use std::collections::BTreeMap;
 
 use crate::backend::interproc::{self, CallGraph};
 use crate::backend::rust_ast::{
-    Block, Expr, FnDef, Ident, IndentStmt, Item, Prim, Program, RustValue, Stmt, Type, UnaryOp,
-    Visibility,
+    Block, Expr, FnDef, Ident, IndentStmt, Item, Path, Prim, Program, RustValue, Stmt, Type,
+    UnaryOp, Visibility,
 };
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 
@@ -822,9 +822,10 @@ fn is_null_like(expr: &Expr) -> bool {
 enum LiftKind {
     Scalar,
     Cell,
+    Owned,
     #[expect(
         dead_code,
-        reason = "lift_kind() excludes Buffer until call-site slice-length bridging lands; see slate-y0qs.4.2 follow-ups"
+        reason = "lift_kind() excludes Buffer until call-site slice-length bridging lands; see slate-y0qs.4.8 follow-up"
     )]
     Buffer,
 }
@@ -839,11 +840,11 @@ struct LiftPlan {
 fn lift_kind(base: ResolvedPtrType) -> Option<LiftKind> {
     match base {
         ResolvedPtrType::Ref | ResolvedPtrType::RefMut => Some(LiftKind::Scalar),
+        ResolvedPtrType::Owned => Some(LiftKind::Owned),
         ResolvedPtrType::RefCell
         | ResolvedPtrType::Slice
         | ResolvedPtrType::SliceMut
         | ResolvedPtrType::Str
-        | ResolvedPtrType::Owned
         | ResolvedPtrType::Vec
         | ResolvedPtrType::StringOwned
         | ResolvedPtrType::RawConst
@@ -873,8 +874,11 @@ fn type_for(base: ResolvedPtrType, inner: &Type) -> Type {
             mutable: true,
             inner: Box::new(Type::Slice(Box::new(inner.clone()))),
         },
+        ResolvedPtrType::Owned => Type::Generic {
+            name: "Box".to_string(),
+            args: vec![inner.clone()],
+        },
         ResolvedPtrType::Str
-        | ResolvedPtrType::Owned
         | ResolvedPtrType::Vec
         | ResolvedPtrType::StringOwned
         | ResolvedPtrType::RawConst
@@ -884,6 +888,8 @@ fn type_for(base: ResolvedPtrType, inner: &Type) -> Type {
 
 pub(in crate::backend) fn apply(program: &mut Program) {
     let facts = solve(program);
+
+    crate::backend::interproc::length_lattice::apply(program, &facts);
 
     let mut plans: BTreeMap<String, BTreeMap<String, LiftPlan>> = BTreeMap::new();
     let mut param_names: BTreeMap<String, Vec<String>> = BTreeMap::new();
@@ -945,11 +951,18 @@ fn for_each_fn_body<'a>(items: &'a [Item], f: &mut impl FnMut(&'a str, &'a [Inde
     }
 }
 
-fn arg_is_provably_bridgeable(arg: &Expr, own: Option<&BTreeMap<String, LiftPlan>>) -> bool {
+fn arg_is_provably_bridgeable(
+    arg: &Expr,
+    own: Option<&BTreeMap<String, LiftPlan>>,
+    plan: &LiftPlan,
+) -> bool {
     if let Expr::Var(name) = arg
         && own.is_some_and(|own| own.contains_key(name.as_str()))
     {
         return true;
+    }
+    if plan.kind == LiftKind::Owned {
+        return matches!(peel_cast(arg), Expr::Var(_));
     }
     matches!(peel_cast(arg), Expr::AddrOf { .. } | Expr::Ref { .. })
 }
@@ -979,10 +992,10 @@ fn validate_plans(
                     let Some(pname) = pnames.get(index) else {
                         continue;
                     };
-                    if !callee_plans.contains_key(pname) {
+                    let Some(plan) = callee_plans.get(pname) else {
                         continue;
-                    }
-                    if !arg_is_provably_bridgeable(arg, own) {
+                    };
+                    if !arg_is_provably_bridgeable(arg, own, plan) {
                         invalid.push((callee.to_string(), pname.clone()));
                     }
                 }
@@ -1015,15 +1028,20 @@ fn apply_plans(
                 for param in &mut f.params {
                     if let Some(plan) = own_plans.get(&param.name) {
                         param.ty = plan.ty.clone();
+                        if plan.kind == LiftKind::Owned {
+                            param.mutable = true;
+                        }
                     }
                 }
                 let mut declared_mutability = BTreeMap::new();
                 collect_declared_ptr_mutability(&f.body, &mut declared_mutability);
+                let owned_aliases = collect_owned_aliases(&f.body, own_plans);
                 let ctx = LiftCtx {
                     own: own_plans,
                     all: plans,
                     param_names,
                     declared_mutability: &declared_mutability,
+                    owned_aliases: &owned_aliases,
                 };
                 rewrite_stmts(&mut f.body, &ctx);
             }
@@ -1084,6 +1102,26 @@ fn to_raw_pointer_as(name: &str, plan: &LiftPlan, target_mutable: bool) -> Expr 
             method: "as_ptr".to_string(),
             args: Vec::new(),
         },
+        LiftKind::Owned => {
+            let inner = match &plan.ty {
+                Type::Generic { args, .. } => args.first().cloned().unwrap_or(Type::Unit),
+                other => other.clone(),
+            };
+            let borrow = Expr::Ref {
+                mutable: target_mutable,
+                expr: Box::new(Expr::Unary {
+                    op: UnaryOp::Deref,
+                    expr: recv,
+                }),
+            };
+            Expr::Cast {
+                expr: Box::new(borrow),
+                ty: Type::Ptr {
+                    mutable: target_mutable,
+                    inner: Box::new(inner),
+                },
+            }
+        }
     }
 }
 
@@ -1097,6 +1135,18 @@ fn bridge_arg_into_ref(arg: &mut Expr, plan: &LiftPlan) {
                 op: UnaryOp::Deref,
                 expr: Box::new(taken),
             }),
+        })),
+    }));
+}
+
+fn bridge_arg_into_box(arg: &mut Expr) {
+    let taken = std::mem::replace(arg, Expr::Value(RustValue::None));
+    *arg = Expr::Unsafe(Box::new(Block {
+        stmts: Vec::new(),
+        tail: Some(Box::new(Expr::Call {
+            binding: CallBinding::Generated,
+            func: Box::new(Expr::Path(Path::new(["Box", "from_raw"].map(Ident::from)))),
+            args: vec![taken],
         })),
     }));
 }
@@ -1125,6 +1175,134 @@ struct LiftCtx<'a> {
     all: &'a BTreeMap<String, BTreeMap<String, LiftPlan>>,
     param_names: &'a BTreeMap<String, Vec<String>>,
     declared_mutability: &'a BTreeMap<String, bool>,
+    owned_aliases: &'a BTreeMap<String, String>,
+}
+
+fn resolve_alias_root(
+    name: &str,
+    own: &BTreeMap<String, LiftPlan>,
+    aliases: &BTreeMap<String, String>,
+) -> Option<String> {
+    if own.contains_key(name) {
+        return Some(name.to_string());
+    }
+    aliases.get(name).cloned()
+}
+
+fn collect_owned_aliases(
+    body: &[IndentStmt],
+    own: &BTreeMap<String, LiftPlan>,
+) -> BTreeMap<String, String> {
+    let mut aliases = BTreeMap::new();
+    collect_owned_aliases_stmts(body, own, &mut aliases);
+    aliases
+}
+
+fn record_owned_alias(
+    name: &str,
+    source_expr: &Expr,
+    own: &BTreeMap<String, LiftPlan>,
+    aliases: &mut BTreeMap<String, String>,
+) {
+    let Some(source) = source_var(source_expr) else {
+        return;
+    };
+    let Some(root) = resolve_alias_root(source.as_str(), own, aliases) else {
+        return;
+    };
+    if own
+        .get(root.as_str())
+        .is_some_and(|plan| plan.kind == LiftKind::Owned)
+    {
+        aliases.insert(name.to_string(), root);
+    }
+}
+
+fn collect_owned_aliases_stmts(
+    body: &[IndentStmt],
+    own: &BTreeMap<String, LiftPlan>,
+    aliases: &mut BTreeMap<String, String>,
+) {
+    for indent in body {
+        collect_owned_aliases_stmt(&indent.stmt, own, aliases);
+    }
+}
+
+fn collect_owned_aliases_stmt(
+    stmt: &Stmt,
+    own: &BTreeMap<String, LiftPlan>,
+    aliases: &mut BTreeMap<String, String>,
+) {
+    match stmt {
+        Stmt::Let {
+            name,
+            init: Some(init),
+            ..
+        } => record_owned_alias(name, init, own, aliases),
+        Stmt::Assign {
+            target: Expr::Var(name),
+            value,
+        } => record_owned_alias(name.as_str(), value, own, aliases),
+        _ => {}
+    }
+    match stmt {
+        Stmt::LetIf {
+            then_body,
+            else_body,
+            ..
+        }
+        | Stmt::If {
+            then_body,
+            else_body,
+            ..
+        } => {
+            collect_owned_aliases_stmts(then_body, own, aliases);
+            collect_owned_aliases_stmts(else_body, own, aliases);
+        }
+        Stmt::Loop { body, .. } | Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
+            collect_owned_aliases_stmts(body, own, aliases);
+        }
+        Stmt::For { body, .. } => collect_owned_aliases_stmts(body, own, aliases),
+        Stmt::Match { arms, .. } => {
+            for arm in arms {
+                collect_owned_aliases_stmts(&arm.body, own, aliases);
+            }
+        }
+        Stmt::While { body, .. } => collect_owned_aliases_stmts(&body.stmts, own, aliases),
+        Stmt::Unsafe { body } => collect_owned_aliases_stmts(&body.stmts, own, aliases),
+        Stmt::Block(block) => collect_owned_aliases_stmts(&block.stmts, own, aliases),
+        _ => {}
+    }
+}
+
+fn free_call_arg(expr: &Expr) -> Option<&Expr> {
+    match expr {
+        Expr::Unsafe(block) if block.stmts.is_empty() => {
+            block.tail.as_deref().and_then(free_call_arg)
+        }
+        Expr::Call { func, args, .. } if args.len() == 1 => {
+            matches!(&**func, Expr::Var(name) if name.as_str() == "free").then(|| &args[0])
+        }
+        _ => None,
+    }
+}
+
+fn is_owned_free_stmt(stmt: &Stmt, ctx: &LiftCtx) -> bool {
+    let Stmt::Expr(expr) = stmt else {
+        return false;
+    };
+    let Some(arg) = free_call_arg(expr) else {
+        return false;
+    };
+    let Some(source) = source_var(arg) else {
+        return false;
+    };
+    let Some(root) = resolve_alias_root(source.as_str(), ctx.own, ctx.owned_aliases) else {
+        return false;
+    };
+    ctx.own
+        .get(root.as_str())
+        .is_some_and(|plan| plan.kind == LiftKind::Owned)
 }
 
 fn collect_declared_ptr_mutability(body: &[IndentStmt], out: &mut BTreeMap<String, bool>) {
@@ -1172,10 +1350,14 @@ fn collect_declared_ptr_mutability_stmt(stmt: &Stmt, out: &mut BTreeMap<String, 
     }
 }
 
-fn rewrite_stmts(body: &mut [IndentStmt], ctx: &LiftCtx) {
-    for indent in body {
+fn rewrite_stmts(body: &mut Vec<IndentStmt>, ctx: &LiftCtx) {
+    body.retain_mut(|indent| {
+        if is_owned_free_stmt(&indent.stmt, ctx) {
+            return false;
+        }
         rewrite_stmt(&mut indent.stmt, ctx);
-    }
+        true
+    });
 }
 
 fn rewrite_block(block: &mut Block, ctx: &LiftCtx) {
@@ -1201,7 +1383,7 @@ fn rewrite_stmt(stmt: &mut Stmt, ctx: &LiftCtx) {
             if let Expr::Var(target_name) = &*target
                 && let Expr::Var(source_name) = &*value
                 && let Some(plan) = ctx.own.get(source_name.as_str())
-                && plan.kind == LiftKind::Scalar
+                && matches!(plan.kind, LiftKind::Scalar | LiftKind::Owned)
                 && let Some(&mutable) = ctx.declared_mutability.get(target_name.as_str())
             {
                 *value = to_raw_pointer_as(source_name.as_str(), plan, mutable);
@@ -1241,7 +1423,7 @@ fn rewrite_stmt(stmt: &mut Stmt, ctx: &LiftCtx) {
         } => {
             if let Expr::Var(name) = &*init
                 && let Some(plan) = ctx.own.get(name.as_str())
-                && plan.kind == LiftKind::Scalar
+                && matches!(plan.kind, LiftKind::Scalar | LiftKind::Owned)
                 && let Some(Type::Ptr { mutable, .. }) = ty
             {
                 *init = to_raw_pointer_as(name.as_str(), plan, *mutable);
@@ -1374,11 +1556,18 @@ fn rewrite_expr(expr: &mut Expr, ctx: &LiftCtx) {
                 let pname = ctx.param_names.get(callee)?.get(index)?;
                 ctx.all.get(callee)?.get(pname.as_str())
             });
-            if let Some(plan) = callee_plan
-                && plan.kind == LiftKind::Scalar
-            {
-                bridge_arg_into_ref(arg, plan);
-                continue;
+            if let Some(plan) = callee_plan {
+                match plan.kind {
+                    LiftKind::Scalar => {
+                        bridge_arg_into_ref(arg, plan);
+                        continue;
+                    }
+                    LiftKind::Owned => {
+                        bridge_arg_into_box(arg);
+                        continue;
+                    }
+                    LiftKind::Cell | LiftKind::Buffer => {}
+                }
             }
             rewrite_expr(arg, ctx);
         }
