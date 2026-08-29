@@ -13,8 +13,10 @@ from pathlib import Path
 TARGET_FIXTURE_DIRECTORIES = {"bionic", "macos", "msvc"}
 SOURCE_ROOT_PATTERN = "__SLATE_FILECHECK_SOURCE_ROOT__"
 ANNOTATION_PATTERN = re.compile(
-    r"^(?P<indent>\s*)(?://\s*@(?P<line_kind>rewrite(?:-not)?)\s*|"
-    r"/\*\s*@(?P<block_kind>rewrite(?:-not)?)\s*\*/\s*)$"
+    r"^(?P<indent>\s*)(?://\s*@(?P<line_kind>(?:lowering|rewrite)(?:-not)?)-"
+    r"(?P<line_boundary>begin|end)\s*|/\*\s*@"
+    r"(?P<block_kind>(?:lowering|rewrite)(?:-not)?)-"
+    r"(?P<block_boundary>begin|end)\s*\*/\s*)$"
 )
 GENERATED_MARKER_PATTERN = re.compile(
     r'(?:core|std)::arch::asm!\("# SLATE_FILECHECK_(BEGIN|END)_(\d+)"'
@@ -44,7 +46,7 @@ UNSTABLE_IDENTIFIER_PATTERNS = (
 
 def instrument_annotations(source):
     annotations = {}
-    active = None
+    active = []
     next_id = 0
     output = []
     for line_number, line in enumerate(source.splitlines(), 1):
@@ -53,57 +55,66 @@ def instrument_annotations(source):
             output.append(line)
             continue
         kind = match.group("line_kind") or match.group("block_kind")
+        annotation_boundary = match.group("line_boundary") or match.group(
+            "block_boundary"
+        )
         indent = match.group("indent")
-        if active is None:
+        if annotation_boundary == "end":
+            if not active:
+                raise ValueError(f"line {line_number}: unmatched @{kind}-end")
+            active_kind, marker_id, start_line = active[-1]
+            if active_kind != kind:
+                if any(open_kind == kind for open_kind, _, _ in active):
+                    raise ValueError(
+                        f"line {line_number}: @{kind}-end crosses "
+                        f"@{active_kind}-begin opened at line {start_line}"
+                    )
+                raise ValueError(
+                    f"line {line_number}: @{kind}-end does not match "
+                    f"@{active_kind}-begin opened at line {start_line}"
+                )
+            active.pop()
+            boundary = "END"
+        else:
+            if any(open_kind == kind for open_kind, _, _ in active):
+                raise ValueError(f"line {line_number}: @{kind}-begin is already open")
             marker_id = next_id
             next_id += 1
             annotations[marker_id] = kind
-            active = (kind, marker_id, line_number)
+            active.append((kind, marker_id, line_number))
             boundary = "BEGIN"
-        else:
-            active_kind, marker_id, start_line = active
-            if kind != active_kind:
-                raise ValueError(
-                    f"line {line_number}: cannot nest @{kind} inside "
-                    f"@{active_kind} opened at line {start_line}"
-                )
-            active = None
-            boundary = "END"
         output.append(
             f'{indent}__asm__ __volatile__("# SLATE_FILECHECK_{boundary}_{marker_id}");'
         )
-    if active is not None:
-        kind, _, line_number = active
-        raise ValueError(f"line {line_number}: unclosed @{kind} annotation")
+    if active:
+        kind, _, line_number = active[-1]
+        raise ValueError(f"line {line_number}: unclosed @{kind}-begin annotation")
     suffix = "\n" if source.endswith("\n") else ""
     return "\n".join(output) + suffix, annotations
 
 
 def extract_generated_regions(rust):
     regions = {}
-    active = None
+    active = []
     skip_wrapper_close = False
     for line_number, line in enumerate(rust.splitlines(), 1):
         marker = GENERATED_MARKER_PATTERN.search(line)
         if marker:
             boundary, raw_id = marker.groups()
             marker_id = int(raw_id)
+            for _, captured in active:
+                if captured and captured[-1].strip() == "unsafe {":
+                    captured.pop()
             if boundary == "BEGIN":
-                if active is not None:
-                    raise RuntimeError(
-                        f"generated marker {marker_id} begins inside marker {active[0]}"
-                    )
-                active = (marker_id, [])
+                active.append((marker_id, []))
                 skip_wrapper_close = True
             else:
-                if active is None or active[0] != marker_id:
+                if not active or active[-1][0] != marker_id:
                     raise RuntimeError(
                         f"generated marker {marker_id} ends without its begin marker"
                     )
-                if active[1] and active[1][-1].strip() == "unsafe {":
-                    active[1].pop()
-                regions[marker_id] = active[1]
-                active = None
+                _, captured = active.pop()
+                regions[marker_id] = captured
                 skip_wrapper_close = True
             continue
         if skip_wrapper_close:
@@ -113,35 +124,46 @@ def extract_generated_regions(rust):
                 )
             skip_wrapper_close = False
             continue
-        if active is not None:
-            active[1].append(line)
-    if active is not None:
-        raise RuntimeError(f"generated marker {active[0]} has no end marker")
+        for _, captured in active:
+            captured.append(line)
+    if active:
+        raise RuntimeError(f"generated marker {active[-1][0]} has no end marker")
     return regions
 
 
 def render_annotation_checks(annotations, rewritten, lowered, prefix):
     rewritten_regions = extract_generated_regions(rewritten)
     lowered_regions = extract_generated_regions(lowered)
+    regions_by_profile = {
+        "lowering": lowered_regions,
+        "rewrite": rewritten_regions,
+    }
+    profile = prefix.partition("-")[0].lower().removesuffix("s")
+    opposite = "rewrite" if profile == "lowering" else "lowering"
     checks = []
     for marker_id, kind in annotations.items():
-        regions = rewritten_regions if kind == "rewrite" else lowered_regions
+        if kind.removesuffix("-not") != profile:
+            continue
+        negative = kind.endswith("-not")
+        selected_profile = opposite if negative else profile
+        regions = regions_by_profile[selected_profile]
         if marker_id not in regions:
             raise RuntimeError(f"generated Rust is missing annotation marker {marker_id}")
-        directive = f"{prefix}-DAG" if kind == "rewrite" else f"{prefix}-NOT"
+        directive = f"{prefix}-NOT" if negative else f"{prefix}-DAG"
         patterns = [
             render_check_pattern(line.strip())
             for line in regions[marker_id]
             if line.strip()
         ]
-        if kind == "rewrite-not":
-            if marker_id not in rewritten_regions:
+        if negative:
+            baseline = regions_by_profile[profile]
+            if marker_id not in baseline:
                 raise RuntimeError(
-                    f"rewritten Rust is missing annotation marker {marker_id}"
+                    f"{profile} Rust is missing annotation marker {marker_id}"
                 )
             remaining = Counter(
                 render_check_pattern(line.strip())
-                for line in rewritten_regions[marker_id]
+                for line in baseline[marker_id]
                 if line.strip()
             )
             removed = []
@@ -297,8 +319,14 @@ def update_path(path, profiles, in_place, target_mode):
         source = remove_generated_block(remove_generated_block(source, "LOWERING"), "REWRITES")
     updated = source
     blocks = []
+    annotation_outputs = {}
     for profile, command, environment in profiles:
-        if annotations and not profile.startswith("REWRITES"):
+        annotation_profile = profile.partition("-")[0].lower().removesuffix("s")
+        has_profile_annotations = any(
+            kind.removesuffix("-not") == annotation_profile
+            for kind in annotations.values()
+        )
+        if annotations and not has_profile_annotations:
             updated = remove_generated_block(updated, profile)
             continue
         if has_handwritten_block(updated, profile):
@@ -309,16 +337,25 @@ def update_path(path, profiles, in_place, target_mode):
             continue
         updated = remove_generated_block(updated, profile)
         if annotations:
-            rewritten = normalize_source_paths(
-                translate_instrumented(path, instrumented, command, environment), path
-            )
-            lowered_command = [*command[:-1], "translate-lowered"]
-            lowered = normalize_source_paths(
-                translate_instrumented(
-                    path, instrumented, lowered_command, environment
-                ),
-                path,
-            )
+            cache_key = (tuple(command[:-1]), tuple(sorted(environment.items())))
+            if cache_key not in annotation_outputs:
+                lowered_command = [*command[:-1], "translate-lowered"]
+                rewritten_command = [*command[:-1], "translate"]
+                annotation_outputs[cache_key] = (
+                    normalize_source_paths(
+                        translate_instrumented(
+                            path, instrumented, rewritten_command, environment
+                        ),
+                        path,
+                    ),
+                    normalize_source_paths(
+                        translate_instrumented(
+                            path, instrumented, lowered_command, environment
+                        ),
+                        path,
+                    ),
+                )
+            rewritten, lowered = annotation_outputs[cache_key]
             checks = render_annotation_checks(
                 annotations, rewritten, lowered, profile
             )

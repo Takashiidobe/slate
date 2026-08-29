@@ -2,22 +2,43 @@
 
 int main(void) {
   int value;
-  // @rewrite-not
+  int lowered_value;
+  int lowered_absence;
+  // @lowering-begin
+  // @rewrite-begin
+  lowered_value = 6 * 7;
+  // @rewrite-end
+  // @lowering-end
+  // @lowering-not-begin
+  lowered_absence = 5 + 6;
+  // @lowering-not-end
+  // @rewrite-not-begin
   value = 40 + 2;
-  // @rewrite-not
-  // @rewrite
-  printf("%d\n", value);
-  // @rewrite
-  // @rewrite
+  // @rewrite-not-end
+  // @rewrite-begin
+  printf("%d %d %d\n", value, lowered_value, lowered_absence);
+  // @rewrite-end
+  // @rewrite-begin
   puts("_v9 anon_4 anon_struct_i32");
-  // @rewrite
+  // @rewrite-end
   return 0;
 }
+// SLATE-FILECHECK-BEGIN lowering
+// LOWERING-DAG: let {{_v[0-9]+}}: i32 = 6;
+// LOWERING-DAG: let {{_v[0-9]+}}: i32 = 7;
+// LOWERING-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} * {{_v[0-9]+}};
+// LOWERING-DAG: lowered_value = {{_v[0-9]+}};
+// LOWERING-NOT: lowered_absence = {{_v[0-9]+}} + {{_v[0-9]+}};
+// SLATE-FILECHECK-END lowering
+
 // SLATE-FILECHECK-BEGIN rewrites
+// REWRITES-DAG: let {{_v[0-9]+}}: i32 = 6;
+// REWRITES-DAG: let {{_v[0-9]+}}: i32 = 7;
+// REWRITES-DAG: lowered_value = {{_v[0-9]+}} * {{_v[0-9]+}};
 // REWRITES-NOT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // REWRITES-NOT: value = {{_v[0-9]+}};
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, value) };
+// REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
+// REWRITES-DAG: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, value, lowered_value, lowered_absence) };
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = b"_v9 anon_4 anon_struct_i32\0".as_ptr() as *mut i8;
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = unsafe { puts({{_v[0-9]+}} as *const i8) };
 // SLATE-FILECHECK-END rewrites
