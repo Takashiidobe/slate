@@ -879,7 +879,7 @@ impl ClassifyCtx<'_> {
                 }
             }
             Expr::Index { base, index } => {
-                if let Expr::Var(name) = &**base
+                if let Some(name) = read_var_name(base)
                     && let Some(canonical) = self.canonical_of(name.as_str())
                 {
                     self.observe(&canonical, PointerFact::observe_offset);
@@ -913,7 +913,7 @@ impl ClassifyCtx<'_> {
                 }
             }
             Expr::MethodCall { recv, method, args } => {
-                if let Expr::Var(name) = &**recv
+                if let Some(name) = read_var_name(recv)
                     && let Some(canonical) = self.canonical_of(name.as_str())
                     && matches!(
                         method.as_str(),
@@ -942,7 +942,7 @@ impl ClassifyCtx<'_> {
                 binding,
             } => self.call(func, args, binding),
             Expr::Index { base, index } => {
-                if let Expr::Var(name) = &**base
+                if let Some(name) = read_var_name(base)
                     && let Some(canonical) = self.canonical_of(name.as_str())
                 {
                     self.observe(&canonical, PointerFact::observe_offset);
@@ -1036,7 +1036,7 @@ impl ClassifyCtx<'_> {
     }
 
     fn observe_null_compare(&mut self, side: &Expr, other: &Expr) {
-        if let Expr::Var(name) = side
+        if let Some(name) = read_var_name(side)
             && let Some(canonical) = self.canonical_of(name.as_str())
             && is_null_like(other)
         {
@@ -1058,8 +1058,7 @@ impl ClassifyCtx<'_> {
             _ => None,
         };
         for (index, arg) in args.iter().enumerate() {
-            let peeled = peel_cast(arg);
-            let Expr::Var(name) = peeled else {
+            let Some(name) = read_var_name(arg) else {
                 self.expr(arg);
                 continue;
             };
@@ -1144,6 +1143,13 @@ fn peel_unsafe_tail(expr: &Expr) -> &Expr {
             None => expr,
         },
         other => other,
+    }
+}
+
+fn read_var_name(expr: &Expr) -> Option<Ident> {
+    match peel_cast(peel_unsafe_tail(expr)) {
+        Expr::Var(name) => Some(*name),
+        _ => None,
     }
 }
 

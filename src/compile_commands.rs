@@ -195,6 +195,10 @@ fn normalize(
             word_index += 1;
             continue;
         }
+        if word.starts_with("-O") {
+            word_index += 1;
+            continue;
+        }
         if matches!(word.as_str(), "-o" | "-MF" | "-MT" | "-MQ" | "-MJ") {
             if word_index + 1 >= words.len() {
                 return Err(CompileCommandsError::MissingOptionValue {
