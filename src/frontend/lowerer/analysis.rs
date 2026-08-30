@@ -73,6 +73,7 @@ pub(super) fn hook_call_stmt(name: &str, unsafe_functions: &BTreeSet<String>) ->
 pub(super) fn cross_block_live_values(body: &inst::Region) -> BTreeSet<String> {
     let mut def_block: BTreeMap<String, usize> = BTreeMap::new();
     let mut used_in: BTreeMap<String, BTreeSet<usize>> = BTreeMap::new();
+    let mut forward_bases: BTreeMap<String, Vec<String>> = BTreeMap::new();
     for (block_index, block) in body.blocks.iter().enumerate() {
         walk_block_ops(&block.ops, &mut |op| {
             op.for_each_result(|result, _| {
@@ -84,8 +85,26 @@ pub(super) fn cross_block_live_values(body: &inst::Region) -> BTreeSet<String> {
                     .or_default()
                     .insert(block_index);
             });
+            if let Some((result, bases)) = inlined_address_bases(op) {
+                forward_bases.insert(result, bases);
+            }
             true
         });
+    }
+    let mut changed = true;
+    while changed {
+        changed = false;
+        for (result, bases) in &forward_bases {
+            let Some(result_uses) = used_in.get(result).cloned() else {
+                continue;
+            };
+            for base in bases {
+                let base_uses = used_in.entry(base.clone()).or_default();
+                for block in &result_uses {
+                    changed |= base_uses.insert(*block);
+                }
+            }
+        }
     }
     def_block
         .into_iter()
@@ -96,6 +115,16 @@ pub(super) fn cross_block_live_values(body: &inst::Region) -> BTreeSet<String> {
         })
         .map(|(ssa, _)| ssa)
         .collect()
+}
+
+fn inlined_address_bases(op: &Op) -> Option<(String, Vec<String>)> {
+    match op {
+        Op::GetMember(op) => Some((op.result.clone(), vec![op.addr.clone()])),
+        Op::GetElement(op) => Some((op.result.clone(), vec![op.base.clone(), op.index.clone()])),
+        Op::ComplexRealPtr(op) => Some((op.result.clone(), vec![op.operand.clone()])),
+        Op::ComplexImagPtr(op) => Some((op.result.clone(), vec![op.operand.clone()])),
+        _ => None,
+    }
 }
 
 pub(super) fn collect_used_symbols(
