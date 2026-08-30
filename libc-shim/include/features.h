@@ -233,13 +233,7 @@
 #endif
 #endif
 
-#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
 #if defined(__GNUC__) || defined(__clang__)
-#define __packed [[gnu::packed]]
-#else
-#define __packed
-#endif
-#elif defined(__GNUC__) || defined(__clang__)
 #define __packed __attribute__((packed))
 #else
 #define __packed

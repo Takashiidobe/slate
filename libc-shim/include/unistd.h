@@ -38,6 +38,11 @@ off_t lseek(int, off_t, int);
 int   fsync(int);
 int   fdatasync(int);
 
+#if defined(__SLATE_LIBC_GLIBC) &&                                            \
+    (defined(_GNU_SOURCE) || defined(_BSD_SOURCE))
+void closefrom(int);
+#endif
+
 ssize_t read(int, void *, size_t);
 ssize_t write(int, const void *, size_t);
 ssize_t pread(int, void *, size_t, off_t);

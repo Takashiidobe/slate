@@ -290,9 +290,11 @@ typedef struct {
   char __size[32];
 } __pthread_barrier_t;
 
-typedef struct {
-  char __size[32];
-} __pthread_once_t;
+#if defined(__SLATE_LIBC_DARWIN)
+typedef long __pthread_once_t;
+#else
+typedef int __pthread_once_t;
+#endif
 
 typedef unsigned long __pthread_t;
 

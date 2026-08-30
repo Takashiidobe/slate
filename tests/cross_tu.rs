@@ -145,7 +145,7 @@ fn cross_tu_work_dir(name: &str) -> PathBuf {
 fn generated_cross_tu_filecheck() {
     let fixtures = project_filecheck_fixtures(support::filecheck::Profile::active());
     support::parallel_map(&fixtures, |fixture| {
-        build_and_diff_in(Path::new("generated-cross-tu-filecheck"), &fixture);
+        build_and_diff_in(Path::new("generated-cross-tu-filecheck"), fixture);
     });
 }
 
@@ -155,8 +155,8 @@ fn generated_library_filecheck() {
     let profile = support::filecheck::Profile::active();
     let fixtures = library_filecheck_fixtures(profile);
     support::parallel_map(&fixtures, |fixture| {
-        let fixture_dir = root.join(&fixture);
-        let work = cross_tu_work_dir("generated-library-filecheck").join(&fixture);
+        let fixture_dir = root.join(fixture);
+        let work = cross_tu_work_dir("generated-library-filecheck").join(fixture);
         let crate_dir = work.join("crate");
         let _ = std::fs::remove_dir_all(&work);
         let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
