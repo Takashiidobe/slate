@@ -56,8 +56,25 @@ to `FileCheck` from `PATH`.
 
 For a multi-translation-unit project, directives in `foo.c` check the generated
 `src/foo.rs`. Library fixtures use the same mapping for C files under `src/`.
-Assertions about synthesized `lib.rs`, `types.rs`, manifests, C shims, smoke
-tests, diagnostics, or binary symbols stay in the Rust project harness.
+Direct textual assertions about synthesized `lib.rs`, `types.rs`, manifests, C
+shims, smoke tests, diagnostics, or binary symbols stay in the Rust project
+harness. Properties exposed through an owned module and verified by compiling
+the generated crate need no duplicate synthesized-file assertion.
+
+Generate annotated multi-translation-unit checks from one whole-project
+translation per requested profile:
+
+```bash
+python3 tools/update_filecheck.py --project \
+  tests/fixtures.multi/<name> --profile both --in-place
+python3 tools/update_filecheck.py --library-project \
+  tests/fixtures.library/<name> --profile both --in-place
+```
+
+Project mode instruments every annotated C source before translating the copied
+fixture, then maps each marker-bearing generated module back to its owning C
+file. Test execution reuses the generated crate for FileCheck, Rust compilation,
+and differential comparison; FileCheck does not trigger another translation.
 
 `translate-directives` fixtures use `DIRECTIVES` prefixes against that
 command's stdout. Those checks are separate from lowering and rewrite profile

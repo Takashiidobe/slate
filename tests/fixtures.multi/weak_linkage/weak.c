@@ -1,6 +1,19 @@
 int weak_global __attribute__((weak)) = 13;
 
+// @rewrite-fn-begin
 int __attribute__((weak)) fallback_value(void) { return weak_global; }
+// @rewrite-fn-end
+
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES-DAG: #[unsafe(no_mangle)]
+// REWRITES-DAG: #[linkage = "weak"]
+// REWRITES-DAG: pub extern "C" fn fallback_value() -> i32 {
+// REWRITES-DAG: let mut __retval: i32 = 0;
+// REWRITES-DAG: __retval = unsafe { weak_global };
+// REWRITES-DAG: return __retval;
+// REWRITES-DAG: }
+// SLATE-FILECHECK-END rewrites
+
 // LOWERING-DAG: #![feature(linkage)]
 // LOWERING-DAG: #[unsafe(no_mangle)]
 // LOWERING-DAG: #[linkage = "weak"]

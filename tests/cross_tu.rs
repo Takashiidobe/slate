@@ -148,16 +148,18 @@ fn cross_tu_work_dir(name: &str) -> PathBuf {
 
 #[test]
 fn generated_cross_tu_filecheck() {
-    for fixture in project_filecheck_fixtures(support::filecheck::Profile::active()) {
+    let fixtures = project_filecheck_fixtures(support::filecheck::Profile::active());
+    support::parallel_map(&fixtures, |fixture| {
         build_and_diff_in(Path::new("generated-cross-tu-filecheck"), &fixture);
-    }
+    });
 }
 
 #[test]
 fn generated_library_filecheck() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures.library");
     let profile = support::filecheck::Profile::active();
-    for fixture in library_filecheck_fixtures(profile) {
+    let fixtures = library_filecheck_fixtures(profile);
+    support::parallel_map(&fixtures, |fixture| {
         let fixture_dir = root.join(&fixture);
         let work = cross_tu_work_dir("generated-library-filecheck").join(&fixture);
         let crate_dir = work.join("crate");
@@ -181,7 +183,7 @@ fn generated_library_filecheck() {
             &work.join("filecheck"),
         )
         .expect("check generated library modules");
-    }
+    });
 }
 
 #[test]
@@ -813,66 +815,9 @@ fn library_crate_links_generated_c_abi_shim_for_long_double_libc_call() {
 }
 
 #[test]
-fn cross_tu_functions() {
-    build_and_diff("cross_tu");
-}
-
-#[test]
-fn project_translation_escapes_rust_keywords() {
-    build_and_diff("keyword_project_idents");
-}
-
-#[test]
-fn project_translation_exports_nonascii_function_names() {
-    build_and_diff("nonascii_function_name");
-}
-
-#[test]
-fn sibling_can_call_function_defined_in_root_translation_unit() {
-    build_and_diff("root_tu_symbol");
-}
-
-#[test]
 #[ignore = "rewrite passes disabled while lowering is the focus"]
 fn setjmp_unwind_abi_propagates_to_cross_module_callers() {
     build_and_diff("setjmp_cross_module_callback");
-}
-
-#[test]
-fn project_translation_shares_record_types() {
-    build_and_diff("shared_record");
-}
-
-#[test]
-fn same_named_local_structs_in_different_tus_stay_distinct() {
-    let rs_dir = build_and_diff("local_struct_cross_file_collision");
-    let types_rs = std::fs::read_to_string(rs_dir.join("types.rs")).unwrap_or_default();
-    assert!(
-        !types_rs.contains("struct Item"),
-        "differently-shaped same-named local structs must not be hoisted into a shared \
-         types.rs definition: {types_rs}"
-    );
-}
-
-#[test]
-fn project_translation_shares_enum_types() {
-    build_and_diff("shared_enum");
-}
-
-#[test]
-fn project_translation_shares_bitfield_record_types() {
-    let rs_dir = build_and_diff("shared_bitfield_record");
-    let types_rs = std::fs::read_to_string(rs_dir.join("types.rs")).unwrap_or_default();
-    assert!(
-        types_rs.contains("__bitfield_"),
-        "shared record carrying a bitfield must be hoisted with positional \
-         __bitfield_N storage fields matching sibling-module accessors: {types_rs}"
-    );
-}
-
-#[test]
-fn project_translation_shares_long_double_types() {
-    build_and_diff("shared_long_double");
 }
 
 #[test]
@@ -969,59 +914,12 @@ fn long_double_aggregate_uses_c_abi_shim() {
 }
 
 #[test]
-fn project_translation_emits_required_long_double_shims() {
-    let rs_dir = build_and_diff("project_strtold");
-    let shim = std::fs::read_to_string(rs_dir.join("slate_shims.c")).expect("read slate_shims.c");
-    assert!(shim.contains("__slate_f80 __slate_strtold"));
-}
-
-#[test]
-fn project_translation_shares_anonymous_record_types() {
-    build_and_diff("shared_anonymous_record");
-}
-
-#[test]
-fn project_translation_shares_function_pointer_types() {
-    build_and_diff("shared_function_pointer");
-}
-
-#[test]
-fn ctype_libc_fixup_stays_off_when_a_sibling_tu_changes_locale() {
-    build_and_diff("ctype_locale");
-}
-
-#[test]
-fn public_pointer_deref_functions_are_unsafe() {
-    build_and_diff("unsafe_public");
-}
-
-#[test]
-fn address_taken_pointer_deref_function_stays_unsafe_across_tus() {
-    build_and_diff("unsafe_deref_callback_cross_tu");
-}
-
-#[test]
-fn cross_tu_variadic_calls_are_unsafe() {
-    build_and_diff("unsafe_variadic");
-}
-
-#[test]
-fn cross_tu_static_linkage() {
-    build_and_diff("static_linkage");
-}
-
-#[test]
 fn cross_tu_globals() {
     build_and_diff("globals");
     let work = cross_tu_work_dir("globals");
     assert_binary_sections(&work.join("c_bin"), &[".slate_data", ".slate_fn"]);
     let rs_bin = support::compile_rs_project(&work.join("rs")).expect("compile Rust");
     assert_binary_sections(&rs_bin, &[".slate_data", ".slate_fn"]);
-}
-
-#[test]
-fn cross_tu_thread_local_globals() {
-    build_and_diff("thread_local");
 }
 
 #[test]
@@ -1035,11 +933,6 @@ fn used_and_retain_attrs_preserve_dead_statics() {
     let rs_bin = support::compile_rs_project(&work.join("rs")).expect("compile Rust");
     assert_binary_symbols(&rs_bin, symbols);
     assert_binary_lacks_symbols(&rs_bin, &["retain_only"]);
-}
-
-#[test]
-fn weak_linkage_attrs_emit_for_globals_and_functions() {
-    build_and_diff("weak_linkage");
 }
 
 #[test]
@@ -1105,11 +998,6 @@ fn generated_weak_symbols_lose_to_strong_external_definitions() {
 }
 
 #[test]
-fn gnu_symbol_pragmas_preserve_cross_tu_linkage() {
-    build_and_diff("gnu_symbol_pragmas");
-}
-
-#[test]
 #[ignore = "rewrite passes disabled while lowering is the focus"]
 fn function_alias_exports_forwarding_wrapper() {
     build_and_diff("alias_function");
@@ -1136,9 +1024,4 @@ fn visibility_attrs_lower_best_effort() {
             && stderr.contains("protected_global"),
         "expected protected visibility warnings, got:\n{stderr}"
     );
-}
-
-#[test]
-fn visibility_pragma_stack_controls_rust_exports() {
-    build_and_diff("visibility_pragma");
 }

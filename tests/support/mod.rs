@@ -101,7 +101,6 @@ fn test_target_dir_for_project(project: &std::path::Path) -> std::path::PathBuf 
     if let Err(e) = std::fs::create_dir_all(&td) {
         eprintln!("could not create test target dir {}: {}", td.display(), e);
     }
-    unsafe { std::env::set_var("CARGO_TARGET_DIR", td.as_os_str()) }
     td
 }
 

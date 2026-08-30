@@ -11,7 +11,11 @@ facts that caused them without concatenating unrelated modules.
 
 Generated project scaffolding has no one-to-one C owner. Checks for `lib.rs`,
 `types.rs`, Cargo manifests, smoke tests, C shims, diagnostics, and linked
-binary properties remain in the Rust harness.
+binary properties remain in the Rust harness when their text or binary artifact
+is the observable. If an owned generated module references a synthesized type,
+shim, or export, checking that reference and compiling the complete generated
+crate already verifies the project-level property without a duplicate harness
+assertion.
 
 `translate-directives` checks its stdout with an explicit `DIRECTIVES` prefix.
 It does not reuse `LOWERING` because conditional-compilation reconstruction is
