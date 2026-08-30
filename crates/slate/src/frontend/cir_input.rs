@@ -2,7 +2,8 @@ use std::collections::BTreeMap;
 use std::path::Path;
 
 use crate::frontend::toolchain::{
-    EmitError, Tool, ToolOperation, emit_generic_with_args, emit_generic_with_args_flattened,
+    EmitError, Tool, ToolOperation, emit_generic_with_args, emit_generic_with_args_cfg_flattened,
+    emit_generic_with_args_flattened,
 };
 use clang_ir::Error as ParseError;
 use clang_ir::ast::{Module as GenericModule, Operation as Op};
@@ -63,7 +64,21 @@ fn contains_nested_label(op: &Op) -> bool {
     })
 }
 
-fn needs_flattening(op: &Op) -> bool {
+fn contains_asm_goto(op: &Op) -> bool {
+    (op.mnemonic() == "asm"
+        && op
+            .attr("asm_string")
+            .and_then(|value| value.as_str())
+            .is_some_and(|template| template.contains(":l}")))
+        || op.regions.iter().any(|region| {
+            region
+                .blocks
+                .iter()
+                .any(|block| block.ops.iter().any(contains_asm_goto))
+        })
+}
+
+fn needs_goto_flattening(op: &Op) -> bool {
     op.mnemonic() == "func"
         && op
             .regions
@@ -72,11 +87,22 @@ fn needs_flattening(op: &Op) -> bool {
         && contains_goto(op)
 }
 
+fn needs_asm_goto_flattening(op: &Op) -> bool {
+    op.mnemonic() == "func"
+        && op
+            .regions
+            .first()
+            .is_some_and(|body| body.blocks.len() <= 1)
+        && !contains_goto(op)
+        && contains_nested_label(op)
+        && contains_asm_goto(op)
+}
+
 fn module_op(module: &GenericModule) -> Option<&Op> {
     module.ops.iter().find(|op| op.name == "builtin.module")
 }
 
-fn module_needs_flattening(module: &GenericModule) -> bool {
+fn module_needs_flattening(module: &GenericModule, needs_flattening: fn(&Op) -> bool) -> bool {
     let Some(module_op) = module_op(module) else {
         return false;
     };
@@ -88,7 +114,11 @@ fn module_needs_flattening(module: &GenericModule) -> bool {
         .any(needs_flattening)
 }
 
-fn merge_flattened_functions(module: &mut GenericModule, flat_module: &GenericModule) {
+fn merge_flattened_functions(
+    module: &mut GenericModule,
+    flat_module: &GenericModule,
+    needs_flattening: fn(&Op) -> bool,
+) {
     let Some(flat_module_op) = module_op(flat_module) else {
         return;
     };
@@ -118,16 +148,11 @@ fn merge_flattened_functions(module: &mut GenericModule, flat_module: &GenericMo
 }
 
 /// Parses `src` into a `Module` exactly like `parse_module(&emit_generic_with_args(..))`,
-/// except that any function which is still structured (a single top-level
-/// block) but contains a raw `cir.goto` — a shape structured lowering can't
-/// bridge on its own (see slate-sy7c/slate-fex8) — is replaced with its
-/// fully flattened form (`cir-opt --cir-flatten-cfg --cir-goto-solver`),
-/// which `lower_dispatch` knows how to turn into a correct (if less
-/// idiomatic) state machine. Functions that don't contain a goto, and
-/// functions CIR already emits as multi-block on their own (computed goto,
-/// asm goto, top-level-labeled functions), are left completely untouched —
-/// the extra cir-opt invocation only happens at all when the first parse
-/// finds at least one goto-bearing structured function.
+/// except that structured functions requiring dispatch are replaced with a
+/// flattened form that `lower_dispatch` can turn into a state machine. Raw
+/// `cir.goto` functions use `--cir-flatten-cfg --cir-goto-solver`; nested asm
+/// goto functions use `--cir-flatten-cfg` alone so their label identities
+/// survive. Other functions keep their structured form.
 pub fn emit_module(src: &Path, extra_args: &[String]) -> Result<Module, ModuleError> {
     let generic = match emit_generic_with_args(src, extra_args) {
         Ok(generic) => generic,
@@ -144,9 +169,13 @@ pub fn emit_module(src: &Path, extra_args: &[String]) -> Result<Module, ModuleEr
         Err(error) => return Err(error.into()),
     };
     let mut module = parse_module(&generic)?;
-    if module_needs_flattening(&module) {
+    if module_needs_flattening(&module, needs_asm_goto_flattening) {
+        let flat_module = parse_module(&emit_generic_with_args_cfg_flattened(src, extra_args)?)?;
+        merge_flattened_functions(&mut module, &flat_module, needs_asm_goto_flattening);
+    }
+    if module_needs_flattening(&module, needs_goto_flattening) {
         let flat_module = parse_module(&emit_generic_with_args_flattened(src, extra_args)?)?;
-        merge_flattened_functions(&mut module, &flat_module);
+        merge_flattened_functions(&mut module, &flat_module, needs_goto_flattening);
     }
     Ok(Module::from_generic(module)?)
 }

@@ -25,7 +25,8 @@ an **upstream blocker**, not a slate gap — no amount of lowering work fixes it
 - `"+r"` read-write constraints — compiles to `inlateout(reg)`
 - Numeric matching constraints (`"0"` tying an input to an output) — compiles
   to `inlateout(reg)`
-- `asm goto` with labels — `tests/fixtures/gnu_asm_goto.c`
+- `asm goto` with labels, including a macro-expanded statement expression —
+  `tests/fixtures/gnu_asm_goto.c`, `asm_goto_statement_expr.c`
 - Named operands (`%[name]`) — handled in template translation,
   `src/frontend/lowerer/asm.rs:200`
 - Whole-template Intel wrappers (`.intel_syntax noprefix` through
@@ -37,6 +38,11 @@ an **upstream blocker**, not a slate gap — no amount of lowering work fixes it
 - clobber lists including `"cc"`/`"memory"`
 
 ## Not supported
+
+- Repeated statement-expression macro expansions that reuse scoped asm-goto
+  label names in one function fail explicitly. CIR's goto solver removes the
+  scoped label identity while flattening; Slate rejects the missing or
+  ambiguous target instead of selecting another same-named label.
 
 - **Memory operand constraints (`"m"`/`"+m"`)** — errors cleanly at lowering
   (`unsupported inline asm input constraint`). Upstream blocker: Rust's

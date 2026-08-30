@@ -367,9 +367,21 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 unsupported!("lower: asm goto requires dispatch control flow");
             };
             for label in asm_goto.labels {
-                let Some(state) = dispatch.label_to_state.get(&label).copied() else {
+                let states = dispatch.label_states.get(&label.name);
+                let state = states.and_then(|states| {
+                    if let Some(target) = label.target.as_ref() {
+                        states
+                            .iter()
+                            .find(|(point, _)| point.as_ref() == Some(target))
+                            .map(|(_, state)| *state)
+                    } else {
+                        (states.len() == 1).then_some(states[0].1)
+                    }
+                });
+                let Some(state) = state else {
                     self.parent.ctx.diagnostics.error(format!(
-                        "lower: asm goto target `{label}` is missing from CIR"
+                        "lower: asm goto target `{}` is missing or ambiguous in CIR",
+                        label.name
                     ));
                     return;
                 };

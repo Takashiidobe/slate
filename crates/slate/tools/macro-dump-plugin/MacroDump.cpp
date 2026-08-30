@@ -368,6 +368,31 @@ public:
     return true;
   }
 
+  bool VisitGCCAsmStmt(GCCAsmStmt *Stmt) {
+    if (!Stmt->isAsmGoto())
+      return true;
+    SourceLocation Loc = SM.getExpansionLoc(Stmt->getAsmLoc());
+    if (Loc.isInvalid() || !SM.isWrittenInMainFile(Loc))
+      return true;
+    llvm::json::Array Labels;
+    for (unsigned I = 0; I < Stmt->getNumLabels(); ++I) {
+      llvm::json::Object Label{{"name", Stmt->getLabelName(I)}};
+      SourceLocation Target =
+          SM.getExpansionLoc(Stmt->getLabelExpr(I)->getLabel()->getLocation());
+      if (Target.isValid())
+        Label["target"] = sourcePoint(SM, Target);
+      Labels.push_back(std::move(Label));
+    }
+    llvm::json::Object Event{
+        {"file", SM.getFilename(Loc).str()},
+        {"offset", static_cast<int64_t>(SM.getFileOffset(Loc))},
+        {"labels", std::move(Labels)},
+    };
+    llvm::errs() << "ASM_GOTO " << llvm::json::Value(std::move(Event))
+                 << "\n";
+    return true;
+  }
+
   bool VisitCallExpr(CallExpr *Call) {
     SourceLocation Loc = SM.getExpansionLoc(Call->getExprLoc());
     if (Loc.isInvalid() || !SM.isWrittenInMainFile(Loc))

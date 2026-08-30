@@ -833,6 +833,7 @@ struct DispatchCtx {
     loop_label: Label,
     state_var: String,
     label_to_state: BTreeMap<String, usize>,
+    label_states: BTreeMap<String, Vec<(Option<SourcePoint>, usize)>>,
     block_to_state: BTreeMap<String, usize>,
     cross_block_names: BTreeMap<String, String>,
     block_args: BTreeMap<usize, Vec<String>>,
