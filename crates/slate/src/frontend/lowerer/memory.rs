@@ -193,6 +193,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_ptr_stride(&mut self, op: &inst::PtrStride) {
+        if let Some(state_expr) = self.indirect_target_values.get(&op.stride).cloned() {
+            self.indirect_target_values
+                .insert(op.result.clone(), state_expr);
+            self.lower_opaque_pointer(&op.result, &op.result_ty, true);
+            return;
+        }
         let base_ty = self.value_type(&op.base);
         let function_pointer_stride = base_ty.is_some_and(is_cir_function_pointer_type)
             && is_cir_function_pointer_type(&op.result_ty);
