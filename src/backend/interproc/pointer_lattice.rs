@@ -892,6 +892,7 @@ impl ClassifyCtx<'_> {
                 self.expr(index);
             }
             Expr::Cast { expr, .. } => self.place(expr, is_write),
+            Expr::Field { base, .. } | Expr::TupleField { base, .. } => self.place(base, is_write),
             other => self.expr(other),
         }
     }
