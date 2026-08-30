@@ -671,15 +671,15 @@ int main(void) {
 // REWRITES-NEXT: return __retval;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn pair_lo({{arg[0-9]+}}: &Pair) -> *mut i32 {
+// REWRITES-NEXT: fn pair_lo({{arg[0-9]+}}: &mut Pair) -> *mut i32 {
 // REWRITES-NEXT: let mut __retval: *mut i32 = std::ptr::null_mut();
-// REWRITES-NEXT: __retval = unsafe { std::ptr::addr_of_mut!((*(({{arg[0-9]+}} as *const Pair) as *mut Pair)).lo) };
+// REWRITES-NEXT: __retval = unsafe { std::ptr::addr_of_mut!((*{{arg[0-9]+}}).lo) };
 // REWRITES-NEXT: return __retval;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn pair_hi({{arg[0-9]+}}: &Pair) -> *mut i32 {
+// REWRITES-NEXT: fn pair_hi({{arg[0-9]+}}: &mut Pair) -> *mut i32 {
 // REWRITES-NEXT: let mut __retval: *mut i32 = std::ptr::null_mut();
-// REWRITES-NEXT: __retval = unsafe { std::ptr::addr_of_mut!((*(({{arg[0-9]+}} as *const Pair) as *mut Pair)).hi) };
+// REWRITES-NEXT: __retval = unsafe { std::ptr::addr_of_mut!((*{{arg[0-9]+}}).hi) };
 // REWRITES-NEXT: return __retval;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -688,8 +688,8 @@ int main(void) {
 // REWRITES-NEXT: let mut pair: Pair = Pair { lo: 1, hi: 2 };
 // REWRITES-NEXT: let mut lo: *mut i32 = std::ptr::null_mut();
 // REWRITES-NEXT: let mut hi: *mut i32 = std::ptr::null_mut();
-// REWRITES-NEXT: lo = pair_lo(unsafe { &(*std::ptr::addr_of_mut!(pair)) });
-// REWRITES-NEXT: hi = pair_hi(unsafe { &(*std::ptr::addr_of_mut!(pair)) });
+// REWRITES-NEXT: lo = pair_lo(unsafe { &mut (*std::ptr::addr_of_mut!(pair)) });
+// REWRITES-NEXT: hi = pair_hi(unsafe { &mut (*std::ptr::addr_of_mut!(pair)) });
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = lo;
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         *{{_v[0-9]+}} = (unsafe { *{{_v[0-9]+}} }) + unsafe { *hi };

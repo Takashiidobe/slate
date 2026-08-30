@@ -402,10 +402,10 @@ int main(void) {
 // REWRITES-NEXT: return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn fill_via_ptr({{arg[0-9]+}}: &table, {{arg[0-9]+}}: i32) {
+// REWRITES-NEXT: fn fill_via_ptr({{arg[0-9]+}}: &mut table, {{arg[0-9]+}}: i32) {
 // REWRITES-NEXT: let mut i: i32 = {{arg[0-9]+}};
 // REWRITES-NEXT: let mut row: *mut [i8; 3] = std::ptr::null_mut();
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut [i8; 3] = (unsafe { std::ptr::addr_of_mut!((*(({{arg[0-9]+}} as *const table) as *mut table)).rows) }) as *mut [i8; 3];
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut [i8; 3] = (unsafe { std::ptr::addr_of_mut!((*{{arg[0-9]+}}).rows) }) as *mut [i8; 3];
 // REWRITES-NEXT: row = {{_v[0-9]+}};
 // REWRITES-NEXT: let {{_v[0-9]+}}: i8 = 88;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
@@ -518,7 +518,7 @@ int main(void) {
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: fill(unsafe { &(*std::ptr::addr_of_mut!(t)) });
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-NEXT: fill_via_ptr(unsafe { &(*std::ptr::addr_of_mut!(t)) }, {{_v[0-9]+}});
+// REWRITES-NEXT: fill_via_ptr(unsafe { &mut (*std::ptr::addr_of_mut!(t)) }, {{_v[0-9]+}});
 // REWRITES-NEXT: {
 // REWRITES-NEXT:         let mut i: i32 = 0;
 // REWRITES-NEXT:         i = 0;
