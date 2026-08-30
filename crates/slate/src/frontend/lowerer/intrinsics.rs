@@ -34,43 +34,25 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             ))));
             return;
         }
-        if self.lower_extended_asm(op, &operands) {
-            return;
-        }
-        let Some(result) = &op.res else {
-            return;
-        };
-        let expr = operands
-            .first()
-            .map(|operand| self.operand_expr(operand))
-            .unwrap_or_else(|| {
-                op.res_ty
-                    .as_ref()
-                    .map(|ty| self.parent.rust_type(ty))
-                    .map(|ty| self.parent.default_value_expr(&ty))
-                    .unwrap_or(Expr::Value(RustValue::I64(0)))
-            });
-        self.materialize_expr(result, expr, op.res_ty.as_ref());
+        self.lower_extended_asm(op, &operands);
     }
 
-    fn lower_extended_asm(&mut self, op: &inst::Asm, input_operands: &[&str]) -> bool {
+    fn lower_extended_asm(&mut self, op: &inst::Asm, input_operands: &[&str]) {
+        macro_rules! unsupported {
+            ($($arg:tt)*) => {{
+                self.parent.ctx.diagnostics.error(format!($($arg)*));
+                return;
+            }};
+        }
         let Ok(template) = String::from_utf8(decode_cir_string(&op.asm_string)) else {
-            self.parent
-                .ctx
-                .diagnostics
-                .error("lower: inline assembly template is not valid UTF-8");
-            return true;
+            unsupported!("lower: inline assembly template is not valid UTF-8");
         };
         let label_count = asm_template_label_count(&template);
         let asm_goto = if label_count == 0 {
             None
         } else {
             let Some(asm_goto) = self.asm_gotos.pop_front() else {
-                self.parent
-                    .ctx
-                    .diagnostics
-                    .error("lower: asm goto labels are missing from the Clang AST");
-                return true;
+                unsupported!("lower: asm goto labels are missing from the Clang AST");
             };
             Some(asm_goto)
         };
@@ -78,11 +60,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .as_ref()
             .is_some_and(|asm_goto| asm_goto.labels.len() != label_count)
         {
-            self.parent
-                .ctx
-                .diagnostics
-                .error("lower: asm goto label count differs between CIR and the Clang AST");
-            return true;
+            unsupported!("lower: asm goto label count differs between CIR and the Clang AST");
         }
         let constraints = op
             .constraints
@@ -91,27 +69,47 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .take_while(|constraint| !constraint.starts_with("~{"))
             .collect::<Vec<_>>();
         let Some(output_count) = constraints.len().checked_sub(input_operands.len()) else {
-            return false;
+            unsupported!(
+                "lower: inline asm has more operands than constraints in `{}`",
+                op.constraints
+            );
         };
         let result_count = usize::from(op.res.is_some());
         if output_count != result_count && !(result_count == 1 && output_count > 1) {
-            return false;
+            unsupported!(
+                "lower: inline asm output count {output_count} does not match result count {result_count} in `{}`",
+                op.constraints
+            );
         }
-        if constraints[..output_count]
+        let Some(output_specs): Option<Vec<(AsmRegConstraint, bool)>> = constraints[..output_count]
             .iter()
-            .any(|constraint| !matches!(*constraint, "=r" | "=&r"))
-        {
-            return false;
-        }
+            .map(|constraint| parse_output_reg_constraint(constraint))
+            .collect()
+        else {
+            unsupported!(
+                "lower: unsupported inline asm output constraint in `{}`",
+                op.constraints
+            );
+        };
         let mut tied_outputs = vec![None; output_count];
+        let mut input_specs: Vec<Option<AsmRegConstraint>> =
+            Vec::with_capacity(input_operands.len());
         for (operand_index, constraint) in constraints[output_count..].iter().enumerate() {
             if let Ok(output_index) = constraint.parse::<usize>() {
                 if output_index >= output_count || tied_outputs[output_index].is_some() {
-                    return false;
+                    unsupported!(
+                        "lower: inline asm tied constraint `{constraint}` is out of range or duplicated in `{}`",
+                        op.constraints
+                    );
                 }
                 tied_outputs[output_index] = Some(operand_index);
-            } else if !matches!(*constraint, "r" | "i") {
-                return false;
+                input_specs.push(None);
+            } else if *constraint == "i" {
+                input_specs.push(None);
+            } else if let Some(spec) = parse_input_reg_constraint(constraint) {
+                input_specs.push(Some(spec));
+            } else {
+                unsupported!("lower: unsupported inline asm input constraint `{constraint}`");
             }
         }
         let result_types: Vec<CirType> = if output_count == 0 {
@@ -120,7 +118,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             let Some(result_types) =
                 asm_output_types(op.res_ty.as_ref(), &self.parent.aliases, output_count)
             else {
-                return false;
+                unsupported!("lower: could not determine inline asm output types");
             };
             result_types.into_iter().cloned().collect()
         };
@@ -129,7 +127,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .map(|operand| self.value_type(operand).cloned())
             .collect()
         else {
-            return false;
+            unsupported!("lower: could not determine inline asm input operand types");
         };
         if constraints[output_count..]
             .iter()
@@ -138,7 +136,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 *constraint == "i" && self.known_arith_value(operand).is_none()
             })
         {
-            return false;
+            unsupported!("lower: inline asm immediate operand is not a known constant");
         }
         let mut slot_to_rust = vec![0; constraints.len() + label_count];
         for (output_index, slot) in slot_to_rust.iter_mut().take(output_count).enumerate() {
@@ -172,11 +170,22 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             &template_constraints,
             &template_types,
         ) else {
-            return false;
+            unsupported!(
+                "lower: could not translate inline asm template `{}`",
+                op.constraints
+            );
         };
         let mut operands = Vec::new();
         let mut output_exprs = Vec::new();
         let mut output_names = Vec::new();
+        struct EbxFixup {
+            operand_index: usize,
+            modifier: char,
+            literal: &'static str,
+            read: bool,
+            write: bool,
+        }
+        let mut ebx_fixups: Vec<EbxFixup> = Vec::new();
         if asm_goto.is_some()
             && output_count > 0
             && (result_count != output_count
@@ -185,13 +194,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     .as_ref()
                     .is_some_and(|result| !self.asm_output_places.contains_key(result)))
         {
-            self.parent
-                .ctx
-                .diagnostics
-                .error("lower: asm goto output does not have a direct CIR destination");
-            return true;
+            unsupported!("lower: asm goto output does not have a direct CIR destination");
         }
-        for (output_index, constraint) in constraints[..output_count].iter().enumerate() {
+        for (output_index, (spec, early_clobber)) in output_specs.into_iter().enumerate() {
             let direct_output = (output_index == 0)
                 .then_some(op.res.as_ref())
                 .flatten()
@@ -209,17 +214,24 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 });
                 (Expr::Var(name.clone().into()), Some(name))
             };
+            let Some(reg) = asm_reg_for_constraint(spec, &template_types[output_index]) else {
+                unsupported!(
+                    "lower: unsupported inline asm output register in `{}`",
+                    op.constraints
+                );
+            };
+            let late = !early_clobber;
             if let Some(operand_index) = tied_outputs[output_index] {
                 operands.push(AsmOperand::InOut {
-                    reg: AsmReg::Class("reg".into()),
-                    late: *constraint == "=r",
+                    reg,
+                    late,
                     input: self.operand_expr(input_operands[operand_index]),
                     output,
                 });
             } else {
                 operands.push(AsmOperand::Out {
-                    reg: AsmReg::Class("reg".into()),
-                    late: *constraint == "=r",
+                    reg,
+                    late,
                     value: output,
                 });
             }
@@ -245,8 +257,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     .unwrap();
                 AsmOperand::Const(int_value_expr(value))
             } else {
+                let spec = input_specs[operand_index].clone().unwrap();
+                let Some(reg) =
+                    asm_reg_for_constraint(spec, &template_types[output_count + operand_index])
+                else {
+                    unsupported!(
+                        "lower: unsupported inline asm input register in `{}`",
+                        op.constraints
+                    );
+                };
                 AsmOperand::In {
-                    reg: AsmReg::Class("reg".into()),
+                    reg,
                     value: self.operand_expr(input_operands[operand_index]),
                 }
             };
@@ -254,18 +275,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
         if let Some(asm_goto) = asm_goto {
             let Some(dispatch) = self.dispatch.as_ref() else {
-                self.parent
-                    .ctx
-                    .diagnostics
-                    .error("lower: asm goto requires dispatch control flow");
-                return true;
+                unsupported!("lower: asm goto requires dispatch control flow");
             };
             for label in asm_goto.labels {
                 let Some(state) = dispatch.label_to_state.get(&label).copied() else {
                     self.parent.ctx.diagnostics.error(format!(
                         "lower: asm goto target `{label}` is missing from CIR"
                     ));
-                    return true;
+                    return;
                 };
                 operands.push(AsmOperand::Label {
                     state: Expr::Var(dispatch.state_var.clone().into()),
@@ -296,7 +313,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.immutable_temps
                 .extend(output_names.into_iter().flatten());
         }
-        true
     }
 
     pub(super) fn lower_eh_setjmp(&mut self, op: &inst::EhSetjmp) {

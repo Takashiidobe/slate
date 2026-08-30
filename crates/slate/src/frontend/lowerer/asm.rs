@@ -253,6 +253,9 @@ pub(super) fn translate_asm_template(
         };
         let rust_slot = *slot_to_rust.get(slot)?;
         let constraint = *constraints.get(slot)?;
+        if constraint_is_explicit_register(constraint) {
+            return None;
+        }
         referenced_operands.insert(rust_slot);
         translated.push('{');
         translated.push_str(&rust_slot.to_string());
@@ -277,9 +280,12 @@ pub(super) fn translate_asm_template(
         let source_slot = slot_to_rust
             .iter()
             .position(|mapped| *mapped == rust_slot)?;
+        let constraint = constraints[source_slot];
+        if constraint_is_explicit_register(constraint) {
+            continue;
+        }
         translated.push_str("\n/* {");
         translated.push_str(&rust_slot.to_string());
-        let constraint = constraints[source_slot];
         if (constraint.contains('r')
             || constraint
                 .parse::<usize>()
@@ -296,6 +302,12 @@ pub(super) fn translate_asm_template(
     Some(translated)
 }
 
+fn constraint_is_explicit_register(mut constraint: &str) -> bool {
+    constraint = constraint.strip_prefix('=').unwrap_or(constraint);
+    constraint = constraint.strip_prefix('&').unwrap_or(constraint);
+    constraint.starts_with('{') || matches!(constraint, "a" | "b" | "c" | "d" | "S" | "D")
+}
+
 pub(super) fn rust_asm_register_modifier(ty: &Type) -> Option<char> {
     match int_bits(&ty.render())? {
         8 => Some('l'),
@@ -304,4 +316,103 @@ pub(super) fn rust_asm_register_modifier(ty: &Type) -> Option<char> {
         64 => Some('r'),
         _ => None,
     }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(super) enum AsmRegConstraint {
+    Generic,
+    FixedLetter(char),
+    ExplicitName(String),
+}
+
+pub(super) fn parse_output_reg_constraint(constraint: &str) -> Option<(AsmRegConstraint, bool)> {
+    let rest = constraint.strip_prefix('=')?;
+    let (early_clobber, rest) = match rest.strip_prefix('&') {
+        Some(rest) => (true, rest),
+        None => (false, rest),
+    };
+    let kind = parse_reg_constraint(rest)?;
+    Some((kind, early_clobber))
+}
+
+pub(super) fn parse_input_reg_constraint(constraint: &str) -> Option<AsmRegConstraint> {
+    parse_reg_constraint(constraint)
+}
+
+fn parse_reg_constraint(constraint: &str) -> Option<AsmRegConstraint> {
+    if let Some(name) = constraint
+        .strip_prefix('{')
+        .and_then(|rest| rest.strip_suffix('}'))
+    {
+        return (!name.is_empty()).then(|| AsmRegConstraint::ExplicitName(name.to_string()));
+    }
+    match constraint {
+        "r" | "g" | "imr" => Some(AsmRegConstraint::Generic),
+        "a" | "b" | "c" | "d" | "S" | "D" => {
+            Some(AsmRegConstraint::FixedLetter(constraint.chars().next()?))
+        }
+        _ => None,
+    }
+}
+
+pub(super) fn asm_reg_for_constraint(kind: AsmRegConstraint, ty: &Type) -> Option<AsmReg> {
+    let letter = match &kind {
+        AsmRegConstraint::Generic => return Some(AsmReg::Class("reg".into())),
+        AsmRegConstraint::FixedLetter(letter) => *letter,
+        AsmRegConstraint::ExplicitName(name) => match x86_register_letter_from_spelling(name) {
+            Some(letter) => letter,
+            None => return Some(AsmReg::Explicit(name.clone())),
+        },
+    };
+    let bits = match ty {
+        Type::Ptr { .. } | Type::FnPtr { .. } => 64,
+        _ => int_bits(&ty.render()).unwrap_or(32),
+    };
+    x86_fixed_register_name(letter, bits).map(|name| AsmReg::Explicit(name.into()))
+}
+
+fn x86_register_letter_from_spelling(spelling: &str) -> Option<char> {
+    Some(match spelling {
+        "al" | "ah" | "ax" | "eax" | "rax" => 'a',
+        "bl" | "bh" | "bx" | "ebx" | "rbx" => 'b',
+        "cl" | "ch" | "cx" | "ecx" | "rcx" => 'c',
+        "dl" | "dh" | "dx" | "edx" | "rdx" => 'd',
+        "sil" | "si" | "esi" | "rsi" => 'S',
+        "dil" | "di" | "edi" | "rdi" => 'D',
+        _ => return None,
+    })
+}
+
+pub(super) fn is_ebx_family_reg(name: &str) -> bool {
+    matches!(name, "bl" | "bh" | "bx" | "ebx" | "rbx")
+}
+
+fn x86_fixed_register_name(letter: char, bits: u32) -> Option<&'static str> {
+    Some(match (letter, bits) {
+        ('a', 8) => "al",
+        ('a', 16) => "ax",
+        ('a', 32) => "eax",
+        ('a', 64) => "rax",
+        ('b', 8) => "bl",
+        ('b', 16) => "bx",
+        ('b', 32) => "ebx",
+        ('b', 64) => "rbx",
+        ('c', 8) => "cl",
+        ('c', 16) => "cx",
+        ('c', 32) => "ecx",
+        ('c', 64) => "rcx",
+        ('d', 8) => "dl",
+        ('d', 16) => "dx",
+        ('d', 32) => "edx",
+        ('d', 64) => "rdx",
+        ('S', 8) => "sil",
+        ('S', 16) => "si",
+        ('S', 32) => "esi",
+        ('S', 64) => "rsi",
+        ('D', 8) => "dil",
+        ('D', 16) => "di",
+        ('D', 32) => "edi",
+        ('D', 64) => "rdi",
+        _ => return None,
+    })
 }
