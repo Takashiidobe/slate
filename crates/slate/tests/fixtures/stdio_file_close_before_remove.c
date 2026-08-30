@@ -26,38 +26,38 @@ int main(void) {
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut f: *mut libc::FILE = std::ptr::null_mut();
-// LOWERING-NEXT:     let _v0: i32 = 0;
-// LOWERING-NEXT:     __retval = _v0;
-// LOWERING-NEXT:     let _v1: *mut i8 = b"slate_stdio_close_before_remove.tmp\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v2: *mut i8 = b"w\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v3: *mut libc::FILE = unsafe { fopen(_v1 as *const i8, _v2 as *const i8) };
-// LOWERING-NEXT:     f = _v3;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"slate_stdio_close_before_remove.tmp\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"w\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut libc::FILE = unsafe { fopen({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as *const i8) };
+// LOWERING-NEXT:     f = {{_v[0-9]+}};
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let _v4: *mut libc::FILE = f;
-// LOWERING-NEXT:         let _v5: bool = _v4 != std::ptr::null_mut();
-// LOWERING-NEXT:         let _v6: bool = !_v5;
-// LOWERING-NEXT:         if _v6 {
-// LOWERING-NEXT:             let _v7: *mut i8 = b"open-fail\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let _v8: i32 = unsafe { puts(_v7 as *const i8) };
-// LOWERING-NEXT:             let _v9: i32 = 0;
-// LOWERING-NEXT:             __retval = _v9;
-// LOWERING-NEXT:             let _v10: i32 = __retval;
-// LOWERING-NEXT:             std::process::exit(_v10 as i32);
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut libc::FILE = f;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-NEXT:         if {{_v[0-9]+}} {
+// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"open-fail\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { puts({{_v[0-9]+}} as *const i8) };
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:             __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:             std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let _v11: *mut i8 = b"owned\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v12: *mut libc::FILE = f;
-// LOWERING-NEXT:     let _v13: i32 = unsafe { fputs(_v11 as *const i8, _v12 as *mut libc::FILE) };
-// LOWERING-NEXT:     let _v14: *mut libc::FILE = f;
-// LOWERING-NEXT:     let _v15: i32 = unsafe { fclose(_v14 as *mut libc::FILE) };
-// LOWERING-NEXT:     let _v16: *mut i8 = b"slate_stdio_close_before_remove.tmp\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v17: i32 = unsafe { remove(_v16 as *const i8) };
-// LOWERING-NEXT:     let _v18: *mut i8 = b"done\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v19: i32 = unsafe { puts(_v18 as *const i8) };
-// LOWERING-NEXT:     let _v20: i32 = 0;
-// LOWERING-NEXT:     __retval = _v20;
-// LOWERING-NEXT:     let _v21: i32 = __retval;
-// LOWERING-NEXT:     std::process::exit(_v21 as i32);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"owned\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut libc::FILE = f;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { fputs({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as *mut libc::FILE) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut libc::FILE = f;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { fclose({{_v[0-9]+}} as *mut libc::FILE) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"slate_stdio_close_before_remove.tmp\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { remove({{_v[0-9]+}} as *const i8) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"done\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { puts({{_v[0-9]+}} as *const i8) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -76,26 +76,26 @@ int main(void) {
 // REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut f: *mut libc::FILE = std::ptr::null_mut();
 // REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: let _v1: *mut i8 = b"slate_stdio_close_before_remove.tmp\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v2: *mut i8 = b"w\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: f = unsafe { fopen(_v1 as *const i8, _v2 as *const i8) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"slate_stdio_close_before_remove.tmp\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"w\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: f = unsafe { fopen({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT: {
-// REWRITES-NEXT:         let _v5: bool = f != std::ptr::null_mut();
-// REWRITES-NEXT:         let _v6: bool = !_v5;
-// REWRITES-NEXT:         if _v6 {
-// REWRITES-NEXT:                     let _v7: *mut i8 = b"open-fail\0".as_ptr() as *mut i8;
-// REWRITES-NEXT:                     let _v8: i32 = unsafe { puts(_v7 as *const i8) };
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = f != std::ptr::null_mut();
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-NEXT:                     let {{_v[0-9]+}}: *mut i8 = b"open-fail\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { puts({{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT:                     __retval = 0;
 // REWRITES-NEXT:                     std::process::exit(__retval as i32);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
-// REWRITES-NEXT: let _v11: *mut i8 = b"owned\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v13: i32 = unsafe { fputs(_v11 as *const i8, f as *mut libc::FILE) };
-// REWRITES-NEXT: let _v15: i32 = unsafe { fclose(f as *mut libc::FILE) };
-// REWRITES-NEXT: let _v16: *mut i8 = b"slate_stdio_close_before_remove.tmp\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v17: i32 = unsafe { remove(_v16 as *const i8) };
-// REWRITES-NEXT: let _v18: *mut i8 = b"done\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v19: i32 = unsafe { puts(_v18 as *const i8) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"owned\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { fputs({{_v[0-9]+}} as *const i8, f as *mut libc::FILE) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { fclose(f as *mut libc::FILE) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"slate_stdio_close_before_remove.tmp\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { remove({{_v[0-9]+}} as *const i8) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"done\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { puts({{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: std::process::exit(__retval as i32);
 // REWRITES-NEXT: }

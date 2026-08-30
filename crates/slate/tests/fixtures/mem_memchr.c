@@ -25,6 +25,150 @@ int main(void) {
          (long)(const_hit - cbuf));
   return 0;
 }
+// SLATE-FILECHECK-BEGIN lowering
+// LOWERING: #![feature(c_variadic)]
+// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn __slate_memchr(s: *const core::ffi::c_void, c: i32, n: usize) -> *mut core::ffi::c_void {
+// LOWERING-NEXT:     let b: u8 = c as u8;
+// LOWERING-NEXT:     let bytes: *const u8 = s as *const u8;
+// LOWERING-NEXT:     let mut i: usize = 0;
+// LOWERING-NEXT:     while i < n {
+// LOWERING-NEXT:         if (unsafe { *bytes.add(i) }) == b {
+// LOWERING-NEXT:             return (unsafe { bytes.add(i) }) as *mut core::ffi::c_void;
+// LOWERING-NEXT:         }
+// LOWERING-NEXT:         i += 1;
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     return std::ptr::null_mut();
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: #[repr(C)]
+// LOWERING-NEXT: struct __SlateAllocaFrame0(*mut u8, *mut u8, *mut u8, *mut u8, *mut i8, *mut i8, *mut i8, *mut u8, *mut u8, *mut u8, u64, i32, [i8; 4], [u8; 4], [u8; 8], i32);
+// LOWERING-EMPTY:
+// LOWERING-NEXT: unsafe extern "C" {
+// LOWERING-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let mut {{__slate_alloca_frame[0-9]+}}: __SlateAllocaFrame0 = __SlateAllocaFrame0(std::ptr::null_mut(), std::ptr::null_mut(), std::ptr::null_mut(), std::ptr::null_mut(), std::ptr::null_mut(), std::ptr::null_mut(), std::ptr::null_mut(), std::ptr::null_mut(), std::ptr::null_mut(), std::ptr::null_mut(), 0, 0, [0; 4], [0; 4], [0; 8], 0);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.15 = {{_v[0-9]+}};
+// LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.14 = [10, 20, 30, 40, 50, 60, 70, 80];
+// LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.13 = [9, 8, 7, 6];
+// LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.12 = [97, 98, 99, 0];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = {{__slate_alloca_frame[0-9]+}}.14[({{_v[0-9]+}} as usize)];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.11 = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 4;
+// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!({{__slate_alloca_frame[0-9]+}}.10), {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = {{__slate_alloca_frame[0-9]+}}.14.as_mut_ptr() as *mut u8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{__slate_alloca_frame[0-9]+}}.11;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = __slate_memchr({{_v[0-9]+}}, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as usize);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = {{_v[0-9]+}} as *mut u8;
+// LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.9 = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = {{__slate_alloca_frame[0-9]+}}.14.as_mut_ptr() as *mut u8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 99;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = __slate_memchr({{_v[0-9]+}}, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as usize);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = {{_v[0-9]+}} as *mut u8;
+// LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.8 = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = {{__slate_alloca_frame[0-9]+}}.14.as_mut_ptr() as *mut u8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 10;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = __slate_memchr({{_v[0-9]+}}, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as usize);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = {{_v[0-9]+}} as *mut u8;
+// LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.7 = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{__slate_alloca_frame[0-9]+}}.12.as_mut_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 4;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = __slate_memchr({{_v[0-9]+}}, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as usize);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{_v[0-9]+}} as *mut i8;
+// LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.6 = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{__slate_alloca_frame[0-9]+}}.12.as_mut_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 3;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = __slate_memchr({{_v[0-9]+}}, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as usize);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{_v[0-9]+}} as *mut i8;
+// LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.5 = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{__slate_alloca_frame[0-9]+}}.12.as_mut_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 2;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = __slate_memchr({{_v[0-9]+}}, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as usize);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{_v[0-9]+}} as *mut i8;
+// LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.4 = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = {{__slate_alloca_frame[0-9]+}}.14.as_mut_ptr() as *mut u8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{__slate_alloca_frame[0-9]+}}.11;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!({{__slate_alloca_frame[0-9]+}}.10)) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = __slate_memchr({{_v[0-9]+}}, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as usize);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = {{_v[0-9]+}} as *mut u8;
+// LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.3 = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = {{__slate_alloca_frame[0-9]+}}.14.as_mut_ptr() as *mut u8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add(2) };
+// LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.2 = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = {{__slate_alloca_frame[0-9]+}}.2;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{__slate_alloca_frame[0-9]+}}.11;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 2;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = __slate_memchr({{_v[0-9]+}}, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as usize);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = {{_v[0-9]+}} as *mut u8;
+// LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.1 = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = {{__slate_alloca_frame[0-9]+}}.13.as_mut_ptr() as *mut u8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 4;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = __slate_memchr({{_v[0-9]+}}, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as usize);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = {{_v[0-9]+}} as *mut u8;
+// LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.0 = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%ld %d %d %ld %d %d %ld %ld %ld\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = {{__slate_alloca_frame[0-9]+}}.9;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = {{__slate_alloca_frame[0-9]+}}.14.as_mut_ptr() as *mut u8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { {{_v[0-9]+}}.offset_from({{_v[0-9]+}}) as i64 };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = {{__slate_alloca_frame[0-9]+}}.8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = {{__slate_alloca_frame[0-9]+}}.7;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{__slate_alloca_frame[0-9]+}}.6;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{__slate_alloca_frame[0-9]+}}.12.as_mut_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { {{_v[0-9]+}}.offset_from({{_v[0-9]+}}) as i64 };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{__slate_alloca_frame[0-9]+}}.5;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{__slate_alloca_frame[0-9]+}}.4;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = {{__slate_alloca_frame[0-9]+}}.3;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = {{__slate_alloca_frame[0-9]+}}.14.as_mut_ptr() as *mut u8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { {{_v[0-9]+}}.offset_from({{_v[0-9]+}}) as i64 };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = {{__slate_alloca_frame[0-9]+}}.1;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = {{__slate_alloca_frame[0-9]+}}.2;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { {{_v[0-9]+}}.offset_from({{_v[0-9]+}}) as i64 };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = {{__slate_alloca_frame[0-9]+}}.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = {{__slate_alloca_frame[0-9]+}}.13.as_mut_ptr() as *mut u8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { {{_v[0-9]+}}.offset_from({{_v[0-9]+}}) as i64 };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.15 = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{__slate_alloca_frame[0-9]+}}.15;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// SLATE-FILECHECK-END lowering
+
 // REWRITES-DAG: fn __slate_memchr(
 // REWRITES-LABEL: {{^}}fn main() {
 // REWRITES-NOT: let mut hit

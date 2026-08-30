@@ -52,70 +52,70 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn fail_now() {
-// LOWERING-NEXT:     let _v0: *mut __slate_jmp_buf_tag = std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
-// LOWERING-NEXT:     let _v1: i32 = 1;
-// LOWERING-NEXT:     unsafe { longjmp(_v0 as *mut __slate_jmp_buf_tag, _v1 as i32) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag = std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     unsafe { longjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag, {{_v[0-9]+}} as i32) };
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C" fn check(arg2: i32) {
+// LOWERING-NEXT: extern "C" fn check({{arg[0-9]+}}: i32) {
 // LOWERING-NEXT:     let mut ok: i32 = 0;
-// LOWERING-NEXT:     ok = arg2;
+// LOWERING-NEXT:     ok = {{arg[0-9]+}};
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let _v0: i32 = ok;
-// LOWERING-NEXT:         let _v1: bool = _v0 != 0;
-// LOWERING-NEXT:         let _v2: bool = !_v1;
-// LOWERING-NEXT:         if _v2 {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = ok;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-NEXT:         if {{_v[0-9]+}} {
 // LOWERING-NEXT:             fail_now();
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let _v3: *mut i8 = b"PASS\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v4: i32 = unsafe { printf(_v3 as *const i8) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"PASS\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8) };
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn run_case(arg0: Option<unsafe extern "C" fn(i32)>, arg1: i32) {
+// LOWERING-NEXT: fn run_case({{arg[0-9]+}}: Option<unsafe extern "C" fn(i32)>, {{arg[0-9]+}}: i32) {
 // LOWERING-NEXT:     let mut r#fn: Option<unsafe extern "C" fn(i32)> = None;
 // LOWERING-NEXT:     let mut ok: i32 = 0;
-// LOWERING-NEXT:     r#fn = arg0;
-// LOWERING-NEXT:     ok = arg1;
+// LOWERING-NEXT:     r#fn = {{arg[0-9]+}};
+// LOWERING-NEXT:     ok = {{arg[0-9]+}};
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let _v0: *mut __slate_jmp_buf_tag = std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
-// LOWERING-NEXT:         let _v1: i32 = unsafe { setjmp(_v0 as *mut __slate_jmp_buf_tag) };
-// LOWERING-NEXT:         let _v2: bool = _v1 != 0;
-// LOWERING-NEXT:         if _v2 {
-// LOWERING-NEXT:             let _v3: i32 = unsafe { failures };
-// LOWERING-NEXT:             let _v4: i32 = _v3 + 1;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag = std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:         if {{_v[0-9]+}} {
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
 // LOWERING-NEXT:             unsafe {
-// LOWERING-NEXT:                 failures = _v4;
+// LOWERING-NEXT:                 failures = {{_v[0-9]+}};
 // LOWERING-NEXT:             }
-// LOWERING-NEXT:             let _v5: *mut i8 = b"FAIL\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let _v6: i32 = unsafe { printf(_v5 as *const i8) };
+// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"FAIL\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8) };
 // LOWERING-NEXT:             return;
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let _v7: Option<unsafe extern "C" fn(i32)> = r#fn;
-// LOWERING-NEXT:     let _v8: i32 = ok;
-// LOWERING-NEXT:     unsafe { _v7.unwrap()(_v8) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32)> = r#fn;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = ok;
+// LOWERING-NEXT:     unsafe { {{_v[0-9]+}}.unwrap()({{_v[0-9]+}}) };
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut r#fn: Option<unsafe extern "C" fn(i32)> = None;
-// LOWERING-NEXT:     let _v0: i32 = 0;
-// LOWERING-NEXT:     __retval = _v0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     r#fn = unsafe { std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32)>>(check as *const ()) };
-// LOWERING-NEXT:     let _v1: Option<unsafe extern "C" fn(i32)> = r#fn;
-// LOWERING-NEXT:     let _v2: i32 = 0;
-// LOWERING-NEXT:     run_case(_v1, _v2);
-// LOWERING-NEXT:     let _v3: *mut i8 = b"failures: %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v4: i32 = unsafe { failures };
-// LOWERING-NEXT:     let _v5: i32 = unsafe { printf(_v3 as *const i8, _v4) };
-// LOWERING-NEXT:     let _v6: i32 = 0;
-// LOWERING-NEXT:     __retval = _v6;
-// LOWERING-NEXT:     let _v7: i32 = __retval;
-// LOWERING-NEXT:     std::process::exit(_v7 as i32);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32)> = r#fn;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     run_case({{_v[0-9]+}}, {{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"failures: %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -143,39 +143,39 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn fail_now() {
-// REWRITES-NEXT: let _v0: *mut __slate_jmp_buf_tag = std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
-// REWRITES-NEXT: let _v1: i32 = 1;
-// REWRITES-NEXT: unsafe { longjmp(_v0 as *mut __slate_jmp_buf_tag, _v1 as i32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag = std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT: unsafe { longjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag, {{_v[0-9]+}} as i32) };
 // REWRITES-NEXT: return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C" fn check(arg2: i32) {
-// REWRITES-NEXT: let mut ok: i32 = arg2;
+// REWRITES-NEXT: extern "C" fn check({{arg[0-9]+}}: i32) {
+// REWRITES-NEXT: let mut ok: i32 = {{arg[0-9]+}};
 // REWRITES-NEXT: {
-// REWRITES-NEXT:         let _v1: bool = ok != 0;
-// REWRITES-NEXT:         let _v2: bool = !_v1;
-// REWRITES-NEXT:         if _v2 {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ok != 0;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-NEXT:         if {{_v[0-9]+}} {
 // REWRITES-NEXT:                     fail_now();
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
-// REWRITES-NEXT: let _v3: *mut i8 = b"PASS\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v4: i32 = unsafe { printf(_v3 as *const i8) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"PASS\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT: return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn run_case(arg0: Option<unsafe extern "C" fn(i32)>, arg1: i32) {
-// REWRITES-NEXT: let mut r#fn: Option<unsafe extern "C" fn(i32)> = arg0;
-// REWRITES-NEXT: let mut ok: i32 = arg1;
+// REWRITES-NEXT: fn run_case({{arg[0-9]+}}: Option<unsafe extern "C" fn(i32)>, {{arg[0-9]+}}: i32) {
+// REWRITES-NEXT: let mut r#fn: Option<unsafe extern "C" fn(i32)> = {{arg[0-9]+}};
+// REWRITES-NEXT: let mut ok: i32 = {{arg[0-9]+}};
 // REWRITES-NEXT: {
-// REWRITES-NEXT:         let _v0: *mut __slate_jmp_buf_tag = std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
-// REWRITES-NEXT:         let _v1: i32 = unsafe { setjmp(_v0 as *mut __slate_jmp_buf_tag) };
-// REWRITES-NEXT:         let _v2: bool = _v1 != 0;
-// REWRITES-NEXT:         if _v2 {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag = std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// REWRITES-NEXT:         if {{_v[0-9]+}} {
 // REWRITES-NEXT:                     unsafe {
 // REWRITES-NEXT:                                     failures = (unsafe { failures }) + 1;
 // REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     let _v5: *mut i8 = b"FAIL\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT:                     let _v6: i32 = unsafe { printf(_v5 as *const i8) };
+// REWRITES-NEXT:                     let {{_v[0-9]+}}: *mut i8 = b"FAIL\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT:                     return;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
@@ -188,10 +188,10 @@ int main(void) {
 // REWRITES-NEXT: let mut r#fn: Option<unsafe extern "C" fn(i32)> = None;
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: r#fn = unsafe { std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32)>>(check as *const ()) };
-// REWRITES-NEXT: let _v2: i32 = 0;
-// REWRITES-NEXT: run_case(r#fn, _v2);
-// REWRITES-NEXT: let _v3: *mut i8 = b"failures: %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v5: i32 = unsafe { printf(_v3 as *const i8, unsafe { failures }) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: run_case(r#fn, {{_v[0-9]+}});
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"failures: %d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, unsafe { failures }) };
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: std::process::exit(__retval as i32);
 // REWRITES-NEXT: }

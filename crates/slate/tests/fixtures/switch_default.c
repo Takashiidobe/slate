@@ -28,33 +28,33 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const i8, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn classify(arg0: i32) -> i32 {
+// LOWERING-NEXT: fn classify({{arg[0-9]+}}: i32) -> i32 {
 // LOWERING-NEXT:     let mut x: i32 = 0;
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut out: i32 = 0;
-// LOWERING-NEXT:     x = arg0;
-// LOWERING-NEXT:     let _v0: i32 = 0;
-// LOWERING-NEXT:     out = _v0;
+// LOWERING-NEXT:     x = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     out = {{_v[0-9]+}};
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let _v1: i32 = x;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = x;
 // LOWERING-NEXT:         {
-// LOWERING-NEXT:             let __switch_value0 = _v1;
+// LOWERING-NEXT:             let __switch_value0 = {{_v[0-9]+}};
 // LOWERING-NEXT:             let mut __switch_case0: i32 = match __switch_value0 { 1 => 0, 2 => 1, _ => 2 };
 // LOWERING-NEXT:             '__switch0: loop {
 // LOWERING-NEXT:                 match __switch_case0 {
 // LOWERING-NEXT:                     0 => {
-// LOWERING-NEXT:                         let _v2: i32 = 11;
-// LOWERING-NEXT:                         out = _v2;
+// LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = 11;
+// LOWERING-NEXT:                         out = {{_v[0-9]+}};
 // LOWERING-NEXT:                         break '__switch0;
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                     1 => {
-// LOWERING-NEXT:                         let _v3: i32 = 22;
-// LOWERING-NEXT:                         out = _v3;
+// LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = 22;
+// LOWERING-NEXT:                         out = {{_v[0-9]+}};
 // LOWERING-NEXT:                         break '__switch0;
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                     2 => {
-// LOWERING-NEXT:                         let _v4: i32 = 99;
-// LOWERING-NEXT:                         out = _v4;
+// LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = 99;
+// LOWERING-NEXT:                         out = {{_v[0-9]+}};
 // LOWERING-NEXT:                         break '__switch0;
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                     _ => {
@@ -64,28 +64,28 @@ int main(void) {
 // LOWERING-NEXT:             }
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let _v5: i32 = out;
-// LOWERING-NEXT:     __retval = _v5;
-// LOWERING-NEXT:     let _v6: i32 = __retval;
-// LOWERING-NEXT:     return _v6;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = out;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let _v0: i32 = 0;
-// LOWERING-NEXT:     __retval = _v0;
-// LOWERING-NEXT:     let _v1: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v2: i32 = 1;
-// LOWERING-NEXT:     let _v3: i32 = classify(_v2);
-// LOWERING-NEXT:     let _v4: i32 = 2;
-// LOWERING-NEXT:     let _v5: i32 = classify(_v4);
-// LOWERING-NEXT:     let _v6: i32 = 7;
-// LOWERING-NEXT:     let _v7: i32 = classify(_v6);
-// LOWERING-NEXT:     let _v8: i32 = unsafe { printf(_v1 as *const i8, _v3, _v5, _v7) };
-// LOWERING-NEXT:     let _v9: i32 = 0;
-// LOWERING-NEXT:     __retval = _v9;
-// LOWERING-NEXT:     let _v10: i32 = __retval;
-// LOWERING-NEXT:     std::process::exit(_v10 as i32);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = classify({{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = classify({{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = classify({{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -97,8 +97,8 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn classify(arg0: i32) -> i32 {
-// REWRITES-NEXT: let mut x: i32 = arg0;
+// REWRITES-NEXT: fn classify({{arg[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT: let mut x: i32 = {{arg[0-9]+}};
 // REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut out: i32 = 0;
 // REWRITES-NEXT: out = 0;
@@ -134,14 +134,14 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: let _v1: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v2: i32 = 1;
-// REWRITES-NEXT: let _v3: i32 = classify(_v2);
-// REWRITES-NEXT: let _v4: i32 = 2;
-// REWRITES-NEXT: let _v5: i32 = classify(_v4);
-// REWRITES-NEXT: let _v6: i32 = 7;
-// REWRITES-NEXT: let _v7: i32 = classify(_v6);
-// REWRITES-NEXT: let _v8: i32 = unsafe { printf(_v1 as *const i8, _v3, _v5, _v7) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = classify({{_v[0-9]+}});
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 2;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = classify({{_v[0-9]+}});
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 7;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = classify({{_v[0-9]+}});
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: std::process::exit(__retval as i32);
 // REWRITES-NEXT: }

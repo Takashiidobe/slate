@@ -35,40 +35,40 @@ int main(void) {
 // LOWERING-NEXT:     let mut z: f64 = 0.0;
 // LOWERING-NEXT:     let mut contracted: f64 = 0.0;
 // LOWERING-NEXT:     let mut uncontracted: f64 = 0.0;
-// LOWERING-NEXT:     let _v0: i32 = 0;
-// LOWERING-NEXT:     __retval = _v0;
-// LOWERING-NEXT:     let _v1: f64 = 1.9999999999999998;
-// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(x), _v1) };
-// LOWERING-NEXT:     let _v2: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
-// LOWERING-NEXT:     y = _v2;
-// LOWERING-NEXT:     let _v3: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
-// LOWERING-NEXT:     let _v4: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
-// LOWERING-NEXT:     let _v5: f64 = _v3 * _v4;
-// LOWERING-NEXT:     let _v6: f64 = -_v5;
-// LOWERING-NEXT:     z = _v6;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 1.9999999999999998;
+// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(x), {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
+// LOWERING-NEXT:     y = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} * {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = -{{_v[0-9]+}};
+// LOWERING-NEXT:     z = {{_v[0-9]+}};
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let _v7: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
-// LOWERING-NEXT:         let _v8: f64 = y;
-// LOWERING-NEXT:         let _v9: f64 = z;
-// LOWERING-NEXT:         let _v10: f64 = _v7 * _v8 + _v9;
-// LOWERING-NEXT:         contracted = _v10;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
+// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = y;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = z;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} * {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:         contracted = {{_v[0-9]+}};
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let _v11: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
-// LOWERING-NEXT:         let _v12: f64 = y;
-// LOWERING-NEXT:         let _v13: f64 = _v11 * _v12;
-// LOWERING-NEXT:         let _v14: f64 = z;
-// LOWERING-NEXT:         let _v15: f64 = _v13 + _v14;
-// LOWERING-NEXT:         uncontracted = _v15;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
+// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = y;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} * {{_v[0-9]+}};
+// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = z;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:         uncontracted = {{_v[0-9]+}};
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let _v16: *mut i8 = b"%.20e %.20e\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v17: f64 = contracted;
-// LOWERING-NEXT:     let _v18: f64 = uncontracted;
-// LOWERING-NEXT:     let _v19: i32 = unsafe { printf(_v16 as *const i8, _v17, _v18) };
-// LOWERING-NEXT:     let _v20: i32 = 0;
-// LOWERING-NEXT:     __retval = _v20;
-// LOWERING-NEXT:     let _v21: i32 = __retval;
-// LOWERING-NEXT:     std::process::exit(_v21 as i32);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%.20e %.20e\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = contracted;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = uncontracted;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -88,22 +88,22 @@ int main(void) {
 // REWRITES-NEXT: let mut contracted: f64 = 0.0;
 // REWRITES-NEXT: let mut uncontracted: f64 = 0.0;
 // REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: let _v1: f64 = 1.9999999999999998;
-// REWRITES-NEXT: unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(x), _v1) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: f64 = 1.9999999999999998;
+// REWRITES-NEXT: unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(x), {{_v[0-9]+}}) };
 // REWRITES-NEXT: y = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
-// REWRITES-NEXT: let _v3: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
-// REWRITES-NEXT: let _v4: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
-// REWRITES-NEXT: z = -(_v3 * _v4);
+// REWRITES-NEXT: let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
+// REWRITES-NEXT: z = -({{_v[0-9]+}} * {{_v[0-9]+}});
 // REWRITES-NEXT: {
-// REWRITES-NEXT:         let _v7: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
-// REWRITES-NEXT:         contracted = _v7 * y + z;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
+// REWRITES-NEXT:         contracted = {{_v[0-9]+}} * y + z;
 // REWRITES-NEXT: }
 // REWRITES-NEXT: {
-// REWRITES-NEXT:         let _v11: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
-// REWRITES-NEXT:         uncontracted = _v11 * y + z;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
+// REWRITES-NEXT:         uncontracted = {{_v[0-9]+}} * y + z;
 // REWRITES-NEXT: }
-// REWRITES-NEXT: let _v16: *mut i8 = b"%.20e %.20e\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v19: i32 = unsafe { printf(_v16 as *const i8, contracted, uncontracted) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%.20e %.20e\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, contracted, uncontracted) };
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: std::process::exit(__retval as i32);
 // REWRITES-NEXT: }

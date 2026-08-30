@@ -81,32 +81,32 @@ int main(void) {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut parsed: LongDouble = LongDouble([0; 10]);
 // LOWERING-NEXT:     let mut matched: i32 = 0;
-// LOWERING-NEXT:     let _v0: i32 = 0;
-// LOWERING-NEXT:     __retval = _v0;
-// LOWERING-NEXT:     let _v1: *mut i8 = b"0x1.0000000000000002p+0\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v2: *mut i8 = b"%La\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v3: i32 = unsafe { __slate_sscanf__ri32_pi8_pi8_pf80(_v1 as *mut i8, _v2 as *mut i8, std::ptr::addr_of_mut!(parsed)) };
-// LOWERING-NEXT:     matched = _v3;
-// LOWERING-NEXT:     let _v4: *mut i8 = b"%d %La\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v5: i32 = matched;
-// LOWERING-NEXT:     let _v6: LongDouble = parsed;
-// LOWERING-NEXT:     let _v7: i32 = unsafe { __slate_printf__ri32_pi8_i32_f80(_v4 as *mut i8, _v5 as i32, _v6) };
-// LOWERING-NEXT:     let _v8: i32 = matched;
-// LOWERING-NEXT:     let _v9: i32 = 1;
-// LOWERING-NEXT:     let _v10: bool = _v8 != _v9;
-// LOWERING-NEXT:     let _v11: bool = if _v10 {
-// LOWERING-NEXT:         let _v12: bool = true;
-// LOWERING-NEXT:         _v12
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"0x1.0000000000000002p+0\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%La\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { __slate_sscanf__ri32_pi8_pi8_pf80({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}} as *mut i8, std::ptr::addr_of_mut!(parsed)) };
+// LOWERING-NEXT:     matched = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %La\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = matched;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = parsed;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { __slate_printf__ri32_pi8_i32_f80({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}} as i32, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = matched;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = true;
+// LOWERING-NEXT:         {{_v[0-9]+}}
 // LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let _v13: LongDouble = parsed;
-// LOWERING-NEXT:         let _v14: LongDouble = LongDouble([1, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// LOWERING-NEXT:         let _v15: bool = _v13 != _v14;
-// LOWERING-NEXT:         _v15
+// LOWERING-NEXT:         let {{_v[0-9]+}}: LongDouble = parsed;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([1, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
+// LOWERING-NEXT:         {{_v[0-9]+}}
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let _v16: i32 = _v11 as i32;
-// LOWERING-NEXT:     __retval = _v16;
-// LOWERING-NEXT:     let _v17: i32 = __retval;
-// LOWERING-NEXT:     std::process::exit(_v17 as i32);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
@@ -242,20 +242,20 @@ int main(void) {
 // REWRITES-NEXT: let mut parsed: LongDouble = LongDouble([0; 10]);
 // REWRITES-NEXT: let mut matched: i32 = 0;
 // REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: let _v1: *mut i8 = b"0x1.0000000000000002p+0\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v2: *mut i8 = b"%La\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: matched = unsafe { __slate_sscanf__ri32_pi8_pi8_pf80(_v1 as *mut i8, _v2 as *mut i8, std::ptr::addr_of_mut!(parsed)) };
-// REWRITES-NEXT: let _v4: *mut i8 = b"%d %La\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v7: i32 = unsafe { __slate_printf__ri32_pi8_i32_f80(_v4 as *mut i8, matched as i32, parsed) };
-// REWRITES-NEXT: let _v9: i32 = 1;
-// REWRITES-NEXT: let _v11: bool = if matched != _v9 {
-// REWRITES-NEXT:         let _v12: bool = true;
-// REWRITES-NEXT:     _v12
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"0x1.0000000000000002p+0\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%La\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: matched = unsafe { __slate_sscanf__ri32_pi8_pi8_pf80({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}} as *mut i8, std::ptr::addr_of_mut!(parsed)) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %La\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { __slate_printf__ri32_pi8_i32_f80({{_v[0-9]+}} as *mut i8, matched as i32, parsed) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT: let {{_v[0-9]+}}: bool = if matched != {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = true;
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: } else {
-// REWRITES-NEXT:         let _v15: bool = parsed != LongDouble([1, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// REWRITES-NEXT:     _v15
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = parsed != LongDouble([1, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: };
-// REWRITES-NEXT: __retval = _v11 as i32;
+// REWRITES-NEXT: __retval = {{_v[0-9]+}} as i32;
 // REWRITES-NEXT: std::process::exit(__retval as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

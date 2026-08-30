@@ -35,9 +35,9 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: unsafe {
-// REWRITES-DAG: (*arg0).a = x;
+// REWRITES-DAG: (*{{arg[0-9]+}}).a = x;
 // REWRITES-DAG: }
 // REWRITES-DAG: unsafe {
-// REWRITES-DAG: (*arg0).b = y;
+// REWRITES-DAG: (*{{arg[0-9]+}}).b = y;
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

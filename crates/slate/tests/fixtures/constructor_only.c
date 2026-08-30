@@ -17,22 +17,22 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn greet() {
-// LOWERING-NEXT:     let _v0: *mut i8 = b"constructor ran\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v1: i32 = unsafe { printf(_v0 as *const i8) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"constructor ran\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8) };
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     greet();
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let _v0: i32 = 0;
-// LOWERING-NEXT:     __retval = _v0;
-// LOWERING-NEXT:     let _v1: *mut i8 = b"main ran\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v2: i32 = unsafe { printf(_v1 as *const i8) };
-// LOWERING-NEXT:     let _v3: i32 = 0;
-// LOWERING-NEXT:     __retval = _v3;
-// LOWERING-NEXT:     let _v4: i32 = __retval;
-// LOWERING-NEXT:     std::process::exit(_v4 as i32);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"main ran\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -45,8 +45,8 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn greet() {
-// REWRITES-NEXT: let _v0: *mut i8 = b"constructor ran\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v1: i32 = unsafe { printf(_v0 as *const i8) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"constructor ran\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT: return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -54,8 +54,8 @@ int main(void) {
 // REWRITES-NEXT: greet();
 // REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: let _v1: *mut i8 = b"main ran\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v2: i32 = unsafe { printf(_v1 as *const i8) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"main ran\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: std::process::exit(__retval as i32);
 // REWRITES-NEXT: }

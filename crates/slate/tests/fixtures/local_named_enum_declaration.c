@@ -48,53 +48,53 @@ int main(void) {
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut cases: aligned::Aligned<aligned::A4, [Case; 2]> = aligned::Aligned([Case { expectedStatus: XML_Status::XML_STATUS_ERROR }; 2]);
-// LOWERING-NEXT:     let _v0: i32 = 0;
-// LOWERING-NEXT:     __retval = _v0;
-// LOWERING-NEXT:     let _v1: u32 = XML_Status::XML_STATUS_OK as u32;
-// LOWERING-NEXT:     let _v2: i64 = 0;
-// LOWERING-NEXT:     cases[(_v2 as usize)].expectedStatus = XML_Status::XML_STATUS_OK;
-// LOWERING-NEXT:     let _v3: u32 = XML_Status::XML_STATUS_ERROR as u32;
-// LOWERING-NEXT:     let _v4: i64 = 1;
-// LOWERING-NEXT:     cases[(_v4 as usize)].expectedStatus = XML_Status::XML_STATUS_ERROR;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = XML_Status::XML_STATUS_OK as u32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
+// LOWERING-NEXT:     cases[({{_v[0-9]+}} as usize)].expectedStatus = XML_Status::XML_STATUS_OK;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = XML_Status::XML_STATUS_ERROR as u32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 1;
+// LOWERING-NEXT:     cases[({{_v[0-9]+}} as usize)].expectedStatus = XML_Status::XML_STATUS_ERROR;
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         let mut i: i32 = 0;
-// LOWERING-NEXT:         let _v5: i32 = 0;
-// LOWERING-NEXT:         i = _v5;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:         i = {{_v[0-9]+}};
 // LOWERING-NEXT:         loop {
-// LOWERING-NEXT:             let _v6: i32 = i;
-// LOWERING-NEXT:             let _v7: i32 = 2;
-// LOWERING-NEXT:             let _v8: bool = _v6 < _v7;
-// LOWERING-NEXT:             if !_v8 {
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 2;
+// LOWERING-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
+// LOWERING-NEXT:             if !{{_v[0-9]+}} {
 // LOWERING-NEXT:                 break;
 // LOWERING-NEXT:             }
 // LOWERING-NEXT:             {
 // LOWERING-NEXT:                 let mut expectedStatus: aligned::Aligned<aligned::A4, XML_Status> = aligned::Aligned(XML_Status::XML_STATUS_ERROR);
-// LOWERING-NEXT:                 let _v9: i32 = i;
-// LOWERING-NEXT:                 let _v10: i64 = _v9 as i64;
-// LOWERING-NEXT:                 let _v11: u32 = cases[(_v10 as usize)].expectedStatus as u32;
-// LOWERING-NEXT:                 *expectedStatus = unsafe { std::mem::transmute(_v11) };
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: u32 = cases[({{_v[0-9]+}} as usize)].expectedStatus as u32;
+// LOWERING-NEXT:                 *expectedStatus = unsafe { std::mem::transmute({{_v[0-9]+}}) };
 // LOWERING-NEXT:                 {
-// LOWERING-NEXT:                     let _v12: u32 = *expectedStatus as u32;
-// LOWERING-NEXT:                     let _v13: u32 = XML_Status::XML_STATUS_OK as u32;
-// LOWERING-NEXT:                     let _v14: bool = _v12 == _v13;
-// LOWERING-NEXT:                     if _v14 {
-// LOWERING-NEXT:                         let _v15: *mut i8 = b"ok\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:                         let _v16: i32 = unsafe { printf(_v15 as *const i8) };
+// LOWERING-NEXT:                     let {{_v[0-9]+}}: u32 = *expectedStatus as u32;
+// LOWERING-NEXT:                     let {{_v[0-9]+}}: u32 = XML_Status::XML_STATUS_OK as u32;
+// LOWERING-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"ok\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8) };
 // LOWERING-NEXT:                     } else {
-// LOWERING-NEXT:                         let _v17: *mut i8 = b"error\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:                         let _v18: i32 = unsafe { printf(_v17 as *const i8) };
+// LOWERING-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"error\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8) };
 // LOWERING-NEXT:                     }
 // LOWERING-NEXT:                 }
 // LOWERING-NEXT:             }
-// LOWERING-NEXT:             let _v19: i32 = i;
-// LOWERING-NEXT:             let _v20: i32 = _v19 + 1;
-// LOWERING-NEXT:             i = _v20;
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-NEXT:             i = {{_v[0-9]+}};
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let _v21: i32 = 0;
-// LOWERING-NEXT:     __retval = _v21;
-// LOWERING-NEXT:     let _v22: i32 = __retval;
-// LOWERING-NEXT:     std::process::exit(_v22 as i32);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -126,33 +126,33 @@ int main(void) {
 // REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut cases: aligned::Aligned<aligned::A4, [Case; 2]> = aligned::Aligned([Case { expectedStatus: XML_Status::XML_STATUS_ERROR }; 2]);
 // REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: let _v1: u32 = XML_Status::XML_STATUS_OK as u32;
-// REWRITES-NEXT: let _v2: i64 = 0;
-// REWRITES-NEXT: cases[(_v2 as usize)].expectedStatus = XML_Status::XML_STATUS_OK;
-// REWRITES-NEXT: let _v3: u32 = XML_Status::XML_STATUS_ERROR as u32;
-// REWRITES-NEXT: let _v4: i64 = 1;
-// REWRITES-NEXT: cases[(_v4 as usize)].expectedStatus = XML_Status::XML_STATUS_ERROR;
+// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = XML_Status::XML_STATUS_OK as u32;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
+// REWRITES-NEXT: cases[({{_v[0-9]+}} as usize)].expectedStatus = XML_Status::XML_STATUS_OK;
+// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = XML_Status::XML_STATUS_ERROR as u32;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 1;
+// REWRITES-NEXT: cases[({{_v[0-9]+}} as usize)].expectedStatus = XML_Status::XML_STATUS_ERROR;
 // REWRITES-NEXT: {
 // REWRITES-NEXT:         let mut i: i32 = 0;
 // REWRITES-NEXT:         i = 0;
 // REWRITES-NEXT:         loop {
-// REWRITES-NEXT:                     let _v7: i32 = 2;
-// REWRITES-NEXT:                     if !(i < _v7) {
+// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = 2;
+// REWRITES-NEXT:                     if !(i < {{_v[0-9]+}}) {
 // REWRITES-NEXT:                                     break;
 // REWRITES-NEXT:                     }
 // REWRITES-NEXT:                     {
 // REWRITES-NEXT:                                     let mut expectedStatus: aligned::Aligned<aligned::A4, XML_Status> = aligned::Aligned(XML_Status::XML_STATUS_ERROR);
 // REWRITES-NEXT:                                     *expectedStatus = unsafe { std::mem::transmute(cases[((i as i64) as usize)].expectedStatus as u32) };
 // REWRITES-NEXT:                                     {
-// REWRITES-NEXT:                                                         let _v12: u32 = *expectedStatus as u32;
-// REWRITES-NEXT:                                                         let _v13: u32 = XML_Status::XML_STATUS_OK as u32;
-// REWRITES-NEXT:                                                         let _v14: bool = _v12 == _v13;
-// REWRITES-NEXT:                                                         if _v14 {
-// REWRITES-NEXT:                                                                                 let _v15: *mut i8 = b"ok\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT:                                                                                 let _v16: i32 = unsafe { printf(_v15 as *const i8) };
+// REWRITES-NEXT:                                                         let {{_v[0-9]+}}: u32 = *expectedStatus as u32;
+// REWRITES-NEXT:                                                         let {{_v[0-9]+}}: u32 = XML_Status::XML_STATUS_OK as u32;
+// REWRITES-NEXT:                                                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// REWRITES-NEXT:                                                         if {{_v[0-9]+}} {
+// REWRITES-NEXT:                                                                                 let {{_v[0-9]+}}: *mut i8 = b"ok\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:                                                                                 let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT:                                                         } else {
-// REWRITES-NEXT:                                                                                 let _v17: *mut i8 = b"error\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT:                                                                                 let _v18: i32 = unsafe { printf(_v17 as *const i8) };
+// REWRITES-NEXT:                                                                                 let {{_v[0-9]+}}: *mut i8 = b"error\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:                                                                                 let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT:                                                         }
 // REWRITES-NEXT:                                     }
 // REWRITES-NEXT:                     }

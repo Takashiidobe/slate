@@ -203,11 +203,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let value_ty = self.value_type(src).cloned();
         let mut value = if value_ty.as_ref().is_some_and(is_cir_function_pointer_type) {
             self.store_function_pointer_value(src, ptr, value_ty.as_ref().unwrap())
-        } else if value_ty
+        } else if let Some(ty) = value_ty
             .as_ref()
-            .is_some_and(|ty| matches!(ty, CirType::Pointer { .. }))
+            .filter(|ty| matches!(ty, CirType::Pointer { .. }))
         {
-            self.pointer_operand_expr(src)
+            self.whole_aggregate_pointer_expr(src, ty)
+                .unwrap_or_else(|| self.pointer_operand_expr(src))
         } else {
             self.operand_expr(src)
         };

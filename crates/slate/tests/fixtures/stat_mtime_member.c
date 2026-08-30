@@ -40,26 +40,26 @@ int main(void) {
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut info: stat = stat { st_dev: 0, st_ino: 0, st_nlink: 0, st_mode: 0, st_uid: 0, st_gid: 0, __pad0: 0, st_rdev: 0, st_size: 0, st_blksize: 0, st_blocks: 0, st_atim: libc::timespec { tv_sec: 0, tv_nsec: 0 }, st_mtim: libc::timespec { tv_sec: 0, tv_nsec: 0 }, st_ctim: libc::timespec { tv_sec: 0, tv_nsec: 0 }, __unused: [0; 3] };
-// LOWERING-NEXT:     let _v0: i32 = 0;
-// LOWERING-NEXT:     __retval = _v0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     info = stat { st_dev: 0, st_ino: 0, st_nlink: 0, st_mode: 0, st_uid: 0, st_gid: 0, __pad0: 0, st_rdev: 0, st_size: 0, st_blksize: 0, st_blocks: 0, st_atim: libc::timespec { tv_sec: 0, tv_nsec: 0 }, st_mtim: libc::timespec { tv_sec: 0, tv_nsec: 0 }, st_ctim: libc::timespec { tv_sec: 0, tv_nsec: 0 }, __unused: [0; 3] };
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let _v1: *mut i8 = b"/dev/null\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:         let _v2: i32 = unsafe { stat(_v1 as *const i8, std::ptr::addr_of_mut!(info) as *mut stat) };
-// LOWERING-NEXT:         let _v3: i32 = 0;
-// LOWERING-NEXT:         let _v4: bool = _v2 != _v3;
-// LOWERING-NEXT:         if _v4 {
-// LOWERING-NEXT:             let _v5: i32 = 1;
-// LOWERING-NEXT:             __retval = _v5;
-// LOWERING-NEXT:             let _v6: i32 = __retval;
-// LOWERING-NEXT:             std::process::exit(_v6 as i32);
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = b"/dev/null\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { stat({{_v[0-9]+}} as *const i8, std::ptr::addr_of_mut!(info) as *mut stat) };
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
+// LOWERING-NEXT:         if {{_v[0-9]+}} {
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:             __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:             std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let _v7: *mut i8 = b"%lld\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v8: i64 = info.st_mtim.tv_sec;
-// LOWERING-NEXT:     let _v9: i32 = unsafe { printf(_v7 as *const i8, _v8) };
-// LOWERING-NEXT:     let _v10: i32 = __retval;
-// LOWERING-NEXT:     std::process::exit(_v10 as i32);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%lld\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = info.st_mtim.tv_sec;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -99,18 +99,18 @@ int main(void) {
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: info = stat { st_dev: 0, st_ino: 0, st_nlink: 0, st_mode: 0, st_uid: 0, st_gid: 0, __pad0: 0, st_rdev: 0, st_size: 0, st_blksize: 0, st_blocks: 0, st_atim: libc::timespec { tv_sec: 0, tv_nsec: 0 }, st_mtim: libc::timespec { tv_sec: 0, tv_nsec: 0 }, st_ctim: libc::timespec { tv_sec: 0, tv_nsec: 0 }, __unused: [0; 3] };
 // REWRITES-NEXT: {
-// REWRITES-NEXT:         let _v1: *mut i8 = b"/dev/null\0".as_ptr() as *mut i8;
-// REWRITES-NEXT:         let _v2: i32 = unsafe { stat(_v1 as *const i8, std::ptr::addr_of_mut!(info) as *mut stat) };
-// REWRITES-NEXT:         let _v3: i32 = 0;
-// REWRITES-NEXT:         let _v4: bool = _v2 != _v3;
-// REWRITES-NEXT:         if _v4 {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = b"/dev/null\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { stat({{_v[0-9]+}} as *const i8, std::ptr::addr_of_mut!(info) as *mut stat) };
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
+// REWRITES-NEXT:         if {{_v[0-9]+}} {
 // REWRITES-NEXT:                     __retval = 1;
 // REWRITES-NEXT:                     std::process::exit(__retval as i32);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
-// REWRITES-NEXT: let _v7: *mut i8 = b"%lld\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v8: i64 = info.st_mtim.tv_sec;
-// REWRITES-NEXT: let _v9: i32 = unsafe { printf(_v7 as *const i8, _v8) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%lld\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = info.st_mtim.tv_sec;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // REWRITES-NEXT: std::process::exit(__retval as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

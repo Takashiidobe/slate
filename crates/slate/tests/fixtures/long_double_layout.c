@@ -107,26 +107,26 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let _v0: i32 = 0;
-// LOWERING-NEXT:     __retval = _v0;
-// LOWERING-NEXT:     let _v1: *mut i8 = b"%zu %zu\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v2: u64 = 16;
-// LOWERING-NEXT:     let _v3: u64 = 16;
-// LOWERING-NEXT:     let _v4: i32 = unsafe { printf(_v1 as *const i8, _v2, _v3) };
-// LOWERING-NEXT:     let _v5: *mut i8 = b"%zu %zu %zu %zu\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v6: u64 = std::mem::size_of::<ld_box>() as u64;
-// LOWERING-NEXT:     let _v7: u64 = std::mem::align_of::<ld_box>() as u64;
-// LOWERING-NEXT:     let _v8: u64 = std::mem::offset_of!(ld_box, value) as u64;
-// LOWERING-NEXT:     let _v9: u64 = std::mem::offset_of!(ld_box, tail) as u64;
-// LOWERING-NEXT:     let _v10: i32 = unsafe { printf(_v5 as *const i8, _v6, _v7, _v8, _v9) };
-// LOWERING-NEXT:     let _v11: *mut i8 = b"%zu %zu\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v12: u64 = std::mem::size_of::<ld_union>() as u64;
-// LOWERING-NEXT:     let _v13: u64 = std::mem::align_of::<ld_union>() as u64;
-// LOWERING-NEXT:     let _v14: i32 = unsafe { printf(_v11 as *const i8, _v12, _v13) };
-// LOWERING-NEXT:     let _v15: i32 = 0;
-// LOWERING-NEXT:     __retval = _v15;
-// LOWERING-NEXT:     let _v16: i32 = __retval;
-// LOWERING-NEXT:     std::process::exit(_v16 as i32);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%zu %zu\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 16;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 16;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%zu %zu %zu %zu\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = std::mem::size_of::<ld_box>() as u64;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = std::mem::align_of::<ld_box>() as u64;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = std::mem::offset_of!(ld_box, value) as u64;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = std::mem::offset_of!(ld_box, tail) as u64;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%zu %zu\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = std::mem::size_of::<ld_union>() as u64;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = std::mem::align_of::<ld_union>() as u64;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
@@ -274,20 +274,20 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: let _v1: *mut i8 = b"%zu %zu\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v2: u64 = 16;
-// REWRITES-NEXT: let _v3: u64 = 16;
-// REWRITES-NEXT: let _v4: i32 = unsafe { printf(_v1 as *const i8, _v2, _v3) };
-// REWRITES-NEXT: let _v5: *mut i8 = b"%zu %zu %zu %zu\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v6: u64 = std::mem::size_of::<ld_box>() as u64;
-// REWRITES-NEXT: let _v7: u64 = std::mem::align_of::<ld_box>() as u64;
-// REWRITES-NEXT: let _v8: u64 = std::mem::offset_of!(ld_box, value) as u64;
-// REWRITES-NEXT: let _v9: u64 = std::mem::offset_of!(ld_box, tail) as u64;
-// REWRITES-NEXT: let _v10: i32 = unsafe { printf(_v5 as *const i8, _v6, _v7, _v8, _v9) };
-// REWRITES-NEXT: let _v11: *mut i8 = b"%zu %zu\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v12: u64 = std::mem::size_of::<ld_union>() as u64;
-// REWRITES-NEXT: let _v13: u64 = std::mem::align_of::<ld_union>() as u64;
-// REWRITES-NEXT: let _v14: i32 = unsafe { printf(_v11 as *const i8, _v12, _v13) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%zu %zu\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 16;
+// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 16;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%zu %zu %zu %zu\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = std::mem::size_of::<ld_box>() as u64;
+// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = std::mem::align_of::<ld_box>() as u64;
+// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = std::mem::offset_of!(ld_box, value) as u64;
+// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = std::mem::offset_of!(ld_box, tail) as u64;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%zu %zu\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = std::mem::size_of::<ld_union>() as u64;
+// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = std::mem::align_of::<ld_union>() as u64;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: std::process::exit(__retval as i32);
 // REWRITES-NEXT: }

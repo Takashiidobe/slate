@@ -19,37 +19,37 @@ int main(int argc, char **argv) {
 // LOWERING-NEXT:     let mut __slate_argv_storage: Vec<std::ffi::CString> = std::env::args().map(|arg| std::ffi::CString::new(arg).unwrap()).collect();
 // LOWERING-NEXT:     let mut __slate_argv_ptrs: Vec<*mut i8> = __slate_argv_storage.iter().map(|arg| arg.as_ptr() as *mut i8).collect();
 // LOWERING-NEXT:     __slate_argv_ptrs.push(std::ptr::null_mut());
-// LOWERING-NEXT:     let arg0: i32 = __slate_argv_storage.len() as i32;
-// LOWERING-NEXT:     let arg1: *mut *mut i8 = __slate_argv_ptrs.as_mut_ptr();
+// LOWERING-NEXT:     let {{arg[0-9]+}}: i32 = __slate_argv_storage.len() as i32;
+// LOWERING-NEXT:     let {{arg[0-9]+}}: *mut *mut i8 = __slate_argv_ptrs.as_mut_ptr();
 // LOWERING-NEXT:     let mut argc: i32 = 0;
 // LOWERING-NEXT:     let mut argv: *mut *mut i8 = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     argc = arg0;
-// LOWERING-NEXT:     argv = arg1;
-// LOWERING-NEXT:     let _v0: i32 = 0;
-// LOWERING-NEXT:     __retval = _v0;
-// LOWERING-NEXT:     let _v1: i32 = argc;
-// LOWERING-NEXT:     let _v2: i32 = 2;
-// LOWERING-NEXT:     let _v3: bool = _v1 == _v2;
-// LOWERING-NEXT:     let _v4: bool = if _v3 {
-// LOWERING-NEXT:         let _v5: bool = true;
-// LOWERING-NEXT:         _v5
+// LOWERING-NEXT:     argc = {{arg[0-9]+}};
+// LOWERING-NEXT:     argv = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = argc;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = true;
+// LOWERING-NEXT:         {{_v[0-9]+}}
 // LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let _v6: *mut i8 = b"argc == 2\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:         let _v7: *mut i8 = b"{{.*}}tests/fixtures/assert_runtime_false.c\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:         let _v8: i32 = 5;
-// LOWERING-NEXT:         let _v9: *mut i8 = b"main\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:         unsafe { __assert_fail(_v6 as *const i8, _v7 as *const i8, _v8 as i32, _v9 as *const i8) };
-// LOWERING-NEXT:         let _v10: i32 = 0;
-// LOWERING-NEXT:         let _v11: bool = _v10 != 0;
-// LOWERING-NEXT:         _v11
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = b"argc == 2\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = b"{{.*}}tests/fixtures/assert_runtime_false.c\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 5;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = b"main\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:         unsafe { __assert_fail({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as *const i8) };
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:         {{_v[0-9]+}}
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let _v12: *mut i8 = b"after\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v13: i32 = unsafe { printf(_v12 as *const i8) };
-// LOWERING-NEXT:     let _v14: i32 = 0;
-// LOWERING-NEXT:     __retval = _v14;
-// LOWERING-NEXT:     let _v15: i32 = __retval;
-// LOWERING-NEXT:     std::process::exit(_v15 as i32);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"after\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -66,29 +66,29 @@ int main(int argc, char **argv) {
 // REWRITES-NEXT: let mut __slate_argv_storage: Vec<std::ffi::CString> = std::env::args().map(|arg| std::ffi::CString::new(arg).unwrap()).collect();
 // REWRITES-NEXT: let mut __slate_argv_ptrs: Vec<*mut i8> = __slate_argv_storage.iter().map(|arg| arg.as_ptr() as *mut i8).collect();
 // REWRITES-NEXT: __slate_argv_ptrs.push(std::ptr::null_mut());
-// REWRITES-NEXT: let arg0: i32 = __slate_argv_storage.len() as i32;
-// REWRITES-NEXT: let arg1: *mut *mut i8 = __slate_argv_ptrs.as_mut_ptr();
-// REWRITES-NEXT: let mut argc: i32 = arg0;
-// REWRITES-NEXT: let mut argv: *mut *mut i8 = arg1;
+// REWRITES-NEXT: let {{arg[0-9]+}}: i32 = __slate_argv_storage.len() as i32;
+// REWRITES-NEXT: let {{arg[0-9]+}}: *mut *mut i8 = __slate_argv_ptrs.as_mut_ptr();
+// REWRITES-NEXT: let mut argc: i32 = {{arg[0-9]+}};
+// REWRITES-NEXT: let mut argv: *mut *mut i8 = {{arg[0-9]+}};
 // REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: let _v2: i32 = 2;
-// REWRITES-NEXT: let _v3: bool = argc == _v2;
-// REWRITES-NEXT: let _v4: bool = if _v3 {
-// REWRITES-NEXT:         let _v5: bool = true;
-// REWRITES-NEXT:     _v5
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 2;
+// REWRITES-NEXT: let {{_v[0-9]+}}: bool = argc == {{_v[0-9]+}};
+// REWRITES-NEXT: let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = true;
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: } else {
-// REWRITES-NEXT:         let _v6: *mut i8 = b"argc == 2\0".as_ptr() as *mut i8;
-// REWRITES-NEXT:         let _v7: *mut i8 = b"{{.*}}tests/fixtures/assert_runtime_false.c\0".as_ptr() as *mut i8;
-// REWRITES-NEXT:         let _v8: i32 = 5;
-// REWRITES-NEXT:         let _v9: *mut i8 = b"main\0".as_ptr() as *mut i8;
-// REWRITES-NEXT:         unsafe { __assert_fail(_v6 as *const i8, _v7 as *const i8, _v8 as i32, _v9 as *const i8) };
-// REWRITES-NEXT:         let _v10: i32 = 0;
-// REWRITES-NEXT:         let _v11: bool = _v10 != 0;
-// REWRITES-NEXT:     _v11
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = b"argc == 2\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = b"{{.*}}tests/fixtures/assert_runtime_false.c\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 5;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = b"main\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:         unsafe { __assert_fail({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as *const i8) };
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: };
-// REWRITES-NEXT: let _v12: *mut i8 = b"after\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v13: i32 = unsafe { printf(_v12 as *const i8) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"after\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: std::process::exit(__retval as i32);
 // REWRITES-NEXT: }

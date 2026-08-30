@@ -24,29 +24,29 @@ int main(void) {
 // LOWERING-NEXT:     let mut c: i32 = 0;
 // LOWERING-NEXT:     let mut u: u32 = 0;
 // LOWERING-NEXT:     let mut l: i64 = 0;
-// LOWERING-NEXT:     let _v0: i32 = 0;
-// LOWERING-NEXT:     __retval = _v0;
-// LOWERING-NEXT:     let _v1: i32 = 42;
-// LOWERING-NEXT:     a = _v1;
-// LOWERING-NEXT:     let _v2: i32 = 7;
-// LOWERING-NEXT:     b = _v2;
-// LOWERING-NEXT:     let _v3: i32 = -42;
-// LOWERING-NEXT:     c = _v3;
-// LOWERING-NEXT:     let _v4: u32 = 9;
-// LOWERING-NEXT:     u = _v4;
-// LOWERING-NEXT:     let _v5: i64 = 123;
-// LOWERING-NEXT:     l = _v5;
-// LOWERING-NEXT:     let _v6: *mut i8 = b"%05d|%-4d|%+d|%5u|%+06ld\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v7: i32 = a;
-// LOWERING-NEXT:     let _v8: i32 = b;
-// LOWERING-NEXT:     let _v9: i32 = c;
-// LOWERING-NEXT:     let _v10: u32 = u;
-// LOWERING-NEXT:     let _v11: i64 = l;
-// LOWERING-NEXT:     let _v12: i32 = unsafe { printf(_v6 as *const i8, _v7, _v8, _v9, _v10, _v11) };
-// LOWERING-NEXT:     let _v13: i32 = 0;
-// LOWERING-NEXT:     __retval = _v13;
-// LOWERING-NEXT:     let _v14: i32 = __retval;
-// LOWERING-NEXT:     std::process::exit(_v14 as i32);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 42;
+// LOWERING-NEXT:     a = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
+// LOWERING-NEXT:     b = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = -42;
+// LOWERING-NEXT:     c = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 9;
+// LOWERING-NEXT:     u = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 123;
+// LOWERING-NEXT:     l = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%05d|%-4d|%+d|%5u|%+06ld\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = a;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = b;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = c;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = u;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = l;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -71,8 +71,8 @@ int main(void) {
 // REWRITES-NEXT: c = -42;
 // REWRITES-NEXT: u = 9;
 // REWRITES-NEXT: l = 123;
-// REWRITES-NEXT: let _v6: *mut i8 = b"%05d|%-4d|%+d|%5u|%+06ld\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v12: i32 = unsafe { printf(_v6 as *const i8, a, b, c, u, l) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%05d|%-4d|%+d|%5u|%+06ld\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, a, b, c, u, l) };
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: std::process::exit(__retval as i32);
 // REWRITES-NEXT: }

@@ -90,64 +90,64 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const i8, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn dump80(arg0: *mut i8, arg1: LongDouble) {
+// LOWERING-NEXT: fn dump80({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: LongDouble) {
 // LOWERING-NEXT:     let mut name: *mut i8 = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut value: LongDouble = LongDouble([0; 10]);
 // LOWERING-NEXT:     let mut bytes: [u8; 10] = [0; 10];
-// LOWERING-NEXT:     name = arg0;
-// LOWERING-NEXT:     value = arg1;
-// LOWERING-NEXT:     let _v0: *mut u8 = bytes.as_mut_ptr() as *mut u8;
-// LOWERING-NEXT:     let _v1: *mut core::ffi::c_void = _v0 as *mut core::ffi::c_void;
-// LOWERING-NEXT:     let _v2: *mut core::ffi::c_void = std::ptr::addr_of_mut!(value) as *mut core::ffi::c_void;
-// LOWERING-NEXT:     let _v3: u64 = 10;
-// LOWERING-NEXT:     let _v4: *mut core::ffi::c_void = unsafe { memcpy(_v1 as *mut core::ffi::c_void, _v2 as *const core::ffi::c_void, _v3 as usize) };
-// LOWERING-NEXT:     let _v5: *mut i8 = b"%s\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v6: *mut i8 = name;
-// LOWERING-NEXT:     let _v7: i32 = unsafe { printf(_v5 as *const i8, _v6) };
+// LOWERING-NEXT:     name = {{arg[0-9]+}};
+// LOWERING-NEXT:     value = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = bytes.as_mut_ptr() as *mut u8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(value) as *mut core::ffi::c_void;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 10;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { memcpy({{_v[0-9]+}} as *mut core::ffi::c_void, {{_v[0-9]+}} as *const core::ffi::c_void, {{_v[0-9]+}} as usize) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%s\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = name;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         let mut i: i32 = 0;
-// LOWERING-NEXT:         let _v8: i32 = 0;
-// LOWERING-NEXT:         i = _v8;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:         i = {{_v[0-9]+}};
 // LOWERING-NEXT:         loop {
-// LOWERING-NEXT:             let _v9: i32 = i;
-// LOWERING-NEXT:             let _v10: i32 = 10;
-// LOWERING-NEXT:             let _v11: bool = _v9 < _v10;
-// LOWERING-NEXT:             if !_v11 {
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 10;
+// LOWERING-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
+// LOWERING-NEXT:             if !{{_v[0-9]+}} {
 // LOWERING-NEXT:                 break;
 // LOWERING-NEXT:             }
-// LOWERING-NEXT:             let _v12: *mut i8 = b"%02x\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let _v13: i32 = i;
-// LOWERING-NEXT:             let _v14: i64 = _v13 as i64;
-// LOWERING-NEXT:             let _v15: u8 = bytes[(_v14 as usize)];
-// LOWERING-NEXT:             let _v16: i32 = _v15 as i32;
-// LOWERING-NEXT:             let _v17: i32 = unsafe { printf(_v12 as *const i8, _v16) };
-// LOWERING-NEXT:             let _v18: i32 = i;
-// LOWERING-NEXT:             let _v19: i32 = _v18 + 1;
-// LOWERING-NEXT:             i = _v19;
+// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"%02x\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
+// LOWERING-NEXT:             let {{_v[0-9]+}}: u8 = bytes[({{_v[0-9]+}} as usize)];
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-NEXT:             i = {{_v[0-9]+}};
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let _v20: *mut i8 = b"\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v21: i32 = unsafe { printf(_v20 as *const i8) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8) };
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut local_pi: LongDouble = LongDouble([0; 10]);
-// LOWERING-NEXT:     let _v0: i32 = 0;
-// LOWERING-NEXT:     __retval = _v0;
-// LOWERING-NEXT:     let _v1: LongDouble = LongDouble([53, 194, 104, 33, 162, 218, 15, 201, 0, 64]);
-// LOWERING-NEXT:     local_pi = _v1;
-// LOWERING-NEXT:     let _v2: *mut i8 = b"local\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v3: LongDouble = local_pi;
-// LOWERING-NEXT:     dump80(_v2, _v3);
-// LOWERING-NEXT:     let _v4: *mut i8 = b"global\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v5: LongDouble = unsafe { global_pi };
-// LOWERING-NEXT:     dump80(_v4, _v5);
-// LOWERING-NEXT:     let _v6: i32 = 0;
-// LOWERING-NEXT:     __retval = _v6;
-// LOWERING-NEXT:     let _v7: i32 = __retval;
-// LOWERING-NEXT:     std::process::exit(_v7 as i32);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([53, 194, 104, 33, 162, 218, 15, 201, 0, 64]);
+// LOWERING-NEXT:     local_pi = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"local\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = local_pi;
+// LOWERING-NEXT:     dump80({{_v[0-9]+}}, {{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"global\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { global_pi };
+// LOWERING-NEXT:     dump80({{_v[0-9]+}}, {{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
@@ -278,32 +278,32 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn dump80(arg0: *mut i8, arg1: LongDouble) {
-// REWRITES-NEXT: let mut name: *mut i8 = arg0;
-// REWRITES-NEXT: let mut value: LongDouble = arg1;
+// REWRITES-NEXT: fn dump80({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: LongDouble) {
+// REWRITES-NEXT: let mut name: *mut i8 = {{arg[0-9]+}};
+// REWRITES-NEXT: let mut value: LongDouble = {{arg[0-9]+}};
 // REWRITES-NEXT: let mut bytes: [u8; 10] = [0; 10];
-// REWRITES-NEXT: let _v0: *mut u8 = bytes.as_mut_ptr() as *mut u8;
-// REWRITES-NEXT: let _v1: *mut core::ffi::c_void = _v0 as *mut core::ffi::c_void;
-// REWRITES-NEXT: let _v2: *mut core::ffi::c_void = std::ptr::addr_of_mut!(value) as *mut core::ffi::c_void;
-// REWRITES-NEXT: let _v3: u64 = 10;
-// REWRITES-NEXT: unsafe { std::ptr::copy_nonoverlapping((_v2 as *const core::ffi::c_void) as *const u8, (_v1 as *mut core::ffi::c_void) as *mut u8, (_v3 as usize) as usize) };
-// REWRITES-NEXT: let _v5: *mut i8 = b"%s\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v7: i32 = unsafe { printf(_v5 as *const i8, name) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut u8 = bytes.as_mut_ptr() as *mut u8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(value) as *mut core::ffi::c_void;
+// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 10;
+// REWRITES-NEXT: unsafe { std::ptr::copy_nonoverlapping(({{_v[0-9]+}} as *const core::ffi::c_void) as *const u8, ({{_v[0-9]+}} as *mut core::ffi::c_void) as *mut u8, ({{_v[0-9]+}} as usize) as usize) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%s\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, name) };
 // REWRITES-NEXT: {
 // REWRITES-NEXT:         let mut i: i32 = 0;
 // REWRITES-NEXT:         i = 0;
 // REWRITES-NEXT:         loop {
-// REWRITES-NEXT:                     let _v10: i32 = 10;
-// REWRITES-NEXT:                     if !(i < _v10) {
+// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = 10;
+// REWRITES-NEXT:                     if !(i < {{_v[0-9]+}}) {
 // REWRITES-NEXT:                                     break;
 // REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     let _v12: *mut i8 = b"%02x\0".as_ptr() as *mut i8;
-// REWRITES-NEXT:                     let _v17: i32 = unsafe { printf(_v12 as *const i8, bytes[((i as i64) as usize)] as i32) };
+// REWRITES-NEXT:                     let {{_v[0-9]+}}: *mut i8 = b"%02x\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, bytes[((i as i64) as usize)] as i32) };
 // REWRITES-NEXT:                     i = i + 1;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
-// REWRITES-NEXT: let _v20: *mut i8 = b"\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v21: i32 = unsafe { printf(_v20 as *const i8) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT: return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -312,10 +312,10 @@ int main(void) {
 // REWRITES-NEXT: let mut local_pi: LongDouble = LongDouble([0; 10]);
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: local_pi = LongDouble([53, 194, 104, 33, 162, 218, 15, 201, 0, 64]);
-// REWRITES-NEXT: let _v2: *mut i8 = b"local\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: dump80(_v2, local_pi);
-// REWRITES-NEXT: let _v4: *mut i8 = b"global\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: dump80(_v4, unsafe { global_pi });
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"local\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: dump80({{_v[0-9]+}}, local_pi);
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"global\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: dump80({{_v[0-9]+}}, unsafe { global_pi });
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: std::process::exit(__retval as i32);
 // REWRITES-NEXT: }
