@@ -49,19 +49,24 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_get_bitfield(&mut self, op: &inst::GetBitfield) {
-        let (place, needs_unsafe) =
-            if let Some((storage, field, needs_unsafe)) = self.bitfield_accessor(&op.addr, false) {
-                (
-                    Expr::MethodCall {
-                        recv: Box::new(storage),
-                        method: field,
-                        args: Vec::new(),
-                    },
-                    needs_unsafe,
-                )
+        let (place, needs_unsafe) = if let Some(accessor) = self.bitfield_accessor(&op.addr, false)
+        {
+            let storage = if accessor.unaligned {
+                self.read_unaligned_expr(accessor.storage)
             } else {
-                self.bitfield_place(&op.addr)
+                accessor.storage
             };
+            (
+                Expr::MethodCall {
+                    recv: Box::new(storage),
+                    method: accessor.field,
+                    args: Vec::new(),
+                },
+                accessor.needs_unsafe && !accessor.unaligned,
+            )
+        } else {
+            self.bitfield_place(&op.addr)
+        };
         let value = if needs_unsafe {
             Self::unsafe_expr(place)
         } else {
@@ -78,13 +83,41 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             Some(&op.result_ty),
         );
         self.materialize_expr(&op.result, value.clone(), Some(&op.result_ty));
-        if let Some((storage, field, needs_unsafe)) = self.bitfield_accessor(&op.addr, true) {
+        if let Some(accessor) = self.bitfield_accessor(&op.addr, true) {
+            if accessor.unaligned {
+                let storage_name = self.next_temp();
+                self.push_stmt(Stmt::Let {
+                    name: storage_name.clone(),
+                    mutable: true,
+                    ty: None,
+                    init: Some(self.read_unaligned_expr(accessor.storage.clone())),
+                });
+                self.push_stmt(Stmt::Expr(Expr::MethodCall {
+                    recv: Box::new(Expr::Var(storage_name.clone().into())),
+                    method: format!("set_{}", accessor.field),
+                    args: vec![value],
+                }));
+                self.push_stmt(Self::unsafe_stmt(Stmt::Expr(Expr::Call {
+                    binding: CallBinding::Generated,
+                    func: Box::new(Expr::Path(Path::new(
+                        ["std", "ptr", "write_unaligned"].map(Ident::from),
+                    ))),
+                    args: vec![
+                        Expr::AddrOf {
+                            mutable: true,
+                            expr: Box::new(accessor.storage),
+                        },
+                        Expr::Var(storage_name.into()),
+                    ],
+                })));
+                return;
+            }
             let setter = Expr::MethodCall {
-                recv: Box::new(storage),
-                method: format!("set_{field}"),
+                recv: Box::new(accessor.storage),
+                method: format!("set_{}", accessor.field),
                 args: vec![value],
             };
-            if needs_unsafe {
+            if accessor.needs_unsafe {
                 self.push_stmt(Self::unsafe_stmt(Stmt::Expr(setter)));
             } else {
                 self.push_stmt(Stmt::Expr(setter));
@@ -672,11 +705,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let storage = self.bitfield_storage_member(&op.addr, &op.result_ty, index);
         let field = storage
             .as_ref()
-            .map(|(field, _, _)| field.clone())
+            .map(|storage| storage.field.clone())
             .unwrap_or_else(|| logical_field.clone());
         let field_ty = storage
             .as_ref()
-            .map(|(_, ty, _)| ty.clone())
+            .map(|storage| storage.ty.clone())
             .or_else(|| self.member_field_type(&op.addr, &logical_field))
             .or_else(|| {
                 self.record_name_from_base_type(&op.addr)
@@ -698,7 +731,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 unsafe_access,
                 bitfield_name: storage
                     .as_ref()
-                    .and_then(|(_, _, wrapped)| wrapped.then_some(logical_field)),
+                    .and_then(|storage| storage.wrapped.then_some(logical_field)),
+                bitfield_unaligned: storage.as_ref().is_some_and(|storage| storage.unaligned),
                 field_is_trailing,
             },
         );
@@ -709,7 +743,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         base_ptr: &str,
         result_ty: &CirType,
         index: Option<usize>,
-    ) -> Option<(String, Type, bool)> {
+    ) -> Option<BitfieldStorageMember> {
         let record_name = self
             .value_type(base_ptr)
             .and_then(CirType::pointee)
@@ -720,19 +754,22 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let fields = self.parent.bitfield_storage_fields(record)?;
         let index = index?;
         let field = fields.get(index)?;
-        let wrapper = self
-            .parent
-            .bitfield_storages
-            .get(&(record_name, index))
-            .map(|storage| Type::Custom(storage.wrapper.clone()));
+        let storage = self.parent.bitfield_storages.get(&(record_name, index));
+        let wrapper = storage.map(|storage| Type::Custom(storage.wrapper.clone()));
+        let unaligned = storage.is_some_and(|storage| {
+            record
+                .packed
+                .is_some_and(|packed| type_alignment(&storage.backing) > packed)
+        });
         let ty = wrapper
             .clone()
             .or_else(|| result_ty.pointee().map(|ty| self.parent.rust_type(ty)))?;
-        Some((
-            sanitize_ident(&field.name).into_string(),
+        Some(BitfieldStorageMember {
+            field: sanitize_ident(&field.name).into_string(),
             ty,
-            wrapper.is_some(),
-        ))
+            wrapped: wrapper.is_some(),
+            unaligned,
+        })
     }
 
     fn member_field_is_trailing(&self, base_ptr: &str, field: &str) -> bool {
@@ -978,9 +1015,20 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    fn bitfield_accessor(&self, ptr: &str, mutable: bool) -> Option<(Expr, String, bool)> {
+    fn bitfield_accessor(&self, ptr: &str, mutable: bool) -> Option<BitfieldAccessor> {
         let member = self.member_ptrs.get(ptr)?;
         let field = member.bitfield_name.clone()?;
+        if member.bitfield_unaligned {
+            return Some(BitfieldAccessor {
+                storage: Expr::Field {
+                    base: Box::new(member.base.clone()),
+                    field: member.field.clone(),
+                },
+                field,
+                needs_unsafe: true,
+                unaligned: true,
+            });
+        }
         let base_is_global = self.ptr_has_global_origin(ptr);
         let base = if base_is_global && !mutable {
             Expr::Call {
@@ -1015,7 +1063,25 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 field: member.field.clone(),
             }
         };
-        Some((storage, field, self.ptr_requires_unsafe(ptr)))
+        Some(BitfieldAccessor {
+            storage,
+            field,
+            needs_unsafe: self.ptr_requires_unsafe(ptr),
+            unaligned: false,
+        })
+    }
+
+    fn read_unaligned_expr(&self, storage: Expr) -> Expr {
+        Self::unsafe_expr(Expr::Call {
+            binding: CallBinding::Generated,
+            func: Box::new(Expr::Path(Path::new(
+                ["std", "ptr", "read_unaligned"].map(Ident::from),
+            ))),
+            args: vec![Expr::AddrOf {
+                mutable: false,
+                expr: Box::new(storage),
+            }],
+        })
     }
 
     // shift up then arithmetic-shift down masks to `size` bits, sign-extending signed types.

@@ -865,7 +865,22 @@ struct MemberPtr {
     field_ty: Option<Type>,
     unsafe_access: bool,
     bitfield_name: Option<String>,
+    bitfield_unaligned: bool,
     field_is_trailing: bool,
+}
+
+struct BitfieldAccessor {
+    storage: Expr,
+    field: String,
+    needs_unsafe: bool,
+    unaligned: bool,
+}
+
+struct BitfieldStorageMember {
+    field: String,
+    ty: Type,
+    wrapped: bool,
+    unaligned: bool,
 }
 
 #[derive(Debug, Clone)]
