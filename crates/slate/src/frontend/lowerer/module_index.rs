@@ -611,6 +611,19 @@ pub fn required_features(module: &Module) -> BTreeSet<Feature> {
         {
             features.insert(Feature::CVariadic);
         }
+        if let Some(body) = &function.body {
+            let mut has_llvm_intrinsic = false;
+            walk_region_ops(body, &mut |op| {
+                has_llvm_intrinsic |= matches!(op, Op::CallLlvmIntrinsic(_));
+                true
+            });
+            if has_llvm_intrinsic {
+                features.insert(Feature::LinkLlvmIntrinsics);
+                features.insert(Feature::AbiUnadjusted);
+                features.insert(Feature::PortableSimd);
+                features.insert(Feature::SimdFfi);
+            }
+        }
     }
     for global in &module.globals {
         if cir_type_mentions_f128(&global.ty)
