@@ -135,7 +135,10 @@ impl<W: Write> Codegen<W> {
                 self.ident(name.as_str())?;
                 self.out.write_str(";\n")?;
             }
-            Item::InlineMod { name, items } => {
+            Item::InlineMod { vis, name, items } => {
+                if let Some(kw) = vis.keyword() {
+                    write!(self.out, "{kw} ")?;
+                }
                 self.out.write_str("mod ")?;
                 self.ident(name.as_str())?;
                 self.out.write_str(" {\n")?;
