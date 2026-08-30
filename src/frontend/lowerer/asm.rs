@@ -364,11 +364,28 @@ pub(super) fn asm_reg_for_constraint(kind: AsmRegConstraint, ty: &Type) -> Optio
             None => return Some(AsmReg::Explicit(name.clone())),
         },
     };
-    let bits = match ty {
+    x86_fixed_register_name(letter, asm_operand_bits(ty)).map(|name| AsmReg::Explicit(name.into()))
+}
+
+pub(super) fn asm_operand_bits(ty: &Type) -> u32 {
+    match ty {
         Type::Ptr { .. } | Type::FnPtr { .. } => 64,
         _ => int_bits(&ty.render()).unwrap_or(32),
-    };
-    x86_fixed_register_name(letter, bits).map(|name| AsmReg::Explicit(name.into()))
+    }
+}
+
+pub(super) fn reg_constraint_letter(kind: &AsmRegConstraint) -> Option<char> {
+    match kind {
+        AsmRegConstraint::Generic => None,
+        AsmRegConstraint::FixedLetter(letter) => Some(*letter),
+        AsmRegConstraint::ExplicitName(name) => x86_register_letter_from_spelling(name),
+    }
+}
+
+pub(super) fn pick_ebx_scratch_letter(used: &BTreeSet<char>) -> Option<char> {
+    ['D', 'S', 'a', 'c', 'd']
+        .into_iter()
+        .find(|letter| !used.contains(letter))
 }
 
 fn x86_register_letter_from_spelling(spelling: &str) -> Option<char> {
@@ -387,7 +404,7 @@ pub(super) fn is_ebx_family_reg(name: &str) -> bool {
     matches!(name, "bl" | "bh" | "bx" | "ebx" | "rbx")
 }
 
-fn x86_fixed_register_name(letter: char, bits: u32) -> Option<&'static str> {
+pub(super) fn x86_fixed_register_name(letter: char, bits: u32) -> Option<&'static str> {
     Some(match (letter, bits) {
         ('a', 8) => "al",
         ('a', 16) => "ax",

@@ -179,13 +179,22 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let mut output_exprs = Vec::new();
         let mut output_names = Vec::new();
         struct EbxFixup {
-            operand_index: usize,
-            modifier: char,
-            literal: &'static str,
+            ebx_literal: String,
+            scratch_literal: String,
             read: bool,
             write: bool,
         }
         let mut ebx_fixups: Vec<EbxFixup> = Vec::new();
+        let mut used_reg_letters: BTreeSet<char> = output_specs
+            .iter()
+            .filter_map(|(spec, _)| reg_constraint_letter(spec))
+            .chain(
+                input_specs
+                    .iter()
+                    .flatten()
+                    .filter_map(reg_constraint_letter),
+            )
+            .collect();
         if asm_goto.is_some()
             && output_count > 0
             && (result_count != output_count
@@ -214,12 +223,37 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 });
                 (Expr::Var(name.clone().into()), Some(name))
             };
-            let Some(reg) = asm_reg_for_constraint(spec, &template_types[output_index]) else {
+            let Some(mut reg) = asm_reg_for_constraint(spec, &template_types[output_index]) else {
                 unsupported!(
                     "lower: unsupported inline asm output register in `{}`",
                     op.constraints
                 );
             };
+            if let AsmReg::Explicit(name) = &reg
+                && is_ebx_family_reg(name)
+            {
+                let Some(scratch_letter) = pick_ebx_scratch_letter(&used_reg_letters) else {
+                    unsupported!(
+                        "lower: inline asm needs a spare register to save/restore ebx around `{}`",
+                        op.constraints
+                    );
+                };
+                used_reg_letters.insert(scratch_letter);
+                let bits = asm_operand_bits(&template_types[output_index]);
+                let Some(scratch_literal) = x86_fixed_register_name(scratch_letter, bits) else {
+                    unsupported!(
+                        "lower: unsupported inline asm output register in `{}`",
+                        op.constraints
+                    );
+                };
+                ebx_fixups.push(EbxFixup {
+                    ebx_literal: name.clone(),
+                    scratch_literal: scratch_literal.into(),
+                    read: tied_outputs[output_index].is_some(),
+                    write: true,
+                });
+                reg = AsmReg::Explicit(scratch_literal.into());
+            }
             let late = !early_clobber;
             if let Some(operand_index) = tied_outputs[output_index] {
                 operands.push(AsmOperand::InOut {
@@ -258,7 +292,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 AsmOperand::Const(int_value_expr(value))
             } else {
                 let spec = input_specs[operand_index].clone().unwrap();
-                let Some(reg) =
+                let Some(mut reg) =
                     asm_reg_for_constraint(spec, &template_types[output_count + operand_index])
                 else {
                     unsupported!(
@@ -266,6 +300,32 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         op.constraints
                     );
                 };
+                if let AsmReg::Explicit(name) = &reg
+                    && is_ebx_family_reg(name)
+                {
+                    let Some(scratch_letter) = pick_ebx_scratch_letter(&used_reg_letters) else {
+                        unsupported!(
+                            "lower: inline asm needs a spare register to save/restore ebx around `{}`",
+                            op.constraints
+                        );
+                    };
+                    used_reg_letters.insert(scratch_letter);
+                    let bits = asm_operand_bits(&template_types[output_count + operand_index]);
+                    let Some(scratch_literal) = x86_fixed_register_name(scratch_letter, bits)
+                    else {
+                        unsupported!(
+                            "lower: unsupported inline asm input register in `{}`",
+                            op.constraints
+                        );
+                    };
+                    ebx_fixups.push(EbxFixup {
+                        ebx_literal: name.clone(),
+                        scratch_literal: scratch_literal.into(),
+                        read: true,
+                        write: false,
+                    });
+                    reg = AsmReg::Explicit(scratch_literal.into());
+                }
                 AsmOperand::In {
                     reg,
                     value: self.operand_expr(input_operands[operand_index]),
@@ -294,6 +354,38 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 self.parent.uses_asm_goto_outputs.set(true);
             }
         }
+        let template = if ebx_fixups.is_empty() {
+            template
+        } else {
+            let dialect = cir_asm_dialect(op.asm_flavor);
+            let att = !matches!(dialect, Some(AsmDialect::Intel));
+            let reg_op = |name: &str| {
+                if att {
+                    format!("%{name}")
+                } else {
+                    name.to_string()
+                }
+            };
+            let mov = |dst: &str, src: &str| {
+                if att {
+                    format!("mov {}, {}", reg_op(src), reg_op(dst))
+                } else {
+                    format!("mov {}, {}", reg_op(dst), reg_op(src))
+                }
+            };
+            let mut prefix = format!("push {}\n\t", reg_op("rbx"));
+            for fixup in ebx_fixups.iter().filter(|fixup| fixup.read) {
+                prefix.push_str(&mov(&fixup.ebx_literal, &fixup.scratch_literal));
+                prefix.push_str("\n\t");
+            }
+            let mut suffix = String::new();
+            for fixup in ebx_fixups.iter().filter(|fixup| fixup.write) {
+                suffix.push_str("\n\t");
+                suffix.push_str(&mov(&fixup.scratch_literal, &fixup.ebx_literal));
+            }
+            suffix.push_str(&format!("\n\tpop {}", reg_op("rbx")));
+            format!("{prefix}{template}{suffix}")
+        };
         self.push_stmt(Self::unsafe_stmt(Stmt::InlineAsm(InlineAsm {
             template,
             dialect: cir_asm_dialect(op.asm_flavor),
