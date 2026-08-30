@@ -159,7 +159,13 @@ pub struct EnumConstRef {
 
 #[derive(Debug, Clone)]
 pub struct AsmGoto {
-    pub labels: Vec<String>,
+    pub labels: Vec<AsmGotoLabel>,
+}
+
+#[derive(Debug, Clone)]
+pub struct AsmGotoLabel {
+    pub name: String,
+    pub target: Option<SourcePoint>,
 }
 
 #[derive(Debug, Clone)]
@@ -364,6 +370,7 @@ struct CallFact {
 #[derive(Debug, Default)]
 struct PluginEvents {
     macros: HashMap<usize, MacroExpansion>,
+    asm_gotos: HashMap<usize, AsmGoto>,
     calls: HashMap<usize, CallFact>,
     pack_attributes: Vec<PackAttribute>,
     floating_literals: HashMap<FloatingLiteralLoc, FloatingLiteralFact>,
@@ -414,6 +421,8 @@ fn parse_plugin_events(stderr: &str) -> PluginEvents {
             ("floating_literal", json)
         } else if let Some(json) = line.strip_prefix("GLOBAL_LONG_DOUBLE ") {
             ("global_long_double", json)
+        } else if let Some(json) = line.strip_prefix("ASM_GOTO ") {
+            ("asm_goto", json)
         } else {
             continue;
         };
@@ -466,6 +475,22 @@ fn parse_plugin_events(stderr: &str) -> PluginEvents {
         let Some(offset) = event.get("offset").and_then(Value::as_u64) else {
             continue;
         };
+        if kind == "asm_goto" {
+            let Some(labels) = event.get("labels").and_then(Value::as_array) else {
+                continue;
+            };
+            let labels = labels
+                .iter()
+                .filter_map(|label| {
+                    Some(AsmGotoLabel {
+                        name: label.get("name")?.as_str()?.to_string(),
+                        target: label.get("target").and_then(plugin_source_point),
+                    })
+                })
+                .collect();
+            out.asm_gotos.insert(offset as usize, AsmGoto { labels });
+            continue;
+        }
         if kind == "record" {
             let (Some(name), Some(file), Some(alignment_bits)) = (
                 event.get("name").and_then(Value::as_str),
@@ -782,6 +807,7 @@ fn parse_json_with_record_roots(
         source_file,
         source_text.as_deref(),
         &plugin_events.macros,
+        &plugin_events.asm_gotos,
         &enum_const_ids,
         &mut functions,
     );
@@ -1324,11 +1350,18 @@ fn collect_functions(
     source_file: &str,
     source_text: Option<&str>,
     macro_events: &HashMap<usize, MacroExpansion>,
+    asm_goto_events: &HashMap<usize, AsmGoto>,
     enum_const_ids: &HashMap<String, (String, String, i64)>,
     out: &mut Vec<Function>,
 ) {
     if kind(node) == Some("FunctionDecl") && is_source_node(node, source_file) && has_body(node) {
-        if let Some(function) = extract_function(node, source_text, macro_events, enum_const_ids) {
+        if let Some(function) = extract_function(
+            node,
+            source_text,
+            macro_events,
+            asm_goto_events,
+            enum_const_ids,
+        ) {
             out.push(function);
         }
         return;
@@ -1339,6 +1372,7 @@ fn collect_functions(
             source_file,
             source_text,
             macro_events,
+            asm_goto_events,
             enum_const_ids,
             out,
         );
@@ -1763,6 +1797,7 @@ fn extract_function(
     node: &Value,
     source_text: Option<&str>,
     macro_events: &HashMap<usize, MacroExpansion>,
+    asm_goto_events: &HashMap<usize, AsmGoto>,
     enum_const_ids: &HashMap<String, (String, String, i64)>,
 ) -> Option<Function> {
     let name = node.get("name")?.as_str()?.to_string();
@@ -1778,7 +1813,7 @@ fn extract_function(
         layout_queries: collect_layout_queries(node, source_text),
         macro_consts: collect_macro_consts(node, source_text, macro_events),
         enum_consts: collect_enum_const_refs(node, source_text, enum_const_ids),
-        asm_gotos: collect_asm_gotos(node, source_text),
+        asm_gotos: collect_asm_gotos(node, source_text, asm_goto_events),
         local_enum_decls: collect_local_enum_decls(node),
     })
 }
@@ -1872,25 +1907,45 @@ fn expansion_end_offset(node: &Value) -> Option<usize> {
         .map(|offset| offset as usize)
 }
 
-fn collect_asm_gotos(node: &Value, source_text: Option<&str>) -> Vec<AsmGoto> {
+fn collect_asm_gotos(
+    node: &Value,
+    source_text: Option<&str>,
+    asm_goto_events: &HashMap<usize, AsmGoto>,
+) -> Vec<AsmGoto> {
     let mut out = Vec::new();
-    if let Some(source) = source_text {
-        collect_asm_gotos_at(node, source, &mut out);
-    }
+    collect_asm_gotos_at(node, source_text, asm_goto_events, &mut out);
     out
 }
 
-fn collect_asm_gotos_at(node: &Value, source: &str, out: &mut Vec<AsmGoto>) {
-    if kind(node) == Some("GCCAsmStmt")
-        && let (Some(begin), Some(end)) = (expansion_offset(node), expansion_end_offset(node))
-        && let Some(text) = source.get(begin..=end)
-        && let Some(labels) = parse_asm_goto_labels(text)
-    {
-        out.push(AsmGoto { labels });
-        return;
+fn collect_asm_gotos_at(
+    node: &Value,
+    source_text: Option<&str>,
+    asm_goto_events: &HashMap<usize, AsmGoto>,
+    out: &mut Vec<AsmGoto>,
+) {
+    if kind(node) == Some("GCCAsmStmt") {
+        if let Some(asm_goto) =
+            expansion_offset(node).and_then(|offset| asm_goto_events.get(&offset))
+        {
+            out.push(asm_goto.clone());
+            return;
+        }
+        if let Some(source) = source_text
+            && let (Some(begin), Some(end)) = (expansion_offset(node), expansion_end_offset(node))
+            && let Some(text) = source.get(begin..=end)
+            && let Some(labels) = parse_asm_goto_labels(text)
+        {
+            out.push(AsmGoto {
+                labels: labels
+                    .into_iter()
+                    .map(|name| AsmGotoLabel { name, target: None })
+                    .collect(),
+            });
+            return;
+        }
     }
     for child in children(node) {
-        collect_asm_gotos_at(child, source, out);
+        collect_asm_gotos_at(child, source_text, asm_goto_events, out);
     }
 }
 

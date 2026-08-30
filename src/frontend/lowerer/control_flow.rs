@@ -493,6 +493,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let state_var = format!("__state{n}");
 
         let mut label_to_state = BTreeMap::new();
+        let mut label_states: BTreeMap<String, Vec<(Option<SourcePoint>, usize)>> = BTreeMap::new();
         let mut block_to_state = BTreeMap::new();
         for (i, block) in body.blocks.iter().enumerate() {
             let key = block.label.clone().unwrap_or_else(|| format!("bb{i}"));
@@ -500,6 +501,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             for op in &block.ops {
                 if let Op::Label(label) = op {
                     label_to_state.insert(label.label.clone(), i);
+                    label_states
+                        .entry(label.label.clone())
+                        .or_default()
+                        .push((label.loc.as_ref().and_then(source_point), i));
                 }
             }
         }
@@ -507,6 +512,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             loop_label: loop_label.clone(),
             state_var: state_var.clone(),
             label_to_state,
+            label_states,
             block_to_state,
             cross_block_names: BTreeMap::new(),
             block_args: BTreeMap::new(),

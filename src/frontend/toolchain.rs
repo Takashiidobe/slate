@@ -579,6 +579,17 @@ pub fn emit_generic_with_args_flattened(
     )
 }
 
+pub fn emit_generic_with_args_cfg_flattened(
+    src: &Path,
+    extra_args: &[String],
+) -> Result<String, EmitError> {
+    emit_generic_with_args_and_cir_opt_flags(
+        src,
+        extra_args,
+        &["--verify-each=false", "--cir-flatten-cfg"],
+    )
+}
+
 fn emit_generic_with_args_and_cir_opt_flags(
     src: &Path,
     extra_args: &[String],
