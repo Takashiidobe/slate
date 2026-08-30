@@ -15,6 +15,7 @@ pub enum Item {
         name: Ident,
     },
     InlineMod {
+        vis: Visibility,
         name: Ident,
         items: Vec<Item>,
     },

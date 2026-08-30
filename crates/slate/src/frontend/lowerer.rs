@@ -54,6 +54,7 @@ use analysis::*;
 use asm::*;
 use atomic::*;
 use bitfields::*;
+pub use bitfields::{BitfieldStorages, collect_bitfield_storages};
 use cir_ops::*;
 use constants::*;
 use module_index::*;
@@ -297,7 +298,18 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         function_param_types: BTreeMap::new(),
         enum_wrapper_fns: std::cell::RefCell::new(BTreeMap::new()),
         needed_enum_from_impls: std::cell::RefCell::new(BTreeSet::new()),
-        bitfield_storages: collect_bitfield_storages(cir),
+        bitfield_storages: {
+            let mut storages = collect_bitfield_storages(cir);
+            if let Some(module) = &project.shared_type_module {
+                let root = project.shared_type_crate.as_deref().unwrap_or("crate");
+                for ((record, _), storage) in storages.iter_mut() {
+                    if project.shared_records.contains(record) {
+                        storage.wrapper = format!("{root}::{module}::{}", storage.wrapper);
+                    }
+                }
+            }
+            storages
+        },
         global_sym_types: BTreeMap::new(),
     };
     lowerer.lower_module(cir, c)
@@ -331,10 +343,61 @@ fn cir_record_field_types_from_aliases(
     })
 }
 
+fn bitfield_storage_fields(
+    record: &crate::frontend::c_ast::Record,
+    aliases: &BTreeMap<String, CirType>,
+    bitfield_storages: &BitfieldStorages,
+) -> Option<Vec<crate::frontend::c_ast::Decl>> {
+    if record.fields.is_empty() || record.fields.iter().all(|field| field.bit_width.is_none()) {
+        return None;
+    }
+    let expanded = aliases.values().find(|ty| {
+        slate_record_name(ty).is_some_and(|name| {
+            sanitize_ident(name).as_str() == sanitize_ident(&record.name).as_str()
+        })
+    })?;
+    let CirType::Struct {
+        members: Some(members),
+        ..
+    } = expanded
+    else {
+        return None;
+    };
+    let preserve_field_names = record
+        .fields
+        .iter()
+        .any(|field| field.name.starts_with("__bitfield_"));
+    let record_name = sanitize_ident(&record.name).into_string();
+    Some(
+        members
+            .iter()
+            .enumerate()
+            .map(|(index, ty)| crate::frontend::c_ast::Decl {
+                name: if preserve_field_names {
+                    record
+                        .fields
+                        .get(index)
+                        .map(|field| field.name.clone())
+                        .unwrap_or_else(|| format!("__bitfield_{index}"))
+                } else {
+                    format!("__bitfield_{index}")
+                },
+                comments: Vec::new(),
+                ty: bitfield_storages
+                    .get(&(record_name.clone(), index))
+                    .map(|storage| crate::frontend::c_ast::CType::Record(storage.wrapper.clone()))
+                    .unwrap_or_else(|| cir_type_to_ctype(ty, aliases)),
+                bit_width: None,
+            })
+            .collect(),
+    )
+}
+
 pub fn lower_shared_types(
     records: &[crate::frontend::c_ast::Record],
     enums: &[crate::frontend::c_ast::Enum],
     aliases: &BTreeMap<String, CirType>,
+    bitfield_storages: &BitfieldStorages,
 ) -> Program {
     let mut items = vec![Item::CrateAttrs(vec![CrateAttr::Allow(vec![
         Lint::DeadCode,
@@ -359,6 +422,20 @@ pub fn lower_shared_types(
             .filter_map(|enm| lower_enum_def(enm, Visibility::Pub).map(Item::Enum)),
     );
     items.extend(records.iter().flat_map(|record| {
+        if let Some(fields) = bitfield_storage_fields(record, aliases, bitfield_storages) {
+            let storage_record = crate::frontend::c_ast::Record {
+                fields,
+                ..record.clone()
+            };
+            return lower_record_def(
+                &storage_record,
+                Visibility::Pub,
+                Visibility::Pub,
+                true,
+                false,
+                None,
+            );
+        }
         lower_record_def(
             record,
             Visibility::Pub,
@@ -368,6 +445,7 @@ pub fn lower_shared_types(
             cir_record_field_types_from_aliases(record, aliases, false).as_deref(),
         )
     }));
+    items.extend(bitfield_items(bitfield_storages, Visibility::Pub));
     Program { items }
 }
 
@@ -1003,7 +1081,16 @@ impl<'a> Lowerer<'a> {
             &self.aliases,
         );
 
-        items.extend(bitfield_items(&self.bitfield_storages));
+        let local_bitfield_storages: BitfieldStorages = self
+            .bitfield_storages
+            .iter()
+            .filter(|((record, _), _)| !self.project.shared_records.contains(record))
+            .map(|(key, storage)| (key.clone(), storage.clone()))
+            .collect();
+        items.extend(bitfield_items(
+            &local_bitfield_storages,
+            Visibility::Private,
+        ));
 
         for enm in &c.enums {
             let name = sanitize_ident(&enm.name).into_string();
@@ -1908,52 +1995,7 @@ impl __SlateVaArgs {
         &self,
         record: &crate::frontend::c_ast::Record,
     ) -> Option<Vec<crate::frontend::c_ast::Decl>> {
-        if record.fields.is_empty() || record.fields.iter().all(|field| field.bit_width.is_none()) {
-            return None;
-        }
-        let expanded = self.aliases.values().find(|ty| {
-            slate_record_name(ty).is_some_and(|name| {
-                sanitize_ident(name).as_str() == sanitize_ident(&record.name).as_str()
-            })
-        })?;
-        let CirType::Struct {
-            members: Some(members),
-            ..
-        } = expanded
-        else {
-            return None;
-        };
-        let preserve_field_names = record
-            .fields
-            .iter()
-            .any(|field| field.name.starts_with("__bitfield_"));
-        let record_name = sanitize_ident(&record.name).into_string();
-        Some(
-            members
-                .iter()
-                .enumerate()
-                .map(|(index, ty)| crate::frontend::c_ast::Decl {
-                    name: if preserve_field_names {
-                        record
-                            .fields
-                            .get(index)
-                            .map(|field| field.name.clone())
-                            .unwrap_or_else(|| format!("__bitfield_{index}"))
-                    } else {
-                        format!("__bitfield_{index}")
-                    },
-                    comments: Vec::new(),
-                    ty: self
-                        .bitfield_storages
-                        .get(&(record_name.clone(), index))
-                        .map(|storage| {
-                            crate::frontend::c_ast::CType::Record(storage.wrapper.clone())
-                        })
-                        .unwrap_or_else(|| cir_type_to_ctype(ty, &self.aliases)),
-                    bit_width: None,
-                })
-                .collect(),
-        )
+        bitfield_storage_fields(record, &self.aliases, &self.bitfield_storages)
     }
 
     fn standard_record_defs(&self) -> Vec<Item> {
@@ -2888,9 +2930,7 @@ fn c_type_to_type(ty: &crate::frontend::c_ast::CType, va_list_boxed: bool) -> Ty
             len: *len,
         },
         CType::Array(inner, None) => ptr(inner),
-        CType::Record(name) if name.starts_with("__slate_bitfields::") => {
-            Type::Custom(name.clone())
-        }
+        CType::Record(name) if name.contains("__slate_bitfields::") => Type::Custom(name.clone()),
         CType::Record(name) => clib_record_type(name)
             .map(Type::CLib)
             .unwrap_or_else(|| Type::Custom(rust_record_name(name))),

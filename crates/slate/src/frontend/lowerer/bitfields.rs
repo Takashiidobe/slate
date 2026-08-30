@@ -9,13 +9,13 @@ pub(super) struct BitfieldField {
 }
 
 #[derive(Debug, Clone)]
-pub(super) struct BitfieldStorage {
+pub struct BitfieldStorage {
     pub(super) wrapper: String,
     pub(super) backing: Type,
     pub(super) fields: BTreeMap<String, BitfieldField>,
 }
 
-pub(super) type BitfieldStorages = BTreeMap<(String, usize), BitfieldStorage>;
+pub type BitfieldStorages = BTreeMap<(String, usize), BitfieldStorage>;
 
 #[derive(Debug, Clone)]
 struct MemberStorage {
@@ -25,7 +25,7 @@ struct MemberStorage {
     field: String,
 }
 
-pub(super) fn collect_bitfield_storages(module: &Module) -> BitfieldStorages {
+pub fn collect_bitfield_storages(module: &Module) -> BitfieldStorages {
     let mut storages = BTreeMap::new();
     for function in &module.functions {
         let Some(body) = &function.body else {
@@ -144,7 +144,7 @@ fn bitfield_info(info: &Attr, module: &Module) -> Option<(u32, u32)> {
     }
 }
 
-pub(super) fn bitfield_items(storages: &BitfieldStorages) -> Vec<Item> {
+pub(super) fn bitfield_items(storages: &BitfieldStorages, vis: Visibility) -> Vec<Item> {
     let mut wrappers = Vec::new();
     for storage in storages.values() {
         let Some(total) = bit_size(&storage.backing) else {
@@ -211,6 +211,7 @@ pub(super) fn bitfield_items(storages: &BitfieldStorages) -> Vec<Item> {
         Vec::new()
     } else {
         vec![Item::InlineMod {
+            vis,
             name: "__slate_bitfields".into(),
             items: wrappers,
         }]

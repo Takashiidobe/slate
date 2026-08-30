@@ -860,6 +860,17 @@ fn project_translation_shares_enum_types() {
 }
 
 #[test]
+fn project_translation_shares_bitfield_record_types() {
+    let rs_dir = build_and_diff("shared_bitfield_record");
+    let types_rs = std::fs::read_to_string(rs_dir.join("types.rs")).unwrap_or_default();
+    assert!(
+        types_rs.contains("__bitfield_"),
+        "shared record carrying a bitfield must be hoisted with positional \
+         __bitfield_N storage fields matching sibling-module accessors: {types_rs}"
+    );
+}
+
+#[test]
 fn project_translation_shares_long_double_types() {
     build_and_diff("shared_long_double");
 }
