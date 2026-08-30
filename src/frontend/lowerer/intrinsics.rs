@@ -81,9 +81,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 op.constraints
             );
         }
+        let flag_outputs: Vec<Option<&str>> = constraints[..output_count]
+            .iter()
+            .map(|constraint| parse_x86_flag_output_constraint(constraint))
+            .collect();
         let Some(output_specs): Option<Vec<(AsmRegConstraint, bool)>> = constraints[..output_count]
             .iter()
-            .map(|constraint| parse_output_reg_constraint(constraint))
+            .zip(&flag_outputs)
+            .map(|(constraint, flag)| {
+                flag.map(|_| (AsmRegConstraint::Generic, false))
+                    .or_else(|| parse_output_reg_constraint(constraint))
+            })
             .collect()
         else {
             unsupported!(
@@ -166,7 +174,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         template_types.extend(std::iter::repeat_n(Type::Unit, label_count));
         let dialect = cir_asm_dialect(op.asm_flavor);
         let (template, dialect) = normalize_asm_dialect_wrapper(template, dialect);
-        let Some(template) = translate_asm_template(
+        let Some(mut template) = translate_asm_template(
             &template,
             &slot_to_rust,
             &template_constraints,
@@ -178,6 +186,24 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 op.constraints
             );
         };
+        for (output_index, condition) in flag_outputs.iter().enumerate() {
+            let Some(condition) = condition else {
+                continue;
+            };
+            let Some(suffix) = x86_flag_output_suffix(
+                slot_to_rust[output_index],
+                condition,
+                &template_types[output_index],
+                dialect,
+            ) else {
+                unsupported!(
+                    "lower: unsupported inline asm flag-output constraint `{}`",
+                    constraints[output_index]
+                );
+            };
+            template.push_str("\n\t");
+            template.push_str(&suffix);
+        }
         let mut operands = Vec::new();
         let mut output_exprs = Vec::new();
         let mut output_names = Vec::new();
