@@ -775,12 +775,25 @@ fn library_crate_links_generated_c_abi_shim_for_long_double_libc_call() {
         .join("c23-strfrom-library");
     let crate_dir = work.join("crate");
     let _ = std::fs::remove_dir_all(&work);
+    std::fs::create_dir_all(&work).expect("create c23 strfrom work directory");
+    let source = dir.join("src/strfrom.c");
+    let commands = serde_json::json!([{
+        "directory": dir.join("src"),
+        "file": source,
+        "arguments": ["clang", "-std=c23", "-c", source, "-o", "strfrom.o"]
+    }]);
+    let database = work.join("compile_commands.json");
+    std::fs::write(
+        &database,
+        serde_json::to_vec(&commands).expect("encode c23 strfrom compile commands"),
+    )
+    .expect("write c23 strfrom compile commands");
 
     let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
-        .args(["translate-project", "--lib"])
+        .args(["translate-project", "--lib", "--compile-commands"])
+        .arg(&database)
         .arg(&dir)
         .arg(&crate_dir)
-        .env("SLATE_CLANG_ARGS", "-std=c23")
         .output()
         .expect("run slate translate-project --lib");
     assert!(
