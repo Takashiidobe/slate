@@ -1,8 +1,3 @@
-//! Cross-translation-unit differential tests: a directory of C files is
-//! translated into separate Rust modules that import each other (rather than
-//! one aggregated file), then C-linked-together and Rust-crate builds are run
-//! and compared for identical stdout and exit code.
-
 mod support;
 
 use std::path::{Path, PathBuf};

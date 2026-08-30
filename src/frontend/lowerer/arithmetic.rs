@@ -98,7 +98,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 } else {
                     "rotate_right".into()
                 },
-                args: vec![self.operand_expr(&op.amount)],
+                args: vec![Expr::Cast {
+                    expr: Box::new(self.operand_expr(&op.amount)),
+                    ty: Type::Prim(Prim::U32),
+                }],
             },
             Some(&op.result_ty),
         );
