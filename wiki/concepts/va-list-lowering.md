@@ -6,7 +6,7 @@ function: every va_list use in the file can be the boxed `__SlateVaArgs`
 (`Rc<Vec<__SlateVaArg>>` + cursor index, `Clone` = independent cursor over
 shared storage) unless something in the file needs genuine C ABI — a
 pub-exported/`c_abi_functions` function touching va_list, or a call to a
-function *not defined in this module* with a va_list argument (real
+function _not defined in this module_ with a va_list argument (real
 `vprintf`/`vfprintf`). Native mode falls back to real `core::ffi::VaList`.
 No fixture in the corpus mixes both needs in one file, so the whole-file
 simplification is unverified against that case.
@@ -44,9 +44,9 @@ proper-AST version unless asked.
 
 ## Known gap: `va_list*` pointer places
 
-`lower_load`'s va-list guard fires whenever the *loaded type* is
+`lower_load`'s va-list guard fires whenever the _loaded type_ is
 va-list-shaped, without distinguishing "loading a by-value `va_list`" (where
-propagating the underlying place is correct — the loaded value *is* the same
+propagating the underlying place is correct — the loaded value _is_ the same
 storage) from "loading a genuine `va_list*` pointer value" (where the load
 produces a pointer, and using its place directly skips a level of
 indirection). Symptom: `va_arg(*ap, int)` inside a function taking
@@ -64,14 +64,14 @@ fall back to the existing `place_or_deref_expr` (already used elsewhere for
 Needs a design decision, not just a lowering fix. `va_list *ap_array[3]`
 populated via `malloc` with pointer arithmetic, feeding a **real**
 `vprintf(s, **ap_ptr)` call. This forces native `core::ffi::VaList` (per the
-whole-file native-ABI rule) *and* needs the va_list to live in raw
+whole-file native-ABI rule) _and_ needs the va_list to live in raw
 `malloc`'d memory — but `core::ffi::VaList` has no defined layout Slate can
 reconstruct from an arbitrary buffer safely, and the boxed `__SlateVaArgs`
 representation can't be consumed by a real libc `vprintf` call.
 
 Two directions: (1) shim `vprintf` itself against `__SlateVaArgs` — a
 from-scratch format-string interpreter, letting anything forcing native
-*solely* because of a vprintf/vfprintf call box like everything else instead;
+_solely_ because of a vprintf/vfprintf call box like everything else instead;
 broadly reusable. (2) reinterpret `malloc`'d bytes as `core::ffi::VaListImpl`
 and hope the byte layout matches `__va_list_tag` on the target ABI — a
 one-off, "morally UB, works in practice" hack for a single test case. Option

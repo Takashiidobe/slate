@@ -22,11 +22,11 @@ on `std::string` alone (see `cxx-translation-pain-points.md`): a 3-line
 program touching `std::string` expands to 86 inlined `cir.func`s, including
 a self-referential SSO pointer that must be fixed up on move (a naive
 byte-copy move leaves it dangling) and internal `_Guard`/`_Terminator` RAII
-types implementing the string's *own* exception safety.
+types implementing the string's _own_ exception safety.
 
 The `cxx` crate's approach — opaque handle, thin wrapper functions, never
-reproduce internal layout — is the right *pattern*, but the crate itself
-isn't the right *mechanism* here: it wants a hand-authored, static bridge
+reproduce internal layout — is the right _pattern_, but the crate itself
+isn't the right _mechanism_ here: it wants a hand-authored, static bridge
 module, and its built-in bridged-type list doesn't cover arbitrary
 user-defined classes or template instantiations, which is most of what a
 translator actually needs to cross. This doc generalizes the pattern into
@@ -57,8 +57,8 @@ C++ class), raw lowering emits:
    operation — real constructor call, real `append`, real virtual dispatch —
    written using the actual C++ type, because the wrapper file has the real
    headers available. Slate never has to reconstruct C++ semantics itself;
-   it only has to reconstruct enough of the call's *signature and callee
-   name* (recoverable from the CIR call site's mangled symbol, demangled
+   it only has to reconstruct enough of the call's _signature and callee
+   name_ (recoverable from the CIR call site's mangled symbol, demangled
    back into source-level syntax) to write the wrapper's one-line body.
 2. **An opaque, fixed-size byte buffer** standing in for the C++ object on
    the Rust side, sized and aligned from CIR's own `cir.record_layouts` (no
@@ -98,7 +98,7 @@ Reuses the ABI-flip mechanism already established for `setjmp`/`longjmp`
   target already chosen for exceptions generally.
 
 A caught exception's payload is itself a C++ object — to preserve it as more
-than a `what()` string (the choice `cxx` makes), it needs the *same*
+than a `what()` string (the choice `cxx` makes), it needs the _same_
 opaque-blob-plus-RTTI-tag treatment as any other shimmed type on the way
 back across, not a separate mechanism. Not free, but not new either.
 
@@ -114,7 +114,7 @@ Escape hatch: type-erase at the boundary (function pointer + opaque `void*`
 context) instead of the generic "same signature, opaque blob" treatment —
 a real special case that needs its own handling, not automatic from the
 general mechanism. A second, less common escape hatch — generating the
-wrapper *inside* the original translation unit instead of a separate
+wrapper _inside_ the original translation unit instead of a separate
 companion file, so the no-linkage type's name is still in scope — trades
 away the "one clean companion file" simplicity for coverage.
 

@@ -25,14 +25,15 @@ callers via whole-repo `rg`, not just the lowerer tree, before each
 deletion).
 
 **Migration debugging methodology** (repeatable for any typed-migration bug):
+
 1. `cargo run --release -- translate-lowered <fixture>.c` — raw lowering, no
    fixups, fastest way to see the bug.
 2. `cargo run --release -- emit-cir <fixture>.c` — ground-truth CIR text.
 3. Grep the `clang-ir` crate itself (`~/Projects/clang-ir/src/{parser,model,
-   ast}/*.rs`) for how the attribute/type is actually represented. Don't guess
+ast}/*.rs`) for how the attribute/type is actually represented. Don't guess
    from the shape of the old raw-text code.
 4. Fix, rebuild, re-diff, re-run `cargo nextest r --release --profile
-   lowering` (never plain `cargo test`).
+lowering` (never plain `cargo test`).
 
 Six real, previously-latent bugs surfaced this way once the lowerer compiled
 again after months of not running at all — a warning that "compiles clean"
@@ -84,8 +85,8 @@ synthetic name from the enclosing alias key instead of defaulting to `i32`.
 legacy `match op.kind()`. Migrate one op family at a time:
 
 1. Check `~/Projects/clang-ir/src/model/instruction.rs`'s `Instruction` enum
-   + `try_lower` for which mnemonics collapse into a variant and what it
-   extracts.
+   - `try_lower` for which mnemonics collapse into a variant and what it
+     extracts.
 2. Add one match arm calling through to the existing `lower_x` helper —
    existing helpers almost always already read what they need from
    `op.operands`/`op.regions`/`op.attr(...)`; don't assume a rewrite is
@@ -96,7 +97,7 @@ legacy `match op.kind()`. Migrate one op family at a time:
    confirming zero remaining references **repo-wide**, not just in
    `lowerer/`.
 4. Verify: `cargo build --release`, `cargo nextest r --release --profile
-   lowering` (+`rewrites` for high-traffic ops like Load/Store/Const),
+lowering` (+`rewrites` for high-traffic ops like Load/Store/Const),
    `cargo fmt`, `cargo clippy --release --all-targets`.
 
 Blocked on crate-side modeling (re-check before re-deriving): `ComplexMul`/
@@ -118,12 +119,12 @@ fixture that hits it — accepted, since differential fixture testing is
 already the whole correctness model here, not a new risk category.
 
 **Convert a family only once it has zero remaining `CirOpKind` references.**
-A legacy fallback arm existing does *not* by itself mean the family is unsafe
+A legacy fallback arm existing does _not_ by itself mean the family is unsafe
 to convert — check whether the hand-written helper's own guards are provably
 identical to `try_lower`'s preconditions. If they're looser and silently
 produce a degenerate default on malformed input (old `Const`/`GetGlobal`:
 missing attr → fabricated zero/empty-string), tighten the helper's guard to
-match `try_lower` *first*, then convert — that's a deliberate behavior
+match `try_lower` _first_, then convert — that's a deliberate behavior
 tightening (runtime check → dispatch-validated precondition), not just a
 refactor. `GetBitfield`/`SetBitfield` looked provably-dead by this check but
 weren't — a third failure mode (missing-attr vs. present-but-unresolved-alias,

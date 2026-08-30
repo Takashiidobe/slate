@@ -1,24 +1,37 @@
 # Rewrite engine v2: ground-up replacement for src/backend/query + salsa
 
-**Status: in progress, ~6/65 passes ported. This is a handoff spec for
-whichever agent picks up `slate-y0qs.3` next.** Read this whole document
-before touching code. It records a real decision made after measuring the
-incremental approach and finding it insufficient -- don't re-litigate the
-"should we rewrite from scratch" question without re-reading the "Rejected:
-retrofit the existing engine" section below; that ground has already been
-covered.
+> **Where this stands (2026-08-30).** This is the design spec that guided the
+> engine that now ships in `src/backend/engine/` + `src/backend/interproc/`.
+> The replacement is real, not hypothetical: `src/backend/query/` and
+> `src/backend/salsa.rs` are **deleted**; the arena + one-edit worklist +
+> two-tier dispatch + hand-rolled fact caches described below are what runs
+> today, and the interprocedural phase landed as the pointer capability lattice
+> ([pointer-capability-lattice.md](pointer-capability-lattice.md)). What is
+> _not_ done is the pass port: only a handful of rules are on the new engine
+> (see [passes.md](passes.md) for the current registry) versus the historical
+> ~65. Sections below that talk about salsa/`query` as still-present, the
+> "currently uncommitted in the tree" state, and the "suggested first slice"
+> are **historical planning context** — read them for the _why_, not as a
+> description of the current tree. Per-session porting fast path:
+> [pass-porting-workflow.md](pass-porting-workflow.md).
+
+Read this whole document before touching engine internals. It records a real
+decision made after measuring the incremental approach and finding it
+insufficient -- don't re-litigate the "should we rewrite from scratch" question
+without re-reading the "Rejected: retrofit the existing engine" section below;
+that ground has already been covered.
 
 **Porting one more pass? Read
 [pass-porting-workflow.md](pass-porting-workflow.md) first** -- it's the
 per-session fast path (which pass to pick, how to port, how to verify, how to
 benchmark) layered on top of the architecture this document specifies. This
-document is the *what*/*why*; that one is the *how*, session to session.
+document is the _what_/_why_; that one is the _how_, session to session.
 
 ## The mandate
 
 libexpat (21 TUs) currently takes ~65-67s to translate with rewrite passes
 enabled. Bare clang compiles it in a few seconds. Target: **under 10s**, and
-the architecture must scale to 60+ rewrite passes *without* runtime growing
+the architecture must scale to 60+ rewrite passes _without_ runtime growing
 linearly (or worse) with pass count -- that's the actual epic goal
 (`slate-y0qs`), not just "make libexpat faster once."
 
@@ -35,20 +48,20 @@ This is a full replacement of:
   per fixpoint round doesn't fit an arena/stable-ID model. Confirm this once
   the arena design is nailed down; don't assume it survives unchanged.
 
-**What survives:** the *algorithms*, not the *plumbing*.
+**What survives:** the _algorithms_, not the _plumbing_.
 
 - `src/backend/facts/*.rs` -- what each fact means and how to derive it from
   AST shape (binding uses, expression purity/effects, control-flow shape,
   cast reasoning, loop shapes, pointer/string/heap provenance). Port the
   logic; the caching/invalidation wrapper around it is being replaced.
-- `wiki/concepts/passes.md`'s pass catalog -- the *semantic* description of
+- `wiki/concepts/passes.md`'s pass catalog -- the _semantic_ description of
   what each of the 65 passes does and why, including the prose next to each
   hand-placed re-run explaining why it's there (e.g. "`string_params`
   re-run after `string_copy` and `printf_format` since each can expose a new
   liftable parameter"). That prose is the actual ordering-dependency
-  knowledge this system has accumulated; it becomes rule *priority* in the
+  knowledge this system has accumulated; it becomes rule _priority_ in the
   new engine (see below), not a literal restatement of stage boundaries.
-- Each `src/backend/query/rules/*.rs` file's *precondition reasoning* -- the
+- Each `src/backend/query/rules/*.rs` file's _precondition reasoning_ -- the
   "what makes this rewrite provably safe" logic inside each case body is
   real engineering (conservative-when-uncertain, evidence-gated). Port the
   reasoning into the new rule bodies; the `QueryRule`/`Matcher`/`EditSet`
@@ -73,7 +86,7 @@ were tried/analyzed this session, in order:
    Root cause of the ceiling: this only cuts round-2+ cost. Round 1 -- one
    full walk per rule, unavoidable in this model since a rule has to look at
    a candidate at least once to know if it matches -- still dominates, and
-   fresh per-pass timing data confirmed it: the *already-scoped* passes
+   fresh per-pass timing data confirmed it: the _already-scoped_ passes
    (`EarlyInlineTemps`, `ZeroInit`, `LateInlineTemps`, `CallArgs`) were still
    near the top of the per-pass cost list after scoping. Diminishing
    returns; not the right lever for a 6-7x target.
@@ -84,14 +97,14 @@ were tried/analyzed this session, in order:
    try both rules per candidate, instead of two separate full walks. This
    is real and would help, but it surfaces a correctness landmine: today,
    each pass fully applies its edits and refreshes facts (`incremental.
-   set_program`) before the next pass's `step!` block runs. Sharing the
-   *candidate walk* across rules from different passes means the later
+set_program`) before the next pass's `step!` block runs. Sharing the
+   _candidate walk_ across rules from different passes means the later
    rule evaluates against a **pre-mutation** snapshot instead of the
    post-earlier-rule-edit state it sees today -- a real behavior change,
    not just a perf one (`SingletonScopes` deletes/unwraps scopes, which
    changes the statement structure `DeadLocals` reasons about). Sharing the
-   walk *and* keeping facts consistent requires also merging edit
-   *application* into the same round, which requires making
+   walk _and_ keeping facts consistent requires also merging edit
+   _application_ into the same round, which requires making
    `PlanBuilder::finish` (`src/backend/query/plan.rs`) priority-aware:
    today, any two overlapping proposals get symmetrically dropped (fine
    when only one pass's proposals ever coexist, which is the case today);
@@ -122,7 +135,7 @@ engine and even the `TouchedItems` retrofit both do), but it is **not** a
 good fit for genuine one-edit-at-a-time application: every single edit would
 pay a snapshot-rebuild tax (the ~9.5% clone+diff cost measured at today's
 large per-round batch size -- multiplying that by "once per edit" instead of
-"once per big batch" could plausibly make single-edit application *slower*
+"once per big batch" could plausibly make single-edit application _slower_
 than today's batching, not faster).
 
 Decision: **drop salsa for this engine.** Replace it with hand-rolled,
@@ -178,7 +191,7 @@ decision explicitly discards.
    re-runs, into a total order) -- that captures real "earlier enables
    later" knowledge distilled from real bugs, and using it as a tie-breaker
    preserves today's observable behavior as the default rather than
-   re-deriving ordering from nothing. It is *not* required to stay a
+   re-deriving ordering from nothing. It is _not_ required to stay a
    literal copy of today's stage boundaries forever -- once the new engine
    is validated against the existing corpora, priorities can be tuned -- but
    start there, don't start from an unordered pile of 65 rules and hope
@@ -199,7 +212,7 @@ decision explicitly discards.
   incremental facts doesn't hand you confluence for free; nothing here
   currently proves the worklist can't oscillate (rule A's edit re-enables
   rule B, whose edit re-enables rule A, forever). `wiki/concepts/
-  rewrite-worklist-engine.md`'s "Open question" section flagged this
+rewrite-worklist-engine.md`'s "Open question" section flagged this
   already for the local worklist; it applies at least as much here. At
   minimum, carry forward something like today's `FixpointLimit::Rounds`
   safety valve (a hard cap, used today for programs over ~2000 statements)
@@ -254,20 +267,20 @@ Also holds, and needs explicit attention, not just "run the suite and see":
   net for "did pass X still fire the way it's supposed to," useful signal
   during the rewrite, not just a hurdle to clear at the end.
 - `tests/differential.rs` has several tests asserting on `fixup-debug`
-  trace output by rule/case *identity* (e.g. `stdout.contains
-  ("query_rule=rewrite_anonymous_structs")`, count assertions on
-  `query_case=known_origin` occurrences). These are tied to the *old*
+  trace output by rule/case _identity_ (e.g. `stdout.contains
+("query_rule=rewrite_anonymous_structs")`, count assertions on
+  `query_case=known_origin` occurrences). These are tied to the _old_
   `Pass` enum and rule-naming scheme and will need rewriting to match
   whatever identity scheme the new engine uses -- expect to update these
   tests' expected strings, not to preserve the old naming as a hard
   constraint.
 - `slate-mmiy` (anonymous-struct field-name mismatch after re-enabling
   rewrite passes) and the other pre-existing failures tracked under
-  `slate-90t8` are bugs in the *old* engine. The new engine isn't expected
+  `slate-90t8` are bugs in the _old_ engine. The new engine isn't expected
   to inherit or specifically fix them -- they may simply not recur if the
   new engine handles the underlying case differently, or may need their
   own new investigation if they do. Don't treat "still 9 tests failing"
-  as a pass/fail gate for this rewrite; treat "no *new* failures beyond
+  as a pass/fail gate for this rewrite; treat "no _new_ failures beyond
   whatever `slate-90t8` already tracks" as the gate, and update `slate-90t8`
   if the set changes shape.
 
@@ -282,11 +295,11 @@ timing instead, e.g. `date +%s.%N` before/after, and note the actual CLI shape
 is `translate-project --lib --compile-commands <file> <project_dir> <crate_dir>`,
 not a bare `--lib <dir>`):
 
-| state | wall time |
-| --- | --- |
-| unscoped baseline (`4281c7e2`, before any `y0qs.3` work) | 67.4s |
+| state                                                                    | wall time   |
+| ------------------------------------------------------------------------ | ----------- |
+| unscoped baseline (`4281c7e2`, before any `y0qs.3` work)                 | 67.4s       |
 | + function-level touched-item scoping (rejected retrofit, for reference) | ~65.1-66.1s |
-| **target for this rewrite** | **< 10s** |
+| **target for this rewrite**                                              | **< 10s**   |
 
 Per-pass cost breakdown at the "rejected retrofit" state (top offenders,
 `step pass=` totals summed across all 21 TUs) is in `wiki/log/
@@ -320,7 +333,7 @@ the remaining 63.
 ## Related
 
 - [rewrite-worklist-engine.md](rewrite-worklist-engine.md) -- the original
-  (less radical) design this supersedes for the *scheduling* layer; its
+  (less radical) design this supersedes for the _scheduling_ layer; its
   data-structure reasoning (`BTreeSet<Site>` for determinism, tier-1/tier-2
   dispatch shape, def-use neighbor requeue) still applies here almost
   unchanged. What's different in v2 is facts (salsa -> hand-rolled) and the
@@ -328,7 +341,7 @@ the remaining 63.
   `EditSet`/`Plan` unchanged"; that scoping is what this document reverses,
   with the reasoning above for why).
 - [passes.md](passes.md) -- the pass catalog to port semantics from.
-- [facts.md](facts.md) -- the fact catalog to port algorithms from.
+- [facts.md](../historical/facts.md) -- the fact catalog to port algorithms from.
 - [pass-porting-workflow.md](pass-porting-workflow.md) -- the per-session
   fast path for picking, porting, verifying, and benchmarking one more pass;
   read that instead of re-deriving the same steps from scratch each time.

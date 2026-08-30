@@ -1,5 +1,10 @@
 # Writing a Fixup
 
+> **Historical.** Describes the retired `src/backend/query/` + salsa fixup
+> engine, which no longer exists in the tree. Kept for context on why the
+> rewrite layer looks the way it does. For the current design see
+> [rewrite-engine-v2.md](../concepts/rewrite-engine-v2.md).
+
 A fixup is an optional, separately verified cleanup pass that runs after
 baseline CIR-to-Rust lowering. Baseline lowering is allowed to be ugly —
 `#[repr(C)]`, raw pointers, explicit temps, `unsafe` — because correctness is

@@ -94,12 +94,12 @@ a failed case. Library modules do not use `String` as an error type.
 
 ## Docs
 
-- [fixups.md](fixups.md) — how to state
+- [fixups.md](../historical/fixups.md) — how to state
   query-driven rewrite cases, proofs, typed recipes, definition lifecycles,
   scheduling, and tracing.
 - [architecture.md](architecture.md) — sources, IRs, pipeline, shared context.
 - [passes.md](passes.md) — the pass catalog: what runs, in what order, how.
-- [facts.md](facts.md) — the salsa-memoized facts analysis layer: what each
+- [facts.md](../historical/facts.md) — the salsa-memoized facts analysis layer: what each
   collector proves and which rewrite pass consumes it.
 
 ## Toolchain

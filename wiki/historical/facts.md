@@ -1,5 +1,9 @@
 # Facts
 
+> **Historical.** Describes the retired salsa-backed `src/backend/facts/` layer
+> (`src/backend/salsa.rs` is gone). Kept for context. For the current design see
+> [rewrite-engine-v2.md](../concepts/rewrite-engine-v2.md).
+
 `src/backend/facts/` is the analysis layer between baseline lowering and the
 fixup passes described in [passes.md](passes.md). It never mutates the AST: it
 reads an already-lowered `Program` and produces facts — purity,

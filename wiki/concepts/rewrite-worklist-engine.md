@@ -8,7 +8,7 @@ design to land before re-enabling them at scale (~60+ rules).
 
 ## Problem
 
-Today (see [fixups.md](fixups.md)) each `QueryRule` walks the *entire*
+Today (see [fixups.md](../historical/fixups.md)) each `QueryRule` walks the _entire_
 `Program` to find its candidates, and `to_fixpoint_program_with_facts`
 (`src/backend/mod.rs`) reruns that per pass until the pass stops changing
 anything. With N passes that's `O(passes × rounds × program_size)` — doesn't
@@ -16,7 +16,7 @@ compose as more rules are added. `SalsaFacts::set_program`
 (`src/backend/salsa.rs`) also unconditionally clones the whole `Program` and
 diffs every item for changes every round, purely to rediscover what
 `Plan::apply` already knew it edited. Interprocedural fact families
-(`string_params`, `ptr_len`, see [facts.md](facts.md)) run as an outer Rust
+(`string_params`, `ptr_len`, see [facts.md](../historical/facts.md)) run as an outer Rust
 loop over a whole-program reduction until stable, which is effectively
 `O(n × propagation_depth)` on call-graph-shaped programs.
 
@@ -80,7 +80,7 @@ Three separate decisions, not one:
    needs a side set anyway to stop the same site being enqueued twice while
    pending (LLVM InstCombine pairs a `SmallVector` with a
    `DenseMap<Instr*, idx>` for this). `Site`/`AstPath` are already `Copy` and
-   `Ord` ([facts.md](facts.md)), so `BTreeSet` gives dedup and deterministic
+   `Ord` ([facts.md](../historical/facts.md)), so `BTreeSet` gives dedup and deterministic
    pop order (function, then path) in one structure — needed since output
    must stay byte-identical for differential tests. A `HashSet` would dedup
    but not give reproducible order across runs.
@@ -122,7 +122,7 @@ slice) requires every use of that binding, across function boundaries, to
 agree — that is a whole-program constraint-propagation problem, not a
 local peephole rewrite. The local worklist above (bounded by parent +
 def-use neighbor requeue) has no complexity guarantee for this shape; it
-needs its own phase, run to completion *before* the local worklist emits
+needs its own phase, run to completion _before_ the local worklist emits
 final AST:
 
 1. One representation variable per binding/parameter, valued over a small
@@ -157,14 +157,14 @@ is four independent capability facts — `write`, `unique`, `free`,
 analysis:
 
 | write | unique | free | offset | Resulting type |
-| :---: | :---: | :---: | :---: | --- |
-|   |   |   |   | `&T` |
-| x | x |   |   | `&mut T` |
-| x |   |   |   | `&Cell<T>` |
-|   | x | x |   | `Box<T>` |
-|   |   |   | x | `&[T]` |
-| x | x |   | x | `&mut [T]` |
-|   | x | x | x | `Box<[T]>` |
+| :---: | :----: | :--: | :----: | -------------- |
+|       |        |      |        | `&T`           |
+|   x   |   x    |      |        | `&mut T`       |
+|   x   |        |      |        | `&Cell<T>`     |
+|       |   x    |  x   |        | `Box<T>`       |
+|       |        |      |   x    | `&[T]`         |
+|   x   |   x    |      |   x    | `&mut [T]`     |
+|       |   x    |  x   |   x    | `Box<[T]>`     |
 
 Each capability is itself a fact collector in the existing sense
 (`facts.md`): computed once from `def_use`/`effects`/`heap_ownership`
@@ -196,8 +196,8 @@ unblock before getting real signal on a real codebase.
 
 ## Related
 
-- [fixups.md](fixups.md) — the matcher/`EditSet` layer this reuses unchanged.
-- [facts.md](facts.md) — `def_use` and the `BTreeMap`-indexing pattern the
+- [fixups.md](../historical/fixups.md) — the matcher/`EditSet` layer this reuses unchanged.
+- [facts.md](../historical/facts.md) — `def_use` and the `BTreeMap`-indexing pattern the
   neighbor requeue depends on.
 - [salsa-migration.md](../historical/salsa-migration.md) — why facts are already
   incremental, and the "Query-performance patterns" hotspot section.

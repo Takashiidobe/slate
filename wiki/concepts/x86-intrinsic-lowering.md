@@ -2,7 +2,7 @@
 
 CIR represents `<immintrin.h>`/`<arm_neon.h>`/`__builtin_ia32_*` calls as
 `cir.call_llvm_intrinsic`. The op carries fully concrete, resolved operand and
-result types at every call site, even for LLVM-level *overloaded* intrinsics
+result types at every call site, even for LLVM-level _overloaded_ intrinsics
 (one `.td` definition, many concrete instantiations) — so slate never needs to
 resolve LLVM's type-DAG overloading for codegen, only for computing the link
 name.

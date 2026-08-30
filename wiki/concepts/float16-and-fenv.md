@@ -58,7 +58,7 @@ hard-rejected rather than best-effort translated.
 **Design: C shim, not soft-float.** The actual hazard `FENV_ACCESS` guards
 against isn't rounding correctness (real hardware FP instructions already
 consult the live MXCSR/FPU control word regardless of source language) — it's
-the *optimizer* being free to fold/reassociate/hoist float ops across code
+the _optimizer_ being free to fold/reassociate/hoist float ops across code
 that might change the environment, absent a barrier. A same-crate Rust
 soft-float call (`arpfloat`, `softfp`) is visible/inlinable to LLVM and
 doesn't inherently provide that barrier, and still needs

@@ -113,13 +113,13 @@ explicit bridge handles that edge.
 
 Each rewrite and bridge should state what justifies it:
 
-| Evidence | Meaning |
-|---|---|
-| proven | Static whole-program analysis establishes the preconditions. |
-| guarded | A runtime check detects misspeculation and falls back or panics. |
-| assumed | The user explicitly accepts a property Slate cannot prove. |
-| observed | Profiling saw the property, but untested executions may differ. |
-| residual | Keep the C++ implementation or representation. |
+| Evidence | Meaning                                                          |
+| -------- | ---------------------------------------------------------------- |
+| proven   | Static whole-program analysis establishes the preconditions.     |
+| guarded  | A runtime check detects misspeculation and falls back or panics. |
+| assumed  | The user explicitly accepts a property Slate cannot prove.       |
+| observed | Profiling saw the property, but untested executions may differ.  |
+| residual | Keep the C++ implementation or representation.                   |
 
 This supports multiple migration policies without conflating them:
 
@@ -181,4 +181,3 @@ hot loop can dominate a large otherwise-Rust function.
 5. Add guarded and profile-informed policies without weakening exact mode.
 6. Add shadow execution for effect-isolated rewrite rules and a Rust-only
    diagnostic mode.
-

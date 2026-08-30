@@ -1,259 +1,121 @@
 # Passes
 
-Readability is recovered later by Rust fixups, not during baseline lowering.
+Baseline lowering is deliberately ugly (`#[repr(C)]`, raw pointers, explicit
+temps, `libc`, `unsafe`); readability is recovered afterward by rewrites, never
+during lowering. This page catalogs the stages and the **current** rewrite
+passes. For the rewrite engine's mechanics see
+[rewrite-engine-v2.md](rewrite-engine-v2.md); for the whole-pipeline map see
+[architecture.md](architecture.md).
 
-## Current pipeline
+## Pipeline
 
-| Stage              | In -> Out                               | How                                                                    |
-| ------------------ | --------------------------------------- | ---------------------------------------------------------------------- |
-| **emit-cir**       | C -> CIR text                           | `clang -fclangir -emit-cir` piped to `cir-opt --mlir-print-op-generic` |
-| **parse-cir**      | CIR text -> clang-ir operation model    | clang-ir parser and generated operation conversion                     |
-| **load-ast**       | C -> compact source context + raw JSON  | `clang -Xclang -ast-dump=json -fsyntax-only`                           |
-| **lower**          | CIR + AST context -> Rust source        | match generated `Op`; materialize temps; use `libc` / `unsafe`         |
-| **fixups**         | baseline Rust AST -> cleaner Rust AST   | fixed cleanup pipeline, `backend::apply`                                |
-| **generated-diff** | C + generated Rust -> output comparison | build generated Rust with Cargo + `libc`, compare stdout + exit code   |
-
-Current code path:
-
-```text
-emit-cir -> parse-cir -> load-ast -> lower(libc/unsafe) -> fixups -> generated-diff
-```
-
-For what the baseline lowerer and fixup ladder currently cover, see
-[slate overview](slate-overview.md) (categorized summary) and
-
-### parse-cir
-
-The parser is deliberately generic. It produces:
+| Stage              | In → Out                               | How                                                                    |
+| ------------------ | -------------------------------------- | ---------------------------------------------------------------------- |
+| **emit-cir**       | C → CIR text                           | `clang -fclangir -emit-cir` piped to `cir-opt --mlir-print-op-generic` |
+| **parse-cir**      | CIR text → clang-ir `Op` model         | clang-ir parser + generated operation conversion                       |
+| **load-ast**       | C → compact source context + raw JSON  | `clang -Xclang -ast-dump=json -fsyntax-only`                           |
+| **lower**          | CIR + AST → baseline Rust AST          | match generated `Op`; materialize temps; `libc`/`unsafe` fallbacks     |
+| **rewrite**        | baseline Rust AST → cleaner Rust AST   | `backend::apply` → `engine::apply` (interproc analyses, then worklist) |
+| **generated-diff** | C + generated Rust → output comparison | build generated Rust with Cargo, compare stdout + exit code            |
 
 ```text
-Op { results, name, operands, attrs, regions, ty, loc }
+emit-cir → parse-cir → load-ast → lower(libc/unsafe) → rewrite → generated-diff
 ```
 
-It does not know what `cir.add` or `cir.for` means. The lowerer owns op
-semantics.
+`NEXTEST_PROFILE=lowering` and `SLATE_RAW_LOWER` short-circuit `backend::apply`
+to return the baseline unchanged — the `lowering` profile tests baseline Rust,
+the `rewrites` profile the rewritten output. Parsing and lowering detail: the
+parser is generic (produces `Op { results, name, operands, attrs, regions, ty,
+loc }` and does not know op semantics); the lowerer is the only stage that knows
+CIR op semantics and emits typed `rust_ast` nodes, never Rust source strings
+(see [lowerer-internals.md](lowerer-internals.md)).
 
-### load-ast
+## The rewrite stage
 
-`src/frontend/c_ast.rs` is a Clang AST oracle, not a handwritten C parser. It filters
-Clang's JSON dump down to source-file function definitions, extracts a compact
-model (`Enum`, `Function`, `Decl`, `Stmt`, `Expr`, `CType`, `Loc`), and
-preserves each function's raw JSON node for later features that need facts not
-yet modeled.
+`engine::apply` (`src/backend/engine/mod.rs`) runs in two phases:
 
-### lower
+```text
+engine::apply(program):
+  1. interproc analyses      (whole-Program, run first)
+       string_params::run          — lift C-string params toward &str
+       pointer_lattice::apply       — resolve each pointer param's Rust shape;
+                                       internally runs length_lattice for
+                                       pointer+length → slice bridging
+  2. per-function worklist   (build an Arena per function, run NodeRules to a
+                              fixed point; EDIT_BUDGET guards oscillation)
+  3. prelude::inject         — add helper preludes the rewrites referenced
+```
 
-The lowerer is the only stage that knows CIR op semantics. It emits **structured
-`rust_ast` nodes**, not Rust source strings: every handler builds
-`Item`/`Stmt`/`Expr` values that `src/backend/codegen.rs` renders once at the end.
-`format!`-ing into Rust text is not allowed. Keep the output as strongly typed as
-possible — favor a new enum variant over a `String` bridge, so the compiler
-enforces exhaustiveness and fixups can pattern-match the shape. If the AST cannot
-express something, add the node to `src/backend/rust_ast.rs`. Fixups follow the same rule
-([fixups.md](fixups.md)).
+### Interproc analyses (phase 1)
 
-### fixups
+Whole-`Program` fixpoints over the call graph, run before any per-function arena
+exists. Each is monotone and bounded (`interproc::run_worklist`).
 
-Fixups run after baseline lowering through the fixed `backend::apply` entry
-point (`src/backend/mod.rs`). They must preserve the fallback property: the
-lowered Rust remains correct without a given cleanup. Keep cleanup code outside
-the CIR visitor unless the baseline lowering itself is wrong.
+- **`string_params`** (`interproc/string_params.rs`) — lifts NUL-terminated
+  `char*` parameters to `&str`, flowing eligibility caller→callee.
+- **`pointer_lattice`** (`interproc/pointer_lattice.rs`) — the c2rust-derived
+  capability lattice that chooses each pointer's Rust representation
+  (`&T`/`&mut T`/`&[T]`/`Box<T>`/`Vec<T>`/`*const`/`*mut`, with `Option<…>` and
+  string specializations) from observed write/unique/free/offset/escape/
+  nullable/string bits, propagated bidirectionally across call sites.
+  **[pointer-capability-lattice.md](pointer-capability-lattice.md) is the
+  canonical reference** for the lattice tables, evaluation order, and what is /
+  isn't wired up.
+- **`length_lattice`** (`interproc/length_lattice.rs`, invoked from
+  `pointer_lattice::apply`) — pairs a pointer parameter with its length
+  parameter into a single slice, and proves UTF-8 for the `Vec → String` row.
 
-The backend directory is split by concern:
+### Per-function worklist rules (phase 2)
 
-- **`src/backend/facts/`** — read-only analysis, computed and memoized by
-  salsa (`src/backend/salsa.rs`'s `SalsaFacts`): one `#[salsa::tracked]` method
-  per per-function analysis (definition/use, effects/purity, control flow,
-  casts, loop shapes, pointer/string/heap provenance, and more — one module
-  per concern, `src/backend/facts/mod.rs` re-exports them), plus
-  whole-program reductions tracked directly on `ProgramInput`. Fact
-  collectors walk the tree with the shared, immutable walkers in
-  `src/backend/facts/walk.rs`. See [facts.md](facts.md) for what each
-  collector proves and which pass below consumes it.
-- **`src/backend/query/rules/`** — the actual AST-to-AST rewrite passes,
-  written against the query engine described in [fixups.md](fixups.md). Each
-  rule queries `QueryContext` (a thin adapter over `SalsaFacts`) for the facts
-  and evidence a case needs, then returns a typed `EditSet`; the shared
-  `ItemPlanBuilder`/`Plan` machinery in `src/backend/query/` applies it.
-  Rewrites that mutate in place share the mutable, path-aware walkers in
-  `src/backend/support/walk.rs`.
-- **`src/backend/idents.rs`** — ident-occurrence counting, used to prove a
-  binding is single-use or dead before folding or dropping it.
-- **`src/backend/trace.rs`** — structured debug logging for `fixup-debug`.
-  The normal `translate`/`apply` path passes a `NoopLogger`; only
-  `fixup-debug` uses the collecting logger and renders pass summaries,
-  rewrite events, snippets, and facts.
+The engine builds an `Arena` of AST nodes per function and applies `NodeRule`s,
+rescheduling affected nodes until a fixed point. The current registry
+(`engine/rules/mod.rs`, in order):
 
-`apply` is a straight-line sequence, not a scheduler: after each edit it sets
-the shared `SalsaFacts` program input. Subsequent fact reads derive lazily from
-that input, and salsa backdating prevents unchanged derived values from
-invalidating their dependents. Several passes re-run through
-`to_fixpoint_program_with_facts` since one fold can expose another. Order
-matters — see [fixups.md](fixups.md) for the rule-authoring contract and
-`src/backend/mod.rs`'s `apply_with_logger` for how passes are sequenced.
+1. `EarlyInlineTemps` (`inline_temps.rs`) — inline single-use pure temps, early.
+2. `ZeroInitFold` (`zero_init.rs`) — fuse a zero-init `let` with the assignment
+   that overwrites it.
+3. `RawPtrAliasElide` (`raw_ptr_alias.rs`) — collapse redundant raw-pointer
+   alias locals.
+4. `WhileLoopUnwrap` / `DoWhileLoopUnwrap` / `SingletonUnwrap`
+   (`singleton_scopes.rs`) — unwrap a loop's redundant body scope around its
+   negated-break guard, and one-statement `{ }` scopes.
+5. `LateInlineTemps` (`inline_temps.rs`) — inline single-use pure temps, late.
+6. `libc_call::rules()` (`libc_call.rs`) — the libc call-rewrite table
+   (`memcpy`/`memmove`/`memset`/`str*`/… → native Rust or `Box`/slice ops),
+   matched by call anchor.
 
-### The pass sequence
+This is a much smaller set than the retired straight-line engine (~65 passes at
+`src/backend/query/rules/*`, now under `wiki/historical/`). The v2 worklist
+engine is a mid-flight port — [rewrite-engine-v2.md](rewrite-engine-v2.md) is
+the handoff spec and tracks which passes have landed. When you port or add a
+rule, register it in `engine/rules/mod.rs` and start from a failing differential
+fixture.
 
-This is the order `backend::apply` (`src/backend/mod.rs`) actually runs in.
-Every pass listed below lives at `src/backend/query/rules/<name>.rs`, so the module
-name is enough to find it. "To fixpoint" means the pass re-runs until a round
-makes no change; facts-backed runners explicitly recompute facts each round.
-"Once" means it runs exactly one time per `apply` call.
+## Debugging the rewrite stage
 
-1. `goto` - restructure the goto dispatch loop into structured control flow.
-2. `switch` - collapse a fallthrough-free switch dispatch loop into a direct `match`.
-3. `early_inline_temps` - inline single-use pure temps (early variant).
-4. `anonymous_structs` - hoist anonymous records into named tuple structs.
-5. `param_spills` - fold a parameter's stack spill into its binding.
-6. `zero_init` (`cross_effects = false`) - fuse a zero-init `let` with the assignment that overwrites it.
-7. `struct_field_init` - fold field assignments into the preceding struct literal.
-8. `singleton_scopes` - unwrap a one-statement `{ }` scope, or a `while`/`do-while` loop's redundant body scope around its negated-break guard.
-9. `compound_assign` - recover `a -= 5`-style compound assignment from its expanded form.
-10. `for_continue` - invert synthetic continue-blocks, then re-run `singleton_scopes`.
-11. `constant_index_casts` - drop redundant `as usize` on constant indices.
-12. `unnecessary_casts` - drop casts a typed context already makes redundant.
-13. `call_args` - inline single-use call-argument temps.
-14. `sprintf_format` - recover `sprintf`/`snprintf` into a fixed local buffer as `let buf = format!(...)`, reusing the printf conversion-spec parser, only when a static worst-case bound on the formatted output provably fits the buffer (or `snprintf`'s `size` argument); reconciles known-safe downstream consumers (`puts`, `printf`, `fprintf`) and leaves everything else (non-constant format, unprovable bound, buffer reused/mutated afterward) on the raw libc path. Runs before `string_lift` so it sees the buffer before that pass can misjudge it as read-only.
-15. `retval` - collapse a return-slot store into the final return/exit.
-16. `final_return_temps` - collapse a return-value temp into the final `return`.
-17. `lazy_singleton` - recover the "static flag guards a static payload" lazy-init idiom into `std::sync::OnceLock::get_or_init`.
-18. `drop_call_results` - turn `let _v = call();` into `call();` when unused.
-19. `string_lift` - lift NUL-terminated buffers to `CStr`/`str`/byte slices.
-20. `string_params` - turn a C-string pointer parameter into `&str` (re-run after `string_copy` and `printf_format` since each can expose a new liftable parameter).
-21. `ptr_len` - pair a pointer+length parameter into a slice parameter.
-22. `slice_index` - rewrite pointer-offset derefs into `slice[i]` once the param is a slice.
-23. `slice_loop` - recover `for x in slice.iter()`/`.iter_mut()`, or `for (i, x) in ....enumerate()` when the body also reads the index directly.
-24. `slice_reduce` - fold a slice-iterator accumulator loop into `.sum()`/`.product()`/`.fold()`.
-25. `range_loop` - recover `for i in 0..bound` for the remaining counted loops.
-26. `va_list` - remove redundant `va_list` clone/alias bookkeeping.
-27. `remove_mut` - drop `mut` where facts prove no mutation (re-run after later passes that can make a binding provably immutable).
-28. `string_copy` - turn `strcpy`/`strcat`-only buffers into an owned `String`.
-29. `string_libc` - rewrite `strlen`/`strcmp`-family calls on lifted strings to native Rust.
-30. `sort_search` - rewrite `qsort`/`bsearch` to `.sort_by()`/`.binary_search_by()`.
-31. `heap_ownership` - rewrite `malloc`/`calloc`/`realloc`/`free` to `Box`/`Vec`.
-32. `dead_locals` - remove locals with no live, effectful use.
-33. `printf_format` - rewrite `printf`-family calls to `println!`/`print!`.
-34. `printf_stream` - rewrite `fprintf`/`fputs` targeting a source-provably `stdout`/`stderr` stream to `println!`/`print!`/`eprintln!`/`eprint!`, reusing the printf conversion-spec mapping; any other `FILE*` stays on the existing libc path.
-35. `c_strings` - mark/simplify recognized C-string literals.
-36. `stdio` - rewrite `fopen`/`fputs`/`fclose` sequences (plus `fgets`-echo loops and `fread`/`fwrite`) to `File`/`OpenOptions` owners.
-37. `perror` - rewrite `perror(msg)` to `eprintln!("{msg}: {}", std::io::Error::last_os_error())` when a def-use/effects proof shows nothing between the guarding call and `perror` could have overwritten errno.
-38. `memchr_prelude::fixup_calls` - recognize hand-written byte-scan loops as `memchr` calls.
-39. `nullable_pointer` - recover `Option<*T>` null-check idioms over dynamic-index search results.
-40. `string_lift::fixup_c_strings` then `memchr_prelude` - a second, narrower string-lift pass followed by the memchr helper's lifecycle (deleted if unused, otherwise given its idiomatic fallback body).
-41. `late_inline_temps` - inline single-use pure temps (late variant).
-42. `ptr_copy` - recover a raw `std::ptr::copy`/`memcpy`/non-overlapping-`memmove` call between provably distinct, in-bounds local buffers into `dst = src` or `dst[..n].copy_from_slice(&src[..n])`, when the result is unused.
-43. `mem_move` - recover a raw `std::ptr::copy`/`memmove` call within a single local buffer into `buf.copy_within(src_range, dst_start)`, when the offsets, length, and result are provable/unused.
-44. `mem_set` - recover a raw `memset`/`bzero`/`std::ptr::write_bytes` call into `[..].fill(value)` when its destination, fill value, and length are all provable and its result is unused.
-45. `mem_cmp` - recover a `memcmp(a, b, n)` compared against `0` with `==`/`!=` into `a[..n] == b[..n]` (or `a == b` for full-length compares), when the buffers, length, and comparison shape are all provable.
-46. `dead_locals` - remove locals made dead by pointer-copy recovery.
-47. `array_element_pointer_origin` - collapse pointer aliases back into direct array indexing.
-48. `array_element_pointer_param_hoist` - when a raw-pointer parameter is only ever bare-dereferenced in its callee and every known call site's argument is provably `&base[i]`/`addr_of_mut!(base[i])`, hoist the parameter to `&T`/`&mut T` and rewrite each call site to pass `&base[i]`/`&mut base[i]` directly, atomically across the function's full call domain.
-49. `dead_locals` - re-run dead-local removal to drop pointer locals left unreferenced by the scalar pointer hoist.
-50. `buffer_cursor` - turn pointer-cursor writes over a fixed array into cursor-struct field ops.
-51. `atomic_locals` - give non-escaping `_Atomic` locals native `AtomicN` storage.
-52. `late_inline_temps` - re-run late temp inlining after the pointer and atomic rewrites.
-53. `zero_init` (`cross_effects = true`) - re-run the zero-init fusion, now allowed to cross intervening effects.
-54. `atomic_compare_exchange` - fold a CAS temp-chain into `compare_exchange`.
-55. `remove_mut` - re-run mutability cleanup after atomic compare-exchange recovery.
-56. `assert_recovery` - recover `assert!(cond)` from the shim `assert()` macro's lowered `if cond { .. } else { abort(); .. }` guard, preserving the guard's result binding if it's still read elsewhere.
-57. `var_aliases` - inline a `let b = a;` alias into its single later use (including the temp `assert_recovery` may leave behind).
-58. `constant_conditions` - simplify constant `if` conditions and remove unreachable branches.
-59. `libc_exit` - rewrite known direct `libc::exit` calls to `std::process::exit`.
-60. `unused_items` - remove dead top-level struct/record/enum definitions.
-61. `unused_params` - drop a function parameter that's never read and rewrite every direct call site to match.
-62. `final_returns` - turn `return <expr>;` into plain `<expr>` at the end of a function.
-63. `main_zero_exit` - drop a trailing `std::process::exit(0)` in `main`.
-64. `prune_unused_definitions` - delete now-dead known libc `extern` declarations and generated support modules.
-65. `unused_items` (rerun) - catch struct/record/enum definitions that only became dead after `unused_params` and `prune_unused_definitions` dropped their last reference.
-
-The repeated passes (`remove_mut`, `string_params`, `string_libc`) exist
-because later groups can create new opportunities for earlier ones; re-running
-the whole pipeline to a global fixpoint was judged not worth the compile time,
-so those specific re-runs are placed by hand where they matter. If you add a
-pass that creates a similar opportunity for an earlier pass, place an explicit
-extra call rather than reaching for a global fixpoint loop.
-
-## Debugging the pass sequence
-
-Use `fixup-debug` to inspect what the fixed pass sequence did without changing
-normal translation:
+The engine does not currently emit a per-pass trace, so `fixup-debug`'s
+`--up-to-pass`/`--only-pass`/`--debug-only-pass` options are inert (it emits the
+fully-rewritten output). The working comparison workflow is baseline-vs-rewritten:
 
 ```bash
-cargo run -- fixup-debug tests/fixtures/mem_memchr.c
-cargo run -- fixup-debug tests/fixtures/mem_memchr.c --up-to-pass memchr_prelude
-cargo run -- fixup-debug tests/fixtures/mem_memchr.c --only-pass late_inline_temps
-cargo run -- fixup-debug tests/fixtures/mem_memchr.c --debug-only-pass late_inline_temps
+cargo run -- translate-lowered tests/fixtures/<name>.c   # baseline, no rewrites
+cargo run -- translate         tests/fixtures/<name>.c   # after rewrites
 ```
 
-Pass names are the strings from `src/backend/trace.rs`'s `Pass` enum, for
-example `zero_init`, `late_inline_temps`, `dead_locals`, and
-`memchr_prelude::fixup_calls`. An unknown pass name fails with the valid names.
+`translate-lowered` (equivalently `SLATE_RAW_LOWER=1 translate`) is the
+canonical way to tell a lowering bug from a rewrite bug: if the baseline is
+already wrong, it's a lowering issue; if only the rewritten output is wrong, it's
+a rule.
 
-`--up-to-pass <pass>` runs the normal ordered pipeline and stops after the first
-matching pass invocation. This is useful when a later pass hides the tree shape
-you need to inspect.
+## Adding a feature vs. a rewrite
 
-`--only-pass <pass>` walks the same sequence but only applies and logs matching
-pass invocations. It still starts from the lowered Rust and still recomputes
-facts at the same sequence points, but skipped passes are not applied. Repeated
-passes with the same enum name run at each matching sequence point.
+- **Feature** (teach baseline lowering to preserve more C — a new `cir.*` op,
+  structs, pointer arithmetic): implement conservative lowering, see
+  [lowerer-internals.md](lowerer-internals.md#adding-a-new-cir-handler).
+- **Rewrite** (turn correct baseline Rust into idiomatic Rust): add a `NodeRule`
+  or extend the libc table, see [rewrite-engine-v2.md](rewrite-engine-v2.md).
 
-`--debug-only-pass <pass>` runs the normal ordered pipeline but only logs
-matching pass invocations. Use this when the pass needs earlier rewrites to build
-the AST shape you are debugging.
-
-Human output is grouped by pass invocation and then by function:
-
-```text
-zero_init                          changed; stmts -1, temp_lets +0, items +0
-  function main:
-    fold_zero_init_assignment
-      at fn main
-      before:
-        definition:
-          fn main() {
-              let mut x: i32 = 0;
-              x = 10;
-              ...
-          }
-      after:
-        definition:
-          fn main() {
-              let mut x: i32 = 10;
-              ...
-          }
-      facts:
-        query_rule=fold_zero_init_assignment
-        query_case=direct
-        evidence.zero_init=moved_decl=false
-```
-
-Passes that make no textual change are still listed as `skipped`. If a changed
-pass has not yet been instrumented with pass-local rewrite events, debug output
-emits one generic `pass_changed` event with whole-program before/after snippets
-and summary facts. Treat that as a migration bridge: pass-local events should
-replace it when there is a useful domain-specific explanation. Locations use
-source file and line when available; otherwise they use the function name and AST
-path.
-
-## Adding a feature
-
-A feature expands baseline C coverage. Examples: structs, arrays, pointer
-arithmetic, new arithmetic operators, globals, `if`, `switch`.
-
-The workflow: add a C fixture under `tests/fixtures/`, inspect CIR and Clang
-AST as needed, implement conservative baseline lowering, and run the test suite.
-Ignored generated fixture trees are refreshed manually only when requested.
-
-## Adding a fixup
-
-A fixup improves already-correct Rust. Examples: `printf -> println!`,
-collapsing retval temps, inlining single-use temps, or recovering `for` loops.
-
-See [fixups.md](fixups.md) for the AST-to-AST pass recipe. A fixup must start
-from generated Rust that already passes differential testing.
-
-For `printf -> println!`, only rewrite when the callee is known, the format
-argument is a constant C string, every format specifier is supported, and Rust
-formatting can express the same output. Everything else stays as
-`unsafe { libc::printf(...) }`.
+Both start from a C fixture in `tests/fixtures/` and a failing differential test
+— never hand-verify output by eye. See
+[differential-fixtures.md](differential-fixtures.md) for the fixture + FileCheck
+workflow.

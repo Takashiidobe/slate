@@ -81,14 +81,36 @@ int r = sum_fixed(arr);
 
 `@lowering-begin`/`@lowering-end` scope the `LOWERING` block, `@rewrite-begin`/
 `@rewrite-end` the `REWRITES` block; the `-not` variants (`@rewrite-not-begin`,
-etc.) assert the region's pre-rewrite text is *absent* after fixups. Regions
+etc.) assert the region's pre-rewrite text is _absent_ after fixups. Regions
 must nest, not cross. Generate or refresh in place with:
 
 ```bash
 python3 tools/update_filecheck.py --in-place tests/fixtures/<name>.c
 ```
 
+Markers only work **inside a function body**. The tool injects `__asm__` sentinels
+around each region, and an asm statement outside a function fails to compile
+(`meaningless 'volatile' on asm outside function`), so you cannot wrap a function
+signature or a top-level definition. To assert something about a signature, wrap a
+statement in the body that reflects it instead: e.g. to prove a pointer param
+became `&mut T`, wrap a field store — the generated store reads `(*arg0).f = x`
+when the param is `&mut T` versus `(*(arg0 as *const T as *mut T)).f = x` when it
+is wrongly `&T`, so the store text alone captures the difference.
+
+Multiple, disjoint regions in one fixture are fine — each `@lowering`/`@rewrite`
+pair contributes to the single `SLATE-FILECHECK-BEGIN/END` block the tool emits,
+so wrap every statement you care about.
+
 Scope the region to the smallest observable of the change — for a
 signature/call-site lift, wrapping the call statement is enough, since the
 bridged call only appears once the lift fires. Re-run the tool whenever the
 generated output legitimately changes so the checked-in block stays in sync.
+
+## Per-fixture clang flags
+
+Fixtures emit CIR at `-O0` by default. Some bugs only exist in optimized CIR
+(e.g. a `const` pointer mem2reg promotes to an SSA temp reused across flattened
+goto/dispatch blocks — `slate-a28e.3`). Give one fixture different flags via
+`fixture_clang_arg_overrides(name) -> Vec<String>` in `tests/differential.rs`,
+e.g. `"my_fixture" => vec!["-O2".into()]`. Prefer a small harness hook like this
+over a one-off manual repro when a corpus bug won't reproduce at `-O0`.

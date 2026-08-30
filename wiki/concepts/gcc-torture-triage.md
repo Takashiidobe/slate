@@ -13,11 +13,11 @@ follows the same three-test shape. Names below use `gcc_torture`; substitute
 `chibicc` or `libc_test_functional` for those suites (`c_testsuite` currently
 only has the first test — no unsupported-corpus tests exist for it yet).
 
-| Test | What it does | Run it with |
-| --- | --- | --- |
-| `gcc_torture_supported_tests_match_c` | Translates + compiles + runs every case in the *supported* dir; fails if any regress. | Included in `--profile lowering` and `--profile rewrites` already. |
-| `gcc_torture_unsupported_tests_still_fail` | Runs every case in the *unsupported* dir; **fails loudly with ready-to-run `git mv` commands** for any case that now passes end-to-end. | Included in `--profile lowering` (wired in for this epic). |
-| `gcc_torture_unsupported_triage_report` | `#[ignore]`d — prints `PASS`/`FAIL <name>` (with the failure detail) for every unsupported case, doesn't assert anything. | `cargo nextest r --release --test gcc_torture_suite -E 'test(gcc_torture_unsupported_triage_report)' --run-ignored ignored-only --nocapture` |
+| Test                                       | What it does                                                                                                                            | Run it with                                                                                                                                  |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `gcc_torture_supported_tests_match_c`      | Translates + compiles + runs every case in the _supported_ dir; fails if any regress.                                                   | Included in `--profile lowering` and `--profile rewrites` already.                                                                           |
+| `gcc_torture_unsupported_tests_still_fail` | Runs every case in the _unsupported_ dir; **fails loudly with ready-to-run `git mv` commands** for any case that now passes end-to-end. | Included in `--profile lowering` (wired in for this epic).                                                                                   |
+| `gcc_torture_unsupported_triage_report`    | `#[ignore]`d — prints `PASS`/`FAIL <name>` (with the failure detail) for every unsupported case, doesn't assert anything.               | `cargo nextest r --release --test gcc_torture_suite -E 'test(gcc_torture_unsupported_triage_report)' --run-ignored ignored-only --nocapture` |
 
 **Always run through `cargo nextest r --release --profile lowering`** (never
 `cargo test`, per the top-level `CLAUDE.md`) while working this epic — see
@@ -42,12 +42,12 @@ directly to `cargo run -- translate`.
 
 ### Directory layout (this varies per suite — check before assuming)
 
-| Suite | Supported | Unsupported |
-| --- | --- | --- |
-| gcc-torture | `tests/fixtures.gcc-torture/` | `tests/fixtures.gcc-torture.unsupported/` (sibling dir) |
-| c-testsuite | `tests/fixtures.c-testsuite/` | `tests/fixtures.c-testsuite.unsupported/` (sibling dir) |
-| chibicc | `tests/fixtures.chibicc/supported/` | `tests/fixtures.chibicc/unsupported/` (nested bucket, sibling `ignored/`) |
-| libc-test functional | `tests/fixtures.libc-test/functional/supported/` | `tests/fixtures.libc-test/functional/unsupported/` (nested bucket) |
+| Suite                | Supported                                        | Unsupported                                                               |
+| -------------------- | ------------------------------------------------ | ------------------------------------------------------------------------- |
+| gcc-torture          | `tests/fixtures.gcc-torture/`                    | `tests/fixtures.gcc-torture.unsupported/` (sibling dir)                   |
+| c-testsuite          | `tests/fixtures.c-testsuite/`                    | `tests/fixtures.c-testsuite.unsupported/` (sibling dir)                   |
+| chibicc              | `tests/fixtures.chibicc/supported/`              | `tests/fixtures.chibicc/unsupported/` (nested bucket, sibling `ignored/`) |
+| libc-test functional | `tests/fixtures.libc-test/functional/supported/` | `tests/fixtures.libc-test/functional/unsupported/` (nested bucket)        |
 
 Promotion is always a `git mv` of the fixture from unsupported to supported —
 `gcc_torture_unsupported_tests_still_fail`'s failure message prints the exact
@@ -83,7 +83,7 @@ upstream of Slate.
    fixups, exactly what the differential test compiles. Read this first.
 2. **`cargo run -- translate-lowered <file.c>`** — raw lowering, fixups
    skipped entirely. If a bug disappears here, it's a fixup bug
-   ([writing a query-driven fixup](writing-a-query-driven-fixup.md)), not a lowering bug
+   ([writing a query-driven fixup](../historical/writing-a-query-driven-fixup.md)), not a lowering bug
    ([lowerer internals](lowerer-internals.md)). This is the fastest lowering-vs-fixup triage
    step — do it before reading any lowerer code.
 3. **`cargo run -- emit-cir <file.c>`** — the generic-form CIR text the
@@ -131,7 +131,7 @@ code differs." It's debug-mode (`cargo build`, not `--release`), so Rust's
 
 `src/backend/mod.rs`'s `apply_with` becomes a no-op — skipping every fixup
 pass — whenever `NEXTEST_PROFILE=lowering` (which `cargo nextest r --profile
-lowering` sets automatically) or `SLATE_RAW_LOWER` is set. So the *same*
+lowering` sets automatically) or `SLATE_RAW_LOWER` is set. So the _same_
 `gcc_torture_supported_tests_match_c` test exercises raw lowering output under
 `--profile lowering` and lowering-plus-fixups under `--profile rewrites` (or
 plain `cargo nextest run`). Since gcc-torture triage is a lowering-focused
@@ -153,15 +153,15 @@ and it isolates lowering bugs from fixup bugs by construction. Don't use
   `src/frontend/lowerer/constants.rs`.
 - **A garbled/mangled identifier in the generated Rust** (e.g.
   `Upgrade_items___1___i32_`) — a string parser swallowed more of a raw CIR
-  attribute than intended, usually because it searched for the *last* or
-  *any* delimiter instead of the *first* relevant one. Compare the parser's
+  attribute than intended, usually because it searched for the _last_ or
+  _any_ delimiter instead of the _first_ relevant one. Compare the parser's
   terminator logic against the actual attribute grammar (`cir-opt`'s `.mlir`
   dump is the ground truth) rather than guessing from the garbled output.
 - **Correct in isolation, wrong when referenced out of module order** — any
   lookup keyed by a symbol name that's only populated by a single sequential
   pass over the module (e.g. `Lowerer::globals`, populated by
   `collect_global` in CIR module order) breaks if something earlier in that
-  same pass needs to look up something declared *later*. Check whether the
+  same pass needs to look up something declared _later_. Check whether the
   lookup needs a name/type index built in a separate pre-pass instead (see
   `global_sym_types` in `lowerer.rs` for the pattern).
 - **`exit code differs: C=Some(0) Rust=None`** — the Rust binary did not exit
@@ -222,7 +222,7 @@ covers, with acceptance criteria requiring every listed case to translate,
 compile, match C's stdout/exit code, and be promoted (`git mv`) into the
 supported dir — or, for a confirmed upstream CIR limitation, to record that
 disposition and stay mapped under the bug until CIR fixes it. If fixing one
-case in a bug's list exposes an unrelated bug in a *different* case from that
+case in a bug's list exposes an unrelated bug in a _different_ case from that
 same list (as happened with `pr43784`'s sret-aliasing issue surfacing after
 its `global_view` bug was fixed), split the unrelated case into its own new
 bug rather than stretching the original bug's scope — keep `bd close`'s

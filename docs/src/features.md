@@ -1103,7 +1103,7 @@ only when the implementation advertises decimal IEC 60559 support through `__STD
 - [x] `__sync_and_and_fetch`
 - [x] `__sync_xor_and_fetch`
 - [x] `__sync_nand_and_fetch`
-- [~] `__sync_bool_compare_and_swap` (CIR codegen: "unimplemented X86 builtin call: __sync_bool_compare_and_swap_4")
+- [~] `__sync_bool_compare_and_swap` (CIR codegen: "unimplemented X86 builtin call: \_\_sync_bool_compare_and_swap_4")
 - [~] `__sync_val_compare_and_swap` (same CIR gap as `__sync_bool_compare_and_swap`)
 - [~] `__sync_lock_test_and_set` (CIR codegen gap, same family as the compare-and-swap builtins)
 - [~] `__sync_lock_release` (CIR codegen gap, same family as the compare-and-swap builtins)

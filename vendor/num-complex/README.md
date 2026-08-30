@@ -28,7 +28,7 @@ default-features = false
 ```
 
 Features based on `Float` types are only available when `std` or `libm` is
-enabled. Where possible, `FloatCore` is used instead.  Formatting complex
+enabled. Where possible, `FloatCore` is used instead. Formatting complex
 numbers only supports format width when `std` is enabled.
 
 ## Releases
@@ -43,8 +43,8 @@ The `num-complex` crate is tested for rustc 1.60 and greater.
 
 Licensed under either of
 
- * [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
- * [MIT license](http://opensource.org/licenses/MIT)
+- [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+- [MIT license](http://opensource.org/licenses/MIT)
 
 at your option.
 
