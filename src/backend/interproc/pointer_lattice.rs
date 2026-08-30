@@ -1838,14 +1838,21 @@ fn rewrite_stmt(stmt: &mut Stmt, ctx: &LiftCtx) {
                 });
                 return;
             }
-            if let Expr::Var(target_name) = &*target
-                && let Expr::Var(source_name) = &*value
+            if let Expr::Var(source_name) = &*value
                 && let Some(plan) = ctx.own.get(source_name.as_str())
                 && matches!(plan.kind, LiftKind::Scalar | LiftKind::Owned)
-                && let Some(&mutable) = ctx.declared_mutability.get(target_name.as_str())
             {
-                *value = to_raw_pointer_as(source_name.as_str(), plan, mutable);
-                return;
+                let target_mutable = match &*target {
+                    Expr::Var(target_name) => {
+                        ctx.declared_mutability.get(target_name.as_str()).copied()
+                    }
+                    Expr::TupleField { .. } => Some(true),
+                    _ => None,
+                };
+                if let Some(mutable) = target_mutable {
+                    *value = to_raw_pointer_as(source_name.as_str(), plan, mutable);
+                    return;
+                }
             }
             rewrite_expr(target, ctx);
             rewrite_expr(value, ctx);
