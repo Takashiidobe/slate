@@ -31,6 +31,9 @@ an **upstream blocker**, not a slate gap — no amount of lowering work fixes it
 - Whole-template Intel wrappers (`.intel_syntax noprefix` through
   `.att_syntax prefix`) and `%Vn` no-prefix operands — normalized to Rust's
   native Intel dialect in `tests/fixtures/asm_dialect_switch.c`
+- x86 flag-output constraints (`=@ccX`) — synthesized as `setcc` plus
+  zero-extension into a normal 16-, 32-, or 64-bit register output in
+  `tests/fixtures/gnu_asm_flag_outputs.c`
 - clobber lists including `"cc"`/`"memory"`
 
 ## Not supported
@@ -43,12 +46,6 @@ an **upstream blocker**, not a slate gap — no amount of lowering work fixes it
   explicitly via `in(reg)` and hand-editing the addressing mode in the
   template string, which changes codegen shape and doesn't generalize; not
   planned.
-- **Flag-output constraints (`"=@ccX"`)** — lowers *without error* but emits
-  invalid Rust (`lateout("@cce")`, not a real register — fails at `rustc`,
-  not at slate translation time). This is the dangerous case: it looks
-  successful until something actually builds the output. Tracked:
-  slate-3f8g.4.15.
-
 ## Audit method
 
 `gh search code "<pattern>" language:c` against real repos to find live

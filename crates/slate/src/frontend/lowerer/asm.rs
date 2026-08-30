@@ -150,6 +150,67 @@ pub(super) fn normalize_asm_dialect_wrapper(
     (body.trim().to_string(), Some(AsmDialect::Intel))
 }
 
+pub(super) fn parse_x86_flag_output_constraint(constraint: &str) -> Option<&str> {
+    let condition = constraint.strip_prefix("={@cc")?.strip_suffix('}')?;
+    (!condition.is_empty() && condition.chars().all(|ch| ch.is_ascii_alphabetic()))
+        .then_some(condition)
+}
+
+pub(super) fn x86_flag_output_suffix(
+    rust_slot: usize,
+    condition: &str,
+    ty: &Type,
+    dialect: Option<AsmDialect>,
+) -> Option<String> {
+    if !matches!(
+        condition,
+        "a" | "ae"
+            | "b"
+            | "be"
+            | "c"
+            | "e"
+            | "g"
+            | "ge"
+            | "l"
+            | "le"
+            | "na"
+            | "nae"
+            | "nb"
+            | "nbe"
+            | "nc"
+            | "ne"
+            | "ng"
+            | "nge"
+            | "nl"
+            | "nle"
+            | "no"
+            | "np"
+            | "ns"
+            | "nz"
+            | "o"
+            | "p"
+            | "pe"
+            | "po"
+            | "s"
+            | "z"
+    ) {
+        return None;
+    }
+    let (modifier, att_mov) = match asm_operand_bits(ty) {
+        16 => ('x', "movzbw"),
+        32 => ('e', "movzbl"),
+        64 => ('r', "movzbq"),
+        _ => return None,
+    };
+    let set = format!("set{condition} {{{rust_slot}:l}}");
+    let extend = if matches!(dialect, Some(AsmDialect::Att)) {
+        format!("{att_mov} {{{rust_slot}:l}}, {{{rust_slot}:{modifier}}}")
+    } else {
+        format!("movzx {{{rust_slot}:{modifier}}}, {{{rust_slot}:l}}")
+    };
+    Some(format!("{set}\n\t{extend}"))
+}
+
 pub(super) fn asm_macro_args(template: String, dialect: Option<AsmDialect>) -> Vec<Expr> {
     let mut options = Vec::new();
     if matches!(dialect, Some(AsmDialect::Att)) {
