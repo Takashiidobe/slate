@@ -28,6 +28,9 @@ an **upstream blocker**, not a slate gap — no amount of lowering work fixes it
 - `asm goto` with labels — `tests/fixtures/gnu_asm_goto.c`
 - Named operands (`%[name]`) — handled in template translation,
   `src/frontend/lowerer/asm.rs:200`
+- Whole-template Intel wrappers (`.intel_syntax noprefix` through
+  `.att_syntax prefix`) and `%Vn` no-prefix operands — normalized to Rust's
+  native Intel dialect in `tests/fixtures/asm_dialect_switch.c`
 - clobber lists including `"cc"`/`"memory"`
 
 ## Not supported

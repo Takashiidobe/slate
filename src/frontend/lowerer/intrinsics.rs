@@ -164,12 +164,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .map(|ty| self.parent.rust_type(ty))
             .collect();
         template_types.extend(std::iter::repeat_n(Type::Unit, label_count));
+        let dialect = cir_asm_dialect(op.asm_flavor);
+        let (template, dialect) = normalize_asm_dialect_wrapper(template, dialect);
         let Some(template) = translate_asm_template(
             &template,
             &slot_to_rust,
             &template_constraints,
             &template_types,
-            cir_asm_dialect(op.asm_flavor),
+            dialect,
         ) else {
             unsupported!(
                 "lower: could not translate inline asm template `{}`",
@@ -358,7 +360,6 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let template = if ebx_fixups.is_empty() {
             template
         } else {
-            let dialect = cir_asm_dialect(op.asm_flavor);
             let att = !matches!(dialect, Some(AsmDialect::Intel));
             let reg_op = |name: &str| {
                 if att {
@@ -389,7 +390,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         };
         self.push_stmt(Self::unsafe_stmt(Stmt::InlineAsm(InlineAsm {
             template,
-            dialect: cir_asm_dialect(op.asm_flavor),
+            dialect,
             operands,
             raw: false,
         })));

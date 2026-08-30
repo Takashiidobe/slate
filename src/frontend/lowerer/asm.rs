@@ -133,6 +133,23 @@ pub(super) fn cir_asm_dialect(flavor: clang_ir::enums::AsmFlavor) -> Option<AsmD
     }
 }
 
+pub(super) fn normalize_asm_dialect_wrapper(
+    template: String,
+    dialect: Option<AsmDialect>,
+) -> (String, Option<AsmDialect>) {
+    if !matches!(dialect, Some(AsmDialect::Att)) {
+        return (template, dialect);
+    }
+    let trimmed = template.trim();
+    let Some(body) = trimmed.strip_prefix(".intel_syntax noprefix") else {
+        return (template, dialect);
+    };
+    let Some(body) = body.trim().strip_suffix(".att_syntax prefix") else {
+        return (template, dialect);
+    };
+    (body.trim().to_string(), Some(AsmDialect::Intel))
+}
+
 pub(super) fn asm_macro_args(template: String, dialect: Option<AsmDialect>) -> Vec<Expr> {
     let mut options = Vec::new();
     if matches!(dialect, Some(AsmDialect::Att)) {
