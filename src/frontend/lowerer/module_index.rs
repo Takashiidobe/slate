@@ -315,6 +315,7 @@ pub(super) fn block_addr_labels(items: &[Attr]) -> Option<Vec<String>> {
         .iter()
         .filter_map(|item| match item {
             Attr::BlockAddrInfo { label, .. } => Some(label.clone()),
+            Attr::BlockAddrDiff { lhs_label, .. } => Some(lhs_label.clone()),
             _ => None,
         })
         .collect();

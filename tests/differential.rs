@@ -173,6 +173,7 @@ fn fixture_clang_arg_overrides(name: &str) -> Vec<String> {
         "goto_temp_cross_state" => vec!["-O2".to_string()],
         "ptr_param_field_addr_of_mut" => vec!["-O2".to_string()],
         "gnu_asm_register_variable" => vec!["-std=gnu23".to_string()],
+        "c23_typeof_unqual" => vec!["-std=gnu23".to_string()],
         _ => Vec::new(),
     }
 }
@@ -180,6 +181,7 @@ fn fixture_clang_arg_overrides(name: &str) -> Vec<String> {
 fn fixture_c_ref_std_override(name: &str) -> Option<String> {
     match name {
         "gnu_asm_register_variable" => Some("-std=gnu23".to_string()),
+        "c23_typeof_unqual" => Some("-std=gnu23".to_string()),
         _ => None,
     }
 }
