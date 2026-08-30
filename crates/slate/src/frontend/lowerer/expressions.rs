@@ -97,6 +97,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 field_ty: result_ty.pointee().map(|ty| self.parent.rust_type(ty)),
                 unsafe_access,
                 bitfield_name: None,
+                bitfield_unaligned: false,
                 field_is_trailing: false,
             },
         );
