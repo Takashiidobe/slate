@@ -13,6 +13,13 @@ from pathlib import Path
 
 TARGET_FIXTURE_DIRECTORIES = {"bionic", "macos", "msvc"}
 SOURCE_ROOT_PATTERN = "__SLATE_FILECHECK_SOURCE_ROOT__"
+FIXTURE_STD_OVERRIDES = {
+    "gnu_asm_register_variable": "gnu23",
+}
+
+
+def fixture_std(path):
+    return FIXTURE_STD_OVERRIDES.get(path.stem, "c23")
 ANNOTATION_PATTERN = re.compile(
     r"^(?P<indent>\s*)(?:"
     r"//\s*@(?P<line_kind>(?:lowering|rewrite)(?:-not)?)-(?P<line_fn>fn-)?"
@@ -295,7 +302,7 @@ def translate_output(path, command, environment=None):
     if environment:
         env.update(environment)
     clang_args = shlex.split(env.get("SLATE_CLANG_ARGS", ""))
-    env["SLATE_CLANG_ARGS"] = shlex.join([*clang_args, "-std=c23"])
+    env["SLATE_CLANG_ARGS"] = shlex.join([*clang_args, f"-std={fixture_std(path)}"])
     result = subprocess.run(
         [*command, str(path.resolve())],
         check=False,
@@ -429,7 +436,7 @@ def run_project_translation(project, crate_dir, slate, raw, library, environment
     env = os.environ.copy()
     env.update(environment)
     clang_args = shlex.split(env.get("SLATE_CLANG_ARGS", ""))
-    env["SLATE_CLANG_ARGS"] = shlex.join([*clang_args, "-std=c23"])
+    env["SLATE_CLANG_ARGS"] = shlex.join([*clang_args, "-std=gnu23"])
     env.pop("SLATE_RAW_LOWER", None)
     if raw:
         env["SLATE_RAW_LOWER"] = "1"
