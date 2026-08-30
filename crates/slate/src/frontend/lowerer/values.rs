@@ -414,10 +414,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             let expr = self
                 .whole_aggregate_pointer_expr(operand, ty)
                 .unwrap_or_else(|| self.pointer_operand_expr(operand));
-            if self
-                .slot_types
+            let operand_field_ty = self
+                .member_ptrs
                 .get(operand)
-                .is_some_and(|slot_ty| self.parent.type_is_enum(slot_ty))
+                .and_then(|member| member.field_ty.as_ref())
+                .or_else(|| {
+                    self.element_ptrs
+                        .get(operand)
+                        .and_then(|element| element.elem_ty.as_ref())
+                })
+                .or_else(|| self.slot_types.get(operand));
+            if operand_field_ty.is_some_and(|field_ty| self.parent.type_is_enum(field_ty))
                 && matches!(self.parent.rust_type(ty), Type::Ptr { .. })
             {
                 Expr::Cast {
