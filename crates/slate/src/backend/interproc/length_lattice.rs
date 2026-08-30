@@ -2,8 +2,8 @@ use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 use crate::backend::interproc::pointer_lattice::{PointerBinding, PointerFact, ResolvedPtrType};
 use crate::backend::rust_ast::{
-    BinOp, Block, Expr, FnDef, Ident, IndentStmt, Item, Path, Prim, Program, Stmt, Type, UnaryOp,
-    Visibility,
+    BinOp, Block, CLibType, Expr, FnDef, Ident, IndentStmt, Item, Path, Prim, Program, Stmt, Type,
+    UnaryOp, Visibility,
 };
 use crate::function_identity::{CallBinding, Known};
 
@@ -1572,6 +1572,19 @@ fn matched_offset_temps(
     ptr_local: &str,
     idx_name: &str,
 ) -> Vec<String> {
+    matched_offset_temps_with_types(body, let_exprs, ptr_local, idx_name)
+        .into_iter()
+        .map(|(temp, _)| temp)
+        .collect()
+}
+
+fn matched_offset_temps_with_types(
+    body: &[IndentStmt],
+    let_exprs: &BTreeMap<String, Expr>,
+    ptr_local: &str,
+    idx_name: &str,
+) -> Vec<(String, Option<Type>)> {
+    let let_types = collect_let_types(body);
     let mut offset_lets = Vec::new();
     collect_offset_lets(body, &mut offset_lets);
     offset_lets
@@ -1580,7 +1593,13 @@ fn matched_offset_temps(
             resolve_var(let_exprs, recv.as_str()) == ptr_local
                 && peeled_var(idx).map(|v| resolve_var(let_exprs, v)) == Some(idx_name)
         })
-        .map(|(temp, ..)| temp.clone())
+        .map(|(temp, recv, _)| {
+            let pointee = match let_types.get(recv.as_str()) {
+                Some(Type::Ptr { inner, .. }) => Some((**inner).clone()),
+                _ => None,
+            };
+            (temp.clone(), pointee)
+        })
         .collect()
 }
 
@@ -1628,14 +1647,25 @@ fn peel_cast(expr: &Expr) -> &Expr {
 fn apply_view(f: &mut FnDef, ptr_name: &str, elem_ty: &Type, pairing: &Pairing) {
     let let_exprs = collect_let_exprs(&f.body);
     let ptr_local = shadow_local_name(&f.body, ptr_name).unwrap_or_else(|| ptr_name.to_string());
-    let temp_names = matched_offset_temps(&f.body, &let_exprs, &ptr_local, &pairing.idx_name);
-    if temp_names.is_empty() {
+    let matched =
+        matched_offset_temps_with_types(&f.body, &let_exprs, &ptr_local, &pairing.idx_name);
+    if matched.is_empty() {
         return;
     }
+    let temp_names: Vec<String> = matched.iter().map(|(temp, _)| temp.clone()).collect();
 
     let view_name = format!("__{ptr_name}_view");
     let insert_at = 0;
     let depth = f.body.first().map(|indent| indent.depth).unwrap_or(0);
+
+    let view_elem_ty = if matches!(elem_ty, Type::CLib(clib) if *clib == CLibType::VOID) {
+        matched
+            .iter()
+            .find_map(|(_, ty)| ty.clone())
+            .unwrap_or(Type::Prim(Prim::U8))
+    } else {
+        elem_ty.clone()
+    };
 
     let view_let = IndentStmt {
         depth,
@@ -1664,7 +1694,7 @@ fn apply_view(f: &mut FnDef, ptr_name: &str, elem_ty: &Type, pairing: &Pairing) 
                             expr: Box::new(Expr::Var(Ident::new(ptr_name))),
                             ty: Type::Ptr {
                                 mutable: pairing.kind.mutable(),
-                                inner: Box::new(elem_ty.clone()),
+                                inner: Box::new(view_elem_ty),
                             },
                         },
                         Expr::Cast {
@@ -2061,6 +2091,55 @@ fn collect_let_exprs(body: &[IndentStmt]) -> BTreeMap<String, Expr> {
     let mut out = BTreeMap::new();
     collect_let_exprs_stmts(body, &mut out);
     out
+}
+
+fn collect_let_types(body: &[IndentStmt]) -> BTreeMap<String, Type> {
+    let mut out = BTreeMap::new();
+    collect_let_types_stmts(body, &mut out);
+    out
+}
+
+fn collect_let_types_stmts(body: &[IndentStmt], out: &mut BTreeMap<String, Type>) {
+    for indent in body {
+        collect_let_types_stmt(&indent.stmt, out);
+    }
+}
+
+fn collect_let_types_stmt(stmt: &Stmt, out: &mut BTreeMap<String, Type>) {
+    if let Stmt::Let {
+        name, ty: Some(ty), ..
+    } = stmt
+    {
+        out.insert(name.clone(), ty.clone());
+    }
+    match stmt {
+        Stmt::LetIf {
+            then_body,
+            else_body,
+            ..
+        }
+        | Stmt::If {
+            then_body,
+            else_body,
+            ..
+        } => {
+            collect_let_types_stmts(then_body, out);
+            collect_let_types_stmts(else_body, out);
+        }
+        Stmt::Loop { body, .. }
+        | Stmt::Scope { body }
+        | Stmt::LabeledBlock { body, .. }
+        | Stmt::For { body, .. } => collect_let_types_stmts(body, out),
+        Stmt::Match { arms, .. } => {
+            for arm in arms {
+                collect_let_types_stmts(&arm.body, out);
+            }
+        }
+        Stmt::While { body, .. } | Stmt::Unsafe { body } | Stmt::Block(body) => {
+            collect_let_types_stmts(&body.stmts, out);
+        }
+        _ => {}
+    }
 }
 
 fn collect_let_exprs_stmts(body: &[IndentStmt], out: &mut BTreeMap<String, Expr>) {
