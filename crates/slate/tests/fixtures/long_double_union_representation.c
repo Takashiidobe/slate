@@ -93,7 +93,7 @@ int main(void) { printf("%d\n", convert(6.75L)); }
 // LOWERING-NEXT: fn convert({{arg[0-9]+}}: LongDouble) -> i32 {
 // LOWERING-NEXT:     let mut value: LongDouble = LongDouble([0; 10]);
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut bits: {{anon_[0-9]+}} = {{anon_[0-9]+}} { f80: LongDouble([0; 10]) };
+// LOWERING-NEXT:     let mut bits: {{anon_[0-9]+}} = unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() };
 // LOWERING-NEXT:     value = {{arg[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
@@ -264,7 +264,7 @@ int main(void) { printf("%d\n", convert(6.75L)); }
 // REWRITES-NEXT: fn convert({{arg[0-9]+}}: LongDouble) -> i32 {
 // REWRITES-NEXT: let mut value: LongDouble = {{arg[0-9]+}};
 // REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut bits: {{anon_[0-9]+}} = {{anon_[0-9]+}} { f80: LongDouble([0; 10]) };
+// REWRITES-NEXT: let mut bits: {{anon_[0-9]+}} = unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         bits.u64[({{_v[0-9]+}} as usize)] = 0;

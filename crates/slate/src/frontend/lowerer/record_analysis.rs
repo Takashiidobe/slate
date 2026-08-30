@@ -366,7 +366,7 @@ pub fn anon_local_records(module: &Module) -> Vec<crate::frontend::c_ast::Record
                 )
             })
             .map(|(i, field_ty)| crate::frontend::c_ast::Decl {
-                name: if bitfield_slots.contains(&(key.clone(), i as i64)) {
+                name: if !is_union && bitfield_slots.contains(&(key.clone(), i as i64)) {
                     format!("__bitfield_{i}")
                 } else {
                     field_names

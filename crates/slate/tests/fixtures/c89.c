@@ -599,7 +599,7 @@ int main(void) {
 // LOWERING-NEXT:     let mut color: aligned::Aligned<aligned::A4, C89Color> = aligned::Aligned(C89Color::C89_RED);
 // LOWERING-NEXT:     let mut point: C89Point = C89Point { x: 0, y: 0 };
 // LOWERING-NEXT:     let mut bits: C89Bits = C89Bits { __bitfield_0: unsafe { std::mem::transmute::<u8, __slate_bitfields::__SlateBitfield_C89Bits_0>(0) }, __bitfield_1: [0; 3] };
-// LOWERING-NEXT:     let mut number: C89Number = C89Number { integer: 0 };
+// LOWERING-NEXT:     let mut number: C89Number = unsafe { std::mem::zeroed::<C89Number>() };
 // LOWERING-NEXT:     let mut array: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
 // LOWERING-NEXT:     let mut copied_value: i32 = 0;
 // LOWERING-NEXT:     let mut source_value: i32 = 0;
@@ -1211,7 +1211,7 @@ int main(void) {
 // REWRITES-NEXT: let mut color: aligned::Aligned<aligned::A4, C89Color> = aligned::Aligned(C89Color::C89_RED);
 // REWRITES-NEXT: let mut point: C89Point = C89Point { x: 0, y: 0 };
 // REWRITES-NEXT: let mut bits: C89Bits = C89Bits { __bitfield_0: unsafe { std::mem::transmute::<u8, __slate_bitfields::__SlateBitfield_C89Bits_0>(0) }, __bitfield_1: [0; 3] };
-// REWRITES-NEXT: let mut number: C89Number = C89Number { integer: 0 };
+// REWRITES-NEXT: let mut number: C89Number = unsafe { std::mem::zeroed::<C89Number>() };
 // REWRITES-NEXT: let mut array: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
 // REWRITES-NEXT: let mut copied_value: i32 = 0;
 // REWRITES-NEXT: let mut source_value: i32 = 0;

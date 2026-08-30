@@ -30,7 +30,7 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut word: Word = Word { value: 0 };
+// LOWERING-NEXT:     let mut word: Word = unsafe { std::mem::zeroed::<Word>() };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     word = Word { value: 0 };
@@ -77,7 +77,7 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut word: Word = Word { value: 0 };
+// REWRITES-NEXT: let mut word: Word = unsafe { std::mem::zeroed::<Word>() };
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: word = Word { value: 0 };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;

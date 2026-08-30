@@ -24,6 +24,7 @@ int main(void) {
   printf("%d\n", (int)value.real);
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
 // LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
@@ -59,10 +60,10 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut value: container = container { prefix: 0, __slate_anon_1: {{anon_[0-9]+}} { integer: 0 }, __slate_anon_2: {{anon_[0-9]+}} { x: 0, y: 0 } };
+// LOWERING-NEXT:     let mut value: container = container { prefix: 0, __slate_anon_1: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() }, __slate_anon_2: {{anon_[0-9]+}} { x: 0, y: 0 } };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     value = container { prefix: 0, __slate_anon_1: {{anon_[0-9]+}} { integer: 0 }, __slate_anon_2: {{anon_[0-9]+}} { x: 0, y: 0 } };
+// LOWERING-NEXT:     value = container { prefix: 0, __slate_anon_1: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() }, __slate_anon_2: {{anon_[0-9]+}} { x: 0, y: 0 } };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
 // LOWERING-NEXT:     value.prefix = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 31;

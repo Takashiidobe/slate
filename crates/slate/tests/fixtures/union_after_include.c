@@ -154,7 +154,7 @@ int main(void) {
 // LOWERING-NEXT:     let mut a: i32 = 0;
 // LOWERING-NEXT:     let mut b: i32 = 0;
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut p: FuzzPair = FuzzPair { left: 0 };
+// LOWERING-NEXT:     let mut p: FuzzPair = unsafe { std::mem::zeroed::<FuzzPair>() };
 // LOWERING-NEXT:     a = {{arg[0-9]+}};
 // LOWERING-NEXT:     b = {{arg[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = a;
@@ -284,7 +284,7 @@ int main(void) {
 // REWRITES-NEXT: let mut a: i32 = {{arg[0-9]+}};
 // REWRITES-NEXT: let mut b: i32 = {{arg[0-9]+}};
 // REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut p: FuzzPair = FuzzPair { left: 0 };
+// REWRITES-NEXT: let mut p: FuzzPair = unsafe { std::mem::zeroed::<FuzzPair>() };
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         p.left = a;
 // REWRITES-NEXT: }

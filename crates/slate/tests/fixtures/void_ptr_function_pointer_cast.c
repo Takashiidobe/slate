@@ -48,7 +48,7 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut r#box: FnBox = FnBox { r#fn: None };
+// LOWERING-NEXT:     let mut r#box: FnBox = unsafe { std::mem::zeroed::<FnBox>() };
 // LOWERING-NEXT:     let mut slot: *mut core::ffi::c_void = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut cb: Option<unsafe extern "C" fn(i32) -> i32> = None;
 // LOWERING-NEXT:     let mut none: Option<unsafe extern "C" fn(i32) -> i32> = None;
@@ -106,7 +106,7 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut r#box: FnBox = FnBox { r#fn: None };
+// REWRITES-NEXT: let mut r#box: FnBox = unsafe { std::mem::zeroed::<FnBox>() };
 // REWRITES-NEXT: let mut slot: *mut core::ffi::c_void = std::ptr::null_mut();
 // REWRITES-NEXT: let mut cb: Option<unsafe extern "C" fn(i32) -> i32> = None;
 // REWRITES-NEXT: let mut none: Option<unsafe extern "C" fn(i32) -> i32> = None;

@@ -30,7 +30,7 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut v: Value = Value { i: 0 };
+// LOWERING-NEXT:     let mut v: Value = unsafe { std::mem::zeroed::<Value>() };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     v = Value { i: 258 };
@@ -70,7 +70,7 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut v: Value = Value { i: 0 };
+// REWRITES-NEXT: let mut v: Value = unsafe { std::mem::zeroed::<Value>() };
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: v = Value { i: 258 };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
