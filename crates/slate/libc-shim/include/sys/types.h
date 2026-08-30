@@ -46,6 +46,13 @@
 #define __NEED_pthread_key_t
 #include <bits/types.h>
 
+#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+typedef unsigned char  u_char;
+typedef unsigned short u_short;
+typedef unsigned int   u_int;
+typedef unsigned long  u_long;
+#endif
+
 #endif
 
 #endif
