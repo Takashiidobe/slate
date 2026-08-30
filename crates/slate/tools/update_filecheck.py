@@ -4,6 +4,7 @@ from collections import Counter
 import os
 import re
 import shlex
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -23,7 +24,10 @@ ANNOTATION_PATTERN = re.compile(
 GENERATED_MARKER_PATTERN = re.compile(
     r'(?:core|std)::arch::asm!\("# SLATE_FILECHECK_(BEGIN|END)_(\d+)"'
 )
-FN_MARKER_PATTERN = re.compile(r"^\s*fn __slate_filecheck_(begin|end)_(\d+)\(\)")
+FN_MARKER_PATTERN = re.compile(
+    r'^\s*(?:pub(?:\(crate\))?\s+)?(?:unsafe\s+)?(?:extern\s+"C"\s+)?'
+    r"fn __slate_filecheck_(begin|end)_(\d+)\(\)"
+)
 RUST_STRING_PATTERN = re.compile(
     r'(?:(?:b|c)?r(?P<hash>#{0,16})".*?"(?P=hash)|(?:b|c)?"(?:\\.|[^"\\])*")'
 )
@@ -48,10 +52,10 @@ UNSTABLE_IDENTIFIER_PATTERNS = (
 )
 
 
-def instrument_annotations(source):
+def instrument_annotations(source, first_id=0):
     annotations = {}
     active = []
-    next_id = 0
+    next_id = first_id
     output = []
     for line_number, line in enumerate(source.splitlines(), 1):
         match = ANNOTATION_PATTERN.match(line)
@@ -118,6 +122,12 @@ def extract_generated_regions(rust):
         if fn_marker:
             boundary, raw_id = fn_marker.groups()
             marker_id = int(raw_id)
+            for _, captured in active:
+                while captured and (
+                    not captured[-1].strip()
+                    or captured[-1].lstrip().startswith(("#[", "///"))
+                ):
+                    captured.pop()
             if boundary == "begin":
                 active.append((marker_id, []))
             else:
@@ -410,12 +420,155 @@ def update_path(path, profiles, in_place, target_mode):
         sys.stdout.write(updated)
 
 
+def project_sources(project, library):
+    source_dir = project / "src" if library else project
+    return sorted(source_dir.glob("*.c"))
+
+
+def run_project_translation(project, crate_dir, slate, raw, library, environment):
+    env = os.environ.copy()
+    env.update(environment)
+    clang_args = shlex.split(env.get("SLATE_CLANG_ARGS", ""))
+    env["SLATE_CLANG_ARGS"] = shlex.join([*clang_args, "-std=c23"])
+    env.pop("SLATE_RAW_LOWER", None)
+    if raw:
+        env["SLATE_RAW_LOWER"] = "1"
+    command = [*slate, "translate-project"]
+    if library:
+        command.append("--lib")
+    result = subprocess.run(
+        [*command, str(project), str(crate_dir)],
+        check=False,
+        text=True,
+        capture_output=True,
+        env=env,
+    )
+    if result.returncode:
+        raise RuntimeError(
+            f"{project}: project translation failed ({result.returncode})\n{result.stderr}"
+        )
+    return {
+        path.name: path.read_text()
+        for path in sorted((crate_dir / "src").glob("*.rs"))
+    }
+
+
+def module_with_marker(modules, marker_id):
+    needles = (
+        f"SLATE_FILECHECK_BEGIN_{marker_id}",
+        f"__slate_filecheck_begin_{marker_id}",
+    )
+    matches = [
+        rust for rust in modules.values() if any(needle in rust for needle in needles)
+    ]
+    if len(matches) != 1:
+        raise RuntimeError(
+            f"generated project has {len(matches)} modules containing marker {marker_id}"
+        )
+    return matches[0]
+
+
+def update_project(project, profiles, in_place, slate, library):
+    source_entries = []
+    next_id = 0
+    for path in project_sources(project, library):
+        source = path.read_text()
+        instrumented, annotations = instrument_annotations(source, next_id)
+        next_id += len(annotations)
+        if annotations:
+            source_entries.append((path, source, instrumented, annotations))
+    if not source_entries:
+        raise RuntimeError(f"{project}: project contains no FileCheck annotations")
+
+    requested = {profile.partition("-")[0] for profile, _, _ in profiles}
+    kinds = {
+        kind
+        for _, _, _, annotations in source_entries
+        for kind in annotations.values()
+    }
+    needs_both = any(kind.endswith("-not") for kind in kinds)
+    needs_lowering = needs_both or "LOWERING" in requested
+    needs_rewrites = needs_both or "REWRITES" in requested
+    environment = profiles[0][2]
+
+    with tempfile.TemporaryDirectory(prefix=f".{project.name}.filecheck-", dir=project.parent) as temporary:
+        temporary = Path(temporary)
+        instrumented_project = temporary / project.name
+        shutil.copytree(project, instrumented_project)
+        for path, _, instrumented, _ in source_entries:
+            relative = path.relative_to(project)
+            (instrumented_project / relative).write_text(instrumented)
+        lowered_modules = (
+            run_project_translation(
+                instrumented_project,
+                temporary / "lowered",
+                slate,
+                True,
+                library,
+                environment,
+            )
+            if needs_lowering
+            else {}
+        )
+        rewritten_modules = (
+            run_project_translation(
+                instrumented_project,
+                temporary / "rewritten",
+                slate,
+                False,
+                library,
+                environment,
+            )
+            if needs_rewrites
+            else {}
+        )
+
+        for path, source, _, annotations in source_entries:
+            marker_id = next(iter(annotations))
+            lowered = module_with_marker(lowered_modules, marker_id) if needs_lowering else ""
+            rewritten = (
+                module_with_marker(rewritten_modules, marker_id) if needs_rewrites else ""
+            )
+            lowered = normalize_source_paths(lowered, path)
+            rewritten = normalize_source_paths(rewritten, path)
+            updated = source
+            blocks = []
+            for profile, _, _ in profiles:
+                annotation_profile = profile.partition("-")[0].lower().removesuffix("s")
+                if not any(
+                    kind.removesuffix("-not") == annotation_profile
+                    for kind in annotations.values()
+                ):
+                    updated = remove_generated_block(updated, profile)
+                    continue
+                if has_handwritten_block(updated, profile):
+                    print(
+                        f"skip: {path}: handwritten {profile} directives present; leaving block untouched",
+                        file=sys.stderr,
+                    )
+                    continue
+                updated = remove_generated_block(updated, profile)
+                checks = render_annotation_checks(
+                    annotations, rewritten, lowered, profile
+                )
+                blocks.append(generated_block(checks, profile))
+            if blocks:
+                updated = insert_generated_blocks(updated, blocks)
+            if in_place:
+                path.write_text(updated)
+            else:
+                sys.stdout.write(updated)
+
+
 def main(argv):
     parser = argparse.ArgumentParser(description="generate stable Slate FileCheck scaffolding")
     parser.add_argument("paths", nargs="+", type=Path)
     parser.add_argument("--profile", choices=("lowering", "rewrites", "both"), default="both")
     parser.add_argument("--in-place", action="store_true")
     parser.add_argument("--slate", default="cargo run --quiet --")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--project", action="store_true")
+    mode.add_argument("--library-project", action="store_true")
     parser.add_argument(
         "--target",
         action="append",
@@ -423,6 +576,8 @@ def main(argv):
         help="generate target-qualified checks; may be repeated",
     )
     args = parser.parse_args(argv)
+    if (args.project or args.library_project) and args.target:
+        parser.error("project FileCheck generation does not support --target")
     slate = args.slate.split()
     profiles = []
     targets = []
@@ -438,7 +593,18 @@ def main(argv):
         for prefix, environment in targets or [("", {})]:
             profiles.append((f"REWRITES-{prefix}".rstrip("-"), [*slate, "translate"], environment))
     for path in args.paths:
-        update_path(path, profiles, args.in_place, bool(targets))
+        if args.project or args.library_project:
+            if not path.is_dir():
+                parser.error(f"project path is not a directory: {path}")
+            update_project(
+                path,
+                profiles,
+                args.in_place,
+                slate,
+                args.library_project,
+            )
+        else:
+            update_path(path, profiles, args.in_place, bool(targets))
     return 0
 
 

@@ -19,6 +19,7 @@ int hidden_again_global = 23;
 int visible_after(void) { return 29; }
 int visible_after_global = 31;
 
+// @rewrite-fn-begin
 int main(void) {
   printf("%d %d %d %d %d %d %d %d %d %d\n", visible_before(),
          visible_before_global, hidden_outer(), hidden_outer_global,
@@ -26,6 +27,28 @@ int main(void) {
          hidden_again_global, visible_after(), visible_after_global);
   return 0;
 }
+// @rewrite-fn-end
+
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES-DAG: fn main() {
+// REWRITES-DAG: let mut __retval: i32 = 0;
+// REWRITES-DAG: __retval = 0;
+// REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
+// REWRITES-DAG: let {{_v[0-9]+}}: i32 = visible_before();
+// REWRITES-DAG: let {{_v[0-9]+}}: i32 = unsafe { visible_before_global };
+// REWRITES-DAG: let {{_v[0-9]+}}: i32 = hidden_outer();
+// REWRITES-DAG: let {{_v[0-9]+}}: i32 = unsafe { hidden_outer_global };
+// REWRITES-DAG: let {{_v[0-9]+}}: i32 = visible_inner();
+// REWRITES-DAG: let {{_v[0-9]+}}: i32 = unsafe { visible_inner_global };
+// REWRITES-DAG: let {{_v[0-9]+}}: i32 = hidden_again();
+// REWRITES-DAG: let {{_v[0-9]+}}: i32 = unsafe { hidden_again_global };
+// REWRITES-DAG: let {{_v[0-9]+}}: i32 = visible_after();
+// REWRITES-DAG: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, unsafe { visible_after_global }) };
+// REWRITES-DAG: __retval = 0;
+// REWRITES-DAG: std::process::exit(__retval as i32);
+// REWRITES-DAG: }
+// SLATE-FILECHECK-END rewrites
+
 // LOWERING-DAG: pub extern "C" fn visible_before
 // LOWERING-DAG: pub static mut visible_before_global
 // LOWERING-DAG: pub extern "C" fn visible_inner

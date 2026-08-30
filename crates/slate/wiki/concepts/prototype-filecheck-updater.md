@@ -101,3 +101,18 @@ through the same structured path, so a region must not end with `return`,
 
 Embedded NUL bytes in generated Rust are emitted as `{{\\x00}}` regexes so
 the C fixture remains a text file.
+
+Multi-translation-unit and library fixtures use project-aware modes:
+
+```bash
+tools/update_filecheck.py --project tests/fixtures.multi/cross_tu \
+  --profile both --in-place
+tools/update_filecheck.py --library-project tests/fixtures.library/simple \
+  --profile both --in-place
+```
+
+All annotated sources in the fixture are instrumented together. The updater
+runs one whole-project translation for each required lowering or rewrite output,
+reads the marker-bearing generated module for each source, and refreshes that
+source's blocks. Project mode rejects target-qualified generation; target-aware
+project generation requires an explicit artifact-to-target ownership design.
