@@ -2459,7 +2459,10 @@ impl __SlateVaArgs {
                 let im = complex_component_from_attr(imag)?;
                 Some(complex_const_expr(Some(ty), re, im))
             }
-            Attr::ConstRecord { members, .. } => {
+            Attr::ConstRecord {
+                members,
+                ty: record_cir_ty,
+            } => {
                 let elements = attr_array_values(members)?;
                 let Type::Custom(name) = ty else {
                     return None;
@@ -2512,14 +2515,30 @@ impl __SlateVaArgs {
                     }
                     RecordKind::Union => {
                         let storage_fields = self.bitfield_storage_fields(record);
+                        let member_elem = elements.first()?;
+                        let field_index = attr_cir_type(member_elem).and_then(|member_ty| {
+                            let member_ty = self.expand_alias(member_ty);
+                            union_member_cir_types(self.expand_alias(record_cir_ty)).and_then(
+                                |members| {
+                                    members
+                                        .iter()
+                                        .map(|m| self.expand_alias(m))
+                                        .position(|m| m == member_ty)
+                                },
+                            )
+                        });
+                        let source_field = field_index
+                            .and_then(|i| record.fields.get(i))
+                            .or_else(|| record.fields.first())?;
                         let field = storage_fields
                             .as_ref()
-                            .and_then(|fields| fields.first())
-                            .or_else(|| record.fields.first())?;
+                            .and_then(|fields| {
+                                fields.iter().find(|field| field.name == source_field.name)
+                            })
+                            .unwrap_or(source_field);
                         let field_ty = self.c_record_field_type(&field.ty);
-                        let value = elements
-                            .first()
-                            .and_then(|e| self.render_const_value_expr(&field_ty, e, facts))
+                        let value = self
+                            .render_const_value_expr(&field_ty, member_elem, facts)
                             .unwrap_or_else(|| self.default_value_expr(&field_ty));
                         Some(wrap_record_lit(
                             record,
@@ -2633,6 +2652,18 @@ impl __SlateVaArgs {
             }
             Attr::Float { text, .. } | Attr::CirFloat { value: text, .. } => {
                 Some(fp_literal_expr_for_type(Some(ty), fp_text_value(text)?))
+            }
+            Attr::Int { value, .. } if bitint_generic_parts(ty).is_some() => {
+                let (name, ..) = bitint_generic_parts(ty)?;
+                bitint_from_int_expr(ty, int_value_expr(*value), name == "bitint::BInt")
+            }
+            Attr::CirInt { value, .. } if bitint_generic_parts(ty).is_some() => {
+                let (name, ..) = bitint_generic_parts(ty)?;
+                bitint_from_int_expr(
+                    ty,
+                    int_value_expr(value.parse().ok()?),
+                    name == "bitint::BInt",
+                )
             }
             _ => scalar_attr_expr(attr),
         }
