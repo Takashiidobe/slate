@@ -54,7 +54,7 @@ int main(void) {
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-DAG: ones = {{_v[0-9]+}};
 // LOWERING-DAG: let {{_v[0-9]+}}: u32 = u;
-// LOWERING-DAG: let {{_v[0-9]+}}: u32 = {{_v[0-9]+}}.count_ones() & 1;
+// LOWERING-DAG: let {{_v[0-9]+}}: u32 = ({{_v[0-9]+}}.count_ones() as u32) & 1;
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-DAG: odd = {{_v[0-9]+}};
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = s;
@@ -86,7 +86,7 @@ int main(void) {
 // REWRITES-DAG: let {{_v[0-9]+}}: u32 = u;
 // REWRITES-DAG: ones = ({{_v[0-9]+}}.count_ones() as u32) as i32;
 // REWRITES-DAG: let {{_v[0-9]+}}: u32 = u;
-// REWRITES-DAG: let {{_v[0-9]+}}: u32 = {{_v[0-9]+}}.count_ones() & 1;
+// REWRITES-DAG: let {{_v[0-9]+}}: u32 = ({{_v[0-9]+}}.count_ones() as u32) & 1;
 // REWRITES-DAG: odd = {{_v[0-9]+}} as i32;
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = s;
 // REWRITES-DAG: redundant_sign = (if {{_v[0-9]+}} < 0 { !{{_v[0-9]+}} } else { {{_v[0-9]+}} }.leading_zeros() as i32) - 1;

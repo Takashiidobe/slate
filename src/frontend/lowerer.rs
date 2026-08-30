@@ -2310,24 +2310,26 @@ impl __SlateVaArgs {
                             );
                         }
                         RecordKind::Union => {
-                            if let Some(field) = record.fields.first() {
-                                return wrap_record_lit(
-                                    record,
-                                    Expr::StructLit {
-                                        name: record_lit_name(record),
-                                        fields: vec![(
-                                            sanitize_ident(&field.name).into_string(),
-                                            self.default_value_expr(
-                                                &self.c_record_field_type(&field.ty),
-                                            ),
-                                        )],
-                                    },
-                                );
+                            if record.fields.is_empty() {
+                                return Expr::StructLit {
+                                    name: record_lit_name(record),
+                                    fields: vec![(
+                                        "__slate_empty".into(),
+                                        Expr::ArrayLit(Vec::new()),
+                                    )],
+                                };
                             }
-                            return Expr::StructLit {
-                                name: record_lit_name(record),
-                                fields: vec![("__slate_empty".into(), Expr::ArrayLit(Vec::new()))],
-                            };
+                            let name = sanitize_ident(&record.name).into_string();
+                            return Expr::Unsafe(Box::new(crate::backend::rust_ast::Block {
+                                stmts: Vec::new(),
+                                tail: Some(Box::new(Expr::Call {
+                                    binding: crate::function_identity::CallBinding::Generated,
+                                    func: Box::new(Expr::Var(
+                                        format!("std::mem::zeroed::<{name}>").into(),
+                                    )),
+                                    args: Vec::new(),
+                                })),
+                            }));
                         }
                     }
                 }

@@ -87,7 +87,7 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut e: event = event { r#type: 0, data: {{_unnamed_at_[0-9A-Za-z_]+}} { alias: {{_unnamed_at_[0-9A-Za-z_]+}} { value: std::ptr::null_mut() } } };
+// LOWERING-NEXT:     let mut e: event = event { r#type: 0, data: unsafe { std::mem::zeroed::<{{_unnamed_at_[0-9A-Za-z_]+}}>() } };
 // LOWERING-NEXT:     let mut h: [i8; 2] = [0; 2];
 // LOWERING-NEXT:     let mut s: [i8; 2] = [0; 2];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
@@ -180,7 +180,7 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut e: event = event { r#type: 0, data: {{_unnamed_at_[0-9A-Za-z_]+}} { alias: {{_unnamed_at_[0-9A-Za-z_]+}} { value: std::ptr::null_mut() } } };
+// REWRITES-NEXT: let mut e: event = event { r#type: 0, data: unsafe { std::mem::zeroed::<{{_unnamed_at_[0-9A-Za-z_]+}}>() } };
 // REWRITES-NEXT: let mut h: [i8; 2] = [0; 2];
 // REWRITES-NEXT: let mut s: [i8; 2] = [0; 2];
 // REWRITES-NEXT: __retval = 0;

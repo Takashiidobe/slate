@@ -23,6 +23,7 @@ int main(void) {
   printf("%d\n", overwrite(3, 9));
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
 // LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
@@ -42,7 +43,7 @@ int main(void) {
 // LOWERING-NEXT: fn pick_left({{arg[0-9]+}}: i32) -> i32 {
 // LOWERING-NEXT:     let mut value: i32 = 0;
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut p: Pair = Pair { left: 0 };
+// LOWERING-NEXT:     let mut p: Pair = unsafe { std::mem::zeroed::<Pair>() };
 // LOWERING-NEXT:     value = {{arg[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = value;
 // LOWERING-NEXT:     unsafe {
@@ -58,7 +59,7 @@ int main(void) {
 // LOWERING-NEXT:     let mut a: i32 = 0;
 // LOWERING-NEXT:     let mut b: i32 = 0;
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut p: Pair = Pair { left: 0 };
+// LOWERING-NEXT:     let mut p: Pair = unsafe { std::mem::zeroed::<Pair>() };
 // LOWERING-NEXT:     a = {{arg[0-9]+}};
 // LOWERING-NEXT:     b = {{arg[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = a;

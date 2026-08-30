@@ -104,8 +104,8 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut src: ld_union = ld_union { ld: LongDouble([0; 10]) };
-// LOWERING-NEXT:     let mut dst: ld_union = ld_union { ld: LongDouble([0; 10]) };
+// LOWERING-NEXT:     let mut src: ld_union = unsafe { std::mem::zeroed::<ld_union>() };
+// LOWERING-NEXT:     let mut dst: ld_union = unsafe { std::mem::zeroed::<ld_union>() };
 // LOWERING-NEXT:     let mut i: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     __retval = {{_v[0-9]+}};
@@ -321,8 +321,8 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut src: ld_union = ld_union { ld: LongDouble([0; 10]) };
-// REWRITES-NEXT: let mut dst: ld_union = ld_union { ld: LongDouble([0; 10]) };
+// REWRITES-NEXT: let mut src: ld_union = unsafe { std::mem::zeroed::<ld_union>() };
+// REWRITES-NEXT: let mut dst: ld_union = unsafe { std::mem::zeroed::<ld_union>() };
 // REWRITES-NEXT: let mut i: i32 = 0;
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(src) as *mut core::ffi::c_void;

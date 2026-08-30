@@ -449,15 +449,15 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn c23_utf8() -> i32 {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut input_state: __mbstate_t = __mbstate_t { __count: 0, __value: {{anon_[0-9]+}} { __wch: 0 } };
-// LOWERING-NEXT:     let mut output_state: __mbstate_t = __mbstate_t { __count: 0, __value: {{anon_[0-9]+}} { __wch: 0 } };
+// LOWERING-NEXT:     let mut input_state: __mbstate_t = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
+// LOWERING-NEXT:     let mut output_state: __mbstate_t = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
 // LOWERING-NEXT:     let mut character: u8 = 0;
 // LOWERING-NEXT:     let mut output: [i8; 4] = [0; 4];
 // LOWERING-NEXT:     let mut input_size: u64 = 0;
 // LOWERING-NEXT:     let mut output_size: u64 = 0;
 // LOWERING-NEXT:     let mut atomic_character: u8 = 0;
-// LOWERING-NEXT:     input_state = __mbstate_t { __count: 0, __value: {{anon_[0-9]+}} { __wch: 0 } };
-// LOWERING-NEXT:     output_state = __mbstate_t { __count: 0, __value: {{anon_[0-9]+}} { __wch: 0 } };
+// LOWERING-NEXT:     input_state = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
+// LOWERING-NEXT:     output_state = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = 0;
 // LOWERING-NEXT:     character = {{_v[0-9]+}};
 // LOWERING-NEXT:     output = [0, 0, 0, 0];
@@ -1409,13 +1409,15 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c23_utf8() -> i32 {
 // REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut input_state: __mbstate_t = __mbstate_t { __count: 0, __value: {{anon_[0-9]+}} { __wch: 0 } };
-// REWRITES-NEXT: let mut output_state: __mbstate_t = __mbstate_t { __count: 0, __value: {{anon_[0-9]+}} { __wch: 0 } };
+// REWRITES-NEXT: let mut input_state: __mbstate_t = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
+// REWRITES-NEXT: let mut output_state: __mbstate_t = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
 // REWRITES-NEXT: let mut character: u8 = 0;
 // REWRITES-NEXT: let mut output: [i8; 4] = [0; 4];
 // REWRITES-NEXT: let mut input_size: u64 = 0;
 // REWRITES-NEXT: let mut output_size: u64 = 0;
 // REWRITES-NEXT: let mut atomic_character: u8 = 0;
+// REWRITES-NEXT: input_state = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
+// REWRITES-NEXT: output_state = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
 // REWRITES-NEXT: character = 0;
 // REWRITES-NEXT: output = [0, 0, 0, 0];
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"A\0".as_ptr() as *mut i8;

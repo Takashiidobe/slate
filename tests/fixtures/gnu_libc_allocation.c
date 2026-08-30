@@ -318,7 +318,7 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn gnu_obstack_extensions() -> i32 {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut storage: obstack = obstack { __bitfield_0: 0, __bitfield_1: std::ptr::null_mut(), __bitfield_2: std::ptr::null_mut(), __bitfield_3: std::ptr::null_mut(), __bitfield_4: std::ptr::null_mut(), __bitfield_5: {{anon_[0-9]+}} { tempint: 0 }, __bitfield_6: 0, __bitfield_7: None, __bitfield_8: None, __bitfield_9: std::ptr::null_mut(), __bitfield_10: unsafe { std::mem::transmute::<u8, __slate_bitfields::__SlateBitfield_obstack_10>(0) } };
+// LOWERING-NEXT:     let mut storage: obstack = obstack { __bitfield_0: 0, __bitfield_1: std::ptr::null_mut(), __bitfield_2: std::ptr::null_mut(), __bitfield_3: std::ptr::null_mut(), __bitfield_4: std::ptr::null_mut(), __bitfield_5: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() }, __bitfield_6: 0, __bitfield_7: None, __bitfield_8: None, __bitfield_9: std::ptr::null_mut(), __bitfield_10: unsafe { std::mem::transmute::<u8, __slate_bitfields::__SlateBitfield_obstack_10>(0) } };
 // LOWERING-NEXT:     let mut {{__slate_alloca_frame[0-9]+}}: __SlateAllocaFrame0 = __SlateAllocaFrame0(0, std::ptr::null_mut(), std::ptr::null_mut());
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.0 = {{_v[0-9]+}};
@@ -775,7 +775,7 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn gnu_obstack_extensions() -> i32 {
 // REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut storage: obstack = obstack { __bitfield_0: 0, __bitfield_1: std::ptr::null_mut(), __bitfield_2: std::ptr::null_mut(), __bitfield_3: std::ptr::null_mut(), __bitfield_4: std::ptr::null_mut(), __bitfield_5: {{anon_[0-9]+}} { tempint: 0 }, __bitfield_6: 0, __bitfield_7: None, __bitfield_8: None, __bitfield_9: std::ptr::null_mut(), __bitfield_10: unsafe { std::mem::transmute::<u8, __slate_bitfields::__SlateBitfield_obstack_10>(0) } };
+// REWRITES-NEXT: let mut storage: obstack = obstack { __bitfield_0: 0, __bitfield_1: std::ptr::null_mut(), __bitfield_2: std::ptr::null_mut(), __bitfield_3: std::ptr::null_mut(), __bitfield_4: std::ptr::null_mut(), __bitfield_5: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() }, __bitfield_6: 0, __bitfield_7: None, __bitfield_8: None, __bitfield_9: std::ptr::null_mut(), __bitfield_10: unsafe { std::mem::transmute::<u8, __slate_bitfields::__SlateBitfield_obstack_10>(0) } };
 // REWRITES-NEXT: let mut {{__slate_alloca_frame[0-9]+}}: __SlateAllocaFrame0 = __SlateAllocaFrame0(0, std::ptr::null_mut(), std::ptr::null_mut());
 // REWRITES-NEXT: {{__slate_alloca_frame[0-9]+}}.0 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;

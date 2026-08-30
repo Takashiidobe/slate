@@ -866,13 +866,20 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_parity(&mut self, result: &str, result_ty: Option<&CirType>, value: &str) {
-        let expr = Expr::Binary {
-            op: BinOp::BitAnd,
-            lhs: Box::new(Expr::MethodCall {
+        let rust_ty = result_ty
+            .map(|ty| self.parent.rust_type(ty))
+            .unwrap_or(Type::Prim(Prim::I32));
+        let count = Expr::Cast {
+            expr: Box::new(Expr::MethodCall {
                 recv: Box::new(self.operand_expr(value)),
                 method: "count_ones".into(),
                 args: Vec::new(),
             }),
+            ty: rust_ty,
+        };
+        let expr = Expr::Binary {
+            op: BinOp::BitAnd,
+            lhs: Box::new(count),
             rhs: Box::new(Expr::Value(RustValue::I64(1))),
         };
         self.materialize_expr(result, expr, result_ty);

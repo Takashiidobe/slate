@@ -49,8 +49,8 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut state16: __mbstate_t = __mbstate_t { __count: 0, __value: {{anon_[0-9]+}} { __wch: 0 } };
-// LOWERING-NEXT:     let mut state32: __mbstate_t = __mbstate_t { __count: 0, __value: {{anon_[0-9]+}} { __wch: 0 } };
+// LOWERING-NEXT:     let mut state16: __mbstate_t = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
+// LOWERING-NEXT:     let mut state32: __mbstate_t = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
 // LOWERING-NEXT:     let mut converted16: u16 = 0;
 // LOWERING-NEXT:     let mut converted32: u32 = 0;
 // LOWERING-NEXT:     let mut multibyte16: [i8; 4] = [0; 4];
@@ -61,8 +61,8 @@ int main(void) {
 // LOWERING-NEXT:     let mut write32: u64 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     state16 = __mbstate_t { __count: 0, __value: {{anon_[0-9]+}} { __wch: 0 } };
-// LOWERING-NEXT:     state32 = __mbstate_t { __count: 0, __value: {{anon_[0-9]+}} { __wch: 0 } };
+// LOWERING-NEXT:     state16 = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
+// LOWERING-NEXT:     state32 = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u16 = 0;
 // LOWERING-NEXT:     converted16 = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 0;
@@ -137,8 +137,8 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut state16: __mbstate_t = __mbstate_t { __count: 0, __value: {{anon_[0-9]+}} { __wch: 0 } };
-// REWRITES-NEXT: let mut state32: __mbstate_t = __mbstate_t { __count: 0, __value: {{anon_[0-9]+}} { __wch: 0 } };
+// REWRITES-NEXT: let mut state16: __mbstate_t = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
+// REWRITES-NEXT: let mut state32: __mbstate_t = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
 // REWRITES-NEXT: let mut converted16: u16 = 0;
 // REWRITES-NEXT: let mut converted32: u32 = 0;
 // REWRITES-NEXT: let mut multibyte16: [i8; 4] = [0; 4];
@@ -148,8 +148,8 @@ int main(void) {
 // REWRITES-NEXT: let mut read32: u64 = 0;
 // REWRITES-NEXT: let mut write32: u64 = 0;
 // REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: state16 = __mbstate_t { __count: 0, __value: {{anon_[0-9]+}} { __wch: 0 } };
-// REWRITES-NEXT: state32 = __mbstate_t { __count: 0, __value: {{anon_[0-9]+}} { __wch: 0 } };
+// REWRITES-NEXT: state16 = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
+// REWRITES-NEXT: state32 = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
 // REWRITES-NEXT: converted16 = 0;
 // REWRITES-NEXT: converted32 = 0;
 // REWRITES-NEXT: multibyte16 = [0, 0, 0, 0];

@@ -26,10 +26,10 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut state: anonymous_header_state = anonymous_header_state { count: 0, value: {{anon_[0-9]+}} { wide: 0 } };
+// LOWERING-NEXT:     let mut state: anonymous_header_state = anonymous_header_state { count: 0, value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     state = anonymous_header_state { count: 0, value: {{anon_[0-9]+}} { wide: 0 } };
+// LOWERING-NEXT:     state = anonymous_header_state { count: 0, value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         state.value.wide = {{_v[0-9]+}};
@@ -67,9 +67,9 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut state: anonymous_header_state = anonymous_header_state { count: 0, value: {{anon_[0-9]+}} { wide: 0 } };
+// REWRITES-NEXT: let mut state: anonymous_header_state = anonymous_header_state { count: 0, value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
 // REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: state = anonymous_header_state { count: 0, value: {{anon_[0-9]+}} { wide: 0 } };
+// REWRITES-NEXT: state = anonymous_header_state { count: 0, value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         state.value.wide = 7;
 // REWRITES-NEXT: }

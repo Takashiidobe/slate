@@ -550,7 +550,7 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn type_punning() -> i32 {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut u: Pun = Pun { i: 0 };
+// LOWERING-NEXT:     let mut u: Pun = unsafe { std::mem::zeroed::<Pun>() };
 // LOWERING-NEXT:     let mut bits: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = 1.0;
 // LOWERING-NEXT:     unsafe {
@@ -874,7 +874,7 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn type_punning() -> i32 {
 // REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut u: Pun = Pun { i: 0 };
+// REWRITES-NEXT: let mut u: Pun = unsafe { std::mem::zeroed::<Pun>() };
 // REWRITES-NEXT: let mut bits: i32 = 0;
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         u.f = 1.0;

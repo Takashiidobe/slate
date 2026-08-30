@@ -119,7 +119,7 @@ int main(void) {
 // LOWERING-NEXT:     let mut old_index: [i32; 3] = [0; 3];
 // LOWERING-NEXT:     let mut p: Point = Point { x: 0, y: 0 };
 // LOWERING-NEXT:     let mut five: i32 = 0;
-// LOWERING-NEXT:     let mut c: Castable = Castable { i: 0 };
+// LOWERING-NEXT:     let mut c: Castable = unsafe { std::mem::zeroed::<Castable>() };
 // LOWERING-NEXT:     let mut f: aligned::Aligned<aligned::A4, Forward> = aligned::Aligned(Forward::FORWARD_A);
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     __retval = {{_v[0-9]+}};
@@ -242,7 +242,7 @@ int main(void) {
 // REWRITES-NEXT: let mut old_index: [i32; 3] = [0; 3];
 // REWRITES-NEXT: let mut p: Point = Point { x: 0, y: 0 };
 // REWRITES-NEXT: let mut five: i32 = 0;
-// REWRITES-NEXT: let mut c: Castable = Castable { i: 0 };
+// REWRITES-NEXT: let mut c: Castable = unsafe { std::mem::zeroed::<Castable>() };
 // REWRITES-NEXT: let mut f: aligned::Aligned<aligned::A4, Forward> = aligned::Aligned(Forward::FORWARD_A);
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: *range_values = [0, 0, 9, 9, 9, 9, 0, 0, 0, 0];
