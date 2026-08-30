@@ -901,11 +901,13 @@ impl ClassifyCtx<'_> {
         match expr {
             Expr::Var(_) => {}
             Expr::Unary { expr, .. } => self.expr(expr),
-            Expr::Ref { expr, .. } | Expr::AddrOf { expr, .. } => {
+            Expr::Ref { mutable, expr } | Expr::AddrOf { mutable, expr } => {
                 if let Expr::Var(name) = &**expr
                     && let Some(canonical) = self.canonical_of(name.as_str())
                 {
                     self.observe(&canonical, PointerFact::observe_escape);
+                } else if *mutable {
+                    self.place(expr, true);
                 } else {
                     self.expr(expr);
                 }
