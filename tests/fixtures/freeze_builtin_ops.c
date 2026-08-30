@@ -23,45 +23,45 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const i8, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn freeze_probe(arg0: i32) -> i32 {
+// LOWERING-NEXT: fn freeze_probe({{arg[0-9]+}}: i32) -> i32 {
 // LOWERING-NEXT:     let mut seed: i32 = 0;
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut value: i32 = 0;
 // LOWERING-NEXT:     let mut frozen: i32 = 0;
-// LOWERING-NEXT:     seed = arg0;
-// LOWERING-NEXT:     let _v0: i32 = seed;
-// LOWERING-NEXT:     let _v1: i32 = 2;
-// LOWERING-NEXT:     let _v2: i32 = _v0 * _v1;
-// LOWERING-NEXT:     let _v3: i32 = 1;
-// LOWERING-NEXT:     let _v4: i32 = _v2 + _v3;
-// LOWERING-NEXT:     value = _v4;
-// LOWERING-NEXT:     let _v5: i32 = 0;
-// LOWERING-NEXT:     let _v6: i32 = _v5;
-// LOWERING-NEXT:     frozen = _v6;
-// LOWERING-NEXT:     let _v7: i32 = frozen;
-// LOWERING-NEXT:     let _v8: i32 = frozen;
-// LOWERING-NEXT:     let _v9: bool = _v7 == _v8;
-// LOWERING-NEXT:     let _v10: i32 = _v9 as i32;
-// LOWERING-NEXT:     __retval = _v10;
-// LOWERING-NEXT:     let _v11: i32 = __retval;
-// LOWERING-NEXT:     return _v11;
+// LOWERING-NEXT:     seed = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = seed;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} * {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     value = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}};
+// LOWERING-NEXT:     frozen = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = frozen;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = frozen;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut input: i32 = 0;
-// LOWERING-NEXT:     let _v0: i32 = 0;
-// LOWERING-NEXT:     __retval = _v0;
-// LOWERING-NEXT:     let _v1: i32 = 20;
-// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(input), _v1) };
-// LOWERING-NEXT:     let _v2: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v3: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(input)) };
-// LOWERING-NEXT:     let _v4: i32 = freeze_probe(_v3);
-// LOWERING-NEXT:     let _v5: i32 = unsafe { printf(_v2 as *const i8, _v4) };
-// LOWERING-NEXT:     let _v6: i32 = 0;
-// LOWERING-NEXT:     __retval = _v6;
-// LOWERING-NEXT:     let _v7: i32 = __retval;
-// LOWERING-NEXT:     std::process::exit(_v7 as i32);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 20;
+// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(input), {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(input)) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = freeze_probe({{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -73,14 +73,14 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn freeze_probe(arg0: i32) -> i32 {
-// REWRITES-NEXT: let mut seed: i32 = arg0;
+// REWRITES-NEXT: fn freeze_probe({{arg[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT: let mut seed: i32 = {{arg[0-9]+}};
 // REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut value: i32 = 0;
 // REWRITES-NEXT: let mut frozen: i32 = 0;
-// REWRITES-NEXT: let _v1: i32 = 2;
-// REWRITES-NEXT: let _v3: i32 = 1;
-// REWRITES-NEXT: value = seed * _v1 + _v3;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 2;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT: value = seed * {{_v[0-9]+}} + {{_v[0-9]+}};
 // REWRITES-NEXT: frozen = 0;
 // REWRITES-NEXT: __retval = (frozen == frozen) as i32;
 // REWRITES-NEXT: return __retval;
@@ -90,12 +90,12 @@ int main(void) {
 // REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut input: i32 = 0;
 // REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: let _v1: i32 = 20;
-// REWRITES-NEXT: unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(input), _v1) };
-// REWRITES-NEXT: let _v2: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v3: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(input)) };
-// REWRITES-NEXT: let _v4: i32 = freeze_probe(_v3);
-// REWRITES-NEXT: let _v5: i32 = unsafe { printf(_v2 as *const i8, _v4) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 20;
+// REWRITES-NEXT: unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(input), {{_v[0-9]+}}) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(input)) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = freeze_probe({{_v[0-9]+}});
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: std::process::exit(__retval as i32);
 // REWRITES-NEXT: }

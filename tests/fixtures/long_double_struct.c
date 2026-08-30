@@ -93,48 +93,48 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const i8, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn sum_box(arg0: *mut r#box) -> i32 {
-// LOWERING-NEXT:     let _v0: r#box = unsafe { *arg0 };
+// LOWERING-NEXT: fn sum_box({{arg[0-9]+}}: *mut r#box) -> i32 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: r#box = unsafe { *{{arg[0-9]+}} };
 // LOWERING-NEXT:     let mut b: r#box = r#box { tag: 0, value: LongDouble([0; 10]) };
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     b = _v0;
-// LOWERING-NEXT:     let _v1: LongDouble = b.value;
-// LOWERING-NEXT:     let _v2: i32 = b.tag;
-// LOWERING-NEXT:     let _v3: LongDouble = __slate_f80_from_i32(_v2);
-// LOWERING-NEXT:     let _v4: LongDouble = _v1 + _v3;
-// LOWERING-NEXT:     let _v5: i32 = __slate_f80_to_i32(_v4);
-// LOWERING-NEXT:     __retval = _v5;
-// LOWERING-NEXT:     let _v6: i32 = __retval;
-// LOWERING-NEXT:     return _v6;
+// LOWERING-NEXT:     b = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = b.value;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = b.tag;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i32({{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __slate_f80_to_i32({{_v[0-9]+}});
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut b: r#box = r#box { tag: 0, value: LongDouble([0; 10]) };
-// LOWERING-NEXT:     let _v0: i32 = 0;
-// LOWERING-NEXT:     __retval = _v0;
-// LOWERING-NEXT:     let _v1: i32 = 3;
-// LOWERING-NEXT:     b.tag = _v1;
-// LOWERING-NEXT:     let _v2: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 1, 64]);
-// LOWERING-NEXT:     b.value = _v2;
-// LOWERING-NEXT:     let _v3: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v4: r#box = b;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
+// LOWERING-NEXT:     b.tag = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 1, 64]);
+// LOWERING-NEXT:     b.value = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: r#box = b;
 // LOWERING-NEXT:     let mut byval: r#box = r#box { tag: 0, value: LongDouble([0; 10]) };
-// LOWERING-NEXT:     byval = _v4;
-// LOWERING-NEXT:     let _v5: i32 = sum_box(std::ptr::addr_of_mut!(byval));
-// LOWERING-NEXT:     let _v6: i32 = unsafe { printf(_v3 as *const i8, _v5) };
-// LOWERING-NEXT:     let _v7: LongDouble = b.value;
-// LOWERING-NEXT:     let _v8: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
-// LOWERING-NEXT:     let _v9: LongDouble = _v7 * _v8;
-// LOWERING-NEXT:     b.value = _v9;
-// LOWERING-NEXT:     let _v10: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v11: LongDouble = b.value;
-// LOWERING-NEXT:     let _v12: i32 = __slate_f80_to_i32(_v11);
-// LOWERING-NEXT:     let _v13: i32 = unsafe { printf(_v10 as *const i8, _v12) };
-// LOWERING-NEXT:     let _v14: i32 = 0;
-// LOWERING-NEXT:     __retval = _v14;
-// LOWERING-NEXT:     let _v15: i32 = __retval;
-// LOWERING-NEXT:     std::process::exit(_v15 as i32);
+// LOWERING-NEXT:     byval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = sum_box(std::ptr::addr_of_mut!(byval));
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = b.value;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} * {{_v[0-9]+}};
+// LOWERING-NEXT:     b.value = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = b.value;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __slate_f80_to_i32({{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
@@ -270,14 +270,14 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn sum_box(arg0: &r#box) -> i32 {
-// REWRITES-NEXT: let _v0: r#box = unsafe { *(arg0 as *const r#box) };
-// REWRITES-NEXT: let mut b: r#box = _v0;
+// REWRITES-NEXT: fn sum_box({{arg[0-9]+}}: &r#box) -> i32 {
+// REWRITES-NEXT: let {{_v[0-9]+}}: r#box = unsafe { *({{arg[0-9]+}} as *const r#box) };
+// REWRITES-NEXT: let mut b: r#box = {{_v[0-9]+}};
 // REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let _v1: LongDouble = b.value;
-// REWRITES-NEXT: let _v2: i32 = b.tag;
-// REWRITES-NEXT: let _v3: LongDouble = __slate_f80_from_i32(_v2);
-// REWRITES-NEXT: __retval = __slate_f80_to_i32(_v1 + _v3);
+// REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = b.value;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = b.tag;
+// REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i32({{_v[0-9]+}});
+// REWRITES-NEXT: __retval = __slate_f80_to_i32({{_v[0-9]+}} + {{_v[0-9]+}});
 // REWRITES-NEXT: return __retval;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -287,16 +287,16 @@ int main(void) {
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: b.tag = 3;
 // REWRITES-NEXT: b.value = LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 1, 64]);
-// REWRITES-NEXT: let _v3: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v4: r#box = b;
-// REWRITES-NEXT: let mut byval: r#box = _v4;
-// REWRITES-NEXT: let _v5: i32 = sum_box(unsafe { &(*std::ptr::addr_of_mut!(byval)) });
-// REWRITES-NEXT: let _v6: i32 = unsafe { printf(_v3 as *const i8, _v5) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: r#box = b;
+// REWRITES-NEXT: let mut byval: r#box = {{_v[0-9]+}};
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = sum_box(unsafe { &(*std::ptr::addr_of_mut!(byval)) });
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // REWRITES-NEXT: b.value = b.value * LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
-// REWRITES-NEXT: let _v10: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v11: LongDouble = b.value;
-// REWRITES-NEXT: let _v12: i32 = __slate_f80_to_i32(_v11);
-// REWRITES-NEXT: let _v13: i32 = unsafe { printf(_v10 as *const i8, _v12) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = b.value;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = __slate_f80_to_i32({{_v[0-9]+}});
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: std::process::exit(__retval as i32);
 // REWRITES-NEXT: }

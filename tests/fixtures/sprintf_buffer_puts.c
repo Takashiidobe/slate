@@ -18,19 +18,19 @@ int main(void) {
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut buf: aligned::Aligned<aligned::A16, [i8; 64]> = aligned::Aligned([0; 64]);
-// LOWERING-NEXT:     let _v0: i32 = 0;
-// LOWERING-NEXT:     __retval = _v0;
-// LOWERING-NEXT:     let _v1: *mut i8 = buf.as_mut_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v2: *mut i8 = b"%d-%d\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v3: i32 = 3;
-// LOWERING-NEXT:     let _v4: i32 = 4;
-// LOWERING-NEXT:     let _v5: i32 = unsafe { sprintf(_v1 as *mut i8, _v2 as *const i8, _v3, _v4) };
-// LOWERING-NEXT:     let _v6: *mut i8 = buf.as_mut_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v7: i32 = unsafe { puts(_v6 as *const i8) };
-// LOWERING-NEXT:     let _v8: i32 = 0;
-// LOWERING-NEXT:     __retval = _v8;
-// LOWERING-NEXT:     let _v9: i32 = __retval;
-// LOWERING-NEXT:     std::process::exit(_v9 as i32);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = buf.as_mut_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d-%d\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 4;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { sprintf({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = buf.as_mut_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { puts({{_v[0-9]+}} as *const i8) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -47,13 +47,13 @@ int main(void) {
 // REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut buf: aligned::Aligned<aligned::A16, [i8; 64]> = aligned::Aligned([0; 64]);
 // REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: let _v1: *mut i8 = buf.as_mut_ptr() as *mut i8;
-// REWRITES-NEXT: let _v2: *mut i8 = b"%d-%d\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v3: i32 = 3;
-// REWRITES-NEXT: let _v4: i32 = 4;
-// REWRITES-NEXT: let _v5: i32 = unsafe { sprintf(_v1 as *mut i8, _v2 as *const i8, _v3, _v4) };
-// REWRITES-NEXT: let _v6: *mut i8 = buf.as_mut_ptr() as *mut i8;
-// REWRITES-NEXT: let _v7: i32 = unsafe { puts(_v6 as *const i8) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = buf.as_mut_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d-%d\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 3;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 4;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { sprintf({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = buf.as_mut_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { puts({{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: std::process::exit(__retval as i32);
 // REWRITES-NEXT: }

@@ -24,35 +24,35 @@ int main(void) {
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut f: *mut libc::FILE = std::ptr::null_mut();
-// LOWERING-NEXT:     let _v0: i32 = 0;
-// LOWERING-NEXT:     __retval = _v0;
-// LOWERING-NEXT:     let _v1: *mut i8 = b"slate_fprintf_non_standard.tmp\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v2: *mut i8 = b"w\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v3: *mut libc::FILE = unsafe { fopen(_v1 as *const i8, _v2 as *const i8) };
-// LOWERING-NEXT:     f = _v3;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"slate_fprintf_non_standard.tmp\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"w\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut libc::FILE = unsafe { fopen({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as *const i8) };
+// LOWERING-NEXT:     f = {{_v[0-9]+}};
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let _v4: *mut libc::FILE = f;
-// LOWERING-NEXT:         let _v5: *mut libc::FILE = std::ptr::null_mut();
-// LOWERING-NEXT:         let _v6: bool = _v4 == _v5;
-// LOWERING-NEXT:         if _v6 {
-// LOWERING-NEXT:             let _v7: i32 = 1;
-// LOWERING-NEXT:             __retval = _v7;
-// LOWERING-NEXT:             let _v8: i32 = __retval;
-// LOWERING-NEXT:             std::process::exit(_v8 as i32);
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut libc::FILE = f;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: *mut libc::FILE = std::ptr::null_mut();
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-NEXT:         if {{_v[0-9]+}} {
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:             __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:             std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let _v9: *mut libc::FILE = f;
-// LOWERING-NEXT:     let _v10: *mut i8 = b"value: %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v11: i32 = 7;
-// LOWERING-NEXT:     let _v12: i32 = unsafe { fprintf(_v9 as *mut libc::FILE, _v10 as *const i8, _v11) };
-// LOWERING-NEXT:     let _v13: *mut libc::FILE = f;
-// LOWERING-NEXT:     let _v14: i32 = unsafe { fclose(_v13 as *mut libc::FILE) };
-// LOWERING-NEXT:     let _v15: *mut i8 = b"slate_fprintf_non_standard.tmp\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v16: i32 = unsafe { remove(_v15 as *const i8) };
-// LOWERING-NEXT:     let _v17: i32 = 0;
-// LOWERING-NEXT:     __retval = _v17;
-// LOWERING-NEXT:     let _v18: i32 = __retval;
-// LOWERING-NEXT:     std::process::exit(_v18 as i32);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut libc::FILE = f;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"value: %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { fprintf({{_v[0-9]+}} as *mut libc::FILE, {{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut libc::FILE = f;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { fclose({{_v[0-9]+}} as *mut libc::FILE) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"slate_fprintf_non_standard.tmp\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { remove({{_v[0-9]+}} as *const i8) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -71,24 +71,24 @@ int main(void) {
 // REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut f: *mut libc::FILE = std::ptr::null_mut();
 // REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: let _v1: *mut i8 = b"slate_fprintf_non_standard.tmp\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v2: *mut i8 = b"w\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: f = unsafe { fopen(_v1 as *const i8, _v2 as *const i8) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"slate_fprintf_non_standard.tmp\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"w\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: f = unsafe { fopen({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT: {
-// REWRITES-NEXT:         let _v5: *mut libc::FILE = std::ptr::null_mut();
-// REWRITES-NEXT:         let _v6: bool = f == _v5;
-// REWRITES-NEXT:         if _v6 {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut libc::FILE = std::ptr::null_mut();
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = f == {{_v[0-9]+}};
+// REWRITES-NEXT:         if {{_v[0-9]+}} {
 // REWRITES-NEXT:                     __retval = 1;
 // REWRITES-NEXT:                     std::process::exit(__retval as i32);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
-// REWRITES-NEXT: let _v9: *mut libc::FILE = f;
-// REWRITES-NEXT: let _v10: *mut i8 = b"value: %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v11: i32 = 7;
-// REWRITES-NEXT: let _v12: i32 = unsafe { fprintf(_v9 as *mut libc::FILE, _v10 as *const i8, _v11) };
-// REWRITES-NEXT: let _v14: i32 = unsafe { fclose(f as *mut libc::FILE) };
-// REWRITES-NEXT: let _v15: *mut i8 = b"slate_fprintf_non_standard.tmp\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v16: i32 = unsafe { remove(_v15 as *const i8) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut libc::FILE = f;
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"value: %d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 7;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { fprintf({{_v[0-9]+}} as *mut libc::FILE, {{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { fclose(f as *mut libc::FILE) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"slate_fprintf_non_standard.tmp\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { remove({{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: std::process::exit(__retval as i32);
 // REWRITES-NEXT: }

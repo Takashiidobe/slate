@@ -32,6 +32,81 @@ int main(void) {
              ? 0
              : 1;
 }
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-EMPTY:
+// REWRITES-NEXT: /// selects an operating mode
+// REWRITES-NEXT: #[repr(C)]
+// REWRITES-NEXT: #[allow(non_camel_case_types)]
+// REWRITES-NEXT: #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
+// REWRITES-NEXT: enum Mode {
+// REWRITES-NEXT:     /// disable processing
+// REWRITES-NEXT:     MODE_OFF = 0,
+// REWRITES-NEXT:     /// enable processing
+// REWRITES-NEXT:     MODE_ON = 1,
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-EMPTY:
+// REWRITES-NEXT: /// stores a selected mode
+// REWRITES-NEXT: /// names holder records
+// REWRITES-NEXT: #[repr(C)]
+// REWRITES-NEXT: #[derive(Clone, Copy)]
+// REWRITES-NEXT: struct Holder {
+// REWRITES-NEXT:     /// current mode value
+// REWRITES-NEXT:     mode: Mode,
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-EMPTY:
+// REWRITES-NEXT: /// counts completed operations
+// REWRITES-NEXT: static mut completed_count: i32 = 1;
+// REWRITES-EMPTY:
+// REWRITES-NEXT: /// increments a value and records the operation
+// REWRITES-NEXT: /// stores the intermediate result
+// REWRITES-NEXT: fn increment({{arg[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT: let mut value: i32 = {{arg[0-9]+}};
+// REWRITES-NEXT: let mut __retval: i32 = 0;
+// REWRITES-NEXT: let mut next: i32 = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT: unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(next), value + {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:         completed_count = (unsafe { completed_count }) + 1;
+// REWRITES-NEXT: }
+// REWRITES-NEXT: __retval = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(next)) };
+// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: let mut __retval: i32 = 0;
+// REWRITES-NEXT: let mut holder: Holder = Holder { mode: Mode::MODE_OFF };
+// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: holder = Holder { mode: Mode::MODE_ON };
+// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = 1;
+// REWRITES-NEXT: let {{_v[0-9]+}}: bool = (holder.mode as u32) == {{_v[0-9]+}};
+// REWRITES-NEXT: let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = increment({{_v[0-9]+}});
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 2;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}}
+// REWRITES-NEXT: } else {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
+// REWRITES-NEXT:     {{_v[0-9]+}}
+// REWRITES-NEXT: };
+// REWRITES-NEXT: let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 2;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = (unsafe { completed_count }) == {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}}
+// REWRITES-NEXT: } else {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
+// REWRITES-NEXT:     {{_v[0-9]+}}
+// REWRITES-NEXT: };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT: __retval = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: }
+// SLATE-FILECHECK-END rewrites
+
 // LOWERING-DAG: /// selects an operating mode
 // LOWERING-DAG: /// disable processing
 // LOWERING-DAG: /// enable processing

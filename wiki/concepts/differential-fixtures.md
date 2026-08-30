@@ -65,11 +65,18 @@ selection because conditional-compilation reconstruction is its own producer.
 
 ## Region-scoped generation with `@begin`/`@end` directives
 
-Prefer scaffolding the FileCheck blocks with `tools/update_filecheck.py` over
-hand-writing them. Wrap the C statements whose generated Rust you want to assert
-in comment directives, then let the tool emit the `SLATE-FILECHECK-BEGIN/END`
-blocks. See `tests/fixtures/global_bool.c` and the `buffer_const_bound*`
-fixtures for the pattern:
+**Every new fixture must carry both a `@lowering` and a `@rewrite` region** so
+the checked-in fixture asserts the generated Rust under both profiles, not just
+runtime stdout/exit parity. A fixture may — and often should — carry several
+disjoint region pairs: wrap each "interesting" statement (the ones whose
+generated form proves the change) in its own pair rather than settling for a
+single region. See "Multiple, disjoint regions" below; to assert a function
+signature, use the file-scope `@lowering-fn-begin`/`@rewrite-fn-begin` markers
+described later in this section. Scaffold the FileCheck blocks with
+`tools/update_filecheck.py` rather than hand-writing them. Wrap the C statements
+whose generated Rust you want to assert in comment directives, then let the tool
+emit the `SLATE-FILECHECK-BEGIN/END` blocks. See `tests/fixtures/global_bool.c`
+and the `buffer_const_bound*` fixtures for the pattern:
 
 ```c
 // @lowering-begin
@@ -88,14 +95,34 @@ must nest, not cross. Generate or refresh in place with:
 python3 tools/update_filecheck.py --in-place tests/fixtures/<name>.c
 ```
 
-Markers only work **inside a function body**. The tool injects `__asm__` sentinels
-around each region, and an asm statement outside a function fails to compile
-(`meaningless 'volatile' on asm outside function`), so you cannot wrap a function
-signature or a top-level definition. To assert something about a signature, wrap a
-statement in the body that reflects it instead: e.g. to prove a pointer param
-became `&mut T`, wrap a field store — the generated store reads `(*arg0).f = x`
-when the param is `&mut T` versus `(*(arg0 as *const T as *mut T)).f = x` when it
-is wrongly `&T`, so the store text alone captures the difference.
+The plain `@lowering-begin`/`@rewrite-begin` markers work **inside a function
+body** only. The tool injects `__asm__` sentinels around each region, and an asm
+statement outside a function fails to compile (`meaningless 'volatile' on asm
+outside function`), so those markers cannot wrap a function signature or a
+top-level definition.
+
+To assert a whole function **including its signature**, use the function-level
+markers `@lowering-fn-begin`/`@lowering-fn-end` (and the `@rewrite-fn-*` pair) at
+**file scope**, wrapping the entire definition:
+
+```c
+// @lowering-fn-begin
+// @rewrite-fn-begin
+int sum3(int a, int b, int c) {
+  return a + b + c;
+}
+// @rewrite-fn-end
+// @lowering-fn-end
+```
+
+The tool instruments these by emitting sentinel *marker functions* around the
+target (globals and unreferenced structs get DCE'd and cannot serve as
+sentinels; functions survive and preserve source order), then captures the whole
+function — signature line and body — as one region. Generated parameter indices
+(`arg0`, `arg1`, …) come from a global counter that shifts under instrumentation,
+so they are always genericized to `{{arg[0-9]+}}` in check output. See
+`tests/fixtures/fn_signature_filecheck.c`. Body-only assertions still prefer the
+plain in-body markers.
 
 Multiple, disjoint regions in one fixture are fine — each `@lowering`/`@rewrite`
 pair contributes to the single `SLATE-FILECHECK-BEGIN/END` block the tool emits,

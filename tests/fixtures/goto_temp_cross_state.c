@@ -41,3 +41,212 @@ int main(void) {
     printf("%d %d\n", compute(&s, 0), compute(&s, 1));
     return 0;
 }
+// SLATE-FILECHECK-BEGIN lowering
+// LOWERING: #![feature(c_variadic)]
+// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-EMPTY:
+// LOWERING-NEXT: #[repr(C)]
+// LOWERING-NEXT: #[derive(Clone, Copy)]
+// LOWERING-NEXT: struct inner_t {
+// LOWERING-NEXT:     pad: i32,
+// LOWERING-NEXT:     x: i32,
+// LOWERING-NEXT:     y: i32,
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-EMPTY:
+// LOWERING-NEXT: #[repr(C)]
+// LOWERING-NEXT: #[derive(Clone, Copy)]
+// LOWERING-NEXT: struct outer_t {
+// LOWERING-NEXT:     lead: i32,
+// LOWERING-NEXT:     r#in: inner_t,
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-EMPTY:
+// LOWERING-NEXT: #[repr(C)]
+// LOWERING-NEXT: #[derive(Clone, Copy)]
+// LOWERING-NEXT: struct state_t {
+// LOWERING-NEXT:     dict: *mut outer_t,
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-EMPTY:
+// LOWERING-NEXT: unsafe extern "C" {
+// LOWERING-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn compute({{arg[0-9]+}}: *mut state_t, {{arg[0-9]+}}: i32) -> i32 {
+// LOWERING-NEXT:     let mut ms: *mut state_t = std::ptr::null_mut();
+// LOWERING-NEXT:     let mut flag: i32 = 0;
+// LOWERING-NEXT:     let mut __retval: i32 = 0;
+// LOWERING-NEXT:     let mut o: *mut outer_t = std::ptr::null_mut();
+// LOWERING-NEXT:     let mut q: *mut inner_t = std::ptr::null_mut();
+// LOWERING-NEXT:     let mut acc: i32 = 0;
+// LOWERING-NEXT: let mut {{_v[0-9]+}}: *mut outer_t = std::ptr::null_mut();
+// LOWERING-NEXT:     let mut {{__state[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     '{{__dispatch[0-9]+}}: loop {
+// LOWERING-NEXT:         match {{__state[0-9]+}} {
+// LOWERING-NEXT:             0 => {
+// LOWERING-NEXT:                 ms = {{arg[0-9]+}};
+// LOWERING-NEXT:                 flag = {{arg[0-9]+}};
+// LOWERING-NEXT:                 {{_v[0-9]+}} = unsafe { (*{{arg[0-9]+}}).dict };
+// LOWERING-NEXT:                 o = {{_v[0-9]+}};
+// LOWERING-NEXT:                 q = unsafe { std::ptr::addr_of_mut!((*{{_v[0-9]+}}).r#in) };
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).r#in.x };
+// LOWERING-NEXT:                 acc = {{_v[0-9]+}};
+// LOWERING-NEXT:                 {
+// LOWERING-NEXT:                     let {{_v[0-9]+}}: i32 = flag;
+// LOWERING-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-NEXT:                         {{__state[0-9]+}} = 1;
+// LOWERING-NEXT:                         continue '{{__dispatch[0-9]+}};
+// LOWERING-NEXT:                     }
+// LOWERING-NEXT:                 }
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = 100;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = acc;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:                 acc = {{_v[0-9]+}};
+// LOWERING-NEXT:                 {{__state[0-9]+}} = 1;
+// LOWERING-NEXT:                 continue '{{__dispatch[0-9]+}};
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:             1 => {
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).r#in.y };
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = acc;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:                 acc = {{_v[0-9]+}};
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = acc;
+// LOWERING-NEXT:                 __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:                 return {{_v[0-9]+}};
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:             _ => {
+// LOWERING-NEXT:                 unreachable!();
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:         }
+// LOWERING-NEXT:     }
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let mut __retval: i32 = 0;
+// LOWERING-NEXT:     let mut inr: inner_t = inner_t { pad: 0, x: 0, y: 0 };
+// LOWERING-NEXT:     let mut ou: outer_t = outer_t { lead: 0, r#in: inner_t { pad: 0, x: 0, y: 0 } };
+// LOWERING-NEXT:     let mut s: state_t = state_t { dict: std::ptr::null_mut() };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     inr.pad = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
+// LOWERING-NEXT:     inr.x = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 4;
+// LOWERING-NEXT:     inr.y = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     ou.lead = {{_v[0-9]+}};
+// LOWERING-NEXT:     ou.r#in = inr;
+// LOWERING-NEXT:     s.dict = std::ptr::addr_of_mut!(ou);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = compute(std::ptr::addr_of_mut!(s), {{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = compute(std::ptr::addr_of_mut!(s), {{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// SLATE-FILECHECK-END lowering
+
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES: #![feature(c_variadic)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[repr(C)]
+// REWRITES-NEXT: #[derive(Clone, Copy)]
+// REWRITES-NEXT: struct inner_t {
+// REWRITES-NEXT:     pad: i32,
+// REWRITES-NEXT:     x: i32,
+// REWRITES-NEXT:     y: i32,
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[repr(C)]
+// REWRITES-NEXT: #[derive(Clone, Copy)]
+// REWRITES-NEXT: struct outer_t {
+// REWRITES-NEXT:     lead: i32,
+// REWRITES-NEXT:     r#in: inner_t,
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[repr(C)]
+// REWRITES-NEXT: #[derive(Clone, Copy)]
+// REWRITES-NEXT: struct state_t {
+// REWRITES-NEXT:     dict: *mut outer_t,
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn compute({{arg[0-9]+}}: &state_t, {{arg[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT: let mut ms: *mut state_t = std::ptr::null_mut();
+// REWRITES-NEXT: let mut flag: i32 = 0;
+// REWRITES-NEXT: let mut __retval: i32 = 0;
+// REWRITES-NEXT: let mut o: *mut outer_t = std::ptr::null_mut();
+// REWRITES-NEXT: let mut q: *mut inner_t = std::ptr::null_mut();
+// REWRITES-NEXT: let mut acc: i32 = 0;
+// REWRITES-NEXT: let mut {{_v[0-9]+}}: *mut outer_t = std::ptr::null_mut();
+// REWRITES-NEXT: let mut {{__state[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: '{{__dispatch[0-9]+}}: loop {
+// REWRITES-NEXT:         match {{__state[0-9]+}} {
+// REWRITES-NEXT:             0 => {
+// REWRITES-NEXT:                         ms = ({{arg[0-9]+}} as *const state_t) as *mut state_t;
+// REWRITES-NEXT:                         flag = {{arg[0-9]+}};
+// REWRITES-NEXT:                         {{_v[0-9]+}} = unsafe { (*({{arg[0-9]+}} as *const state_t)).dict };
+// REWRITES-NEXT:                         o = {{_v[0-9]+}};
+// REWRITES-NEXT:                         q = unsafe { std::ptr::addr_of_mut!((*{{_v[0-9]+}}).r#in) };
+// REWRITES-NEXT:                         acc = unsafe { (*{{_v[0-9]+}}).r#in.x };
+// REWRITES-NEXT:                         {
+// REWRITES-NEXT:                                         let {{_v[0-9]+}}: bool = flag != 0;
+// REWRITES-NEXT:                                         if {{_v[0-9]+}} {
+// REWRITES-NEXT:                                                             {{__state[0-9]+}} = 1;
+// REWRITES-NEXT:                                                             continue '{{__dispatch[0-9]+}};
+// REWRITES-NEXT:                                         }
+// REWRITES-NEXT:                         }
+// REWRITES-NEXT:                         let {{_v[0-9]+}}: i32 = 100;
+// REWRITES-NEXT:                         acc = acc + {{_v[0-9]+}};
+// REWRITES-NEXT:                         {{__state[0-9]+}} = 1;
+// REWRITES-NEXT:                         continue '{{__dispatch[0-9]+}};
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             1 => {
+// REWRITES-NEXT:                         acc = acc + unsafe { (*{{_v[0-9]+}}).r#in.y };
+// REWRITES-NEXT:                         __retval = acc;
+// REWRITES-NEXT:                         return __retval;
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             _ => {
+// REWRITES-NEXT:                         unreachable!();
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:         }
+// REWRITES-NEXT: }
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: let mut __retval: i32 = 0;
+// REWRITES-NEXT: let mut inr: inner_t = inner_t { pad: 0, x: 0, y: 0 };
+// REWRITES-NEXT: let mut ou: outer_t = outer_t { lead: 0, r#in: inner_t { pad: 0, x: 0, y: 0 } };
+// REWRITES-NEXT: let mut s: state_t = state_t { dict: std::ptr::null_mut() };
+// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: inr.pad = 0;
+// REWRITES-NEXT: inr.x = 3;
+// REWRITES-NEXT: inr.y = 4;
+// REWRITES-NEXT: ou.lead = 0;
+// REWRITES-NEXT: ou.r#in = inr;
+// REWRITES-NEXT: s.dict = std::ptr::addr_of_mut!(ou);
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = compute(unsafe { &(*std::ptr::addr_of_mut!(s)) }, {{_v[0-9]+}});
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = compute(unsafe { &(*std::ptr::addr_of_mut!(s)) }, {{_v[0-9]+}});
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: }
+// SLATE-FILECHECK-END rewrites

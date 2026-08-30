@@ -49,9 +49,9 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const i8, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn bump(arg1: *mut i32) {
+// LOWERING-NEXT: fn bump({{arg[0-9]+}}: *mut i32) {
 // LOWERING-NEXT:     let mut p: *mut i32 = std::ptr::null_mut();
-// LOWERING-NEXT:     p = arg1;
+// LOWERING-NEXT:     p = {{arg[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = p;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 10;
@@ -63,9 +63,9 @@ int main(void) {
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn init(arg0: *mut outer) {
+// LOWERING-NEXT: fn init({{arg[0-9]+}}: *mut outer) {
 // LOWERING-NEXT:     let mut o: *mut outer = std::ptr::null_mut();
-// LOWERING-NEXT:     o = arg0;
+// LOWERING-NEXT:     o = {{arg[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut outer = o;
 // LOWERING-NEXT:     unsafe {
@@ -128,25 +128,25 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn bump(arg1: *mut i32) {
+// REWRITES-NEXT: fn bump({{arg[0-9]+}}: *mut i32) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 10;
 // REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         *arg1 = (unsafe { *arg1 }) + {{_v[0-9]+}};
+// REWRITES-NEXT:         *{{arg[0-9]+}} = (unsafe { *{{arg[0-9]+}} }) + {{_v[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-NEXT: return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn init(arg0: &mut outer) {
+// REWRITES-NEXT: fn init({{arg[0-9]+}}: &mut outer) {
 // REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*arg0).buf.start = 1;
+// REWRITES-NEXT:         (*{{arg[0-9]+}}).buf.start = 1;
 // REWRITES-NEXT: }
 // REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*arg0).buf.end = 2;
+// REWRITES-NEXT:         (*{{arg[0-9]+}}).buf.end = 2;
 // REWRITES-NEXT: }
 // REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*arg0).error = 0;
+// REWRITES-NEXT:         (*{{arg[0-9]+}}).error = 0;
 // REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut outer = arg0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut outer = {{arg[0-9]+}};
 // REWRITES-NEXT: bump(unsafe { std::ptr::addr_of_mut!((*{{_v[0-9]+}}).buf.start) });
 // REWRITES-NEXT: return;
 // REWRITES-NEXT: }

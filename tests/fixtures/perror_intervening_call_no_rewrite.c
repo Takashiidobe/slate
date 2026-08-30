@@ -22,30 +22,30 @@ int main(void) {
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut rc: i32 = 0;
-// LOWERING-NEXT:     let _v0: i32 = 0;
-// LOWERING-NEXT:     __retval = _v0;
-// LOWERING-NEXT:     let _v1: *mut i8 = b"slate_perror_intervening_missing.tmp\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v2: i32 = unsafe { remove(_v1 as *const i8) };
-// LOWERING-NEXT:     rc = _v2;
-// LOWERING-NEXT:     let _v3: *mut libc::FILE = unsafe { stdout };
-// LOWERING-NEXT:     let _v4: i32 = unsafe { fflush(_v3 as *mut libc::FILE) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"slate_perror_intervening_missing.tmp\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { remove({{_v[0-9]+}} as *const i8) };
+// LOWERING-NEXT:     rc = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stdout };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { fflush({{_v[0-9]+}} as *mut libc::FILE) };
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let _v5: i32 = rc;
-// LOWERING-NEXT:         let _v6: i32 = 0;
-// LOWERING-NEXT:         let _v7: bool = _v5 < _v6;
-// LOWERING-NEXT:         if _v7 {
-// LOWERING-NEXT:             let _v8: *mut i8 = b"remove failed\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             unsafe { perror(_v8 as *const i8) };
-// LOWERING-NEXT:             let _v9: i32 = 1;
-// LOWERING-NEXT:             __retval = _v9;
-// LOWERING-NEXT:             let _v10: i32 = __retval;
-// LOWERING-NEXT:             std::process::exit(_v10 as i32);
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = rc;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
+// LOWERING-NEXT:         if {{_v[0-9]+}} {
+// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"remove failed\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:             unsafe { perror({{_v[0-9]+}} as *const i8) };
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:             __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:             std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let _v11: i32 = 0;
-// LOWERING-NEXT:     __retval = _v11;
-// LOWERING-NEXT:     let _v12: i32 = __retval;
-// LOWERING-NEXT:     std::process::exit(_v12 as i32);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -63,15 +63,15 @@ int main(void) {
 // REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut rc: i32 = 0;
 // REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: let _v1: *mut i8 = b"slate_perror_intervening_missing.tmp\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: rc = unsafe { remove(_v1 as *const i8) };
-// REWRITES-NEXT: let _v4: i32 = unsafe { fflush((unsafe { stdout }) as *mut libc::FILE) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"slate_perror_intervening_missing.tmp\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: rc = unsafe { remove({{_v[0-9]+}} as *const i8) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { fflush((unsafe { stdout }) as *mut libc::FILE) };
 // REWRITES-NEXT: {
-// REWRITES-NEXT:         let _v6: i32 = 0;
-// REWRITES-NEXT:         let _v7: bool = rc < _v6;
-// REWRITES-NEXT:         if _v7 {
-// REWRITES-NEXT:                     let _v8: *mut i8 = b"remove failed\0".as_ptr() as *mut i8;
-// REWRITES-NEXT:                     unsafe { perror(_v8 as *const i8) };
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = rc < {{_v[0-9]+}};
+// REWRITES-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-NEXT:                     let {{_v[0-9]+}}: *mut i8 = b"remove failed\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:                     unsafe { perror({{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT:                     __retval = 1;
 // REWRITES-NEXT:                     std::process::exit(__retval as i32);
 // REWRITES-NEXT:         }

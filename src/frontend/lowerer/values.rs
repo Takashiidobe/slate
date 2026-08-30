@@ -385,6 +385,20 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         )
     }
 
+    pub(super) fn whole_aggregate_pointer_expr(&self, operand: &str, ty: &CirType) -> Option<Expr> {
+        let is_array_slot = self
+            .slot_types
+            .get(operand)
+            .is_some_and(|slot_ty| matches!(slot_ty, Type::Array { .. }));
+        let points_to_whole_aggregate = ty
+            .pointee()
+            .is_some_and(|inner| inner.as_array().is_some() || inner.as_vector().is_some());
+        (is_array_slot && points_to_whole_aggregate).then(|| Expr::AddrOf {
+            mutable: true,
+            expr: Box::new(self.slot_place(operand).expect("checked slot_types above")),
+        })
+    }
+
     pub(super) fn call_arg_expr(&self, operand: &str, ty: &CirType) -> Expr {
         if is_boxed_va_args_type(&self.parent.rust_type(ty))
             && let Some(place) = self.va_target_place(operand)
@@ -397,24 +411,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         } else if is_cir_function_pointer_type(ty) {
             self.function_pointer_operand_expr(operand)
         } else if matches!(ty, CirType::Pointer { .. }) {
-            // A pointer-to-whole-aggregate parameter (e.g. `V*` for a GNU vector
-            // typedef, or `int (*)[N]`) must not decay to an element pointer the
-            // way a bare array-to-pointer argument would.
-            let points_to_whole_aggregate = self
-                .slot_types
-                .get(operand)
-                .is_some_and(|slot_ty| matches!(slot_ty, Type::Array { .. }))
-                && ty
-                    .pointee()
-                    .is_some_and(|inner| inner.as_array().is_some() || inner.as_vector().is_some());
-            let expr = if points_to_whole_aggregate {
-                Expr::AddrOf {
-                    mutable: true,
-                    expr: Box::new(self.slot_place(operand).expect("checked slot_types above")),
-                }
-            } else {
-                self.pointer_operand_expr(operand)
-            };
+            let expr = self
+                .whole_aggregate_pointer_expr(operand, ty)
+                .unwrap_or_else(|| self.pointer_operand_expr(operand));
             if self
                 .slot_types
                 .get(operand)

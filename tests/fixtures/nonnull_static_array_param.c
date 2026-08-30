@@ -21,59 +21,59 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const i8, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: unsafe fn sum4(arg0: *mut i32) -> i32 {
+// LOWERING-NEXT: unsafe fn sum4({{arg[0-9]+}}: *mut i32) -> i32 {
 // LOWERING-NEXT:     let mut arr: *mut i32 = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut s: i32 = 0;
-// LOWERING-NEXT:     arr = arg0;
-// LOWERING-NEXT:     let _v0: i32 = 0;
-// LOWERING-NEXT:     s = _v0;
+// LOWERING-NEXT:     arr = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     s = {{_v[0-9]+}};
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         let mut i: i32 = 0;
-// LOWERING-NEXT:         let _v1: i32 = 0;
-// LOWERING-NEXT:         i = _v1;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:         i = {{_v[0-9]+}};
 // LOWERING-NEXT:         loop {
-// LOWERING-NEXT:             let _v2: i32 = i;
-// LOWERING-NEXT:             let _v3: i32 = 4;
-// LOWERING-NEXT:             let _v4: bool = _v2 < _v3;
-// LOWERING-NEXT:             if !_v4 {
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 4;
+// LOWERING-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
+// LOWERING-NEXT:             if !{{_v[0-9]+}} {
 // LOWERING-NEXT:                 break;
 // LOWERING-NEXT:             }
 // LOWERING-NEXT:             {
-// LOWERING-NEXT:                 let _v5: i32 = i;
-// LOWERING-NEXT:                 let _v6: i64 = _v5 as i64;
-// LOWERING-NEXT:                 let _v7: *mut i32 = arr;
-// LOWERING-NEXT:                 let _v8: *mut i32 = unsafe { _v7.offset(_v6 as isize) };
-// LOWERING-NEXT:                 let _v9: i32 = unsafe { *_v8 };
-// LOWERING-NEXT:                 let _v10: i32 = s;
-// LOWERING-NEXT:                 let _v11: i32 = _v10 + _v9;
-// LOWERING-NEXT:                 s = _v11;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut i32 = arr;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset({{_v[0-9]+}} as isize) };
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = s;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:                 s = {{_v[0-9]+}};
 // LOWERING-NEXT:             }
-// LOWERING-NEXT:             let _v12: i32 = i;
-// LOWERING-NEXT:             let _v13: i32 = _v12 + 1;
-// LOWERING-NEXT:             i = _v13;
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = i;
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-NEXT:             i = {{_v[0-9]+}};
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let _v14: i32 = s;
-// LOWERING-NEXT:     __retval = _v14;
-// LOWERING-NEXT:     let _v15: i32 = __retval;
-// LOWERING-NEXT:     return _v15;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = s;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut values: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
-// LOWERING-NEXT:     let _v0: i32 = 0;
-// LOWERING-NEXT:     __retval = _v0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     *values = [1, 2, 3, 4];
-// LOWERING-NEXT:     let _v1: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v2: *mut i32 = values.as_mut_ptr() as *mut i32;
-// LOWERING-NEXT:     let _v3: i32 = unsafe { sum4(_v2) };
-// LOWERING-NEXT:     let _v4: i32 = unsafe { printf(_v1 as *const i8, _v3) };
-// LOWERING-NEXT:     let _v5: i32 = 0;
-// LOWERING-NEXT:     __retval = _v5;
-// LOWERING-NEXT:     let _v6: i32 = __retval;
-// LOWERING-NEXT:     std::process::exit(_v6 as i32);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = values.as_mut_ptr() as *mut i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { sum4({{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -85,8 +85,8 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: unsafe fn sum4(arg0: *mut i32) -> i32 {
-// REWRITES-NEXT: let mut arr: *mut i32 = arg0;
+// REWRITES-NEXT: unsafe fn sum4({{arg[0-9]+}}: *mut i32) -> i32 {
+// REWRITES-NEXT: let mut arr: *mut i32 = {{arg[0-9]+}};
 // REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut s: i32 = 0;
 // REWRITES-NEXT: s = 0;
@@ -94,14 +94,14 @@ int main(void) {
 // REWRITES-NEXT:         let mut i: i32 = 0;
 // REWRITES-NEXT:         i = 0;
 // REWRITES-NEXT:         loop {
-// REWRITES-NEXT:                     let _v3: i32 = 4;
-// REWRITES-NEXT:                     if !(i < _v3) {
+// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = 4;
+// REWRITES-NEXT:                     if !(i < {{_v[0-9]+}}) {
 // REWRITES-NEXT:                                     break;
 // REWRITES-NEXT:                     }
 // REWRITES-NEXT:                     {
-// REWRITES-NEXT:                                     let _v7: *mut i32 = arr;
-// REWRITES-NEXT:                                     let _v8: *mut i32 = unsafe { _v7.offset((i as i64) as isize) };
-// REWRITES-NEXT:                                     s = s + unsafe { *_v8 };
+// REWRITES-NEXT:                                     let {{_v[0-9]+}}: *mut i32 = arr;
+// REWRITES-NEXT:                                     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
+// REWRITES-NEXT:                                     s = s + unsafe { *{{_v[0-9]+}} };
 // REWRITES-NEXT:                     }
 // REWRITES-NEXT:                     i = i + 1;
 // REWRITES-NEXT:         }
@@ -115,10 +115,10 @@ int main(void) {
 // REWRITES-NEXT: let mut values: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: *values = [1, 2, 3, 4];
-// REWRITES-NEXT: let _v1: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v2: *mut i32 = values.as_mut_ptr() as *mut i32;
-// REWRITES-NEXT: let _v3: i32 = unsafe { sum4(_v2) };
-// REWRITES-NEXT: let _v4: i32 = unsafe { printf(_v1 as *const i8, _v3) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = values.as_mut_ptr() as *mut i32;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { sum4({{_v[0-9]+}}) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: std::process::exit(__retval as i32);
 // REWRITES-NEXT: }

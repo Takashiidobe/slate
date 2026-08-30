@@ -18,30 +18,30 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const i8, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn msvc_arm_guarded_pragma(arg0: i32) -> i32 {
+// LOWERING-NEXT: fn msvc_arm_guarded_pragma({{arg[0-9]+}}: i32) -> i32 {
 // LOWERING-NEXT:     let mut x: i32 = 0;
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     x = arg0;
-// LOWERING-NEXT:     let _v0: i32 = x;
-// LOWERING-NEXT:     let _v1: i32 = 41;
-// LOWERING-NEXT:     let _v2: i32 = _v0 + _v1;
-// LOWERING-NEXT:     __retval = _v2;
-// LOWERING-NEXT:     let _v3: i32 = __retval;
-// LOWERING-NEXT:     return _v3;
+// LOWERING-NEXT:     x = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = x;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 41;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let _v0: i32 = 0;
-// LOWERING-NEXT:     __retval = _v0;
-// LOWERING-NEXT:     let _v1: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v2: i32 = 1;
-// LOWERING-NEXT:     let _v3: i32 = msvc_arm_guarded_pragma(_v2);
-// LOWERING-NEXT:     let _v4: i32 = unsafe { printf(_v1 as *const i8, _v3) };
-// LOWERING-NEXT:     let _v5: i32 = 0;
-// LOWERING-NEXT:     __retval = _v5;
-// LOWERING-NEXT:     let _v6: i32 = __retval;
-// LOWERING-NEXT:     std::process::exit(_v6 as i32);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = msvc_arm_guarded_pragma({{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -53,21 +53,21 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn msvc_arm_guarded_pragma(arg0: i32) -> i32 {
-// REWRITES-NEXT: let mut x: i32 = arg0;
+// REWRITES-NEXT: fn msvc_arm_guarded_pragma({{arg[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT: let mut x: i32 = {{arg[0-9]+}};
 // REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let _v1: i32 = 41;
-// REWRITES-NEXT: __retval = x + _v1;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 41;
+// REWRITES-NEXT: __retval = x + {{_v[0-9]+}};
 // REWRITES-NEXT: return __retval;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: let _v1: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v2: i32 = 1;
-// REWRITES-NEXT: let _v3: i32 = msvc_arm_guarded_pragma(_v2);
-// REWRITES-NEXT: let _v4: i32 = unsafe { printf(_v1 as *const i8, _v3) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = msvc_arm_guarded_pragma({{_v[0-9]+}});
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: std::process::exit(__retval as i32);
 // REWRITES-NEXT: }

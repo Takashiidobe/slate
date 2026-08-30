@@ -13,19 +13,23 @@ from pathlib import Path
 TARGET_FIXTURE_DIRECTORIES = {"bionic", "macos", "msvc"}
 SOURCE_ROOT_PATTERN = "__SLATE_FILECHECK_SOURCE_ROOT__"
 ANNOTATION_PATTERN = re.compile(
-    r"^(?P<indent>\s*)(?://\s*@(?P<line_kind>(?:lowering|rewrite)(?:-not)?)-"
-    r"(?P<line_boundary>begin|end)\s*|/\*\s*@"
-    r"(?P<block_kind>(?:lowering|rewrite)(?:-not)?)-"
-    r"(?P<block_boundary>begin|end)\s*\*/\s*)$"
+    r"^(?P<indent>\s*)(?:"
+    r"//\s*@(?P<line_kind>(?:lowering|rewrite)(?:-not)?)-(?P<line_fn>fn-)?"
+    r"(?P<line_boundary>begin|end)\s*"
+    r"|/\*\s*@(?P<block_kind>(?:lowering|rewrite)(?:-not)?)-(?P<block_fn>fn-)?"
+    r"(?P<block_boundary>begin|end)\s*\*/\s*"
+    r")$"
 )
 GENERATED_MARKER_PATTERN = re.compile(
     r'(?:core|std)::arch::asm!\("# SLATE_FILECHECK_(BEGIN|END)_(\d+)"'
 )
+FN_MARKER_PATTERN = re.compile(r"^\s*fn __slate_filecheck_(begin|end)_(\d+)\(\)")
 RUST_STRING_PATTERN = re.compile(
     r'(?:(?:b|c)?r(?P<hash>#{0,16})".*?"(?P=hash)|(?:b|c)?"(?:\\.|[^"\\])*")'
 )
 UNSTABLE_IDENTIFIER_PATTERNS = (
     (re.compile(r"\b_v[0-9]+\b"), "{{_v[0-9]+}}"),
+    (re.compile(r"\barg[0-9]+\b"), "{{arg[0-9]+}}"),
     (
         re.compile(r"\banon_struct[0-9A-Za-z_]*\b"),
         "{{anon_struct[0-9A-Za-z_]*}}",
@@ -55,6 +59,7 @@ def instrument_annotations(source):
             output.append(line)
             continue
         kind = match.group("line_kind") or match.group("block_kind")
+        is_fn = bool(match.group("line_fn") or match.group("block_fn"))
         annotation_boundary = match.group("line_boundary") or match.group(
             "block_boundary"
         )
@@ -62,9 +67,9 @@ def instrument_annotations(source):
         if annotation_boundary == "end":
             if not active:
                 raise ValueError(f"line {line_number}: unmatched @{kind}-end")
-            active_kind, marker_id, start_line = active[-1]
+            active_kind, marker_id, start_line, active_fn = active[-1]
             if active_kind != kind:
-                if any(open_kind == kind for open_kind, _, _ in active):
+                if any(open_kind == kind for open_kind, _, _, _ in active):
                     raise ValueError(
                         f"line {line_number}: @{kind}-end crosses "
                         f"@{active_kind}-begin opened at line {start_line}"
@@ -73,21 +78,31 @@ def instrument_annotations(source):
                     f"line {line_number}: @{kind}-end does not match "
                     f"@{active_kind}-begin opened at line {start_line}"
                 )
+            if active_fn != is_fn:
+                raise ValueError(
+                    f"line {line_number}: @{kind} boundary style mismatches "
+                    f"the -begin opened at line {start_line}"
+                )
             active.pop()
             boundary = "END"
         else:
-            if any(open_kind == kind for open_kind, _, _ in active):
+            if any(open_kind == kind for open_kind, _, _, _ in active):
                 raise ValueError(f"line {line_number}: @{kind}-begin is already open")
             marker_id = next_id
             next_id += 1
             annotations[marker_id] = kind
-            active.append((kind, marker_id, line_number))
+            active.append((kind, marker_id, line_number, is_fn))
             boundary = "BEGIN"
-        output.append(
-            f'{indent}__asm__ __volatile__("# SLATE_FILECHECK_{boundary}_{marker_id}");'
-        )
+        if is_fn:
+            output.append(
+                f"void __slate_filecheck_{boundary.lower()}_{marker_id}(void) {{}}"
+            )
+        else:
+            output.append(
+                f'{indent}__asm__ __volatile__("# SLATE_FILECHECK_{boundary}_{marker_id}");'
+            )
     if active:
-        kind, _, line_number = active[-1]
+        kind, _, line_number, _ = active[-1]
         raise ValueError(f"line {line_number}: unclosed @{kind}-begin annotation")
     suffix = "\n" if source.endswith("\n") else ""
     return "\n".join(output) + suffix, annotations
@@ -97,7 +112,27 @@ def extract_generated_regions(rust):
     regions = {}
     active = []
     skip_wrapper_close = False
+    skip_fn_body = False
     for line_number, line in enumerate(rust.splitlines(), 1):
+        fn_marker = FN_MARKER_PATTERN.match(line)
+        if fn_marker:
+            boundary, raw_id = fn_marker.groups()
+            marker_id = int(raw_id)
+            if boundary == "begin":
+                active.append((marker_id, []))
+            else:
+                if not active or active[-1][0] != marker_id:
+                    raise RuntimeError(
+                        f"generated marker {marker_id} ends without its begin marker"
+                    )
+                _, captured = active.pop()
+                regions[marker_id] = captured
+            skip_fn_body = True
+            continue
+        if skip_fn_body:
+            if line.strip() == "}":
+                skip_fn_body = False
+            continue
         marker = GENERATED_MARKER_PATTERN.search(line)
         if marker:
             boundary, raw_id = marker.groups()

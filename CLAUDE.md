@@ -164,6 +164,15 @@ parses the generic-form CIR op-tree.
 - **Never comment.**
 - **Every feature and fixup starts with a C fixture** in `tests/fixtures/` (C-only), driven
   by the relevant `lowering` or `rewrites` profile and `--test differential -E 'test(generated_differential)'`.
+- **Every new fixture must carry both `@lowering` and `@rewrite` FileCheck assertions.**
+  Wrap the statements whose generated Rust proves the fix in `@lowering-begin`/`@rewrite-begin`
+  markers and run `python3 tools/update_filecheck.py --in-place tests/fixtures/<name>.c` to emit the
+  `SLATE-FILECHECK-BEGIN/END` blocks. Runtime differential comparison alone is not enough; the shape
+  assertions lock in the specific generated form. Use as many disjoint region pairs as the fixture
+  has interesting spots — wrap every statement worth asserting, not just one. In-body markers wrap
+  statements; to assert a whole function **including its signature**, use the file-scope
+  `@lowering-fn-begin`/`@rewrite-fn-begin` markers around the definition.
+  See [wiki/concepts/differential-fixtures.md](wiki/concepts/differential-fixtures.md).
 - **Testing**: Feature testing is done with e2e fixture differential tests, **never unit tests**.
 - **Transliterate first, idiomatize later.** Baseline Rust may be ugly:
   `#[repr(C)]`, raw pointers, explicit temps, `libc`, and `unsafe` are all

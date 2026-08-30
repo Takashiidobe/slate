@@ -94,41 +94,41 @@ int main(void) {
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut packed: PackedOne = PackedOne { tag: 0, value: 0 };
-// LOWERING-NEXT:     let _v0: i32 = 0;
-// LOWERING-NEXT:     __retval = _v0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     packed = PackedOne { tag: 29, value: 31 };
-// LOWERING-NEXT:     let _v1: *mut i8 = b"%d %d %d %d %d %d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let _v2: i32 = std::mem::size_of::<NaturalBefore>() as i32;
-// LOWERING-NEXT:     let _v3: i32 = std::mem::offset_of!(NaturalBefore, value) as i32;
-// LOWERING-NEXT:     let _v4: i32 = std::mem::size_of::<PackedTwo>() as i32;
-// LOWERING-NEXT:     let _v5: i32 = std::mem::align_of::<PackedTwo>() as i32;
-// LOWERING-NEXT:     let _v6: i32 = std::mem::offset_of!(PackedTwo, value) as i32;
-// LOWERING-NEXT:     let _v7: i32 = 5;
-// LOWERING-NEXT:     let _v8: i32 = std::mem::align_of::<PackedOne>() as i32;
-// LOWERING-NEXT:     let _v9: i32 = std::mem::offset_of!(PackedOne, value) as i32;
-// LOWERING-NEXT:     let _v10: i32 = std::mem::size_of::<PackedTwoAgain>() as i32;
-// LOWERING-NEXT:     let _v11: i32 = std::mem::offset_of!(PackedTwoAgain, value) as i32;
-// LOWERING-NEXT:     let _v12: i32 = std::mem::offset_of!(NaturalAfter, value) as i32;
-// LOWERING-NEXT:     let _v13: i32 = unsafe { printf(_v1 as *const i8, _v2, _v3, _v4, _v5, _v6, _v7, _v8, _v9, _v10, _v11, _v12) };
-// LOWERING-NEXT:     let _v14: u8 = packed.tag;
-// LOWERING-NEXT:     let _v15: i32 = _v14 as i32;
-// LOWERING-NEXT:     let _v16: i32 = 29;
-// LOWERING-NEXT:     let _v17: bool = _v15 == _v16;
-// LOWERING-NEXT:     let _v18: bool = if _v17 {
-// LOWERING-NEXT:         let _v19: u32 = packed.value;
-// LOWERING-NEXT:         let _v20: u32 = 31;
-// LOWERING-NEXT:         let _v21: bool = _v19 == _v20;
-// LOWERING-NEXT:         _v21
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d %d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = std::mem::size_of::<NaturalBefore>() as i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = std::mem::offset_of!(NaturalBefore, value) as i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = std::mem::size_of::<PackedTwo>() as i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = std::mem::align_of::<PackedTwo>() as i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = std::mem::offset_of!(PackedTwo, value) as i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = std::mem::align_of::<PackedOne>() as i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = std::mem::offset_of!(PackedOne, value) as i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = std::mem::size_of::<PackedTwoAgain>() as i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = std::mem::offset_of!(PackedTwoAgain, value) as i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = std::mem::offset_of!(NaturalAfter, value) as i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = packed.tag;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 29;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: u32 = packed.value;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: u32 = 31;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-NEXT:         {{_v[0-9]+}}
 // LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let _v22: bool = false;
-// LOWERING-NEXT:         _v22
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let _v23: i32 = 0;
-// LOWERING-NEXT:     let _v24: i32 = 1;
-// LOWERING-NEXT:     let _v25: i32 = if _v18 { _v23 } else { _v24 };
-// LOWERING-NEXT:     __retval = _v25;
-// LOWERING-NEXT:     let _v26: i32 = __retval;
-// LOWERING-NEXT:     std::process::exit(_v26 as i32);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -185,31 +185,31 @@ int main(void) {
 // REWRITES-NEXT: let mut packed: PackedOne = PackedOne { tag: 0, value: 0 };
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: packed = PackedOne { tag: 29, value: 31 };
-// REWRITES-NEXT: let _v1: *mut i8 = b"%d %d %d %d %d %d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let _v2: i32 = std::mem::size_of::<NaturalBefore>() as i32;
-// REWRITES-NEXT: let _v3: i32 = std::mem::offset_of!(NaturalBefore, value) as i32;
-// REWRITES-NEXT: let _v4: i32 = std::mem::size_of::<PackedTwo>() as i32;
-// REWRITES-NEXT: let _v5: i32 = std::mem::align_of::<PackedTwo>() as i32;
-// REWRITES-NEXT: let _v6: i32 = std::mem::offset_of!(PackedTwo, value) as i32;
-// REWRITES-NEXT: let _v7: i32 = 5;
-// REWRITES-NEXT: let _v8: i32 = std::mem::align_of::<PackedOne>() as i32;
-// REWRITES-NEXT: let _v9: i32 = std::mem::offset_of!(PackedOne, value) as i32;
-// REWRITES-NEXT: let _v10: i32 = std::mem::size_of::<PackedTwoAgain>() as i32;
-// REWRITES-NEXT: let _v11: i32 = std::mem::offset_of!(PackedTwoAgain, value) as i32;
-// REWRITES-NEXT: let _v12: i32 = std::mem::offset_of!(NaturalAfter, value) as i32;
-// REWRITES-NEXT: let _v13: i32 = unsafe { printf(_v1 as *const i8, _v2, _v3, _v4, _v5, _v6, _v7, _v8, _v9, _v10, _v11, _v12) };
-// REWRITES-NEXT: let _v16: i32 = 29;
-// REWRITES-NEXT: let _v18: bool = if (packed.tag as i32) == _v16 {
-// REWRITES-NEXT:         let _v20: u32 = 31;
-// REWRITES-NEXT:         let _v21: bool = packed.value == _v20;
-// REWRITES-NEXT:     _v21
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d %d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = std::mem::size_of::<NaturalBefore>() as i32;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = std::mem::offset_of!(NaturalBefore, value) as i32;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = std::mem::size_of::<PackedTwo>() as i32;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = std::mem::align_of::<PackedTwo>() as i32;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = std::mem::offset_of!(PackedTwo, value) as i32;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 5;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = std::mem::align_of::<PackedOne>() as i32;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = std::mem::offset_of!(PackedOne, value) as i32;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = std::mem::size_of::<PackedTwoAgain>() as i32;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = std::mem::offset_of!(PackedTwoAgain, value) as i32;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = std::mem::offset_of!(NaturalAfter, value) as i32;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 29;
+// REWRITES-NEXT: let {{_v[0-9]+}}: bool = if (packed.tag as i32) == {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: u32 = 31;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = packed.value == {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: } else {
-// REWRITES-NEXT:         let _v22: bool = false;
-// REWRITES-NEXT:     _v22
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: };
-// REWRITES-NEXT: let _v23: i32 = 0;
-// REWRITES-NEXT: let _v24: i32 = 1;
-// REWRITES-NEXT: __retval = if _v18 { _v23 } else { _v24 };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT: __retval = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
 // REWRITES-NEXT: std::process::exit(__retval as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

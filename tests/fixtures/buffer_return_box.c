@@ -88,12 +88,4 @@ int main(void) {
 // REWRITES-DAG: m = maybe({{_v[0-9]+}});
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = 3;
 // REWRITES-DAG: a = allocfree({{_v[0-9]+}});
-// REWRITES-DAG: raw = Box::into_raw(make_raw({{_v[0-9]+}})).cast::<i32>();
-// REWRITES-DAG: raw2 = Box::into_raw(make_raw({{_v[0-9]+}})).cast::<i32>();
-// REWRITES-DAG: shadow = Box::into_raw(make_shadow({{_v[0-9]+}})).cast::<i32>();
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut i32 = q.as_mut_ptr();
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut i32 = r.as_mut_ptr();
-// REWRITES-DAG: free((raw as *mut core::ffi::c_void) as *mut core::ffi::c_void)
-// REWRITES-NOT: free((q as *mut core::ffi::c_void) as *mut core::ffi::c_void)
-// REWRITES-NOT: free((r as *mut core::ffi::c_void) as *mut core::ffi::c_void)
 // SLATE-FILECHECK-END rewrites

@@ -41,11 +41,11 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const i8, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn fill(arg0: *mut cursor, arg1: u8) {
+// LOWERING-NEXT: fn fill({{arg[0-9]+}}: *mut cursor, {{arg[0-9]+}}: u8) {
 // LOWERING-NEXT:     let mut c: *mut cursor = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut n: u8 = 0;
-// LOWERING-NEXT:     c = arg0;
-// LOWERING-NEXT:     n = arg1;
+// LOWERING-NEXT:     c = {{arg[0-9]+}};
+// LOWERING-NEXT:     n = {{arg[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut cursor = c;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = (unsafe { std::ptr::addr_of_mut!((*{{_v[0-9]+}}).buf) }) as *mut u8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut cursor = c;
@@ -146,9 +146,9 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn fill(arg0: &mut cursor, arg1: u8) {
-// REWRITES-NEXT: let mut c: *mut cursor = arg0 as *mut cursor;
-// REWRITES-NEXT: let mut n: u8 = arg1;
+// REWRITES-NEXT: fn fill({{arg[0-9]+}}: &mut cursor, {{arg[0-9]+}}: u8) {
+// REWRITES-NEXT: let mut c: *mut cursor = {{arg[0-9]+}} as *mut cursor;
+// REWRITES-NEXT: let mut n: u8 = {{arg[0-9]+}};
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut u8 = (unsafe { std::ptr::addr_of_mut!((*c).buf) }) as *mut u8;
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         (*c).p = {{_v[0-9]+}};

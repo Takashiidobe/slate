@@ -35,6 +35,100 @@ int main(void) {
          once_total, key_created, quick_registered);
   return 0;
 }
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES: #![feature(c_variadic)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-EMPTY:
+// REWRITES-NEXT: static mut once_total: i32 = 0;
+// REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn thrd_create(_0: *mut u64, _1: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> i32>, _2: *mut core::ffi::c_void) -> i32;
+// REWRITES-NEXT:     fn thrd_join(_0: u64, _1: *mut i32) -> i32;
+// REWRITES-NEXT:     fn call_once(_0: *mut i32, _1: Option<unsafe extern "C" fn()>);
+// REWRITES-NEXT:     fn tss_create(_0: *mut u32, _1: Option<unsafe extern "C" fn(*mut core::ffi::c_void)>) -> i32;
+// REWRITES-NEXT:     fn tss_delete(_0: u32);
+// REWRITES-NEXT:     fn at_quick_exit(_0: Option<unsafe extern "C" fn()>) -> i32;
+// REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: extern "C" fn thread_worker({{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
+// REWRITES-NEXT: let mut argument: *mut core::ffi::c_void = {{arg[0-9]+}};
+// REWRITES-NEXT: let mut __retval: i32 = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT: __retval = (unsafe { *(argument as *mut i32) }) + {{_v[0-9]+}};
+// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: extern "C" fn once_handler() {
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:         once_total = (unsafe { once_total }) + {{_v[0-9]+}};
+// REWRITES-NEXT: }
+// REWRITES-NEXT: return;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: extern "C" fn tss_destructor({{arg[0-9]+}}: *mut core::ffi::c_void) {
+// REWRITES-NEXT: let mut value: *mut core::ffi::c_void = {{arg[0-9]+}};
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
+// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:         once_total = (unsafe { once_total }) + ((value != {{_v[0-9]+}}) as i32);
+// REWRITES-NEXT: }
+// REWRITES-NEXT: return;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: extern "C" fn quick_handler() {
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 100;
+// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:         once_total = (unsafe { once_total }) + {{_v[0-9]+}};
+// REWRITES-NEXT: }
+// REWRITES-NEXT: return;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: let mut __retval: i32 = 0;
+// REWRITES-NEXT: let mut thread: u64 = 0;
+// REWRITES-NEXT: let mut key: u32 = 0;
+// REWRITES-NEXT: let mut argument: i32 = 0;
+// REWRITES-NEXT: let mut thread_result: i32 = 0;
+// REWRITES-NEXT: let mut thread_created: i32 = 0;
+// REWRITES-NEXT: let mut thread_joined: i32 = 0;
+// REWRITES-NEXT: let mut control: i32 = 0;
+// REWRITES-NEXT: let mut key_created: i32 = 0;
+// REWRITES-NEXT: let mut quick_registered: i32 = 0;
+// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: argument = 40;
+// REWRITES-NEXT: thread_result = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(argument) as *mut core::ffi::c_void;
+// REWRITES-NEXT: thread_created = unsafe { thrd_create(std::ptr::addr_of_mut!(thread) as *mut u64, Some(thread_worker), {{_v[0-9]+}} as *mut core::ffi::c_void) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: bool = thread_created == {{_v[0-9]+}};
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { thrd_join(thread as u64, std::ptr::addr_of_mut!(thread_result) as *mut i32) };
+// REWRITES-NEXT:     {{_v[0-9]+}}
+// REWRITES-NEXT: } else {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = -1;
+// REWRITES-NEXT:     {{_v[0-9]+}}
+// REWRITES-NEXT: };
+// REWRITES-NEXT: thread_joined = {{_v[0-9]+}};
+// REWRITES-NEXT: control = 0;
+// REWRITES-NEXT: unsafe { call_once(std::ptr::addr_of_mut!(control) as *mut i32, Some(once_handler)) };
+// REWRITES-NEXT: unsafe { call_once(std::ptr::addr_of_mut!(control) as *mut i32, Some(once_handler)) };
+// REWRITES-NEXT: key_created = unsafe { tss_create(std::ptr::addr_of_mut!(key) as *mut u32, Some(tss_destructor)) };
+// REWRITES-NEXT: {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = key_created == {{_v[0-9]+}};
+// REWRITES-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-NEXT:                     unsafe { tss_delete(key as u32) };
+// REWRITES-NEXT:         }
+// REWRITES-NEXT: }
+// REWRITES-NEXT: quick_registered = unsafe { at_quick_exit(Some(quick_handler)) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, thread_created, thread_joined, thread_result, unsafe { once_total }, key_created, quick_registered) };
+// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: }
+// SLATE-FILECHECK-END rewrites
+
 // LOWERING-DAG: Option<unsafe extern "C" fn
 // LOWERING-DAG: extern "C" fn thread_worker
 // LOWERING-DAG: extern "C" fn once_handler
