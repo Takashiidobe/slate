@@ -168,6 +168,13 @@ fn collect_fixtures(
     }
 }
 
+fn fixture_clang_arg_overrides(name: &str) -> Vec<String> {
+    match name {
+        "goto_temp_cross_state" => vec!["-O2".to_string()],
+        _ => Vec::new(),
+    }
+}
+
 fn fixtures() -> Vec<Fixture> {
     let dir = fixtures_dir();
     let selected = std::env::var("SLATE_DIFF_FIXTURE").ok();
@@ -507,24 +514,25 @@ fn generated_differential() {
         .collect();
     let translated = support::parallel_map(&default_fixtures, |f| {
         let generated = tmp.join(format!("{}.generated.rs", f.name));
-        support::translate(&f.path, &generated).and_then(|()| {
-            let fixture = std::fs::read_to_string(&f.path)
-                .map_err(|e| format!("read {}: {e}", f.path.display()))?;
-            let rust = std::fs::read_to_string(&generated)
-                .map_err(|e| format!("read {}: {e}", generated.display()))?;
-            support::filecheck::check_generated_rust(
-                &fixture,
-                &rust,
-                support::filecheck::Profile::active(),
-                &tmp.join("filecheck").join(&f.name),
-            )?;
-            Ok(support::Case {
-                name: f.name.clone(),
-                c_src: f.path.clone(),
-                rs_src: generated,
-                config: support::RunConfig::default(),
+        support::translate_with_args(&f.path, &generated, &fixture_clang_arg_overrides(&f.name))
+            .and_then(|()| {
+                let fixture = std::fs::read_to_string(&f.path)
+                    .map_err(|e| format!("read {}: {e}", f.path.display()))?;
+                let rust = std::fs::read_to_string(&generated)
+                    .map_err(|e| format!("read {}: {e}", generated.display()))?;
+                support::filecheck::check_generated_rust(
+                    &fixture,
+                    &rust,
+                    support::filecheck::Profile::active(),
+                    &tmp.join("filecheck").join(&f.name),
+                )?;
+                Ok(support::Case {
+                    name: f.name.clone(),
+                    c_src: f.path.clone(),
+                    rs_src: generated,
+                    config: support::RunConfig::default(),
+                })
             })
-        })
     });
     let mut cases = Vec::new();
     for (f, result) in default_fixtures.iter().zip(translated) {
