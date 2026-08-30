@@ -169,6 +169,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             &slot_to_rust,
             &template_constraints,
             &template_types,
+            cir_asm_dialect(op.asm_flavor),
         ) else {
             unsupported!(
                 "lower: could not translate inline asm template `{}`",

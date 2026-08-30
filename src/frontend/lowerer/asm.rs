@@ -201,6 +201,7 @@ pub(super) fn translate_asm_template(
     slot_to_rust: &[usize],
     constraints: &[&str],
     types: &[Type],
+    dialect: Option<AsmDialect>,
 ) -> Option<String> {
     let mut translated = String::new();
     let mut referenced_operands = BTreeSet::new();
@@ -253,10 +254,18 @@ pub(super) fn translate_asm_template(
         };
         let rust_slot = *slot_to_rust.get(slot)?;
         let constraint = *constraints.get(slot)?;
-        if constraint_is_explicit_register(constraint) {
-            return None;
-        }
         referenced_operands.insert(rust_slot);
+        if constraint_is_explicit_register(constraint) {
+            let kind = parse_reg_constraint(constraint.strip_prefix('=').unwrap_or(constraint))?;
+            let AsmReg::Explicit(name) = asm_reg_for_constraint(kind, types.get(slot)?)? else {
+                return None;
+            };
+            if matches!(dialect, Some(AsmDialect::Att)) {
+                translated.push('%');
+            }
+            translated.push_str(&name);
+            continue;
+        }
         translated.push('{');
         translated.push_str(&rust_slot.to_string());
         if !suppress_modifier

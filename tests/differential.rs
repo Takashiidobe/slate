@@ -172,7 +172,15 @@ fn fixture_clang_arg_overrides(name: &str) -> Vec<String> {
     match name {
         "goto_temp_cross_state" => vec!["-O2".to_string()],
         "ptr_param_field_addr_of_mut" => vec!["-O2".to_string()],
+        "gnu_asm_register_variable" => vec!["-std=gnu23".to_string()],
         _ => Vec::new(),
+    }
+}
+
+fn fixture_c_ref_std_override(name: &str) -> Option<String> {
+    match name {
+        "gnu_asm_register_variable" => Some("-std=gnu23".to_string()),
+        _ => None,
     }
 }
 
@@ -527,11 +535,13 @@ fn generated_differential() {
                     support::filecheck::Profile::active(),
                     &tmp.join("filecheck").join(&f.name),
                 )?;
+                let mut config = support::RunConfig::default();
+                config.c_args.extend(fixture_c_ref_std_override(&f.name));
                 Ok(support::Case {
                     name: f.name.clone(),
                     c_src: f.path.clone(),
                     rs_src: generated,
-                    config: support::RunConfig::default(),
+                    config,
                 })
             })
     });
