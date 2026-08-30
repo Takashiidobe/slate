@@ -20,7 +20,7 @@ override-mining step.
   the loop to those dirs is the same mechanical line-scanner, no new parsing
   logic. Rename the generated `X86_STDARCH_OVERRIDES` to an arch-agnostic
   combined `STDARCH_OVERRIDES` table while doing this — `find_stdarch_
-  override`'s matching is already scoped by the full `llvm.<name>.` prefix,
+override`'s matching is already scoped by the full `llvm.<name>.` prefix,
   so there's no cross-arch collision risk from merging, and a single lookup
   site is cheaper to keep in sync than one table per arch.
 
@@ -37,7 +37,7 @@ override-mining step.
   one spot repro (a masked/tail-predicated RVV load/store) through the whole
   pipeline before trusting the x86 fix's shape unchanged.
 - **AArch64 SVE** (170/1420 overloaded AArch64 intrinsics, `llvm.aarch64.
-  sve.*`): deliberately out of scope. Unresolvable by the LLVM-side extractor
+sve.*`): deliberately out of scope. Unresolvable by the LLVM-side extractor
   — `IITDescriptor` kinds `OneNthEltsVec`/`Subdivide2`/`Subdivide4`
   (scalable-vector narrowing/widening) aren't decoded. Fails closed
   (`overloaded_positions: null`), not a silent wrong answer. Only reached via

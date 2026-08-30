@@ -5,8 +5,9 @@ fixpoint families). Implements the c2rust-derived pointer representation
 lattice first proposed in `rewrite-worklist-engine.md`'s "Representation
 decisions are unification, not local rewrites" section, extended beyond
 c2rust per `wiki/log/2026-08-28-07-48.md`. Code: `src/backend/interproc/
-pointer_lattice.rs` (analysis only, read-only, not yet wired into the
-pipeline — see "Status" below).
+pointer_lattice.rs`. This is the canonical reference for how Slate chooses a
+pointer's Rust representation; it is wired into `engine::apply()` (see
+"Status" below).
 
 ## The tables
 
@@ -50,7 +51,7 @@ through something you own doesn't revoke ownership:
 
 An earlier version of this table only listed 7 rows and used an implicit
 catch-all for the rest, which — combined with `U` defaulting to `true`
-until disproven — meant the *common* case (a plain pointer with no
+until disproven — meant the _common_ case (a plain pointer with no
 aliasing evidence yet) missed the `&T`/`&[T]` rows, and any owned buffer
 that was ever written (i.e. almost all of them) missed `Box<T>`/`Vec<T>`.
 See `wiki/log/2026-08-28-12-38.md` for the session that found this.
@@ -89,9 +90,9 @@ the result in `Option<...>`.
 nodes replace source variables, and slate wants named locals preserved
 end to end. Building real SSA for this one analysis would fight that,
 and it doesn't solve the problem this analysis actually has: SSA gives a
-clean def/use-list for *one variable's own reassignments*, which the arena
+clean def/use-list for _one variable's own reassignments_, which the arena
 already provides for free (`Arena::def_use_neighbors`, `src/backend/engine/
-arena.rs:383`). The hard part of `UNIQUE` is *cross-binding* aliasing, which
+arena.rs:383`). The hard part of `UNIQUE` is _cross-binding_ aliasing, which
 SSA renaming doesn't touch in either representation.
 
 ## Monotonicity
@@ -107,7 +108,7 @@ already relies on for `string_params` (`WORKLIST_EDIT_BUDGET`).
 
 Splitting these matters because they run at different stages of the
 pipeline (`rewrite-engine-v2.md`'s whole-Program interproc phase runs
-*before* the per-function arena is even built — see `engine::run_function`,
+_before_ the per-function arena is even built — see `engine::run_function`,
 `src/backend/engine/mod.rs:99-104`):
 
 1. **Interproc solve** (`slate-y0qs.4.1`, implemented) operates on the
@@ -129,7 +130,7 @@ pipeline (`rewrite-engine-v2.md`'s whole-Program interproc phase runs
    `&mut T`/`Box<T>` since Rust's own `Deref`/`DerefMut` cover them; a
    `.as_ptr()`/`.as_mut_ptr()`-shaped raw-pointer fallback is synthesized
    at call sites that still need a raw pointer). There's no separate
-   accessor-*cleanup* rule as originally envisioned — the decision of
+   accessor-_cleanup_ rule as originally envisioned — the decision of
    "does this call site need a raw pointer or can it take the lifted type
    directly" (`callee_accepts_directly`) is made once, at rewrite time,
    instead of inserted-then-deleted in two passes.
@@ -145,7 +146,7 @@ pipeline (`rewrite-engine-v2.md`'s whole-Program interproc phase runs
   deletes the C `free()` call that justified the `FREE` bit in the first
   place (`is_owned_free_stmt`/`collect_owned_aliases`), relying on `Box`'s
   own `Drop` instead. Skipping that deletion would double-free: the
-  lifted `Box<T>` frees on scope exit *and* the untouched `free()` call
+  lifted `Box<T>` frees on scope exit _and_ the untouched `free()` call
   would free the same allocation again. `collect_owned_aliases` exists
   because CIR routinely hoists parameter derefs through an intermediate
   local (`let mut y: *mut i32 = arg0; ...; free(y);`) rather than
@@ -170,7 +171,7 @@ pipeline (`rewrite-engine-v2.md`'s whole-Program interproc phase runs
   usefully.
 - `Buffer` (`&[T]`/`&mut [T]`/`&str`/`Vec<T>`/`String`, the `Slice`/
   `SliceMut`/`Str`/`Vec`/`StringOwned` rows): needs call-site
-  slice-*length* bridging (associating a length expression/parameter with
+  slice-_length_ bridging (associating a length expression/parameter with
   the pointer at every call site and use site) that doesn't exist yet —
   a structurally different, larger piece of work than accessor insertion.
   Tracked as `slate-y0qs.4.8`.
@@ -191,7 +192,7 @@ Unlike `string_params` (whose eligibility only flows caller→callee),
 capability evidence flows **both ways** through a call site:
 
 - **Backward**: if a callee writes/frees/offsets/fails-to-contain its
-  parameter, that taints the *caller's argument binding* too — passing `p`
+  parameter, that taints the _caller's argument binding_ too — passing `p`
   into a function that calls `free` on it makes `p` itself `FREE`.
 - **Forward**: the caller argument's own facts (e.g. already known
   `nullable`) inform what the callee can assume about its parameter.
@@ -230,7 +231,7 @@ call conservatively to `ESCAPE` — and the `Buffer`-kind rows
 
 One latent soundness gap surfaced while implementing `Owned`, not yet
 filed as its own bead: the interprocedural `FREE` taint can over-approximate
-across a *shared* helper. If function `h(int *q)` is called from two
+across a _shared_ helper. If function `h(int *q)` is called from two
 different callers, and only one of them later frees the pointer it passed
 in, `solve()`'s bidirectional merge taints `h`'s own parameter fact with
 `FREE` regardless of which call site produced it — there's no per-call-site
@@ -250,9 +251,9 @@ caught the same way.
 - [rewrite-engine-v2.md](rewrite-engine-v2.md) — the arena/worklist engine
   this plugs into; "Known risks" section flags interprocedural rules as a
   distinct phase.
-- [facts.md](facts.md) — the fact-collector conventions this follows
-  (`heap_ownership` for `FREE`, `borrow_alias` for `UNIQUE`,
-  `array_element_pointer_origin`/`slice_index` for `OFFSET`).
+- [passes.md](passes.md) — the pass catalog; the interproc analyses (this
+  lattice, `length_lattice`, `string_params`) run before the per-function
+  worklist.
 - `wiki/log/2026-08-28-07-48.md` — the session that extended the lattice
   past c2rust's original four facts (dropped `Box<[T]>`, added `&str`/
   `String`/`Option<...>`).

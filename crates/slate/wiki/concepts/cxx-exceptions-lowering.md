@@ -2,9 +2,10 @@
 
 > Scoping doc, not implemented. Companion to
 > [cxx-translation-pain-points.md](cxx-translation-pain-points.md) (the "RAII
-> + exceptions have no direct Rust control-flow shape" section originates
-> this doc) and [setjmp-longjmp-lowering.md](setjmp-longjmp-lowering.md),
-> which already treats a related unwind-shaped C construct the same way.
+>
+> - exceptions have no direct Rust control-flow shape" section originates
+>   this doc) and [setjmp-longjmp-lowering.md](setjmp-longjmp-lowering.md),
+>   which already treats a related unwind-shaped C construct the same way.
 
 ## Correction to prior scoping: CIR already models this in detail
 
@@ -80,13 +81,13 @@ Same design choice already made for `setjmp`/`longjmp`
 unwind-shaped source construct onto Rust's own unwind mechanism, not a
 hand-rolled reimplementation.
 
-| CIR op | Rust raw-lowering target |
-|---|---|
-| `cir.alloc.exception` + ctor call + `cir.throw` | construct the payload value, `std::panic::panic_any(payload)` |
-| `cir.try { A } catch T1(...) {B1} catch T2(...) {B2} unwind {resume}` | `match std::panic::catch_unwind(AssertUnwindSafe(\|\| A)) { Ok(v) => v, Err(p) => if let Some(e) = p.downcast_ref::<T1>() { B1 } else if let Some(e) = p.downcast_ref::<T2>() { B2 } else { std::panic::resume_unwind(p) } }` |
-| `cir.resume` (unwind clause, no match) | `std::panic::resume_unwind(payload)` — direct 1:1 |
-| destructor named in `cir.throw`'s third operand | free: the payload is a real Rust value, `Drop` fires on unwind automatically, no fixup needed |
-| locals live across the `try` body at an unwind point (`cir.scope`/`cir.cleanup.scope` nesting) | ordinary Rust `Drop` on those locals, same as any other scope exit — no special-cased cleanup codegen needed as long as they're real owned Rust values |
+| CIR op                                                                                         | Rust raw-lowering target                                                                                                                                                                                                      |
+| ---------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cir.alloc.exception` + ctor call + `cir.throw`                                                | construct the payload value, `std::panic::panic_any(payload)`                                                                                                                                                                 |
+| `cir.try { A } catch T1(...) {B1} catch T2(...) {B2} unwind {resume}`                          | `match std::panic::catch_unwind(AssertUnwindSafe(\|\| A)) { Ok(v) => v, Err(p) => if let Some(e) = p.downcast_ref::<T1>() { B1 } else if let Some(e) = p.downcast_ref::<T2>() { B2 } else { std::panic::resume_unwind(p) } }` |
+| `cir.resume` (unwind clause, no match)                                                         | `std::panic::resume_unwind(payload)` — direct 1:1                                                                                                                                                                             |
+| destructor named in `cir.throw`'s third operand                                                | free: the payload is a real Rust value, `Drop` fires on unwind automatically, no fixup needed                                                                                                                                 |
+| locals live across the `try` body at an unwind point (`cir.scope`/`cir.cleanup.scope` nesting) | ordinary Rust `Drop` on those locals, same as any other scope exit — no special-cased cleanup codegen needed as long as they're real owned Rust values                                                                        |
 
 Catch clause order matters and is preserved directly: CIR's clause list is
 already in source order, so the `downcast_ref` chain just walks it in the
@@ -123,8 +124,8 @@ implemented and differentially passing its own fixtures. Reasons:
 
 1. The `Result` rewrite is a fixup pass over already-lowered Rust, the same
    relationship every other fixup in this codebase has to raw lowering (see
-   [fixups.md](fixups.md), [writing-a-query-driven-fixup.md](writing-a-query-driven-fixup.md))
-   — it needs a correct, compiling raw form to rewrite *from*. Without that,
+   [fixups.md](../historical/fixups.md), [writing-a-query-driven-fixup.md](../historical/writing-a-query-driven-fixup.md))
+   — it needs a correct, compiling raw form to rewrite _from_. Without that,
    there's no differential baseline to prove the rewrite preserves behavior
    against.
 2. `SetjmpRecovery` is the direct precedent for exactly this ordering: raw

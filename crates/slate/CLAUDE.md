@@ -137,14 +137,14 @@ parses the generic-form CIR op-tree.
   entries. Use `llog search "<query>"` before re-deriving a decision that may
   already be recorded, **always** write a log with `llog new` for changes
   and especially decisions made. No more than 30 lines per log entry.
-- [wiki/concepts/writing-a-query-driven-fixup.md](wiki/concepts/writing-a-query-driven-fixup.md) — start here for any new
-  or migrated rewrite: how to pick a rewrite shape and wire a new pass into
-  the pipeline end to end.
-- [wiki/concepts/fixups.md](wiki/concepts/fixups.md) — the
-  preferred query-driven interface for supported expression and definition
-  rewrites: matcher/`EditSet` mechanics in depth.
-- [wiki/concepts/facts.md](wiki/concepts/facts.md) — the read-only analysis layer fixups
-  consume instead of re-deriving facts by hand.
+- [wiki/concepts/rewrite-engine-v2.md](wiki/concepts/rewrite-engine-v2.md) — start here for any
+  new or ported rewrite: the current worklist engine that replaced
+  `src/backend/query/` + salsa. (The retired query/facts docs now live under
+  `wiki/historical/`.)
+- [wiki/concepts/differential-fixtures.md](wiki/concepts/differential-fixtures.md) — how fixture
+  differential tests and FileCheck directives work: `@lowering`/`@rewrite`
+  region markers, `tools/update_filecheck.py`, and per-fixture clang-arg
+  overrides. Read before adding a fixture.
 - [wiki/concepts/architecture.md](wiki/concepts/architecture.md) — sources, the two IRs, the
   pipeline, and why CIR over LLVM IR.
 - [wiki/concepts/lowerer-internals.md](wiki/concepts/lowerer-internals.md) — the lowerer's internal module split:

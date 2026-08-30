@@ -10,7 +10,7 @@ change.
 ## Loop
 
 1. Take one fresh compiler error or runtime mismatch from an existing test
-   artifact. Group by generated-Rust *shape*, not by C filename — many
+   artifact. Group by generated-Rust _shape_, not by C filename — many
    filenames can share one root cause.
 2. Inspect all three representations of the fixture:
    `translate-lowered` (raw lowering), `emit-cir` (ground truth), `translate`
@@ -33,8 +33,8 @@ change.
 6. Grep remaining captured errors for the next distinct generated-Rust shape.
    Don't re-run the full suite while basic compile families still repeat.
 7. Once the targeted queue is exhausted: `cargo fmt`, `cargo clippy --release
-   --all-targets`, `cargo nextest r --release --profile lowering
-   --no-fail-fast`.
+--all-targets`, `cargo nextest r --release --profile lowering
+--no-fail-fast`.
 
 ## Stale-artifact trap
 
@@ -101,6 +101,7 @@ backend rewrite pass — that just relocates a lowering bug instead of fixing
 it, and backend rewrites are meant for idiomization, not correctness repair.
 
 Useful greps across a fresh batch of generated output:
+
 ```bash
 rg -n ' as \*mut| as \*const|\.str|cannot find value|expected .* found' target
 rg -n 'todo!|lower: unhandled|without Clang AST value' target

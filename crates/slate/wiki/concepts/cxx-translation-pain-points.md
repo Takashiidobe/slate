@@ -6,7 +6,7 @@
 > detailed structured ops; general C++ support is otherwise still expected to
 > stabilize over the next year. This records what's already known
 > from probing `~/llvm-project/build-cir/bin/clang -Xclang -fclangir -Xclang
-> -emit-cir` and `-ast-dump` on small C++ snippets, so it isn't re-derived
+-emit-cir` and `-ast-dump` on small C++ snippets, so it isn't re-derived
 > from scratch when C++ support actually starts. See
 > [slate-overview.md](slate-overview.md) for the current C-only supported
 > subset and [architecture.md](architecture.md) for the CIR/AST join this
@@ -33,7 +33,7 @@ as separate monomorphized functions (matches CIR directly, consistent with
 ## The AST join needs a second key for templates
 
 The current C join (source location -> single CIR node) breaks here: N
-`FunctionDecl`s share the *same* source range as each other and as the
+`FunctionDecl`s share the _same_ source range as each other and as the
 uninstantiated template pattern. Confirmed via `-ast-dump`:
 
 ```
@@ -93,7 +93,7 @@ outcomes:
 - **Arbitrary compound expression validity**, especially chained via
   implicit-conversion priority ranking (the `priority_tag`/fallback-chain
   idiom: try overload A, silently fall back to overload B if A doesn't
-  typecheck) — has no Rust target at *any* stability level. Rust trait
+  typecheck) — has no Rust target at _any_ stability level. Rust trait
   bounds only test "does an impl exist," never "is this expression
   well-formed." Nightly `specialization`/`min_specialization` doesn't cover
   it either — that mechanism ranks impl specificity over type/trait
@@ -102,7 +102,7 @@ outcomes:
   unsupported/manual-port boundary, not a fixup-pass problem.
 
 Also checked and ruled out: `rustc_private` (linking slate itself against
-rustc internals) is irrelevant to what the *generated* Rust code can do —
+rustc internals) is irrelevant to what the _generated_ Rust code can do —
 it's for building compiler-adjacent tools, not for granting generated code
 access to unstable language features.
 
@@ -134,7 +134,7 @@ Rewriting the same dispatch as a `macro_rules!` that expands `(&&Wrap($val)).pro
 textually at each call site — so `$val`'s type is already concrete
 (`i32`, `&str`, `&[i32]`) by the time the expansion is type-checked — does
 correctly select the fallback/medium/highest-tier impl per call site, once
-the reference-depth ordering is also fixed to put the *most specific* impl
+the reference-depth ordering is also fixed to put the _most specific_ impl
 at the shallowest depth and the fallback at the bare (zero-ref) type:
 
 ```rust
@@ -144,15 +144,15 @@ impl<'a, T: ?Sized> Priority3Generic for Wrap<'a, T> { .. } // bare = fallback, 
 ```
 
 Consequence for translation: even the "recoverable" (single-recognizable-capability)
-SFINAE bucket above only survives translation as a *macro expanded per
-instantiation*, not as one idiomatic generic `fn`. That's the same
+SFINAE bucket above only survives translation as a _macro expanded per
+instantiation_, not as one idiomatic generic `fn`. That's the same
 already-monomorphized shape CIR hands you for ordinary templates in the
 first place (see the templates section above) — the autoref trick doesn't
 let you claw back a single generic function C++ users write once; it only
 reproduces the per-instantiation dispatch CIR already exposes, via a
 different mechanism (macro expansion instead of template instantiation).
 
-### Disjunctive *gating* is solvable via `#[marker]`; correction to an earlier claim here
+### Disjunctive _gating_ is solvable via `#[marker]`; correction to an earlier claim here
 
 Originally logged as a third unemulatable case ("no Rust target even with
 nightly `specialization`"). That was wrong, and worth correcting rather than
@@ -219,7 +219,7 @@ making the tag generic over `T` just exposes the same generic-function
 timing bug as the very first autoref attempt in this doc — a call inside a
 generic `fn dispatch<T>(...)` type-checks once against the abstract `T`,
 before monomorphization, so it always resolves to the one branch applicable
-to *every* `T` (confirmed: prints `Fallback` unconditionally, same failure
+to _every_ `T` (confirmed: prints `Fallback` unconditionally, same failure
 mode as the original `dispatch<T: ?Sized>` case above).
 
 Second, and more fundamental: even sidestepping the generic-function timing
@@ -231,12 +231,13 @@ worked for the recoverable-SFINAE case), ordinary overlapping impls plus
 impl<T: TraitB> Handle for T { default fn handle(&self) { println!("B branch"); } }
 impl<T: TraitA> Handle for T { fn handle(&self) { println!("A branch"); } }
 ```
+
 ```
 error[E0119]: conflicting implementations of trait `Handle`
 ```
 
 `default fn` alone doesn't grant the override — specialization only permits
-it when the compiler can *prove* one impl's domain is a strict subset of
+it when the compiler can _prove_ one impl's domain is a strict subset of
 the other's, and two independent trait-bounded predicates have no such
 relationship. The natural C++-style workaround, manually breaking the tie
 with negation (`enable_if<!is_a<T>::value && is_b<T>::value>` for the B
@@ -245,6 +246,7 @@ branch), doesn't exist in Rust either — confirmed:
 ```rust
 fn f<T: TraitB + !TraitA>(_t: T) {}
 ```
+
 ```
 error: negative bounds are not supported
 ```

@@ -19,4 +19,3 @@ Fixture: `tests/fixtures/atoi_atof_const_fold.c`. rewrites profile 110/110.
 Deferred: Tier B (`__slate_ato*` prelude helper for dynamic args) needs a
 backend→prelude wiring path (memchr injects at the frontend lowerer). errno tiering
 only matters for strtol/strtoul/strtod, not these zero-error conversions.
-

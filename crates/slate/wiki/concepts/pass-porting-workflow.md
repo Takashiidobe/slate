@@ -50,7 +50,7 @@ not salsa -> worklist engine) and is pure historical record now.
   pass that's a verified 1:1 port of an already-shipped algorithm (same
   matcher, same edit shape, reusing the sibling's helpers) does **not** need
   a bespoke new fixture under `tests/fixtures/` — CLAUDE.md's "every feature
-  starts with a fixture" targets *new* behavior; the existing differential
+  starts with a fixture" targets _new_ behavior; the existing differential
   corpus already exercises the ported logic broadly.
 - Don't hand-construct a minimal C repro to prove one specific guard/branch
   fired. Tracing conservative safety checks (e.g. a `type_anchored`/
@@ -73,7 +73,7 @@ not salsa -> worklist engine) and is pure historical record now.
   invocation in wall-clock timing yourself (`date +%s.%N` before/after,
   3 runs, eyeball the spread).
 - `translate-project --lib` needs `--compile-commands <file>
-  <project_dir> <crate_dir>` — check `slate translate-project --help`
+<project_dir> <crate_dir>` — check `slate translate-project --help`
   rather than guessing flags (`--out` is not one of them).
 - To isolate one pass's marginal cost: build twice (with/without the new
   rule registered), keep both binaries, run each 2-3x on the same corpus
@@ -92,5 +92,5 @@ not salsa -> worklist engine) and is pure historical record now.
 - [passes.md](passes.md) — the pass catalog and ordering rationale.
 - `wiki/log/2026-08-27-13-38.md` — the per-pass cost table.
 - `wiki/historical/salsa-migration.md` — background only, not needed to port
-  a pass; read it solely if you need history on *why* salsa was adopted and
+  a pass; read it solely if you need history on _why_ salsa was adopted and
   then dropped.

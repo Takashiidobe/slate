@@ -31,5 +31,5 @@ surrounding casts/`unsafe` (harmless, covered by the `unused` allow).
 
 Shipped entries: exit, abort, strlen (`-> s.len()`). Verified e2e on
 `ptr_len_str_worklist` differential. Follow-ups (slate-y0qs.6): strcmp/strcpy
-family, and mem*/memset which need result-value/node handling (they return
+family, and mem\*/memset which need result-value/node handling (they return
 `dst` into a typed let) — a distinct shape from the value-returning chase.

@@ -1,11 +1,9 @@
 # Index
 
 - [Architecture](concepts/architecture.md)
-- [Facts](concepts/facts.md)
-- [Fixups](concepts/fixups.md)
+- [Differential fixtures](concepts/differential-fixtures.md)
 - [Lowerer internals](concepts/lowerer-internals.md)
 - [Passes](concepts/passes.md)
-- [Writing a Query-Driven Fixup](concepts/writing-a-query-driven-fixup.md)
 - [libc-shim](concepts/libc-shim.md)
 - [gcc-torture triage](concepts/gcc-torture-triage.md)
 - [Android NDK oracle](concepts/android-ndk-oracle.md)
@@ -58,12 +56,18 @@ superseded each one for what actually applies now.
 - [Salsa Migration](historical/salsa-migration.md) -- superseded by
   [Rewrite engine v2](concepts/rewrite-engine-v2.md), which dropped salsa
   for hand-rolled fact caches.
+- [Writing a Query-Driven Fixup](historical/writing-a-query-driven-fixup.md) --
+  the retired `src/backend/query/` engine; see
+  [Rewrite engine v2](concepts/rewrite-engine-v2.md).
+- [Fixups](historical/fixups.md) -- query-engine matcher/`EditSet` mechanics,
+  retired with `src/backend/query/`.
+- [Facts](historical/facts.md) -- salsa-backed analysis layer, retired.
 - [ptr_len signature worklist with canonical forwarding](concepts/ptr-len-signature-worklist-with-canonical-forwarding.md)
 - [ptr_len owned Vec signature lifting](concepts/ptr-len-owned-vec-signature-lifting.md)
 - [Re-enable rewrite FileCheck for worklist baseline](concepts/re-enable-rewrite-filecheck-for-worklist-baseline.md)
 - [Local libc-call rewrite table with multi-hop lifted-arg chase](concepts/local-libc-call-rewrite-table-with-multi-hop-lifted-arg-chase.md)
 - [Fix length-lattice multi-buffer asymmetry (by_callee/accepted single-candidate bug)](concepts/fix-length-lattice-multi-buffer-asymmetry-by-callee-accepted-single-candidate-bug.md)
-- [Local libc table: strcmp via Ordering, mem* via intrinsic, dead-let drop](concepts/local-libc-table-strcmp-via-ordering-mem-via-intrinsic-dead-let-drop.md)
+- [Local libc table: strcmp via Ordering, mem\* via intrinsic, dead-let drop](concepts/local-libc-table-strcmp-via-ordering-mem-via-intrinsic-dead-let-drop.md)
 - [memcmp libc rewrite + byte-array slice lifting; ctype backed out for locale](concepts/memcmp-libc-rewrite-byte-array-slice-lifting-ctype-backed-out-for-locale.md)
 - [Remove retired backend facts and Salsa](concepts/remove-retired-backend-facts-and-salsa.md)
 - [Bridge fixed arrays into pointer length signatures](concepts/bridge-fixed-arrays-into-pointer-length-signatures.md)

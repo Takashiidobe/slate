@@ -1,163 +1,248 @@
 # Architecture
 
+A one-stop map of the pipeline: what each stage consumes and produces, which
+crate or module owns it, and **where to target a given fix**. Deep-dives live in
+[lowerer-internals.md](lowerer-internals.md), [rewrite-engine-v2.md](rewrite-engine-v2.md),
+[passes.md](passes.md), and [differential-fixtures.md](differential-fixtures.md); this
+page is the index that gets you to the right one.
+
+## The pipeline at a glance
+
+```
+                          ┌─────────────────────── clang-ir crate ───────────────────────┐
+  C source                │                                                              │
+     │                    │ clang -fclangir -emit-cir ─▶ cir-opt --mlir-print-op-generic │
+     ├── preprocess ──────┤                                                              │
+     │   (#if/#cfg,       │                     │                                        │
+     │    diagnostics)    │            parse ─▶ Operation tree ─▶ generated Op model     │
+     │                    └─────────────────────────────────────────────┬────────────────┘
+     │                                                                   │ Module (CIR)
+     └── clang -ast-dump=json ───────────────▶ src/frontend/c_ast.rs ────┤ Unit (compact AST)
+         + SLATE_MACRO_DUMP_PLUGIN provenance                            │
+                                                                         ▼
+                                        src/frontend/lowerer/*  ── LOWERING ──▶ Program
+                                        (Module + Unit, joined by source location)   │ (rust_ast)
+                                                                                     ▼
+                                        src/backend/{interproc,engine}/* ── REWRITING ──▶ Program
+                                        (lattices, then AST-to-AST worklist rules)    │
+                                                                                      ▼
+                                                     src/backend/codegen.rs ── EMIT ──▶ Rust source
+```
+
+Two independent knobs turn stages off: `NEXTEST_PROFILE=lowering` or
+`SLATE_RAW_LOWER` skips **rewriting** entirely (baseline Rust only); the
+`rewrites` profile runs the whole thing. The pipeline order is fixed and
+explicit in `src/api.rs` (`lowered_program_with_args`) and `src/main.rs` — there
+is no pass-scheduling machinery to configure.
+
 ## Why CIR, not LLVM IR
 
-Translation quality is bounded by how much structure the source IR retains.
-LLVM IR has already destroyed what Rust needs:
-
-- **Control flow** becomes a CFG of basic blocks — no `for`/`while`/`if`.
-  Recovering structure (the "relooper" problem) is hard and, for irreducible
-  graphs, impossible without node duplication or dispatch variables.
-- **SSA + phi nodes** replace source variables.
-- **Signedness and source types** are largely gone (`add` is neither signed nor
-  unsigned; structs are scalarized).
+Translation quality is bounded by how much structure the source IR retains, and
+LLVM IR has already destroyed what Rust needs: control flow is a CFG of basic
+blocks (no `for`/`while`/`if`; irreducible graphs need node duplication or
+dispatch variables to re-structure), source variables are gone into SSA + phi
+nodes, and signedness and source types are largely erased.
 
 ClangIR (CIR) sits between the Clang AST and LLVM IR. In its high-level,
-pre-`cir-flatten-cfg` form it keeps exactly what we need:
+pre-`cir-flatten-cfg` form it keeps what we need:
 
 - Structured control flow as region-carrying ops (`cir.for`, `cir.scope`,
   `cir.if`, `cir.switch`).
-- Named local variables as `cir.alloca "x"` memory slots (not SSA) — these map
-  directly to Rust `let mut`, sidestepping phi reconstruction.
+- Named locals as `cir.alloca "x"` memory slots (not SSA) — these map directly
+  to Rust `let mut`, sidestepping phi reconstruction.
 - Integer signedness in the type (`!cir.int<s, 32>` vs `<u, 32>`).
 
-We consume the **MLIR generic form** (`cir-opt --mlir-print-op-generic`) because
-it is fully regular — `"op"(operands) <{attrs}> ({regions}) : type` — which makes
-a stable, op-agnostic parser possible. clang-ir parses this into a generic
-`Operation` tree and converts function bodies to its generated `Op` model (see
-[Two IRs](#two-irs) below). Slate dispatches directly on that generated enum;
-it has no separate operation-kind taxonomy.
+**Escape hatch for `goto`**: arbitrary `goto` doesn't fit the structured region
+model. For functions that contain a `goto`, Slate opts into a second emission
+path that runs `cir-opt --cir-flatten-cfg --cir-goto-solver`, producing a plain
+multi-block CFG, which lowering turns into a `loop { match state { .. } }`
+dispatch. It is invoked only when needed — running it unconditionally would be
+correct but would degrade every goto-free function into the uglier dispatch
+form. (This flattening is why a value defined in one flattened block and used in
+another must be recognized as cross-block-live during lowering.)
 
-**Escape hatch for `goto`**: arbitrary `goto` (including Duff's-device-shaped
-jumps into nested scopes) doesn't fit the structured region model above.
-`frontend::toolchain::emit_generic_with_args_flattened` is a second, opt-in emission
-path that runs `cir-opt --cir-flatten-cfg --cir-goto-solver`, producing a
-plain multi-block CFG (`cir.switch.flat`/`cir.brcond`/real `cir.br` edges)
-instead of the nested structured form, which `frontend::cir_input` then turns
-into a `loop { match state { .. } }` dispatch. This is deliberately only
-invoked for functions that actually contain a `goto` — running it
-unconditionally would still be correct but would degrade every goto-free
-function from native Rust `if`/`loop` control flow into the uglier dispatch
-form.
+## The clang-ir crate (CIR ingestion)
 
-## The three sources
+Slate does not parse C or CIR by hand. The sibling `clang-ir` workspace
+(`../clang-ir`, path dependency in `Cargo.toml`) owns everything about turning
+CIR text into typed Rust values. Keep the split in mind but treat it as a
+black box unless you're adding a CIR op:
+
+- **`clang-ir-types-gen`** is a code generator that emits the **op / type /
+  attribute / enum model** — the `Op` enum and per-op structs like `GetMember {
+addr, result, .. }` that lowering matches on. When a CIR op Slate needs isn't
+  in the model yet, that generator is what grows to add it (regenerate, don't
+  hand-edit the generated `clang-ir-types` output).
+- **`clang-ir`** holds the parsing helpers and `toolchain.rs`: it runs
+  `clang`/`cir-opt`, lexes the MLIR generic form, builds a generic `Operation`
+  tree, and converts function bodies into the generated `Op` model. Slate
+  dispatches directly on that generated enum; it has no separate operation-kind
+  taxonomy.
+
+Slate consumes the **MLIR generic form** (`"op"(operands) <{attrs}> ({regions})
+: type`) precisely because it is fully regular, which makes a stable,
+op-agnostic parser possible. `src/frontend/cir_input.rs` drives emission and
+hands lowering a `Module`.
+
+## The three sources, joined by location
 
 Every input is available in three forms, all keyed by **source location**:
 
 | Source    | How obtained                                                     | Role                                     |
-| --------- | ---------------------------------------------------------------- | ----------------------------------------- |
+| --------- | ---------------------------------------------------------------- | ---------------------------------------- |
 | CIR       | `clang -fclangir -emit-cir` \| `cir-opt --mlir-print-op-generic` | primary lowering input                   |
 | Clang AST | `clang -Xclang -ast-dump=json -fsyntax-only`                     | structured source context and raw oracle |
 | C text    | read the file                                                    | comments / naming (final polish)         |
 
 **Location is the join key.** CIR ops carry `loc("f.c":4:13)`; AST nodes carry
-source ranges; C text is addressable by line:col. "Consult the AST" means: take
-a CIR op's `loc`, look up the AST node covering that range, read the
-disambiguating fact. The parser retains locations for exactly this reason —
-they are structural, not noise.
+source ranges. "Consult the AST" means: take a CIR op's `loc`, look up the AST
+node covering that range, read the disambiguating fact (signedness of a literal,
+a field's declared type, a macro spelling). `src/frontend/c_ast.rs` loads
+Clang's JSON AST, filters it to source-file function definitions, extracts a
+compact `Unit` (`Function`, `Decl`, `Stmt`, `Expr`, `CType`, `Loc`), and keeps
+each function's raw Clang JSON node as an escape hatch for facts the compact
+model hasn't grown yet.
 
-`src/frontend/c_ast.rs` loads Clang's JSON AST during `translate`. It filters
-the dump down to source-file function definitions, extracts a compact `Unit`
-(`Function`, `Decl`, `Stmt`, `Expr`, `CType`, `Loc`), and preserves each
-function's raw Clang JSON node. The compact AST is the common path; the raw
-node is the escape hatch when a new feature needs more source facts before the
-compact model has grown.
-
-### Plugin provenance events
+### Provenance from the plugin
 
 The Clang plugin (`SLATE_MACRO_DUMP_PLUGIN`, built by
-`tools/macro-dump-plugin/build.sh`) emits three line-oriented JSON event types
-on stderr:
+`tools/macro-dump-plugin/build.sh` against the same clang tree as `SLATE_CLANG`)
+emits line-oriented JSON on stderr: `MACRO_EXPANSION` (macro names at source
+offsets), `INCLUDE_PROVENANCE` (written include, quote/angle form, resolved
+file, system-header characteristic), and `FUNCTION_PROVENANCE` (each call site's
+declaration binding, canonical type, trusted-system-header ancestry, asm/alias
+name, weak-import and availability). `trusted_header` means the declaration
+chain reaches an angled system header with no untrusted redefinition — it does
+**not** by itself identify a libc API; consumers must additionally match a known
+function identity, required header, and canonical signature.
 
-- `MACRO_EXPANSION` records macro names at main-file source offsets.
-- `INCLUDE_PROVENANCE` records the written include name, angle-versus-quote
-  form, physical resolved file, includer location, and Clang system-header
-  characteristic.
-- `FUNCTION_PROVENANCE` records each main-file call site, its direct Clang
-  declaration binding when one exists, canonical type, redeclaration evidence,
-  trusted system-header ancestry, source macro spelling, resolved assembler or
-  alias name, weak-import state, availability versions, and conservative
-  rejection reasons.
+## libc-shim (what "the system headers" are)
 
-`trusted_header` means that the declaration chain reaches a physical header
-resolved by an angled include from a Clang system search path and has no
-untrusted definition or symbol-changing declaration. It does not by itself mean
-that the function is a particular libc API. Consumers must additionally match a
-known function identity, required header, and canonical signature. `unknown` is
-the default for indirect calls, project-only declarations, project definitions,
-aliases, asm labels, weak declarations, and ifunc declarations.
+Slate never parses the host's real libc headers. `SLATE_CLANG` runs with
+`-nostdlibinc -isystem libc-shim/include`, so `libc-shim/` **is** the C standard
+library as far as CIR emission is concerned (clang's own freestanding builtin
+headers — `stddef.h`, `stdint.h`, `stdatomic.h` — stay available). This pins the
+ABI and declaration surface to something Slate controls and can model per
+target, instead of whatever the build host happens to ship. Target variants live
+alongside (`bionic-*`, `macos-*`, `msvc-*` header lists and `bits/`).
 
-Header provenance describes source-level declaration binding under the exact
-Clang invocation. It does not prove which implementation a static or dynamic
-linker selects, and it does not rule out runtime symbol interposition.
+The reverse direction is `src/frontend/c_shim.rs`: when the generated Rust calls
+into libc, it renders a small **shim C source** declaring exactly those externs
+so the differential harness can compile and link the C side consistently. Shim
+and header work is exercised by the `libc` nextest profile — see
+[libc-shim.md](libc-shim.md).
 
-## Two IRs
+## Directive translate (`#if`/`#cfg` reconstruction)
 
-The pipeline flows through two internal representations on the frontend side:
+Preprocessing is its own producer, kept separate from lowering. `src/frontend/
+preprocess.rs` records the translation unit's directive structure — `#if` /
+`#ifdef` / `#elif` chains, `#error`/`#warning`, pragmas — as `Branch` /
+`CondChain` records, and maps each condition to a Rust `Cfg`
+(`src/backend/rust_ast.rs`). Active `#error`/`#warning` on the selected config
+become `compile_error!` items so the failure survives translation. The
+experimental `translate-directives` command
+(`src/frontend/directive_translate.rs`) uses these records to reconstruct **one
+Rust source carrying multiple `#[cfg]` configurations** instead of collapsing to
+the single config clang happened to preprocess. High-level for now; the checks
+run under `DIRECTIVES` FileCheck prefixes.
 
-1. **clang-ir CIR model** — its parser first builds generic `Operation` nodes,
-   then its generated `Op` model provides checked operation structs with named
-   operands, results, attributes, successors, and regions. Slate lowers the
-   generated model directly while retaining generic operations for module-level
-   collection and analysis.
-2. **Clang source context** (`src/frontend/c_ast.rs`) — a compact AST plus raw
-   JSON, keyed by source locations and function names. This is not a
-   handwritten C parser; it is Clang's semantic AST reduced to the facts Slate
-   currently needs.
+## Lowering (CIR + AST → baseline Rust AST)
 
-`src/backend/rust_ast.rs` is the output-side tree and printer. The lowerer
-(`src/frontend/lowerer.rs` and `src/frontend/lowerer/`) builds it directly:
-every handler emits structured `Item`/`Stmt`/`Expr` nodes that
-`src/backend/codegen.rs` renders once, never Rust source strings. Keep that
-output as strongly typed as possible — a new enum variant is preferred over a
-`String` bridge, so the compiler enforces exhaustiveness and fixups can
-pattern-match the shape. Fixups (`src/backend/`) operate on the same tree
-(AST-to-AST only, see [fixups.md](fixups.md)). AST nodes can also carry typed,
-non-rendered metadata populated by lowering when CIR or the Clang AST provides
-semantic contracts that Rust syntax cannot express; fact analysis
-(`src/backend/facts/`, [facts.md](facts.md)) imports that metadata without
-coupling the lowerer to the fixup fact API.
+This is the core, in `src/frontend/lowerer.rs` and `src/frontend/lowerer/`.
+`frontend::lower(&module, &unit, &mut ctx)` returns a `Program` (a
+`src/backend/rust_ast.rs` tree), which `src/backend/codegen.rs` renders — the
+lowerer never builds Rust _source strings_, only typed `Item`/`Stmt`/`Expr`
+nodes, so the compiler enforces exhaustiveness and rewrites can pattern-match
+shape. Keep output strongly typed: prefer a new enum variant over a `String`
+bridge, and attach typed, non-rendered metadata to nodes when CIR or the AST
+proves a contract Rust syntax can't express.
 
-**See [lowerer internals](lowerer-internals.md) for the lowerer's internal module split** — the
-`Lowerer`/`FunctionLowerer` two-tier design, the submodule-by-concern table,
-op dispatch, and how to wire in a new `cir.*` handler.
+Two tiers (full map in [lowerer-internals.md](lowerer-internals.md)):
 
-## Shared context
-
-`Ctx` (`src/ctx.rs`) is threaded through lowering:
-
-```rust
-pub struct Ctx {
-    pub diagnostics: Diagnostics, // unsupported-construct reports
-}
+```
+Lowerer                     translation-unit state: globals, records, enums,
+  │                         known signatures, aliases, string table
+  └─ FunctionLowerer        per-function: SSA value map, alloca slots,
+       │                    member_ptrs/element_ptrs, dispatch context
+       └─ lower_op(op)  ──▶ one handler per cir.* op, split by concern:
 ```
 
-`Diagnostics` is what keeps the pipeline runnable as coverage grows: an
-unhandled op lowers to a marked fallback (a `todo!()`, an `unsafe` `libc` call,
-or a comment) and records a diagnostic instead of crashing or silently
-dropping code. Translation-unit-wide lowering state itself (globals, records,
-enums, known function signatures) lives on `Lowerer`, not `Ctx` — see
-[lowerer internals](lowerer-internals.md).
+| Concern           | Submodule(s)                                                        |
+| ----------------- | ------------------------------------------------------------------- |
+| op dispatch       | `dispatch.rs` (the big `match` in `lower_op`)                       |
+| control flow      | `control_flow.rs` (`if`/loops/scope, goto dispatch)                 |
+| memory / places   | `memory.rs`, `storage.rs` (load/store, get_member/element, allocas) |
+| values / temps    | `values.rs` (`materialize_expr`, SSA value map)                     |
+| arithmetic, calls | `arithmetic.rs`, `calls.rs`, `builtins.rs`, `intrinsics*.rs`        |
+| types / records   | `types.rs`, `record_analysis.rs`, `bitfields.rs`                    |
+| whole-fn analysis | `analysis.rs` (e.g. cross-block liveness), `function_setup.rs`      |
 
-## Pipeline shape
+Key mechanics a fix usually touches: **op dispatch** (`lower_op` routes each
+`Op::*` to a handler; a new op = a new arm + handler), the **SSA value map**
+(`materialize_expr` decides `let _vN = ..` vs a hoisted `let mut`), **place
+inlining** (`get_member`/`get_element` are stashed as `member_ptr`/`element_ptr`
+and expanded at each use rather than bound), **goto dispatch** (`lower_dispatch`
+turns flattened blocks into a `loop { match state }`, with `cross_block_live_
+values` deciding which SSA temps must be hoisted across states), and the
+**diagnostics fallback** — an unhandled op lowers to a marked `todo!()` / `unsafe`
+libc call / comment and records a `Ctx` diagnostic instead of crashing, which is
+what keeps the pipeline runnable as coverage grows.
 
-The pipeline is fixed and explicit in the CLI (`src/main.rs`): emit CIR, parse
-CIR, load Clang AST JSON, lower to Rust, apply fixups, and verify with
-generated differential tests. Do not add pass scheduling machinery until a
-feature needs conditional ordering.
+## Rewriting (baseline Rust AST → idiomatic Rust AST)
 
-See [passes.md](passes.md) for the current stages, the fixup pass sequence,
-and the extension workflow.
+Baseline lowering is allowed to be ugly (`#[repr(C)]`, raw pointers, explicit
+temps, `unsafe`, `libc`) because correctness is the only bar. Rewrites recover
+idiom — safe references, `Vec`/`Box`, `for x in ..`, compound assignment — as
+**separately verified, AST-to-AST** passes, in `src/backend/`. Entry point is
+`engine::apply(program)`:
 
-## Adding a feature
+```
+engine::apply(program):
+  1. interproc analyses  (src/backend/interproc/*)  — whole-program, run first
+       string_params ▸ pointer_lattice ▸ length_lattice
+       decide signatures/provenance: *mut vs &mut vs &[T], Box, string lifting
+  2. per-function worklist  (src/backend/engine/*)
+       build an Arena of nodes ─▶ run_worklist:
+         pop node ▸ RuleRegistry.candidates(kind) ▸ rule.apply ▸ reschedule
+         neighbors/parents; EDIT_BUDGET guards oscillation
+       rules: inline_temps (early/late), zero_init, raw_ptr_alias,
+              singleton_scopes (loop/scope unwrap), libc_call table
+  3. prelude::inject  — add helper preludes the rewrites referenced
+```
 
-- **Lowering feature** (teach Slate to preserve more C semantics in baseline
-  Rust — structs, arrays, pointer arithmetic, a new arithmetic operator, a new
-  `cir.*` op): see [lowerer internals](lowerer-internals.md#adding-a-new-cir-handler).
-- **Rust fixup** (turn already-correct baseline Rust into more idiomatic or
-  safer Rust): see [writing a query-driven fixup](writing-a-query-driven-fixup.md).
+The interproc **lattices** are the cross-function part: `pointer_lattice`
+resolves each pointer parameter to its safest Rust shape (`&T`/`&mut T`/`&[T]`/
+`Box`/`*const`/`*mut`) by fixed-point over observed writes, offsets, escapes,
+and call-site propagation; `length_lattice` pairs pointer+length params into
+slices; `string_params` lifts C strings. A rule is a `NodeRule` matched by node
+kind (and optional call anchor); the worklist reruns only affected nodes to a
+fixed point. Full authoring contract and the pass catalog:
+[rewrite-engine-v2.md](rewrite-engine-v2.md) and [passes.md](passes.md); the
+pointer-representation lattice has its own canonical reference,
+[pointer-capability-lattice.md](pointer-capability-lattice.md). (The older
+`src/backend/query/` + salsa engine these replaced is documented under
+`wiki/historical/`.)
 
-Both start from a fixture in `tests/fixtures/` and a failing differential test
-— never hand-verify output by eye. Keep baseline lowering conservative
-(`#[repr(C)]`, raw pointers, explicit temps, `libc`, `unsafe` are all
-acceptable); recover idiom only in a separate, independently-verified fixup.
+## Verification
+
+Correctness is checked by **differential testing**: compile and run both the C
+source and the generated Rust, require identical stdout and exit code. FileCheck
+directives add generated-Rust _shape_ assertions on top. Every feature and fixup
+starts from a fixture in `tests/fixtures/` and a failing differential test —
+never hand-verify output by eye. See
+[differential-fixtures.md](differential-fixtures.md) for markers, the
+`update_filecheck.py` scaffolder, and per-fixture clang-arg overrides.
+
+## Where to target a fix
+
+| Symptom                                                         | Subsystem → start here                                                     |
+| --------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| A `cir.*` op emits `todo!()` / is unhandled                     | lowering op dispatch — `lowerer/dispatch.rs` + a handler                   |
+| Wrong control-flow shape, goto/`match state`, out-of-scope temp | lowering control flow — `control_flow.rs`, `analysis.rs`                   |
+| Wrong pointer type (`&` vs `&mut` vs slice), missing `Box`      | rewriting interproc — `interproc/pointer_lattice.rs` / `length_lattice.rs` |
+| Ugly-but-correct Rust that should be idiomatic                  | rewriting rule — `engine/rules/*`                                          |
+| A CIR op/type/attr Slate can't represent                        | `../clang-ir/clang-ir-types-gen` (regenerate the model)                    |
+| Wrong libc declaration / ABI / missing header                   | `libc-shim/` (+ `c_shim.rs`); run the `libc` profile                       |
+| `#if`/`#cfg` handling, `compile_error!` from directives         | `frontend/preprocess.rs`, `directive_translate.rs`                         |
+| Wrong final Rust text for a correct AST                         | output side — `backend/rust_ast.rs`, `backend/codegen.rs`                  |
+| Need a source fact CIR lacks (signedness, field type, macro)    | AST oracle — `frontend/c_ast.rs` (compact `Unit` or raw JSON)              |
