@@ -484,6 +484,7 @@ pub fn target_feature_functions(module: &Module) -> BTreeMap<String, Vec<String>
 pub(super) fn rustc_target_feature_name(name: &str) -> &str {
     match name {
         "crc32" => "sse4.2",
+        "bmi" => "bmi1",
         other => other,
     }
 }
