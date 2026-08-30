@@ -341,6 +341,28 @@ pub(super) fn decode_cir_string(s: &str) -> Vec<u8> {
     clang_ir::decode_escaped_bytes(s.as_bytes())
 }
 
+pub(super) fn attr_cir_type(attr: &Attr) -> Option<&CirType> {
+    match attr {
+        Attr::ConstArray { ty, .. }
+        | Attr::ConstComplex { ty, .. }
+        | Attr::ConstPtr { ty, .. }
+        | Attr::ConstRecord { ty, .. }
+        | Attr::ConstVector { ty, .. }
+        | Attr::CirFloat { ty, .. }
+        | Attr::CirInt { ty, .. }
+        | Attr::Zero { ty } => Some(ty),
+        Attr::Int { ty, .. } | Attr::Float { ty, .. } => ty.as_ref(),
+        _ => None,
+    }
+}
+
+pub(super) fn union_member_cir_types(ty: &CirType) -> Option<&[CirType]> {
+    match ty {
+        CirType::Union { members, .. } => members.as_deref(),
+        _ => None,
+    }
+}
+
 pub(super) fn sanitize_ident(s: &str) -> Ident {
     let mut out = String::new();
     for (i, c) in s.chars().enumerate() {
