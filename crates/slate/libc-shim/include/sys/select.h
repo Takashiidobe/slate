@@ -11,6 +11,12 @@
 #define __NEED_sigset_t
 #include <bits/types.h>
 
+#if defined(__SLATE_LIBC_DARWIN)
+
+#include <bits/darwin/select.h>
+
+#else
+
 enum { FD_SETSIZE = 1024 };
 
 typedef unsigned long fd_mask;
@@ -36,6 +42,8 @@ enum { NFDBITS = (8 * (int)sizeof(long)) };
 #if _REDIR_TIME64
 __REDIR(select, __select_time64);
 __REDIR(pselect, __pselect_time64);
+#endif
+
 #endif
 
 #endif
