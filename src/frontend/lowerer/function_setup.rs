@@ -380,6 +380,7 @@ impl<'a> Lowerer<'a> {
             member_ptrs: BTreeMap::new(),
             element_ptrs: BTreeMap::new(),
             block_addr_element_ptrs: BTreeMap::new(),
+            local_block_addr_arrays: BTreeMap::new(),
             indirect_target_values: BTreeMap::new(),
             temp_counter: 0,
             indent: 1,
