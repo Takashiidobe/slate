@@ -12,6 +12,12 @@ extern const locale_t _c_locale;
 struct lconv *localeconv_l(locale_t);
 const char   *querylocale(int, locale_t);
 
+#elif defined(__SLATE_LIBC_FREEBSD)
+
+#include <locale.h>
+
+struct lconv *localeconv_l(locale_t);
+
 #endif
 
 #endif

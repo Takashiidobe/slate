@@ -104,3 +104,49 @@ headers beyond the ISO set (`dirent.h`, `pthread.h`, `signal.h`,
 `sys/socket.h`, `sys/stat.h`, `unistd.h`, ...) are deliberately excluded from
 this manifest until their layouts are checked against the oracle in later
 tickets (`slate-sfzn.10.4`–`.10.13`).
+
+## stdio, locale, and text conversion (`slate-sfzn.10.3`)
+
+`libc-shim/freebsd-stdio-locale-headers.txt` extends the manifest with
+stdio.h, locale.h, xlocale.h, wchar.h, wctype.h, uchar.h, and langinfo.h.
+
+`struct __sFILE`, defined in `libc-shim/bits/freebsd/stdio.h`, is the real
+15.1-RELEASE layout (312 bytes, 8-byte aligned), verified field-for-field
+against the oracle sysroot with
+`clang -Xclang -fdump-record-layouts -c -o /dev/null`. `fpos_t` is a direct
+`__off_t` alias (no wrapper struct, unlike Darwin's `__fpos_t`). `stdin` /
+`stdout` / `stderr` route through `__stdinp` / `__stdoutp` / `__stderrp`,
+same as Darwin. `__mbstate_t` (`bits/types.h`) is a union of a 128-byte
+buffer and a `long long`, embedded inline in `__sFILE` at offset 176 — a
+plain byte array would have the wrong alignment, since the real type
+requires 8-byte alignment for its `long long` member. `_fl_mutex` /
+`_fl_owner` are modeled as `void *` rather than the real
+`struct pthread_mutex *` / `struct pthread *`, since only pointer
+size/alignment matters for this layout and the pointee types aren't
+otherwise modeled.
+
+`locale.h`: `LC_*` category numbering (`LC_ALL=0` .. `LC_MESSAGES=6`) and
+`lconv`'s `int_p_cs_precedes`/`int_n_cs_precedes` field order match
+Darwin's. `LC_*_MASK` bit assignment does not — FreeBSD orders
+`COLLATE,CTYPE,MONETARY,NUMERIC,TIME,MESSAGES`, Darwin orders
+`COLLATE,CTYPE,MESSAGES,MONETARY,NUMERIC,TIME` — so FreeBSD has its own
+mask block rather than reusing Darwin's. `freelocale()` returns `void` on
+FreeBSD (`int` on Darwin), so FreeBSD stays on the shared default branch.
+
+`langinfo.h`: `nl_item` numbering (`CODESET=0` .. `D_MD_ORDER=57`) is
+numerically identical to Darwin's, but Darwin gates `YESSTR`/`NOSTR`/
+`D_MD_ORDER` behind `__DARWIN_C_LEVEL`; FreeBSD defines them
+unconditionally, so it has its own block instead of reusing Darwin's.
+
+`xlocale.h`: FreeBSD gets only `localeconv_l`, matching its real surface.
+Darwin's `LC_C_LOCALE`/`_c_locale` globals and the wider `_l`-suffixed
+function family (`strtol_l` etc.) have no FreeBSD equivalent in this header
+and are out of scope here.
+
+`wchar.h`/`wctype.h` gained `__SLATE_LIBC_FREEBSD` in the existing
+POSIX/Bionic/Darwin visibility conditions for `locale_t` and `_l`-suffixed
+wide-char functions — visibility only, no ABI divergence.
+
+Verified end-to-end via `slate translate` + `cargo check --target
+{x86_64,aarch64}-unknown-freebsd` against the generated Rust using the real
+`libc` crate, for a stdio-using fixture, on both architectures.

@@ -22,7 +22,8 @@
 #define __NEED_wctype_t
 #if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
     defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||  \
-    defined(__SLATE_LIBC_BIONIC) || defined(__SLATE_LIBC_DARWIN)
+    defined(__SLATE_LIBC_BIONIC) || defined(__SLATE_LIBC_DARWIN) ||   \
+    defined(__SLATE_LIBC_FREEBSD)
 #define __NEED_locale_t
 #endif
 #define __NEED_wctrans_t
@@ -52,7 +53,8 @@ wctype_t  wctype(const char *);
 
 #if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
     defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||  \
-    defined(__SLATE_LIBC_BIONIC) || defined(__SLATE_LIBC_DARWIN)
+    defined(__SLATE_LIBC_BIONIC) || defined(__SLATE_LIBC_DARWIN) ||   \
+    defined(__SLATE_LIBC_FREEBSD)
 int       iswalnum_l(wint_t, locale_t);
 int       iswalpha_l(wint_t, locale_t);
 int       iswblank_l(wint_t, locale_t);

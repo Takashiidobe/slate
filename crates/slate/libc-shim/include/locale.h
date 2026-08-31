@@ -16,7 +16,7 @@
 
 #else
 
-#if defined(__SLATE_LIBC_DARWIN)
+#if defined(__SLATE_LIBC_DARWIN) || defined(__SLATE_LIBC_FREEBSD)
 #define LC_ALL      0
 #define LC_COLLATE  1
 #define LC_CTYPE    2
@@ -33,7 +33,7 @@
 #define LC_MESSAGES 5
 #define LC_ALL      6
 #endif
-#if !defined(__SLATE_LIBC_DARWIN)
+#if !defined(__SLATE_LIBC_DARWIN) && !defined(__SLATE_LIBC_FREEBSD)
 #define LC_PAPER          7
 #define LC_NAME           8
 #define LC_ADDRESS        9
@@ -64,7 +64,7 @@ struct lconv {
   char  n_sep_by_space;
   char  p_sign_posn;
   char  n_sign_posn;
-#if defined(__SLATE_LIBC_DARWIN)
+#if defined(__SLATE_LIBC_DARWIN) || defined(__SLATE_LIBC_FREEBSD)
   char  int_p_cs_precedes;
   char  int_n_cs_precedes;
   char  int_p_sep_by_space;
@@ -80,7 +80,8 @@ struct lconv {
 
 #if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
     defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||  \
-    defined(__SLATE_LIBC_BIONIC) || defined(__SLATE_LIBC_DARWIN)
+    defined(__SLATE_LIBC_BIONIC) || defined(__SLATE_LIBC_DARWIN) ||            \
+    defined(__SLATE_LIBC_FREEBSD)
 #define __NEED_NULL
 #define __NEED_locale_t
 #include <bits/types.h>
@@ -94,6 +95,16 @@ struct lconv {
 #define LC_MONETARY_MASK (1 << 3)
 #define LC_NUMERIC_MASK  (1 << 4)
 #define LC_TIME_MASK     (1 << 5)
+#define LC_ALL_MASK                                                           \
+  (LC_COLLATE_MASK | LC_CTYPE_MASK | LC_MESSAGES_MASK | LC_MONETARY_MASK |   \
+   LC_NUMERIC_MASK | LC_TIME_MASK)
+#elif defined(__SLATE_LIBC_FREEBSD)
+#define LC_COLLATE_MASK  (1 << 0)
+#define LC_CTYPE_MASK    (1 << 1)
+#define LC_MONETARY_MASK (1 << 2)
+#define LC_NUMERIC_MASK  (1 << 3)
+#define LC_TIME_MASK     (1 << 4)
+#define LC_MESSAGES_MASK (1 << 5)
 #define LC_ALL_MASK                                                           \
   (LC_COLLATE_MASK | LC_CTYPE_MASK | LC_MESSAGES_MASK | LC_MONETARY_MASK |   \
    LC_NUMERIC_MASK | LC_TIME_MASK)
