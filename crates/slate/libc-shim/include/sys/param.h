@@ -1,6 +1,12 @@
 #ifndef _SLATE_SYS_PARAM_H
 #define _SLATE_SYS_PARAM_H
 
+#include <features.h>
+
+#if defined(__SLATE_LIBC_FREEBSD)
+#define __FreeBSD_version __SLATE_FREEBSD_VERSION__
+#endif
+
 #define MAXSYMLINKS    20
 #define MAXHOSTNAMELEN 64
 #define MAXNAMLEN      255

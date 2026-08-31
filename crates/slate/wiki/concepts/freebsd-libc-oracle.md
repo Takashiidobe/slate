@@ -589,3 +589,22 @@ for a fixture exercising `strlcpy`/`strlcat`, `reallocarray`, `qsort_r`
 with a context-carrying comparator, and
 `arc4random`/`arc4random_buf`/`arc4random_uniform` — both architectures
 check clean with zero warnings.
+
+## Feature selection and symbol versions (`slate-sfzn.10.10`)
+
+`bits/freebsd/features.h` mirrors the 15.1 `sys/_visible.h` state machine.
+The default namespace exposes BSD extensions, POSIX.1-2024, XSI Issue 8,
+and C23; `_POSIX_C_SOURCE`, `_XOPEN_SOURCE`, and the strict FreeBSD C-source
+macros narrow that surface without synthesizing glibc's `_BSD_SOURCE` or
+`_GNU_SOURCE`. `sys/param.h` exposes `__FreeBSD_version=1501000`, and the
+feature profile rejects any other release number so future declarations
+cannot silently enter the modeled surface.
+
+FreeBSD compatibility redirects use file-scope `.symver` assembly rather
+than Clang `AsmLabelAttr`. The macro provenance plugin now collects those
+directives before visiting calls. A call fact retains the source macro
+spelling, the resolved base ELF symbol, and a separate `FBSD_1.x` version.
+The historical-form `qsort_r` fixture therefore records source `qsort_r`,
+foreign symbol `qsort_r`, version `FBSD_1.0`; the POSIX-form call remains on
+the unversioned source declaration. Carrying that fact into emitted Rust is
+left to `slate-sfzn.10.12`.

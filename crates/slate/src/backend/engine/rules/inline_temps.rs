@@ -1282,6 +1282,17 @@ fn kind_simple_macro_arg_use(kind: &NodeKind, name: Ident) -> bool {
     }
 }
 
+fn unwrap_single_stmt(arena: &Arena, id: NodeId) -> NodeId {
+    match arena.get(id) {
+        Some(NodeKind::Unsafe { stmts, tail }) | Some(NodeKind::Block { stmts, tail })
+            if tail.is_none() && stmts.len() == 1 =>
+        {
+            unwrap_single_stmt(arena, stmts[0])
+        }
+        _ => id,
+    }
+}
+
 fn is_allowed_argument_use(
     kind: &NodeKind,
     name: Ident,
@@ -1389,8 +1400,12 @@ impl NodeRule for EarlyInlineTemps {
 
         let allowed_receiver =
             is_option_receiver_use(arena, found.consumer_id, name, ty.as_ref(), &init);
+        let arg_use_id = unwrap_single_stmt(arena, found.consumer_id);
+        let allowed_argument = arena.get(arg_use_id).is_some_and(|kind| {
+            is_allowed_argument_use(kind, name, ty.as_ref(), &init, producer_effects, adjacent)
+        });
         let consumer_effects = node_effects(arena, found.consumer_id);
-        if consumer_effects.has_call() && !allowed_receiver {
+        if consumer_effects.has_call() && !(allowed_receiver || allowed_argument) {
             return false;
         }
         if is_receiver_use(arena, found.consumer_id, name) && !allowed_receiver {
@@ -1505,7 +1520,8 @@ impl NodeRule for LateInlineTemps {
 
         let allowed_receiver =
             is_option_receiver_use(arena, found.consumer_id, name, ty.as_ref(), &init);
-        let Some(consumer_kind) = arena.get(found.consumer_id) else {
+        let arg_use_id = unwrap_single_stmt(arena, found.consumer_id);
+        let Some(consumer_kind) = arena.get(arg_use_id) else {
             return false;
         };
         let allowed_argument = is_allowed_argument_use(

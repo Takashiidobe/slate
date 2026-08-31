@@ -72,7 +72,8 @@ size_t strlen(const char *);
 
 char *strerror(int);
 
-#if defined(_BSD_SOURCE) || defined(_GNU_SOURCE)
+#if defined(_BSD_SOURCE) || defined(_GNU_SOURCE) ||                           \
+    (defined(__SLATE_LIBC_FREEBSD) && __BSD_VISIBLE)
 #include <strings.h>
 #endif
 
@@ -110,7 +111,8 @@ char *strndup(const char *, size_t);
 void *memccpy(void *__restrict, const void *__restrict, int, size_t);
 #endif
 
-#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||                           \
+    (defined(__SLATE_LIBC_FREEBSD) && __BSD_VISIBLE)
 char  *strsep(char **, const char *);
 size_t strlcat(char *, const char *, size_t);
 size_t strlcpy(char *, const char *, size_t);

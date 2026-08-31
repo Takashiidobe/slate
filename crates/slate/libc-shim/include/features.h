@@ -81,6 +81,8 @@
 
 #if defined(__SLATE_LIBC_DARWIN)
 #include <bits/darwin/features.h>
+#elif defined(__SLATE_LIBC_FREEBSD)
+#include <bits/freebsd/features.h>
 #endif
 
 #if defined(__SLATE_OBJ_ELF) + defined(__SLATE_OBJ_COFF) +                     \
@@ -97,15 +99,18 @@
 #error "Slate requires one target byte order."
 #endif
 
-#if defined(_ALL_SOURCE) && !defined(_GNU_SOURCE)
+#if !defined(__SLATE_LIBC_FREEBSD) && defined(_ALL_SOURCE) &&                  \
+    !defined(_GNU_SOURCE)
 #define _GNU_SOURCE 1
 #endif
 
-#if defined(_DEFAULT_SOURCE) && !defined(_BSD_SOURCE)
+#if !defined(__SLATE_LIBC_FREEBSD) && defined(_DEFAULT_SOURCE) &&              \
+    !defined(_BSD_SOURCE)
 #define _BSD_SOURCE 1
 #endif
 
 #if !defined(__SLATE_LIBC_MSVC) && !defined(__SLATE_LIBC_DARWIN) &&            \
+    !defined(__SLATE_LIBC_FREEBSD) &&                                         \
     !defined(_POSIX_SOURCE) && !defined(_POSIX_C_SOURCE) &&                    \
     !defined(_XOPEN_SOURCE) && !defined(_GNU_SOURCE) &&                        \
     !defined(_BSD_SOURCE) && !defined(__STRICT_ANSI__)

@@ -13,6 +13,7 @@
 #include "llvm/Support/Path.h"
 #include "llvm/Support/raw_ostream.h"
 
+#include <map>
 #include <memory>
 #include <set>
 #include <string>
@@ -192,10 +193,16 @@ llvm::json::Object sourcePoint(SourceManager &SM, SourceLocation Loc) {
       {"column", static_cast<int64_t>(Presumed.getColumn())}};
 }
 
+struct SymverFact {
+  std::string ForeignName;
+  std::string Version;
+};
+
 class ProvenanceVisitor : public RecursiveASTVisitor<ProvenanceVisitor> {
   SourceManager &SM;
   ASTContext &Context;
   const ProvenanceState &State;
+  const std::map<std::string, SymverFact> &Symvers;
 
   static llvm::json::Object floatingValue(const llvm::APFloat &Value) {
     llvm::SmallString<32> Text;
@@ -255,7 +262,7 @@ class ProvenanceVisitor : public RecursiveASTVisitor<ProvenanceVisitor> {
            Decl.hasAttr<WeakRefAttr>();
   }
 
-  static std::string foreignName(const FunctionDecl &Decl) {
+  std::string foreignName(const FunctionDecl &Decl) const {
     if (const auto *Attr = Decl.getAttr<AsmLabelAttr>())
       return Attr->getLabel().str();
     if (const auto *Attr = Decl.getAttr<AliasAttr>())
@@ -263,7 +270,22 @@ class ProvenanceVisitor : public RecursiveASTVisitor<ProvenanceVisitor> {
     if (const auto *Attr = Decl.getAttr<WeakRefAttr>();
         Attr && !Attr->getAliasee().empty())
       return Attr->getAliasee().str();
+    auto It = Symvers.find(Decl.getNameAsString());
+    if (It != Symvers.end())
+      return It->second.ForeignName;
     return Decl.getNameAsString();
+  }
+
+  std::string symbolVersion(const FunctionDecl &Decl) const {
+    auto It = Symvers.find(Decl.getNameAsString());
+    if (It != Symvers.end())
+      return It->second.Version;
+    std::string ForeignStorage = foreignName(Decl);
+    StringRef Foreign = ForeignStorage;
+    size_t At = Foreign.find('@');
+    if (At == StringRef::npos)
+      return {};
+    return Foreign.drop_front(At).ltrim('@').str();
   }
 
   static llvm::json::Array availability(const FunctionDecl &Decl) {
@@ -307,8 +329,9 @@ class ProvenanceVisitor : public RecursiveASTVisitor<ProvenanceVisitor> {
 
 public:
   ProvenanceVisitor(SourceManager &SM, ASTContext &Context,
-                    const ProvenanceState &State)
-      : SM(SM), Context(Context), State(State) {}
+                    const ProvenanceState &State,
+                    const std::map<std::string, SymverFact> &Symvers)
+      : SM(SM), Context(Context), State(State), Symvers(Symvers) {}
 
   bool VisitFloatingLiteral(FloatingLiteral *Literal) {
     SourceLocation Expansion = SM.getExpansionLoc(Literal->getExprLoc());
@@ -404,6 +427,7 @@ public:
     llvm::json::Array Declarations;
     std::string Name;
     std::string ForeignName;
+    std::string SymbolVersion;
     bool WeakImport = false;
     llvm::json::Array Availability;
 
@@ -421,9 +445,14 @@ public:
         HasTrustedDeclaration |= !DeclHeaders.empty();
         HasUntrustedDefinition |=
             Redecl->doesThisDeclarationHaveABody() && DeclHeaders.empty();
-        HasSymbolOverride |= changesSymbol(*Redecl);
-        if (changesSymbol(*Redecl))
+        bool HasResolvedSymbol =
+            changesSymbol(*Redecl) ||
+            Symvers.find(Redecl->getNameAsString()) != Symvers.end();
+        HasSymbolOverride |= HasResolvedSymbol;
+        if (HasResolvedSymbol) {
           ForeignName = foreignName(*Redecl);
+          SymbolVersion = symbolVersion(*Redecl);
+        }
         WeakImport |= Redecl->hasAttr<WeakImportAttr>();
         llvm::json::Array DeclAvailability = availability(*Redecl);
         for (llvm::json::Value &Value : DeclAvailability)
@@ -457,7 +486,7 @@ public:
         {"source_name", SourceName},
         {"foreign_name", ForeignName},
         {"source_macros", std::move(SourceMacros)},
-        {"symbol_override", ForeignName != Name},
+        {"symbol_override", ForeignName != Name || !SymbolVersion.empty()},
         {"weak_import", WeakImport},
         {"availability", std::move(Availability)},
         {"file", SM.getFilename(Loc).str()},
@@ -469,6 +498,8 @@ public:
         {"declarations", std::move(Declarations)},
         {"reasons", std::move(ReasonValues)},
     };
+    if (!SymbolVersion.empty())
+      Event["symbol_version"] = SymbolVersion;
     if (Callee)
       Event["canonical_type"] =
           Callee->getCanonicalDecl()->getType().getAsString();
@@ -498,6 +529,29 @@ public:
   }
 };
 
+class SymverCollector : public RecursiveASTVisitor<SymverCollector> {
+public:
+  std::map<std::string, SymverFact> Symvers;
+
+  bool VisitFileScopeAsmDecl(FileScopeAsmDecl *Decl) {
+    std::string TextStorage = Decl->getAsmString();
+    StringRef Text = TextStorage;
+    if (!Text.consume_front(".symver"))
+      return true;
+    auto [Implementation, Resolved] = Text.trim().split(',');
+    Implementation = Implementation.trim();
+    Resolved = Resolved.trim();
+    size_t At = Resolved.find('@');
+    if (Implementation.empty() || At == StringRef::npos)
+      return true;
+    StringRef ForeignName = Resolved.take_front(At);
+    StringRef Version = Resolved.drop_front(At).ltrim('@');
+    if (!ForeignName.empty() && !Version.empty())
+      Symvers[Implementation.str()] = {ForeignName.str(), Version.str()};
+    return true;
+  }
+};
+
 class ProvenanceConsumer : public ASTConsumer {
   SourceManager &SM;
   std::shared_ptr<ProvenanceState> State;
@@ -507,7 +561,9 @@ public:
       : SM(SM), State(std::move(State)) {}
 
   void HandleTranslationUnit(ASTContext &Context) override {
-    ProvenanceVisitor Visitor(SM, Context, *State);
+    SymverCollector Collector;
+    Collector.TraverseDecl(Context.getTranslationUnitDecl());
+    ProvenanceVisitor Visitor(SM, Context, *State, Collector.Symvers);
     Visitor.TraverseDecl(Context.getTranslationUnitDecl());
   }
 };
