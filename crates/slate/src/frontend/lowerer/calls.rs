@@ -70,7 +70,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 (
                     String::new(),
                     Expr::MethodCall {
-                        recv: Box::new(self.operand_expr(callee_operand)),
+                        recv: Box::new(self.function_pointer_operand_expr(callee_operand)),
                         method: "unwrap".into(),
                         args: vec![],
                     },

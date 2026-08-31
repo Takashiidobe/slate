@@ -168,10 +168,11 @@ impl<'a> Lowerer<'a> {
                     }
                 };
                 entry_arg_names.insert(arg.clone(), rust_name.clone());
+                let rust_ty = self.rust_type(ty);
                 FnParam {
                     name: rust_name,
-                    mutable: false,
-                    ty: self.rust_type(ty),
+                    mutable: is_boxed_va_args_type(&rust_ty),
+                    ty: rust_ty,
                 }
             })
             .collect::<Vec<_>>();
@@ -421,7 +422,13 @@ impl<'a> Lowerer<'a> {
                 .get(arg)
                 .cloned()
                 .unwrap_or_else(|| arg.clone());
-            f.immutable_temps.insert(rust_name.clone());
+            let boxed_va_args = is_boxed_va_args_type(&f.parent.rust_type(arg_ty));
+            if boxed_va_args {
+                f.va_places
+                    .insert(arg.clone(), Expr::Var(rust_name.clone().into()));
+            } else {
+                f.immutable_temps.insert(rust_name.clone());
+            }
             f.values
                 .insert(arg.clone(), Val::Expr(Expr::Var(rust_name.into())));
             f.value_types.insert(arg.clone(), arg_ty.clone());
