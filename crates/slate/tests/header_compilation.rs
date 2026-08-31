@@ -69,6 +69,17 @@ fn macos_filesystem_headers() -> Vec<String> {
         .collect()
 }
 
+fn macos_time_signal_headers() -> Vec<String> {
+    let manifest =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("libc-shim/macos-time-signal-headers.txt");
+    fs::read_to_string(manifest)
+        .expect("read macOS time/signal header manifest")
+        .lines()
+        .filter(|line| !line.is_empty())
+        .map(str::to_string)
+        .collect()
+}
+
 fn header_program(headers: &[String]) -> String {
     let includes = headers
         .iter()
@@ -317,6 +328,46 @@ fn macos_filesystem_header_manifest_compiles_for_aarch64() {
         "macOS filesystem manifest headers failed standalone compilation:\n{}",
         failures.join("\n\n")
     );
+}
+
+#[test]
+fn macos_time_signal_header_manifest_compiles_for_aarch64() {
+    let headers = macos_time_signal_headers();
+    assert!(!headers.iter().any(|header| header == "ucontext.h"));
+    let config = TestConfig::new(Architecture::Aarch64, LibcVariant::Darwin);
+    let includes = headers
+        .iter()
+        .map(|header| format!("#include <{header}>\n"))
+        .collect::<String>();
+    let source = format!("{includes}\nint main(void) {{ return 0; }}\n");
+    compile_test_program(&config, &source).unwrap();
+
+    let sdk = std::env::var_os("SLATE_MACOS_SDK")
+        .filter(|path| !path.is_empty())
+        .map(PathBuf::from);
+    let failures = headers
+        .iter()
+        .filter_map(|header| {
+            let source = format!("#include <{header}>\nint main(void) {{ return 0; }}\n");
+            if let Err(error) = compile_test_program(&config, &source) {
+                return Some(format!("{header} against shim:\n{error}"));
+            }
+            if let Some(sdk) = &sdk
+                && let Err(error) = compile_macos_sdk_header(header, sdk)
+            {
+                return Some(format!("{header} against macOS SDK:\n{error}"));
+            }
+            None
+        })
+        .collect::<Vec<_>>();
+    assert!(
+        failures.is_empty(),
+        "macOS time/signal manifest headers failed standalone compilation:\n{}",
+        failures.join("\n\n")
+    );
+
+    let error = compile_test_program(&config, "#include <ucontext.h>\n").unwrap_err();
+    assert!(error.contains("process-context interfaces are unavailable"));
 }
 
 #[test]

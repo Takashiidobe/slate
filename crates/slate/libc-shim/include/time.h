@@ -3,7 +3,11 @@
 
 #include <features.h>
 
-#if defined(__SLATE_LIBC_MSVC)
+#if defined(__SLATE_LIBC_DARWIN)
+
+#include <bits/darwin/time.h>
+
+#elif defined(__SLATE_LIBC_MSVC)
 
 #define __NEED_size_t
 #define __NEED_time_t

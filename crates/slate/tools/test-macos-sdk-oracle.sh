@@ -24,6 +24,8 @@ test -s "$OUTPUT/assembly.s"
 test -s "$OUTPUT/availability.json"
 test -s "$OUTPUT/symbols.txt"
 grep -q 'slate_macos_export' "$OUTPUT/symbols.txt"
+grep -q 'slate_macos_clock' "$OUTPUT/symbols.txt"
+grep -q 'slate_macos_sigmask' "$OUTPUT/symbols.txt"
 test -s "$OUTPUT/probe.json"
 
 echo "macOS SDK oracle tests passed"
