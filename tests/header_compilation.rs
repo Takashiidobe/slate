@@ -508,6 +508,35 @@ fn freebsd_process_header_manifest_compiles_for_x86_64_and_aarch64() {
 }
 
 #[test]
+fn freebsd_feature_modes_match_release_headers() {
+    let fixture =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/freebsd/feature_modes.c");
+    let source = fs::read_to_string(fixture).expect("read FreeBSD feature mode fixture");
+    for arch in [Architecture::X86_64, Architecture::Aarch64] {
+        let config = TestConfig::new(arch, LibcVariant::FreeBsd);
+        for args in [
+            vec!["-DEXPECT_FREEBSD_FULL"],
+            vec!["-D_POSIX_C_SOURCE=200809L", "-DEXPECT_POSIX_2008"],
+            vec!["-D_XOPEN_SOURCE=700", "-DEXPECT_XSI_700"],
+            vec!["-D_ANSI_SOURCE", "-DEXPECT_ANSI"],
+        ] {
+            compile_test_program_with_args(&config, &source, &args).unwrap();
+        }
+    }
+}
+
+#[test]
+fn freebsd_versioned_symbol_fixture_compiles() {
+    let fixture =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/freebsd/versioned_symbols.c");
+    let source = fs::read_to_string(fixture).expect("read FreeBSD symbol fixture");
+    for arch in [Architecture::X86_64, Architecture::Aarch64] {
+        let config = TestConfig::new(arch, LibcVariant::FreeBsd);
+        compile_test_program(&config, &source).unwrap();
+    }
+}
+
+#[test]
 fn freebsd_pthread_header_manifest_compiles_for_x86_64_and_aarch64() {
     let headers = freebsd_pthread_headers();
     let includes = headers

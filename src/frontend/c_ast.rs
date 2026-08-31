@@ -74,6 +74,7 @@ pub struct Unit {
 pub struct CallSymbolFact {
     pub source_name: String,
     pub foreign_name: String,
+    pub symbol_version: Option<String>,
     pub weak_import: bool,
     pub availability: Vec<AvailabilityFact>,
 }
@@ -549,6 +550,10 @@ fn parse_plugin_events(stderr: &str) -> PluginEvents {
             .and_then(Value::as_str)
             .unwrap_or(name)
             .to_string();
+        let symbol_version = event
+            .get("symbol_version")
+            .and_then(Value::as_str)
+            .map(str::to_string);
         let availability = event
             .get("availability")
             .and_then(Value::as_array)
@@ -607,6 +612,7 @@ fn parse_plugin_events(stderr: &str) -> PluginEvents {
                 symbol: CallSymbolFact {
                     source_name,
                     foreign_name,
+                    symbol_version,
                     weak_import: event
                         .get("weak_import")
                         .and_then(Value::as_bool)

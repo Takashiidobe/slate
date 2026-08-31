@@ -9,7 +9,6 @@ use super::NodeRule;
 
 pub(super) fn registry() -> Vec<Box<dyn NodeRule>> {
     let mut rules: Vec<Box<dyn NodeRule>> = vec![
-        Box::new(inline_temps::EarlyInlineTemps),
         Box::new(zero_init::ZeroInitFold),
         Box::new(raw_ptr_alias::RawPtrAliasElide),
         Box::new(singleton_scopes::WhileLoopUnwrap),

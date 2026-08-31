@@ -451,6 +451,19 @@ fn reports_source_and_assembler_symbol_names() {
 }
 
 #[test]
+fn reports_freebsd_symver_resolution() {
+    let case = Case::new(
+        "extern int compat_api(int);\n__asm__(\".symver compat_api, public_api@FBSD_1.2\");\n#define source_api compat_api\nint f(int value) { return source_api(value); }\n",
+        &[],
+    );
+    let event = event(&case, "compat_api");
+    assert_eq!(event["source_name"], "source_api");
+    assert_eq!(event["foreign_name"], "public_api");
+    assert_eq!(event["symbol_version"], "FBSD_1.2");
+    assert_eq!(event["symbol_override"], true);
+}
+
+#[test]
 fn reports_weak_import_and_availability() {
     let case = Case::new(
         "extern int future_api(void) __attribute__((weak_import, availability(macos, introduced=12.0)));\nint f(void) { return future_api(); }\n",

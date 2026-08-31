@@ -38,8 +38,9 @@ off_t lseek(int, off_t, int);
 int   fsync(int);
 int   fdatasync(int);
 
-#if defined(__SLATE_LIBC_GLIBC) &&                                            \
-    (defined(_GNU_SOURCE) || defined(_BSD_SOURCE))
+#if (defined(__SLATE_LIBC_GLIBC) &&                                           \
+     (defined(_GNU_SOURCE) || defined(_BSD_SOURCE))) ||                       \
+    (defined(__SLATE_LIBC_FREEBSD) && __BSD_VISIBLE)
 void closefrom(int);
 #endif
 

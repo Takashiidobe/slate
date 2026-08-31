@@ -155,7 +155,8 @@ unsigned short *seed48(unsigned short seed16v[3]);
 void            lcong48(unsigned short param[7]);
 #endif
 
-#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||                           \
+    (defined(__SLATE_LIBC_FREEBSD) && __BSD_VISIBLE)
 #include <alloca.h>
 char *mktemp(char *template);
 int   mkstemps(char *template, int suffixlen);
@@ -168,6 +169,17 @@ int   on_exit(void (*function)(int, void *), void *arg);
 void *reallocarray(void *ptr, size_t nmemb, size_t size);
 void  qsort_r(void *base, size_t nmemb, size_t size,
               int (*compar)(const void *, const void *, void *), void *arg);
+#if defined(__SLATE_LIBC_FREEBSD)
+void __qsort_r_compat(void *base, size_t nmemb, size_t size, void *arg,
+                      int (*compar)(void *, const void *, const void *));
+__sym_compat(qsort_r, __qsort_r_compat, FBSD_1.0);
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+#define qsort_r(base, nmemb, size, arg4, arg5)                                \
+  _Generic((arg5),                                                            \
+      int (*)(void *, const void *, const void *): __qsort_r_compat,          \
+      default: qsort_r)(base, nmemb, size, arg4, arg5)
+#endif
+#endif
 #endif
 
 #ifdef _GNU_SOURCE
@@ -195,7 +207,8 @@ long double strtold_l(const char *__restrict nptr, char **__restrict endptr,
 #endif
 #endif
 
-#if !defined(__SLATE_LIBC_MSVC)
+#if !defined(__SLATE_LIBC_MSVC) &&                                            \
+    (!defined(__SLATE_LIBC_FREEBSD) || __BSD_VISIBLE)
 void         arc4random_stir(void);
 void         arc4random_addrandom(unsigned char *data, int length);
 unsigned int arc4random(void);
