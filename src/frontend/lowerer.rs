@@ -2984,6 +2984,7 @@ fn c_type_to_type(ty: &crate::frontend::c_ast::CType, va_list_boxed: bool) -> Ty
             .map(Type::CLib)
             .unwrap_or_else(|| Type::Custom(rust_record_name(name))),
         CType::Enum(name) => Type::Custom(sanitize_ident(name).into_string()),
+        CType::Complex(inner) => Type::Complex(Box::new(c_type_to_type(inner, va_list_boxed))),
     }
 }
 
@@ -3050,6 +3051,13 @@ fn c_layout(
         }
         CType::Record(name) => record_layout(name, records),
         CType::Enum(_) => scalar_layout(32),
+        CType::Complex(inner) => {
+            let elem = c_layout(inner, records)?;
+            Some(CLayout {
+                size: align_to(elem.size, elem.align) * 2,
+                align: elem.align,
+            })
+        }
     }
 }
 
@@ -3163,6 +3171,7 @@ fn ctype_uses_long_double(ty: &crate::frontend::c_ast::CType) -> bool {
             ctype_uses_long_double(ret) || params.iter().any(ctype_uses_long_double)
         }
         CType::Enum(_) => false,
+        CType::Complex(inner) => ctype_uses_long_double(inner),
         _ => false,
     }
 }

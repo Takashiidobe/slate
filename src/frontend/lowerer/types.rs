@@ -526,6 +526,7 @@ fn ctype_abi_sig(ty: &crate::frontend::c_ast::CType) -> String {
         CType::Void => "v".to_string(),
         CType::Record(name) => format!("r{}", sanitize_ident(name).into_string()),
         CType::Enum(name) => format!("e{}", sanitize_ident(name).into_string()),
+        CType::Complex(inner) => format!("c{}", ctype_abi_sig(inner)),
     }
 }
 
@@ -771,6 +772,9 @@ pub(super) fn cir_type_to_ctype(
         CirType::Single => return CType::Float { bits: 32 },
         CirType::Double => return CType::Float { bits: 64 },
         CirType::Fp128 => return CType::Float { bits: 128 },
+        CirType::Complex { element_type } => {
+            return CType::Complex(Box::new(cir_type_to_ctype(element_type, aliases)));
+        }
         _ => {}
     }
     if is_quad_long_double(ty) {
