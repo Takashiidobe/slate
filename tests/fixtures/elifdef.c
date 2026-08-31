@@ -47,32 +47,16 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut elifdef_value: i32 = 0;
-// LOWERING-NEXT:     let mut elifndef_value: i32 = 0;
-// LOWERING-NEXT:     let mut inactive_value: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     elifdef_value = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     elifndef_value = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     inactive_value = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 23;
-// LOWERING-NEXT:     elifdef_value = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 29;
-// LOWERING-NEXT:     elifndef_value = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 31;
-// LOWERING-NEXT:     inactive_value = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = elifdef_value;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = elifndef_value;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = inactive_value;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -86,20 +70,16 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut elifdef_value: i32 = 0;
-// REWRITES-NEXT: let mut elifndef_value: i32 = 0;
-// REWRITES-NEXT: let mut inactive_value: i32 = 0;
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: elifdef_value = 0;
-// REWRITES-NEXT: elifndef_value = 0;
-// REWRITES-NEXT: inactive_value = 0;
-// REWRITES-NEXT: elifdef_value = 23;
-// REWRITES-NEXT: elifndef_value = 29;
-// REWRITES-NEXT: inactive_value = 31;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 23;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 29;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 31;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, elifdef_value, elifndef_value, inactive_value) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

@@ -188,74 +188,44 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn add_in_place({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: *mut i32) {
-// LOWERING-NEXT:     let mut a: *mut i32 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut b: *mut i32 = std::ptr::null_mut();
-// LOWERING-NEXT:     a = {{arg[0-9]+}};
-// LOWERING-NEXT:     b = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = b;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = a;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{arg[0-9]+}} };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{arg[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-NEXT:         *{{arg[0-9]+}} = {{_v[0-9]+}};
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn alias_same_object() -> i32 {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut x: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
 // LOWERING-NEXT:     x = {{_v[0-9]+}};
 // LOWERING-NEXT:     add_in_place(std::ptr::addr_of_mut!(x), std::ptr::addr_of_mut!(x));
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = x;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn pair_lo({{arg[0-9]+}}: *mut Pair) -> *mut i32 {
-// LOWERING-NEXT:     let mut p: *mut Pair = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut __retval: *mut i32 = std::ptr::null_mut();
-// LOWERING-NEXT:     p = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut Pair = p;
-// LOWERING-NEXT:     __retval = unsafe { std::ptr::addr_of_mut!((*{{_v[0-9]+}}).lo) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = __retval;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     return unsafe { std::ptr::addr_of_mut!((*{{arg[0-9]+}}).lo) };
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn pair_hi({{arg[0-9]+}}: *mut Pair) -> *mut i32 {
-// LOWERING-NEXT:     let mut p: *mut Pair = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut __retval: *mut i32 = std::ptr::null_mut();
-// LOWERING-NEXT:     p = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut Pair = p;
-// LOWERING-NEXT:     __retval = unsafe { std::ptr::addr_of_mut!((*{{_v[0-9]+}}).hi) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = __retval;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT:     return unsafe { std::ptr::addr_of_mut!((*{{arg[0-9]+}}).hi) };
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn alias_struct_fields() -> i32 {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut pair: Pair = Pair { lo: 0, hi: 0 };
-// LOWERING-NEXT:     let mut lo: *mut i32 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut hi: *mut i32 = std::ptr::null_mut();
 // LOWERING-NEXT:     pair = Pair { lo: 1, hi: 2 };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = pair_lo(std::ptr::addr_of_mut!(pair));
-// LOWERING-NEXT:     lo = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = pair_hi(std::ptr::addr_of_mut!(pair));
-// LOWERING-NEXT:     hi = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = hi;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = lo;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = lo;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = hi;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     unsafe {
@@ -264,13 +234,10 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = pair.lo;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = pair.hi;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn circular_list() -> i32 {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut a: Node = Node { val: 0, next: std::ptr::null_mut(), prev: std::ptr::null_mut() };
 // LOWERING-NEXT:     let mut b: Node = Node { val: 0, next: std::ptr::null_mut(), prev: std::ptr::null_mut() };
 // LOWERING-NEXT:     let mut c: Node = Node { val: 0, next: std::ptr::null_mut(), prev: std::ptr::null_mut() };
@@ -329,13 +296,10 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = c.val;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn parent_pointer_tree() -> i32 {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut root: Tree = Tree { val: 0, parent: std::ptr::null_mut(), left: std::ptr::null_mut(), right: std::ptr::null_mut() };
 // LOWERING-NEXT:     let mut left: Tree = Tree { val: 0, parent: std::ptr::null_mut(), left: std::ptr::null_mut(), right: std::ptr::null_mut() };
 // LOWERING-NEXT:     let mut right: Tree = Tree { val: 0, parent: std::ptr::null_mut(), left: std::ptr::null_mut(), right: std::ptr::null_mut() };
@@ -375,13 +339,10 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = right.val;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn self_referential_struct() -> i32 {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut buf: Buf = Buf { data: [0; 8], cursor: std::ptr::null_mut() };
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         let mut i: i32 = 0;
@@ -430,8 +391,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 97;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} * {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} - {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
@@ -449,17 +408,14 @@ int main(void) {
 // LOWERING-NEXT:                 break;
 // LOWERING-NEXT:             }
 // LOWERING-NEXT:             {
-// LOWERING-NEXT:                 let mut t: i32 = 0;
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut i32 = lo;
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:                 t = {{_v[0-9]+}};
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut i32 = hi;
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut i32 = lo;
 // LOWERING-NEXT:                 unsafe {
 // LOWERING-NEXT:                     *{{_v[0-9]+}} = {{_v[0-9]+}};
 // LOWERING-NEXT:                 }
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = t;
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut i32 = hi;
 // LOWERING-NEXT:                 unsafe {
 // LOWERING-NEXT:                     *{{_v[0-9]+}} = {{_v[0-9]+}};
@@ -479,7 +435,6 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn overlapping_array_pointers() -> i32 {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut values: aligned::Aligned<aligned::A16, [i32; 5]> = aligned::Aligned([0; 5]);
 // LOWERING-NEXT:     *values = [1, 2, 3, 4, 5];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
@@ -507,23 +462,17 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 4;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = values[({{_v[0-9]+}} as usize)];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn capture_global({{arg[0-9]+}}: *mut i32) {
-// LOWERING-NEXT:     let mut p: *mut i32 = std::ptr::null_mut();
-// LOWERING-NEXT:     p = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = p;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         g_ptr = {{_v[0-9]+}};
+// LOWERING-NEXT:         g_ptr = {{arg[0-9]+}};
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn global_alias_with_local() -> i32 {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut x: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
 // LOWERING-NEXT:     x = {{_v[0-9]+}};
@@ -543,28 +492,22 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { g_ptr };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn type_punning() -> i32 {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut u: Pun = unsafe { std::mem::zeroed::<Pun>() };
-// LOWERING-NEXT:     let mut bits: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = 1.0;
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         u.f = {{_v[0-9]+}};
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { u.i };
-// LOWERING-NEXT:     bits = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { u.i };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         u.i = {{_v[0-9]+}};
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = bits;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { u.i };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} {
@@ -575,15 +518,11 @@ int main(void) {
 // LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:         {{_v[0-9]+}}
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = alias_same_object();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = alias_struct_fields();
@@ -595,8 +534,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = type_punning();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -655,55 +592,41 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn add_in_place({{arg[0-9]+}}: &mut i32, {{arg[0-9]+}}: &i32) {
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = {{arg[0-9]+}};
 // REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         *{{_v[0-9]+}} = (unsafe { *{{_v[0-9]+}} }) + unsafe { *(({{arg[0-9]+}} as *const i32) as *mut i32) };
+// REWRITES-NEXT:         *({{arg[0-9]+}} as *mut i32) = (unsafe { *({{arg[0-9]+}} as *mut i32) }) + unsafe { *({{arg[0-9]+}} as *const i32) };
 // REWRITES-NEXT: }
 // REWRITES-NEXT: return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn alias_same_object() -> i32 {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut x: i32 = 0;
 // REWRITES-NEXT: x = 5;
 // REWRITES-NEXT: add_in_place(unsafe { &mut (*std::ptr::addr_of_mut!(x)) }, unsafe { &(*std::ptr::addr_of_mut!(x)) });
-// REWRITES-NEXT: __retval = x;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return x;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn pair_lo({{arg[0-9]+}}: &mut Pair) -> *mut i32 {
-// REWRITES-NEXT: let mut __retval: *mut i32 = std::ptr::null_mut();
-// REWRITES-NEXT: __retval = unsafe { std::ptr::addr_of_mut!((*{{arg[0-9]+}}).lo) };
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return unsafe { std::ptr::addr_of_mut!((*({{arg[0-9]+}} as *mut Pair)).lo) };
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn pair_hi({{arg[0-9]+}}: &mut Pair) -> *mut i32 {
-// REWRITES-NEXT: let mut __retval: *mut i32 = std::ptr::null_mut();
-// REWRITES-NEXT: __retval = unsafe { std::ptr::addr_of_mut!((*{{arg[0-9]+}}).hi) };
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return unsafe { std::ptr::addr_of_mut!((*({{arg[0-9]+}} as *mut Pair)).hi) };
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn alias_struct_fields() -> i32 {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut pair: Pair = Pair { lo: 1, hi: 2 };
-// REWRITES-NEXT: let mut lo: *mut i32 = std::ptr::null_mut();
-// REWRITES-NEXT: let mut hi: *mut i32 = std::ptr::null_mut();
-// REWRITES-NEXT: lo = pair_lo(unsafe { &mut (*std::ptr::addr_of_mut!(pair)) });
-// REWRITES-NEXT: hi = pair_hi(unsafe { &mut (*std::ptr::addr_of_mut!(pair)) });
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = lo;
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = pair_lo(unsafe { &mut (*std::ptr::addr_of_mut!(pair)) });
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = pair_hi(unsafe { &mut (*std::ptr::addr_of_mut!(pair)) });
 // REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         *{{_v[0-9]+}} = (unsafe { *{{_v[0-9]+}} }) + unsafe { *hi };
+// REWRITES-NEXT:         *{{_v[0-9]+}} = (unsafe { *{{_v[0-9]+}} }) + unsafe { *{{_v[0-9]+}} };
 // REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = hi;
 // REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         *{{_v[0-9]+}} = (unsafe { *{{_v[0-9]+}} }) + unsafe { *lo };
+// REWRITES-NEXT:         *{{_v[0-9]+}} = (unsafe { *{{_v[0-9]+}} }) + unsafe { *{{_v[0-9]+}} };
 // REWRITES-NEXT: }
-// REWRITES-NEXT: __retval = pair.lo + pair.hi;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return pair.lo + pair.hi;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn circular_list() -> i32 {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut a: Node = Node { val: 1, next: std::ptr::null_mut(), prev: std::ptr::null_mut() };
 // REWRITES-NEXT: let mut b: Node = Node { val: 2, next: std::ptr::null_mut(), prev: std::ptr::null_mut() };
 // REWRITES-NEXT: let mut c: Node = Node { val: 3, next: std::ptr::null_mut(), prev: std::ptr::null_mut() };
@@ -737,12 +660,10 @@ int main(void) {
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         (*{{_v[0-9]+}}).val = (unsafe { (*{{_v[0-9]+}}).val }) + {{_v[0-9]+}};
 // REWRITES-NEXT: }
-// REWRITES-NEXT: __retval = sum + a.val + b.val + c.val;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return sum + a.val + b.val + c.val;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn parent_pointer_tree() -> i32 {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut root: Tree = Tree { val: 1, parent: std::ptr::null_mut(), left: std::ptr::null_mut(), right: std::ptr::null_mut() };
 // REWRITES-NEXT: let mut left: Tree = Tree { val: 0, parent: std::ptr::null_mut(), left: std::ptr::null_mut(), right: std::ptr::null_mut() };
 // REWRITES-NEXT: let mut right: Tree = Tree { val: 0, parent: std::ptr::null_mut(), left: std::ptr::null_mut(), right: std::ptr::null_mut() };
@@ -764,12 +685,10 @@ int main(void) {
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         (*{{_v[0-9]+}}).val = (unsafe { (*{{_v[0-9]+}}).val }) + right.val;
 // REWRITES-NEXT: }
-// REWRITES-NEXT: __retval = root.val + left.val + right.val;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return root.val + left.val + right.val;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn self_referential_struct() -> i32 {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut buf: Buf = Buf { data: [0; 8], cursor: std::ptr::null_mut() };
 // REWRITES-NEXT: {
 // REWRITES-NEXT:         let mut i: i32 = 0;
@@ -798,8 +717,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 2;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 97;
-// REWRITES-NEXT: __retval = {{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32) - {{_v[0-9]+}} * {{_v[0-9]+}};
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return {{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32) - {{_v[0-9]+}} * {{_v[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn reverse_in_place({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: *mut i32) {
@@ -810,13 +728,12 @@ int main(void) {
 // REWRITES-NEXT:                     break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         {
-// REWRITES-NEXT:                     let mut t: i32 = 0;
-// REWRITES-NEXT:                     t = unsafe { *lo };
+// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { *lo };
 // REWRITES-NEXT:                     unsafe {
 // REWRITES-NEXT:                                     *lo = unsafe { *hi };
 // REWRITES-NEXT:                     }
 // REWRITES-NEXT:                     unsafe {
-// REWRITES-NEXT:                                     *hi = t;
+// REWRITES-NEXT:                                     *hi = {{_v[0-9]+}};
 // REWRITES-NEXT:                     }
 // REWRITES-NEXT:                     let {{_v[0-9]+}}: *mut i32 = lo;
 // REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = 1;
@@ -830,7 +747,6 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn overlapping_array_pointers() -> i32 {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut values: aligned::Aligned<aligned::A16, [i32; 5]> = aligned::Aligned([0; 5]);
 // REWRITES-NEXT: *values = [1, 2, 3, 4, 5];
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
@@ -845,22 +761,20 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 10;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 4;
-// REWRITES-NEXT: __retval = values[({{_v[0-9]+}} as usize)] * {{_v[0-9]+}} + values[({{_v[0-9]+}} as usize)] * {{_v[0-9]+}} + values[({{_v[0-9]+}} as usize)] * {{_v[0-9]+}} + values[({{_v[0-9]+}} as usize)] * {{_v[0-9]+}} + values[({{_v[0-9]+}} as usize)];
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return values[({{_v[0-9]+}} as usize)] * {{_v[0-9]+}} + values[({{_v[0-9]+}} as usize)] * {{_v[0-9]+}} + values[({{_v[0-9]+}} as usize)] * {{_v[0-9]+}} + values[({{_v[0-9]+}} as usize)] * {{_v[0-9]+}} + values[({{_v[0-9]+}} as usize)];
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn capture_global({{arg[0-9]+}}: &i32) {
+// REWRITES-NEXT: fn capture_global({{arg[0-9]+}}: *mut i32) {
 // REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         g_ptr = ({{arg[0-9]+}} as *const i32) as *mut i32;
+// REWRITES-NEXT:         g_ptr = {{arg[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-NEXT: return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn global_alias_with_local() -> i32 {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut x: i32 = 0;
 // REWRITES-NEXT: x = 7;
-// REWRITES-NEXT: capture_global(unsafe { &(*std::ptr::addr_of_mut!(x)) });
+// REWRITES-NEXT: capture_global(std::ptr::addr_of_mut!(x));
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = unsafe { g_ptr };
 // REWRITES-NEXT: unsafe {
@@ -868,36 +782,31 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT: x = x + {{_v[0-9]+}};
-// REWRITES-NEXT: __retval = x + unsafe { *unsafe { g_ptr } };
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return x + unsafe { *unsafe { g_ptr } };
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn type_punning() -> i32 {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut u: Pun = unsafe { std::mem::zeroed::<Pun>() };
-// REWRITES-NEXT: let mut bits: i32 = 0;
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         u.f = 1.0;
 // REWRITES-NEXT: }
-// REWRITES-NEXT: bits = unsafe { u.i };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { u.i };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         u.i = (unsafe { u.i }) + {{_v[0-9]+}};
 // REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = if bits == unsafe { u.i } {
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} == unsafe { u.i } {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = -1;
 // REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: } else {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = (unsafe { u.f }) as i32;
 // REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: };
-// REWRITES-NEXT: __retval = {{_v[0-9]+}};
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return {{_v[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = alias_same_object();
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = alias_struct_fields();
@@ -908,7 +817,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = global_alias_with_local();
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = type_punning();
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

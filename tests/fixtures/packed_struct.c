@@ -37,10 +37,8 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut p: Packed = Packed { a: 0, b: 0, c: 0 };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = 1;
 // LOWERING-NEXT:     p.a = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 287454020;
@@ -64,8 +62,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -88,9 +84,8 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut p: Packed = Packed { a: 0, b: 0, c: 0 };
-// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: p.a = 1;
 // REWRITES-NEXT: p.b = 287454020;
 // REWRITES-NEXT: p.c = 2;
@@ -106,7 +101,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %x %d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = p.b;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, p.a as i32, {{_v[0-9]+}}, p.c as i32) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

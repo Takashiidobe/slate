@@ -14,6 +14,7 @@ int main(void) {
   printf("%d %d %d %d\n", first, second, third, fourth);
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
 // LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
@@ -43,24 +44,18 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut flag: atomic_flag = atomic_flag { _Value: false };
-// LOWERING-NEXT:     let mut first: i32 = 0;
 // LOWERING-NEXT:     let mut _atomictmp: bool = false;
 // LOWERING-NEXT:     let mut atomic_temp: bool = false;
 // LOWERING-NEXT:     let mut _atomictmp2: bool = false;
-// LOWERING-NEXT:     let mut second: i32 = 0;
 // LOWERING-NEXT:     let mut _atomictmp3: bool = false;
 // LOWERING-NEXT:     let mut atomic_temp2: bool = false;
-// LOWERING-NEXT:     let mut third: i32 = 0;
 // LOWERING-NEXT:     let mut _atomictmp4: bool = false;
 // LOWERING-NEXT:     let mut atomic_temp3: bool = false;
 // LOWERING-NEXT:     let mut _atomictmp5: bool = false;
-// LOWERING-NEXT:     let mut fourth: i32 = 0;
 // LOWERING-NEXT:     let mut _atomictmp6: bool = false;
 // LOWERING-NEXT:     let mut atomic_temp4: bool = false;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     flag = atomic_flag { _Value: false };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
@@ -76,7 +71,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut bool = {{_v[0-9]+}} as *mut bool;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = unsafe { *{{_v[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     first = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // LOWERING-NEXT:     _atomictmp2 = {{_v[0-9]+}};
@@ -98,7 +92,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut bool = {{_v[0-9]+}} as *mut bool;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = unsafe { *{{_v[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     second = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // LOWERING-NEXT:     _atomictmp4 = {{_v[0-9]+}};
@@ -113,7 +106,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut bool = {{_v[0-9]+}} as *mut bool;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = unsafe { *{{_v[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     third = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // LOWERING-NEXT:     _atomictmp5 = {{_v[0-9]+}};
@@ -135,16 +127,9 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut bool = {{_v[0-9]+}} as *mut bool;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = unsafe { *{{_v[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     fourth = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = first;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = second;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = third;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = fourth;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering

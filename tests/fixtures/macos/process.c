@@ -57,26 +57,14 @@ int slate_lookup_user_shell(uid_t uid, char *buffer, size_t size) {
 // @lowering-fn-end
 // SLATE-FILECHECK-BEGIN lowering-macos
 // LOWERING-MACOS-DAG: unsafe fn slate_spawn_and_wait({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut *mut i8, {{arg[0-9]+}}: *mut *mut i8) -> i32 {
-// LOWERING-MACOS-DAG: let mut child: *mut i32 = std::ptr::null_mut();
-// LOWERING-MACOS-DAG: let mut path: *mut i8 = std::ptr::null_mut();
-// LOWERING-MACOS-DAG: let mut argv: *mut *mut i8 = std::ptr::null_mut();
-// LOWERING-MACOS-DAG: let mut envp: *mut *mut i8 = std::ptr::null_mut();
 // LOWERING-MACOS-DAG: let mut __retval: i32 = 0;
 // LOWERING-MACOS-DAG: let mut status: i32 = 0;
 // LOWERING-MACOS-DAG: let mut result: i32 = 0;
-// LOWERING-MACOS-DAG: child = {{arg[0-9]+}};
-// LOWERING-MACOS-DAG: path = {{arg[0-9]+}};
-// LOWERING-MACOS-DAG: argv = {{arg[0-9]+}};
-// LOWERING-MACOS-DAG: envp = {{arg[0-9]+}};
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-MACOS-DAG: status = {{_v[0-9]+}};
-// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut i32 = child;
-// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut i8 = path;
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut *mut core::ffi::c_void = std::ptr::null_mut();
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut *mut i8 = argv;
-// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut *mut i8 = envp;
-// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = unsafe { posix_spawn({{_v[0-9]+}} as *mut i32, {{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as *const *mut core::ffi::c_void, {{_v[0-9]+}} as *const *mut core::ffi::c_void, {{_v[0-9]+}} as *mut *mut i8, {{_v[0-9]+}} as *mut *mut i8) };
+// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = unsafe { posix_spawn({{arg[0-9]+}} as *mut i32, {{arg[0-9]+}} as *const i8, {{_v[0-9]+}} as *const *mut core::ffi::c_void, {{_v[0-9]+}} as *const *mut core::ffi::c_void, {{arg[0-9]+}} as *mut *mut i8, {{arg[0-9]+}} as *mut *mut i8) };
 // LOWERING-MACOS-DAG: result = {{_v[0-9]+}};
 // LOWERING-MACOS-DAG: {
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = result;
@@ -89,8 +77,7 @@ int slate_lookup_user_shell(uid_t uid, char *buffer, size_t size) {
 // LOWERING-MACOS-DAG: return {{_v[0-9]+}};
 // LOWERING-MACOS-DAG: }
 // LOWERING-MACOS-DAG: }
-// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut i32 = child;
-// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
+// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = unsafe { *{{arg[0-9]+}} };
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = unsafe { waitpid({{_v[0-9]+}} as i32, std::ptr::addr_of_mut!(status) as *mut i32, {{_v[0-9]+}} as i32) };
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = 0;
@@ -132,17 +119,12 @@ int slate_lookup_user_shell(uid_t uid, char *buffer, size_t size) {
 // LOWERING-MACOS-DAG: return {{_v[0-9]+}};
 // LOWERING-MACOS-DAG: }
 // LOWERING-MACOS-DAG: unsafe fn slate_lookup_user_shell({{arg[0-9]+}}: u32, {{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: u64) -> i32 {
-// LOWERING-MACOS-DAG: let mut uid: u32 = 0;
-// LOWERING-MACOS-DAG: let mut buffer: *mut i8 = std::ptr::null_mut();
 // LOWERING-MACOS-DAG: let mut size: u64 = 0;
 // LOWERING-MACOS-DAG: let mut __retval: i32 = 0;
 // LOWERING-MACOS-DAG: let mut entry: *mut passwd = std::ptr::null_mut();
 // LOWERING-MACOS-DAG: let mut length: u64 = 0;
-// LOWERING-MACOS-DAG: uid = {{arg[0-9]+}};
-// LOWERING-MACOS-DAG: buffer = {{arg[0-9]+}};
 // LOWERING-MACOS-DAG: size = {{arg[0-9]+}};
-// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: u32 = uid;
-// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut passwd = unsafe { getpwuid({{_v[0-9]+}} as u32) };
+// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut passwd = unsafe { getpwuid({{arg[0-9]+}} as u32) };
 // LOWERING-MACOS-DAG: entry = {{_v[0-9]+}};
 // LOWERING-MACOS-DAG: {
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut passwd = entry;
@@ -186,8 +168,7 @@ int slate_lookup_user_shell(uid_t uid, char *buffer, size_t size) {
 // LOWERING-MACOS-DAG: length = {{_v[0-9]+}};
 // LOWERING-MACOS-DAG: }
 // LOWERING-MACOS-DAG: }
-// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut i8 = buffer;
-// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut core::ffi::c_void = {{arg[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut passwd = entry;
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut i8 = unsafe { (*{{_v[0-9]+}}).pw_shell };
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
@@ -195,8 +176,7 @@ int slate_lookup_user_shell(uid_t uid, char *buffer, size_t size) {
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { memcpy({{_v[0-9]+}} as *mut core::ffi::c_void, {{_v[0-9]+}} as *mut core::ffi::c_void, {{_v[0-9]+}} as u64) };
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i8 = 0;
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: u64 = length;
-// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut i8 = buffer;
-// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add({{_v[0-9]+}} as usize) };
+// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut i8 = unsafe { {{arg[0-9]+}}.add({{_v[0-9]+}} as usize) };
 // LOWERING-MACOS-DAG: unsafe {
 // LOWERING-MACOS-DAG: *{{_v[0-9]+}} = {{_v[0-9]+}};
 // LOWERING-MACOS-DAG: }
@@ -209,17 +189,13 @@ int slate_lookup_user_shell(uid_t uid, char *buffer, size_t size) {
 
 // SLATE-FILECHECK-BEGIN rewrites-macos
 // REWRITES-MACOS-DAG: unsafe fn slate_spawn_and_wait({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut *mut i8, {{arg[0-9]+}}: *mut *mut i8) -> i32 {
-// REWRITES-MACOS-DAG: let mut child: *mut i32 = {{arg[0-9]+}};
-// REWRITES-MACOS-DAG: let mut path: *mut i8 = {{arg[0-9]+}};
-// REWRITES-MACOS-DAG: let mut argv: *mut *mut i8 = {{arg[0-9]+}};
-// REWRITES-MACOS-DAG: let mut envp: *mut *mut i8 = {{arg[0-9]+}};
 // REWRITES-MACOS-DAG: let mut __retval: i32 = 0;
 // REWRITES-MACOS-DAG: let mut status: i32 = 0;
 // REWRITES-MACOS-DAG: let mut result: i32 = 0;
 // REWRITES-MACOS-DAG: status = 0;
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: *mut *mut core::ffi::c_void = std::ptr::null_mut();
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: *mut *mut core::ffi::c_void = std::ptr::null_mut();
-// REWRITES-MACOS-DAG: result = unsafe { posix_spawn(child as *mut i32, path as *const i8, {{_v[0-9]+}} as *const *mut core::ffi::c_void, {{_v[0-9]+}} as *const *mut core::ffi::c_void, argv as *mut *mut i8, envp as *mut *mut i8) };
+// REWRITES-MACOS-DAG: result = unsafe { posix_spawn({{arg[0-9]+}} as *mut i32, {{arg[0-9]+}} as *const i8, {{_v[0-9]+}} as *const *mut core::ffi::c_void, {{_v[0-9]+}} as *const *mut core::ffi::c_void, {{arg[0-9]+}} as *mut *mut i8, {{arg[0-9]+}} as *mut *mut i8) };
 // REWRITES-MACOS-DAG: {
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-MACOS-DAG: if result != {{_v[0-9]+}} {
@@ -228,7 +204,7 @@ int slate_lookup_user_shell(uid_t uid, char *buffer, size_t size) {
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = unsafe { waitpid((unsafe { *child }) as i32, std::ptr::addr_of_mut!(status) as *mut i32, {{_v[0-9]+}} as i32) };
+// REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = unsafe { waitpid((unsafe { *{{arg[0-9]+}} }) as i32, std::ptr::addr_of_mut!(status) as *mut i32, {{_v[0-9]+}} as i32) };
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} < {{_v[0-9]+}} {
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = -1;
@@ -257,13 +233,11 @@ int slate_lookup_user_shell(uid_t uid, char *buffer, size_t size) {
 // REWRITES-MACOS-DAG: return __retval;
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: unsafe fn slate_lookup_user_shell({{arg[0-9]+}}: u32, {{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: u64) -> i32 {
-// REWRITES-MACOS-DAG: let mut uid: u32 = {{arg[0-9]+}};
-// REWRITES-MACOS-DAG: let mut buffer: *mut i8 = {{arg[0-9]+}};
 // REWRITES-MACOS-DAG: let mut size: u64 = {{arg[0-9]+}};
 // REWRITES-MACOS-DAG: let mut __retval: i32 = 0;
 // REWRITES-MACOS-DAG: let mut entry: *mut passwd = std::ptr::null_mut();
 // REWRITES-MACOS-DAG: let mut length: u64 = 0;
-// REWRITES-MACOS-DAG: entry = unsafe { getpwuid(uid as u32) };
+// REWRITES-MACOS-DAG: entry = unsafe { getpwuid({{arg[0-9]+}} as u32) };
 // REWRITES-MACOS-DAG: {
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: *mut passwd = std::ptr::null_mut();
 // REWRITES-MACOS-DAG: if entry == {{_v[0-9]+}} {
@@ -289,10 +263,9 @@ int slate_lookup_user_shell(uid_t uid, char *buffer, size_t size) {
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: length = length + 1;
 // REWRITES-MACOS-DAG: }
-// REWRITES-MACOS-DAG: unsafe { std::ptr::copy_nonoverlapping((((unsafe { (*entry).pw_shell }) as *mut core::ffi::c_void) as *mut core::ffi::c_void) as *const u8, ((buffer as *mut core::ffi::c_void) as *mut core::ffi::c_void) as *mut u8, (length as u64) as usize) };
+// REWRITES-MACOS-DAG: unsafe { std::ptr::copy_nonoverlapping((((unsafe { (*entry).pw_shell }) as *mut core::ffi::c_void) as *mut core::ffi::c_void) as *const u8, (({{arg[0-9]+}} as *mut core::ffi::c_void) as *mut core::ffi::c_void) as *mut u8, (length as u64) as usize) };
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i8 = 0;
-// REWRITES-MACOS-DAG: let {{_v[0-9]+}}: *mut i8 = buffer;
-// REWRITES-MACOS-DAG: let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(length as usize) };
+// REWRITES-MACOS-DAG: let {{_v[0-9]+}}: *mut i8 = unsafe { {{arg[0-9]+}}.add(length as usize) };
 // REWRITES-MACOS-DAG: unsafe {
 // REWRITES-MACOS-DAG: *{{_v[0-9]+}} = {{_v[0-9]+}};
 // REWRITES-MACOS-DAG: }

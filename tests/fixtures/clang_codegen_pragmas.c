@@ -35,47 +35,22 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn hidden_fn() -> i32 {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn fma_like({{arg[0-9]+}}: f64, {{arg[0-9]+}}: f64, {{arg[0-9]+}}: f64) -> f64 {
-// LOWERING-NEXT:     let mut a: f64 = 0.0;
-// LOWERING-NEXT:     let mut b: f64 = 0.0;
-// LOWERING-NEXT:     let mut c: f64 = 0.0;
-// LOWERING-NEXT:     let mut __retval: f64 = 0.0;
-// LOWERING-NEXT:     a = {{arg[0-9]+}};
-// LOWERING-NEXT:     b = {{arg[0-9]+}};
-// LOWERING-NEXT:     c = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = a;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = b;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = c;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} * {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = __retval;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{arg[0-9]+}} * {{arg[0-9]+}} + {{arg[0-9]+}};
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[inline(never)]
 // LOWERING-NEXT: fn add_noopt({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-NEXT:     let mut a: i32 = 0;
-// LOWERING-NEXT:     let mut b: i32 = 0;
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     a = {{arg[0-9]+}};
-// LOWERING-NEXT:     b = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = a;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = b;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{arg[0-9]+}};
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn loop_sum() -> i32 {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut s: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     s = {{_v[0-9]+}};
@@ -100,15 +75,11 @@ int main(void) {
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = s;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %f\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
@@ -121,8 +92,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = fma_like({{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -136,34 +105,19 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn hidden_fn() -> i32 {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: __retval = 7;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return 7;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn fma_like({{arg[0-9]+}}: f64, {{arg[0-9]+}}: f64, {{arg[0-9]+}}: f64) -> f64 {
-// REWRITES-NEXT: let mut a: f64 = 0.0;
-// REWRITES-NEXT: let mut b: f64 = 0.0;
-// REWRITES-NEXT: let mut c: f64 = 0.0;
-// REWRITES-NEXT: let mut __retval: f64 = 0.0;
-// REWRITES-NEXT: a = {{arg[0-9]+}};
-// REWRITES-NEXT: b = {{arg[0-9]+}};
-// REWRITES-NEXT: c = {{arg[0-9]+}};
-// REWRITES-NEXT: __retval = a * b + c;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return {{arg[0-9]+}} * {{arg[0-9]+}} + {{arg[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[inline(never)]
 // REWRITES-NEXT: fn add_noopt({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT: let mut a: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut b: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: __retval = a + b;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return {{arg[0-9]+}} + {{arg[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn loop_sum() -> i32 {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut s: i32 = 0;
 // REWRITES-NEXT: s = 0;
 // REWRITES-NEXT: {
@@ -178,13 +132,11 @@ int main(void) {
 // REWRITES-NEXT:                     i = i + 1;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
-// REWRITES-NEXT: __retval = s;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return s;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %f\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 2;
@@ -196,7 +148,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = 4.0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = fma_like({{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}});
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

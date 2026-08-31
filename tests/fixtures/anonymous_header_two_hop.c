@@ -25,10 +25,8 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut state: anonymous_header_state = anonymous_header_state { count: 0, value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     state = anonymous_header_state { count: 0, value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
 // LOWERING-NEXT:     unsafe {
@@ -40,8 +38,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -66,15 +62,13 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut state: anonymous_header_state = anonymous_header_state { count: 0, value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
-// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: state = anonymous_header_state { count: 0, value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         state.value.wide = 7;
 // REWRITES-NEXT: }
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 7;
-// REWRITES-NEXT: __retval = state.count + (((unsafe { state.value.wide }) != {{_v[0-9]+}}) as i32);
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: std::process::exit((state.count + (((unsafe { state.value.wide }) != {{_v[0-9]+}}) as i32)) as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

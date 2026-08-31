@@ -29,38 +29,24 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut first: num_complex::Complex<i32> = num_complex::Complex { re: 0, im: 0 };
-// LOWERING-NEXT:     let mut second: num_complex::Complex<i32> = num_complex::Complex { re: 0, im: 0 };
-// LOWERING-NEXT:     let mut imaginary: num_complex::Complex<i32> = num_complex::Complex { re: 0, im: 0 };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: 0, im: 7 };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: {{_v[0-9]+}}.re + {{_v[0-9]+}}.re, im: {{_v[0-9]+}}.im + {{_v[0-9]+}}.im };
-// LOWERING-NEXT:     first = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = -3;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: 0, im: 11 };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: {{_v[0-9]+}}.re + {{_v[0-9]+}}.re, im: {{_v[0-9]+}}.im + {{_v[0-9]+}}.im };
-// LOWERING-NEXT:     second = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: 0, im: 13 };
-// LOWERING-NEXT:     imaginary = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<i32> = first;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<i32> = first;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.im;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<i32> = second;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<i32> = second;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.im;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<i32> = imaginary;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.re;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<i32> = imaginary;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.im;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<i32> = unsafe { global_value };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.re;
@@ -68,8 +54,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.im;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -92,41 +76,31 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut first: num_complex::Complex<i32> = num_complex::Complex { re: 0, im: 0 };
-// REWRITES-NEXT: let mut second: num_complex::Complex<i32> = num_complex::Complex { re: 0, im: 0 };
-// REWRITES-NEXT: let mut imaginary: num_complex::Complex<i32> = num_complex::Complex { re: 0, im: 0 };
-// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 5;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
 // REWRITES-NEXT: let {{_v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: 0, im: 7 };
-// REWRITES-NEXT: first = num_complex::Complex { re: {{_v[0-9]+}}.re + {{_v[0-9]+}}.re, im: {{_v[0-9]+}}.im + {{_v[0-9]+}}.im };
+// REWRITES-NEXT: let {{_v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: {{_v[0-9]+}}.re + {{_v[0-9]+}}.re, im: {{_v[0-9]+}}.im + {{_v[0-9]+}}.im };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = -3;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
 // REWRITES-NEXT: let {{_v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: 0, im: 11 };
-// REWRITES-NEXT: second = num_complex::Complex { re: {{_v[0-9]+}}.re + {{_v[0-9]+}}.re, im: {{_v[0-9]+}}.im + {{_v[0-9]+}}.im };
-// REWRITES-NEXT: imaginary = num_complex::Complex { re: 0, im: 13 };
+// REWRITES-NEXT: let {{_v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: {{_v[0-9]+}}.re + {{_v[0-9]+}}.re, im: {{_v[0-9]+}}.im + {{_v[0-9]+}}.im };
+// REWRITES-NEXT: let {{_v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: 0, im: 13 };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: num_complex::Complex<i32> = first;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.re;
-// REWRITES-NEXT: let {{_v[0-9]+}}: num_complex::Complex<i32> = first;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.im;
-// REWRITES-NEXT: let {{_v[0-9]+}}: num_complex::Complex<i32> = second;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.re;
-// REWRITES-NEXT: let {{_v[0-9]+}}: num_complex::Complex<i32> = second;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.im;
-// REWRITES-NEXT: let {{_v[0-9]+}}: num_complex::Complex<i32> = imaginary;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.re;
-// REWRITES-NEXT: let {{_v[0-9]+}}: num_complex::Complex<i32> = imaginary;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.im;
 // REWRITES-NEXT: let {{_v[0-9]+}}: num_complex::Complex<i32> = unsafe { global_value };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.re;
 // REWRITES-NEXT: let {{_v[0-9]+}}: num_complex::Complex<i32> = unsafe { global_value };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.im;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

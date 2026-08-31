@@ -357,34 +357,16 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn truncate_long_double({{arg[0-9]+}}: LongDouble) -> i32 {
-// LOWERING-NEXT:     let mut value: LongDouble = LongDouble([0; 10]);
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     value = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = value;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __slate_f80_to_i32({{_v[0-9]+}});
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __slate_f80_to_i32({{arg[0-9]+}});
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn mix_long_double({{arg[0-9]+}}: LongDouble, {{arg[0-9]+}}: LongDouble) -> LongDouble {
-// LOWERING-NEXT:     let mut a: LongDouble = LongDouble([0; 10]);
-// LOWERING-NEXT:     let mut b: LongDouble = LongDouble([0; 10]);
-// LOWERING-NEXT:     let mut __retval: LongDouble = LongDouble([0; 10]);
-// LOWERING-NEXT:     let mut c: LongDouble = LongDouble([0; 10]);
-// LOWERING-NEXT:     a = {{arg[0-9]+}};
-// LOWERING-NEXT:     b = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = a;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = b;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{arg[0-9]+}} + {{arg[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} / {{_v[0-9]+}};
-// LOWERING-NEXT:     c = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = c;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
@@ -728,14 +710,8 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn print_ld({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: LongDouble) {
-// LOWERING-NEXT:     let mut name: *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut v: LongDouble = LongDouble([0; 10]);
-// LOWERING-NEXT:     name = {{arg[0-9]+}};
-// LOWERING-NEXT:     v = {{arg[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%s=%La\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = name;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = v;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { __slate_printf__ri32_pi8_pi8_f80({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}} as *mut i8, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { __slate_printf__ri32_pi8_pi8_f80({{_v[0-9]+}} as *mut i8, {{arg[0-9]+}} as *mut i8, {{arg[0-9]+}}) };
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
@@ -906,8 +882,6 @@ int main(void) {
 // LOWERING-NEXT: fn check_remaining_math_functions() {
 // LOWERING-NEXT:     let mut ten: LongDouble = LongDouble([0; 10]);
 // LOWERING-NEXT:     let mut three: LongDouble = LongDouble([0; 10]);
-// LOWERING-NEXT:     let mut ipart: LongDouble = LongDouble([0; 10]);
-// LOWERING-NEXT:     let mut frac: LongDouble = LongDouble([0; 10]);
 // LOWERING-NEXT:     let mut quo: i32 = 0;
 // LOWERING-NEXT:     let mut vnan: LongDouble = LongDouble([0; 10]);
 // LOWERING-NEXT:     let mut vinf: LongDouble = LongDouble([0; 10]);
@@ -917,25 +891,19 @@ int main(void) {
 // LOWERING-NEXT:     let mut vtwo: LongDouble = LongDouble([0; 10]);
 // LOWERING-NEXT:     let mut ten_plain: LongDouble = LongDouble([0; 10]);
 // LOWERING-NEXT:     let mut canon: LongDouble = LongDouble([0; 10]);
-// LOWERING-NEXT:     let mut canon_r: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 2, 64]);
 // LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(ten), {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
 // LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(three), {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// LOWERING-NEXT:     ipart = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} / {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_fract({{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_trunc({{_v[0-9]+}});
-// LOWERING-NEXT:     ipart = {{_v[0-9]+}};
-// LOWERING-NEXT:     frac = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"modf_ipart\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = ipart;
 // LOWERING-NEXT:     print_ld({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"modf_frac\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = frac;
 // LOWERING-NEXT:     print_ld({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"remainder\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
@@ -1094,12 +1062,10 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // LOWERING-NEXT:     canon = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { __slate_canonicalizel__ri32_pf80_pf80(std::ptr::addr_of_mut!(canon), std::ptr::addr_of_mut!(ten_plain)) };
-// LOWERING-NEXT:     canon_r = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"canonicalize\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = canon;
 // LOWERING-NEXT:     print_ld({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"canonicalize_r=%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = canon_r;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"ldbl_min\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 0]);
@@ -1119,18 +1085,10 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut x: LongDouble = LongDouble([0; 10]);
-// LOWERING-NEXT:     let mut y: LongDouble = LongDouble([0; 10]);
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63]);
-// LOWERING-NEXT:     x = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 1, 64]);
-// LOWERING-NEXT:     y = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = x;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = y;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = truncate_long_double({{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
@@ -1153,8 +1111,6 @@ int main(void) {
 // LOWERING-NEXT:     check_math_functions();
 // LOWERING-NEXT:     check_remaining_math_functions();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
@@ -1368,20 +1324,11 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn truncate_long_double({{arg[0-9]+}}: LongDouble) -> i32 {
-// REWRITES-NEXT: let mut value: LongDouble = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: __retval = __slate_f80_to_i32(value);
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return __slate_f80_to_i32({{arg[0-9]+}});
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn mix_long_double({{arg[0-9]+}}: LongDouble, {{arg[0-9]+}}: LongDouble) -> LongDouble {
-// REWRITES-NEXT: let mut a: LongDouble = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut b: LongDouble = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut __retval: LongDouble = LongDouble([0; 10]);
-// REWRITES-NEXT: let mut c: LongDouble = LongDouble([0; 10]);
-// REWRITES-NEXT: c = (a + b) / LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
-// REWRITES-NEXT: __retval = c * LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return ({{arg[0-9]+}} + {{arg[0-9]+}}) / LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]) * LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn check_int_casts() {
@@ -1662,10 +1609,8 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn print_ld({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: LongDouble) {
-// REWRITES-NEXT: let mut name: *mut i8 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut v: LongDouble = {{arg[0-9]+}};
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%s=%La\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { __slate_printf__ri32_pi8_pi8_f80({{_v[0-9]+}} as *mut i8, name as *mut i8, v) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { __slate_printf__ri32_pi8_pi8_f80({{_v[0-9]+}} as *mut i8, {{arg[0-9]+}} as *mut i8, {{arg[0-9]+}}) };
 // REWRITES-NEXT: return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -1833,8 +1778,6 @@ int main(void) {
 // REWRITES-NEXT: fn check_remaining_math_functions() {
 // REWRITES-NEXT: let mut ten: LongDouble = LongDouble([0; 10]);
 // REWRITES-NEXT: let mut three: LongDouble = LongDouble([0; 10]);
-// REWRITES-NEXT: let mut ipart: LongDouble = LongDouble([0; 10]);
-// REWRITES-NEXT: let mut frac: LongDouble = LongDouble([0; 10]);
 // REWRITES-NEXT: let mut quo: i32 = 0;
 // REWRITES-NEXT: let mut vnan: LongDouble = LongDouble([0; 10]);
 // REWRITES-NEXT: let mut vinf: LongDouble = LongDouble([0; 10]);
@@ -1844,22 +1787,20 @@ int main(void) {
 // REWRITES-NEXT: let mut vtwo: LongDouble = LongDouble([0; 10]);
 // REWRITES-NEXT: let mut ten_plain: LongDouble = LongDouble([0; 10]);
 // REWRITES-NEXT: let mut canon: LongDouble = LongDouble([0; 10]);
-// REWRITES-NEXT: let mut canon_r: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 2, 64]);
 // REWRITES-NEXT: unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(ten), {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
 // REWRITES-NEXT: unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(three), {{_v[0-9]+}}) };
-// REWRITES-NEXT: ipart = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} / {{_v[0-9]+}};
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = __slate_f80_fract({{_v[0-9]+}});
-// REWRITES-NEXT: ipart = __slate_f80_trunc({{_v[0-9]+}});
-// REWRITES-NEXT: frac = {{_v[0-9]+}};
+// REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = __slate_f80_trunc({{_v[0-9]+}});
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"modf_ipart\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: print_ld({{_v[0-9]+}}, ipart);
+// REWRITES-NEXT: print_ld({{_v[0-9]+}}, {{_v[0-9]+}});
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"modf_frac\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: print_ld({{_v[0-9]+}}, frac);
+// REWRITES-NEXT: print_ld({{_v[0-9]+}}, {{_v[0-9]+}});
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"remainder\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
@@ -1996,11 +1937,11 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, ({{_v[0-9]+}} < {{_v[0-9]+}} || {{_v[0-9]+}} > {{_v[0-9]+}}) as i32) };
 // REWRITES-NEXT: ten_plain = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
 // REWRITES-NEXT: canon = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// REWRITES-NEXT: canon_r = unsafe { __slate_canonicalizel__ri32_pf80_pf80(std::ptr::addr_of_mut!(canon), std::ptr::addr_of_mut!(ten_plain)) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { __slate_canonicalizel__ri32_pf80_pf80(std::ptr::addr_of_mut!(canon), std::ptr::addr_of_mut!(ten_plain)) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"canonicalize\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: print_ld({{_v[0-9]+}}, canon);
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"canonicalize_r=%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, canon_r) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"ldbl_min\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 0]);
 // REWRITES-NEXT: print_ld({{_v[0-9]+}}, {{_v[0-9]+}});
@@ -2019,14 +1960,11 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut x: LongDouble = LongDouble([0; 10]);
-// REWRITES-NEXT: let mut y: LongDouble = LongDouble([0; 10]);
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: x = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63]);
-// REWRITES-NEXT: y = LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 1, 64]);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63]);
+// REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 1, 64]);
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = truncate_long_double(x + y);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = truncate_long_double({{_v[0-9]+}} + {{_v[0-9]+}});
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
@@ -2044,8 +1982,8 @@ int main(void) {
 // REWRITES-NEXT: check_bitint_casts();
 // REWRITES-NEXT: check_math_functions();
 // REWRITES-NEXT: check_remaining_math_functions();
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {

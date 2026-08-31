@@ -56,32 +56,18 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: extern "C" fn handle_ok({{arg[0-9]+}}: i32) -> u32 {
-// LOWERING-NEXT:     let mut x: i32 = 0;
-// LOWERING-NEXT:     let mut __retval: u32 = 0;
-// LOWERING-NEXT:     x = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = x;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = Status::E_OK as u32;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: extern "C" fn handle_fail({{arg[0-9]+}}: i32) -> u32 {
-// LOWERING-NEXT:     let mut x: i32 = 0;
-// LOWERING-NEXT:     let mut __retval: u32 = 0;
-// LOWERING-NEXT:     x = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = x;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = Status::E_FAIL as u32;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut p: Parser = Parser { processor: None };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         let mut i: i32 = 0;
 // LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 0;
@@ -123,8 +109,6 @@ int main(void) {
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -154,27 +138,18 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn handle_ok({{arg[0-9]+}}: i32) -> u32 {
-// REWRITES-NEXT: let mut x: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut __retval: u32 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = x;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = Status::E_OK as u32;
-// REWRITES-NEXT: __retval = {{_v[0-9]+}};
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return {{_v[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn handle_fail({{arg[0-9]+}}: i32) -> u32 {
-// REWRITES-NEXT: let mut x: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut __retval: u32 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = x;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = Status::E_FAIL as u32;
-// REWRITES-NEXT: __retval = {{_v[0-9]+}};
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return {{_v[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut p: Parser = Parser { processor: None };
-// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: {
 // REWRITES-NEXT:         let mut i: i32 = 0;
 // REWRITES-NEXT:         i = 0;
@@ -208,7 +183,7 @@ int main(void) {
 // REWRITES-NEXT:                     i = i + 1;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

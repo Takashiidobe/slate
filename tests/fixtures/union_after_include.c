@@ -73,25 +73,12 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn helper({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-NEXT:     let mut a: i32 = 0;
-// LOWERING-NEXT:     let mut b: i32 = 0;
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut c: i32 = 0;
-// LOWERING-NEXT:     a = {{arg[0-9]+}};
-// LOWERING-NEXT:     b = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = a;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = b;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     c = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = c;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{arg[0-9]+}};
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn loop_sum({{arg[0-9]+}}: i32) -> i32 {
 // LOWERING-NEXT:     let mut n: i32 = 0;
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut total: i32 = 0;
 // LOWERING-NEXT:     n = {{arg[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
@@ -119,16 +106,11 @@ int main(void) {
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn array_pick({{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-NEXT:     let mut index: i32 = 0;
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut values: [i32; 3] = [0; 3];
-// LOWERING-NEXT:     index = {{arg[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 6;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
 // LOWERING-NEXT:     values[({{_v[0-9]+}} as usize)] = {{_v[0-9]+}};
@@ -142,39 +124,25 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 2;
 // LOWERING-NEXT:     values[({{_v[0-9]+}} as usize)] = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = index;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = {{arg[0-9]+}} as i64;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = values[({{_v[0-9]+}} as usize)];
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn union_pick({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-NEXT:     let mut a: i32 = 0;
-// LOWERING-NEXT:     let mut b: i32 = 0;
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut p: FuzzPair = unsafe { std::mem::zeroed::<FuzzPair>() };
-// LOWERING-NEXT:     a = {{arg[0-9]+}};
-// LOWERING-NEXT:     b = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = a;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         p.left = {{_v[0-9]+}};
+// LOWERING-NEXT:         p.left = {{arg[0-9]+}};
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = b;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         p.right = {{_v[0-9]+}};
+// LOWERING-NEXT:         p.right = {{arg[0-9]+}};
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { p.left };
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
@@ -197,8 +165,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = FuzzEnum::FuzzSix as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -233,18 +199,11 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn helper({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT: let mut a: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut b: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut c: i32 = 0;
-// REWRITES-NEXT: c = a + b;
-// REWRITES-NEXT: __retval = c;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return {{arg[0-9]+}} + {{arg[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn loop_sum({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT: let mut n: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut total: i32 = 0;
 // REWRITES-NEXT: total = 0;
 // REWRITES-NEXT: {
@@ -260,13 +219,10 @@ int main(void) {
 // REWRITES-NEXT:                     i = i + 1;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
-// REWRITES-NEXT: __retval = total;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return total;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn array_pick({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT: let mut index: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut values: [i32; 3] = [0; 3];
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
 // REWRITES-NEXT: values[({{_v[0-9]+}} as usize)] = 6;
@@ -276,28 +232,22 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
 // REWRITES-NEXT: values[({{_v[0-9]+}} as usize)] = values[({{_v[0-9]+}} as usize)] + values[({{_v[0-9]+}} as usize)];
-// REWRITES-NEXT: __retval = values[((index as i64) as usize)];
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return values[(({{arg[0-9]+}} as i64) as usize)];
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn union_pick({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT: let mut a: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut b: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut p: FuzzPair = unsafe { std::mem::zeroed::<FuzzPair>() };
 // REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         p.left = a;
+// REWRITES-NEXT:         p.left = {{arg[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         p.right = b;
+// REWRITES-NEXT:         p.right = {{arg[0-9]+}};
 // REWRITES-NEXT: }
-// REWRITES-NEXT: __retval = unsafe { p.left };
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return unsafe { p.left };
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 7;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 2;
@@ -319,7 +269,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = FuzzEnum::FuzzSix as i32;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

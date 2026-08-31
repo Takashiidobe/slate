@@ -138,13 +138,9 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn cache_prefetch_probe({{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-NEXT:     let mut x: i32 = 0;
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut bytes: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
-// LOWERING-NEXT:     x = {{arg[0-9]+}};
 // LOWERING-NEXT:     *bytes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = x;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = {{_v[0-9]+}} as i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = {{arg[0-9]+}} as i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
 // LOWERING-NEXT:     bytes[({{_v[0-9]+}} as usize)] = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = bytes.as_mut_ptr() as *mut i8;
@@ -165,33 +161,23 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn frame_probe() -> i32 {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut frame: *mut core::ffi::c_void = std::ptr::null_mut();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 0;
 // LOWERING-NEXT:     let mut {{_v[0-9]+}}: u8 = 0u8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = std::ptr::addr_of_mut!({{_v[0-9]+}}) as *mut u8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-NEXT:     frame = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = frame;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn clear_padding_probe() -> i32 {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut value: padded = padded { byte: 0, word: 0 };
 // LOWERING-NEXT:     let mut bits: bit_padded = bit_padded { __bitfield_0: unsafe { std::mem::transmute::<u8, __slate_bitfields::__SlateBitfield_bit_padded_0>(0) } };
-// LOWERING-NEXT:     let mut bytes: *mut u8 = std::ptr::null_mut();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(value) as *mut core::ffi::c_void;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 255;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 8;
@@ -223,21 +209,17 @@ int main(void) {
 // LOWERING-NEXT:         *(std::ptr::addr_of_mut!(bits) as *mut u8).add(0usize) = *(std::ptr::addr_of_mut!(bits) as *mut u8).add(0usize) & 231u8;
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = std::ptr::addr_of_mut!(value) as *mut u8;
-// LOWERING-NEXT:     bytes = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 10;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = bytes;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add(1) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = unsafe { *{{_v[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = bytes;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add(2) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = unsafe { *{{_v[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = bytes;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add(3) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = unsafe { *{{_v[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
@@ -250,19 +232,12 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn frexp_probe() -> i32 {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut input: f64 = 0.0;
 // LOWERING-NEXT:     let mut input_f: f32 = 0.0;
-// LOWERING-NEXT:     let mut exponent_d: i32 = 0;
-// LOWERING-NEXT:     let mut exponent_f: i32 = 0;
-// LOWERING-NEXT:     let mut fraction_d: f64 = 0.0;
-// LOWERING-NEXT:     let mut fraction_f: f32 = 0.0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 12.0;
 // LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(input), {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = 8.0;
@@ -271,60 +246,42 @@ int main(void) {
 // LOWERING-NEXT:     let mut {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { __slate_builtin_frexp({{_v[0-9]+}}, std::ptr::addr_of_mut!({{_v[0-9]+}})) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}};
-// LOWERING-NEXT:     exponent_d = {{_v[0-9]+}};
-// LOWERING-NEXT:     fraction_d = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(input_f)) };
 // LOWERING-NEXT:     let mut {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = unsafe { __slate_builtin_frexpf({{_v[0-9]+}}, std::ptr::addr_of_mut!({{_v[0-9]+}})) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}};
-// LOWERING-NEXT:     exponent_f = {{_v[0-9]+}};
-// LOWERING-NEXT:     fraction_f = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 100;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 10;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = fraction_d;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.75;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = exponent_d;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} * {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 10;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = fraction_f;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = 0.5;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} * {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = exponent_f;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn hyperbolic_probe() -> i32 {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut input: f64 = 0.0;
-// LOWERING-NEXT:     let mut c: f64 = 0.0;
-// LOWERING-NEXT:     let mut s: f64 = 0.0;
-// LOWERING-NEXT:     let mut t: f64 = 0.0;
 // LOWERING-NEXT:     let mut vector_input: aligned::Aligned<aligned::A16, [f64; 2]> = aligned::Aligned([0.0; 2]);
 // LOWERING-NEXT:     let mut vc: aligned::Aligned<aligned::A16, [f64; 2]> = aligned::Aligned([0.0; 2]);
 // LOWERING-NEXT:     let mut vs: aligned::Aligned<aligned::A16, [f64; 2]> = aligned::Aligned([0.0; 2]);
 // LOWERING-NEXT:     let mut vt: aligned::Aligned<aligned::A16, [f64; 2]> = aligned::Aligned([0.0; 2]);
-// LOWERING-NEXT:     let mut vector_ok: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.0;
 // LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(input), {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(input)) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.cosh();
-// LOWERING-NEXT:     c = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(input)) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.sinh();
-// LOWERING-NEXT:     s = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(input)) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.tanh();
-// LOWERING-NEXT:     t = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: [f64; 2] = [0.0, 0.0];
 // LOWERING-NEXT:     *vector_input = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: [f64; 2] = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(*vector_input)) };
@@ -397,39 +354,30 @@ int main(void) {
 // LOWERING-NEXT:         {{_v[0-9]+}}
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     vector_ok = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1000;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = vector_ok;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} * {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 100;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = c;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 1.0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} * {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 10;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = s;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} * {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = t;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut input: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
 // LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(input), {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d\n\0".as_ptr() as *mut i8;
@@ -441,8 +389,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = hyperbolic_probe();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
@@ -498,12 +444,10 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn cache_prefetch_probe({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT: let mut x: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut bytes: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
 // REWRITES-NEXT: *bytes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
-// REWRITES-NEXT: bytes[({{_v[0-9]+}} as usize)] = x as i8;
+// REWRITES-NEXT: bytes[({{_v[0-9]+}} as usize)] = {{arg[0-9]+}} as i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = bytes.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = bytes.as_mut_ptr() as *mut i8;
@@ -519,27 +463,20 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT: __retval = (bytes[({{_v[0-9]+}} as usize)] as i32) + {{_v[0-9]+}};
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return (bytes[({{_v[0-9]+}} as usize)] as i32) + {{_v[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn frame_probe() -> i32 {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut frame: *mut core::ffi::c_void = std::ptr::null_mut();
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = 0;
 // REWRITES-NEXT: let mut {{_v[0-9]+}}: u8 = 0u8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut u8 = std::ptr::addr_of_mut!({{_v[0-9]+}}) as *mut u8;
-// REWRITES-NEXT: frame = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// REWRITES-NEXT: __retval = (frame != {{_v[0-9]+}}) as i32;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return (({{_v[0-9]+}} as *mut core::ffi::c_void) != {{_v[0-9]+}}) as i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn clear_padding_probe() -> i32 {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut value: padded = padded { byte: 0, word: 0 };
 // REWRITES-NEXT: let mut bits: bit_padded = bit_padded { __bitfield_0: unsafe { std::mem::transmute::<u8, __slate_bitfields::__SlateBitfield_bit_padded_0>(0) } };
-// REWRITES-NEXT: let mut bytes: *mut u8 = std::ptr::null_mut();
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(value) as *mut core::ffi::c_void;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 255;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 8;
@@ -569,34 +506,24 @@ int main(void) {
 // REWRITES-NEXT:         *(std::ptr::addr_of_mut!(bits) as *mut u8).add(0usize) = *(std::ptr::addr_of_mut!(bits) as *mut u8).add(0usize) & 231u8;
 // REWRITES-NEXT: }
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut u8 = std::ptr::addr_of_mut!(value) as *mut u8;
-// REWRITES-NEXT: bytes = {{_v[0-9]+}};
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 10;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 1;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut u8 = bytes;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add(1) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = (unsafe { *{{_v[0-9]+}} }) as i32;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut u8 = bytes;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add(2) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32);
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut u8 = bytes;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add(3) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} * ({{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32));
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut u8 = std::ptr::addr_of_mut!(bits) as *mut u8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 231;
-// REWRITES-NEXT: __retval = {{_v[0-9]+}} + ((((unsafe { *{{_v[0-9]+}} }) as i32) == {{_v[0-9]+}}) as i32);
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return {{_v[0-9]+}} + ((((unsafe { *{{_v[0-9]+}} }) as i32) == {{_v[0-9]+}}) as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn frexp_probe() -> i32 {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut input: f64 = 0.0;
 // REWRITES-NEXT: let mut input_f: f32 = 0.0;
-// REWRITES-NEXT: let mut exponent_d: i32 = 0;
-// REWRITES-NEXT: let mut exponent_f: i32 = 0;
-// REWRITES-NEXT: let mut fraction_d: f64 = 0.0;
-// REWRITES-NEXT: let mut fraction_f: f32 = 0.0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = 12.0;
 // REWRITES-NEXT: unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(input), {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: f32 = 8.0;
@@ -604,41 +531,32 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(input)) };
 // REWRITES-NEXT: let mut {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = unsafe { __slate_builtin_frexp({{_v[0-9]+}}, std::ptr::addr_of_mut!({{_v[0-9]+}})) };
-// REWRITES-NEXT: exponent_d = {{_v[0-9]+}};
-// REWRITES-NEXT: fraction_d = {{_v[0-9]+}};
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}};
 // REWRITES-NEXT: let {{_v[0-9]+}}: f32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(input_f)) };
 // REWRITES-NEXT: let mut {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: f32 = unsafe { __slate_builtin_frexpf({{_v[0-9]+}}, std::ptr::addr_of_mut!({{_v[0-9]+}})) };
-// REWRITES-NEXT: exponent_f = {{_v[0-9]+}};
-// REWRITES-NEXT: fraction_f = {{_v[0-9]+}};
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 100;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 10;
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = 0.75;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 10;
 // REWRITES-NEXT: let {{_v[0-9]+}}: f32 = 0.5;
-// REWRITES-NEXT: __retval = {{_v[0-9]+}} * ({{_v[0-9]+}} * ((fraction_d == {{_v[0-9]+}}) as i32) + exponent_d) + {{_v[0-9]+}} * ((fraction_f == {{_v[0-9]+}}) as i32) + exponent_f;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return {{_v[0-9]+}} * ({{_v[0-9]+}} * (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) + {{_v[0-9]+}}) + {{_v[0-9]+}} * (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) + {{_v[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn hyperbolic_probe() -> i32 {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut input: f64 = 0.0;
-// REWRITES-NEXT: let mut c: f64 = 0.0;
-// REWRITES-NEXT: let mut s: f64 = 0.0;
-// REWRITES-NEXT: let mut t: f64 = 0.0;
 // REWRITES-NEXT: let mut vector_input: aligned::Aligned<aligned::A16, [f64; 2]> = aligned::Aligned([0.0; 2]);
 // REWRITES-NEXT: let mut vc: aligned::Aligned<aligned::A16, [f64; 2]> = aligned::Aligned([0.0; 2]);
 // REWRITES-NEXT: let mut vs: aligned::Aligned<aligned::A16, [f64; 2]> = aligned::Aligned([0.0; 2]);
 // REWRITES-NEXT: let mut vt: aligned::Aligned<aligned::A16, [f64; 2]> = aligned::Aligned([0.0; 2]);
-// REWRITES-NEXT: let mut vector_ok: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = 0.0;
 // REWRITES-NEXT: unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(input), {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(input)) };
-// REWRITES-NEXT: c = {{_v[0-9]+}}.cosh();
+// REWRITES-NEXT: let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.cosh();
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(input)) };
-// REWRITES-NEXT: s = {{_v[0-9]+}}.sinh();
+// REWRITES-NEXT: let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.sinh();
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(input)) };
-// REWRITES-NEXT: t = {{_v[0-9]+}}.tanh();
+// REWRITES-NEXT: let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.tanh();
 // REWRITES-NEXT: *vector_input = [0.0, 0.0];
 // REWRITES-NEXT: let {{_v[0-9]+}}: [f64; 2] = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(*vector_input)) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: [f64; 2] = [{{_v[0-9]+}}[0usize].cosh(), {{_v[0-9]+}}[1usize].cosh()];
@@ -696,21 +614,18 @@ int main(void) {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
 // REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: };
-// REWRITES-NEXT: vector_ok = {{_v[0-9]+}} as i32;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1000;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 100;
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = 1.0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 10;
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = 0.0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = 0.0;
-// REWRITES-NEXT: __retval = {{_v[0-9]+}} * vector_ok + {{_v[0-9]+}} * ((c == {{_v[0-9]+}}) as i32) + {{_v[0-9]+}} * ((s == {{_v[0-9]+}}) as i32) + ((t == {{_v[0-9]+}}) as i32);
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return {{_v[0-9]+}} * ({{_v[0-9]+}} as i32) + {{_v[0-9]+}} * (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) + {{_v[0-9]+}} * (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut input: i32 = 0;
-// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 7;
 // REWRITES-NEXT: unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(input), {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d\n\0".as_ptr() as *mut i8;
@@ -721,8 +636,8 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = frexp_probe();
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = hyperbolic_probe();
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "unadjusted" {

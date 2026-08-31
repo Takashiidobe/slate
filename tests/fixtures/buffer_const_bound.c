@@ -65,16 +65,14 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: let {{_v[0-9]+}}: *mut i32 = arr.as_mut_ptr() as *mut i32;
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = sum_fixed({{_v[0-9]+}});
-// LOWERING-DAG: r = {{_v[0-9]+}};
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut i32 = arr.as_mut_ptr() as *mut i32;
-// REWRITES-DAG: r = sum_fixed(unsafe { std::slice::from_raw_parts({{_v[0-9]+}} as *const i32, 4usize) });
+// REWRITES-DAG: let {{_v[0-9]+}}: i32 = sum_fixed(unsafe { std::slice::from_raw_parts({{_v[0-9]+}} as *const i32, 4usize) });
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut i32 = a.as_mut_ptr() as *mut i32;
 // REWRITES-DAG: scale_fixed(unsafe { std::slice::from_raw_parts_mut({{_v[0-9]+}} as *mut i32, 3usize) });
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut i32 = m;
-// REWRITES-DAG: r2 = sum3(unsafe { std::slice::from_raw_parts({{_v[0-9]+}} as *const i32, 3usize) });
+// REWRITES-DAG: let {{_v[0-9]+}}: i32 = sum3(unsafe { std::slice::from_raw_parts({{_v[0-9]+}} as *const i32, 3usize) });
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut i32 = big.as_mut_ptr() as *mut i32;
-// REWRITES-DAG: r3 = mix({{_v[0-9]+}});
+// REWRITES-DAG: let {{_v[0-9]+}}: i32 = mix({{_v[0-9]+}});
 // SLATE-FILECHECK-END rewrites

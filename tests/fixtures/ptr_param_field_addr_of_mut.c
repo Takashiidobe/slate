@@ -43,6 +43,6 @@ int main(void) {
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: freeDict(unsafe { std::ptr::addr_of_mut!((*{{arg[0-9]+}}).dict) });
-// REWRITES-DAG: syncDestroy(unsafe { std::ptr::addr_of_mut!((*{{arg[0-9]+}}).io) });
+// REWRITES-DAG: freeDict(unsafe { std::ptr::addr_of_mut!((*({{arg[0-9]+}} as *mut cRess_t)).dict) });
+// REWRITES-DAG: syncDestroy(unsafe { std::ptr::addr_of_mut!((*({{arg[0-9]+}} as *mut cRess_t)).io) });
 // SLATE-FILECHECK-END rewrites

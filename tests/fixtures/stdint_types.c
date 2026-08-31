@@ -15,6 +15,7 @@ static int32_t add_i32(int32_t a, int16_t b) {
   int32_t sum = a + b;
   return sum;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
 // LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
@@ -37,65 +38,29 @@ static int32_t add_i32(int32_t a, int16_t b) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn add_i32({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i16) -> i32 {
-// LOWERING-NEXT:     let mut a: i32 = 0;
-// LOWERING-NEXT:     let mut b: i16 = 0;
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut sum: i32 = 0;
-// LOWERING-NEXT:     a = {{arg[0-9]+}};
-// LOWERING-NEXT:     b = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = a;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i16 = b;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     sum = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = sum;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: /// REWRITES-DAG: println!("{}
 // LOWERING-NEXT: fn widen_u32({{arg[0-9]+}}: u32) -> u64 {
-// LOWERING-NEXT:     let mut value: u32 = 0;
-// LOWERING-NEXT:     let mut __retval: u64 = 0;
-// LOWERING-NEXT:     let mut wide: u64 = 0;
-// LOWERING-NEXT:     value = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = value;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} as u64;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{arg[0-9]+}} as u64;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = unsafe { global_size };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     wide = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = wide;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn use_fixed_types() -> i32 {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut small: i8 = 0;
-// LOWERING-NEXT:     let mut byte: u8 = 0;
-// LOWERING-NEXT:     let mut short_value: i16 = 0;
-// LOWERING-NEXT:     let mut ushort_value: u16 = 0;
-// LOWERING-NEXT:     let mut signed_value: i32 = 0;
-// LOWERING-NEXT:     let mut wide: u64 = 0;
 // LOWERING-NEXT:     let mut pair: FixedPair = FixedPair { left: 0, right: 0, count: 0 };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = -5;
-// LOWERING-NEXT:     small = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = 250;
-// LOWERING-NEXT:     byte = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i16 = 1200;
-// LOWERING-NEXT:     short_value = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u16 = 65000;
-// LOWERING-NEXT:     ushort_value = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 100000;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i16 = short_value;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = add_i32({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     signed_value = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { global_u32 };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = widen_u32({{_v[0-9]+}});
-// LOWERING-NEXT:     wide = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i16 = short_value;
 // LOWERING-NEXT:     pair.left = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { global_u32 };
 // LOWERING-NEXT:     pair.right = {{_v[0-9]+}};
@@ -103,34 +68,25 @@ static int32_t add_i32(int32_t a, int16_t b) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 3;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     pair.count = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = small;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = byte;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i16 = pair.left;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = signed_value;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u16 = ushort_value;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} as u64;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = pair.count;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = wide;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 10;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i16 = 20;
@@ -144,8 +100,6 @@ static int32_t add_i32(int32_t a, int16_t b) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = use_fixed_types();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering

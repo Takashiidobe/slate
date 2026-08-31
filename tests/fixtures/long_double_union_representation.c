@@ -91,10 +91,7 @@ int main(void) { printf("%d\n", convert(6.75L)); }
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn convert({{arg[0-9]+}}: LongDouble) -> i32 {
-// LOWERING-NEXT:     let mut value: LongDouble = LongDouble([0; 10]);
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut bits: {{anon_[0-9]+}} = unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() };
-// LOWERING-NEXT:     value = {{arg[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
 // LOWERING-NEXT:     unsafe {
@@ -105,26 +102,20 @@ int main(void) { printf("%d\n", convert(6.75L)); }
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         bits.u64[({{_v[0-9]+}} as usize)] = {{_v[0-9]+}};
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = value;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         bits.f80 = {{_v[0-9]+}};
+// LOWERING-NEXT:         bits.f80 = {{arg[0-9]+}};
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { bits.f80 };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __slate_f80_to_i32({{_v[0-9]+}});
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 216, 1, 64]);
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = convert({{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
@@ -262,8 +253,6 @@ int main(void) { printf("%d\n", convert(6.75L)); }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn convert({{arg[0-9]+}}: LongDouble) -> i32 {
-// REWRITES-NEXT: let mut value: LongDouble = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut bits: {{anon_[0-9]+}} = unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
 // REWRITES-NEXT: unsafe {
@@ -274,21 +263,19 @@ int main(void) { printf("%d\n", convert(6.75L)); }
 // REWRITES-NEXT:         bits.u64[({{_v[0-9]+}} as usize)] = 0;
 // REWRITES-NEXT: }
 // REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         bits.f80 = value;
+// REWRITES-NEXT:         bits.f80 = {{arg[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = unsafe { bits.f80 };
-// REWRITES-NEXT: __retval = __slate_f80_to_i32({{_v[0-9]+}});
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return __slate_f80_to_i32({{_v[0-9]+}});
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 216, 1, 64]);
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = convert({{_v[0-9]+}});
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {

@@ -49,53 +49,36 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn read_volatile_param({{arg[0-9]+}}: f64) -> f64 {
 // LOWERING-NEXT:     let mut value: f64 = 0.0;
-// LOWERING-NEXT:     let mut __retval: f64 = 0.0;
 // LOWERING-NEXT:     value = {{arg[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(value)) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.5;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn bump_return({{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-NEXT:     let mut value: i32 = 0;
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     value = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = value;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn use_volatile_fields({{arg[0-9]+}}: f64) -> f64 {
-// LOWERING-NEXT:     let mut input: f64 = 0.0;
-// LOWERING-NEXT:     let mut __retval: f64 = 0.0;
 // LOWERING-NEXT:     let mut fields: VolatileFields = VolatileFields { count: 0, ratio: 0.0 };
-// LOWERING-NEXT:     input = {{arg[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 4;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = bump_return({{_v[0-9]+}});
 // LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(fields.count), {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = input;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(gain)) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{arg[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(fields.ratio), {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(fields.ratio)) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(fields.count)) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} as f64;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(marker)) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
@@ -117,8 +100,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = use_volatile_fields({{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -145,42 +126,31 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn read_volatile_param({{arg[0-9]+}}: f64) -> f64 {
 // REWRITES-NEXT: let mut value: f64 = 0.0;
-// REWRITES-NEXT: let mut __retval: f64 = 0.0;
 // REWRITES-NEXT: value = {{arg[0-9]+}};
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(value)) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = 0.5;
-// REWRITES-NEXT: __retval = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return {{_v[0-9]+}} + {{_v[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn bump_return({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT: let mut value: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT: __retval = value + {{_v[0-9]+}};
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return {{arg[0-9]+}} + {{_v[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn use_volatile_fields({{arg[0-9]+}}: f64) -> f64 {
-// REWRITES-NEXT: let mut input: f64 = 0.0;
-// REWRITES-NEXT: let mut __retval: f64 = 0.0;
 // REWRITES-NEXT: let mut fields: VolatileFields = VolatileFields { count: 0, ratio: 0.0 };
-// REWRITES-NEXT: input = {{arg[0-9]+}};
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 4;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = bump_return({{_v[0-9]+}});
 // REWRITES-NEXT: unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(fields.count), {{_v[0-9]+}}) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: f64 = input;
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(gain)) };
-// REWRITES-NEXT: unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(fields.ratio), {{_v[0-9]+}} + {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(fields.ratio), {{arg[0-9]+}} + {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(fields.ratio)) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(fields.count)) };
-// REWRITES-NEXT: __retval = {{_v[0-9]+}} + ({{_v[0-9]+}} as f64);
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return {{_v[0-9]+}} + ({{_v[0-9]+}} as f64);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i8 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(marker)) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT: unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(marker), (({{_v[0-9]+}} as i32) + {{_v[0-9]+}}) as i8) };
@@ -197,7 +167,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = 2.0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = use_volatile_fields({{_v[0-9]+}});
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

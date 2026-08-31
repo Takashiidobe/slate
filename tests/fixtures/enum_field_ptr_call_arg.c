@@ -57,17 +57,8 @@ int main(void) {
 // LOWERING-DAG: return {{_v[0-9]+}};
 // LOWERING-DAG: }
 // LOWERING-DAG: fn run({{arg[0-9]+}}: *mut Entropy, {{arg[0-9]+}}: u32) -> i32 {
-// LOWERING-DAG: let mut e: *mut Entropy = std::ptr::null_mut();
-// LOWERING-DAG: let mut count: u32 = 0;
-// LOWERING-DAG: let mut __retval: i32 = 0;
-// LOWERING-DAG: e = {{arg[0-9]+}};
-// LOWERING-DAG: count = {{arg[0-9]+}};
-// LOWERING-DAG: let {{_v[0-9]+}}: *mut Entropy = e;
-// LOWERING-DAG: let {{_v[0-9]+}}: u32 = count;
-// LOWERING-DAG: let {{_v[0-9]+}}: u32 = select_type((unsafe { std::ptr::addr_of_mut!((*{{_v[0-9]+}}).mode) }) as *mut u32, {{_v[0-9]+}});
+// LOWERING-DAG: let {{_v[0-9]+}}: u32 = select_type((unsafe { std::ptr::addr_of_mut!((*{{arg[0-9]+}}).mode) }) as *mut u32, {{arg[0-9]+}});
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-DAG: __retval = {{_v[0-9]+}};
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-DAG: return {{_v[0-9]+}};
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
@@ -91,11 +82,7 @@ int main(void) {
 // REWRITES-DAG: return __retval;
 // REWRITES-DAG: }
 // REWRITES-DAG: fn run({{arg[0-9]+}}: &mut Entropy, {{arg[0-9]+}}: u32) -> i32 {
-// REWRITES-DAG: let mut count: u32 = {{arg[0-9]+}};
-// REWRITES-DAG: let mut __retval: i32 = 0;
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut Entropy = {{arg[0-9]+}};
-// REWRITES-DAG: let {{_v[0-9]+}}: u32 = select_type((unsafe { std::ptr::addr_of_mut!((*{{_v[0-9]+}}).mode) }) as *mut u32, count);
-// REWRITES-DAG: __retval = {{_v[0-9]+}} as i32;
-// REWRITES-DAG: return __retval;
+// REWRITES-DAG: let {{_v[0-9]+}}: u32 = select_type((unsafe { std::ptr::addr_of_mut!((*({{arg[0-9]+}} as *mut Entropy)).mode) }) as *mut u32, {{arg[0-9]+}});
+// REWRITES-DAG: return {{_v[0-9]+}} as i32;
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

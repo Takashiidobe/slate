@@ -18,7 +18,6 @@ int run_a(void) {
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: #[unsafe(no_mangle)]
 // REWRITES-DAG: pub extern "C" fn run_a() -> i32 {
-// REWRITES-DAG: let mut __retval: i32 = 0;
 // REWRITES-DAG: let mut items: aligned::Aligned<aligned::A16, [Item; 2]> = aligned::Aligned([Item { value: 0, weight: 0 }; 2]);
 // REWRITES-DAG: let mut total: i32 = 0;
 // REWRITES-DAG: *items = [Item { value: 1, weight: 10 }, Item { value: 2, weight: 20 }];
@@ -37,8 +36,7 @@ int run_a(void) {
 // REWRITES-DAG: i = i + 1;
 // REWRITES-DAG: }
 // REWRITES-DAG: }
-// REWRITES-DAG: __retval = total;
-// REWRITES-DAG: return __retval;
+// REWRITES-DAG: return total;
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites
 

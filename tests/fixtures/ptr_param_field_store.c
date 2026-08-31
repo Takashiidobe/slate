@@ -21,23 +21,19 @@ int main(void) {
     return 0;
 }
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = x;
-// LOWERING-DAG: let {{_v[0-9]+}}: *mut pair_t = out;
 // LOWERING-DAG: unsafe {
-// LOWERING-DAG: (*{{_v[0-9]+}}).a = {{_v[0-9]+}};
+// LOWERING-DAG: (*{{arg[0-9]+}}).a = {{arg[0-9]+}};
 // LOWERING-DAG: }
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = y;
-// LOWERING-DAG: let {{_v[0-9]+}}: *mut pair_t = out;
 // LOWERING-DAG: unsafe {
-// LOWERING-DAG: (*{{_v[0-9]+}}).b = {{_v[0-9]+}};
+// LOWERING-DAG: (*{{arg[0-9]+}}).b = {{arg[0-9]+}};
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: unsafe {
-// REWRITES-DAG: (*{{arg[0-9]+}}).a = x;
+// REWRITES-DAG: (*({{arg[0-9]+}} as *mut pair_t)).a = {{arg[0-9]+}};
 // REWRITES-DAG: }
 // REWRITES-DAG: unsafe {
-// REWRITES-DAG: (*{{arg[0-9]+}}).b = y;
+// REWRITES-DAG: (*({{arg[0-9]+}} as *mut pair_t)).b = {{arg[0-9]+}};
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

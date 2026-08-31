@@ -314,63 +314,42 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn c23_stdbit() -> i32 {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut value: u32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 176;
-// LOWERING-NEXT:     value = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = value;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { stdc_leading_zeros_ui({{_v[0-9]+}} as u32) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = value;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { stdc_leading_ones_ui({{_v[0-9]+}} as u32) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = value;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { stdc_trailing_zeros_ui({{_v[0-9]+}} as u32) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = value;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { stdc_trailing_ones_ui({{_v[0-9]+}} as u32) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = value;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { stdc_first_leading_zero_ui({{_v[0-9]+}} as u32) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = value;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { stdc_first_leading_one_ui({{_v[0-9]+}} as u32) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = value;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { stdc_first_trailing_zero_ui({{_v[0-9]+}} as u32) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = value;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { stdc_first_trailing_one_ui({{_v[0-9]+}} as u32) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = value;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { stdc_count_zeros_ui({{_v[0-9]+}} as u32) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = value;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { stdc_count_ones_ui({{_v[0-9]+}} as u32) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = true;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} as u32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = value;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { stdc_bit_width_ui({{_v[0-9]+}} as u32) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = value;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { stdc_bit_floor_ui({{_v[0-9]+}} as u32) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = value;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { stdc_bit_ceil_ui({{_v[0-9]+}} as u32) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn c23_checked_arithmetic() -> i32 {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut result: i32 = 0;
-// LOWERING-NEXT:     let mut total: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 20;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 22;
 // LOWERING-NEXT:     let {{_v[0-9]+}} = {{_v[0-9]+}}.overflowing_add({{_v[0-9]+}});
@@ -388,9 +367,7 @@ int main(void) {
 // LOWERING-NEXT:         {{_v[0-9]+}}
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 50;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 8;
 // LOWERING-NEXT:     let {{_v[0-9]+}} = {{_v[0-9]+}}.overflowing_sub({{_v[0-9]+}});
@@ -408,9 +385,7 @@ int main(void) {
 // LOWERING-NEXT:         {{_v[0-9]+}}
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 6;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
 // LOWERING-NEXT:     let {{_v[0-9]+}} = {{_v[0-9]+}}.overflowing_mul({{_v[0-9]+}});
@@ -428,9 +403,7 @@ int main(void) {
 // LOWERING-NEXT:         {{_v[0-9]+}}
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2147483647;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:     let {{_v[0-9]+}} = {{_v[0-9]+}}.overflowing_add({{_v[0-9]+}});
@@ -438,23 +411,15 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.1 || ({{_v[0-9]+}}.0 < -2147483648 || {{_v[0-9]+}}.0 > 2147483647);
 // LOWERING-NEXT:     result = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn c23_utf8() -> i32 {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut input_state: __mbstate_t = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
 // LOWERING-NEXT:     let mut output_state: __mbstate_t = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
 // LOWERING-NEXT:     let mut character: u8 = 0;
 // LOWERING-NEXT:     let mut output: [i8; 4] = [0; 4];
-// LOWERING-NEXT:     let mut input_size: u64 = 0;
-// LOWERING-NEXT:     let mut output_size: u64 = 0;
 // LOWERING-NEXT:     let mut atomic_character: u8 = 0;
 // LOWERING-NEXT:     input_state = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
 // LOWERING-NEXT:     output_state = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
@@ -464,20 +429,16 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"A\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 1;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe { mbrtoc8(std::ptr::addr_of_mut!(character) as *mut u8, {{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as usize, std::ptr::addr_of_mut!(input_state) as *mut __mbstate_t) }) as u64;
-// LOWERING-NEXT:     input_size = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = output.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = character;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe { c8rtomb({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}} as u8, std::ptr::addr_of_mut!(output_state) as *mut __mbstate_t) }) as u64;
-// LOWERING-NEXT:     output_size = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = character;
 // LOWERING-NEXT:     atomic_character = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = 66;
 // LOWERING-NEXT:     unsafe { std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(atomic_character)).store({{_v[0-9]+}}, std::sync::atomic::Ordering::SeqCst) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = input_size;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 1;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = output_size;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 1;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
@@ -500,29 +461,21 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn c23_memory() -> i32 {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut source: [i8; 7] = [0; 7];
 // LOWERING-NEXT:     let mut destination: [i8; 8] = [0; 8];
 // LOWERING-NEXT:     let mut secret: [i8; 7] = [0; 7];
 // LOWERING-NEXT:     let mut first_copy: *mut i8 = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut second_copy: *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut phrase: *mut i8 = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut mutable_phrase: [i8; 12] = [0; 12];
-// LOWERING-NEXT:     let mut stop: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut total: i32 = 0;
-// LOWERING-NEXT:     let mut const_hit: *mut i8 = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut mut_hit: *mut i8 = std::ptr::null_mut();
 // LOWERING-NEXT:     source = [97, 98, 99, 100, 101, 102, 0];
 // LOWERING-NEXT:     destination = [0, 0, 0, 0, 0, 0, 0, 0];
 // LOWERING-NEXT:     secret = [115, 101, 99, 114, 101, 116, 0];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"hello world\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     phrase = {{_v[0-9]+}};
 // LOWERING-NEXT:     mutable_phrase = [104, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100, 0];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = destination.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
@@ -531,8 +484,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 99;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 6;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { memccpy({{_v[0-9]+}} as *mut core::ffi::c_void, {{_v[0-9]+}} as *const core::ffi::c_void, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as usize) };
-// LOWERING-NEXT:     stop = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = stop;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = destination.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(3) };
@@ -550,7 +501,6 @@ int main(void) {
 // LOWERING-NEXT:         {{_v[0-9]+}}
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = secret.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
@@ -573,9 +523,7 @@ int main(void) {
 // LOWERING-NEXT:         {{_v[0-9]+}}
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"c23\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { strdup({{_v[0-9]+}} as *const i8) };
 // LOWERING-NEXT:     first_copy = {{_v[0-9]+}};
@@ -598,9 +546,7 @@ int main(void) {
 // LOWERING-NEXT:         {{_v[0-9]+}}
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = second_copy;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
@@ -616,24 +562,19 @@ int main(void) {
 // LOWERING-NEXT:         {{_v[0-9]+}}
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = first_copy;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:     unsafe { free({{_v[0-9]+}} as *mut core::ffi::c_void) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = second_copy;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:     unsafe { free({{_v[0-9]+}} as *mut core::ffi::c_void) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = phrase;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 119;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { strchr({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as i32) };
-// LOWERING-NEXT:     const_hit = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = mutable_phrase.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 119;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { strchr({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as i32) };
 // LOWERING-NEXT:     mut_hit = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = const_hit;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
@@ -646,10 +587,7 @@ int main(void) {
 // LOWERING-NEXT:         {{_v[0-9]+}}
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = phrase;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 111;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 11;
@@ -657,9 +595,7 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = mutable_phrase.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 111;
@@ -668,43 +604,30 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = phrase;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"world\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { strstr({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as *const i8) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = mutable_phrase.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"world\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { strstr({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as *const i8) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn c23_time() -> i32 {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut timestamp: i64 = 0;
 // LOWERING-NEXT:     let mut utc: tm = tm { tm_sec: 0, tm_min: 0, tm_hour: 0, tm_mday: 0, tm_mon: 0, tm_year: 0, tm_wday: 0, tm_yday: 0, tm_isdst: 0, __tm_gmtoff: 0, __tm_zone: std::ptr::null_mut() };
 // LOWERING-NEXT:     let mut local: tm = tm { tm_sec: 0, tm_min: 0, tm_hour: 0, tm_mday: 0, tm_mon: 0, tm_year: 0, tm_wday: 0, tm_yday: 0, tm_isdst: 0, __tm_gmtoff: 0, __tm_zone: std::ptr::null_mut() };
 // LOWERING-NEXT:     let mut resolution: libc::timespec = libc::timespec { tv_sec: 0, tv_nsec: 0 };
 // LOWERING-NEXT:     let mut month: aligned::Aligned<aligned::A16, [i8; 32]> = aligned::Aligned([0; 32]);
 // LOWERING-NEXT:     let mut wide_month: aligned::Aligned<aligned::A16, [i32; 32]> = aligned::Aligned([0; 32]);
-// LOWERING-NEXT:     let mut total: i32 = 0;
-// LOWERING-NEXT:     let mut const_month: *mut i32 = std::ptr::null_mut();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
 // LOWERING-NEXT:     timestamp = {{_v[0-9]+}};
 // LOWERING-NEXT:     utc = tm { tm_sec: 0, tm_min: 0, tm_hour: 0, tm_mday: 0, tm_mon: 0, tm_year: 0, tm_wday: 0, tm_yday: 0, tm_isdst: 0, __tm_gmtoff: 0, __tm_zone: std::ptr::null_mut() };
@@ -715,21 +638,16 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut tm = unsafe { gmtime_r(std::ptr::addr_of_mut!(timestamp) as *const i64, std::ptr::addr_of_mut!(utc) as *mut tm) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == std::ptr::addr_of_mut!(utc);
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut tm = unsafe { localtime_r(std::ptr::addr_of_mut!(timestamp) as *const i64, std::ptr::addr_of_mut!(local) as *mut tm) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == std::ptr::addr_of_mut!(local);
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { timespec_getres(std::ptr::addr_of_mut!(resolution) as *mut libc::timespec, {{_v[0-9]+}} as i32) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = resolution.tv_sec;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > {{_v[0-9]+}};
@@ -743,16 +661,12 @@ int main(void) {
 // LOWERING-NEXT:         {{_v[0-9]+}}
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { timegm(std::ptr::addr_of_mut!(utc) as *mut tm) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = month.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%OB\0".as_ptr() as *mut i8;
@@ -760,18 +674,14 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 7;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = month.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"January\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { strcmp({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as *const i8) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = wide_month.as_mut_ptr() as *mut i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = std::ptr::addr_of_mut!(_str_9).cast::<i32>();
@@ -779,64 +689,45 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 7;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = wide_month.as_mut_ptr() as *mut i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = std::ptr::addr_of_mut!(_str_10).cast::<i32>();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { wcscmp({{_v[0-9]+}} as *const i32, {{_v[0-9]+}} as *const i32) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = wide_month.as_mut_ptr() as *mut i32;
-// LOWERING-NEXT:     const_month = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = const_month;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 110;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { wcschr({{_v[0-9]+}} as *const i32, {{_v[0-9]+}} as i32) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = wide_month.as_mut_ptr() as *mut i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 110;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { wcschr({{_v[0-9]+}} as *const i32, {{_v[0-9]+}} as i32) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = std::ptr::null_mut();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = const_month;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = wide_month.as_mut_ptr() as *mut i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 110;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { wcschr({{_v[0-9]+}} as *const i32, {{_v[0-9]+}} as i32) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = std::ptr::addr_of_mut!(_str_11).cast::<i32>();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { wcsstr({{_v[0-9]+}} as *const i32, {{_v[0-9]+}} as *const i32) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = std::ptr::null_mut();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = wide_month.as_mut_ptr() as *mut i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = std::ptr::addr_of_mut!(_str_11).cast::<i32>();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { wcsstr({{_v[0-9]+}} as *const i32, {{_v[0-9]+}} as *const i32) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = std::ptr::null_mut();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn c23_io() -> i32 {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut output: aligned::Aligned<aligned::A16, [i8; 64]> = aligned::Aligned([0; 64]);
 // LOWERING-NEXT:     let mut float_output: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
 // LOWERING-NEXT:     let mut double_output: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
@@ -844,9 +735,6 @@ int main(void) {
 // LOWERING-NEXT:     let mut binary_value: u32 = 0;
 // LOWERING-NEXT:     let mut exact_value: u16 = 0;
 // LOWERING-NEXT:     let mut fast_value: u64 = 0;
-// LOWERING-NEXT:     let mut written: i32 = 0;
-// LOWERING-NEXT:     let mut scanned: i32 = 0;
-// LOWERING-NEXT:     let mut floating_written: i32 = 0;
 // LOWERING-NEXT:     *output = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 // LOWERING-NEXT:     *float_output = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 // LOWERING-NEXT:     *double_output = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -864,11 +752,9 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 21;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 34;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { snprintf({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}} as usize, {{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     written = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"1011 55 89\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%b %w16u %wf16u\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { sscanf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as *const i8, std::ptr::addr_of_mut!(binary_value), std::ptr::addr_of_mut!(exact_value), std::ptr::addr_of_mut!(fast_value)) };
-// LOWERING-NEXT:     scanned = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = float_output.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 16;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%.1f\0".as_ptr() as *mut i8;
@@ -886,8 +772,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 224, 0, 64]);
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { __slate_strfroml__ri32_pi8_usize_pi8_f80({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}} as usize, {{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     floating_written = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = written;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = output.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"1101 21 34\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { strcmp({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as *const i8) };
@@ -895,7 +779,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = scanned;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = binary_value;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 11;
@@ -913,7 +796,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = floating_written;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = float_output.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"1.5\0".as_ptr() as *mut i8;
@@ -936,16 +818,10 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn c23_limits() -> i32 {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut integer_widths: i32 = 0;
-// LOWERING-NEXT:     let mut floating_limits: i32 = 0;
-// LOWERING-NEXT:     let mut header_versions: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
@@ -973,7 +849,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 64;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     integer_widths = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = 0.0000000000000000000000000000000000000000000014013;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = 0.0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > {{_v[0-9]+}};
@@ -1033,7 +908,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     floating_limits = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 202311;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 202311;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
@@ -1068,21 +942,13 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     header_versions = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = integer_widths;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = floating_limits;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = header_versions;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = c23_stdbit();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = c23_checked_arithmetic();
@@ -1094,8 +960,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
@@ -1316,42 +1180,37 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c23_stdbit() -> i32 {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut value: u32 = 0;
-// REWRITES-NEXT: value = 176;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { stdc_leading_zeros_ui(value as u32) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { stdc_leading_ones_ui(value as u32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = 176;
+// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { stdc_leading_zeros_ui({{_v[0-9]+}} as u32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { stdc_leading_ones_ui({{_v[0-9]+}} as u32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { stdc_trailing_zeros_ui(value as u32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { stdc_trailing_zeros_ui({{_v[0-9]+}} as u32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { stdc_trailing_ones_ui(value as u32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { stdc_trailing_ones_ui({{_v[0-9]+}} as u32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { stdc_first_leading_zero_ui(value as u32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { stdc_first_leading_zero_ui({{_v[0-9]+}} as u32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { stdc_first_leading_one_ui(value as u32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { stdc_first_leading_one_ui({{_v[0-9]+}} as u32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { stdc_first_trailing_zero_ui(value as u32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { stdc_first_trailing_zero_ui({{_v[0-9]+}} as u32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { stdc_first_trailing_one_ui(value as u32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { stdc_first_trailing_one_ui({{_v[0-9]+}} as u32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { stdc_count_zeros_ui(value as u32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { stdc_count_zeros_ui({{_v[0-9]+}} as u32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { stdc_count_ones_ui(value as u32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { stdc_count_ones_ui({{_v[0-9]+}} as u32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} + {{_v[0-9]+}} + (true as u32);
-// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { stdc_bit_width_ui(value as u32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { stdc_bit_width_ui({{_v[0-9]+}} as u32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { stdc_bit_floor_ui(value as u32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { stdc_bit_floor_ui({{_v[0-9]+}} as u32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { stdc_bit_ceil_ui(value as u32) };
-// REWRITES-NEXT: __retval = ({{_v[0-9]+}} + {{_v[0-9]+}}) as i32;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { stdc_bit_ceil_ui({{_v[0-9]+}} as u32) };
+// REWRITES-NEXT: return ({{_v[0-9]+}} + {{_v[0-9]+}}) as i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c23_checked_arithmetic() -> i32 {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut result: i32 = 0;
-// REWRITES-NEXT: let mut total: i32 = 0;
-// REWRITES-NEXT: total = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 20;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 22;
 // REWRITES-NEXT: let {{_v[0-9]+}} = {{_v[0-9]+}}.overflowing_add({{_v[0-9]+}});
@@ -1366,7 +1225,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
 // REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: };
-// REWRITES-NEXT: total = total + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 50;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 8;
 // REWRITES-NEXT: let {{_v[0-9]+}} = {{_v[0-9]+}}.overflowing_sub({{_v[0-9]+}});
@@ -1381,7 +1240,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
 // REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: };
-// REWRITES-NEXT: total = total + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 6;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 7;
 // REWRITES-NEXT: let {{_v[0-9]+}} = {{_v[0-9]+}}.overflowing_mul({{_v[0-9]+}});
@@ -1396,25 +1255,20 @@ int main(void) {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
 // REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: };
-// REWRITES-NEXT: total = total + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 2147483647;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}} = {{_v[0-9]+}}.overflowing_add({{_v[0-9]+}});
 // REWRITES-NEXT: let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.1 || ({{_v[0-9]+}}.0 < -2147483648 || {{_v[0-9]+}}.0 > 2147483647);
 // REWRITES-NEXT: result = {{_v[0-9]+}}.0 as i32;
-// REWRITES-NEXT: total = total + ({{_v[0-9]+}} as i32);
-// REWRITES-NEXT: __retval = total;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c23_utf8() -> i32 {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut input_state: __mbstate_t = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
 // REWRITES-NEXT: let mut output_state: __mbstate_t = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
 // REWRITES-NEXT: let mut character: u8 = 0;
 // REWRITES-NEXT: let mut output: [i8; 4] = [0; 4];
-// REWRITES-NEXT: let mut input_size: u64 = 0;
-// REWRITES-NEXT: let mut output_size: u64 = 0;
 // REWRITES-NEXT: let mut atomic_character: u8 = 0;
 // REWRITES-NEXT: input_state = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
 // REWRITES-NEXT: output_state = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
@@ -1422,9 +1276,9 @@ int main(void) {
 // REWRITES-NEXT: output = [0, 0, 0, 0];
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"A\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 1;
-// REWRITES-NEXT: input_size = (unsafe { mbrtoc8(std::ptr::addr_of_mut!(character) as *mut u8, {{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as usize, std::ptr::addr_of_mut!(input_state) as *mut __mbstate_t) }) as u64;
+// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = (unsafe { mbrtoc8(std::ptr::addr_of_mut!(character) as *mut u8, {{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as usize, std::ptr::addr_of_mut!(input_state) as *mut __mbstate_t) }) as u64;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = output.as_mut_ptr() as *mut i8;
-// REWRITES-NEXT: output_size = (unsafe { c8rtomb({{_v[0-9]+}} as *mut i8, character as u8, std::ptr::addr_of_mut!(output_state) as *mut __mbstate_t) }) as u64;
+// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = (unsafe { c8rtomb({{_v[0-9]+}} as *mut i8, character as u8, std::ptr::addr_of_mut!(output_state) as *mut __mbstate_t) }) as u64;
 // REWRITES-NEXT: atomic_character = character;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u8 = 66;
 // REWRITES-NEXT: unsafe { std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(atomic_character)).store({{_v[0-9]+}}, std::sync::atomic::Ordering::SeqCst) };
@@ -1432,37 +1286,29 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 65;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = ((input_size == {{_v[0-9]+}}) as i32) + ((output_size == {{_v[0-9]+}}) as i32) + (((output[({{_v[0-9]+}} as usize)] as i32) == {{_v[0-9]+}}) as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) + (((output[({{_v[0-9]+}} as usize)] as i32) == {{_v[0-9]+}}) as i32);
 // REWRITES-NEXT: let {{_v[0-9]+}}: u8 = unsafe { std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(atomic_character)).load(std::sync::atomic::Ordering::SeqCst) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 66;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 2;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT: __retval = {{_v[0-9]+}} + ((({{_v[0-9]+}} as i32) == {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} > {{_v[0-9]+}}) as i32);
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return {{_v[0-9]+}} + ((({{_v[0-9]+}} as i32) == {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} > {{_v[0-9]+}}) as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c23_memory() -> i32 {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut source: [i8; 7] = [97, 98, 99, 100, 101, 102, 0];
 // REWRITES-NEXT: let mut destination: [i8; 8] = [0, 0, 0, 0, 0, 0, 0, 0];
 // REWRITES-NEXT: let mut secret: [i8; 7] = [115, 101, 99, 114, 101, 116, 0];
 // REWRITES-NEXT: let mut first_copy: *mut i8 = std::ptr::null_mut();
 // REWRITES-NEXT: let mut second_copy: *mut i8 = std::ptr::null_mut();
-// REWRITES-NEXT: let mut phrase: *mut i8 = std::ptr::null_mut();
-// REWRITES-NEXT: let mut mutable_phrase: [i8; 12] = [0; 12];
-// REWRITES-NEXT: let mut stop: *mut core::ffi::c_void = std::ptr::null_mut();
-// REWRITES-NEXT: let mut total: i32 = 0;
-// REWRITES-NEXT: let mut const_hit: *mut i8 = std::ptr::null_mut();
+// REWRITES-NEXT: let mut mutable_phrase: [i8; 12] = [104, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100, 0];
 // REWRITES-NEXT: let mut mut_hit: *mut i8 = std::ptr::null_mut();
-// REWRITES-NEXT: phrase = b"hello world\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: mutable_phrase = [104, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100, 0];
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"hello world\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = destination.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = source.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 99;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 6;
-// REWRITES-NEXT: stop = unsafe { memccpy({{_v[0-9]+}} as *mut core::ffi::c_void, ({{_v[0-9]+}} as *mut core::ffi::c_void) as *const core::ffi::c_void, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as usize) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = stop;
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { memccpy({{_v[0-9]+}} as *mut core::ffi::c_void, ({{_v[0-9]+}} as *mut core::ffi::c_void) as *const core::ffi::c_void, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as usize) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = destination.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 3;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(3) };
@@ -1475,7 +1321,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
 // REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: };
-// REWRITES-NEXT: total = {{_v[0-9]+}} as i32;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = secret.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 7;
@@ -1491,7 +1337,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
 // REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: };
-// REWRITES-NEXT: total = total + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"c23\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: first_copy = unsafe { strdup({{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"library\0".as_ptr() as *mut i8;
@@ -1510,7 +1356,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
 // REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: };
-// REWRITES-NEXT: total = total + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
 // REWRITES-NEXT: let {{_v[0-9]+}}: bool = second_copy != {{_v[0-9]+}};
 // REWRITES-NEXT: let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
@@ -1524,16 +1370,16 @@ int main(void) {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
 // REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: };
-// REWRITES-NEXT: total = total + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: unsafe { free((first_copy as *mut core::ffi::c_void) as *mut core::ffi::c_void) };
 // REWRITES-NEXT: unsafe { free((second_copy as *mut core::ffi::c_void) as *mut core::ffi::c_void) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 119;
-// REWRITES-NEXT: const_hit = unsafe { strchr(phrase as *const i8, {{_v[0-9]+}} as i32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = unsafe { strchr({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as i32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = mutable_phrase.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 119;
 // REWRITES-NEXT: mut_hit = unsafe { strchr({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as i32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
-// REWRITES-NEXT: let {{_v[0-9]+}}: bool = if const_hit != {{_v[0-9]+}} {
+// REWRITES-NEXT: let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} != {{_v[0-9]+}} {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = mut_hit != {{_v[0-9]+}};
 // REWRITES-NEXT:     {{_v[0-9]+}}
@@ -1541,42 +1387,36 @@ int main(void) {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
 // REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: };
-// REWRITES-NEXT: total = total + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 111;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 11;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { memchr((phrase as *mut core::ffi::c_void) as *const core::ffi::c_void, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as usize) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { memchr(({{_v[0-9]+}} as *mut core::ffi::c_void) as *const core::ffi::c_void, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as usize) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// REWRITES-NEXT: total = total + (({{_v[0-9]+}} != {{_v[0-9]+}}) as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} != {{_v[0-9]+}}) as i32);
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = mutable_phrase.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 111;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 11;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { memchr(({{_v[0-9]+}} as *mut core::ffi::c_void) as *const core::ffi::c_void, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as usize) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// REWRITES-NEXT: total = total + (({{_v[0-9]+}} != {{_v[0-9]+}}) as i32);
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = phrase;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} != {{_v[0-9]+}}) as i32);
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"world\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = unsafe { strstr({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
-// REWRITES-NEXT: total = total + (({{_v[0-9]+}} != {{_v[0-9]+}}) as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} != {{_v[0-9]+}}) as i32);
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = mutable_phrase.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"world\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = unsafe { strstr({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
-// REWRITES-NEXT: total = total + (({{_v[0-9]+}} != {{_v[0-9]+}}) as i32);
-// REWRITES-NEXT: __retval = total;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return {{_v[0-9]+}} + (({{_v[0-9]+}} != {{_v[0-9]+}}) as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c23_time() -> i32 {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut timestamp: i64 = 0;
 // REWRITES-NEXT: let mut utc: tm = tm { tm_sec: 0, tm_min: 0, tm_hour: 0, tm_mday: 0, tm_mon: 0, tm_year: 0, tm_wday: 0, tm_yday: 0, tm_isdst: 0, __tm_gmtoff: 0, __tm_zone: std::ptr::null_mut() };
 // REWRITES-NEXT: let mut local: tm = tm { tm_sec: 0, tm_min: 0, tm_hour: 0, tm_mday: 0, tm_mon: 0, tm_year: 0, tm_wday: 0, tm_yday: 0, tm_isdst: 0, __tm_gmtoff: 0, __tm_zone: std::ptr::null_mut() };
 // REWRITES-NEXT: let mut resolution: libc::timespec = libc::timespec { tv_sec: 0, tv_nsec: 0 };
 // REWRITES-NEXT: let mut month: aligned::Aligned<aligned::A16, [i8; 32]> = aligned::Aligned([0; 32]);
 // REWRITES-NEXT: let mut wide_month: aligned::Aligned<aligned::A16, [i32; 32]> = aligned::Aligned([0; 32]);
-// REWRITES-NEXT: let mut total: i32 = 0;
-// REWRITES-NEXT: let mut const_month: *mut i32 = std::ptr::null_mut();
 // REWRITES-NEXT: timestamp = 0;
 // REWRITES-NEXT: utc = tm { tm_sec: 0, tm_min: 0, tm_hour: 0, tm_mday: 0, tm_mon: 0, tm_year: 0, tm_wday: 0, tm_yday: 0, tm_isdst: 0, __tm_gmtoff: 0, __tm_zone: std::ptr::null_mut() };
 // REWRITES-NEXT: local = tm { tm_sec: 0, tm_min: 0, tm_hour: 0, tm_mday: 0, tm_mon: 0, tm_year: 0, tm_wday: 0, tm_yday: 0, tm_isdst: 0, __tm_gmtoff: 0, __tm_zone: std::ptr::null_mut() };
@@ -1585,14 +1425,14 @@ int main(void) {
 // REWRITES-NEXT: *wide_month = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut tm = unsafe { gmtime_r(std::ptr::addr_of_mut!(timestamp) as *const i64, std::ptr::addr_of_mut!(utc) as *mut tm) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == std::ptr::addr_of_mut!(utc);
-// REWRITES-NEXT: total = {{_v[0-9]+}} as i32;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut tm = unsafe { localtime_r(std::ptr::addr_of_mut!(timestamp) as *const i64, std::ptr::addr_of_mut!(local) as *mut tm) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == std::ptr::addr_of_mut!(local);
-// REWRITES-NEXT: total = total + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { timespec_getres(std::ptr::addr_of_mut!(resolution) as *mut libc::timespec, {{_v[0-9]+}} as i32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT: total = total + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32);
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: bool = if resolution.tv_sec > {{_v[0-9]+}} {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = true;
@@ -1602,58 +1442,54 @@ int main(void) {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = resolution.tv_nsec > {{_v[0-9]+}};
 // REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: };
-// REWRITES-NEXT: total = total + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = unsafe { timegm(std::ptr::addr_of_mut!(utc) as *mut tm) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
-// REWRITES-NEXT: total = total + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32);
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = month.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 32;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%OB\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = (unsafe { strftime({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}} as usize, {{_v[0-9]+}} as *const i8, std::ptr::addr_of_mut!(utc) as *const tm) }) as u64;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 7;
-// REWRITES-NEXT: total = total + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32);
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = month.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"January\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { strcmp({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT: total = total + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32);
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = wide_month.as_mut_ptr() as *mut i32;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 32;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = std::ptr::addr_of_mut!(_str_9).cast::<i32>();
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = (unsafe { wcsftime({{_v[0-9]+}} as *mut i32, {{_v[0-9]+}} as usize, {{_v[0-9]+}} as *const i32, std::ptr::addr_of_mut!(utc) as *const tm) }) as u64;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 7;
-// REWRITES-NEXT: total = total + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32);
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = wide_month.as_mut_ptr() as *mut i32;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = std::ptr::addr_of_mut!(_str_10).cast::<i32>();
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { wcscmp({{_v[0-9]+}} as *const i32, {{_v[0-9]+}} as *const i32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT: total = total + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32);
-// REWRITES-NEXT: const_month = wide_month.as_mut_ptr() as *mut i32;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 110;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = unsafe { wcschr(const_month as *const i32, {{_v[0-9]+}} as i32) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = std::ptr::null_mut();
-// REWRITES-NEXT: total = total + (({{_v[0-9]+}} != {{_v[0-9]+}}) as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32);
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = wide_month.as_mut_ptr() as *mut i32;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 110;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = unsafe { wcschr({{_v[0-9]+}} as *const i32, {{_v[0-9]+}} as i32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = std::ptr::null_mut();
-// REWRITES-NEXT: total = total + (({{_v[0-9]+}} != {{_v[0-9]+}}) as i32);
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = const_month;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} != {{_v[0-9]+}}) as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = wide_month.as_mut_ptr() as *mut i32;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 110;
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = unsafe { wcschr({{_v[0-9]+}} as *const i32, {{_v[0-9]+}} as i32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = std::ptr::null_mut();
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} != {{_v[0-9]+}}) as i32);
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = std::ptr::addr_of_mut!(_str_11).cast::<i32>();
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = unsafe { wcsstr({{_v[0-9]+}} as *const i32, {{_v[0-9]+}} as *const i32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = std::ptr::null_mut();
-// REWRITES-NEXT: total = total + (({{_v[0-9]+}} != {{_v[0-9]+}}) as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} != {{_v[0-9]+}}) as i32);
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = wide_month.as_mut_ptr() as *mut i32;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = std::ptr::addr_of_mut!(_str_11).cast::<i32>();
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = unsafe { wcsstr({{_v[0-9]+}} as *const i32, {{_v[0-9]+}} as *const i32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = std::ptr::null_mut();
-// REWRITES-NEXT: total = total + (({{_v[0-9]+}} != {{_v[0-9]+}}) as i32);
-// REWRITES-NEXT: __retval = total;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return {{_v[0-9]+}} + (({{_v[0-9]+}} != {{_v[0-9]+}}) as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c23_io() -> i32 {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut output: aligned::Aligned<aligned::A16, [i8; 64]> = aligned::Aligned([0; 64]);
 // REWRITES-NEXT: let mut float_output: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
 // REWRITES-NEXT: let mut double_output: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
@@ -1661,9 +1497,6 @@ int main(void) {
 // REWRITES-NEXT: let mut binary_value: u32 = 0;
 // REWRITES-NEXT: let mut exact_value: u16 = 0;
 // REWRITES-NEXT: let mut fast_value: u64 = 0;
-// REWRITES-NEXT: let mut written: i32 = 0;
-// REWRITES-NEXT: let mut scanned: i32 = 0;
-// REWRITES-NEXT: let mut floating_written: i32 = 0;
 // REWRITES-NEXT: *output = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 // REWRITES-NEXT: *float_output = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 // REWRITES-NEXT: *double_output = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -1677,10 +1510,10 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = 13;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 21;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 34;
-// REWRITES-NEXT: written = unsafe { snprintf({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}} as usize, {{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { snprintf({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}} as usize, {{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"1011 55 89\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%b %w16u %wf16u\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: scanned = unsafe { sscanf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as *const i8, std::ptr::addr_of_mut!(binary_value), std::ptr::addr_of_mut!(exact_value), std::ptr::addr_of_mut!(fast_value)) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { sscanf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as *const i8, std::ptr::addr_of_mut!(binary_value), std::ptr::addr_of_mut!(exact_value), std::ptr::addr_of_mut!(fast_value)) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = float_output.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 16;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%.1f\0".as_ptr() as *mut i8;
@@ -1697,8 +1530,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%.1f\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 224, 0, 64]);
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { __slate_strfroml__ri32_pi8_usize_pi8_f80({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}} as usize, {{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
-// REWRITES-NEXT: floating_written = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = written;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = output.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"1101 21 34\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { strcmp({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as *const i8) };
@@ -1706,7 +1538,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = 11;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 55;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 89;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) + scanned + ((binary_value == {{_v[0-9]+}}) as i32) + (((exact_value as i32) == {{_v[0-9]+}}) as i32) + ((fast_value == {{_v[0-9]+}}) as i32) + floating_written;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) + {{_v[0-9]+}} + ((binary_value == {{_v[0-9]+}}) as i32) + (((exact_value as i32) == {{_v[0-9]+}}) as i32) + ((fast_value == {{_v[0-9]+}}) as i32) + {{_v[0-9]+}};
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = float_output.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"1.5\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { strcmp({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as *const i8) };
@@ -1721,15 +1553,10 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"3.5\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { strcmp({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT: __retval = {{_v[0-9]+}} + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32);
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return {{_v[0-9]+}} + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c23_limits() -> i32 {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut integer_widths: i32 = 0;
-// REWRITES-NEXT: let mut floating_limits: i32 = 0;
-// REWRITES-NEXT: let mut header_versions: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 8;
@@ -1744,7 +1571,6 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 64;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 64;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 64;
-// REWRITES-NEXT: integer_widths = {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}};
 // REWRITES-NEXT: let {{_v[0-9]+}}: f32 = 0.0000000000000000000000000000000000000000000014013;
 // REWRITES-NEXT: let {{_v[0-9]+}}: f32 = 0.0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = 0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005;
@@ -1765,7 +1591,6 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 16;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 16;
-// REWRITES-NEXT: floating_limits = (({{_v[0-9]+}} > {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} > {{_v[0-9]+}}) as i32) + ((LongDouble([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]) > LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])) as i32) + (({{_v[0-9]+}} <= {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} <= {{_v[0-9]+}}) as i32) + ((LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 254, 127]) <= LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 254, 127])) as i32) + (({{_v[0-9]+}} >= {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} >= {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} >= {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32);
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 202311;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 202311;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 202311;
@@ -1780,14 +1605,11 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 202311;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 202311;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 202311;
-// REWRITES-NEXT: header_versions = (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32);
-// REWRITES-NEXT: __retval = integer_widths + floating_limits + header_versions;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + ((({{_v[0-9]+}} > {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} > {{_v[0-9]+}}) as i32) + ((LongDouble([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]) > LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])) as i32) + (({{_v[0-9]+}} <= {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} <= {{_v[0-9]+}}) as i32) + ((LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 254, 127]) <= LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 254, 127])) as i32) + (({{_v[0-9]+}} >= {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} >= {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} >= {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32)) + ((({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32));
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = c23_stdbit();
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = c23_checked_arithmetic();
@@ -1797,8 +1619,8 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = c23_io();
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = c23_limits();
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}} + {{_v[0-9]+}}) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {

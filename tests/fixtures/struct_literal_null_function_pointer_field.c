@@ -44,7 +44,6 @@ int main(void) {
 // LOWERING-NEXT: fn report({{arg[0-9]+}}: *mut Handlers) -> i32 {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: Handlers = unsafe { *{{arg[0-9]+}} };
 // LOWERING-NEXT:     let mut h: Handlers = Handlers { label: std::ptr::null_mut(), onEvent: None, counter: std::ptr::null_mut() };
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut total: i32 = 0;
 // LOWERING-NEXT:     h = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
@@ -75,26 +74,18 @@ int main(void) {
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut h: Handlers = Handlers { label: std::ptr::null_mut(), onEvent: None, counter: std::ptr::null_mut() };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     h = Handlers { label: b"none\0".as_ptr() as *mut i8, onEvent: None, counter: std::ptr::null_mut() };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Handlers = Handlers { label: b"none\0".as_ptr() as *mut i8, onEvent: None, counter: std::ptr::null_mut() };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Handlers = h;
 // LOWERING-NEXT:     let mut byval: Handlers = Handlers { label: std::ptr::null_mut(), onEvent: None, counter: std::ptr::null_mut() };
 // LOWERING-NEXT:     byval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = report(std::ptr::addr_of_mut!(byval));
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -119,7 +110,6 @@ int main(void) {
 // REWRITES-NEXT: fn report({{arg[0-9]+}}: &Handlers) -> i32 {
 // REWRITES-NEXT: let {{_v[0-9]+}}: Handlers = unsafe { *({{arg[0-9]+}} as *const Handlers) };
 // REWRITES-NEXT: let mut h: Handlers = {{_v[0-9]+}};
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut total: i32 = 0;
 // REWRITES-NEXT: total = 0;
 // REWRITES-NEXT: {
@@ -137,21 +127,17 @@ int main(void) {
 // REWRITES-NEXT:                     total = total + unsafe { *h.counter };
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
-// REWRITES-NEXT: __retval = total;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return total;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut h: Handlers = Handlers { label: std::ptr::null_mut(), onEvent: None, counter: std::ptr::null_mut() };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: h = Handlers { label: b"none\0".as_ptr() as *mut i8, onEvent: None, counter: std::ptr::null_mut() };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: Handlers = Handlers { label: b"none\0".as_ptr() as *mut i8, onEvent: None, counter: std::ptr::null_mut() };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: Handlers = h;
 // REWRITES-NEXT: let mut byval: Handlers = {{_v[0-9]+}};
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = report(unsafe { &(*std::ptr::addr_of_mut!(byval)) });
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

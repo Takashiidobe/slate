@@ -33,58 +33,33 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn next_lower() -> i32 {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { next_lower_c };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         next_lower_c = {{_v[0-9]+}};
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut upper: i32 = 0;
-// LOWERING-NEXT:     let mut lower: i32 = 0;
-// LOWERING-NEXT:     let mut digit: i32 = 0;
-// LOWERING-NEXT:     let mut punct: i32 = 0;
-// LOWERING-NEXT:     let mut eof: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 81;
-// LOWERING-NEXT:     upper = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 113;
-// LOWERING-NEXT:     lower = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 53;
-// LOWERING-NEXT:     digit = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 33;
-// LOWERING-NEXT:     punct = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = -1;
-// LOWERING-NEXT:     eof = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = lower;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { toupper({{_v[0-9]+}} as i32) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = digit;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { toupper({{_v[0-9]+}} as i32) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = punct;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { toupper({{_v[0-9]+}} as i32) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = upper;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { toupper({{_v[0-9]+}} as i32) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = eof;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { toupper({{_v[0-9]+}} as i32) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = upper;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { tolower({{_v[0-9]+}} as i32) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = digit;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { tolower({{_v[0-9]+}} as i32) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = punct;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { tolower({{_v[0-9]+}} as i32) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = lower;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { tolower({{_v[0-9]+}} as i32) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = eof;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { tolower({{_v[0-9]+}} as i32) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
@@ -94,8 +69,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { tolower({{_v[0-9]+}} as i32) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -113,41 +86,33 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn next_lower() -> i32 {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { next_lower_c };
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         next_lower_c = {{_v[0-9]+}} + 1;
 // REWRITES-NEXT: }
-// REWRITES-NEXT: __retval = {{_v[0-9]+}};
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return {{_v[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut upper: i32 = 0;
-// REWRITES-NEXT: let mut lower: i32 = 0;
-// REWRITES-NEXT: let mut digit: i32 = 0;
-// REWRITES-NEXT: let mut punct: i32 = 0;
-// REWRITES-NEXT: let mut eof: i32 = 0;
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: upper = 81;
-// REWRITES-NEXT: lower = 113;
-// REWRITES-NEXT: digit = 53;
-// REWRITES-NEXT: punct = 33;
-// REWRITES-NEXT: eof = -1;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 81;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 113;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 53;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 33;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = -1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { toupper(lower as i32) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { toupper(digit as i32) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { toupper(punct as i32) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { toupper(upper as i32) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { toupper(eof as i32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { toupper({{_v[0-9]+}} as i32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { toupper({{_v[0-9]+}} as i32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { toupper({{_v[0-9]+}} as i32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { toupper({{_v[0-9]+}} as i32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { toupper({{_v[0-9]+}} as i32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { tolower(upper as i32) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { tolower(digit as i32) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { tolower(punct as i32) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { tolower(lower as i32) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { tolower(eof as i32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { tolower({{_v[0-9]+}} as i32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { tolower({{_v[0-9]+}} as i32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { tolower({{_v[0-9]+}} as i32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { tolower({{_v[0-9]+}} as i32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { tolower({{_v[0-9]+}} as i32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = next_lower();
@@ -155,7 +120,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = next_lower();
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { tolower({{_v[0-9]+}} as i32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

@@ -85,42 +85,23 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn add16({{arg[0-9]+}}: f16, {{arg[0-9]+}}: f16) -> f16 {
-// LOWERING-NEXT:     let mut a: f16 = 0.0f16;
-// LOWERING-NEXT:     let mut b: f16 = 0.0f16;
-// LOWERING-NEXT:     let mut __retval: f16 = 0.0f16;
-// LOWERING-NEXT:     a = {{arg[0-9]+}};
-// LOWERING-NEXT:     b = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f16 = a;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}} as f32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f16 = b;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}} as f32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = {{arg[0-9]+}} as f32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = {{arg[0-9]+}} as f32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f16 = {{_v[0-9]+}} as f16;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f16 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn mul16({{arg[0-9]+}}: f16, {{arg[0-9]+}}: f16) -> f16 {
-// LOWERING-NEXT:     let mut a: f16 = 0.0f16;
-// LOWERING-NEXT:     let mut b: f16 = 0.0f16;
-// LOWERING-NEXT:     let mut __retval: f16 = 0.0f16;
-// LOWERING-NEXT:     a = {{arg[0-9]+}};
-// LOWERING-NEXT:     b = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f16 = a;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}} as f32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f16 = b;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}} as f32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = {{arg[0-9]+}} as f32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = {{arg[0-9]+}} as f32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}} * {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f16 = {{_v[0-9]+}} as f16;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f16 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe fn sum_variadic({{arg[0-9]+}}: i32, mut __slate_va_args: __SlateVaArgs) -> f16 {
 // LOWERING-NEXT:     let mut n: i32 = 0;
-// LOWERING-NEXT:     let mut __retval: f16 = 0.0f16;
 // LOWERING-NEXT:     let mut ap: __SlateVaArgs = __SlateVaArgs::empty();
 // LOWERING-NEXT:     let mut total: f16 = 0.0f16;
 // LOWERING-NEXT:     n = {{arg[0-9]+}};
@@ -156,30 +137,18 @@ int main(void) {
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f16 = total;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f16 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut a: f16 = 0.0f16;
-// LOWERING-NEXT:     let mut b: f16 = 0.0f16;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f16 = 3.0;
-// LOWERING-NEXT:     a = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f16 = 4.0;
-// LOWERING-NEXT:     b = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f16 = a;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f16 = b;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f16 = add16({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f16 = a;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f16 = b;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f16 = mul16({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
@@ -192,8 +161,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -257,28 +224,15 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn add16({{arg[0-9]+}}: f16, {{arg[0-9]+}}: f16) -> f16 {
-// REWRITES-NEXT: let mut a: f16 = 0.0f16;
-// REWRITES-NEXT: let mut b: f16 = 0.0f16;
-// REWRITES-NEXT: let mut __retval: f16 = 0.0f16;
-// REWRITES-NEXT: a = {{arg[0-9]+}};
-// REWRITES-NEXT: b = {{arg[0-9]+}};
-// REWRITES-NEXT: __retval = ((a as f32) + (b as f32)) as f16;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return (({{arg[0-9]+}} as f32) + ({{arg[0-9]+}} as f32)) as f16;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn mul16({{arg[0-9]+}}: f16, {{arg[0-9]+}}: f16) -> f16 {
-// REWRITES-NEXT: let mut a: f16 = 0.0f16;
-// REWRITES-NEXT: let mut b: f16 = 0.0f16;
-// REWRITES-NEXT: let mut __retval: f16 = 0.0f16;
-// REWRITES-NEXT: a = {{arg[0-9]+}};
-// REWRITES-NEXT: b = {{arg[0-9]+}};
-// REWRITES-NEXT: __retval = ((a as f32) * (b as f32)) as f16;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return (({{arg[0-9]+}} as f32) * ({{arg[0-9]+}} as f32)) as f16;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe fn sum_variadic({{arg[0-9]+}}: i32, mut __slate_va_args: __SlateVaArgs) -> f16 {
 // REWRITES-NEXT: let mut n: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut __retval: f16 = 0.0f16;
 // REWRITES-NEXT: let mut ap: __SlateVaArgs = __SlateVaArgs::empty();
 // REWRITES-NEXT: let mut total: f16 = 0.0f16;
 // REWRITES-NEXT: unsafe {
@@ -301,22 +255,18 @@ int main(void) {
 // REWRITES-NEXT:                     i = i + 1;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
-// REWRITES-NEXT: __retval = total;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return total;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut a: f16 = 0.0f16;
-// REWRITES-NEXT: let mut b: f16 = 0.0f16;
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: a = 3.0;
-// REWRITES-NEXT: b = 4.0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: f16 = 3.0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: f16 = 4.0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: f16 = add16(a, b);
+// REWRITES-NEXT: let {{_v[0-9]+}}: f16 = add16({{_v[0-9]+}}, {{_v[0-9]+}});
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as i32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: f16 = mul16(a, b);
+// REWRITES-NEXT: let {{_v[0-9]+}}: f16 = mul16({{_v[0-9]+}}, {{_v[0-9]+}});
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as i32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 3;
@@ -325,7 +275,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: f16 = 3.0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: f16 = unsafe { sum_variadic({{_v[0-9]+}}, __SlateVaArgs::new(vec![__SlateVaArg::new({{_v[0-9]+}}), __SlateVaArg::new({{_v[0-9]+}}), __SlateVaArg::new({{_v[0-9]+}})])) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as i32) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

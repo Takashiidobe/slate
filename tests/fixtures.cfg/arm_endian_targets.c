@@ -15,6 +15,6 @@ int main(void) {
 // DIRECTIVES-DAG: #[cfg(any(all(target_arch = "arm", target_endian = "big"), all(target_arch = "aarch64", target_endian = "big")))]
 // DIRECTIVES-DAG: #[cfg(any(all(target_arch = "arm", target_endian = "little"), all(target_arch = "aarch64", target_endian = "little")))]
 // DIRECTIVES-DAG: #[cfg(not(any(any(all(target_arch = "arm", target_endian = "big"), all(target_arch = "aarch64", target_endian = "big")), any(all(target_arch = "arm", target_endian = "little"), all(target_arch = "aarch64", target_endian = "little")))))]
-// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = }}100;
-// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = }}200;
-// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = }}0;
+// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}100;
+// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}200;
+// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}0;

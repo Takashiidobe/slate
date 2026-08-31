@@ -44,11 +44,9 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut cases: aligned::Aligned<aligned::A16, [CaseData; 2]> = aligned::Aligned([CaseData { input: 0, expected: Status::E_OK }; 2]);
 // LOWERING-NEXT:     let mut actual: aligned::Aligned<aligned::A4, Status> = aligned::Aligned(Status::E_OK);
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     *cases = [CaseData { input: 1, expected: Status::E_OK }, CaseData { input: 2, expected: Status::E_FAIL }];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 0;
 // LOWERING-NEXT:     *actual = Status::E_OK;
@@ -87,8 +85,6 @@ int main(void) {
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -119,10 +115,9 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut cases: aligned::Aligned<aligned::A16, [CaseData; 2]> = aligned::Aligned([CaseData { input: 0, expected: Status::E_OK }; 2]);
 // REWRITES-NEXT: let mut actual: aligned::Aligned<aligned::A4, Status> = aligned::Aligned(Status::E_OK);
-// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: *cases = [CaseData { input: 1, expected: Status::E_OK }, CaseData { input: 2, expected: Status::E_FAIL }];
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = 0;
 // REWRITES-NEXT: *actual = Status::E_OK;
@@ -149,7 +144,7 @@ int main(void) {
 // REWRITES-NEXT:                     i = i + 1;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

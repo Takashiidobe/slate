@@ -75,10 +75,6 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn run_case({{arg[0-9]+}}: Option<unsafe extern "C" fn(i32)>, {{arg[0-9]+}}: i32) {
-// LOWERING-NEXT:     let mut r#fn: Option<unsafe extern "C" fn(i32)> = None;
-// LOWERING-NEXT:     let mut ok: i32 = 0;
-// LOWERING-NEXT:     r#fn = {{arg[0-9]+}};
-// LOWERING-NEXT:     ok = {{arg[0-9]+}};
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag = std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
 // LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };
@@ -94,27 +90,18 @@ int main(void) {
 // LOWERING-NEXT:             return;
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32)> = r#fn;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = ok;
-// LOWERING-NEXT:     unsafe { {{_v[0-9]+}}.unwrap()({{_v[0-9]+}}) };
+// LOWERING-NEXT:     unsafe { {{arg[0-9]+}}.unwrap()({{arg[0-9]+}}) };
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut r#fn: Option<unsafe extern "C" fn(i32)> = None;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     r#fn = unsafe { std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32)>>(check as *const ()) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32)> = r#fn;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     run_case({{_v[0-9]+}}, {{_v[0-9]+}});
+// LOWERING-NEXT:     run_case(Some(check), {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"failures: %d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { failures };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -164,8 +151,6 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn run_case({{arg[0-9]+}}: Option<unsafe extern "C" fn(i32)>, {{arg[0-9]+}}: i32) {
-// REWRITES-NEXT: let mut r#fn: Option<unsafe extern "C" fn(i32)> = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut ok: i32 = {{arg[0-9]+}};
 // REWRITES-NEXT: {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag = std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };
@@ -179,20 +164,17 @@ int main(void) {
 // REWRITES-NEXT:                     return;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
-// REWRITES-NEXT: unsafe { r#fn.unwrap()(ok) };
+// REWRITES-NEXT: unsafe { {{arg[0-9]+}}.unwrap()({{arg[0-9]+}}) };
 // REWRITES-NEXT: return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut r#fn: Option<unsafe extern "C" fn(i32)> = None;
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: r#fn = unsafe { std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32)>>(check as *const ()) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT: run_case(r#fn, {{_v[0-9]+}});
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: run_case(Some(check), {{_v[0-9]+}});
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"failures: %d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, unsafe { failures }) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

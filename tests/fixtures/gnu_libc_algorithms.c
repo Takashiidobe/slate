@@ -271,46 +271,22 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: extern "C" fn gnu_compare_with_direction({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
-// LOWERING-NEXT:     let mut left: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut right: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut state: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut direction: i32 = 0;
-// LOWERING-NEXT:     let mut a: i32 = 0;
-// LOWERING-NEXT:     let mut b: i32 = 0;
-// LOWERING-NEXT:     left = {{arg[0-9]+}};
-// LOWERING-NEXT:     right = {{arg[0-9]+}};
-// LOWERING-NEXT:     state = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = state;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{_v[0-9]+}} as *mut i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{arg[0-9]+}} as *mut i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     direction = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = left;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{_v[0-9]+}} as *mut i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{arg[0-9]+}} as *mut i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     a = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = right;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{_v[0-9]+}} as *mut i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{arg[0-9]+}} as *mut i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     b = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = direction;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = a;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = b;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = a;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = b;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} - {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn gnu_qsort_extension() -> i32 {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut values: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
 // LOWERING-NEXT:     let mut direction: i32 = 0;
 // LOWERING-NEXT:     *values = [4, 1, 3, 2];
@@ -339,13 +315,10 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 3;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = values[({{_v[0-9]+}} as usize)];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn gnu_getopt_extensions() -> i32 {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut program: [i8; 6] = [0; 6];
 // LOWERING-NEXT:     let mut number: [i8; 11] = [0; 11];
 // LOWERING-NEXT:     let mut flag: [i8; 3] = [0; 3];
@@ -436,22 +409,17 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} * {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = flag_value;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: extern "C" fn gnu_parse_option({{arg[0-9]+}}: i32, {{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut argp_state) -> i32 {
 // LOWERING-NEXT:     let mut key: i32 = 0;
 // LOWERING-NEXT:     let mut argument: *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut state: *mut argp_state = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut arguments: *mut GNUArguments = std::ptr::null_mut();
 // LOWERING-NEXT:     key = {{arg[0-9]+}};
 // LOWERING-NEXT:     argument = {{arg[0-9]+}};
-// LOWERING-NEXT:     state = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut argp_state = state;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { (*{{_v[0-9]+}}).input };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { (*{{arg[0-9]+}}).input };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut GNUArguments = {{_v[0-9]+}} as *mut GNUArguments;
 // LOWERING-NEXT:     arguments = {{_v[0-9]+}};
 // LOWERING-NEXT:     {
@@ -548,7 +516,6 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn gnu_argp_extensions() -> i32 {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut options: aligned::Aligned<aligned::A16, [argp_option; 2]> = aligned::Aligned([argp_option { name: std::ptr::null_mut(), key: 0, arg: std::ptr::null_mut(), flags: 0, doc: std::ptr::null_mut(), group: 0 }; 2]);
 // LOWERING-NEXT:     let mut parser: argp = argp { options: std::ptr::null_mut(), parser: None, args_doc: std::ptr::null_mut(), doc: std::ptr::null_mut(), children: std::ptr::null_mut(), help_filter: None, argp_domain: std::ptr::null_mut() };
 // LOWERING-NEXT:     let mut parsed: GNUArguments = GNUArguments { number: 0, positional: 0 };
@@ -556,7 +523,6 @@ int main(void) {
 // LOWERING-NEXT:     let mut option: [i8; 11] = [0; 11];
 // LOWERING-NEXT:     let mut item: [i8; 5] = [0; 5];
 // LOWERING-NEXT:     let mut arguments: aligned::Aligned<aligned::A16, [*mut i8; 4]> = aligned::Aligned([std::ptr::null_mut(); 4]);
-// LOWERING-NEXT:     let mut result: i32 = 0;
 // LOWERING-NEXT:     *options = [argp_option { name: b"number\0".as_ptr() as *mut i8, key: 110, arg: b"VALUE\0".as_ptr() as *mut i8, flags: 0, doc: b"number\0".as_ptr() as *mut i8, group: 0 }, argp_option { name: std::ptr::null_mut(), key: 0, arg: std::ptr::null_mut(), flags: 0, doc: std::ptr::null_mut(), group: 0 }];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut argp_option = options.as_mut_ptr() as *mut argp_option;
 // LOWERING-NEXT:     parser.options = {{_v[0-9]+}};
@@ -607,8 +573,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = std::ptr::null_mut();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(parsed) as *mut core::ffi::c_void;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { argp_parse(std::ptr::addr_of_mut!(parser) as *const argp, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as *mut *mut i8, {{_v[0-9]+}} as u32, {{_v[0-9]+}} as *mut i32, {{_v[0-9]+}} as *mut core::ffi::c_void) };
-// LOWERING-NEXT:     result = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = result;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
@@ -618,80 +582,50 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = parsed.positional;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: extern "C" fn gnu_compare_entries({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
-// LOWERING-NEXT:     let mut left: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut right: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut a: i32 = 0;
-// LOWERING-NEXT:     let mut b: i32 = 0;
-// LOWERING-NEXT:     left = {{arg[0-9]+}};
-// LOWERING-NEXT:     right = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = left;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{_v[0-9]+}} as *mut i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{arg[0-9]+}} as *mut i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     a = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = right;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{_v[0-9]+}} as *mut i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{arg[0-9]+}} as *mut i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     b = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = a;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = b;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = a;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = b;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} - {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: extern "C" fn gnu_free_entry({{arg[0-9]+}}: *mut core::ffi::c_void) {
-// LOWERING-NEXT:     let mut entry: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     entry = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = entry;
-// LOWERING-NEXT:     unsafe { free({{_v[0-9]+}} as *mut core::ffi::c_void) };
+// LOWERING-NEXT:     unsafe { free({{arg[0-9]+}} as *mut core::ffi::c_void) };
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn gnu_search_extensions() -> i32 {
 // LOWERING-NEXT:     let mut coerce: entry = entry { key: std::ptr::null_mut(), data: std::ptr::null_mut() };
 // LOWERING-NEXT:     let mut coerce2: entry = entry { key: std::ptr::null_mut(), data: std::ptr::null_mut() };
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut table: hsearch_data = hsearch_data { __tab: std::ptr::null_mut(), __unused1: 0, __unused2: 0 };
-// LOWERING-NEXT:     let mut inserted: entry = entry { key: std::ptr::null_mut(), data: std::ptr::null_mut() };
-// LOWERING-NEXT:     let mut query: entry = entry { key: std::ptr::null_mut(), data: std::ptr::null_mut() };
 // LOWERING-NEXT:     let mut found: *mut entry = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut tree: *mut core::ffi::c_void = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut values: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
-// LOWERING-NEXT:     let mut total: i32 = 0;
 // LOWERING-NEXT:     table = hsearch_data { __tab: std::ptr::null_mut(), __unused1: 0, __unused2: 0 };
-// LOWERING-NEXT:     inserted = entry { key: b"slate\0".as_ptr() as *mut i8, data: b"24\0".as_ptr() as *mut core::ffi::c_void };
-// LOWERING-NEXT:     query = entry { key: b"slate\0".as_ptr() as *mut i8, data: std::ptr::null_mut() };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: entry = entry { key: b"slate\0".as_ptr() as *mut i8, data: b"24\0".as_ptr() as *mut core::ffi::c_void };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: entry = entry { key: b"slate\0".as_ptr() as *mut i8, data: std::ptr::null_mut() };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut entry = std::ptr::null_mut();
 // LOWERING-NEXT:     found = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
 // LOWERING-NEXT:     tree = {{_v[0-9]+}};
 // LOWERING-NEXT:     *values = [3, 1, 4, 2];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { hcreate_r({{_v[0-9]+}} as usize, std::ptr::addr_of_mut!(table) as *mut hsearch_data) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = ACTION::ENTER as u32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: entry = inserted;
 // LOWERING-NEXT:     coerce2 = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut {{anon_struct[0-9A-Za-z_]*}} = std::ptr::addr_of_mut!(coerce2) as *mut {{anon_struct[0-9A-Za-z_]*}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { (*{{_v[0-9]+}}).__slate_anon_0 };
@@ -700,11 +634,8 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = ACTION::FIND as u32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: entry = query;
 // LOWERING-NEXT:     coerce = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut {{anon_struct[0-9A-Za-z_]*}} = std::ptr::addr_of_mut!(coerce) as *mut {{anon_struct[0-9A-Za-z_]*}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { (*{{_v[0-9]+}}).__slate_anon_0 };
@@ -713,9 +644,7 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut entry = found;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut entry = {{_v[0-9]+}} as *mut entry;
@@ -734,9 +663,7 @@ int main(void) {
 // LOWERING-NEXT:         {{_v[0-9]+}}
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     unsafe { hdestroy_r(std::ptr::addr_of_mut!(table) as *mut hsearch_data) };
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         let mut index: u64 = 0;
@@ -750,18 +677,14 @@ int main(void) {
 // LOWERING-NEXT:                 break;
 // LOWERING-NEXT:             }
 // LOWERING-NEXT:             {
-// LOWERING-NEXT:                 let mut value: *mut i32 = std::ptr::null_mut();
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: u64 = 4;
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{_v[0-9]+}} as usize) };
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut i32 = {{_v[0-9]+}} as *mut i32;
-// LOWERING-NEXT:                 value = {{_v[0-9]+}};
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: u64 = index;
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = values[({{_v[0-9]+}} as usize)];
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut i32 = value;
 // LOWERING-NEXT:                 unsafe {
 // LOWERING-NEXT:                     *{{_v[0-9]+}} = {{_v[0-9]+}};
 // LOWERING-NEXT:                 }
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut i32 = value;
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { tsearch({{_v[0-9]+}} as *const core::ffi::c_void, std::ptr::addr_of_mut!(tree) as *mut *mut core::ffi::c_void, Some(gnu_compare_entries)) };
 // LOWERING-NEXT:             }
@@ -776,21 +699,14 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = tree;
 // LOWERING-NEXT:     unsafe { tdestroy({{_v[0-9]+}} as *mut core::ffi::c_void, Some(gnu_free_entry)) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_qsort_extension();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_getopt_extensions();
@@ -798,8 +714,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_search_extensions();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering

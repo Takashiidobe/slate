@@ -40,19 +40,10 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn add({{arg[0-9]+}}: i32, {{arg[0-9]+}}: u64) {
-// LOWERING-NEXT:     let mut isDirect: i32 = 0;
-// LOWERING-NEXT:     let mut amount: u64 = 0;
-// LOWERING-NEXT:     let mut target: *mut u64 = std::ptr::null_mut();
-// LOWERING-NEXT:     isDirect = {{arg[0-9]+}};
-// LOWERING-NEXT:     amount = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = isDirect;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u64 = if {{_v[0-9]+}} { unsafe { std::ptr::addr_of_mut!(acc.direct) } } else { unsafe { std::ptr::addr_of_mut!(acc.indirect) } };
-// LOWERING-NEXT:     target = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = amount;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u64 = target;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} + {{arg[0-9]+}};
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
 // LOWERING-NEXT:     }
@@ -60,9 +51,7 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 3;
 // LOWERING-NEXT:     add({{_v[0-9]+}}, {{_v[0-9]+}});
@@ -77,8 +66,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = unsafe { acc.indirect };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -102,22 +89,16 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn add({{arg[0-9]+}}: i32, {{arg[0-9]+}}: u64) {
-// REWRITES-NEXT: let mut isDirect: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut amount: u64 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut target: *mut u64 = std::ptr::null_mut();
-// REWRITES-NEXT: let {{_v[0-9]+}}: bool = isDirect != 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut u64 = if {{_v[0-9]+}} { unsafe { std::ptr::addr_of_mut!(acc.direct) } } else { unsafe { std::ptr::addr_of_mut!(acc.indirect) } };
-// REWRITES-NEXT: target = {{_v[0-9]+}};
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut u64 = target;
 // REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         *{{_v[0-9]+}} = (unsafe { *{{_v[0-9]+}} }) + amount;
+// REWRITES-NEXT:         *{{_v[0-9]+}} = (unsafe { *{{_v[0-9]+}} }) + {{arg[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-NEXT: return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 3;
 // REWRITES-NEXT: add({{_v[0-9]+}}, {{_v[0-9]+}});
@@ -131,7 +112,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = unsafe { acc.direct };
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = unsafe { acc.indirect };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

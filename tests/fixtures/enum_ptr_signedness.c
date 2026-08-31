@@ -44,12 +44,9 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut data: [u32; 3] = [0; 3];
 // LOWERING-NEXT:     let mut p: palette = palette { start: std::ptr::null_mut(), top: std::ptr::null_mut() };
-// LOWERING-NEXT:     let mut c: aligned::Aligned<aligned::A4, color_t> = aligned::Aligned(color_t::RED);
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     data = [0, 1, 2];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u32 = data.as_mut_ptr() as *mut u32;
 // LOWERING-NEXT:     p.start = {{_v[0-9]+}} as *mut color_t;
@@ -61,9 +58,7 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u32 = unsafe { {{_v[0-9]+}}.add(1) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     *c = unsafe { std::mem::transmute({{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = *c as u32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
@@ -73,8 +68,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -106,12 +99,9 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut data: [u32; 3] = [0; 3];
+// REWRITES-NEXT: let mut data: [u32; 3] = [0, 1, 2];
 // REWRITES-NEXT: let mut p: palette = palette { start: std::ptr::null_mut(), top: std::ptr::null_mut() };
-// REWRITES-NEXT: let mut c: aligned::Aligned<aligned::A4, color_t> = aligned::Aligned(color_t::RED);
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: data = [0, 1, 2];
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut u32 = data.as_mut_ptr() as *mut u32;
 // REWRITES-NEXT: p.start = {{_v[0-9]+}} as *mut color_t;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut u32 = data.as_mut_ptr() as *mut u32;
@@ -121,14 +111,14 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut u32 = p.start as *mut u32;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut u32 = unsafe { {{_v[0-9]+}}.add(1) };
-// REWRITES-NEXT: *c = unsafe { std::mem::transmute(unsafe { *{{_v[0-9]+}} }) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { *{{_v[0-9]+}} };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, (*c as u32) as i32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as i32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut u32 = p.top as *mut u32;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = unsafe { {{_v[0-9]+}}.offset_from(p.start as *mut u32) as i64 };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as i32) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

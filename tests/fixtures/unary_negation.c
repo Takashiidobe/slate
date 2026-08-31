@@ -19,31 +19,17 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn neg_int({{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-NEXT:     let mut x: i32 = 0;
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     x = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = x;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.wrapping_neg();
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}}.wrapping_neg();
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn neg_double({{arg[0-9]+}}: f64) -> f64 {
-// LOWERING-NEXT:     let mut x: f64 = 0.0;
-// LOWERING-NEXT:     let mut __retval: f64 = 0.0;
-// LOWERING-NEXT:     x = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = x;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = -{{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = __retval;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = -{{arg[0-9]+}};
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = neg_int({{_v[0-9]+}});
@@ -57,8 +43,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = neg_double({{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -72,24 +56,15 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn neg_int({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT: let mut x: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = x;
-// REWRITES-NEXT: __retval = {{_v[0-9]+}}.wrapping_neg();
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return {{arg[0-9]+}}.wrapping_neg();
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn neg_double({{arg[0-9]+}}: f64) -> f64 {
-// REWRITES-NEXT: let mut x: f64 = 0.0;
-// REWRITES-NEXT: let mut __retval: f64 = 0.0;
-// REWRITES-NEXT: x = {{arg[0-9]+}};
-// REWRITES-NEXT: __retval = -x;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return -{{arg[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 7;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = neg_int({{_v[0-9]+}});
@@ -102,7 +77,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = 1.5;
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = neg_double({{_v[0-9]+}});
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

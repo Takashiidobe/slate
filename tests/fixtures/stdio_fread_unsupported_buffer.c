@@ -46,8 +46,6 @@ int main(void) {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut f: *mut libc::FILE = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut g: *mut libc::FILE = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut buf: *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut n: u64 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"slate_stdio_fread_unsupported_buffer.tmp\0".as_ptr() as *mut i8;
@@ -94,33 +92,24 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 16;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{_v[0-9]+}} as usize) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{_v[0-9]+}} as *mut i8;
-// LOWERING-NEXT:     buf = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = buf;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = buf;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 1;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 10;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut libc::FILE = g;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe { fread({{_v[0-9]+}} as *mut core::ffi::c_void, {{_v[0-9]+}} as usize, {{_v[0-9]+}} as usize, {{_v[0-9]+}} as *mut libc::FILE) }) as u64;
-// LOWERING-NEXT:     n = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = n;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = buf;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add({{_v[0-9]+}} as usize) };
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%zu %s\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = n;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = buf;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = buf;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:     unsafe { free({{_v[0-9]+}} as *mut core::ffi::c_void) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut libc::FILE = g;
@@ -154,8 +143,6 @@ int main(void) {
 // REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut f: *mut libc::FILE = std::ptr::null_mut();
 // REWRITES-NEXT: let mut g: *mut libc::FILE = std::ptr::null_mut();
-// REWRITES-NEXT: let mut buf: *mut i8 = std::ptr::null_mut();
-// REWRITES-NEXT: let mut n: u64 = 0;
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"slate_stdio_fread_unsupported_buffer.tmp\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { remove({{_v[0-9]+}} as *const i8) };
@@ -190,26 +177,24 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 16;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{_v[0-9]+}} as usize) };
-// REWRITES-NEXT: buf = {{_v[0-9]+}} as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = {{_v[0-9]+}} as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i8 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = buf;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 10;
-// REWRITES-NEXT: n = (unsafe { fread((buf as *mut core::ffi::c_void) as *mut core::ffi::c_void, {{_v[0-9]+}} as usize, {{_v[0-9]+}} as usize, g as *mut libc::FILE) }) as u64;
+// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = (unsafe { fread(({{_v[0-9]+}} as *mut core::ffi::c_void) as *mut core::ffi::c_void, {{_v[0-9]+}} as usize, {{_v[0-9]+}} as usize, g as *mut libc::FILE) }) as u64;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i8 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = buf;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(n as usize) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add({{_v[0-9]+}} as usize) };
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%zu %s\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, n, buf) };
-// REWRITES-NEXT: unsafe { free((buf as *mut core::ffi::c_void) as *mut core::ffi::c_void) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe { free(({{_v[0-9]+}} as *mut core::ffi::c_void) as *mut core::ffi::c_void) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { fclose(g as *mut libc::FILE) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"slate_stdio_fread_unsupported_buffer.tmp\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { remove({{_v[0-9]+}} as *const i8) };

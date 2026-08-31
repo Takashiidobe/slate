@@ -90,51 +90,35 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut f: num_complex::Complex<f32> = num_complex::Complex { re: 0.0, im: 0.0 };
-// LOWERING-NEXT:     let mut d: num_complex::Complex<f64> = num_complex::Complex { re: 0.0, im: 0.0 };
-// LOWERING-NEXT:     let mut l: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: 1.0, im: 2.0 };
-// LOWERING-NEXT:     f = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: 3.0, im: 4.0 };
-// LOWERING-NEXT:     d = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]), im: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 1, 64]) };
-// LOWERING-NEXT:     l = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f32> = f;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: 1.0, im: 2.0 };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f32> = f;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: 1.0, im: 3.0 };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = d;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: 3.0, im: 4.0 };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = d;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: 3.0, im: 5.0 };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = l;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]), im: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 1, 64]) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = l;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]), im: LongDouble([0, 0, 0, 0, 0, 0, 0, 224, 1, 64]) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
@@ -271,22 +255,18 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut f: num_complex::Complex<f32> = num_complex::Complex { re: 0.0, im: 0.0 };
-// REWRITES-NEXT: let mut d: num_complex::Complex<f64> = num_complex::Complex { re: 0.0, im: 0.0 };
-// REWRITES-NEXT: let mut l: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0; 10]), im: LongDouble([0; 10]) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: f = num_complex::Complex { re: 1.0, im: 2.0 };
-// REWRITES-NEXT: d = num_complex::Complex { re: 3.0, im: 4.0 };
-// REWRITES-NEXT: l = num_complex::Complex { re: LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]), im: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 1, 64]) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: 1.0, im: 2.0 };
+// REWRITES-NEXT: let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: 3.0, im: 4.0 };
+// REWRITES-NEXT: let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex { re: LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]), im: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 1, 64]) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, (f == num_complex::Complex { re: 1.0, im: 2.0 }) as i32, (f != num_complex::Complex { re: 1.0, im: 3.0 }) as i32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, ({{_v[0-9]+}} == num_complex::Complex { re: 1.0, im: 2.0 }) as i32, ({{_v[0-9]+}} != num_complex::Complex { re: 1.0, im: 3.0 }) as i32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, (d == num_complex::Complex { re: 3.0, im: 4.0 }) as i32, (d != num_complex::Complex { re: 3.0, im: 5.0 }) as i32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, ({{_v[0-9]+}} == num_complex::Complex { re: 3.0, im: 4.0 }) as i32, ({{_v[0-9]+}} != num_complex::Complex { re: 3.0, im: 5.0 }) as i32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, (l == num_complex::Complex { re: LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]), im: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 1, 64]) }) as i32, (l != num_complex::Complex { re: LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]), im: LongDouble([0, 0, 0, 0, 0, 0, 0, 224, 1, 64]) }) as i32) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, ({{_v[0-9]+}} == num_complex::Complex { re: LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]), im: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 1, 64]) }) as i32, ({{_v[0-9]+}} != num_complex::Complex { re: LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]), im: LongDouble([0, 0, 0, 0, 0, 0, 0, 224, 1, 64]) }) as i32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {

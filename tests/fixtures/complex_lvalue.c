@@ -33,31 +33,19 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn pick({{arg[0-9]+}}: *mut f64) -> f64 {
-// LOWERING-NEXT:     let mut p: *mut f64 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut __retval: f64 = 0.0;
-// LOWERING-NEXT:     p = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut f64 = p;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { *{{_v[0-9]+}} };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { *{{arg[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 5.0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut f64 = p;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-NEXT:         *{{arg[0-9]+}} = {{_v[0-9]+}};
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut f64 = p;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = __retval;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { *{{arg[0-9]+}} };
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut z: num_complex::Complex<f64> = num_complex::Complex { re: 0.0, im: 0.0 };
-// LOWERING-NEXT:     let mut r: f64 = 0.0;
-// LOWERING-NEXT:     let mut i: f64 = 0.0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: 1.0, im: 2.0 };
 // LOWERING-NEXT:     z = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 7.0;
@@ -65,9 +53,7 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 11.0;
 // LOWERING-NEXT:     z.im = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = pick(std::ptr::addr_of_mut!(z.re));
-// LOWERING-NEXT:     r = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = pick(std::ptr::addr_of_mut!(z.im));
-// LOWERING-NEXT:     i = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = z;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.re;
@@ -79,16 +65,12 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = r;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = i;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -109,26 +91,21 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn pick({{arg[0-9]+}}: &mut f64) -> f64 {
-// REWRITES-NEXT: let mut __retval: f64 = 0.0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = 5.0;
 // REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         *{{arg[0-9]+}} = (unsafe { *{{arg[0-9]+}} }) + {{_v[0-9]+}};
+// REWRITES-NEXT:         *({{arg[0-9]+}} as *mut f64) = (unsafe { *({{arg[0-9]+}} as *mut f64) }) + {{_v[0-9]+}};
 // REWRITES-NEXT: }
-// REWRITES-NEXT: __retval = unsafe { *{{arg[0-9]+}} };
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return unsafe { *({{arg[0-9]+}} as *mut f64) };
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut z: num_complex::Complex<f64> = num_complex::Complex { re: 0.0, im: 0.0 };
-// REWRITES-NEXT: let mut r: f64 = 0.0;
-// REWRITES-NEXT: let mut i: f64 = 0.0;
-// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: z = num_complex::Complex { re: 1.0, im: 2.0 };
 // REWRITES-NEXT: z.re = 7.0;
 // REWRITES-NEXT: z.im = 11.0;
-// REWRITES-NEXT: r = pick(unsafe { &mut (*std::ptr::addr_of_mut!(z.re)) });
-// REWRITES-NEXT: i = pick(unsafe { &mut (*std::ptr::addr_of_mut!(z.im)) });
+// REWRITES-NEXT: let {{_v[0-9]+}}: f64 = pick(unsafe { &mut (*std::ptr::addr_of_mut!(z.re)) });
+// REWRITES-NEXT: let {{_v[0-9]+}}: f64 = pick(unsafe { &mut (*std::ptr::addr_of_mut!(z.im)) });
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: num_complex::Complex<f64> = z;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}.re as i32) };
@@ -136,10 +113,10 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: num_complex::Complex<f64> = z;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}.im as i32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, r as i32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as i32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, i as i32) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as i32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

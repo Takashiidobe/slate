@@ -68,7 +68,6 @@ int main(void) {
 // LOWERING-NEXT: fn sum_values({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: i32) -> i32 {
 // LOWERING-NEXT:     let mut values: *mut i32 = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut len: i32 = 0;
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut sum: i32 = 0;
 // LOWERING-NEXT:     values = {{arg[0-9]+}};
 // LOWERING-NEXT:     len = {{arg[0-9]+}};
@@ -99,8 +98,6 @@ int main(void) {
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = sum;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
@@ -141,7 +138,6 @@ int main(void) {
 // LOWERING-NEXT: fn score_text({{arg[0-9]+}}: *mut u8, {{arg[0-9]+}}: i32) -> i32 {
 // LOWERING-NEXT:     let mut text: *mut u8 = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut len: i32 = 0;
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut score: i32 = 0;
 // LOWERING-NEXT:     text = {{arg[0-9]+}};
 // LOWERING-NEXT:     len = {{arg[0-9]+}};
@@ -176,8 +172,6 @@ int main(void) {
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = score;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
@@ -185,7 +179,6 @@ int main(void) {
 // LOWERING-NEXT:     let mut values: *mut i32 = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut len: i32 = 0;
 // LOWERING-NEXT:     let mut release: i32 = 0;
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut sum: i32 = 0;
 // LOWERING-NEXT:     values = {{arg[0-9]+}};
 // LOWERING-NEXT:     len = {{arg[0-9]+}};
@@ -226,15 +219,12 @@ int main(void) {
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = sum;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn sum_prefix({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: i32) -> i32 {
 // LOWERING-NEXT:     let mut values: *mut i32 = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut len: i32 = 0;
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut sum: i32 = 0;
 // LOWERING-NEXT:     values = {{arg[0-9]+}};
 // LOWERING-NEXT:     len = {{arg[0-9]+}};
@@ -265,54 +255,36 @@ int main(void) {
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = sum;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut local_values: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
 // LOWERING-NEXT:     let mut text: [u8; 4] = [0; 4];
-// LOWERING-NEXT:     let mut total: i32 = 0;
-// LOWERING-NEXT:     let mut score: i32 = 0;
-// LOWERING-NEXT:     let mut borrowed: i32 = 0;
-// LOWERING-NEXT:     let mut prefix: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     *local_values = [1, 3, 5, 7];
 // LOWERING-NEXT:     text = [97, 98, 99, 0];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = std::ptr::addr_of_mut!(global_values).cast::<i32>();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 4;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = sum_values({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = local_values.as_mut_ptr() as *mut i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 4;
 // LOWERING-NEXT:     bump_values({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = text.as_mut_ptr() as *mut u8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = score_text({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     score = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = local_values.as_mut_ptr() as *mut i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 4;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = maybe_consume({{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     borrowed = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = local_values.as_mut_ptr() as *mut i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = sum_prefix({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     prefix = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 3;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = local_values[({{_v[0-9]+}} as usize)];
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = score;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = borrowed;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = prefix;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering

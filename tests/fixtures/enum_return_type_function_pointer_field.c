@@ -58,63 +58,41 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: extern "C" fn succeed({{arg[0-9]+}}: i32) -> u32 {
-// LOWERING-NEXT:     let mut x: i32 = 0;
-// LOWERING-NEXT:     let mut __retval: u32 = 0;
-// LOWERING-NEXT:     x = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = x;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 100;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         lastCode = {{_v[0-9]+}};
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = Status::STATUS_OK as u32;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: extern "C" fn fail({{arg[0-9]+}}: i32) -> u32 {
-// LOWERING-NEXT:     let mut x: i32 = 0;
-// LOWERING-NEXT:     let mut __retval: u32 = 0;
-// LOWERING-NEXT:     x = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = x;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 200;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         lastCode = {{_v[0-9]+}};
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = Status::STATUS_FAIL as u32;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut d: Dispatcher = Dispatcher { run: None };
-// LOWERING-NEXT:     let mut a: i32 = 0;
-// LOWERING-NEXT:     let mut b: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     d.run = unsafe { std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32) -> u32>>(succeed as *const ()) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> u32> = d.run;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { {{_v[0-9]+}}.unwrap()({{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { lastCode };
-// LOWERING-NEXT:     a = {{_v[0-9]+}};
 // LOWERING-NEXT:     d.run = unsafe { std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32) -> u32>>(fail as *const ()) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> u32> = d.run;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { {{_v[0-9]+}}.unwrap()({{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { lastCode };
-// LOWERING-NEXT:     b = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = a;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = b;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -146,46 +124,37 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn succeed({{arg[0-9]+}}: i32) -> u32 {
-// REWRITES-NEXT: let mut x: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut __retval: u32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 100;
 // REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         lastCode = x + {{_v[0-9]+}};
+// REWRITES-NEXT:         lastCode = {{arg[0-9]+}} + {{_v[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = Status::STATUS_OK as u32;
-// REWRITES-NEXT: __retval = {{_v[0-9]+}};
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return {{_v[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn fail({{arg[0-9]+}}: i32) -> u32 {
-// REWRITES-NEXT: let mut x: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut __retval: u32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 200;
 // REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         lastCode = x + {{_v[0-9]+}};
+// REWRITES-NEXT:         lastCode = {{arg[0-9]+}} + {{_v[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = Status::STATUS_FAIL as u32;
-// REWRITES-NEXT: __retval = {{_v[0-9]+}};
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return {{_v[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut d: Dispatcher = Dispatcher { run: None };
-// REWRITES-NEXT: let mut a: i32 = 0;
-// REWRITES-NEXT: let mut b: i32 = 0;
-// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: d.run = unsafe { std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32) -> u32>>(succeed as *const ()) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { d.run.unwrap()({{_v[0-9]+}}) };
-// REWRITES-NEXT: a = unsafe { lastCode };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { lastCode };
 // REWRITES-NEXT: d.run = unsafe { std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32) -> u32>>(fail as *const ()) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 2;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { d.run.unwrap()({{_v[0-9]+}}) };
-// REWRITES-NEXT: b = unsafe { lastCode };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { lastCode };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, a, b) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

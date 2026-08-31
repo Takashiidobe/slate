@@ -27,6 +27,7 @@ int main(void) {
          spans(span, empty), spans(empty, reject));
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
 // LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
@@ -40,58 +41,25 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn bounded_cmp({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: u64) -> i32 {
-// LOWERING-NEXT:     let mut a: *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut b: *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut n: u64 = 0;
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     a = {{arg[0-9]+}};
-// LOWERING-NEXT:     b = {{arg[0-9]+}};
-// LOWERING-NEXT:     n = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = a;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = n;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { strncmp({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as usize) };
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { strncmp({{arg[0-9]+}} as *const i8, {{arg[0-9]+}} as *const i8, {{arg[0-9]+}} as usize) };
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn bounded_len({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: u64) -> u64 {
-// LOWERING-NEXT:     let mut s: *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut n: u64 = 0;
-// LOWERING-NEXT:     let mut __retval: u64 = 0;
-// LOWERING-NEXT:     s = {{arg[0-9]+}};
-// LOWERING-NEXT:     n = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = s;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = n;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe { strnlen({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as usize) }) as u64;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = __retval;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe { strnlen({{arg[0-9]+}} as *const i8, {{arg[0-9]+}} as usize) }) as u64;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn spans({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8) -> u64 {
-// LOWERING-NEXT:     let mut s: *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut set: *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut __retval: u64 = 0;
-// LOWERING-NEXT:     s = {{arg[0-9]+}};
-// LOWERING-NEXT:     set = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = s;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = set;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe { strspn({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as *const i8) }) as u64;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe { strspn({{arg[0-9]+}} as *const i8, {{arg[0-9]+}} as *const i8) }) as u64;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 100;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = s;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = set;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe { strcspn({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as *const i8) }) as u64;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe { strcspn({{arg[0-9]+}} as *const i8, {{arg[0-9]+}} as *const i8) }) as u64;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut abc: [i8; 4] = [0; 4];
 // LOWERING-NEXT:     let mut abd: [i8; 4] = [0; 4];
 // LOWERING-NEXT:     let mut text: [i8; 7] = [0; 7];
@@ -100,7 +68,6 @@ int main(void) {
 // LOWERING-NEXT:     let mut empty: [i8; 1] = [0; 1];
 // LOWERING-NEXT:     let mut reject: [i8; 3] = [0; 3];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     abc = [97, 98, 99, 0];
 // LOWERING-NEXT:     abd = [97, 98, 100, 0];
 // LOWERING-NEXT:     text = [97, 98, 99, 100, 101, 102, 0];
@@ -150,8 +117,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = spans({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering

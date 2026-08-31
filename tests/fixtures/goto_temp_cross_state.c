@@ -92,22 +92,36 @@ int main(void) {
 // LOWERING-NEXT:                 q = unsafe { std::ptr::addr_of_mut!((*{{_v[0-9]+}}).r#in) };
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).r#in.x };
 // LOWERING-NEXT:                 acc = {{_v[0-9]+}};
-// LOWERING-NEXT:                 {
-// LOWERING-NEXT:                     let {{_v[0-9]+}}: i32 = flag;
-// LOWERING-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:                     if {{_v[0-9]+}} {
-// LOWERING-NEXT:                         {{__state[0-9]+}} = 1;
-// LOWERING-NEXT:                         continue '{{__dispatch[0-9]+}};
-// LOWERING-NEXT:                     }
-// LOWERING-NEXT:                 }
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = 100;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = acc;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:                 acc = {{_v[0-9]+}};
 // LOWERING-NEXT:                 {{__state[0-9]+}} = 1;
 // LOWERING-NEXT:                 continue '{{__dispatch[0-9]+}};
 // LOWERING-NEXT:             }
 // LOWERING-NEXT:             1 => {
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = flag;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:                 if {{_v[0-9]+}} {
+// LOWERING-NEXT:                     {{__state[0-9]+}} = 2;
+// LOWERING-NEXT:                 } else {
+// LOWERING-NEXT:                     {{__state[0-9]+}} = 3;
+// LOWERING-NEXT:                 }
+// LOWERING-NEXT:                 continue '{{__dispatch[0-9]+}};
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:             2 => {
+// LOWERING-NEXT:                 {{__state[0-9]+}} = 5;
+// LOWERING-NEXT:                 continue '{{__dispatch[0-9]+}};
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:             3 => {
+// LOWERING-NEXT:                 {{__state[0-9]+}} = 4;
+// LOWERING-NEXT:                 continue '{{__dispatch[0-9]+}};
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:             4 => {
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = 100;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = acc;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:                 acc = {{_v[0-9]+}};
+// LOWERING-NEXT:                 {{__state[0-9]+}} = 5;
+// LOWERING-NEXT:                 continue '{{__dispatch[0-9]+}};
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:             5 => {
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).r#in.y };
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = acc;
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
@@ -125,12 +139,10 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut inr: inner_t = inner_t { pad: 0, x: 0, y: 0 };
 // LOWERING-NEXT:     let mut ou: outer_t = outer_t { lead: 0, r#in: inner_t { pad: 0, x: 0, y: 0 } };
 // LOWERING-NEXT:     let mut s: state_t = state_t { dict: std::ptr::null_mut() };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     inr.pad = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
@@ -148,8 +160,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = compute(std::ptr::addr_of_mut!(s), {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -204,19 +214,33 @@ int main(void) {
 // REWRITES-NEXT:                         o = {{_v[0-9]+}};
 // REWRITES-NEXT:                         q = unsafe { std::ptr::addr_of_mut!((*{{_v[0-9]+}}).r#in) };
 // REWRITES-NEXT:                         acc = unsafe { (*{{_v[0-9]+}}).r#in.x };
-// REWRITES-NEXT:                         {
-// REWRITES-NEXT:                                         let {{_v[0-9]+}}: bool = flag != 0;
-// REWRITES-NEXT:                                         if {{_v[0-9]+}} {
-// REWRITES-NEXT:                                                             {{__state[0-9]+}} = 1;
-// REWRITES-NEXT:                                                             continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:                                         }
-// REWRITES-NEXT:                         }
-// REWRITES-NEXT:                         let {{_v[0-9]+}}: i32 = 100;
-// REWRITES-NEXT:                         acc = acc + {{_v[0-9]+}};
 // REWRITES-NEXT:                         {{__state[0-9]+}} = 1;
 // REWRITES-NEXT:                         continue '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             1 => {
+// REWRITES-NEXT:                         let {{_v[0-9]+}}: bool = flag != 0;
+// REWRITES-NEXT:                         if {{_v[0-9]+}} {
+// REWRITES-NEXT:                                         {{__state[0-9]+}} = 2;
+// REWRITES-NEXT:                         } else {
+// REWRITES-NEXT:                                         {{__state[0-9]+}} = 3;
+// REWRITES-NEXT:                         }
+// REWRITES-NEXT:                         continue '{{__dispatch[0-9]+}};
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             2 => {
+// REWRITES-NEXT:                         {{__state[0-9]+}} = 5;
+// REWRITES-NEXT:                         continue '{{__dispatch[0-9]+}};
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             3 => {
+// REWRITES-NEXT:                         {{__state[0-9]+}} = 4;
+// REWRITES-NEXT:                         continue '{{__dispatch[0-9]+}};
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             4 => {
+// REWRITES-NEXT:                         let {{_v[0-9]+}}: i32 = 100;
+// REWRITES-NEXT:                         acc = acc + {{_v[0-9]+}};
+// REWRITES-NEXT:                         {{__state[0-9]+}} = 5;
+// REWRITES-NEXT:                         continue '{{__dispatch[0-9]+}};
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             5 => {
 // REWRITES-NEXT:                         acc = acc + unsafe { (*{{_v[0-9]+}}).r#in.y };
 // REWRITES-NEXT:                         __retval = acc;
 // REWRITES-NEXT:                         return __retval;
@@ -229,11 +253,10 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut inr: inner_t = inner_t { pad: 0, x: 0, y: 0 };
 // REWRITES-NEXT: let mut ou: outer_t = outer_t { lead: 0, r#in: inner_t { pad: 0, x: 0, y: 0 } };
 // REWRITES-NEXT: let mut s: state_t = state_t { dict: std::ptr::null_mut() };
-// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: inr.pad = 0;
 // REWRITES-NEXT: inr.x = 3;
 // REWRITES-NEXT: inr.y = 4;
@@ -246,7 +269,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = compute(unsafe { &(*std::ptr::addr_of_mut!(s)) }, {{_v[0-9]+}});
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

@@ -51,6 +51,7 @@ int main(void) {
   printf("%d %d %d\n", c[0], c[1], c[2]);
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
 // LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
@@ -101,13 +102,11 @@ int main(void) {
 // LOWERING-NEXT:                                 let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
 // LOWERING-NEXT:                                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > {{_v[0-9]+}};
 // LOWERING-NEXT:                                 if {{_v[0-9]+}} {
-// LOWERING-NEXT:                                     let mut tmp: i32 = 0;
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: i32 = i;
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: *mut i32 = items;
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset({{_v[0-9]+}} as isize) };
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:                                     tmp = {{_v[0-9]+}};
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: i32 = j;
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: *mut i32 = items;
@@ -120,7 +119,6 @@ int main(void) {
 // LOWERING-NEXT:                                     unsafe {
 // LOWERING-NEXT:                                         *{{_v[0-9]+}} = {{_v[0-9]+}};
 // LOWERING-NEXT:                                     }
-// LOWERING-NEXT:                                     let {{_v[0-9]+}}: i32 = tmp;
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: i32 = j;
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: *mut i32 = items;
@@ -187,13 +185,11 @@ int main(void) {
 // LOWERING-NEXT:                                 let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
 // LOWERING-NEXT:                                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > {{_v[0-9]+}};
 // LOWERING-NEXT:                                 if {{_v[0-9]+}} {
-// LOWERING-NEXT:                                     let mut tmp: i32 = 0;
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: i32 = i;
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: *mut i32 = items;
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset({{_v[0-9]+}} as isize) };
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:                                     tmp = {{_v[0-9]+}};
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: i32 = j;
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: *mut i32 = items;
@@ -206,7 +202,6 @@ int main(void) {
 // LOWERING-NEXT:                                     unsafe {
 // LOWERING-NEXT:                                         *{{_v[0-9]+}} = {{_v[0-9]+}};
 // LOWERING-NEXT:                                     }
-// LOWERING-NEXT:                                     let {{_v[0-9]+}}: i32 = tmp;
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: i32 = j;
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: *mut i32 = items;
@@ -215,7 +210,6 @@ int main(void) {
 // LOWERING-NEXT:                                         *{{_v[0-9]+}} = {{_v[0-9]+}};
 // LOWERING-NEXT:                                     }
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: *mut i8 = b"tmp=%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:                                     let {{_v[0-9]+}}: i32 = tmp;
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // LOWERING-NEXT:                                 }
 // LOWERING-NEXT:                             }
@@ -272,13 +266,11 @@ int main(void) {
 // LOWERING-NEXT:                                 let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:                                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > {{_v[0-9]+}};
 // LOWERING-NEXT:                                 if {{_v[0-9]+}} {
-// LOWERING-NEXT:                                     let mut tmp: i32 = 0;
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: i32 = j;
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: *mut i32 = items;
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset({{_v[0-9]+}} as isize) };
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:                                     tmp = {{_v[0-9]+}};
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: i32 = j;
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: *mut i32 = items;
@@ -291,7 +283,6 @@ int main(void) {
 // LOWERING-NEXT:                                     unsafe {
 // LOWERING-NEXT:                                         *{{_v[0-9]+}} = {{_v[0-9]+}};
 // LOWERING-NEXT:                                     }
-// LOWERING-NEXT:                                     let {{_v[0-9]+}}: i32 = tmp;
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: i32 = j;
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
 // LOWERING-NEXT:                                     let {{_v[0-9]+}}: *mut i32 = items;
@@ -317,12 +308,10 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut a: aligned::Aligned<aligned::A16, [i32; 5]> = aligned::Aligned([0; 5]);
 // LOWERING-NEXT:     let mut b: [i32; 3] = [0; 3];
 // LOWERING-NEXT:     let mut c: [i32; 3] = [0; 3];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     *a = [5, 3, 4, 1, 2];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = a.as_mut_ptr() as *mut i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
@@ -364,8 +353,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = c[({{_v[0-9]+}} as usize)];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering

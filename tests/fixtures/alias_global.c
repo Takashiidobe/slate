@@ -12,9 +12,8 @@ int main(void) {
 }
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = unsafe { real_global };
-// LOWERING-DAG: result = {{_v[0-9]+}};
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: result = unsafe { real_global };
+// REWRITES-DAG: std::process::exit((unsafe { real_global }) as i32);
 // SLATE-FILECHECK-END rewrites

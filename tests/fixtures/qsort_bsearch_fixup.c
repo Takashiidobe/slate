@@ -51,49 +51,24 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: extern "C" fn cmp_int({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
-// LOWERING-NEXT:     let mut a: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut b: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     a = {{arg[0-9]+}};
-// LOWERING-NEXT:     b = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = a;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{_v[0-9]+}} as *mut i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{arg[0-9]+}} as *mut i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = b;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{_v[0-9]+}} as *mut i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{arg[0-9]+}} as *mut i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} - {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: extern "C" fn cmp_item({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
-// LOWERING-NEXT:     let mut a: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut b: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut ia: *mut Item = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut ib: *mut Item = std::ptr::null_mut();
-// LOWERING-NEXT:     a = {{arg[0-9]+}};
-// LOWERING-NEXT:     b = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = a;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut Item = {{_v[0-9]+}} as *mut Item;
-// LOWERING-NEXT:     ia = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = b;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut Item = {{_v[0-9]+}} as *mut Item;
-// LOWERING-NEXT:     ib = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut Item = ia;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut Item = {{arg[0-9]+}} as *mut Item;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut Item = {{arg[0-9]+}} as *mut Item;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).key };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut Item = ib;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).key };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} - {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut nums: aligned::Aligned<aligned::A16, [i32; 5]> = aligned::Aligned([0; 5]);
 // LOWERING-NEXT:     let mut key: i32 = 0;
 // LOWERING-NEXT:     let mut hit: *mut i32 = std::ptr::null_mut();
@@ -101,7 +76,6 @@ int main(void) {
 // LOWERING-NEXT:     let mut needle: Item = Item { key: 0, value: 0 };
 // LOWERING-NEXT:     let mut found: *mut Item = std::ptr::null_mut();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     *nums = [4, 1, 5, 3, 2];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
 // LOWERING-NEXT:     key = {{_v[0-9]+}};
@@ -160,8 +134,6 @@ int main(void) {
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -185,34 +157,21 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn cmp_int({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
-// REWRITES-NEXT: let mut a: *mut core::ffi::c_void = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut b: *mut core::ffi::c_void = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: __retval = (unsafe { *(a as *mut i32) }) - unsafe { *(b as *mut i32) };
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return (unsafe { *({{arg[0-9]+}} as *mut i32) }) - unsafe { *({{arg[0-9]+}} as *mut i32) };
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn cmp_item({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
-// REWRITES-NEXT: let mut a: *mut core::ffi::c_void = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut b: *mut core::ffi::c_void = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut ia: *mut Item = std::ptr::null_mut();
-// REWRITES-NEXT: let mut ib: *mut Item = std::ptr::null_mut();
-// REWRITES-NEXT: ia = a as *mut Item;
-// REWRITES-NEXT: ib = b as *mut Item;
-// REWRITES-NEXT: __retval = (unsafe { (*ia).key }) - unsafe { (*ib).key };
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return (unsafe { (*({{arg[0-9]+}} as *mut Item)).key }) - unsafe { (*({{arg[0-9]+}} as *mut Item)).key };
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut nums: aligned::Aligned<aligned::A16, [i32; 5]> = aligned::Aligned([0; 5]);
 // REWRITES-NEXT: let mut key: i32 = 0;
 // REWRITES-NEXT: let mut hit: *mut i32 = std::ptr::null_mut();
 // REWRITES-NEXT: let mut items: aligned::Aligned<aligned::A16, [Item; 4]> = aligned::Aligned([Item { key: 0, value: 0 }; 4]);
 // REWRITES-NEXT: let mut needle: Item = Item { key: 0, value: 0 };
 // REWRITES-NEXT: let mut found: *mut Item = std::ptr::null_mut();
-// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: *nums = [4, 1, 5, 3, 2];
 // REWRITES-NEXT: key = 3;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = nums.as_mut_ptr() as *mut i32;
@@ -261,7 +220,7 @@ int main(void) {
 // REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

@@ -18,34 +18,15 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut a: i32 = 0;
-// LOWERING-NEXT:     let mut b: i32 = 0;
-// LOWERING-NEXT:     let mut c: i32 = 0;
-// LOWERING-NEXT:     let mut u: u32 = 0;
-// LOWERING-NEXT:     let mut l: i64 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 42;
-// LOWERING-NEXT:     a = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
-// LOWERING-NEXT:     b = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = -42;
-// LOWERING-NEXT:     c = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 9;
-// LOWERING-NEXT:     u = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 123;
-// LOWERING-NEXT:     l = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%05d|%-4d|%+d|%5u|%+06ld\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = a;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = b;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = c;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = u;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = l;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -59,21 +40,15 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut a: i32 = 0;
-// REWRITES-NEXT: let mut b: i32 = 0;
-// REWRITES-NEXT: let mut c: i32 = 0;
-// REWRITES-NEXT: let mut u: u32 = 0;
-// REWRITES-NEXT: let mut l: i64 = 0;
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: a = 42;
-// REWRITES-NEXT: b = 7;
-// REWRITES-NEXT: c = -42;
-// REWRITES-NEXT: u = 9;
-// REWRITES-NEXT: l = 123;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 42;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 7;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = -42;
+// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = 9;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 123;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%05d|%-4d|%+d|%5u|%+06ld\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, a, b, c, u, l) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

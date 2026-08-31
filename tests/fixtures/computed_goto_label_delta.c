@@ -31,6 +31,7 @@ int main(void) {
   // @lowering-end
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // LOWERING-DAG: let {{_v[0-9]+}}: *mut u8 = code.as_mut_ptr() as *mut u8;

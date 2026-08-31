@@ -135,17 +135,13 @@ int slate_yield(void) { return sched_yield(); }
 // SLATE-FILECHECK-BEGIN lowering-macos
 // LOWERING-MACOS-DAG: unsafe fn slate_create_and_join({{arg[0-9]+}}: *mut *mut _opaque_pthread_t, {{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
 // LOWERING-MACOS-DAG: let mut thread: *mut *mut _opaque_pthread_t = std::ptr::null_mut();
-// LOWERING-MACOS-DAG: let mut argument: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-MACOS-DAG: let mut __retval: i32 = 0;
 // LOWERING-MACOS-DAG: let mut result: *mut core::ffi::c_void = std::ptr::null_mut();
 // LOWERING-MACOS-DAG: thread = {{arg[0-9]+}};
-// LOWERING-MACOS-DAG: argument = {{arg[0-9]+}};
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
 // LOWERING-MACOS-DAG: result = {{_v[0-9]+}};
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut *mut _opaque_pthread_t = thread;
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut _opaque_pthread_attr_t = std::ptr::null_mut();
-// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut core::ffi::c_void = argument;
-// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = unsafe { pthread_create({{_v[0-9]+}} as *mut *mut _opaque_pthread_t, {{_v[0-9]+}} as *const _opaque_pthread_attr_t, Some(slate_thread_entry), {{_v[0-9]+}} as *mut core::ffi::c_void) };
+// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = unsafe { pthread_create({{_v[0-9]+}} as *mut *mut _opaque_pthread_t, {{_v[0-9]+}} as *const _opaque_pthread_attr_t, Some(slate_thread_entry), {{arg[0-9]+}} as *mut core::ffi::c_void) };
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: bool = true;
@@ -158,13 +154,10 @@ int slate_yield(void) { return sched_yield(); }
 // LOWERING-MACOS-DAG: {{_v[0-9]+}}
 // LOWERING-MACOS-DAG: };
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-MACOS-DAG: __retval = {{_v[0-9]+}};
-// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-MACOS-DAG: return {{_v[0-9]+}};
 // LOWERING-MACOS-DAG: }
 // LOWERING-MACOS-DAG: fn slate_wait_until({{arg[0-9]+}}: *mut libc::timespec) -> i32 {
 // LOWERING-MACOS-DAG: let mut deadline: *mut libc::timespec = std::ptr::null_mut();
-// LOWERING-MACOS-DAG: let mut __retval: i32 = 0;
 // LOWERING-MACOS-DAG: let mut result: i32 = 0;
 // LOWERING-MACOS-DAG: deadline = {{arg[0-9]+}};
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = unsafe { pthread_mutex_lock(std::ptr::addr_of_mut!(slate_mutex) as *mut _opaque_pthread_mutex_t) };
@@ -190,12 +183,9 @@ int slate_yield(void) { return sched_yield(); }
 // LOWERING-MACOS-DAG: {{_v[0-9]+}}
 // LOWERING-MACOS-DAG: };
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-MACOS-DAG: __retval = {{_v[0-9]+}};
-// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-MACOS-DAG: return {{_v[0-9]+}};
 // LOWERING-MACOS-DAG: }
 // LOWERING-MACOS-DAG: fn slate_read_lock() -> i32 {
-// LOWERING-MACOS-DAG: let mut __retval: i32 = 0;
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = unsafe { pthread_rwlock_rdlock(std::ptr::addr_of_mut!(slate_rwlock) as *mut _opaque_pthread_rwlock_t) };
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
@@ -207,14 +197,11 @@ int slate_yield(void) { return sched_yield(); }
 // LOWERING-MACOS-DAG: {{_v[0-9]+}}
 // LOWERING-MACOS-DAG: };
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-MACOS-DAG: __retval = {{_v[0-9]+}};
-// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-MACOS-DAG: return {{_v[0-9]+}};
 // LOWERING-MACOS-DAG: }
 // LOWERING-MACOS-DAG: unsafe fn slate_tls_once({{arg[0-9]+}}: *mut u64, {{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
 // LOWERING-MACOS-DAG: let mut key: *mut u64 = std::ptr::null_mut();
 // LOWERING-MACOS-DAG: let mut value: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-MACOS-DAG: let mut __retval: i32 = 0;
 // LOWERING-MACOS-DAG: key = {{arg[0-9]+}};
 // LOWERING-MACOS-DAG: value = {{arg[0-9]+}};
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = unsafe { pthread_once(std::ptr::addr_of_mut!(slate_once) as *mut _opaque_pthread_once_t, Some(slate_once_routine)) };
@@ -241,18 +228,12 @@ int slate_yield(void) { return sched_yield(); }
 // LOWERING-MACOS-DAG: {{_v[0-9]+}}
 // LOWERING-MACOS-DAG: };
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-MACOS-DAG: __retval = {{_v[0-9]+}};
-// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-MACOS-DAG: return {{_v[0-9]+}};
 // LOWERING-MACOS-DAG: }
 // LOWERING-MACOS-DAG: fn slate_post_named_semaphore({{arg[0-9]+}}: *mut i8) -> i32 {
-// LOWERING-MACOS-DAG: let mut name: *mut i8 = std::ptr::null_mut();
-// LOWERING-MACOS-DAG: let mut __retval: i32 = 0;
 // LOWERING-MACOS-DAG: let mut semaphore: *mut i32 = std::ptr::null_mut();
-// LOWERING-MACOS-DAG: name = {{arg[0-9]+}};
-// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut i8 = name;
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut i32 = unsafe { sem_open({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as i32) };
+// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut i32 = unsafe { sem_open({{arg[0-9]+}} as *const i8, {{_v[0-9]+}} as i32) };
 // LOWERING-MACOS-DAG: semaphore = {{_v[0-9]+}};
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut i32 = semaphore;
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: u64 = 18446744073709551615u64;
@@ -277,15 +258,10 @@ int slate_yield(void) { return sched_yield(); }
 // LOWERING-MACOS-DAG: {{_v[0-9]+}}
 // LOWERING-MACOS-DAG: };
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-MACOS-DAG: __retval = {{_v[0-9]+}};
-// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-MACOS-DAG: return {{_v[0-9]+}};
 // LOWERING-MACOS-DAG: }
 // LOWERING-MACOS-DAG: fn slate_yield() -> i32 {
-// LOWERING-MACOS-DAG: let mut __retval: i32 = 0;
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = unsafe { sched_yield() };
-// LOWERING-MACOS-DAG: __retval = {{_v[0-9]+}};
-// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-MACOS-DAG: return {{_v[0-9]+}};
 // LOWERING-MACOS-DAG: }
 // SLATE-FILECHECK-END lowering-macos
@@ -293,12 +269,10 @@ int slate_yield(void) { return sched_yield(); }
 // SLATE-FILECHECK-BEGIN rewrites-macos
 // REWRITES-MACOS-DAG: unsafe fn slate_create_and_join({{arg[0-9]+}}: *mut *mut _opaque_pthread_t, {{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
 // REWRITES-MACOS-DAG: let mut thread: *mut *mut _opaque_pthread_t = {{arg[0-9]+}};
-// REWRITES-MACOS-DAG: let mut argument: *mut core::ffi::c_void = {{arg[0-9]+}};
-// REWRITES-MACOS-DAG: let mut __retval: i32 = 0;
 // REWRITES-MACOS-DAG: let mut result: *mut core::ffi::c_void = std::ptr::null_mut();
 // REWRITES-MACOS-DAG: result = std::ptr::null_mut();
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: *mut _opaque_pthread_attr_t = std::ptr::null_mut();
-// REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = unsafe { pthread_create(thread as *mut *mut _opaque_pthread_t, {{_v[0-9]+}} as *const _opaque_pthread_attr_t, Some(slate_thread_entry), argument as *mut core::ffi::c_void) };
+// REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = unsafe { pthread_create(thread as *mut *mut _opaque_pthread_t, {{_v[0-9]+}} as *const _opaque_pthread_attr_t, Some(slate_thread_entry), {{arg[0-9]+}} as *mut core::ffi::c_void) };
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: bool = true;
@@ -308,12 +282,10 @@ int slate_yield(void) { return sched_yield(); }
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-MACOS-DAG: {{_v[0-9]+}}
 // REWRITES-MACOS-DAG: };
-// REWRITES-MACOS-DAG: __retval = {{_v[0-9]+}} as i32;
-// REWRITES-MACOS-DAG: return __retval;
+// REWRITES-MACOS-DAG: return {{_v[0-9]+}} as i32;
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: fn slate_wait_until({{arg[0-9]+}}: *mut libc::timespec) -> i32 {
 // REWRITES-MACOS-DAG: let mut deadline: *mut libc::timespec = {{arg[0-9]+}};
-// REWRITES-MACOS-DAG: let mut __retval: i32 = 0;
 // REWRITES-MACOS-DAG: let mut result: i32 = 0;
 // REWRITES-MACOS-DAG: result = unsafe { pthread_mutex_lock(std::ptr::addr_of_mut!(slate_mutex) as *mut _opaque_pthread_mutex_t) };
 // REWRITES-MACOS-DAG: {
@@ -332,11 +304,9 @@ int slate_yield(void) { return sched_yield(); }
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: bool = result != 0;
 // REWRITES-MACOS-DAG: {{_v[0-9]+}}
 // REWRITES-MACOS-DAG: };
-// REWRITES-MACOS-DAG: __retval = {{_v[0-9]+}} as i32;
-// REWRITES-MACOS-DAG: return __retval;
+// REWRITES-MACOS-DAG: return {{_v[0-9]+}} as i32;
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: fn slate_read_lock() -> i32 {
-// REWRITES-MACOS-DAG: let mut __retval: i32 = 0;
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = unsafe { pthread_rwlock_rdlock(std::ptr::addr_of_mut!(slate_rwlock) as *mut _opaque_pthread_rwlock_t) };
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
@@ -347,13 +317,11 @@ int slate_yield(void) { return sched_yield(); }
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-MACOS-DAG: {{_v[0-9]+}}
 // REWRITES-MACOS-DAG: };
-// REWRITES-MACOS-DAG: __retval = {{_v[0-9]+}} as i32;
-// REWRITES-MACOS-DAG: return __retval;
+// REWRITES-MACOS-DAG: return {{_v[0-9]+}} as i32;
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: unsafe fn slate_tls_once({{arg[0-9]+}}: *mut u64, {{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
 // REWRITES-MACOS-DAG: let mut key: *mut u64 = {{arg[0-9]+}};
 // REWRITES-MACOS-DAG: let mut value: *mut core::ffi::c_void = {{arg[0-9]+}};
-// REWRITES-MACOS-DAG: let mut __retval: i32 = 0;
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = unsafe { pthread_once(std::ptr::addr_of_mut!(slate_once) as *mut _opaque_pthread_once_t, Some(slate_once_routine)) };
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
@@ -373,15 +341,12 @@ int slate_yield(void) { return sched_yield(); }
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-MACOS-DAG: {{_v[0-9]+}}
 // REWRITES-MACOS-DAG: };
-// REWRITES-MACOS-DAG: __retval = {{_v[0-9]+}} as i32;
-// REWRITES-MACOS-DAG: return __retval;
+// REWRITES-MACOS-DAG: return {{_v[0-9]+}} as i32;
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: fn slate_post_named_semaphore({{arg[0-9]+}}: *mut i8) -> i32 {
-// REWRITES-MACOS-DAG: let mut name: *mut i8 = {{arg[0-9]+}};
-// REWRITES-MACOS-DAG: let mut __retval: i32 = 0;
 // REWRITES-MACOS-DAG: let mut semaphore: *mut i32 = std::ptr::null_mut();
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-MACOS-DAG: semaphore = unsafe { sem_open(name as *const i8, {{_v[0-9]+}} as i32) };
+// REWRITES-MACOS-DAG: semaphore = unsafe { sem_open({{arg[0-9]+}} as *const i8, {{_v[0-9]+}} as i32) };
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: bool = semaphore == (18446744073709551615u64 as *mut i32);
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: bool = true;
@@ -399,12 +364,9 @@ int slate_yield(void) { return sched_yield(); }
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-MACOS-DAG: {{_v[0-9]+}}
 // REWRITES-MACOS-DAG: };
-// REWRITES-MACOS-DAG: __retval = {{_v[0-9]+}} as i32;
-// REWRITES-MACOS-DAG: return __retval;
+// REWRITES-MACOS-DAG: return {{_v[0-9]+}} as i32;
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: fn slate_yield() -> i32 {
-// REWRITES-MACOS-DAG: let mut __retval: i32 = 0;
-// REWRITES-MACOS-DAG: __retval = unsafe { sched_yield() };
-// REWRITES-MACOS-DAG: return __retval;
+// REWRITES-MACOS-DAG: return unsafe { sched_yield() };
 // REWRITES-MACOS-DAG: }
 // SLATE-FILECHECK-END rewrites-macos

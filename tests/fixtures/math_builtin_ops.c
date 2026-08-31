@@ -50,22 +50,13 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut a: f64 = 0.0;
 // LOWERING-NEXT:     let mut b: f64 = 0.0;
 // LOWERING-NEXT:     let mut c: f64 = 0.0;
 // LOWERING-NEXT:     let mut d: f64 = 0.0;
 // LOWERING-NEXT:     let mut e: f64 = 0.0;
 // LOWERING-NEXT:     let mut f: f64 = 0.0;
-// LOWERING-NEXT:     let mut trig: f64 = 0.0;
-// LOWERING-NEXT:     let mut logs: f64 = 0.0;
-// LOWERING-NEXT:     let mut powers: f64 = 0.0;
-// LOWERING-NEXT:     let mut rem: f64 = 0.0;
-// LOWERING-NEXT:     let mut rounded: i64 = 0;
-// LOWERING-NEXT:     let mut rounded_ll: i64 = 0;
-// LOWERING-NEXT:     let mut exp10_val: f64 = 0.0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 0.5;
 // LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(a), {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 2.0;
@@ -86,7 +77,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { tan({{_v[0-9]+}} as f64) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     trig = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c)) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { log({{_v[0-9]+}} as f64) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 100.0;
@@ -95,7 +85,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c)) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { log2({{_v[0-9]+}} as f64) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     logs = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(b)) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 3.0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { pow({{_v[0-9]+}} as f64, {{_v[0-9]+}} as f64) };
@@ -108,32 +97,18 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 3.0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { exp2({{_v[0-9]+}} as f64) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     powers = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(d)) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(e)) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { fmod({{_v[0-9]+}} as f64, {{_v[0-9]+}} as f64) };
-// LOWERING-NEXT:     rem = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f)) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { lround({{_v[0-9]+}} as f64) };
-// LOWERING-NEXT:     rounded = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f)) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { llround({{_v[0-9]+}} as f64) };
-// LOWERING-NEXT:     rounded_ll = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 2.0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { __slate_builtin_exp10({{_v[0-9]+}}) };
-// LOWERING-NEXT:     exp10_val = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%.3f %.3f %.3f %.3f %ld %lld %.3f\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = trig;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = logs;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = powers;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = rem;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = rounded;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = rounded_ll;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = exp10_val;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -165,21 +140,13 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut a: f64 = 0.0;
 // REWRITES-NEXT: let mut b: f64 = 0.0;
 // REWRITES-NEXT: let mut c: f64 = 0.0;
 // REWRITES-NEXT: let mut d: f64 = 0.0;
 // REWRITES-NEXT: let mut e: f64 = 0.0;
 // REWRITES-NEXT: let mut f: f64 = 0.0;
-// REWRITES-NEXT: let mut trig: f64 = 0.0;
-// REWRITES-NEXT: let mut logs: f64 = 0.0;
-// REWRITES-NEXT: let mut powers: f64 = 0.0;
-// REWRITES-NEXT: let mut rem: f64 = 0.0;
-// REWRITES-NEXT: let mut rounded: i64 = 0;
-// REWRITES-NEXT: let mut rounded_ll: i64 = 0;
-// REWRITES-NEXT: let mut exp10_val: f64 = 0.0;
-// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = 0.5;
 // REWRITES-NEXT: unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(a), {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = 2.0;
@@ -199,7 +166,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = unsafe { tan({{_v[0-9]+}} as f64) };
-// REWRITES-NEXT: trig = {{_v[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-NEXT: let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c)) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = unsafe { log({{_v[0-9]+}} as f64) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = 100.0;
@@ -207,7 +174,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c)) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = unsafe { log2({{_v[0-9]+}} as f64) };
-// REWRITES-NEXT: logs = {{_v[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-NEXT: let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(b)) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = 3.0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = unsafe { pow({{_v[0-9]+}} as f64, {{_v[0-9]+}} as f64) };
@@ -219,19 +186,19 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = 3.0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = unsafe { exp2({{_v[0-9]+}} as f64) };
-// REWRITES-NEXT: powers = {{_v[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-NEXT: let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(d)) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(e)) };
-// REWRITES-NEXT: rem = unsafe { fmod({{_v[0-9]+}} as f64, {{_v[0-9]+}} as f64) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: f64 = unsafe { fmod({{_v[0-9]+}} as f64, {{_v[0-9]+}} as f64) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f)) };
-// REWRITES-NEXT: rounded = unsafe { lround({{_v[0-9]+}} as f64) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = unsafe { lround({{_v[0-9]+}} as f64) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f)) };
-// REWRITES-NEXT: rounded_ll = unsafe { llround({{_v[0-9]+}} as f64) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = unsafe { llround({{_v[0-9]+}} as f64) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: f64 = 2.0;
-// REWRITES-NEXT: exp10_val = unsafe { __slate_builtin_exp10({{_v[0-9]+}}) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: f64 = unsafe { __slate_builtin_exp10({{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%.3f %.3f %.3f %.3f %ld %lld %.3f\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, trig, logs, powers, rem, rounded, rounded_ll, exp10_val) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites
