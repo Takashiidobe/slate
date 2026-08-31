@@ -179,6 +179,7 @@ fn normalize_record_shape(ty: &crate::frontend::c_ast::CType) -> crate::frontend
             signed: false,
             bits: 0,
         },
+        CType::Complex(inner) => CType::Complex(Box::new(normalize_record_shape(inner))),
         other => other.clone(),
     }
 }

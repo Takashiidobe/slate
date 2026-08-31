@@ -40,6 +40,31 @@ fn starts_with_brace_expr(expr: &Expr) -> bool {
     )
 }
 
+fn expr_contains_bare_struct_lit(expr: &Expr) -> bool {
+    match expr {
+        Expr::StructLit { .. } => true,
+        Expr::Binary { lhs, rhs, .. } => {
+            expr_contains_bare_struct_lit(lhs) || expr_contains_bare_struct_lit(rhs)
+        }
+        Expr::Range { start, end } => {
+            expr_contains_bare_struct_lit(start) || expr_contains_bare_struct_lit(end)
+        }
+        Expr::Cast { expr, .. }
+        | Expr::Unary { expr, .. }
+        | Expr::Ref { expr, .. }
+        | Expr::AddrOf { expr, .. } => expr_contains_bare_struct_lit(expr),
+        Expr::Field { base, .. } | Expr::TupleField { base, .. } | Expr::Index { base, .. } => {
+            expr_contains_bare_struct_lit(base)
+        }
+        Expr::ArrayPtr { array, .. } => expr_contains_bare_struct_lit(array),
+        Expr::Call { func, .. } => expr_contains_bare_struct_lit(func),
+        Expr::MethodCall { recv, .. } | Expr::MethodCallGeneric { recv, .. } => {
+            expr_contains_bare_struct_lit(recv)
+        }
+        _ => false,
+    }
+}
+
 fn atomic_wrapper(ty: AtomicType) -> &'static str {
     match ty {
         AtomicType::I8 => "AtomicI8",
@@ -793,7 +818,7 @@ impl<W: Write> Codegen<W> {
                     self.ty(ty)?;
                 }
                 self.out.write_str(" = if ")?;
-                self.expr(cond)?;
+                self.cond_expr(cond)?;
                 self.out.write_str(" {\n")?;
                 self.indent_stmts(then_body, depth + 1)?;
                 write!(self.out, "{pad}{INDENT}")?;
@@ -917,7 +942,7 @@ impl<W: Write> Codegen<W> {
                 else_body,
             } => {
                 write!(self.out, "{pad}if ")?;
-                self.expr(cond)?;
+                self.cond_expr(cond)?;
                 self.out.write_str(" {\n")?;
                 self.indent_stmts(then_body, depth + 1)?;
                 if else_body.is_empty() {
@@ -938,7 +963,7 @@ impl<W: Write> Codegen<W> {
             }
             Stmt::For { pat, iter, body } => {
                 write!(self.out, "{pad}for {pat} in ")?;
-                self.expr(iter)?;
+                self.cond_expr(iter)?;
                 self.out.write_str(" {\n")?;
                 self.indent_stmts(body, depth + 1)?;
                 writeln!(self.out, "{pad}}}")
@@ -955,7 +980,7 @@ impl<W: Write> Codegen<W> {
             }
             Stmt::Match { expr, arms } => {
                 write!(self.out, "{pad}match ")?;
-                self.expr(expr)?;
+                self.cond_expr(expr)?;
                 self.out.write_str(" {\n")?;
                 for arm in arms {
                     write!(self.out, "{pad}{INDENT}")?;
@@ -976,7 +1001,7 @@ impl<W: Write> Codegen<W> {
             },
             Stmt::While { cond, body } => {
                 write!(self.out, "{pad}while ")?;
-                self.expr(cond)?;
+                self.cond_expr(cond)?;
                 self.out.write_str(" {\n")?;
                 self.block(body, depth + 1)?;
                 writeln!(self.out, "{pad}}}")
@@ -1002,6 +1027,14 @@ impl<W: Write> Codegen<W> {
 
     pub fn expr(&mut self, expr: &Expr) -> fmt::Result {
         self.expr_prec(expr, 0)
+    }
+
+    fn cond_expr(&mut self, expr: &Expr) -> fmt::Result {
+        if expr_contains_bare_struct_lit(expr) {
+            self.parenthesized(expr)
+        } else {
+            self.expr(expr)
+        }
     }
 
     fn expr_prec(&mut self, expr: &Expr, min: u8) -> fmt::Result {
@@ -1168,7 +1201,7 @@ impl<W: Write> Codegen<W> {
             }
             Expr::Match { expr, arms } => {
                 self.out.write_str("match ")?;
-                self.expr(expr)?;
+                self.cond_expr(expr)?;
                 self.out.write_str(" { ")?;
                 for (i, arm) in arms.iter().enumerate() {
                     if i > 0 {
@@ -1186,7 +1219,7 @@ impl<W: Write> Codegen<W> {
                 else_expr,
             } => {
                 self.out.write_str("if ")?;
-                self.expr(cond)?;
+                self.cond_expr(cond)?;
                 self.out.write_str(" { ")?;
                 self.expr(then_expr)?;
                 self.out.write_str(" } else { ")?;

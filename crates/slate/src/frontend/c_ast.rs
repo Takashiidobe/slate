@@ -193,6 +193,7 @@ pub enum CType {
     Array(Box<CType>, Option<u64>),
     Record(String),
     Enum(String),
+    Complex(Box<CType>),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -2266,6 +2267,12 @@ fn parse_c_type(s: &str) -> CType {
         return parse_c_type(inner);
     }
     let s = strip_trailing_type_qualifiers(s);
+    if let Some(inner) = s
+        .strip_prefix("_Complex")
+        .filter(|rest| rest.starts_with(char::is_whitespace))
+    {
+        return CType::Complex(Box::new(parse_c_type(inner.trim_start())));
+    }
     if let Some(ty) = parse_bitint_type(s) {
         return ty;
     }
