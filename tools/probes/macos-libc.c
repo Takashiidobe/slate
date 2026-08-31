@@ -1,7 +1,11 @@
+#include <dirent.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <langinfo.h>
 #include <locale.h>
 #include <stdio.h>
+#include <sys/stat.h>
+#include <sys/statvfs.h>
 #include <uchar.h>
 #include <wchar.h>
 #include <wctype.h>
@@ -18,6 +22,12 @@ struct slate_macos_stdio_locale_layouts {
   wctrans_t transformation;
 };
 
+struct slate_macos_filesystem_layouts {
+  struct stat    file_status;
+  struct dirent  directory_entry;
+  struct statvfs filesystem_status;
+};
+
 FILE *slate_macos_open(const char *path) { return fopen(path, "r"); }
 
 int slate_macos_errno(void) { return errno; }
@@ -29,3 +39,13 @@ int slate_macos_classify(wint_t value, locale_t locale) {
 }
 
 int slate_macos_export(void) { return LC_ALL + CODESET; }
+
+int slate_macos_stat(const char *path, struct stat *out) {
+  return stat(path, out);
+}
+
+struct dirent *slate_macos_readdir(DIR *dir) { return readdir(dir); }
+
+int slate_macos_open_read_only(const char *path) {
+  return open(path, O_RDONLY);
+}

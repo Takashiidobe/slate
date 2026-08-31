@@ -301,19 +301,27 @@ fn check_generated_rust_for_target(
     }
     std::fs::create_dir_all(work_dir)
         .map_err(|error| format!("create {}: {error}", work_dir.display()))?;
-    let source = work_dir.join(format!("{name}.rs"));
-    let metadata = work_dir.join(format!("lib{name}.rmeta"));
-    std::fs::write(&source, rust)
-        .map_err(|error| format!("write {}: {error}", source.display()))?;
-    let output = Command::new(&rustc)
-        .args(["--edition=2024", "--crate-type=lib", "--emit=metadata"])
-        .arg("--target")
-        .arg(target)
-        .arg("-o")
-        .arg(metadata)
-        .arg(source)
+    let crate_dir = work_dir.join(format!("{name}_crate"));
+    let src_dir = crate_dir.join("src");
+    std::fs::create_dir_all(&src_dir)
+        .map_err(|error| format!("create {}: {error}", src_dir.display()))?;
+    std::fs::write(
+        crate_dir.join("Cargo.toml"),
+        format!(
+            "[package]\nname = \"{name}\"\nversion = \"0.0.0\"\nedition = \"2024\"\n\n[dependencies]\nlibc = \"0.2\"\n\n[lib]\npath = \"src/lib.rs\"\n"
+        ),
+    )
+    .map_err(|error| format!("write {}/Cargo.toml: {error}", crate_dir.display()))?;
+    std::fs::write(src_dir.join("lib.rs"), rust)
+        .map_err(|error| format!("write {}/lib.rs: {error}", src_dir.display()))?;
+    let cargo = std::env::var("SLATE_CARGO").unwrap_or_else(|_| "cargo".into());
+    let output = Command::new(&cargo)
+        .args(["check", "--target", target])
+        .arg("--target-dir")
+        .arg(work_dir.join("target"))
+        .current_dir(&crate_dir)
         .output()
-        .map_err(|error| format!("spawn {rustc}: {error}"))?;
+        .map_err(|error| format!("spawn {cargo}: {error}"))?;
     output.status.success().then_some(()).ok_or_else(|| {
         format!(
             "generated Rust target check failed:\n{}",
@@ -386,7 +394,7 @@ fn run_cross_target_fixture(
         return Ok(());
     }
     if flavor == FixtureFlavor::Macos
-        && matches!(name, "fundamental_types" | "stdio_locale")
+        && matches!(name, "fundamental_types" | "stdio_locale" | "filesystem")
         && let Ok(sdk) = std::env::var("SLATE_MACOS_SDK")
         && !sdk.trim().is_empty()
     {

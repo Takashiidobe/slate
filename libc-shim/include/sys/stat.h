@@ -33,11 +33,17 @@
 
 #include <bits/types.h>
 
+#if defined(__SLATE_LIBC_DARWIN)
+#include <bits/darwin/stat.h>
+#else
 #include <bits/stat.h>
+#endif
 
+#if !defined(__SLATE_LIBC_DARWIN)
 #define st_atime st_atim.tv_sec
 #define st_mtime st_mtim.tv_sec
 #define st_ctime st_ctim.tv_sec
+#endif
 
 #define S_IFMT 0170000
 
@@ -80,8 +86,13 @@
 #define S_IRWXO 0007
 #endif
 
+#if defined(__SLATE_LIBC_DARWIN)
+#define UTIME_NOW  (-1)
+#define UTIME_OMIT (-2)
+#else
 #define UTIME_NOW  0x3fffffff
 #define UTIME_OMIT 0x3ffffffe
+#endif
 
 int    stat(const char *__restrict, struct stat *__restrict);
 int    fstat(int, struct stat *);
@@ -96,7 +107,8 @@ int    mkfifo(const char *, mode_t);
 int    mkdirat(int, const char *, mode_t);
 int    mkfifoat(int, const char *, mode_t);
 
-#if defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+#if defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||   \
+    defined(__SLATE_LIBC_DARWIN)
 int mknod(const char *, mode_t, dev_t);
 int mknodat(int, const char *, mode_t, dev_t);
 #endif
@@ -104,7 +116,7 @@ int mknodat(int, const char *, mode_t, dev_t);
 int futimens(int, const struct timespec[2]);
 int utimensat(int, const char *, const struct timespec[2], int);
 
-#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE) || defined(__SLATE_LIBC_DARWIN)
 int lchmod(const char *, mode_t);
 #define S_IREAD  S_IRUSR
 #define S_IWRITE S_IWUSR

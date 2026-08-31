@@ -5,6 +5,7 @@
 
 #include <sys/types.h>
 
+#if !defined(__SLATE_LIBC_DARWIN)
 enum {
   O_RDONLY   = 0,
   O_WRONLY   = 1,
@@ -40,6 +41,7 @@ enum {
   F_ADD_SEALS     = 1033,
   F_GET_SEALS     = 1034,
 };
+#endif
 
 #define __NEED_off_t
 #define __NEED_pid_t
@@ -53,7 +55,11 @@ enum {
 
 #include <bits/types.h>
 
+#if defined(__SLATE_LIBC_DARWIN)
+#include <bits/darwin/fcntl.h>
+#else
 #include <bits/fcntl.h>
+#endif
 #include <stdint.h>
 
 struct flock {
@@ -68,6 +74,8 @@ int fcntl(int fd, int cmd, ...);
 int open(const char *pathname, int flags, ...);
 int creat(const char *pathname, mode_t mode);
 int openat(int, const char *, int, ...);
+
+#if !defined(__SLATE_LIBC_DARWIN)
 int posix_fadvise(int, off_t, off_t, int);
 int posix_fallocate(int, off_t, off_t);
 
@@ -77,7 +85,9 @@ struct open_how {
   uint64_t resolve;
 };
 int openat2(int, const char *, struct open_how *, size_t);
+#endif
 
+#if !defined(__SLATE_LIBC_DARWIN)
 #define O_SEARCH   O_PATH
 #define O_EXEC     O_PATH
 #define O_TTY_INIT 0
@@ -101,6 +111,7 @@ int openat2(int, const char *, struct open_how *, size_t);
 #define O_RDONLY  00
 #define O_WRONLY  01
 #define O_RDWR    02
+#endif
 
 #ifndef S_IRUSR
 #define S_ISUID 04000
@@ -120,6 +131,7 @@ int openat2(int, const char *, struct open_how *, size_t);
 #define S_IRWXO 0007
 #endif
 
+#if !defined(__SLATE_LIBC_DARWIN)
 #define F_OFD_GETLK  36
 #define F_OFD_SETLK  37
 #define F_OFD_SETLKW 38
@@ -137,6 +149,9 @@ int openat2(int, const char *, struct open_how *, size_t);
 #define AT_REMOVEDIR        0x200
 #define AT_SYMLINK_FOLLOW   0x400
 #define AT_EACCESS          0x200
+#else
+#define FD_CLOEXEC 1
+#endif
 
 #define POSIX_FADV_NORMAL     0
 #define POSIX_FADV_RANDOM     1
@@ -172,7 +187,17 @@ int openat2(int, const char *, struct open_how *, size_t);
 #define S_IRWXO 0007
 #endif
 
-#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE) || defined(__SLATE_LIBC_DARWIN)
+#define F_OK 0
+#define R_OK 4
+#define W_OK 2
+#define X_OK 1
+
+int lockf(int, int, off_t);
+#endif
+
+#if (defined(_GNU_SOURCE) || defined(_BSD_SOURCE)) &&                          \
+    !defined(__SLATE_LIBC_DARWIN)
 #define AT_NO_AUTOMOUNT       0x800
 #define AT_EMPTY_PATH         0x1000
 #define AT_STATX_SYNC_TYPE    0x6000
@@ -187,10 +212,6 @@ int openat2(int, const char *, struct open_how *, size_t);
 #define FNONBLOCK O_NONBLOCK
 #define FNDELAY   O_NDELAY
 
-#define F_OK    0
-#define R_OK    4
-#define W_OK    2
-#define X_OK    1
 #define F_ULOCK 0
 #define F_LOCK  1
 #define F_TLOCK 2
@@ -230,11 +251,9 @@ int openat2(int, const char *, struct open_how *, size_t);
 #define DN_RENAME    0x00000010
 #define DN_ATTRIB    0x00000020
 #define DN_MULTISHOT 0x80000000
-
-int lockf(int, int, off_t);
 #endif
 
-#if defined(_GNU_SOURCE)
+#if defined(_GNU_SOURCE) && !defined(__SLATE_LIBC_DARWIN)
 #define F_OWNER_TID  0
 #define F_OWNER_PID  1
 #define F_OWNER_PGRP 2
