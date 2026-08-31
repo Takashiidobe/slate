@@ -27,9 +27,10 @@ int main(void) {
   remove("slate_stdio_gets_loop_unsupported.tmp");
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
 // REWRITES-NEXT:     fn remove(_0: *const i8) -> i32;
@@ -50,7 +51,7 @@ int main(void) {
 // REWRITES-NEXT: let mut count: i32 = 0;
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"slate_stdio_gets_loop_unsupported.tmp\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { remove({{_v[0-9]+}} as *const i8) };
+// REWRITES-NEXT: unsafe { remove({{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"slate_stdio_gets_loop_unsupported.tmp\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"w\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: f = unsafe { fopen({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as *const i8) };
@@ -59,16 +60,16 @@ int main(void) {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
 // REWRITES-NEXT:         if {{_v[0-9]+}} {
 // REWRITES-NEXT:                     let {{_v[0-9]+}}: *mut i8 = b"open-fail\0".as_ptr() as *mut i8;
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { puts({{_v[0-9]+}} as *const i8) };
+// REWRITES-NEXT:                     unsafe { puts({{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT:                     __retval = 0;
 // REWRITES-NEXT:                     std::process::exit(__retval as i32);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"one\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { fputs({{_v[0-9]+}} as *const i8, f as *mut libc::FILE) };
+// REWRITES-NEXT: unsafe { fputs({{_v[0-9]+}} as *const i8, f as *mut libc::FILE) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"two\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { fputs({{_v[0-9]+}} as *const i8, f as *mut libc::FILE) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { fclose(f as *mut libc::FILE) };
+// REWRITES-NEXT: unsafe { fputs({{_v[0-9]+}} as *const i8, f as *mut libc::FILE) };
+// REWRITES-NEXT: unsafe { fclose(f as *mut libc::FILE) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"slate_stdio_gets_loop_unsupported.tmp\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"r\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: g = unsafe { fopen({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as *const i8) };
@@ -77,12 +78,11 @@ int main(void) {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
 // REWRITES-NEXT:         if {{_v[0-9]+}} {
 // REWRITES-NEXT:                     let {{_v[0-9]+}}: *mut i8 = b"reopen-fail\0".as_ptr() as *mut i8;
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { puts({{_v[0-9]+}} as *const i8) };
+// REWRITES-NEXT:                     unsafe { puts({{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT:                     __retval = 0;
 // REWRITES-NEXT:                     std::process::exit(__retval as i32);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
-// REWRITES-NEXT: count = 0;
 // REWRITES-NEXT: loop {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = line.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 64;
@@ -97,11 +97,11 @@ int main(void) {
 // REWRITES-NEXT:                     count = count + ({{_v[0-9]+}} as i32);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { fclose(g as *mut libc::FILE) };
+// REWRITES-NEXT: unsafe { fclose(g as *mut libc::FILE) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, count) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, count) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"slate_stdio_gets_loop_unsupported.tmp\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { remove({{_v[0-9]+}} as *const i8) };
+// REWRITES-NEXT: unsafe { remove({{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: std::process::exit(__retval as i32);
 // REWRITES-NEXT: }

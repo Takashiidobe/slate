@@ -96,7 +96,7 @@ int main(void) {
 // LOWERING: #![feature(abi_unadjusted)]
 // LOWERING-NEXT: #![feature(link_llvm_intrinsics)]
 // LOWERING-NEXT: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
 // LOWERING-NEXT:     #[link_name = "frexp"]
@@ -402,7 +402,7 @@ int main(void) {
 // REWRITES: #![feature(abi_unadjusted)]
 // REWRITES-NEXT: #![feature(link_llvm_intrinsics)]
 // REWRITES-NEXT: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
 // REWRITES-NEXT:     #[link_name = "frexp"]
@@ -451,23 +451,19 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = bytes.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = bytes.as_mut_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 16;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(16) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         unsafe { __slate_intrinsic_clear_cache_64e8e36ba84fcffa({{_v[0-9]+}}, {{_v[0-9]+}}) };
 // REWRITES-NEXT: }
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = bytes.as_mut_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(1) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// REWRITES-NEXT: unsafe { {{_v[0-9]+}}.add(1) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT: return (bytes[({{_v[0-9]+}} as usize)] as i32) + {{_v[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn frame_probe() -> i32 {
-// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = 0;
 // REWRITES-NEXT: let mut {{_v[0-9]+}}: u8 = 0u8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut u8 = std::ptr::addr_of_mut!({{_v[0-9]+}}) as *mut u8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
@@ -488,10 +484,8 @@ int main(void) {
 // REWRITES-NEXT: value.byte = 7;
 // REWRITES-NEXT: value.word = 11;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u8 = 7;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u8 = ({{_v[0-9]+}} as u8) << 5 >> 5;
 // REWRITES-NEXT: bits.__bitfield_0.set_low(({{_v[0-9]+}} as u8) << 5 >> 5);
 // REWRITES-NEXT: let {{_v[0-9]+}}: u8 = 7;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u8 = ({{_v[0-9]+}} as u8) << 5 >> 5;
 // REWRITES-NEXT: bits.__bitfield_0.set_high(({{_v[0-9]+}} as u8) << 5 >> 5);
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         *(std::ptr::addr_of_mut!(value) as *mut u8).add(1usize) = *(std::ptr::addr_of_mut!(value) as *mut u8).add(1usize) & 0u8;
@@ -507,13 +501,10 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut u8 = std::ptr::addr_of_mut!(value) as *mut u8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 10;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add(1) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = (unsafe { *{{_v[0-9]+}} }) as i32;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add(2) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32);
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add(3) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} * ({{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32));
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut u8 = std::ptr::addr_of_mut!(bits) as *mut u8;
@@ -625,7 +616,6 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT: let mut input: i32 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 7;
 // REWRITES-NEXT: unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(input), {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d\n\0".as_ptr() as *mut i8;
@@ -635,7 +625,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = clear_padding_probe();
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = frexp_probe();
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = hyperbolic_probe();
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }

@@ -296,7 +296,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(thread_local)]
 // LOWERING-NEXT: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
 // LOWERING-NEXT:     fn __muldc3(a: f64, b: f64, c: f64, d: f64) -> num_complex::Complex<f64>;
@@ -1119,7 +1119,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(thread_local)]
 // REWRITES-NEXT: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
 // REWRITES-NEXT:     fn __muldc3(a: f64, b: f64, c: f64, d: f64) -> num_complex::Complex<f64>;
@@ -1345,13 +1345,11 @@ int main(void) {
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         *{{_v[0-9]+}} = {{arg[0-9]+}};
 // REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         *{{_v[0-9]+}} = {{arg[0-9]+}} + {{_v[0-9]+}};
 // REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(2) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 2;
 // REWRITES-NEXT: unsafe {
@@ -1375,7 +1373,7 @@ int main(void) {
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
 // REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(c11_atomic_total)).fetch_add({{_v[0-9]+}}, std::sync::atomic::Ordering::SeqCst) };
+// REWRITES-NEXT: unsafe { std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(c11_atomic_total)).fetch_add({{_v[0-9]+}}, std::sync::atomic::Ordering::SeqCst) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { c11_thread_local_value };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = unsafe { __errno_location() };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 34;
@@ -1392,7 +1390,7 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn c11_quick_handler() {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 100;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(c11_atomic_total)).fetch_add({{_v[0-9]+}}, std::sync::atomic::Ordering::Relaxed) };
+// REWRITES-NEXT: unsafe { std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(c11_atomic_total)).fetch_add({{_v[0-9]+}}, std::sync::atomic::Ordering::Relaxed) };
 // REWRITES-NEXT: return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -1428,7 +1426,6 @@ int main(void) {
 // REWRITES-NEXT: let mut exclusive_second: *mut libc::FILE = std::ptr::null_mut();
 // REWRITES-NEXT: let mut concurrency_total: i32 = 0;
 // REWRITES-NEXT: let mut ref_tmp0: C11Temporary = C11Temporary { values: [0; 3] };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u16 = 937;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = 128578;
 // REWRITES-NEXT: anonymous = C11Anonymous { __slate_anon_0: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() }, __slate_anon_1: {{anon_[0-9]+}} { x: 0, y: 0 } };
@@ -1518,7 +1515,6 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = unsafe { __errno_location() };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (((unsafe { *{{_v[0-9]+}} }) == {{_v[0-9]+}}) as i32);
-// REWRITES-NEXT: concurrency_total = 0;
 // REWRITES-NEXT: {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { mtx_init(std::ptr::addr_of_mut!(mutex) as *mut mtx_t, {{_v[0-9]+}} as i32) };
@@ -1613,7 +1609,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}} == {{_v[0-9]+}}) as i32;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"slate-c11-exclusive.tmp\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { remove({{_v[0-9]+}} as *const i8) };
+// REWRITES-NEXT: unsafe { remove({{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"slate-c11-exclusive.tmp\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: exclusive_first = c11_open_exclusive({{_v[0-9]+}});
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"slate-c11-exclusive.tmp\0".as_ptr() as *mut i8;
@@ -1632,18 +1628,18 @@ int main(void) {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut libc::FILE = std::ptr::null_mut();
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = exclusive_first != {{_v[0-9]+}};
 // REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { fclose(exclusive_first as *mut libc::FILE) };
+// REWRITES-NEXT:                     unsafe { fclose(exclusive_first as *mut libc::FILE) };
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
 // REWRITES-NEXT: {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut libc::FILE = std::ptr::null_mut();
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = exclusive_second != {{_v[0-9]+}};
 // REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { fclose(exclusive_second as *mut libc::FILE) };
+// REWRITES-NEXT:                     unsafe { fclose(exclusive_second as *mut libc::FILE) };
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"slate-c11-exclusive.tmp\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { remove({{_v[0-9]+}} as *const i8) };
+// REWRITES-NEXT: unsafe { remove({{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { timespec_get(std::ptr::addr_of_mut!(current_time) as *mut libc::timespec, {{_v[0-9]+}} as i32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
@@ -1693,9 +1689,9 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, concurrency_total, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, concurrency_total, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 10;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { putchar({{_v[0-9]+}} as i32) };
+// REWRITES-NEXT: unsafe { putchar({{_v[0-9]+}} as i32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }

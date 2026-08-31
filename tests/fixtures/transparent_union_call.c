@@ -62,5 +62,5 @@ int main(void) {
 // REWRITES-DAG: coerce = agg_tmp1;
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut *mut core::ffi::c_void = std::ptr::addr_of_mut!(coerce) as *mut *mut core::ffi::c_void;
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = read_value((unsafe { *{{_v[0-9]+}} }) as *mut core::ffi::c_void);
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-DAG: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // SLATE-FILECHECK-END rewrites

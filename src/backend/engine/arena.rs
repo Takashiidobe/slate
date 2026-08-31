@@ -418,6 +418,14 @@ impl Arena {
         }
     }
 
+    pub(in crate::backend) fn reads(&self, id: NodeId) -> &[Ident] {
+        self.slots
+            .get(id.index as usize)
+            .filter(|slot| slot.generation == id.generation)
+            .map(|slot| slot.reads.as_slice())
+            .unwrap_or(&[])
+    }
+
     pub(in crate::backend) fn def_use_neighbors(&self, name: Ident) -> &[NodeId] {
         self.def_uses.get(&name).map(Vec::as_slice).unwrap_or(&[])
     }

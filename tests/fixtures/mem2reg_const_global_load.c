@@ -51,7 +51,6 @@ int main(void) {
 // REWRITES-DAG: return unsafe { *{{_v[0-9]+}} };
 // REWRITES-DAG: }
 // REWRITES-DAG: fn initialize_chars() -> i32 {
-// REWRITES-DAG: let {{_v[0-9]+}}: [i8; 4] = [97, 98, 99, 0];
 // REWRITES-DAG: return 5;
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

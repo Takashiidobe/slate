@@ -18,7 +18,7 @@ int main(void) {
 }
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
 // LOWERING-NEXT:     fn strcpy(_0: *mut i8, _1: *const i8) -> *mut i8;
@@ -68,7 +68,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
 // REWRITES-NEXT:     fn strcpy(_0: *mut i8, _1: *const i8) -> *mut i8;
@@ -84,25 +84,24 @@ int main(void) {
 // REWRITES-NEXT: let mut append: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
 // REWRITES-NEXT: let mut trunc_copy: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
 // REWRITES-NEXT: let mut trunc_append: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: *copy = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 // REWRITES-NEXT: *append = [102, 111, 111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 // REWRITES-NEXT: *trunc_copy = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 // REWRITES-NEXT: *trunc_append = [112, 114, 101, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = copy.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"abc\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = unsafe { strcpy({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}} as *const i8) };
+// REWRITES-NEXT: unsafe { strcpy({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = append.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"bar\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = unsafe { strcat({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}} as *const i8) };
+// REWRITES-NEXT: unsafe { strcat({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = trunc_copy.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"abcdef\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = unsafe { strncpy({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as usize) };
+// REWRITES-NEXT: unsafe { strncpy({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as usize) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = trunc_append.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"suffix\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = unsafe { strncat({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as usize) };
+// REWRITES-NEXT: unsafe { strncat({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as usize) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%s %s %s %s %zu\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = copy.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = append.as_mut_ptr() as *mut i8;
@@ -110,7 +109,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = trunc_append.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = trunc_append.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = (unsafe { strlen({{_v[0-9]+}} as *const i8) }) as u64;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }

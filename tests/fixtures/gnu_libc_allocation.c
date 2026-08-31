@@ -57,7 +57,7 @@ int main(void) {
 }
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: mod __slate_bitfields {
 // LOWERING-NEXT:     #[bitfields::bitfield(u8, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
@@ -544,7 +544,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: mod __slate_bitfields {
 // REWRITES-NEXT:     #[bitfields::bitfield(u8, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
@@ -659,19 +659,15 @@ int main(void) {
 // REWRITES-NEXT:                     index = index + 1;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = values;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(0) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = values;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = values;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(2) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = values;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(3) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} + unsafe { *{{_v[0-9]+}} });
@@ -730,14 +726,13 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i64) -> *mut core::ffi::c_void> = unsafe { std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i64) -> *mut core::ffi::c_void>>(malloc as *const ()) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { _obstack_begin(std::ptr::addr_of_mut!(storage) as *mut obstack, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as i32, {{_v[0-9]+}}, Some(free)) };
+// REWRITES-NEXT: unsafe { _obstack_begin(std::ptr::addr_of_mut!(storage) as *mut obstack, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as i32, {{_v[0-9]+}}, Some(free)) };
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         storage.__bitfield_5.tempint = 3;
 // REWRITES-NEXT: }
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = storage.__bitfield_3;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = unsafe { storage.__bitfield_5.tempint };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.offset({{_v[0-9]+}} as isize) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(1) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > storage.__bitfield_4;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} {
@@ -758,7 +753,6 @@ int main(void) {
 // REWRITES-NEXT: storage.__bitfield_3 = {{_v[0-9]+}};
 // REWRITES-NEXT: let {{_v[0-9]+}}: i8 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = storage.__bitfield_3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(1) };
 // REWRITES-NEXT: storage.__bitfield_3 = {{_v[0-9]+}};
 // REWRITES-NEXT: unsafe {
@@ -767,7 +761,6 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: bool = storage.__bitfield_3 == storage.__bitfield_2;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: u32 = 1;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: u32 = ({{_v[0-9]+}} as u32) << 31 >> 31;
 // REWRITES-NEXT:         storage.__bitfield_10.set_maybe_empty_object(({{_v[0-9]+}} as u32) << 31 >> 31);
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:     {{_v[0-9]+}}
@@ -804,7 +797,6 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = storage.__bitfield_3;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = unsafe { storage.__bitfield_5.tempint };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.offset({{_v[0-9]+}} as isize) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(1) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > storage.__bitfield_4;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} {
@@ -825,7 +817,6 @@ int main(void) {
 // REWRITES-NEXT: storage.__bitfield_3 = {{_v[0-9]+}};
 // REWRITES-NEXT: let {{_v[0-9]+}}: i8 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = storage.__bitfield_3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(1) };
 // REWRITES-NEXT: storage.__bitfield_3 = {{_v[0-9]+}};
 // REWRITES-NEXT: unsafe {
@@ -834,7 +825,6 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: bool = storage.__bitfield_3 == storage.__bitfield_2;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: u32 = 1;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: u32 = ({{_v[0-9]+}} as u32) << 31 >> 31;
 // REWRITES-NEXT:         storage.__bitfield_10.set_maybe_empty_object(({{_v[0-9]+}} as u32) << 31 >> 31);
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:     {{_v[0-9]+}}
@@ -899,11 +889,10 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = gnu_allocation_extensions();
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = gnu_obstack_extensions();
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }

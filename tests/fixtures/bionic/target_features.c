@@ -36,7 +36,7 @@ _Static_assert(__SLATE_ANDROID_API__ == 21, "Android API 21 required");
 
 int main(void) { return 0; }
 // SLATE-FILECHECK-BEGIN lowering-bionic-x86_64
-// LOWERING-BIONIC-X86_64: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-BIONIC-X86_64: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-BIONIC-X86_64-EMPTY:
 // LOWERING-BIONIC-X86_64-NEXT: fn main() {
 // LOWERING-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: i32 = 0;
@@ -46,7 +46,7 @@ int main(void) { return 0; }
 // SLATE-FILECHECK-END lowering-bionic-x86_64
 
 // SLATE-FILECHECK-BEGIN rewrites-bionic-x86_64
-// REWRITES-BIONIC-X86_64: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-BIONIC-X86_64: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-BIONIC-X86_64-EMPTY:
 // REWRITES-BIONIC-X86_64-NEXT: fn main() {
 // REWRITES-BIONIC-X86_64-NEXT: let {{_v[0-9]+}}: i32 = 0;

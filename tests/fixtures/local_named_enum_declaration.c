@@ -23,7 +23,7 @@ int main(void) {
 }
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[allow(non_camel_case_types)]
@@ -96,7 +96,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[allow(non_camel_case_types)]
@@ -120,11 +120,8 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT: let mut cases: aligned::Aligned<aligned::A4, [Case; 2]> = aligned::Aligned([Case { expectedStatus: XML_Status::XML_STATUS_ERROR }; 2]);
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = XML_Status::XML_STATUS_OK as u32;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
 // REWRITES-NEXT: cases[({{_v[0-9]+}} as usize)].expectedStatus = XML_Status::XML_STATUS_OK;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = XML_Status::XML_STATUS_ERROR as u32;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 1;
 // REWRITES-NEXT: cases[({{_v[0-9]+}} as usize)].expectedStatus = XML_Status::XML_STATUS_ERROR;
 // REWRITES-NEXT: {
@@ -144,10 +141,10 @@ int main(void) {
 // REWRITES-NEXT:                                                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
 // REWRITES-NEXT:                                                         if {{_v[0-9]+}} {
 // REWRITES-NEXT:                                                                                 let {{_v[0-9]+}}: *mut i8 = b"ok\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT:                                                                                 let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8) };
+// REWRITES-NEXT:                                                                                 unsafe { printf({{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT:                                                         } else {
 // REWRITES-NEXT:                                                                                 let {{_v[0-9]+}}: *mut i8 = b"error\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT:                                                                                 let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8) };
+// REWRITES-NEXT:                                                                                 unsafe { printf({{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT:                                                         }
 // REWRITES-NEXT:                                     }
 // REWRITES-NEXT:                     }

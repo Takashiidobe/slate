@@ -36,10 +36,10 @@ int main(void) {
 // REWRITES-DAG: let {{_v[0-9]+}}: u64 = 4;
 // REWRITES-DAG: let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} * ({{_v[0-9]+}} as u64);
 // REWRITES-DAG: let {{_v[0-9]+}}: u64 = 8;
-// REWRITES-DAG: let mut values: [i32; 3] = [7, 8, 9];
+// REWRITES-DAG: values = [7, 8, 9];
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = 3;
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut i32 = values.as_mut_ptr() as *mut i32;
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = parameter_bound({{_v[0-9]+}}, {{_v[0-9]+}});
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = b"%lu %lu %d %d\n\0".as_ptr() as *mut i8;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-DAG: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // SLATE-FILECHECK-END rewrites

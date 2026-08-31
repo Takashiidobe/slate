@@ -58,7 +58,7 @@ int main(void) {
 }
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
@@ -332,7 +332,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
@@ -386,7 +386,6 @@ int main(void) {
 // REWRITES-NEXT: fn fill_via_ptr({{arg[0-9]+}}: &mut table, {{arg[0-9]+}}: i32) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut [i8; 3] = (unsafe { std::ptr::addr_of_mut!((*({{arg[0-9]+}} as *mut table)).rows) }) as *mut [i8; 3];
 // REWRITES-NEXT: let {{_v[0-9]+}}: i8 = 88;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut [i8; 3] = unsafe { {{_v[0-9]+}}.offset({{arg[0-9]+}} as isize) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut [i8; 3] = unsafe { {{_v[0-9]+}}.add(0) };
@@ -470,7 +469,6 @@ int main(void) {
 // REWRITES-NEXT:                                                                                 }
 // REWRITES-NEXT:                                                                                 {
 // REWRITES-NEXT:                                                                                                             let {{_v[0-9]+}}: i64 = k as i64;
-// REWRITES-NEXT:                                                                                                             let {{_v[0-9]+}}: i64 = 0;
 // REWRITES-NEXT:                                                                                                             let {{_v[0-9]+}}: *mut [i32; 4] = plane;
 // REWRITES-NEXT:                                                                                                             let {{_v[0-9]+}}: *mut [i32; 4] = unsafe { {{_v[0-9]+}}.offset(j as isize) };
 // REWRITES-NEXT:                                                                                                             let {{_v[0-9]+}}: *mut [i32; 4] = unsafe { {{_v[0-9]+}}.add(0) };
@@ -489,7 +487,6 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT: let mut t: table = table { rows: {{\[\[}}0; 3]; 4] };
 // REWRITES-NEXT: let mut c: cube = cube { v: {{\[\[}}[0; 4]; 3]; 2] };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: fill(unsafe { &mut (*std::ptr::addr_of_mut!(t)) });
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 2;
 // REWRITES-NEXT: fill_via_ptr(unsafe { &mut (*std::ptr::addr_of_mut!(t)) }, {{_v[0-9]+}});
@@ -504,7 +501,7 @@ int main(void) {
 // REWRITES-NEXT:                     {
 // REWRITES-NEXT:                                     let {{_v[0-9]+}}: *mut i8 = b"%s\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT:                                     let {{_v[0-9]+}}: *mut i8 = std::ptr::addr_of_mut!(t.rows[((i as i64) as usize)]) as *mut i8;
-// REWRITES-NEXT:                                     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// REWRITES-NEXT:                                     unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // REWRITES-NEXT:                     }
 // REWRITES-NEXT:                     i = i + 1;
 // REWRITES-NEXT:         }
@@ -520,7 +517,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = c.v[({{_v[0-9]+}} as usize)][({{_v[0-9]+}} as usize)][({{_v[0-9]+}} as usize)];
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = sum_cube_via_ptr(unsafe { &mut (*std::ptr::addr_of_mut!(c)) });
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }

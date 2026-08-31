@@ -43,7 +43,7 @@ int main(void) {
 }
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
@@ -80,17 +80,19 @@ int main(void) {
 // LOWERING-NEXT:     let mut o: *mut outer_t = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut q: *mut inner_t = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut acc: i32 = 0;
-// LOWERING-NEXT: let mut {{_v[0-9]+}}: *mut outer_t = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut {{__state[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     '{{__dispatch[0-9]+}}: loop {
 // LOWERING-NEXT:         match {{__state[0-9]+}} {
 // LOWERING-NEXT:             0 => {
 // LOWERING-NEXT:                 ms = {{arg[0-9]+}};
 // LOWERING-NEXT:                 flag = {{arg[0-9]+}};
-// LOWERING-NEXT:                 {{_v[0-9]+}} = unsafe { (*{{arg[0-9]+}}).dict };
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut state_t = ms;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut outer_t = unsafe { (*{{_v[0-9]+}}).dict };
 // LOWERING-NEXT:                 o = {{_v[0-9]+}};
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut outer_t = o;
 // LOWERING-NEXT:                 q = unsafe { std::ptr::addr_of_mut!((*{{_v[0-9]+}}).r#in) };
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).r#in.x };
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut inner_t = q;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).x };
 // LOWERING-NEXT:                 acc = {{_v[0-9]+}};
 // LOWERING-NEXT:                 {{__state[0-9]+}} = 1;
 // LOWERING-NEXT:                 continue '{{__dispatch[0-9]+}};
@@ -122,7 +124,8 @@ int main(void) {
 // LOWERING-NEXT:                 continue '{{__dispatch[0-9]+}};
 // LOWERING-NEXT:             }
 // LOWERING-NEXT:             5 => {
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).r#in.y };
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut inner_t = q;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).y };
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = acc;
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:                 acc = {{_v[0-9]+}};
@@ -166,7 +169,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
@@ -203,17 +206,15 @@ int main(void) {
 // REWRITES-NEXT: let mut o: *mut outer_t = std::ptr::null_mut();
 // REWRITES-NEXT: let mut q: *mut inner_t = std::ptr::null_mut();
 // REWRITES-NEXT: let mut acc: i32 = 0;
-// REWRITES-NEXT: let mut {{_v[0-9]+}}: *mut outer_t = std::ptr::null_mut();
 // REWRITES-NEXT: let mut {{__state[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: '{{__dispatch[0-9]+}}: loop {
 // REWRITES-NEXT:         match {{__state[0-9]+}} {
 // REWRITES-NEXT:             0 => {
 // REWRITES-NEXT:                         ms = ({{arg[0-9]+}} as *const state_t) as *mut state_t;
 // REWRITES-NEXT:                         flag = {{arg[0-9]+}};
-// REWRITES-NEXT:                         {{_v[0-9]+}} = unsafe { (*({{arg[0-9]+}} as *const state_t)).dict };
-// REWRITES-NEXT:                         o = {{_v[0-9]+}};
-// REWRITES-NEXT:                         q = unsafe { std::ptr::addr_of_mut!((*{{_v[0-9]+}}).r#in) };
-// REWRITES-NEXT:                         acc = unsafe { (*{{_v[0-9]+}}).r#in.x };
+// REWRITES-NEXT:                         o = unsafe { (*ms).dict };
+// REWRITES-NEXT:                         q = unsafe { std::ptr::addr_of_mut!((*o).r#in) };
+// REWRITES-NEXT:                         acc = unsafe { (*q).x };
 // REWRITES-NEXT:                         {{__state[0-9]+}} = 1;
 // REWRITES-NEXT:                         continue '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }
@@ -241,7 +242,7 @@ int main(void) {
 // REWRITES-NEXT:                         continue '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             5 => {
-// REWRITES-NEXT:                         acc = acc + unsafe { (*{{_v[0-9]+}}).r#in.y };
+// REWRITES-NEXT:                         acc = acc + unsafe { (*q).y };
 // REWRITES-NEXT:                         __retval = acc;
 // REWRITES-NEXT:                         return __retval;
 // REWRITES-NEXT:             }
@@ -256,7 +257,6 @@ int main(void) {
 // REWRITES-NEXT: let mut inr: inner_t = inner_t { pad: 0, x: 0, y: 0 };
 // REWRITES-NEXT: let mut ou: outer_t = outer_t { lead: 0, r#in: inner_t { pad: 0, x: 0, y: 0 } };
 // REWRITES-NEXT: let mut s: state_t = state_t { dict: std::ptr::null_mut() };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: inr.pad = 0;
 // REWRITES-NEXT: inr.x = 3;
 // REWRITES-NEXT: inr.y = 4;
@@ -268,7 +268,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = compute(unsafe { &(*std::ptr::addr_of_mut!(s)) }, {{_v[0-9]+}});
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = compute(unsafe { &(*std::ptr::addr_of_mut!(s)) }, {{_v[0-9]+}});
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }

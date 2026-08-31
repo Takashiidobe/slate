@@ -39,7 +39,7 @@ int main(void) {
 }
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[allow(non_camel_case_types)]
@@ -153,7 +153,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[allow(non_camel_case_types)]
@@ -185,16 +185,15 @@ int main(void) {
 // REWRITES-NEXT:         *({{arg[0-9]+}} as *mut i32) = {{arg[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"on_exit:%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{arg[0-9]+}}) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{arg[0-9]+}}) };
 // REWRITES-NEXT: return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT: let mut captured: i32 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: captured = -1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(captured) as *mut core::ffi::c_void;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { on_exit(Some(handle_exit), {{_v[0-9]+}} as *mut core::ffi::c_void) };
+// REWRITES-NEXT: unsafe { on_exit(Some(handle_exit), {{_v[0-9]+}} as *mut core::ffi::c_void) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32)> = None;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { mcheck({{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
@@ -204,7 +203,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { mprobe({{_v[0-9]+}} as *mut core::ffi::c_void) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"mcheck:%d %d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = mcheck_status::MCHECK_OK as i32;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, ({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, ({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) };
 // REWRITES-NEXT: unsafe { free({{_v[0-9]+}} as *mut core::ffi::c_void) };
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         error_one_per_line = 0;
@@ -218,7 +217,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"second message\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: unsafe { error({{_v[0-9]+}} as i32, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"count_after_two:%u\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, unsafe { error_message_count }) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, unsafe { error_message_count }) };
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         error_one_per_line = 1;
 // REWRITES-NEXT: }
@@ -235,7 +234,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"deduped message\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: unsafe { error_at_line({{_v[0-9]+}} as i32, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as u32, {{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"count_after_dedup:%u\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, unsafe { error_message_count }) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, unsafe { error_message_count }) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"sample.c\0".as_ptr() as *mut i8;
@@ -243,13 +242,13 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"different line\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: unsafe { error_at_line({{_v[0-9]+}} as i32, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as u32, {{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"count_after_new_line:%u\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, unsafe { error_message_count }) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, unsafe { error_message_count }) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 5;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"fatal message\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: unsafe { error({{_v[0-9]+}} as i32, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"unreachable\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }

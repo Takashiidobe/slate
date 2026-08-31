@@ -213,7 +213,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(thread_local)]
 // LOWERING-NEXT: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[deprecated(note = "C23 warning directive probe")]
 // LOWERING-NEXT: const __SLATE_WARNING_0: () = {  };
@@ -595,7 +595,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(thread_local)]
 // REWRITES-NEXT: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[deprecated(note = "C23 warning directive probe")]
 // REWRITES-NEXT: const __SLATE_WARNING_0: () = {  };
@@ -797,12 +797,10 @@ int main(void) {
 // REWRITES-NEXT: let mut empty_struct: C23Empty = C23Empty { first: 0, second: 0 };
 // REWRITES-NEXT: let mut empty_array: [i32; 3] = [0, 0, 0];
 // REWRITES-NEXT: let mut qualified_array: [i32; 3] = [2, 3, 5];
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 61;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 3;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 67;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 71;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 73;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 79;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 5;
 // REWRITES-NEXT: let {{_v[0-9]+}}: bitint::BInt<17, 1, 4> = bitint::BInt::<17, 1, 4>::from_decimal_str("-12345");
@@ -811,7 +809,6 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: u8 = 90;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u16 = 37;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 8589934591u64;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = std::ptr::null_mut();
 // REWRITES-NEXT: let {{_v[0-9]+}}: bool = true;
 // REWRITES-NEXT: let {{_v[0-9]+}}: bool = false;
@@ -878,7 +875,7 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-NEXT: c23_label_before_brace();
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }

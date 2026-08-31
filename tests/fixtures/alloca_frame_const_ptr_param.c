@@ -17,7 +17,7 @@ int main(void) {
   return (int)out;
 }
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
@@ -59,7 +59,7 @@ int main(void) {
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
@@ -80,12 +80,10 @@ int main(void) {
 // REWRITES-NEXT: let mut p: Params = Params { windowLog: 0 };
 // REWRITES-NEXT: let mut buf: [i8; 8] = [0; 8];
 // REWRITES-NEXT: let mut out: u32 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: p.windowLog = 5;
 // REWRITES-NEXT: out = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = buf.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = buf.as_mut_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 4;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(4) };
 // REWRITES-NEXT: use_params(unsafe { &(*std::ptr::addr_of_mut!(p)) }, unsafe { &mut (*std::ptr::addr_of_mut!(out)) }, {{_v[0-9]+}}, {{_v[0-9]+}});
 // REWRITES-NEXT: std::process::exit((out as i32) as i32);

@@ -115,7 +115,7 @@ int main(void) {
 }
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
 // LOWERING-NEXT:     fn __muldc3(a: f64, b: f64, c: f64, d: f64) -> num_complex::Complex<f64>;
@@ -831,7 +831,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
 // REWRITES-NEXT:     fn __muldc3(a: f64, b: f64, c: f64, d: f64) -> num_complex::Complex<f64>;
@@ -940,7 +940,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%s=%Lax%Lai\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { __slate_printf__ri32_pi8_pi8_f80_f80({{_v[0-9]+}} as *mut i8, {{arg[0-9]+}} as *mut i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe { __slate_printf__ri32_pi8_pi8_f80_f80({{_v[0-9]+}} as *mut i8, {{arg[0-9]+}} as *mut i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // REWRITES-NEXT: return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -1086,7 +1086,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
 // REWRITES-NEXT: let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { __slate_printf__ri32_pi8_f80_f80({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe { __slate_printf__ri32_pi8_f80_f80({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // REWRITES-NEXT: return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -1180,11 +1180,11 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"cabs=%La\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let mut byval: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = unsafe { __slate_cabsl__rf80_pcf80(std::ptr::addr_of_mut!(byval) as *mut num_complex::Complex<LongDouble>) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { __slate_printf__ri32_pi8_f80({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe { __slate_printf__ri32_pi8_f80({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"carg=%La\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let mut byval2: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = unsafe { __slate_cargl__rf80_pcf80(std::ptr::addr_of_mut!(byval2) as *mut num_complex::Complex<LongDouble>) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { __slate_printf__ri32_pi8_f80({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe { __slate_printf__ri32_pi8_f80({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"conj\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex { re: {{_v[0-9]+}}.re, im: -{{_v[0-9]+}}.im };
 // REWRITES-NEXT: let mut byval3: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
@@ -1328,12 +1328,11 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"creal=%La cimag=%La\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { __slate_printf__ri32_pi8_f80_f80({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe { __slate_printf__ri32_pi8_f80_f80({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // REWRITES-NEXT: return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: check_arithmetic();
 // REWRITES-NEXT: check_casts();
 // REWRITES-NEXT: check_stdlib_functions();

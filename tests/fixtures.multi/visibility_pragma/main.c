@@ -31,7 +31,6 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn main() {
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = visible_before();
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = unsafe { visible_before_global };
@@ -42,7 +41,7 @@ int main(void) {
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = hidden_again();
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = unsafe { hidden_again_global };
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = visible_after();
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, unsafe { visible_after_global }) };
+// REWRITES-DAG: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, unsafe { visible_after_global }) };
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-DAG: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-DAG: }

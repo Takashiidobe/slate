@@ -11,7 +11,7 @@ int main(void) {
   return sum_n(a, 5);
 }
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn sum_n({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: i32) -> i32 {
 // LOWERING-NEXT:     let mut p: *mut i32 = std::ptr::null_mut();
@@ -63,7 +63,7 @@ int main(void) {
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn sum_n({{arg[0-9]+}}: &[i32]) -> i32 {
 // REWRITES-NEXT: let mut p: *mut i32 = {{arg[0-9]+}}.as_ptr() as *mut i32;
@@ -90,7 +90,6 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT: let mut a: aligned::Aligned<aligned::A16, [i32; 5]> = aligned::Aligned([0; 5]);
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: *a = [1, 2, 3, 4, 5];
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = a.as_mut_ptr() as *mut i32;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 5;

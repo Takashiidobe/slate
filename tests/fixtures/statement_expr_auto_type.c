@@ -50,5 +50,5 @@ int main(void) {
 // REWRITES-DAG: let {{_v[0-9]+}}: i64 = tmp;
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = b"%ld %ld %d\n\0".as_ptr() as *mut i8;
 // REWRITES-DAG: let {{_v[0-9]+}}: i64 = 0;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, values[({{_v[0-9]+}} as usize)], index) };
+// REWRITES-DAG: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, values[({{_v[0-9]+}} as usize)], index) };
 // SLATE-FILECHECK-END rewrites
