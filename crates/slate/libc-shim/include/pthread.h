@@ -7,6 +7,12 @@
 #error "<pthread.h> is unavailable for the MSVC libc profile."
 #endif
 
+#if defined(__SLATE_LIBC_DARWIN)
+
+#include <bits/darwin/pthread.h>
+
+#else
+
 #define __NEED_NULL
 #define __NEED_pthread_attr_t
 #define __NEED_pthread_t
@@ -265,6 +271,8 @@ __REDIR(pthread_rwlock_timedrdlock, __pthread_rwlock_timedrdlock_time64);
 __REDIR(pthread_rwlock_timedwrlock, __pthread_rwlock_timedwrlock_time64);
 #ifdef _GNU_SOURCE
 __REDIR(pthread_timedjoin_np, __pthread_timedjoin_np_time64);
+#endif
+
 #endif
 
 #endif

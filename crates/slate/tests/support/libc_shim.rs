@@ -64,6 +64,7 @@ impl Architecture {
 pub enum LibcVariant {
     Bionic,
     Darwin,
+    FreeBsd,
     Musl,
     Glibc,
     Msvc,
@@ -74,12 +75,15 @@ impl LibcVariant {
         match self {
             LibcVariant::Bionic => "bionic",
             LibcVariant::Darwin => "darwin",
+            LibcVariant::FreeBsd => "freebsd",
             LibcVariant::Musl => "musl",
             LibcVariant::Glibc => "glibc",
             LibcVariant::Msvc => "msvc",
         }
     }
 }
+
+pub const FREEBSD_VERSION_NUMBER: u32 = 1_501_000;
 
 pub struct TestConfig {
     pub arch: Architecture,
@@ -121,6 +125,20 @@ impl TestConfig {
                 "-D__SLATE_ENDIAN_LITTLE".to_string(),
             ];
         }
+        if self.libc == LibcVariant::FreeBsd {
+            return vec![
+                "-D_SLATE_LIBC".to_string(),
+                format!("-D{}", self.arch.arch_define()),
+                "-D__SLATE_VENDOR_UNKNOWN".to_string(),
+                "-D__SLATE_KERNEL_FREEBSD".to_string(),
+                "-D__SLATE_PLATFORM_FREEBSD".to_string(),
+                "-D__SLATE_LIBC_FREEBSD".to_string(),
+                "-D__SLATE_OBJ_ELF".to_string(),
+                "-D__SLATE_WORDSIZE_64".to_string(),
+                "-D__SLATE_ENDIAN_LITTLE".to_string(),
+                format!("-D__SLATE_FREEBSD_VERSION__={FREEBSD_VERSION_NUMBER}"),
+            ];
+        }
         let mut defines = vec![
             "-D_SLATE_LIBC".to_string(),
             format!("-D{}", self.arch.arch_define()),
@@ -141,6 +159,7 @@ impl TestConfig {
                 LibcVariant::Glibc => "-D__SLATE_LIBC_GLIBC",
                 LibcVariant::Bionic => "-D__SLATE_LIBC_BIONIC",
                 LibcVariant::Darwin => unreachable!(),
+                LibcVariant::FreeBsd => unreachable!(),
                 LibcVariant::Msvc => unreachable!(),
             }
             .to_string(),
@@ -162,6 +181,11 @@ impl TestConfig {
             }),
             LibcVariant::Msvc => Some("x86_64-pc-windows-msvc"),
             LibcVariant::Darwin => Some("arm64-apple-macos11.0"),
+            LibcVariant::FreeBsd => Some(match self.arch {
+                Architecture::Aarch64 => "aarch64-unknown-freebsd15.1",
+                Architecture::X86_64 => "x86_64-unknown-freebsd15.1",
+                _ => unreachable!(),
+            }),
             LibcVariant::Musl | LibcVariant::Glibc => None,
         }
     }
