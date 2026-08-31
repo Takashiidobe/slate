@@ -7,7 +7,11 @@
 #define __STDC_VERSION_SIGNAL_H__ 202311L
 #endif
 
-#if defined(__SLATE_LIBC_MSVC)
+#if defined(__SLATE_LIBC_DARWIN)
+
+#include <bits/darwin/signal.h>
+
+#elif defined(__SLATE_LIBC_MSVC)
 
 #include <bits/msvc/signal.h>
 

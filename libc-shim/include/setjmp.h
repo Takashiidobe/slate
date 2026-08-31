@@ -3,6 +3,12 @@
 
 #include <features.h>
 
+#if defined(__SLATE_LIBC_DARWIN)
+
+#include <bits/darwin/setjmp.h>
+
+#else
+
 #define __STDC_VERSION_SETJMP_H__ 202311L
 
 #if defined(__GNUC__) && !defined(__clang__)
@@ -42,5 +48,7 @@ _Noreturn void _longjmp(jmp_buf env, int val);
 #define setjmp setjmp
 
 #undef __setjmp_attr
+
+#endif
 
 #endif

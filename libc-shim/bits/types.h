@@ -20,7 +20,7 @@ typedef unsigned int   __gid_t;
 typedef int            __dev_t;
 typedef unsigned short __nlink_t;
 typedef unsigned int   __useconds_t;
-typedef int            __clockid_t;
+typedef unsigned int   __clockid_t;
 typedef void          *__timer_t;
 typedef unsigned long  __clock_t;
 typedef int            __key_t;

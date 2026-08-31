@@ -3,6 +3,12 @@
 
 #include <features.h>
 
+#if defined(__SLATE_LIBC_DARWIN)
+
+#include <bits/darwin/sys/time.h>
+
+#else
+
 #include <sys/select.h>
 
 #define __NEED_struct_timeval
@@ -65,6 +71,8 @@ __REDIR(lutimes, __lutimes_time64);
 __REDIR(settimeofday, __settimeofday_time64);
 __REDIR(adjtime, __adjtime64);
 #endif
+#endif
+
 #endif
 
 #endif

@@ -3,6 +3,10 @@
 
 #include <features.h>
 
+#if defined(__SLATE_LIBC_DARWIN)
+#error "ucontext.h process-context interfaces are unavailable for the Darwin libc profile; use sys/ucontext.h for ucontext_t"
+#endif
+
 #include <signal.h>
 
 #if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)

@@ -394,7 +394,10 @@ fn run_cross_target_fixture(
         return Ok(());
     }
     if flavor == FixtureFlavor::Macos
-        && matches!(name, "fundamental_types" | "stdio_locale" | "filesystem")
+        && matches!(
+            name,
+            "fundamental_types" | "stdio_locale" | "filesystem" | "time_signal"
+        )
         && let Ok(sdk) = std::env::var("SLATE_MACOS_SDK")
         && !sdk.trim().is_empty()
     {
