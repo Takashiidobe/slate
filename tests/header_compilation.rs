@@ -71,6 +71,17 @@ fn freebsd_headers() -> Vec<String> {
         .collect()
 }
 
+fn freebsd_stdio_locale_headers() -> Vec<String> {
+    let manifest =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("libc-shim/freebsd-stdio-locale-headers.txt");
+    fs::read_to_string(manifest)
+        .expect("read FreeBSD stdio/locale header manifest")
+        .lines()
+        .filter(|line| !line.is_empty())
+        .map(str::to_string)
+        .collect()
+}
+
 fn macos_filesystem_headers() -> Vec<String> {
     let manifest =
         Path::new(env!("CARGO_MANIFEST_DIR")).join("libc-shim/macos-filesystem-headers.txt");
@@ -277,6 +288,22 @@ fn freebsd_basic_header_manifest_compiles_for_x86_64_and_aarch64() {
         .collect::<String>();
     let source = format!(
         "{includes}\n#include <sys/types.h>\n_Static_assert(sizeof(wchar_t) == 4, \"wchar_t\");\n_Static_assert(sizeof(long double) == 16, \"long double\");\n_Static_assert(sizeof(mode_t) == 2, \"mode_t\");\n_Static_assert(sizeof(dev_t) == 8, \"dev_t\");\n_Static_assert(sizeof(nlink_t) == 8, \"nlink_t\");\n_Static_assert(__SLATE_FREEBSD_VERSION__ == {FREEBSD_VERSION_NUMBER}, \"release\");\nint main(void) {{ return 0; }}\n"
+    );
+    for arch in [Architecture::X86_64, Architecture::Aarch64] {
+        let config = TestConfig::new(arch, LibcVariant::FreeBsd);
+        compile_test_program(&config, &source).unwrap();
+    }
+}
+
+#[test]
+fn freebsd_stdio_locale_header_manifest_compiles_for_x86_64_and_aarch64() {
+    let headers = freebsd_stdio_locale_headers();
+    let includes = headers
+        .iter()
+        .map(|header| format!("#include <{header}>\n"))
+        .collect::<String>();
+    let source = format!(
+        "{includes}\n#include <stddef.h>\n_Static_assert(sizeof(FILE) == 312, \"FILE size\");\n_Static_assert(offsetof(FILE, _mbstate) == 176, \"FILE mbstate offset\");\n_Static_assert(LC_ALL == 0, \"LC_ALL\");\n_Static_assert(LC_MESSAGES == 6, \"LC_MESSAGES\");\n_Static_assert(LC_MONETARY_MASK == (1 << 2), \"LC_MONETARY_MASK\");\n_Static_assert(LC_MESSAGES_MASK == (1 << 5), \"LC_MESSAGES_MASK\");\n_Static_assert(CODESET == 0, \"CODESET\");\n_Static_assert(D_MD_ORDER == 57, \"D_MD_ORDER\");\nint main(void) {{ FILE *f = stdin; return f == stdout || f == stderr; }}\n"
     );
     for arch in [Architecture::X86_64, Architecture::Aarch64] {
         let config = TestConfig::new(arch, LibcVariant::FreeBsd);

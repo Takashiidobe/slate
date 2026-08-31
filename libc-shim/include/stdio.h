@@ -75,6 +75,18 @@ extern FILE *__stderrp;
 #define FILENAME_MAX 1024
 #define TMP_MAX      308915776
 #define L_tmpnam     1024
+#elif defined(__SLATE_LIBC_FREEBSD)
+typedef __off_t fpos_t;
+
+#include <bits/freebsd/stdio.h>
+
+extern FILE *__stdinp;
+extern FILE *__stdoutp;
+extern FILE *__stderrp;
+
+#define stdin  __stdinp
+#define stdout __stdoutp
+#define stderr __stderrp
 #elif defined(__SLATE_LIBC_BIONIC)
 typedef off_t fpos_t;
 

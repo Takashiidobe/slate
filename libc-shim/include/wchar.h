@@ -32,7 +32,8 @@
 #define __NEED_mbstate_t
 #if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
     defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||  \
-    defined(__SLATE_LIBC_BIONIC) || defined(__SLATE_LIBC_DARWIN)
+    defined(__SLATE_LIBC_BIONIC) || defined(__SLATE_LIBC_DARWIN) ||   \
+    defined(__SLATE_LIBC_FREEBSD)
 #define __NEED_locale_t
 #endif
 #include <bits/types.h>
@@ -154,7 +155,8 @@ int                wscanf(const wchar_t *, ...);
 
 #if defined(_POSIX_SOURCE) || defined(_POSIX_C_SOURCE) ||                      \
     defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||  \
-    defined(__SLATE_LIBC_BIONIC) || defined(__SLATE_LIBC_DARWIN)
+    defined(__SLATE_LIBC_BIONIC) || defined(__SLATE_LIBC_DARWIN) ||   \
+    defined(__SLATE_LIBC_FREEBSD)
 size_t   mbsnrtowcs(wchar_t *, const char **, size_t, size_t, mbstate_t *);
 FILE    *open_wmemstream(wchar_t **, size_t *);
 size_t   wcsnrtombs(char *, const wchar_t **, size_t, size_t, mbstate_t *);

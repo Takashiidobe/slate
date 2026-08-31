@@ -282,6 +282,13 @@ typedef union {
 } __mbstate_t;
 
 typedef __off_t __fpos_t;
+#elif defined(__SLATE_LIBC_FREEBSD)
+typedef union {
+  char      __mbstate8[128];
+  long long __mbstateL;
+} __mbstate_t;
+
+typedef __off_t __fpos_t;
 #elif defined(__SLATE_LIBC_MUSL)
 typedef struct {
   unsigned __opaque1;
@@ -306,7 +313,7 @@ typedef struct {
 } __mbstate_t;
 #endif
 
-#if !defined(__SLATE_LIBC_DARWIN)
+#if !defined(__SLATE_LIBC_DARWIN) && !defined(__SLATE_LIBC_FREEBSD)
 typedef struct __fpos_t {
   __off_t     __pos;
   __mbstate_t __state;
@@ -560,7 +567,7 @@ struct winsize {
 #if defined(__NEED_FILE) && !defined(__DEFINED_FILE)
 #if defined(__SLATE_LIBC_MSVC)
 #include <bits/msvc/types.h>
-#elif defined(__SLATE_LIBC_DARWIN)
+#elif defined(__SLATE_LIBC_DARWIN) || defined(__SLATE_LIBC_FREEBSD)
 typedef struct __sFILE FILE;
 #define __DEFINED_FILE
 #else
