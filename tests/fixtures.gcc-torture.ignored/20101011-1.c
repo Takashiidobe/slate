@@ -1,3 +1,4 @@
+/* Slate excludes target-specific divide traps: Rust panics instead of raising catchable SIGFPE. */
 /* { dg-options "-fnon-call-exceptions" } */
 /* With -fnon-call-exceptions 0 / 0 should not be eliminated.  */
 /* { dg-additional-options "-DSIGNAL_SUPPRESS" { target { ! signal } } } */
