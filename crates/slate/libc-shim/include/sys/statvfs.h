@@ -5,6 +5,9 @@
 #define __NEED_fsfilcnt_t
 #include <bits/types.h>
 
+#if defined(__SLATE_LIBC_DARWIN)
+#include <bits/darwin/statvfs.h>
+#else
 struct statvfs {
   unsigned long f_bsize, f_frsize;
   fsblkcnt_t    f_blocks, f_bfree, f_bavail;
@@ -20,10 +23,15 @@ struct statvfs {
   unsigned int  f_type;
   int           __reserved[5];
 };
+#endif
 
 int statvfs(const char *__restrict, struct statvfs *__restrict);
 int fstatvfs(int, struct statvfs *);
 
+#if defined(__SLATE_LIBC_DARWIN)
+#define ST_RDONLY 0x00000001
+#define ST_NOSUID 0x00000002
+#else
 #define ST_RDONLY      1
 #define ST_NOSUID      2
 #define ST_NODEV       4
@@ -36,6 +44,7 @@ int fstatvfs(int, struct statvfs *);
 #define ST_NOATIME     1024
 #define ST_NODIRATIME  2048
 #define ST_RELATIME    4096
+#endif
 
 #if defined(_LARGEFILE64_SOURCE)
 #define statvfs64    statvfs
