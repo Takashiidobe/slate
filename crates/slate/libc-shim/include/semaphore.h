@@ -7,6 +7,15 @@
 
 #include <bits/darwin/semaphore.h>
 
+#elif defined(__SLATE_LIBC_FREEBSD)
+
+#define __NEED_struct_timespec
+#define __NEED_mode_t
+#include <bits/types.h>
+
+#include <fcntl.h>
+#include <bits/freebsd/semaphore.h>
+
 #else
 
 #define __NEED_clockid_t

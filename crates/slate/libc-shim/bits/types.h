@@ -328,6 +328,10 @@ typedef struct __fpos_t {
 
 #include <bits/darwin/pthread-types.h>
 
+#elif defined(__SLATE_LIBC_FREEBSD)
+
+#include <bits/freebsd/pthread-types.h>
+
 #else
 
 typedef union {

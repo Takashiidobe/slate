@@ -11,6 +11,12 @@
 
 #include <bits/types.h>
 
+#if defined(__SLATE_LIBC_FREEBSD)
+
+#include <bits/freebsd/un.h>
+
+#else
+
 struct sockaddr_un {
   sa_family_t sun_family;
   char        sun_path[108];
@@ -20,5 +26,7 @@ struct sockaddr_un {
 size_t strlen(const char *);
 #define SUN_LEN(s) (2 + strlen((s)->sun_path))
 #endif
+
+#endif 
 
 #endif

@@ -9,6 +9,12 @@
 #define __NEED_uint32_t
 #include <bits/types.h>
 
+#if defined(__SLATE_LIBC_FREEBSD)
+
+#include <bits/freebsd/in.h>
+
+#else
+
 typedef uint16_t in_port_t;
 typedef uint32_t in_addr_t;
 struct in_addr {
@@ -417,5 +423,7 @@ struct ip6_mtuinfo {
 #define __UAPI_DEF_IPV6_OPTIONS 0
 #define __UAPI_DEF_IN6_PKTINFO  0
 #define __UAPI_DEF_IP6_MTUINFO  0
+
+#endif 
 
 #endif

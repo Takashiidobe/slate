@@ -104,6 +104,27 @@ fn freebsd_time_signal_headers() -> Vec<String> {
         .collect()
 }
 
+fn freebsd_pthread_headers() -> Vec<String> {
+    let manifest =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("libc-shim/freebsd-pthread-headers.txt");
+    fs::read_to_string(manifest)
+        .expect("read FreeBSD pthread header manifest")
+        .lines()
+        .filter(|line| !line.is_empty())
+        .map(str::to_string)
+        .collect()
+}
+
+fn freebsd_net_headers() -> Vec<String> {
+    let manifest = Path::new(env!("CARGO_MANIFEST_DIR")).join("libc-shim/freebsd-net-headers.txt");
+    fs::read_to_string(manifest)
+        .expect("read FreeBSD net header manifest")
+        .lines()
+        .filter(|line| !line.is_empty())
+        .map(str::to_string)
+        .collect()
+}
+
 fn macos_filesystem_headers() -> Vec<String> {
     let manifest =
         Path::new(env!("CARGO_MANIFEST_DIR")).join("libc-shim/macos-filesystem-headers.txt");
@@ -354,6 +375,85 @@ fn freebsd_time_signal_header_manifest_compiles_for_x86_64_and_aarch64() {
          _Static_assert(ILL_ILLOPN == 2, \"ILL_ILLOPN\");\n\
          _Static_assert(ILL_ILLTRP == 4, \"ILL_ILLTRP\");\n\
          int main(void) {{ sigset_t s; struct sigaction sa; siginfo_t si; (void)s; (void)sa; (void)si; return 0; }}\n"
+    );
+    for arch in [Architecture::X86_64, Architecture::Aarch64] {
+        let config = TestConfig::new(arch, LibcVariant::FreeBsd);
+        compile_test_program(&config, &source).unwrap();
+    }
+}
+
+#[test]
+fn freebsd_net_header_manifest_compiles_for_x86_64_and_aarch64() {
+    let headers = freebsd_net_headers();
+    let includes = headers
+        .iter()
+        .map(|header| format!("#include <{header}>\n"))
+        .collect::<String>();
+    let source = format!(
+        "{includes}\n#include <stddef.h>\n\
+         _Static_assert(sizeof(struct sockaddr) == 16, \"sockaddr size\");\n\
+         _Static_assert(offsetof(struct sockaddr, sa_family) == 1, \"sa_family offset\");\n\
+         _Static_assert(offsetof(struct sockaddr, sa_data) == 2, \"sa_data offset\");\n\
+         _Static_assert(sizeof(struct sockaddr_storage) == 128, \"sockaddr_storage size\");\n\
+         _Static_assert(sizeof(struct sockaddr_in) == 16, \"sockaddr_in size\");\n\
+         _Static_assert(offsetof(struct sockaddr_in, sin_family) == 1, \"sin_family offset\");\n\
+         _Static_assert(offsetof(struct sockaddr_in, sin_port) == 2, \"sin_port offset\");\n\
+         _Static_assert(offsetof(struct sockaddr_in, sin_addr) == 4, \"sin_addr offset\");\n\
+         _Static_assert(sizeof(struct sockaddr_in6) == 28, \"sockaddr_in6 size\");\n\
+         _Static_assert(offsetof(struct sockaddr_in6, sin6_addr) == 8, \"sin6_addr offset\");\n\
+         _Static_assert(sizeof(struct sockaddr_un) == 106, \"sockaddr_un size\");\n\
+         _Static_assert(offsetof(struct sockaddr_un, sun_path) == 2, \"sun_path offset\");\n\
+         _Static_assert(AF_INET6 == 28, \"AF_INET6\");\n\
+         _Static_assert(AF_INET == 2, \"AF_INET\");\n\
+         _Static_assert(AF_UNIX == 1, \"AF_UNIX\");\n\
+         _Static_assert(SOL_SOCKET == 0xffff, \"SOL_SOCKET\");\n\
+         _Static_assert(SO_REUSEADDR == 0x0004, \"SO_REUSEADDR\");\n\
+         _Static_assert(SO_ERROR == 0x1007, \"SO_ERROR\");\n\
+         _Static_assert(SOCK_STREAM == 1, \"SOCK_STREAM\");\n\
+         _Static_assert(SOCK_DGRAM == 2, \"SOCK_DGRAM\");\n\
+         _Static_assert(IPPROTO_TCP == 6, \"IPPROTO_TCP\");\n\
+         _Static_assert(IPPROTO_UDP == 17, \"IPPROTO_UDP\");\n\
+         _Static_assert(INADDR_LOOPBACK == 0x7f000001, \"INADDR_LOOPBACK\");\n\
+         _Static_assert(sizeof(struct addrinfo) == 48, \"addrinfo size\");\n\
+         _Static_assert(offsetof(struct addrinfo, ai_canonname) == 24, \"ai_canonname offset\");\n\
+         _Static_assert(offsetof(struct addrinfo, ai_addr) == 32, \"ai_addr offset\");\n\
+         _Static_assert(EAI_FAMILY == 5, \"EAI_FAMILY\");\n\
+         _Static_assert(sizeof(struct ifaddrs) == 56, \"ifaddrs size\");\n\
+         int main(void) {{ struct sockaddr sa; struct sockaddr_in sin; struct sockaddr_in6 sin6; struct sockaddr_un sun; struct addrinfo ai; struct ifaddrs ifa; (void)sa; (void)sin; (void)sin6; (void)sun; (void)ai; (void)ifa; return 0; }}\n"
+    );
+    for arch in [Architecture::X86_64, Architecture::Aarch64] {
+        let config = TestConfig::new(arch, LibcVariant::FreeBsd);
+        compile_test_program(&config, &source).unwrap();
+    }
+}
+
+#[test]
+fn freebsd_pthread_header_manifest_compiles_for_x86_64_and_aarch64() {
+    let headers = freebsd_pthread_headers();
+    let includes = headers
+        .iter()
+        .map(|header| format!("#include <{header}>\n"))
+        .collect::<String>();
+    let source = format!(
+        "{includes}\n#include <stddef.h>\n\
+         _Static_assert(sizeof(pthread_t) == 8, \"pthread_t size\");\n\
+         _Static_assert(sizeof(pthread_mutex_t) == 8, \"pthread_mutex_t size\");\n\
+         _Static_assert(sizeof(pthread_attr_t) == 8, \"pthread_attr_t size\");\n\
+         _Static_assert(sizeof(pthread_cond_t) == 8, \"pthread_cond_t size\");\n\
+         _Static_assert(sizeof(pthread_rwlock_t) == 8, \"pthread_rwlock_t size\");\n\
+         _Static_assert(sizeof(pthread_once_t) == 16, \"pthread_once_t size\");\n\
+         _Static_assert(sizeof(sem_t) == 16, \"sem_t size\");\n\
+         _Static_assert(sizeof(struct sched_param) == 4, \"sched_param size\");\n\
+         _Static_assert(PTHREAD_MUTEX_ERRORCHECK == 1, \"PTHREAD_MUTEX_ERRORCHECK\");\n\
+         _Static_assert(PTHREAD_MUTEX_RECURSIVE == 2, \"PTHREAD_MUTEX_RECURSIVE\");\n\
+         _Static_assert(PTHREAD_MUTEX_NORMAL == 3, \"PTHREAD_MUTEX_NORMAL\");\n\
+         _Static_assert(PTHREAD_MUTEX_DEFAULT == PTHREAD_MUTEX_ERRORCHECK, \"PTHREAD_MUTEX_DEFAULT\");\n\
+         _Static_assert(PTHREAD_CREATE_JOINABLE == 0, \"PTHREAD_CREATE_JOINABLE\");\n\
+         _Static_assert(PTHREAD_CREATE_DETACHED == 0x1, \"PTHREAD_CREATE_DETACHED\");\n\
+         _Static_assert(SCHED_FIFO == 1, \"SCHED_FIFO\");\n\
+         _Static_assert(SCHED_OTHER == 2, \"SCHED_OTHER\");\n\
+         _Static_assert(SCHED_RR == 3, \"SCHED_RR\");\n\
+         int main(void) {{ pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER; pthread_once_t o = PTHREAD_ONCE_INIT; sem_t s; (void)m; (void)o; (void)s; return 0; }}\n"
     );
     for arch in [Architecture::X86_64, Architecture::Aarch64] {
         let config = TestConfig::new(arch, LibcVariant::FreeBsd);

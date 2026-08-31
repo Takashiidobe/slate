@@ -11,6 +11,10 @@
 
 #include <bits/darwin/pthread.h>
 
+#elif defined(__SLATE_LIBC_FREEBSD)
+
+#include <bits/freebsd/pthread.h>
+
 #else
 
 #define __NEED_NULL
