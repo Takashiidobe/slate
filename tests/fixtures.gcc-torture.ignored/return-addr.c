@@ -1,7 +1,10 @@
-/* Test to verify that a function that returns either the address
-   of a local variable or a non-local via a MAX_EXPR or MIN_EXPR
-   doesn't return null when the result of the expression is
-   the latter.  */
+/* SLATE: prints raw stack addresses via %p, which differ between the C and
+   Rust binaries (different stack layouts) and can never byte-match stdout
+   even when the pointer-selection logic is correct in both -- verified by
+   hand that Slate picks the same addresses via the same MAX_EXPR/MIN_EXPR
+   comparisons as C. Not a lowering bug; not a candidate for differential
+   testing as written. Ignored, not tracked as unsupported work; see
+   tests/fixtures.gcc-torture.ignored/. */
 
 #define NOIPA __attribute__((noclone, noinline, noipa))
 
