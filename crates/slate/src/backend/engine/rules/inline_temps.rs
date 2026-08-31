@@ -1438,6 +1438,10 @@ impl NodeRule for EffectfulTempForward {
         42
     }
 
+    fn requeues_consumer_producers(&self) -> bool {
+        true
+    }
+
     fn kinds(&self) -> &'static [NodeKindTag] {
         &[NodeKindTag::Let]
     }
@@ -1731,6 +1735,10 @@ impl NodeRule for InlineConstArgTemps {
 
     fn priority(&self) -> u32 {
         43
+    }
+
+    fn requeues_consumer_producers(&self) -> bool {
+        true
     }
 
     fn kinds(&self) -> &'static [NodeKindTag] {
