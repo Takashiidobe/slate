@@ -27,6 +27,11 @@ fn is_pure_primitive_bit_method(method: &str) -> bool {
     )
 }
 
+fn is_pure_static_ptr_method(method: &str, recv: &Expr) -> bool {
+    matches!(method, "as_ptr" | "as_mut_ptr")
+        && matches!(recv, Expr::ByteStr(_) | Expr::Str(_) | Expr::CStr(_))
+}
+
 fn is_movable_pure_bit_operand(expr: &Expr) -> bool {
     match expr {
         Expr::Unary {
@@ -55,6 +60,9 @@ fn is_movable_pure_expr(expr: &Expr) -> bool {
         Expr::Binary { lhs, rhs, .. } => is_movable_pure_expr(lhs) && is_movable_pure_expr(rhs),
         Expr::MethodCall { recv, method, args } if is_pure_primitive_bit_method(method) => {
             is_movable_pure_bit_operand(recv) && args.iter().all(is_movable_pure_expr)
+        }
+        Expr::MethodCall { recv, method, args } if is_pure_static_ptr_method(method, recv) => {
+            args.iter().all(is_movable_pure_expr)
         }
         Expr::Field { base, .. } | Expr::TupleField { base, .. } => is_movable_pure_expr(base),
         Expr::Index { base, index } => is_movable_pure_expr(base) && is_movable_pure_expr(index),
@@ -202,7 +210,7 @@ pub(super) fn expr_effects(expr: &Expr) -> Effects {
             for arg in args {
                 effects = effects.union(expr_effects(arg));
             }
-            if !is_pure_primitive_bit_method(method) {
+            if !is_pure_primitive_bit_method(method) && !is_pure_static_ptr_method(method, recv) {
                 effects.method_call = true;
             }
             effects
@@ -1187,6 +1195,25 @@ fn call_arg_uses_name(expr: &Expr, name: Ident) -> bool {
     }
 }
 
+fn blocks_effectful_forward(effects: Effects) -> bool {
+    effects.is_side_effect() || effects.atomic_read || effects.volatile_read
+}
+
+enum ArgSink<'a> {
+    Call { func: &'a Expr, args: &'a [Expr] },
+    Macro { args: &'a [Expr] },
+}
+
+fn locate_arg_sink(expr: &Expr) -> Option<ArgSink<'_>> {
+    match expr {
+        Expr::Call { func, args, .. } => Some(ArgSink::Call { func, args }),
+        Expr::Macro { args, .. } => Some(ArgSink::Macro { args }),
+        Expr::Block(block) | Expr::Unsafe(block) => block.tail.as_deref().and_then(locate_arg_sink),
+        Expr::Cast { expr, .. } => locate_arg_sink(expr),
+        _ => None,
+    }
+}
+
 fn call_or_macro_arg_use_expr(expr: &Expr, name: Ident) -> bool {
     match expr {
         Expr::Call { args, .. } | Expr::Macro { args, .. } => {
@@ -1502,6 +1529,119 @@ impl NodeRule for LateInlineTemps {
         }
 
         if !expr_is_type_anchored(&init) && !is_top_level_use(arena, found.consumer_id, name) {
+            return false;
+        }
+
+        if !node_substitute_var(arena, found.consumer_id, name.as_str(), &init) {
+            return false;
+        }
+        arena.touch_subtree(found.consumer_id);
+
+        let _ = arena.take(id);
+        if let Some(parent_kind) = arena.get_mut(found.parent)
+            && let Some(list) = parent_kind.child_lists_mut().get_mut(found.list_index)
+        {
+            list.remove(found.decl_pos);
+        }
+        true
+    }
+}
+
+pub(in crate::backend::engine) struct EffectfulTempForward;
+
+impl NodeRule for EffectfulTempForward {
+    fn name(&self) -> &'static str {
+        "inline_temps::effectful_forward"
+    }
+
+    fn priority(&self) -> u32 {
+        42
+    }
+
+    fn kinds(&self) -> &'static [NodeKindTag] {
+        &[NodeKindTag::Let]
+    }
+
+    fn matches(&self, arena: &Arena, id: NodeId) -> bool {
+        matches!(
+            arena.get(id),
+            Some(NodeKind::Let {
+                name,
+                mutable: false,
+                init: Some(init),
+                ..
+            }) if is_temp_name(name.as_str()) && expr_effects(init).is_side_effect()
+        )
+    }
+
+    fn apply(&self, arena: &mut Arena, id: NodeId) -> bool {
+        let Some(NodeKind::Let {
+            name,
+            mutable: false,
+            init: Some(init),
+            ..
+        }) = arena.get(id)
+        else {
+            return false;
+        };
+        if !is_temp_name(name.as_str()) || !expr_effects(init).is_side_effect() {
+            return false;
+        }
+        let name = *name;
+        let init = init.clone();
+
+        let root = function_root(arena, id);
+        if node_ident_count(arena, root, name) != 1 {
+            return false;
+        }
+
+        let Some(found) = locate_consumer(arena, id, name) else {
+            return false;
+        };
+
+        let Some(parent_kind) = arena.get(found.parent) else {
+            return false;
+        };
+        let lists = parent_kind.child_lists();
+        let Some(list) = lists.get(found.list_index) else {
+            return false;
+        };
+        let intervening = &list[found.decl_pos + 1..found.consumer_pos];
+        if intervening
+            .iter()
+            .any(|&sibling| blocks_effectful_forward(node_effects(arena, sibling)))
+        {
+            return false;
+        }
+
+        let Some(NodeKind::Expr(consumer_expr)) = arena.get(found.consumer_id) else {
+            return false;
+        };
+        let Some(sink) = locate_arg_sink(consumer_expr) else {
+            return false;
+        };
+        let args = match sink {
+            ArgSink::Call { func, args } => {
+                if blocks_effectful_forward(expr_effects(func)) {
+                    return false;
+                }
+                args
+            }
+            ArgSink::Macro { args } => args,
+        };
+        let Some(arg_index) = args.iter().position(|arg| call_arg_uses_name(arg, name)) else {
+            return false;
+        };
+        if args[..arg_index]
+            .iter()
+            .any(|arg| blocks_effectful_forward(expr_effects(arg)))
+        {
+            return false;
+        }
+
+        if let Some(root_name) = root_var(&init)
+            && macro_arg_alias_conflict(arena, found.consumer_id, root_name)
+        {
             return false;
         }
 
