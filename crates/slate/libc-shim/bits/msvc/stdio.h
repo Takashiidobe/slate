@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_MSVC_STDIO_H
 #define _SLATE_BITS_MSVC_STDIO_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/msvc/stdio.h> directly; include a public header instead."
+#endif
+
 #define BUFSIZ       512
 #define _NSTREAM_    512
 #define _NFILE       _NSTREAM_

@@ -1,3 +1,7 @@
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/x86/ptrace.h> directly; include a public header instead."
+#endif
+
 #define PTRACE_GET_THREAD_AREA   25
 #define PTRACE_SET_THREAD_AREA   26
 #define PTRACE_SYSEMU            31

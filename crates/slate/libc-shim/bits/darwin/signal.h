@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_DARWIN_SIGNAL_H
 #define _SLATE_BITS_DARWIN_SIGNAL_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/darwin/signal.h> directly; include a public header instead."
+#endif
+
 #define __NEED_size_t
 #define __NEED_pid_t
 #define __NEED_uid_t

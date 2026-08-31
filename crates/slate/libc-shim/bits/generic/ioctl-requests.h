@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_GENERIC_IOCTL_REQUESTS_H
 #define _SLATE_BITS_GENERIC_IOCTL_REQUESTS_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/generic/ioctl-requests.h> directly; include a public header instead."
+#endif
+
 #define TCGETS      0x5401
 #define TCSETS      0x5402
 #define TCSETSW     0x5403

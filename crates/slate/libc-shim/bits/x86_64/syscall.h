@@ -1,3 +1,7 @@
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/x86_64/syscall.h> directly; include a public header instead."
+#endif
+
 enum {
   __NR_read                    = 0,
   __NR_write                   = 1,

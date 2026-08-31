@@ -1,3 +1,7 @@
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/generic/stat.h> directly; include a public header instead."
+#endif
+
 struct stat {
   dev_t              st_dev;
   ino_t              st_ino;

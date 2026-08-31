@@ -1,3 +1,7 @@
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/x86_64/io.h> directly; include a public header instead."
+#endif
+
 static __inline void outb(unsigned char __val, unsigned short __port) {
   __asm__ volatile("outb %0,%1" : : "a"(__val), "dN"(__port));
 }

@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_MSVC_LOCALE_CTYPE_H
 #define _SLATE_BITS_MSVC_LOCALE_CTYPE_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/msvc/locale/ctype.h> directly; include a public header instead."
+#endif
+
 #include <bits/msvc/types.h>
 
 int _chvalidchk_l(int, int, _locale_t);

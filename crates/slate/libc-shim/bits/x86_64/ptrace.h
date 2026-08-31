@@ -1,3 +1,7 @@
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/x86_64/ptrace.h> directly; include a public header instead."
+#endif
+
 enum {
   PTRACE_GET_THREAD_AREA   = 25,
   PTRACE_SET_THREAD_AREA   = 26,

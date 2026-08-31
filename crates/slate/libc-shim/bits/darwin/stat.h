@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_DARWIN_STAT_H
 #define _SLATE_BITS_DARWIN_STAT_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/darwin/stat.h> directly; include a public header instead."
+#endif
+
 struct stat {
   dev_t           st_dev;
   mode_t          st_mode;

@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_DARWIN_STATVFS_H
 #define _SLATE_BITS_DARWIN_STATVFS_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/darwin/statvfs.h> directly; include a public header instead."
+#endif
+
 struct statvfs {
   unsigned long f_bsize;
   unsigned long f_frsize;

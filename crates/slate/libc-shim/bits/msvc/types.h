@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_MSVC_TYPES_H
 #define _SLATE_BITS_MSVC_TYPES_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/msvc/types.h> directly; include a public header instead."
+#endif
+
 #ifndef __DEFINED_errno_t
 typedef int errno_t;
 #define __DEFINED_errno_t

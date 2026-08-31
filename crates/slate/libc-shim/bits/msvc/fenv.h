@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_MSVC_FENV_H
 #define _SLATE_BITS_MSVC_FENV_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/msvc/fenv.h> directly; include a public header instead."
+#endif
+
 #define FE_TONEAREST  0x0000
 #define FE_UPWARD     0x0100
 #define FE_DOWNWARD   0x0200

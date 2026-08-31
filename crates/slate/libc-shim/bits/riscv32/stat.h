@@ -1,3 +1,7 @@
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/riscv32/stat.h> directly; include a public header instead."
+#endif
+
 /* riscv32 stat layout (32-bit) */
 
 struct stat {

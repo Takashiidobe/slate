@@ -1,3 +1,7 @@
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/x86/msg.h> directly; include a public header instead."
+#endif
+
 struct msqid_ds {
   struct ipc_perm msg_perm;
   unsigned long   __msg_stime_lo;

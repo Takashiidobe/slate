@@ -1,3 +1,7 @@
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/x86_64/fenv.h> directly; include a public header instead."
+#endif
+
 #define FE_INVALID   0x01
 #define FE_DIVBYZERO 0x04
 #define FE_OVERFLOW  0x08

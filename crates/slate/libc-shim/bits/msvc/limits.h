@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_MSVC_LIMITS_H
 #define _SLATE_BITS_MSVC_LIMITS_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/msvc/limits.h> directly; include a public header instead."
+#endif
+
 #define CHAR_BIT  8
 #define SCHAR_MIN (-128)
 #define SCHAR_MAX 127

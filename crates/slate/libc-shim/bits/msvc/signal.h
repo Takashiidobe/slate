@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_MSVC_SIGNAL_H
 #define _SLATE_BITS_MSVC_SIGNAL_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/msvc/signal.h> directly; include a public header instead."
+#endif
+
 typedef int  sig_atomic_t;
 typedef void (*_crt_signal_t)(int);
 

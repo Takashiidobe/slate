@@ -1,3 +1,7 @@
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/arm/hwcap.h> directly; include a public header instead."
+#endif
+
 #define HWCAP_SWP       (1 << 0)
 #define HWCAP_HALF      (1 << 1)
 #define HWCAP_THUMB     (1 << 2)

@@ -1,3 +1,7 @@
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/arm/user.h> directly; include a public header instead."
+#endif
+
 typedef struct user_fpregs {
   struct fp_reg {
     unsigned sign1     : 1;

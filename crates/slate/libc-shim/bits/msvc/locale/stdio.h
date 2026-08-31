@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_MSVC_LOCALE_STDIO_H
 #define _SLATE_BITS_MSVC_LOCALE_STDIO_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/msvc/locale/stdio.h> directly; include a public header instead."
+#endif
+
 #include <bits/msvc/types.h>
 
 int _vfprintf_l(FILE *, const char *, _locale_t, va_list);

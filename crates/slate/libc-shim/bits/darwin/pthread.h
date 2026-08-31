@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_DARWIN_PTHREAD_H
 #define _SLATE_BITS_DARWIN_PTHREAD_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/darwin/pthread.h> directly; include a public header instead."
+#endif
+
 #define __NEED_NULL
 #define __NEED_size_t
 #define __NEED_sigset_t

@@ -1,3 +1,7 @@
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/aarch64/syscall.h> directly; include a public header instead."
+#endif
+
 enum {
   __NR_io_setup                = 0,
   __NR_io_destroy              = 1,

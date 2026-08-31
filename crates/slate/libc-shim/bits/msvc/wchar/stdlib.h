@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_MSVC_WCHAR_STDLIB_H
 #define _SLATE_BITS_MSVC_WCHAR_STDLIB_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/msvc/wchar/stdlib.h> directly; include a public header instead."
+#endif
+
 double             wcstod(const wchar_t *, wchar_t **);
 double             _wcstod_l(const wchar_t *, wchar_t **, _locale_t);
 float              wcstof(const wchar_t *, wchar_t **);

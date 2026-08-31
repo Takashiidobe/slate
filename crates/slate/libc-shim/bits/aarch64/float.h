@@ -1,3 +1,7 @@
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/aarch64/float.h> directly; include a public header instead."
+#endif
+
 #define FLT_EVAL_METHOD 0
 
 #define LDBL_TRUE_MIN 6.47517511943802511092443895822764655e-4966L

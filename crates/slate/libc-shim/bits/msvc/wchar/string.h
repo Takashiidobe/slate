@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_MSVC_WCHAR_STRING_H
 #define _SLATE_BITS_MSVC_WCHAR_STRING_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/msvc/wchar/string.h> directly; include a public header instead."
+#endif
+
 wchar_t *_wcsdup(const wchar_t *);
 wchar_t *wcscat(wchar_t *, const wchar_t *);
 int      wcscmp(const wchar_t *, const wchar_t *);

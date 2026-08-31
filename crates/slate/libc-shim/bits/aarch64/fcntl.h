@@ -1,3 +1,7 @@
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/aarch64/fcntl.h> directly; include a public header instead."
+#endif
+
 #define O_CREAT     0100
 #define O_EXCL      0200
 #define O_NOCTTY    0400

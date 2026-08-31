@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_MSVC_WCHAR_STDIO_H
 #define _SLATE_BITS_MSVC_WCHAR_STDIO_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/msvc/wchar/stdio.h> directly; include a public header instead."
+#endif
+
 wint_t   fgetwc(FILE *);
 wint_t   _fgetwchar(void);
 wint_t   fputwc(wchar_t, FILE *);

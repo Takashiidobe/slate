@@ -1,3 +1,7 @@
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/x86/user.h> directly; include a public header instead."
+#endif
+
 typedef struct user_fpregs_struct {
   long cwd, swd, twd, fip, fcs, foo, fos, st_space[20];
 } elf_fpregset_t;

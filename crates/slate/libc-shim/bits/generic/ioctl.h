@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_GENERIC_IOCTL_H
 #define _SLATE_BITS_GENERIC_IOCTL_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/generic/ioctl.h> directly; include a public header instead."
+#endif
+
 #define _IOC(a, b, c, d) (((a) << 30) | ((b) << 8) | (c) | ((d) << 16))
 #define _IOC_NONE  0U
 #define _IOC_WRITE 1U

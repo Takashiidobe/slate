@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_MSVC_LOCALE_H
 #define _SLATE_BITS_MSVC_LOCALE_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/msvc/locale.h> directly; include a public header instead."
+#endif
+
 #define __NEED_mbstate_t
 #define __NEED_msvc_locale_layouts
 #include <bits/msvc/types.h>

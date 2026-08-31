@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_MSVC_WCHAR_H
 #define _SLATE_BITS_MSVC_WCHAR_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/msvc/wchar.h> directly; include a public header instead."
+#endif
+
 #define WCHAR_MIN 0x0000
 #define WCHAR_MAX 0xffff
 #define WEOF      ((wint_t)0xffff)

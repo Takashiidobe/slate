@@ -1,3 +1,7 @@
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/x86_64/user.h> directly; include a public header instead."
+#endif
+
 typedef struct user_fpregs_struct {
   unsigned short int cwd;
   unsigned short int swd;
