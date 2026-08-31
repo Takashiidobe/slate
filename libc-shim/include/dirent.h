@@ -15,6 +15,8 @@
 
 #if defined(__SLATE_LIBC_DARWIN)
 #include <bits/darwin/dirent.h>
+#elif defined(__SLATE_LIBC_FREEBSD)
+#include <bits/freebsd/dirent.h>
 #else
 struct dirent {
   ino_t          d_ino;
@@ -37,7 +39,9 @@ struct posix_dent {
 
 typedef struct __dirstream DIR;
 
+#if !defined(__SLATE_LIBC_FREEBSD)
 #define d_fileno d_ino
+#endif
 
 int            closedir(DIR *);
 DIR           *fdopendir(int);
@@ -48,7 +52,7 @@ int            readdir_r(DIR *__restrict, struct dirent *__restrict,
 void           rewinddir(DIR *);
 int            dirfd(DIR *);
 
-#if !defined(__SLATE_LIBC_DARWIN)
+#if !defined(__SLATE_LIBC_DARWIN) && !defined(__SLATE_LIBC_FREEBSD)
 ssize_t posix_getdents(int, void *, size_t, int);
 #endif
 
@@ -57,7 +61,7 @@ int scandir(const char *, struct dirent ***, int (*)(const struct dirent *),
             int (*)(const struct dirent **, const struct dirent **));
 
 #if defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||   \
-    defined(__SLATE_LIBC_DARWIN)
+    defined(__SLATE_LIBC_DARWIN) || defined(__SLATE_LIBC_FREEBSD)
 void seekdir(DIR *, long);
 long telldir(DIR *);
 #endif
@@ -73,13 +77,19 @@ long telldir(DIR *);
 #define DT_WHT     14
 
 #if (defined(_GNU_SOURCE) || defined(_BSD_SOURCE)) &&                          \
-    !defined(__SLATE_LIBC_DARWIN)
+    !defined(__SLATE_LIBC_DARWIN) && !defined(__SLATE_LIBC_FREEBSD)
 #define IFTODT(x) ((x) >> 12 & 017)
 #define DTTOIF(x) ((x) << 12)
 int getdents(int, struct dirent *, size_t);
 #endif
 
-#ifdef _GNU_SOURCE
+#if defined(__SLATE_LIBC_FREEBSD)
+#define IFTODT(x) ((x) >> 12 & 017)
+#define DTTOIF(x) ((x) << 12)
+ssize_t getdents(int, char *, size_t);
+#endif
+
+#if defined(_GNU_SOURCE) || defined(__SLATE_LIBC_FREEBSD)
 int versionsort(const struct dirent **, const struct dirent **);
 #endif
 

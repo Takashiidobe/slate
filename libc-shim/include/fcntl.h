@@ -5,7 +5,7 @@
 
 #include <sys/types.h>
 
-#if !defined(__SLATE_LIBC_DARWIN)
+#if !defined(__SLATE_LIBC_DARWIN) && !defined(__SLATE_LIBC_FREEBSD)
 enum {
   O_RDONLY   = 0,
   O_WRONLY   = 1,
@@ -57,6 +57,8 @@ enum {
 
 #if defined(__SLATE_LIBC_DARWIN)
 #include <bits/darwin/fcntl.h>
+#elif defined(__SLATE_LIBC_FREEBSD)
+#include <bits/freebsd/fcntl.h>
 #else
 #include <bits/fcntl.h>
 #endif
@@ -87,7 +89,7 @@ struct open_how {
 int openat2(int, const char *, struct open_how *, size_t);
 #endif
 
-#if !defined(__SLATE_LIBC_DARWIN)
+#if !defined(__SLATE_LIBC_DARWIN) && !defined(__SLATE_LIBC_FREEBSD)
 #define O_SEARCH   O_PATH
 #define O_EXEC     O_PATH
 #define O_TTY_INIT 0
@@ -131,7 +133,7 @@ int openat2(int, const char *, struct open_how *, size_t);
 #define S_IRWXO 0007
 #endif
 
-#if !defined(__SLATE_LIBC_DARWIN)
+#if !defined(__SLATE_LIBC_DARWIN) && !defined(__SLATE_LIBC_FREEBSD)
 #define F_OFD_GETLK  36
 #define F_OFD_SETLK  37
 #define F_OFD_SETLKW 38
@@ -187,7 +189,8 @@ int openat2(int, const char *, struct open_how *, size_t);
 #define S_IRWXO 0007
 #endif
 
-#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE) || defined(__SLATE_LIBC_DARWIN)
+#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE) || defined(__SLATE_LIBC_DARWIN) ||  \
+    defined(__SLATE_LIBC_FREEBSD)
 #define F_OK 0
 #define R_OK 4
 #define W_OK 2
@@ -197,7 +200,7 @@ int lockf(int, int, off_t);
 #endif
 
 #if (defined(_GNU_SOURCE) || defined(_BSD_SOURCE)) &&                          \
-    !defined(__SLATE_LIBC_DARWIN)
+    !defined(__SLATE_LIBC_DARWIN) && !defined(__SLATE_LIBC_FREEBSD)
 #define AT_NO_AUTOMOUNT       0x800
 #define AT_EMPTY_PATH         0x1000
 #define AT_STATX_SYNC_TYPE    0x6000
@@ -253,7 +256,8 @@ int lockf(int, int, off_t);
 #define DN_MULTISHOT 0x80000000
 #endif
 
-#if defined(_GNU_SOURCE) && !defined(__SLATE_LIBC_DARWIN)
+#if defined(_GNU_SOURCE) && !defined(__SLATE_LIBC_DARWIN) &&                   \
+    !defined(__SLATE_LIBC_FREEBSD)
 #define F_OWNER_TID  0
 #define F_OWNER_PID  1
 #define F_OWNER_PGRP 2

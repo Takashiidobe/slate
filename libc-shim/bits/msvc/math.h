@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_MSVC_MATH_H
 #define _SLATE_BITS_MSVC_MATH_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/msvc/math.h> directly; include a public header instead."
+#endif
+
 #include <bits/msvc/types.h>
 
 typedef float  float_t;

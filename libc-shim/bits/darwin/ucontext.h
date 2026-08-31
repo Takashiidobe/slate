@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_DARWIN_UCONTEXT_H
 #define _SLATE_BITS_DARWIN_UCONTEXT_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/darwin/ucontext.h> directly; include a public header instead."
+#endif
+
 #include <signal.h>
 
 struct __darwin_mcontext64;

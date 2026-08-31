@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_X86_64_IOCTL_H
 #define _SLATE_BITS_X86_64_IOCTL_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/x86_64/ioctl.h> directly; include a public header instead."
+#endif
+
 /* ioctl command encoding: 32 bits total, command in lower 16 bits,
  * size of the parameter structure in the lower 14 bits of the
  * upper 16 bits.

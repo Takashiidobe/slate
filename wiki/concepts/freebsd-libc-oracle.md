@@ -150,3 +150,65 @@ wide-char functions — visibility only, no ABI divergence.
 Verified end-to-end via `slate translate` + `cargo check --target
 {x86_64,aarch64}-unknown-freebsd` against the generated Rust using the real
 `libc` crate, for a stdio-using fixture, on both architectures.
+
+## Filesystem and directory ABI (`slate-sfzn.10.4`)
+
+`libc-shim/freebsd-filesystem-headers.txt` extends the manifest with
+`sys/types.h`, `sys/stat.h`, `sys/statvfs.h`, `dirent.h`, `fcntl.h`, and
+`unistd.h`.
+
+`struct stat` (`libc-shim/bits/freebsd/stat.h`) is FreeBSD 15.1's modern
+(non-`freebsd11`) layout — 224 bytes, oracle-verified field offset by
+field offset via `offsetof` static asserts under the real sysroot. It is
+**not** POSIX-generic: field order is
+`st_dev, st_ino, st_nlink, st_mode, st_bsdflags, st_uid, st_gid,
+st_padding1, st_rdev, st_atim, st_mtim, st_ctim, st_birthtim, st_size,
+st_blocks, st_blksize, st_flags, st_gen, st_filerev, st_spare[9]`, with a
+16-bit `st_bsdflags` immediately after `st_mode` and a trailing
+`st_gen`/`st_filerev`/`st_spare` reservation block that POSIX/glibc structs
+don't have. `st_flags`/`st_gen` (the BSD file-flags and generation-number
+fields with no glibc equivalent) and `st_birthtim` (file creation time,
+exposed as `st_birthtime`/`st_birthtimensec` macros) are present, matching
+the ticket's acceptance criteria. `st_blksize` stays `int32_t` per the
+divergence already noted in 10.2/10.3.
+
+`struct dirent` (`libc-shim/bits/freebsd/dirent.h`) is 280 bytes:
+`d_fileno` (not `d_ino` — FreeBSD's field is already named `d_fileno`, so
+the shared `#define d_fileno d_ino` compat macro is suppressed for
+FreeBSD), `d_off`, `d_reclen`, `d_type`, `d_pad0`, `d_namlen`, `d_pad1`,
+`d_name[256]`. `DT_*` file-type constants are numerically identical to the
+existing shared block, so no override was needed there. FreeBSD's
+`getdents(2)` has a different signature than Linux's
+(`ssize_t getdents(int, char *, size_t)` vs. `int getdents(int, struct
+dirent *, size_t)`), so it gets its own declaration rather than reusing
+the glibc one.
+
+`fcntl.h` (`libc-shim/bits/freebsd/fcntl.h`): `O_*`, `F_*`, and `AT_*`
+values are all BSD-style bit assignments, distinct from both the
+glibc-style octal values and Darwin's own BSD-style values (e.g.
+`AT_FDCWD` is `-100` on FreeBSD vs. `-2` on Darwin; `O_CLOEXEC` is
+`0x00100000` on FreeBSD vs. `0x01000000` on Darwin; `F_DUPFD_CLOEXEC` is
+`17` on FreeBSD vs. `67` on Darwin; `F_GETLK`/`F_SETLK`/`F_SETLKW` are
+`11`/`12`/`13` on FreeBSD vs. `7`/`8`/`9` on Darwin). All existing
+glibc-specific octal `O_*`/`AT_*`/`F_*` blocks in the shared `fcntl.h` were
+additionally gated off for FreeBSD (they were previously gated off only
+for Darwin).
+
+`struct statvfs` (`libc-shim/bits/freebsd/statvfs.h`) uses FreeBSD's real
+field order (`f_bavail, f_bfree, f_blocks, f_favail, f_ffree, f_files,
+f_bsize, f_flag, f_frsize, f_fsid, f_namemax`), which differs from both
+the generic branch's and Darwin's `f_bsize`/`f_frsize`-first ordering.
+`ST_RDONLY`/`ST_NOSUID` values match Darwin's, so FreeBSD reuses that
+branch.
+
+`unistd.h` filesystem calls (`link`, `unlink`, `symlink`, `readlink`,
+`truncate`, `chown`, `access`, ...) needed no changes: their prototypes
+were already libc-agnostic. `_PC_*` `pathconf` constants are glibc-numbered
+with no per-libc gating for any libc, Darwin included — that's a
+pre-existing gap, deliberately left alone here and deferred to the
+feature-selection/symbol-versioning ticket (`slate-sfzn.10.10`).
+
+Verified end-to-end via `slate translate` + `cargo check --target
+{x86_64,aarch64}-unknown-freebsd` against the generated Rust using the real
+`libc` crate, for a fixture exercising `open`/`fstat`/`opendir`/`readdir`/
+`statvfs`, on both architectures.

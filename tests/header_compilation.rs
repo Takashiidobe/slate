@@ -82,6 +82,17 @@ fn freebsd_stdio_locale_headers() -> Vec<String> {
         .collect()
 }
 
+fn freebsd_filesystem_headers() -> Vec<String> {
+    let manifest =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("libc-shim/freebsd-filesystem-headers.txt");
+    fs::read_to_string(manifest)
+        .expect("read FreeBSD filesystem header manifest")
+        .lines()
+        .filter(|line| !line.is_empty())
+        .map(str::to_string)
+        .collect()
+}
+
 fn macos_filesystem_headers() -> Vec<String> {
     let manifest =
         Path::new(env!("CARGO_MANIFEST_DIR")).join("libc-shim/macos-filesystem-headers.txt");
@@ -304,6 +315,47 @@ fn freebsd_stdio_locale_header_manifest_compiles_for_x86_64_and_aarch64() {
         .collect::<String>();
     let source = format!(
         "{includes}\n#include <stddef.h>\n_Static_assert(sizeof(FILE) == 312, \"FILE size\");\n_Static_assert(offsetof(FILE, _mbstate) == 176, \"FILE mbstate offset\");\n_Static_assert(LC_ALL == 0, \"LC_ALL\");\n_Static_assert(LC_MESSAGES == 6, \"LC_MESSAGES\");\n_Static_assert(LC_MONETARY_MASK == (1 << 2), \"LC_MONETARY_MASK\");\n_Static_assert(LC_MESSAGES_MASK == (1 << 5), \"LC_MESSAGES_MASK\");\n_Static_assert(CODESET == 0, \"CODESET\");\n_Static_assert(D_MD_ORDER == 57, \"D_MD_ORDER\");\nint main(void) {{ FILE *f = stdin; return f == stdout || f == stderr; }}\n"
+    );
+    for arch in [Architecture::X86_64, Architecture::Aarch64] {
+        let config = TestConfig::new(arch, LibcVariant::FreeBsd);
+        compile_test_program(&config, &source).unwrap();
+    }
+}
+
+#[test]
+fn freebsd_filesystem_header_manifest_compiles_for_x86_64_and_aarch64() {
+    let headers = freebsd_filesystem_headers();
+    let includes = headers
+        .iter()
+        .map(|header| format!("#include <{header}>\n"))
+        .collect::<String>();
+    let source = format!(
+        "{includes}\n#include <stddef.h>\n\
+         _Static_assert(sizeof(struct stat) == 224, \"stat size\");\n\
+         _Static_assert(offsetof(struct stat, st_ino) == 8, \"st_ino offset\");\n\
+         _Static_assert(offsetof(struct stat, st_mode) == 24, \"st_mode offset\");\n\
+         _Static_assert(offsetof(struct stat, st_rdev) == 40, \"st_rdev offset\");\n\
+         _Static_assert(offsetof(struct stat, st_atim) == 48, \"st_atim offset\");\n\
+         _Static_assert(offsetof(struct stat, st_birthtim) == 96, \"st_birthtim offset\");\n\
+         _Static_assert(offsetof(struct stat, st_size) == 112, \"st_size offset\");\n\
+         _Static_assert(offsetof(struct stat, st_blksize) == 128, \"st_blksize offset\");\n\
+         _Static_assert(offsetof(struct stat, st_gen) == 136, \"st_gen offset\");\n\
+         _Static_assert(offsetof(struct stat, st_filerev) == 144, \"st_filerev offset\");\n\
+         _Static_assert(offsetof(struct stat, st_spare) == 152, \"st_spare offset\");\n\
+         _Static_assert(sizeof(((struct stat *)0)->st_blksize) == 4, \"st_blksize width\");\n\
+         _Static_assert(sizeof(((struct stat *)0)->st_blocks) == 8, \"st_blocks width\");\n\
+         _Static_assert(sizeof(struct dirent) == 280, \"dirent size\");\n\
+         _Static_assert(offsetof(struct dirent, d_off) == 8, \"d_off offset\");\n\
+         _Static_assert(offsetof(struct dirent, d_namlen) == 20, \"d_namlen offset\");\n\
+         _Static_assert(offsetof(struct dirent, d_name) == 24, \"d_name offset\");\n\
+         _Static_assert(O_CREAT == 0x0200, \"O_CREAT\");\n\
+         _Static_assert(O_NOCTTY == 0x8000, \"O_NOCTTY\");\n\
+         _Static_assert(O_DIRECTORY == 0x00020000, \"O_DIRECTORY\");\n\
+         _Static_assert(O_CLOEXEC == 0x00100000, \"O_CLOEXEC\");\n\
+         _Static_assert(AT_FDCWD == -100, \"AT_FDCWD\");\n\
+         _Static_assert(F_DUPFD_CLOEXEC == 17, \"F_DUPFD_CLOEXEC\");\n\
+         _Static_assert(F_GETLK == 11, \"F_GETLK\");\n\
+         int main(void) {{ struct stat s; struct dirent d; (void)s; (void)d; return 0; }}\n"
     );
     for arch in [Architecture::X86_64, Architecture::Aarch64] {
         let config = TestConfig::new(arch, LibcVariant::FreeBsd);

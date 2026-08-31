@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_DARWIN_SYS_TIME_H
 #define _SLATE_BITS_DARWIN_SYS_TIME_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/darwin/sys/time.h> directly; include a public header instead."
+#endif
+
 #include <sys/select.h>
 
 #define __NEED_struct_timeval

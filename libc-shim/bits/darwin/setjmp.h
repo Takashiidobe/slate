@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_DARWIN_SETJMP_H
 #define _SLATE_BITS_DARWIN_SETJMP_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/darwin/setjmp.h> directly; include a public header instead."
+#endif
+
 #define _JBLEN ((14 + 8 + 2) * 2)
 
 typedef int jmp_buf[_JBLEN];

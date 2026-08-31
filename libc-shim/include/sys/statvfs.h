@@ -7,6 +7,8 @@
 
 #if defined(__SLATE_LIBC_DARWIN)
 #include <bits/darwin/statvfs.h>
+#elif defined(__SLATE_LIBC_FREEBSD)
+#include <bits/freebsd/statvfs.h>
 #else
 struct statvfs {
   unsigned long f_bsize, f_frsize;
@@ -28,7 +30,7 @@ struct statvfs {
 int statvfs(const char *__restrict, struct statvfs *__restrict);
 int fstatvfs(int, struct statvfs *);
 
-#if defined(__SLATE_LIBC_DARWIN)
+#if defined(__SLATE_LIBC_DARWIN) || defined(__SLATE_LIBC_FREEBSD)
 #define ST_RDONLY 0x00000001
 #define ST_NOSUID 0x00000002
 #else

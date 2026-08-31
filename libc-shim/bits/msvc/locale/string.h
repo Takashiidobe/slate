@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_MSVC_LOCALE_STRING_H
 #define _SLATE_BITS_MSVC_LOCALE_STRING_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/msvc/locale/string.h> directly; include a public header instead."
+#endif
+
 #include <bits/msvc/types.h>
 
 int    _memicmp_l(const void *, const void *, size_t, _locale_t);

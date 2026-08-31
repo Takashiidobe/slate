@@ -1,3 +1,7 @@
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/riscv64/fenv.h> directly; include a public header instead."
+#endif
+
 #ifdef __riscv_float_abi_soft
 enum {
   FE_ALL_EXCEPT = 0,

@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_FREEBSD_STDIO_H
 #define _SLATE_BITS_FREEBSD_STDIO_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/freebsd/stdio.h> directly; include a public header instead."
+#endif
+
 struct __sbuf {
   unsigned char *_base;
   int            _size;

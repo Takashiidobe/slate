@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_DARWIN_FCNTL_H
 #define _SLATE_BITS_DARWIN_FCNTL_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/darwin/fcntl.h> directly; include a public header instead."
+#endif
+
 enum {
   O_RDONLY   = 0x0000,
   O_WRONLY   = 0x0001,

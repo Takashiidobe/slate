@@ -1,3 +1,7 @@
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/riscv64/user.h> directly; include a public header instead."
+#endif
+
 #include <signal.h>
 
 #define ELF_NGREG  32

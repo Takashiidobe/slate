@@ -1,3 +1,7 @@
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/arm/stat.h> directly; include a public header instead."
+#endif
+
 /* copied from kernel definition, but with padding replaced
  * by the corresponding correctly-sized userspace types. */
 

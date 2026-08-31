@@ -1,3 +1,7 @@
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/riscv32/shm.h> directly; include a public header instead."
+#endif
+
 #define SHMLBA 4096
 
 struct shmid_ds {

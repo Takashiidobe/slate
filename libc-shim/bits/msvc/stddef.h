@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_MSVC_STDDEF_H
 #define _SLATE_BITS_MSVC_STDDEF_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/msvc/stddef.h> directly; include a public header instead."
+#endif
+
 #include <bits/msvc/types.h>
 
 #ifndef __STDC_WANT_SECURE_LIB__

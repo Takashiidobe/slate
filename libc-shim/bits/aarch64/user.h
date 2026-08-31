@@ -1,3 +1,7 @@
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/aarch64/user.h> directly; include a public header instead."
+#endif
+
 struct user_regs_struct {
   unsigned long long regs[31];
   unsigned long long sp;

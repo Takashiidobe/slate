@@ -1,3 +1,7 @@
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/x86_64/reg.h> directly; include a public header instead."
+#endif
+
 #define R15      0
 #define R14      1
 #define R13      2

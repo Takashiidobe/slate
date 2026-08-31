@@ -1,3 +1,7 @@
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/aarch64/hwcap.h> directly; include a public header instead."
+#endif
+
 enum {
   HWCAP_FP       = 1 << 0,
   HWCAP_ASIMD    = 1 << 1,

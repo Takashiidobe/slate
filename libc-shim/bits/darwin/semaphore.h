@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_DARWIN_SEMAPHORE_H
 #define _SLATE_BITS_DARWIN_SEMAPHORE_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/darwin/semaphore.h> directly; include a public header instead."
+#endif
+
 typedef int sem_t;
 
 #define SEM_VALUE_MAX 32767

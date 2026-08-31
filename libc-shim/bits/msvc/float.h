@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_MSVC_FLOAT_H
 #define _SLATE_BITS_MSVC_FLOAT_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/msvc/float.h> directly; include a public header instead."
+#endif
+
 #include <bits/msvc/types.h>
 
 #undef DBL_NORM_MAX

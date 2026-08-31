@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_DARWIN_TIME_H
 #define _SLATE_BITS_DARWIN_TIME_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/darwin/time.h> directly; include a public header instead."
+#endif
+
 #define __NEED_size_t
 #define __NEED_time_t
 #define __NEED_clock_t

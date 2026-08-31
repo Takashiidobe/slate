@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_MSVC_SYS_STAT_H
 #define _SLATE_BITS_MSVC_SYS_STAT_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/msvc/sys/stat.h> directly; include a public header instead."
+#endif
+
 #include <bits/msvc/types.h>
 
 struct _stat32 {

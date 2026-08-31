@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_X86_64_TERMIOS_H
 #define _SLATE_BITS_X86_64_TERMIOS_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/arm/termios.h> directly; include a public header instead."
+#endif
+
 typedef unsigned char cc_t;
 typedef unsigned int  speed_t;
 typedef unsigned int  tcflag_t;

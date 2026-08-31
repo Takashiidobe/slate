@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_MSVC_SYS_TIMEB_H
 #define _SLATE_BITS_MSVC_SYS_TIMEB_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/msvc/sys/timeb.h> directly; include a public header instead."
+#endif
+
 #include <bits/msvc/types.h>
 
 struct __timeb32 {

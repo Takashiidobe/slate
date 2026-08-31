@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_MSVC_PROCESS_H
 #define _SLATE_BITS_MSVC_PROCESS_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/msvc/process.h> directly; include a public header instead."
+#endif
+
 #define _P_WAIT         0
 #define _P_NOWAIT       1
 #define _OLD_P_OVERLAY  2

@@ -1,3 +1,7 @@
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/x86/reg.h> directly; include a public header instead."
+#endif
+
 #define EBX      0
 #define ECX      1
 #define EDX      2

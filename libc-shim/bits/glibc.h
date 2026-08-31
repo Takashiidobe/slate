@@ -1,6 +1,10 @@
 #ifndef _SLATE_GLIBC_H
 #define _SLATE_GLIBC_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/glibc.h> directly; include a public header instead."
+#endif
+
 #define __GLIBC_USE(F) __GLIBC_USE_##F
 
 #ifdef _GNU_SOURCE

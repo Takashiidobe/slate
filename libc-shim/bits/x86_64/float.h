@@ -1,3 +1,7 @@
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/x86_64/float.h> directly; include a public header instead."
+#endif
+
 #ifdef __FLT_EVAL_METHOD__
 #define FLT_EVAL_METHOD __FLT_EVAL_METHOD__
 #else

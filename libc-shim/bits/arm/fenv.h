@@ -1,5 +1,10 @@
 #ifndef __ARM_PCS_VFP
 #define FE_ALL_EXCEPT 0
+
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/arm/fenv.h> directly; include a public header instead."
+#endif
+
 #define FE_TONEAREST  0
 #else
 #define FE_INVALID    1

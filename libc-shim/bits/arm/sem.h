@@ -1,3 +1,7 @@
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/arm/sem.h> directly; include a public header instead."
+#endif
+
 struct semid_ds {
   struct ipc_perm sem_perm;
   unsigned long   __sem_otime_lo;

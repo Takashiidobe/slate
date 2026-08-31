@@ -1,6 +1,10 @@
 #ifndef _SLATE_BITS_MSVC_STDLIB_H
 #define _SLATE_BITS_MSVC_STDLIB_H
 
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/msvc/stdlib.h> directly; include a public header instead."
+#endif
+
 #include <bits/msvc/types.h>
 
 #define _MAX_ENV 32767
