@@ -13,14 +13,11 @@ int square(int x) {
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: #[unsafe(no_mangle)]
 // REWRITES-DAG: pub extern "C" fn square({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-DAG: let mut x: i32 = {{arg[0-9]+}};
-// REWRITES-DAG: let mut __retval: i32 = 0;
 // REWRITES-DAG: let mut value: shared_value = shared_value { value: 0, mode: shared_mode_t::SHARED_IDLE };
-// REWRITES-DAG: value.value = x;
+// REWRITES-DAG: value.value = {{arg[0-9]+}};
 // REWRITES-DAG: let {{_v[0-9]+}}: u32 = shared_mode_t::SHARED_READY as u32;
 // REWRITES-DAG: value.mode = shared_mode_t::SHARED_READY;
-// REWRITES-DAG: __retval = value.value * value.value;
-// REWRITES-DAG: return __retval;
+// REWRITES-DAG: return value.value * value.value;
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites
 

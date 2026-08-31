@@ -61,47 +61,28 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn forward_fill({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: i32) {
-// LOWERING-NEXT:     let mut values: *mut i32 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut len: i32 = 0;
-// LOWERING-NEXT:     values = {{arg[0-9]+}};
-// LOWERING-NEXT:     len = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = values;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = len;
-// LOWERING-NEXT:     fill_values({{_v[0-9]+}}, {{_v[0-9]+}});
+// LOWERING-NEXT:     fill_values({{arg[0-9]+}}, {{arg[0-9]+}});
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut len: i32 = 0;
-// LOWERING-NEXT:     let mut values: *mut i32 = std::ptr::null_mut();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
-// LOWERING-NEXT:     len = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = len;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} as u64;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 4;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} * {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{_v[0-9]+}} as usize) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{_v[0-9]+}} as *mut i32;
-// LOWERING-NEXT:     values = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = values;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = len;
 // LOWERING-NEXT:     forward_fill({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = values;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 4;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = values;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(4) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -139,36 +120,25 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn forward_fill({{arg[0-9]+}}: &mut [i32]) {
-// REWRITES-NEXT: let mut values: *mut i32 = {{arg[0-9]+}}.as_mut_ptr() as *mut i32;
-// REWRITES-NEXT: let mut len: i32 = {{arg[0-9]+}}.len() as i32;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = values;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = len;
 // REWRITES-NEXT: fill_values({{arg[0-9]+}});
 // REWRITES-NEXT: return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut len: i32 = 0;
-// REWRITES-NEXT: let mut values: *mut i32 = std::ptr::null_mut();
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: len = 5;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 5;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 4;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc(((len as u64) * {{_v[0-9]+}}) as usize) };
-// REWRITES-NEXT: values = {{_v[0-9]+}} as *mut i32;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = values;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = len;
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc((({{_v[0-9]+}} as u64) * {{_v[0-9]+}}) as usize) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = {{_v[0-9]+}} as *mut i32;
 // REWRITES-NEXT: forward_fill(unsafe { std::slice::from_raw_parts_mut({{_v[0-9]+}} as *mut i32, {{_v[0-9]+}} as usize) });
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 1;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = values;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 4;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = values;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(4) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, unsafe { *{{_v[0-9]+}} }) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

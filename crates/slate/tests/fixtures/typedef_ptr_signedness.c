@@ -33,11 +33,9 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut data: [u8; 4] = [0; 4];
 // LOWERING-NEXT:     let mut b: buffer = buffer { start: std::ptr::null_mut(), end: std::ptr::null_mut() };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     data = [65, 66, 67, 0];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = data.as_mut_ptr() as *mut u8;
 // LOWERING-NEXT:     b.start = {{_v[0-9]+}};
@@ -69,8 +67,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -92,11 +88,9 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut data: [u8; 4] = [0; 4];
+// REWRITES-NEXT: let mut data: [u8; 4] = [65, 66, 67, 0];
 // REWRITES-NEXT: let mut b: buffer = buffer { start: std::ptr::null_mut(), end: std::ptr::null_mut() };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: data = [65, 66, 67, 0];
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut u8 = data.as_mut_ptr() as *mut u8;
 // REWRITES-NEXT: b.start = {{_v[0-9]+}};
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut u8 = data.as_mut_ptr() as *mut u8;
@@ -121,7 +115,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut u8 = b.start;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = unsafe { {{_v[0-9]+}}.offset_from({{_v[0-9]+}}) as i64 };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as i32) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

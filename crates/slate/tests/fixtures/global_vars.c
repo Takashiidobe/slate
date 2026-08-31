@@ -49,12 +49,8 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn adjust({{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-NEXT:     let mut by: i32 = 0;
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     by = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = by;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { counter };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         counter = {{_v[0-9]+}};
 // LOWERING-NEXT:     }
@@ -82,15 +78,11 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { pair.left };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { pair.right };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 6;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = adjust({{_v[0-9]+}});
@@ -102,15 +94,63 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { (*numbers)[({{_v[0-9]+}} as usize)] };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
-// REWRITES-DAG: static mut counter: i32 = 4;
-// REWRITES-DAG: static mut zeroed: i32 = 0;
-// REWRITES-DAG: static mut numbers: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([1, 2, 0, 0]);
-// REWRITES-DAG: static mut pair: Pair = Pair { left: 3, right: 5 };
-// REWRITES-DAG: (unsafe { pair.left }) + unsafe { pair.right }
-// REWRITES-DAG: counter = (unsafe { counter }) + by;
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES: #![feature(c_variadic)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[repr(C)]
+// REWRITES-NEXT: #[derive(Clone, Copy)]
+// REWRITES-NEXT: struct Pair {
+// REWRITES-NEXT:     left: i32,
+// REWRITES-NEXT:     right: i32,
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-EMPTY:
+// REWRITES-NEXT: static mut counter: i32 = 4;
+// REWRITES-EMPTY:
+// REWRITES-NEXT: static mut numbers: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([1, 2, 0, 0]);
+// REWRITES-EMPTY:
+// REWRITES-NEXT: static mut pair: Pair = Pair { left: 3, right: 5 };
+// REWRITES-EMPTY:
+// REWRITES-NEXT: static mut zeroed: i32 = 0;
+// REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn adjust({{arg[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:         counter = (unsafe { counter }) + {{arg[0-9]+}};
+// REWRITES-NEXT: }
+// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:         zeroed = (unsafe { zeroed }) + unsafe { counter };
+// REWRITES-NEXT: }
+// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:         (*numbers)[({{_v[0-9]+}} as usize)] = (unsafe { zeroed }) - unsafe { (*numbers)[({{_v[0-9]+}} as usize)] };
+// REWRITES-NEXT: }
+// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 1;
+// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:         pair.right = (unsafe { pair.right }) + unsafe { (*numbers)[({{_v[0-9]+}} as usize)] };
+// REWRITES-NEXT: }
+// REWRITES-NEXT: return (unsafe { pair.left }) + unsafe { pair.right };
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 6;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = adjust({{_v[0-9]+}});
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, unsafe { counter }, unsafe { zeroed }, unsafe { (*numbers)[({{_v[0-9]+}} as usize)] }) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
+// REWRITES-NEXT: }
+// SLATE-FILECHECK-END rewrites

@@ -25,9 +25,6 @@ int main(void) {
 // LOWERING-DAG: unsafe {
 // LOWERING-DAG: core::arch::asm!("cpuid\n\t", lateout("eax") {{_v[0-9]+}}, lateout("ecx") {{_v[0-9]+}}, lateout("edx") {{_v[0-9]+}}, in("eax") {{_v[0-9]+}}, options(att_syntax));
 // LOWERING-DAG: }
-// LOWERING-DAG: f1a = {{_v[0-9]+}};
-// LOWERING-DAG: f1c = {{_v[0-9]+}};
-// LOWERING-DAG: f1d = {{_v[0-9]+}};
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
@@ -38,7 +35,4 @@ int main(void) {
 // REWRITES-DAG: unsafe {
 // REWRITES-DAG: core::arch::asm!("cpuid\n\t", lateout("eax") {{_v[0-9]+}}, lateout("ecx") {{_v[0-9]+}}, lateout("edx") {{_v[0-9]+}}, in("eax") {{_v[0-9]+}}, options(att_syntax));
 // REWRITES-DAG: }
-// REWRITES-DAG: f1a = {{_v[0-9]+}};
-// REWRITES-DAG: f1c = {{_v[0-9]+}};
-// REWRITES-DAG: f1d = {{_v[0-9]+}};
 // SLATE-FILECHECK-END rewrites

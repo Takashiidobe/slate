@@ -32,112 +32,53 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[inline(always)]
 // LOWERING-NEXT: fn _mm_set_epi32({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> [i64; 2] {
-// LOWERING-NEXT:     let mut __i3: i32 = 0;
-// LOWERING-NEXT:     let mut __i2: i32 = 0;
-// LOWERING-NEXT:     let mut __i1: i32 = 0;
-// LOWERING-NEXT:     let mut __i0: i32 = 0;
-// LOWERING-NEXT:     let mut __retval: aligned::Aligned<aligned::A16, [i64; 2]> = aligned::Aligned([0; 2]);
-// LOWERING-NEXT:     __i3 = {{arg[0-9]+}};
-// LOWERING-NEXT:     __i2 = {{arg[0-9]+}};
-// LOWERING-NEXT:     __i1 = {{arg[0-9]+}};
-// LOWERING-NEXT:     __i0 = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __i0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __i1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __i2;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __i3;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: [i32; 4] = [{{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i32; 4] = [{{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: [i64; 2] = unsafe { std::mem::transmute::<[i32; 4], [i64; 2]>({{_v[0-9]+}}) };
-// LOWERING-NEXT:     *__retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: [i64; 2] = *__retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[inline(always)]
 // LOWERING-NEXT: fn _mm_set1_epi32({{arg[0-9]+}}: i32) -> [i64; 2] {
-// LOWERING-NEXT:     let mut __i: i32 = 0;
-// LOWERING-NEXT:     let mut __retval: aligned::Aligned<aligned::A16, [i64; 2]> = aligned::Aligned([0; 2]);
-// LOWERING-NEXT:     __i = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __i;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __i;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __i;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __i;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: [i64; 2] = _mm_set_epi32({{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     *__retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: [i64; 2] = *__retval;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i64; 2] = _mm_set_epi32({{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}});
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[target_feature(enable = "avx,avx2,avx512f,avx512vl,f16c,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
 // LOWERING-NEXT: unsafe fn _mm_mask_loadu_epi32({{arg[0-9]+}}: [i64; 2], {{arg[0-9]+}}: u8, {{arg[0-9]+}}: *mut core::ffi::c_void) -> [i64; 2] {
-// LOWERING-NEXT:     let mut __W: aligned::Aligned<aligned::A16, [i64; 2]> = aligned::Aligned([0; 2]);
-// LOWERING-NEXT:     let mut __U: u8 = 0;
-// LOWERING-NEXT:     let mut __P: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut __retval: aligned::Aligned<aligned::A16, [i64; 2]> = aligned::Aligned([0; 2]);
-// LOWERING-NEXT:     *__W = {{arg[0-9]+}};
-// LOWERING-NEXT:     __U = {{arg[0-9]+}};
-// LOWERING-NEXT:     __P = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = __P;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut [i32; 4] = {{_v[0-9]+}} as *mut [i32; 4];
-// LOWERING-NEXT:     let {{_v[0-9]+}}: [i64; 2] = *__W;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: [i32; 4] = unsafe { std::mem::transmute::<[i64; 2], [i32; 4]>({{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = __U;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: [bitint::BInt<1, 1, 1>; 8] = [bitint::BInt::<1, 1, 1>::from_u128(({{_v[0-9]+}} >> 0u8 & 1u8) as u128), bitint::BInt::<1, 1, 1>::from_u128(({{_v[0-9]+}} >> 1u8 & 1u8) as u128), bitint::BInt::<1, 1, 1>::from_u128(({{_v[0-9]+}} >> 2u8 & 1u8) as u128), bitint::BInt::<1, 1, 1>::from_u128(({{_v[0-9]+}} >> 3u8 & 1u8) as u128), bitint::BInt::<1, 1, 1>::from_u128(({{_v[0-9]+}} >> 4u8 & 1u8) as u128), bitint::BInt::<1, 1, 1>::from_u128(({{_v[0-9]+}} >> 5u8 & 1u8) as u128), bitint::BInt::<1, 1, 1>::from_u128(({{_v[0-9]+}} >> 6u8 & 1u8) as u128), bitint::BInt::<1, 1, 1>::from_u128(({{_v[0-9]+}} >> 7u8 & 1u8) as u128)];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut [i32; 4] = {{arg[0-9]+}} as *mut [i32; 4];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i32; 4] = unsafe { std::mem::transmute::<[i64; 2], [i32; 4]>({{arg[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [bitint::BInt<1, 1, 1>; 8] = [bitint::BInt::<1, 1, 1>::from_u128(({{arg[0-9]+}} >> 0u8 & 1u8) as u128), bitint::BInt::<1, 1, 1>::from_u128(({{arg[0-9]+}} >> 1u8 & 1u8) as u128), bitint::BInt::<1, 1, 1>::from_u128(({{arg[0-9]+}} >> 2u8 & 1u8) as u128), bitint::BInt::<1, 1, 1>::from_u128(({{arg[0-9]+}} >> 3u8 & 1u8) as u128), bitint::BInt::<1, 1, 1>::from_u128(({{arg[0-9]+}} >> 4u8 & 1u8) as u128), bitint::BInt::<1, 1, 1>::from_u128(({{arg[0-9]+}} >> 5u8 & 1u8) as u128), bitint::BInt::<1, 1, 1>::from_u128(({{arg[0-9]+}} >> 6u8 & 1u8) as u128), bitint::BInt::<1, 1, 1>::from_u128(({{arg[0-9]+}} >> 7u8 & 1u8) as u128)];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: [bitint::BInt<1, 1, 1>; 4] = [{{_v[0-9]+}}[0usize], {{_v[0-9]+}}[1usize], {{_v[0-9]+}}[2usize], {{_v[0-9]+}}[3usize]];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: [i32; 4] = [if {{_v[0-9]+}}[0usize].to_i128() != 0 { unsafe { *({{_v[0-9]+}} as *const i32).add(0usize) } } else { {{_v[0-9]+}}[0usize] }, if {{_v[0-9]+}}[1usize].to_i128() != 0 { unsafe { *({{_v[0-9]+}} as *const i32).add(1usize) } } else { {{_v[0-9]+}}[1usize] }, if {{_v[0-9]+}}[2usize].to_i128() != 0 { unsafe { *({{_v[0-9]+}} as *const i32).add(2usize) } } else { {{_v[0-9]+}}[2usize] }, if {{_v[0-9]+}}[3usize].to_i128() != 0 { unsafe { *({{_v[0-9]+}} as *const i32).add(3usize) } } else { {{_v[0-9]+}}[3usize] }];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: [i64; 2] = unsafe { std::mem::transmute::<[i32; 4], [i64; 2]>({{_v[0-9]+}}) };
-// LOWERING-NEXT:     *__retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: [i64; 2] = *__retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[inline(always)]
 // LOWERING-NEXT: fn _mm_storeu_si128({{arg[0-9]+}}: *mut [i64; 2], {{arg[0-9]+}}: [i64; 2]) {
-// LOWERING-NEXT:     let mut __p: *mut [i64; 2] = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut __b: aligned::Aligned<aligned::A16, [i64; 2]> = aligned::Aligned([0; 2]);
-// LOWERING-NEXT:     __p = {{arg[0-9]+}};
-// LOWERING-NEXT:     *__b = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: [i64; 2] = *__b;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut [i64; 2] = __p;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut __storeu_si128 = {{_v[0-9]+}} as *mut __storeu_si128;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut __storeu_si128 = {{arg[0-9]+}} as *mut __storeu_si128;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         (*{{_v[0-9]+}}).__v = {{_v[0-9]+}};
+// LOWERING-NEXT:         (*{{_v[0-9]+}}).__v = {{arg[0-9]+}};
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[target_feature(enable = "avx,avx2,avx512f,avx512vl,f16c,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
 // LOWERING-NEXT: unsafe fn masked_load_probe({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: u32, {{arg[0-9]+}}: *mut i32) {
-// LOWERING-NEXT:     let mut p: *mut i32 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut mask: u32 = 0;
-// LOWERING-NEXT:     let mut out: *mut i32 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut w: aligned::Aligned<aligned::A16, [i64; 2]> = aligned::Aligned([0; 2]);
-// LOWERING-NEXT:     let mut v: aligned::Aligned<aligned::A16, [i64; 2]> = aligned::Aligned([0; 2]);
-// LOWERING-NEXT:     p = {{arg[0-9]+}};
-// LOWERING-NEXT:     mask = {{arg[0-9]+}};
-// LOWERING-NEXT:     out = {{arg[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = -1;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: [i64; 2] = _mm_set1_epi32({{_v[0-9]+}});
-// LOWERING-NEXT:     *w = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: [i64; 2] = *w;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = mask;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = {{_v[0-9]+}} as u8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = p;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = {{arg[0-9]+}} as u8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{arg[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: [i64; 2] = unsafe { _mm_mask_loadu_epi32({{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}} as *mut core::ffi::c_void) };
-// LOWERING-NEXT:     *v = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = out;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut [i64; 2] = {{_v[0-9]+}} as *mut [i64; 2];
-// LOWERING-NEXT:     let {{_v[0-9]+}}: [i64; 2] = *v;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut [i64; 2] = {{arg[0-9]+}} as *mut [i64; 2];
 // LOWERING-NEXT:     _mm_storeu_si128({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut data: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
 // LOWERING-NEXT:     let mut out: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     *data = [10, 20, 30, 40];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = data.as_mut_ptr() as *mut i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 5;
@@ -154,8 +95,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = out[({{_v[0-9]+}} as usize)];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -177,77 +116,47 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[inline(always)]
 // REWRITES-NEXT: fn _mm_set_epi32({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> [i64; 2] {
-// REWRITES-NEXT: let mut __i3: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut __i2: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut __i1: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut __i0: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut __retval: aligned::Aligned<aligned::A16, [i64; 2]> = aligned::Aligned([0; 2]);
-// REWRITES-NEXT: let {{_v[0-9]+}}: [i64; 2] = unsafe { std::mem::transmute::<[i32; 4], [i64; 2]>([__i0, __i1, __i2, __i3]) };
-// REWRITES-NEXT: *__retval = {{_v[0-9]+}};
-// REWRITES-NEXT: return *__retval;
+// REWRITES-NEXT: let {{_v[0-9]+}}: [i64; 2] = unsafe { std::mem::transmute::<[i32; 4], [i64; 2]>([{{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}]) };
+// REWRITES-NEXT: return {{_v[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[inline(always)]
 // REWRITES-NEXT: fn _mm_set1_epi32({{arg[0-9]+}}: i32) -> [i64; 2] {
-// REWRITES-NEXT: let mut __i: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut __retval: aligned::Aligned<aligned::A16, [i64; 2]> = aligned::Aligned([0; 2]);
-// REWRITES-NEXT: let {{_v[0-9]+}}: [i64; 2] = _mm_set_epi32(__i, __i, __i, __i);
-// REWRITES-NEXT: *__retval = {{_v[0-9]+}};
-// REWRITES-NEXT: return *__retval;
+// REWRITES-NEXT: return _mm_set_epi32({{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}});
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[target_feature(enable = "avx,avx2,avx512f,avx512vl,f16c,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
 // REWRITES-NEXT: unsafe fn _mm_mask_loadu_epi32({{arg[0-9]+}}: [i64; 2], {{arg[0-9]+}}: u8, {{arg[0-9]+}}: *mut core::ffi::c_void) -> [i64; 2] {
-// REWRITES-NEXT: let mut __W: aligned::Aligned<aligned::A16, [i64; 2]> = aligned::Aligned([0; 2]);
-// REWRITES-NEXT: let mut __U: u8 = 0;
-// REWRITES-NEXT: let mut __P: *mut core::ffi::c_void = std::ptr::null_mut();
-// REWRITES-NEXT: let mut __retval: aligned::Aligned<aligned::A16, [i64; 2]> = aligned::Aligned([0; 2]);
-// REWRITES-NEXT: *__W = {{arg[0-9]+}};
-// REWRITES-NEXT: __U = {{arg[0-9]+}};
-// REWRITES-NEXT: __P = {{arg[0-9]+}};
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut [i32; 4] = __P as *mut [i32; 4];
-// REWRITES-NEXT: let {{_v[0-9]+}}: [i32; 4] = unsafe { std::mem::transmute::<[i64; 2], [i32; 4]>(*__W) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: u8 = __U;
-// REWRITES-NEXT: let {{_v[0-9]+}}: [bitint::BInt<1, 1, 1>; 8] = [bitint::BInt::<1, 1, 1>::from_u128(({{_v[0-9]+}} >> 0u8 & 1u8) as u128), bitint::BInt::<1, 1, 1>::from_u128(({{_v[0-9]+}} >> 1u8 & 1u8) as u128), bitint::BInt::<1, 1, 1>::from_u128(({{_v[0-9]+}} >> 2u8 & 1u8) as u128), bitint::BInt::<1, 1, 1>::from_u128(({{_v[0-9]+}} >> 3u8 & 1u8) as u128), bitint::BInt::<1, 1, 1>::from_u128(({{_v[0-9]+}} >> 4u8 & 1u8) as u128), bitint::BInt::<1, 1, 1>::from_u128(({{_v[0-9]+}} >> 5u8 & 1u8) as u128), bitint::BInt::<1, 1, 1>::from_u128(({{_v[0-9]+}} >> 6u8 & 1u8) as u128), bitint::BInt::<1, 1, 1>::from_u128(({{_v[0-9]+}} >> 7u8 & 1u8) as u128)];
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut [i32; 4] = {{arg[0-9]+}} as *mut [i32; 4];
+// REWRITES-NEXT: let {{_v[0-9]+}}: [i32; 4] = unsafe { std::mem::transmute::<[i64; 2], [i32; 4]>({{arg[0-9]+}}) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: [bitint::BInt<1, 1, 1>; 8] = [bitint::BInt::<1, 1, 1>::from_u128(({{arg[0-9]+}} >> 0u8 & 1u8) as u128), bitint::BInt::<1, 1, 1>::from_u128(({{arg[0-9]+}} >> 1u8 & 1u8) as u128), bitint::BInt::<1, 1, 1>::from_u128(({{arg[0-9]+}} >> 2u8 & 1u8) as u128), bitint::BInt::<1, 1, 1>::from_u128(({{arg[0-9]+}} >> 3u8 & 1u8) as u128), bitint::BInt::<1, 1, 1>::from_u128(({{arg[0-9]+}} >> 4u8 & 1u8) as u128), bitint::BInt::<1, 1, 1>::from_u128(({{arg[0-9]+}} >> 5u8 & 1u8) as u128), bitint::BInt::<1, 1, 1>::from_u128(({{arg[0-9]+}} >> 6u8 & 1u8) as u128), bitint::BInt::<1, 1, 1>::from_u128(({{arg[0-9]+}} >> 7u8 & 1u8) as u128)];
 // REWRITES-NEXT: let {{_v[0-9]+}}: [bitint::BInt<1, 1, 1>; 4] = [{{_v[0-9]+}}[0usize], {{_v[0-9]+}}[1usize], {{_v[0-9]+}}[2usize], {{_v[0-9]+}}[3usize]];
 // REWRITES-NEXT: let {{_v[0-9]+}}: [i32; 4] = [if {{_v[0-9]+}}[0usize].to_i128() != 0 { unsafe { *({{_v[0-9]+}} as *const i32).add(0usize) } } else { {{_v[0-9]+}}[0usize] }, if {{_v[0-9]+}}[1usize].to_i128() != 0 { unsafe { *({{_v[0-9]+}} as *const i32).add(1usize) } } else { {{_v[0-9]+}}[1usize] }, if {{_v[0-9]+}}[2usize].to_i128() != 0 { unsafe { *({{_v[0-9]+}} as *const i32).add(2usize) } } else { {{_v[0-9]+}}[2usize] }, if {{_v[0-9]+}}[3usize].to_i128() != 0 { unsafe { *({{_v[0-9]+}} as *const i32).add(3usize) } } else { {{_v[0-9]+}}[3usize] }];
 // REWRITES-NEXT: let {{_v[0-9]+}}: [i64; 2] = unsafe { std::mem::transmute::<[i32; 4], [i64; 2]>({{_v[0-9]+}}) };
-// REWRITES-NEXT: *__retval = {{_v[0-9]+}};
-// REWRITES-NEXT: return *__retval;
+// REWRITES-NEXT: return {{_v[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[inline(always)]
 // REWRITES-NEXT: fn _mm_storeu_si128({{arg[0-9]+}}: *mut [i64; 2], {{arg[0-9]+}}: [i64; 2]) {
-// REWRITES-NEXT: let mut __p: *mut [i64; 2] = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut __b: aligned::Aligned<aligned::A16, [i64; 2]> = aligned::Aligned([0; 2]);
-// REWRITES-NEXT: *__b = {{arg[0-9]+}};
 // REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*(__p as *mut __storeu_si128)).__v = *__b;
+// REWRITES-NEXT:         (*({{arg[0-9]+}} as *mut __storeu_si128)).__v = {{arg[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-NEXT: return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[target_feature(enable = "avx,avx2,avx512f,avx512vl,f16c,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
 // REWRITES-NEXT: unsafe fn masked_load_probe({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: u32, {{arg[0-9]+}}: *mut i32) {
-// REWRITES-NEXT: let mut p: *mut i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut mask: u32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut out: *mut i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut w: aligned::Aligned<aligned::A16, [i64; 2]> = aligned::Aligned([0; 2]);
-// REWRITES-NEXT: let mut v: aligned::Aligned<aligned::A16, [i64; 2]> = aligned::Aligned([0; 2]);
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = -1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: [i64; 2] = _mm_set1_epi32({{_v[0-9]+}});
-// REWRITES-NEXT: *w = {{_v[0-9]+}};
-// REWRITES-NEXT: let {{_v[0-9]+}}: [i64; 2] = unsafe { _mm_mask_loadu_epi32(*w, mask as u8, (p as *mut core::ffi::c_void) as *mut core::ffi::c_void) };
-// REWRITES-NEXT: *v = {{_v[0-9]+}};
-// REWRITES-NEXT: _mm_storeu_si128(out as *mut [i64; 2], *v);
+// REWRITES-NEXT: let {{_v[0-9]+}}: [i64; 2] = unsafe { _mm_mask_loadu_epi32({{_v[0-9]+}}, {{arg[0-9]+}} as u8, ({{arg[0-9]+}} as *mut core::ffi::c_void) as *mut core::ffi::c_void) };
+// REWRITES-NEXT: _mm_storeu_si128({{arg[0-9]+}} as *mut [i64; 2], {{_v[0-9]+}});
 // REWRITES-NEXT: return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut data: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
 // REWRITES-NEXT: let mut out: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
-// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: *data = [10, 20, 30, 40];
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = data.as_mut_ptr() as *mut i32;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = 5;
@@ -259,7 +168,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, out[({{_v[0-9]+}} as usize)], out[({{_v[0-9]+}} as usize)], out[({{_v[0-9]+}} as usize)], out[({{_v[0-9]+}} as usize)]) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

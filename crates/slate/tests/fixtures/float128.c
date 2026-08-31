@@ -25,16 +25,7 @@ int main(void) {
 // LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn add({{arg[0-9]+}}: f128, {{arg[0-9]+}}: f128) -> f128 {
-// LOWERING-NEXT:     let mut a: f128 = 0.0f128;
-// LOWERING-NEXT:     let mut b: f128 = 0.0f128;
-// LOWERING-NEXT:     let mut __retval: f128 = 0.0f128;
-// LOWERING-NEXT:     a = {{arg[0-9]+}};
-// LOWERING-NEXT:     b = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f128 = a;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f128 = b;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f128 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f128 = __retval;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f128 = {{arg[0-9]+}} + {{arg[0-9]+}};
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
@@ -147,13 +138,7 @@ int main(void) {
 // REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn add({{arg[0-9]+}}: f128, {{arg[0-9]+}}: f128) -> f128 {
-// REWRITES-NEXT: let mut a: f128 = 0.0f128;
-// REWRITES-NEXT: let mut b: f128 = 0.0f128;
-// REWRITES-NEXT: let mut __retval: f128 = 0.0f128;
-// REWRITES-NEXT: a = {{arg[0-9]+}};
-// REWRITES-NEXT: b = {{arg[0-9]+}};
-// REWRITES-NEXT: __retval = a + b;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return {{arg[0-9]+}} + {{arg[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

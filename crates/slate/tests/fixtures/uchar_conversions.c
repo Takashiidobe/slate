@@ -48,19 +48,13 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut state16: __mbstate_t = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
 // LOWERING-NEXT:     let mut state32: __mbstate_t = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
 // LOWERING-NEXT:     let mut converted16: u16 = 0;
 // LOWERING-NEXT:     let mut converted32: u32 = 0;
 // LOWERING-NEXT:     let mut multibyte16: [i8; 4] = [0; 4];
 // LOWERING-NEXT:     let mut multibyte32: [i8; 4] = [0; 4];
-// LOWERING-NEXT:     let mut read16: u64 = 0;
-// LOWERING-NEXT:     let mut write16: u64 = 0;
-// LOWERING-NEXT:     let mut read32: u64 = 0;
-// LOWERING-NEXT:     let mut write32: u64 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     state16 = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
 // LOWERING-NEXT:     state32 = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u16 = 0;
@@ -72,37 +66,27 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"A\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 1;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe { mbrtoc16(std::ptr::addr_of_mut!(converted16) as *mut u16, {{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as usize, std::ptr::addr_of_mut!(state16) as *mut __mbstate_t) }) as u64;
-// LOWERING-NEXT:     read16 = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = multibyte16.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u16 = 65;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe { c16rtomb({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}} as u16, std::ptr::addr_of_mut!(state16) as *mut __mbstate_t) }) as u64;
-// LOWERING-NEXT:     write16 = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"B\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 1;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe { mbrtoc32(std::ptr::addr_of_mut!(converted32) as *mut u32, {{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as usize, std::ptr::addr_of_mut!(state32) as *mut __mbstate_t) }) as u64;
-// LOWERING-NEXT:     read32 = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = multibyte32.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 66;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe { c32rtomb({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}} as u32, std::ptr::addr_of_mut!(state32) as *mut __mbstate_t) }) as u64;
-// LOWERING-NEXT:     write32 = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%zu %zu %u %d %zu %zu %u %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = read16;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = write16;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u16 = converted16;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} as u32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = multibyte16[({{_v[0-9]+}} as usize)];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = read32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = write32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = converted32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = multibyte32[({{_v[0-9]+}} as usize)];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -136,18 +120,13 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut state16: __mbstate_t = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
 // REWRITES-NEXT: let mut state32: __mbstate_t = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
 // REWRITES-NEXT: let mut converted16: u16 = 0;
 // REWRITES-NEXT: let mut converted32: u32 = 0;
 // REWRITES-NEXT: let mut multibyte16: [i8; 4] = [0; 4];
 // REWRITES-NEXT: let mut multibyte32: [i8; 4] = [0; 4];
-// REWRITES-NEXT: let mut read16: u64 = 0;
-// REWRITES-NEXT: let mut write16: u64 = 0;
-// REWRITES-NEXT: let mut read32: u64 = 0;
-// REWRITES-NEXT: let mut write32: u64 = 0;
-// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: state16 = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
 // REWRITES-NEXT: state32 = __mbstate_t { __count: 0, __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() } };
 // REWRITES-NEXT: converted16 = 0;
@@ -156,21 +135,21 @@ int main(void) {
 // REWRITES-NEXT: multibyte32 = [0, 0, 0, 0];
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"A\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 1;
-// REWRITES-NEXT: read16 = (unsafe { mbrtoc16(std::ptr::addr_of_mut!(converted16) as *mut u16, {{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as usize, std::ptr::addr_of_mut!(state16) as *mut __mbstate_t) }) as u64;
+// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = (unsafe { mbrtoc16(std::ptr::addr_of_mut!(converted16) as *mut u16, {{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as usize, std::ptr::addr_of_mut!(state16) as *mut __mbstate_t) }) as u64;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = multibyte16.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u16 = 65;
-// REWRITES-NEXT: write16 = (unsafe { c16rtomb({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}} as u16, std::ptr::addr_of_mut!(state16) as *mut __mbstate_t) }) as u64;
+// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = (unsafe { c16rtomb({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}} as u16, std::ptr::addr_of_mut!(state16) as *mut __mbstate_t) }) as u64;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"B\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 1;
-// REWRITES-NEXT: read32 = (unsafe { mbrtoc32(std::ptr::addr_of_mut!(converted32) as *mut u32, {{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as usize, std::ptr::addr_of_mut!(state32) as *mut __mbstate_t) }) as u64;
+// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = (unsafe { mbrtoc32(std::ptr::addr_of_mut!(converted32) as *mut u32, {{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as usize, std::ptr::addr_of_mut!(state32) as *mut __mbstate_t) }) as u64;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = multibyte32.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = 66;
-// REWRITES-NEXT: write32 = (unsafe { c32rtomb({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}} as u32, std::ptr::addr_of_mut!(state32) as *mut __mbstate_t) }) as u64;
+// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = (unsafe { c32rtomb({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}} as u32, std::ptr::addr_of_mut!(state32) as *mut __mbstate_t) }) as u64;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%zu %zu %u %d %zu %zu %u %d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, read16, write16, converted16 as u32, multibyte16[({{_v[0-9]+}} as usize)] as i32, read32, write32, converted32, multibyte32[({{_v[0-9]+}} as usize)] as i32) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, converted16 as u32, multibyte16[({{_v[0-9]+}} as usize)] as i32, {{_v[0-9]+}}, {{_v[0-9]+}}, converted32, multibyte32[({{_v[0-9]+}} as usize)] as i32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

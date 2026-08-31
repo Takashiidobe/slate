@@ -41,17 +41,11 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut u8: u8 = 0;
 // LOWERING-NEXT:     let mut i8: i8 = 0;
 // LOWERING-NEXT:     let mut u32: u32 = 0;
 // LOWERING-NEXT:     let mut i64: i64 = 0;
-// LOWERING-NEXT:     let mut old_u8: u8 = 0;
-// LOWERING-NEXT:     let mut old_i8: i8 = 0;
-// LOWERING-NEXT:     let mut old_u32: u32 = 0;
-// LOWERING-NEXT:     let mut old_i64: i64 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = 250;
 // LOWERING-NEXT:     u8 = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = -5;
@@ -62,23 +56,15 @@ int main(void) {
 // LOWERING-NEXT:     i64 = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = 3;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = unsafe { std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(u8)).fetch_add({{_v[0-9]+}}, std::sync::atomic::Ordering::Relaxed) };
-// LOWERING-NEXT:     old_u8 = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = 7;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = unsafe { std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(i8)).fetch_sub({{_v[0-9]+}}, std::sync::atomic::Ordering::AcqRel) };
-// LOWERING-NEXT:     old_i8 = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 255;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { std::sync::atomic::AtomicU32::from_ptr(std::ptr::addr_of_mut!(u32)).fetch_xor({{_v[0-9]+}}, std::sync::atomic::Ordering::Release) };
-// LOWERING-NEXT:     old_u32 = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 1234567890123i64;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { std::sync::atomic::AtomicI64::from_ptr(std::ptr::addr_of_mut!(i64)).swap({{_v[0-9]+}}, std::sync::atomic::Ordering::Acquire) };
-// LOWERING-NEXT:     old_i64 = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%u %d %u %lld %u %d %u %lld\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = old_u8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = old_i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = old_u32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = old_i64;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = unsafe { std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(u8)).load(std::sync::atomic::Ordering::SeqCst) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = unsafe { std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(i8)).load(std::sync::atomic::Ordering::SeqCst) };
@@ -87,8 +73,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { std::sync::atomic::AtomicI64::from_ptr(std::ptr::addr_of_mut!(i64)).load(std::sync::atomic::Ordering::SeqCst) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -115,32 +99,25 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut u8: u8 = 0;
 // REWRITES-NEXT: let mut i8: i8 = 0;
 // REWRITES-NEXT: let mut u32: u32 = 0;
 // REWRITES-NEXT: let mut i64: i64 = 0;
-// REWRITES-NEXT: let mut old_u8: u8 = 0;
-// REWRITES-NEXT: let mut old_i8: i8 = 0;
-// REWRITES-NEXT: let mut old_u32: u32 = 0;
-// REWRITES-NEXT: let mut old_i64: i64 = 0;
-// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: u8 = 250;
 // REWRITES-NEXT: i8 = -5;
 // REWRITES-NEXT: u32 = 1000;
 // REWRITES-NEXT: i64 = -10000000000i64;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u8 = 3;
-// REWRITES-NEXT: old_u8 = unsafe { std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(u8)).fetch_add({{_v[0-9]+}}, std::sync::atomic::Ordering::Relaxed) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: u8 = unsafe { std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(u8)).fetch_add({{_v[0-9]+}}, std::sync::atomic::Ordering::Relaxed) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i8 = 7;
-// REWRITES-NEXT: old_i8 = unsafe { std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(i8)).fetch_sub({{_v[0-9]+}}, std::sync::atomic::Ordering::AcqRel) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i8 = unsafe { std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(i8)).fetch_sub({{_v[0-9]+}}, std::sync::atomic::Ordering::AcqRel) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = 255;
-// REWRITES-NEXT: old_u32 = unsafe { std::sync::atomic::AtomicU32::from_ptr(std::ptr::addr_of_mut!(u32)).fetch_xor({{_v[0-9]+}}, std::sync::atomic::Ordering::Release) };
-// REWRITES-NEXT: old_i64 = unsafe { std::sync::atomic::AtomicI64::from_ptr(std::ptr::addr_of_mut!(i64)).swap(1234567890123i64, std::sync::atomic::Ordering::Acquire) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { std::sync::atomic::AtomicU32::from_ptr(std::ptr::addr_of_mut!(u32)).fetch_xor({{_v[0-9]+}}, std::sync::atomic::Ordering::Release) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = unsafe { std::sync::atomic::AtomicI64::from_ptr(std::ptr::addr_of_mut!(i64)).swap(1234567890123i64, std::sync::atomic::Ordering::Acquire) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%u %d %u %lld %u %d %u %lld\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = old_u8 as i32;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = old_i8 as i32;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = old_u32;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = old_i64;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u8 = unsafe { std::sync::atomic::AtomicU8::from_ptr(std::ptr::addr_of_mut!(u8)).load(std::sync::atomic::Ordering::SeqCst) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i8 = unsafe { std::sync::atomic::AtomicI8::from_ptr(std::ptr::addr_of_mut!(i8)).load(std::sync::atomic::Ordering::SeqCst) };
@@ -148,7 +125,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { std::sync::atomic::AtomicU32::from_ptr(std::ptr::addr_of_mut!(u32)).load(std::sync::atomic::Ordering::SeqCst) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = unsafe { std::sync::atomic::AtomicI64::from_ptr(std::ptr::addr_of_mut!(i64)).load(std::sync::atomic::Ordering::SeqCst) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

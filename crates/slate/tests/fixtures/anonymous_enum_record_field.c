@@ -35,10 +35,8 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut conditional: Conditional = Conditional { ctx: {{_unnamed_at_[0-9A-Za-z_]+}}::IN_THEN };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     conditional = Conditional { ctx: {{_unnamed_at_[0-9A-Za-z_]+}}::IN_THEN };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 5;
 // LOWERING-NEXT:     conditional.ctx = {{_unnamed_at_[0-9A-Za-z_]+}}::IN_ELSE;
@@ -47,7 +45,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 4;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -78,15 +75,14 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut conditional: Conditional = Conditional { ctx: {{_unnamed_at_[0-9A-Za-z_]+}}::IN_THEN };
-// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: conditional = Conditional { ctx: {{_unnamed_at_[0-9A-Za-z_]+}}::IN_THEN };
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = 5;
 // REWRITES-NEXT: conditional.ctx = {{_unnamed_at_[0-9A-Za-z_]+}}::IN_ELSE;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 4;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, (conditional.ctx as u32) as i32, {{_v[0-9]+}}) };
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

@@ -97,7 +97,6 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn sum_docs() -> i32 {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut cases: aligned::Aligned<aligned::A16, [TestCase; 3]> = aligned::Aligned([TestCase { doc: std::ptr::null_mut(), expectedStatus: 0 }; 3]);
 // LOWERING-NEXT:     let mut total: i32 = 0;
 // LOWERING-NEXT:     *cases = [TestCase { doc: b"a\0".as_ptr() as *mut i8, expectedStatus: 1 }, TestCase { doc: b"bb\0".as_ptr() as *mut i8, expectedStatus: 2 }, TestCase { doc: b"ccc\0".as_ptr() as *mut i8, expectedStatus: 3 }];
@@ -136,13 +135,10 @@ int main(void) {
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn sum_flags() -> i32 {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut cases: aligned::Aligned<aligned::A16, [TestCase_0; 2]> = aligned::Aligned([TestCase_0 { usesParameterEntities: 0, weight: 0 }; 2]);
 // LOWERING-NEXT:     let mut total: i32 = 0;
 // LOWERING-NEXT:     *cases = [TestCase_0 { usesParameterEntities: 1, weight: 10 }, TestCase_0 { usesParameterEntities: 0, weight: 20 }];
@@ -188,13 +184,10 @@ int main(void) {
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn sum_movements() -> i32 {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut cases: aligned::Aligned<aligned::A16, [TestCase_1; 3]> = aligned::Aligned([TestCase_1 { expectedMovementInChars: 0, input: std::ptr::null_mut() }; 3]);
 // LOWERING-NEXT:     let mut total: i32 = 0;
 // LOWERING-NEXT:     *cases = [TestCase_1 { expectedMovementInChars: 1, input: b"x\0".as_ptr() as *mut i8 }, TestCase_1 { expectedMovementInChars: 2, input: b"yy\0".as_ptr() as *mut i8 }, TestCase_1 { expectedMovementInChars: 3, input: b"zzz\0".as_ptr() as *mut i8 }];
@@ -233,23 +226,17 @@ int main(void) {
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = sum_docs();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = sum_flags();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = sum_movements();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -287,7 +274,6 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn sum_docs() -> i32 {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut cases: aligned::Aligned<aligned::A16, [TestCase; 3]> = aligned::Aligned([TestCase { doc: std::ptr::null_mut(), expectedStatus: 0 }; 3]);
 // REWRITES-NEXT: let mut total: i32 = 0;
 // REWRITES-NEXT: *cases = [TestCase { doc: b"a\0".as_ptr() as *mut i8, expectedStatus: 1 }, TestCase { doc: b"bb\0".as_ptr() as *mut i8, expectedStatus: 2 }, TestCase { doc: b"ccc\0".as_ptr() as *mut i8, expectedStatus: 3 }];
@@ -309,12 +295,10 @@ int main(void) {
 // REWRITES-NEXT:                     i = i + 1;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
-// REWRITES-NEXT: __retval = total;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return total;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn sum_flags() -> i32 {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut cases: aligned::Aligned<aligned::A16, [TestCase_0; 2]> = aligned::Aligned([TestCase_0 { usesParameterEntities: 0, weight: 0 }; 2]);
 // REWRITES-NEXT: let mut total: i32 = 0;
 // REWRITES-NEXT: *cases = [TestCase_0 { usesParameterEntities: 1, weight: 10 }, TestCase_0 { usesParameterEntities: 0, weight: 20 }];
@@ -340,12 +324,10 @@ int main(void) {
 // REWRITES-NEXT:                     i = i + 1;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
-// REWRITES-NEXT: __retval = total;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return total;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn sum_movements() -> i32 {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut cases: aligned::Aligned<aligned::A16, [TestCase_1; 3]> = aligned::Aligned([TestCase_1 { expectedMovementInChars: 0, input: std::ptr::null_mut() }; 3]);
 // REWRITES-NEXT: let mut total: i32 = 0;
 // REWRITES-NEXT: *cases = [TestCase_1 { expectedMovementInChars: 1, input: b"x\0".as_ptr() as *mut i8 }, TestCase_1 { expectedMovementInChars: 2, input: b"yy\0".as_ptr() as *mut i8 }, TestCase_1 { expectedMovementInChars: 3, input: b"zzz\0".as_ptr() as *mut i8 }];
@@ -368,19 +350,17 @@ int main(void) {
 // REWRITES-NEXT:                     i = i + 1;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
-// REWRITES-NEXT: __retval = total;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return total;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = sum_docs();
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = sum_flags();
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = sum_movements();
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

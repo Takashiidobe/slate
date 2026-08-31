@@ -23,6 +23,9 @@ int main(void) {
 // LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
+// LOWERING-NEXT: struct __SlateAllocaFrame0(*mut i32, *mut i32, aligned::Aligned<aligned::A16, [i32; 4]>, f32);
+// LOWERING-EMPTY:
+// LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[allow(non_camel_case_types)]
 // LOWERING-NEXT: #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
 // LOWERING-NEXT: enum memory_order {
@@ -40,83 +43,127 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut f: f32 = 0.0;
-// LOWERING-NEXT:     let mut old_f: f32 = 0.0;
-// LOWERING-NEXT:     let mut now_f: f32 = 0.0;
-// LOWERING-NEXT:     let mut values: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
-// LOWERING-NEXT:     let mut p: *mut i32 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut old_p: *mut i32 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut atomic_temp: *mut i32 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut now_p: *mut i32 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut old_x: *mut i32 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut now_x: *mut i32 = std::ptr::null_mut();
+// LOWERING-NEXT:     let mut {{__slate_alloca_frame[0-9]+}}: __SlateAllocaFrame0 = __SlateAllocaFrame0(std::ptr::null_mut(), std::ptr::null_mut(), aligned::Aligned([0; 4]), 0.0);
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = 1.5;
-// LOWERING-NEXT:     f = {{_v[0-9]+}};
+// LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.3 = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = 2.25;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = unsafe { *std::ptr::addr_of_mut!(f) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = unsafe { *std::ptr::addr_of_mut!({{__slate_alloca_frame[0-9]+}}.3) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         *std::ptr::addr_of_mut!(f) = {{_v[0-9]+}};
+// LOWERING-NEXT:         *std::ptr::addr_of_mut!({{__slate_alloca_frame[0-9]+}}.3) = {{_v[0-9]+}};
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     old_f = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = f;
-// LOWERING-NEXT:     now_f = {{_v[0-9]+}};
-// LOWERING-NEXT:     *values = [10, 20, 30, 40];
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = values.as_mut_ptr() as *mut i32;
-// LOWERING-NEXT:     p = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = {{__slate_alloca_frame[0-9]+}}.3;
+// LOWERING-NEXT:     *{{__slate_alloca_frame[0-9]+}}.2 = [10, 20, 30, 40];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{__slate_alloca_frame[0-9]+}}.2.as_mut_ptr() as *mut i32;
+// LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.1 = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 2;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 4;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i64 = std::ptr::addr_of_mut!(p) as *mut i64;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i64 = std::ptr::addr_of_mut!({{__slate_alloca_frame[0-9]+}}.1) as *mut i64;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { std::sync::atomic::AtomicI64::from_ptr({{_v[0-9]+}}).fetch_add({{_v[0-9]+}}, std::sync::atomic::Ordering::AcqRel) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i64 = std::ptr::addr_of_mut!(atomic_temp) as *mut i64;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i64 = std::ptr::addr_of_mut!({{__slate_alloca_frame[0-9]+}}.0) as *mut i64;
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = atomic_temp;
-// LOWERING-NEXT:     old_p = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = p;
-// LOWERING-NEXT:     now_p = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = values.as_mut_ptr() as *mut i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{__slate_alloca_frame[0-9]+}}.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{__slate_alloca_frame[0-9]+}}.1;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{__slate_alloca_frame[0-9]+}}.2.as_mut_ptr() as *mut i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { *std::ptr::addr_of_mut!(p) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { *std::ptr::addr_of_mut!({{__slate_alloca_frame[0-9]+}}.1) };
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         *std::ptr::addr_of_mut!(p) = {{_v[0-9]+}};
+// LOWERING-NEXT:         *std::ptr::addr_of_mut!({{__slate_alloca_frame[0-9]+}}.1) = {{_v[0-9]+}};
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     old_x = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = p;
-// LOWERING-NEXT:     now_x = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{__slate_alloca_frame[0-9]+}}.1;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%.2f %.2f %td %td %d %td %td\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = old_f;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} as f64;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = now_f;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} as f64;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = old_p;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = values.as_mut_ptr() as *mut i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{__slate_alloca_frame[0-9]+}}.2.as_mut_ptr() as *mut i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { {{_v[0-9]+}}.offset_from({{_v[0-9]+}}) as i64 };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = now_p;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = values.as_mut_ptr() as *mut i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{__slate_alloca_frame[0-9]+}}.2.as_mut_ptr() as *mut i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { {{_v[0-9]+}}.offset_from({{_v[0-9]+}}) as i64 };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = now_p;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = old_x;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = values.as_mut_ptr() as *mut i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{__slate_alloca_frame[0-9]+}}.2.as_mut_ptr() as *mut i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { {{_v[0-9]+}}.offset_from({{_v[0-9]+}}) as i64 };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = now_x;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = values.as_mut_ptr() as *mut i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{__slate_alloca_frame[0-9]+}}.2.as_mut_ptr() as *mut i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { {{_v[0-9]+}}.offset_from({{_v[0-9]+}}) as i64 };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
-// REWRITES-DAG: *std::ptr::addr_of_mut!(f) =
-// REWRITES-DAG: *std::ptr::addr_of_mut!(p) =
-// REWRITES-NOT: AtomicF32
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES: #![feature(c_variadic)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[repr(C)]
+// REWRITES-NEXT: struct __SlateAllocaFrame0(*mut i32, *mut i32, aligned::Aligned<aligned::A16, [i32; 4]>, f32);
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[repr(C)]
+// REWRITES-NEXT: #[allow(non_camel_case_types)]
+// REWRITES-NEXT: #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
+// REWRITES-NEXT: enum memory_order {
+// REWRITES-NEXT:     memory_order_relaxed = 0,
+// REWRITES-NEXT:     memory_order_consume = 1,
+// REWRITES-NEXT:     memory_order_acquire = 2,
+// REWRITES-NEXT:     memory_order_release = 3,
+// REWRITES-NEXT:     memory_order_acq_rel = 4,
+// REWRITES-NEXT:     memory_order_seq_cst = 5,
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: let mut {{__slate_alloca_frame[0-9]+}}: __SlateAllocaFrame0 = __SlateAllocaFrame0(std::ptr::null_mut(), std::ptr::null_mut(), aligned::Aligned([0; 4]), 0.0);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: {{__slate_alloca_frame[0-9]+}}.3 = 1.5;
+// REWRITES-NEXT: let {{_v[0-9]+}}: f32 = 2.25;
+// REWRITES-NEXT: let {{_v[0-9]+}}: f32 = unsafe { *std::ptr::addr_of_mut!({{__slate_alloca_frame[0-9]+}}.3) };
+// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:         *std::ptr::addr_of_mut!({{__slate_alloca_frame[0-9]+}}.3) = {{_v[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-NEXT: }
+// REWRITES-NEXT: let {{_v[0-9]+}}: f32 = {{__slate_alloca_frame[0-9]+}}.3;
+// REWRITES-NEXT: *{{__slate_alloca_frame[0-9]+}}.2 = [10, 20, 30, 40];
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = {{__slate_alloca_frame[0-9]+}}.2.as_mut_ptr() as *mut i32;
+// REWRITES-NEXT: {{__slate_alloca_frame[0-9]+}}.1 = {{_v[0-9]+}};
+// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 4;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} * {{_v[0-9]+}};
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i64 = std::ptr::addr_of_mut!({{__slate_alloca_frame[0-9]+}}.1) as *mut i64;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = unsafe { std::sync::atomic::AtomicI64::from_ptr({{_v[0-9]+}}).fetch_add({{_v[0-9]+}}, std::sync::atomic::Ordering::AcqRel) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i64 = std::ptr::addr_of_mut!({{__slate_alloca_frame[0-9]+}}.0) as *mut i64;
+// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
+// REWRITES-NEXT: }
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = {{__slate_alloca_frame[0-9]+}}.0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = {{__slate_alloca_frame[0-9]+}}.1;
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = {{__slate_alloca_frame[0-9]+}}.2.as_mut_ptr() as *mut i32;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = unsafe { *std::ptr::addr_of_mut!({{__slate_alloca_frame[0-9]+}}.1) };
+// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:         *std::ptr::addr_of_mut!({{__slate_alloca_frame[0-9]+}}.1) = {{_v[0-9]+}};
+// REWRITES-NEXT: }
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = {{__slate_alloca_frame[0-9]+}}.1;
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%.2f %.2f %td %td %d %td %td\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT: let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} as f64;
+// REWRITES-NEXT: let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} as f64;
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = {{__slate_alloca_frame[0-9]+}}.2.as_mut_ptr() as *mut i32;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = unsafe { {{_v[0-9]+}}.offset_from({{_v[0-9]+}}) as i64 };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = {{__slate_alloca_frame[0-9]+}}.2.as_mut_ptr() as *mut i32;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = unsafe { {{_v[0-9]+}}.offset_from({{_v[0-9]+}}) as i64 };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = {{__slate_alloca_frame[0-9]+}}.2.as_mut_ptr() as *mut i32;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = unsafe { {{_v[0-9]+}}.offset_from({{_v[0-9]+}}) as i64 };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = {{__slate_alloca_frame[0-9]+}}.2.as_mut_ptr() as *mut i32;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = unsafe { {{_v[0-9]+}}.offset_from({{_v[0-9]+}}) as i64 };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
+// REWRITES-NEXT: }
+// SLATE-FILECHECK-END rewrites

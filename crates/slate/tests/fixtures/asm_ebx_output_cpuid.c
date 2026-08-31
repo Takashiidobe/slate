@@ -26,7 +26,6 @@ int main(void) {
 // LOWERING-DAG: core::arch::asm!("push %rbx\n\tcpuid\n\tmov %ebx, %edi\n\tpop %rbx", lateout("eax") {{_v[0-9]+}}, lateout("edi") {{_v[0-9]+}}, lateout("ecx") {{_v[0-9]+}}, in("eax") {{_v[0-9]+}}, in("ecx") {{_v[0-9]+}}, options(att_syntax));
 // LOWERING-DAG: }
 // LOWERING-DAG: f7a = {{_v[0-9]+}};
-// LOWERING-DAG: f7b = {{_v[0-9]+}};
 // LOWERING-DAG: f7c = {{_v[0-9]+}};
 // SLATE-FILECHECK-END lowering
 
@@ -40,6 +39,5 @@ int main(void) {
 // REWRITES-DAG: core::arch::asm!("push %rbx\n\tcpuid\n\tmov %ebx, %edi\n\tpop %rbx", lateout("eax") {{_v[0-9]+}}, lateout("edi") {{_v[0-9]+}}, lateout("ecx") {{_v[0-9]+}}, in("eax") {{_v[0-9]+}}, in("ecx") {{_v[0-9]+}}, options(att_syntax));
 // REWRITES-DAG: }
 // REWRITES-DAG: f7a = {{_v[0-9]+}};
-// REWRITES-DAG: f7b = {{_v[0-9]+}};
 // REWRITES-DAG: f7c = {{_v[0-9]+}};
 // SLATE-FILECHECK-END rewrites

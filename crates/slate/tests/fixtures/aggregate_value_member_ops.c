@@ -39,6 +39,7 @@ int main(void) {
   printf("%d\n", array_value(w));
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
 // LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
@@ -94,14 +95,9 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut Pair = std::ptr::addr_of_mut!(coerce2) as *mut Pair;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: Pair = unsafe { *{{_v[0-9]+}} };
 // LOWERING-NEXT:     let mut p: Pair = Pair { left: 0, right: 0 };
-// LOWERING-NEXT:     let mut v: i32 = 0;
-// LOWERING-NEXT:     let mut __retval: Pair = Pair { left: 0, right: 0 };
 // LOWERING-NEXT:     p = {{_v[0-9]+}};
-// LOWERING-NEXT:     v = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = v;
-// LOWERING-NEXT:     p.left = {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = p;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Pair = __retval;
+// LOWERING-NEXT:     p.left = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Pair = p;
 // LOWERING-NEXT:     *coerce = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u64 = std::ptr::addr_of_mut!(*coerce) as *mut u64;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = unsafe { *{{_v[0-9]+}} };
@@ -114,15 +110,12 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut Pair = std::ptr::addr_of_mut!(coerce) as *mut Pair;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: Pair = unsafe { *{{_v[0-9]+}} };
 // LOWERING-NEXT:     let mut p: Pair = Pair { left: 0, right: 0 };
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     p = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = p.left;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 10;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} * {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = p.right;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
@@ -136,15 +129,12 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut Nested = std::ptr::addr_of_mut!(coerce) as *mut Nested;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: Nested = unsafe { *{{_v[0-9]+}} };
 // LOWERING-NEXT:     let mut n: Nested = Nested { inner: Pair { left: 0, right: 0 }, tag: 0 };
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     n = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = n.inner.left;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = n.inner.right;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = n.tag;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
@@ -158,14 +148,11 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut WithArray = std::ptr::addr_of_mut!(coerce) as *mut WithArray;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: WithArray = unsafe { *{{_v[0-9]+}} };
 // LOWERING-NEXT:     let mut w: WithArray = WithArray { data: [0; 3], marker: 0 };
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     w = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 1;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = w.data[({{_v[0-9]+}} as usize)];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = w.marker;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
@@ -176,16 +163,9 @@ int main(void) {
 // LOWERING-NEXT:     let mut coerce4: aligned::Aligned<aligned::A8, Pair> = aligned::Aligned(Pair { left: 0, right: 0 });
 // LOWERING-NEXT:     let mut coerce5: u64 = 0;
 // LOWERING-NEXT:     let mut coerce6: aligned::Aligned<aligned::A8, Pair> = aligned::Aligned(Pair { left: 0, right: 0 });
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut p: Pair = Pair { left: 0, right: 0 };
-// LOWERING-NEXT:     let mut q: Pair = Pair { left: 0, right: 0 };
-// LOWERING-NEXT:     let mut n: Nested = Nested { inner: Pair { left: 0, right: 0 }, tag: 0 };
-// LOWERING-NEXT:     let mut w: WithArray = WithArray { data: [0; 3], marker: 0 };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     p = Pair { left: 2, right: 3 };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Pair = Pair { left: 2, right: 3 };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Pair = p;
 // LOWERING-NEXT:     *coerce6 = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u64 = std::ptr::addr_of_mut!(*coerce6) as *mut u64;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = unsafe { *{{_v[0-9]+}} };
@@ -193,25 +173,21 @@ int main(void) {
 // LOWERING-NEXT:     coerce5 = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut Pair = std::ptr::addr_of_mut!(coerce5) as *mut Pair;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: Pair = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     q = {{_v[0-9]+}};
-// LOWERING-NEXT:     n = Nested { inner: Pair { left: 4, right: 5 }, tag: 6 };
-// LOWERING-NEXT:     w = WithArray { data: [8, 9, 10], marker: 11 };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Nested = Nested { inner: Pair { left: 4, right: 5 }, tag: 6 };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: WithArray = WithArray { data: [8, 9, 10], marker: 11 };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Pair = p;
 // LOWERING-NEXT:     *coerce4 = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u64 = std::ptr::addr_of_mut!(*coerce4) as *mut u64;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = unsafe { *{{_v[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = take_pair({{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Pair = q;
 // LOWERING-NEXT:     *coerce3 = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u64 = std::ptr::addr_of_mut!(*coerce3) as *mut u64;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = unsafe { *{{_v[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = take_pair({{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Nested = n;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut Nested = std::ptr::addr_of_mut!(coerce2) as *mut Nested;
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
@@ -221,7 +197,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = nested_total({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: WithArray = w;
 // LOWERING-NEXT:     *coerce = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut {{anon_struct[0-9A-Za-z_]*}} = std::ptr::addr_of_mut!(*coerce) as *mut {{anon_struct[0-9A-Za-z_]*}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = unsafe { (*{{_v[0-9]+}}).__slate_anon_0 };
@@ -229,8 +204,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = array_value({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering

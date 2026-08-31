@@ -133,20 +133,11 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn fill_via_ptr({{arg[0-9]+}}: *mut table, {{arg[0-9]+}}: i32) {
-// LOWERING-NEXT:     let mut t: *mut table = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut i: i32 = 0;
-// LOWERING-NEXT:     let mut row: *mut [i8; 3] = std::ptr::null_mut();
-// LOWERING-NEXT:     t = {{arg[0-9]+}};
-// LOWERING-NEXT:     i = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut table = t;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut [i8; 3] = (unsafe { std::ptr::addr_of_mut!((*{{_v[0-9]+}}).rows) }) as *mut [i8; 3];
-// LOWERING-NEXT:     row = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut [i8; 3] = (unsafe { std::ptr::addr_of_mut!((*{{arg[0-9]+}}).rows) }) as *mut [i8; 3];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = 88;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut [i8; 3] = row;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut [i8; 3] = unsafe { {{_v[0-9]+}}.offset({{_v[0-9]+}} as isize) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut [i8; 3] = unsafe { {{_v[0-9]+}}.offset({{arg[0-9]+}} as isize) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut [i8; 3] = unsafe { {{_v[0-9]+}}.add(0) };
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         (*{{_v[0-9]+}})[({{_v[0-9]+}} as usize)] = {{_v[0-9]+}};
@@ -234,14 +225,10 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn sum_cube_via_ptr({{arg[0-9]+}}: *mut cube) -> i32 {
-// LOWERING-NEXT:     let mut c: *mut cube = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut plane: *mut [i32; 4] = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut total: i32 = 0;
-// LOWERING-NEXT:     c = {{arg[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut cube = c;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut [i32; 4] = (unsafe { std::ptr::addr_of_mut!((*{{_v[0-9]+}}).v[({{_v[0-9]+}} as usize)]) }) as *mut [i32; 4];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut [i32; 4] = (unsafe { std::ptr::addr_of_mut!((*{{arg[0-9]+}}).v[({{_v[0-9]+}} as usize)]) }) as *mut [i32; 4];
 // LOWERING-NEXT:     plane = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     total = {{_v[0-9]+}};
@@ -293,17 +280,13 @@ int main(void) {
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut t: table = table { rows: {{\[\[}}0; 3]; 4] };
 // LOWERING-NEXT:     let mut c: cube = cube { v: {{\[\[}}[0; 4]; 3]; 2] };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     fill(std::ptr::addr_of_mut!(t));
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
 // LOWERING-NEXT:     fill_via_ptr(std::ptr::addr_of_mut!(t), {{_v[0-9]+}});
@@ -343,8 +326,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = sum_cube_via_ptr(std::ptr::addr_of_mut!(c));
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -371,7 +352,7 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn fill({{arg[0-9]+}}: &table) {
+// REWRITES-NEXT: fn fill({{arg[0-9]+}}: &mut table) {
 // REWRITES-NEXT: {
 // REWRITES-NEXT:         let mut i: i32 = 0;
 // REWRITES-NEXT:         i = 0;
@@ -384,16 +365,16 @@ int main(void) {
 // REWRITES-NEXT:                                     let {{_v[0-9]+}}: i32 = 97;
 // REWRITES-NEXT:                                     let {{_v[0-9]+}}: i64 = 0;
 // REWRITES-NEXT:                                     unsafe {
-// REWRITES-NEXT:                                                         (*(({{arg[0-9]+}} as *const table) as *mut table)).rows[((i as i64) as usize)][({{_v[0-9]+}} as usize)] = ({{_v[0-9]+}} + i) as i8;
+// REWRITES-NEXT:                                                         (*{{arg[0-9]+}}).rows[((i as i64) as usize)][({{_v[0-9]+}} as usize)] = ({{_v[0-9]+}} + i) as i8;
 // REWRITES-NEXT:                                     }
 // REWRITES-NEXT:                                     let {{_v[0-9]+}}: i32 = 48;
 // REWRITES-NEXT:                                     let {{_v[0-9]+}}: i64 = 1;
 // REWRITES-NEXT:                                     unsafe {
-// REWRITES-NEXT:                                                         (*(({{arg[0-9]+}} as *const table) as *mut table)).rows[((i as i64) as usize)][({{_v[0-9]+}} as usize)] = ({{_v[0-9]+}} + i) as i8;
+// REWRITES-NEXT:                                                         (*{{arg[0-9]+}}).rows[((i as i64) as usize)][({{_v[0-9]+}} as usize)] = ({{_v[0-9]+}} + i) as i8;
 // REWRITES-NEXT:                                     }
 // REWRITES-NEXT:                                     let {{_v[0-9]+}}: i64 = 2;
 // REWRITES-NEXT:                                     unsafe {
-// REWRITES-NEXT:                                                         (*(({{arg[0-9]+}} as *const table) as *mut table)).rows[((i as i64) as usize)][({{_v[0-9]+}} as usize)] = 0;
+// REWRITES-NEXT:                                                         (*{{arg[0-9]+}}).rows[((i as i64) as usize)][({{_v[0-9]+}} as usize)] = 0;
 // REWRITES-NEXT:                                     }
 // REWRITES-NEXT:                     }
 // REWRITES-NEXT:                     i = i + 1;
@@ -403,15 +384,11 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn fill_via_ptr({{arg[0-9]+}}: &mut table, {{arg[0-9]+}}: i32) {
-// REWRITES-NEXT: let mut i: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut row: *mut [i8; 3] = std::ptr::null_mut();
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut [i8; 3] = (unsafe { std::ptr::addr_of_mut!((*{{arg[0-9]+}}).rows) }) as *mut [i8; 3];
-// REWRITES-NEXT: row = {{_v[0-9]+}};
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut [i8; 3] = (unsafe { std::ptr::addr_of_mut!((*({{arg[0-9]+}} as *mut table)).rows) }) as *mut [i8; 3];
 // REWRITES-NEXT: let {{_v[0-9]+}}: i8 = 88;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut [i8; 3] = row;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut [i8; 3] = unsafe { {{_v[0-9]+}}.offset(i as isize) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut [i8; 3] = unsafe { {{_v[0-9]+}}.offset({{arg[0-9]+}} as isize) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut [i8; 3] = unsafe { {{_v[0-9]+}}.add(0) };
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         (*{{_v[0-9]+}})[({{_v[0-9]+}} as usize)] = {{_v[0-9]+}};
@@ -419,7 +396,7 @@ int main(void) {
 // REWRITES-NEXT: return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn fill_cube({{arg[0-9]+}}: &cube) {
+// REWRITES-NEXT: fn fill_cube({{arg[0-9]+}}: &mut cube) {
 // REWRITES-NEXT: {
 // REWRITES-NEXT:         let mut i: i32 = 0;
 // REWRITES-NEXT:         i = 0;
@@ -450,7 +427,7 @@ int main(void) {
 // REWRITES-NEXT:                                                                                                                                                                                                                         let {{_v[0-9]+}}: i32 = 100;
 // REWRITES-NEXT:                                                                                                                                                                                                                         let {{_v[0-9]+}}: i32 = 10;
 // REWRITES-NEXT:                                                                                                                                                                                                                         unsafe {
-// REWRITES-NEXT:                                                                                                                                                                                                                                                                     (*(({{arg[0-9]+}} as *const cube) as *mut cube)).v[((i as i64) as usize)][((j as i64) as usize)][((k as i64) as usize)] = i * {{_v[0-9]+}} + j * {{_v[0-9]+}} + k;
+// REWRITES-NEXT:                                                                                                                                                                                                                                                                     (*{{arg[0-9]+}}).v[((i as i64) as usize)][((j as i64) as usize)][((k as i64) as usize)] = i * {{_v[0-9]+}} + j * {{_v[0-9]+}} + k;
 // REWRITES-NEXT:                                                                                                                                                                                                                         }
 // REWRITES-NEXT:                                                                                                                                                                                 }
 // REWRITES-NEXT:                                                                                                                                                                                 k = k + 1;
@@ -467,12 +444,11 @@ int main(void) {
 // REWRITES-NEXT: return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn sum_cube_via_ptr({{arg[0-9]+}}: &cube) -> i32 {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
+// REWRITES-NEXT: fn sum_cube_via_ptr({{arg[0-9]+}}: &mut cube) -> i32 {
 // REWRITES-NEXT: let mut plane: *mut [i32; 4] = std::ptr::null_mut();
 // REWRITES-NEXT: let mut total: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 1;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut [i32; 4] = (unsafe { std::ptr::addr_of_mut!((*(({{arg[0-9]+}} as *const cube) as *mut cube)).v[({{_v[0-9]+}} as usize)]) }) as *mut [i32; 4];
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut [i32; 4] = (unsafe { std::ptr::addr_of_mut!((*({{arg[0-9]+}} as *mut cube)).v[({{_v[0-9]+}} as usize)]) }) as *mut [i32; 4];
 // REWRITES-NEXT: plane = {{_v[0-9]+}};
 // REWRITES-NEXT: total = 0;
 // REWRITES-NEXT: {
@@ -507,16 +483,14 @@ int main(void) {
 // REWRITES-NEXT:                     j = j + 1;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
-// REWRITES-NEXT: __retval = total;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return total;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut t: table = table { rows: {{\[\[}}0; 3]; 4] };
 // REWRITES-NEXT: let mut c: cube = cube { v: {{\[\[}}[0; 4]; 3]; 2] };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: fill(unsafe { &(*std::ptr::addr_of_mut!(t)) });
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: fill(unsafe { &mut (*std::ptr::addr_of_mut!(t)) });
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 2;
 // REWRITES-NEXT: fill_via_ptr(unsafe { &mut (*std::ptr::addr_of_mut!(t)) }, {{_v[0-9]+}});
 // REWRITES-NEXT: {
@@ -535,7 +509,7 @@ int main(void) {
 // REWRITES-NEXT:                     i = i + 1;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
-// REWRITES-NEXT: fill_cube(unsafe { &(*std::ptr::addr_of_mut!(c)) });
+// REWRITES-NEXT: fill_cube(unsafe { &mut (*std::ptr::addr_of_mut!(c)) });
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
@@ -545,9 +519,9 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = c.v[({{_v[0-9]+}} as usize)][({{_v[0-9]+}} as usize)][({{_v[0-9]+}} as usize)];
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = sum_cube_via_ptr(unsafe { &(*std::ptr::addr_of_mut!(c)) });
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = sum_cube_via_ptr(unsafe { &mut (*std::ptr::addr_of_mut!(c)) });
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

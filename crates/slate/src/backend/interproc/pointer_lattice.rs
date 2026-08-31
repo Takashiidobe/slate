@@ -243,14 +243,21 @@ pub(in crate::backend) fn solve(program: &Program) -> BTreeMap<PointerBinding, P
         return BTreeMap::new();
     }
 
+    let global_ptr_mutability = collect_global_ptr_mutability(&program.items);
     let return_aliases = collect_return_aliases(&fn_defs, &candidates);
 
     let mut facts: BTreeMap<PointerBinding, PointerFact> = BTreeMap::new();
     let mut call_sites: Vec<CallSite> = Vec::new();
     let mut return_sites: Vec<ReturnCallSite> = Vec::new();
     for (name, f) in &fn_defs {
-        let (local, sites, local_return_sites) =
-            classify_function(name, f, candidates.get(name), &candidates, &return_aliases);
+        let (local, sites, local_return_sites) = classify_function(
+            name,
+            f,
+            candidates.get(name),
+            &candidates,
+            &return_aliases,
+            &global_ptr_mutability,
+        );
         facts.extend(local);
         call_sites.extend(sites);
         return_sites.extend(local_return_sites);
@@ -379,6 +386,28 @@ fn candidate_for(f: &FnDef) -> Option<Candidate> {
         .filter_map(|(index, param)| matches!(param.ty, Type::Ptr { .. }).then_some(index))
         .collect();
     (!param_indices.is_empty()).then_some(Candidate { param_indices })
+}
+
+fn collect_global_ptr_mutability(items: &[Item]) -> BTreeMap<String, bool> {
+    let mut out = BTreeMap::new();
+    collect_global_ptr_mutability_into(items, &mut out);
+    out
+}
+
+fn collect_global_ptr_mutability_into(items: &[Item], out: &mut BTreeMap<String, bool>) {
+    for item in items {
+        match item {
+            Item::Static {
+                name,
+                ty: Type::Ptr { mutable, .. },
+                ..
+            } => {
+                out.insert(name.clone(), *mutable);
+            }
+            Item::InlineMod { items, .. } => collect_global_ptr_mutability_into(items, out),
+            _ => {}
+        }
+    }
 }
 
 fn collect_fn_defs(items: &[Item]) -> BTreeMap<String, &FnDef> {
@@ -589,6 +618,7 @@ fn classify_function(
     candidate: Option<&Candidate>,
     candidates: &BTreeMap<String, Candidate>,
     return_aliases: &BTreeMap<String, ReturnAlias>,
+    global_ptr_mutability: &BTreeMap<String, bool>,
 ) -> (
     BTreeMap<PointerBinding, PointerFact>,
     Vec<CallSite>,
@@ -629,6 +659,7 @@ fn classify_function(
         sites: &mut sites,
         return_sites: &mut return_sites,
         use_counts: &use_counts,
+        global_ptr_mutability,
     };
     ctx.body(&f.body);
     (facts, sites, return_sites)
@@ -644,6 +675,7 @@ struct ClassifyCtx<'a> {
     sites: &'a mut Vec<CallSite>,
     return_sites: &'a mut Vec<ReturnCallSite>,
     use_counts: &'a BTreeMap<String, usize>,
+    global_ptr_mutability: &'a BTreeMap<String, bool>,
 }
 
 impl ClassifyCtx<'_> {
@@ -790,7 +822,19 @@ impl ClassifyCtx<'_> {
                 self.expr(else_value);
             }
             Stmt::Assign { target, value } => {
-                if let Expr::Var(name) = target {
+                if let Expr::Var(name) = target
+                    && let Some(&global_mutable) = self.global_ptr_mutability.get(name.as_str())
+                {
+                    if let Some(source) = source_var(value)
+                        && let Some(canonical) = self.canonical_of(source.as_str())
+                    {
+                        self.observe(&canonical, PointerFact::observe_escape);
+                        if global_mutable {
+                            self.observe(&canonical, PointerFact::observe_write);
+                        }
+                    }
+                    self.expr(value);
+                } else if let Expr::Var(name) = target {
                     if !self.try_alias(name.as_str(), value)
                         && !self.try_offset_alias(name.as_str(), value)
                         && !self.try_return_call_alias(name.as_str(), value)

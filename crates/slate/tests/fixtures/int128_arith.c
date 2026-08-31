@@ -37,98 +37,44 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn add128({{arg[0-9]+}}: i128, {{arg[0-9]+}}: i128) -> i128 {
-// LOWERING-NEXT:     let mut a: i128 = 0;
-// LOWERING-NEXT:     let mut b: i128 = 0;
-// LOWERING-NEXT:     let mut __retval: i128 = 0;
-// LOWERING-NEXT:     a = {{arg[0-9]+}};
-// LOWERING-NEXT:     b = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i128 = a;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i128 = b;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i128 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i128 = __retval;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i128 = {{arg[0-9]+}} + {{arg[0-9]+}};
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn print128({{arg[0-9]+}}: u128) {
-// LOWERING-NEXT:     let mut v: u128 = 0;
-// LOWERING-NEXT:     let mut hi: u64 = 0;
-// LOWERING-NEXT:     let mut lo: u64 = 0;
-// LOWERING-NEXT:     v = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u128 = v;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 64;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u128 = {{_v[0-9]+}} >> {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u128 = {{arg[0-9]+}} >> {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} as u64;
-// LOWERING-NEXT:     hi = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u128 = v;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} as u64;
-// LOWERING-NEXT:     lo = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{arg[0-9]+}} as u64;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%llu:%llu\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = hi;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = lo;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn mul128({{arg[0-9]+}}: u128, {{arg[0-9]+}}: u128) -> u128 {
-// LOWERING-NEXT:     let mut a: u128 = 0;
-// LOWERING-NEXT:     let mut b: u128 = 0;
-// LOWERING-NEXT:     let mut __retval: u128 = 0;
-// LOWERING-NEXT:     a = {{arg[0-9]+}};
-// LOWERING-NEXT:     b = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u128 = a;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u128 = b;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u128 = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u128 = __retval;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u128 = {{arg[0-9]+}} * {{arg[0-9]+}};
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut a: i128 = 0;
-// LOWERING-NEXT:     let mut b: i128 = 0;
-// LOWERING-NEXT:     let mut sum: i128 = 0;
-// LOWERING-NEXT:     let mut x: u128 = 0;
-// LOWERING-NEXT:     let mut y: u128 = 0;
-// LOWERING-NEXT:     let mut prod: u128 = 0;
-// LOWERING-NEXT:     let mut cmp: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i128 = 9000000000000000000i128;
-// LOWERING-NEXT:     a = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i128 = 9000000000000000000i128;
-// LOWERING-NEXT:     b = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i128 = a;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i128 = b;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i128 = add128({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     sum = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i128 = sum;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u128 = {{_v[0-9]+}} as u128;
 // LOWERING-NEXT:     print128({{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u128 = 1000000000000u128;
-// LOWERING-NEXT:     x = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u128 = 1000000000000u128;
-// LOWERING-NEXT:     y = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u128 = x;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u128 = y;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u128 = mul128({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     prod = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u128 = prod;
 // LOWERING-NEXT:     print128({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i128 = sum;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i128 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     cmp = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = cmp;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -142,58 +88,39 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn add128({{arg[0-9]+}}: i128, {{arg[0-9]+}}: i128) -> i128 {
-// REWRITES-NEXT: let mut a: i128 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut b: i128 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut __retval: i128 = 0;
-// REWRITES-NEXT: __retval = a + b;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return {{arg[0-9]+}} + {{arg[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn print128({{arg[0-9]+}}: u128) {
-// REWRITES-NEXT: let mut v: u128 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut hi: u64 = 0;
-// REWRITES-NEXT: let mut lo: u64 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 64;
-// REWRITES-NEXT: hi = (v >> {{_v[0-9]+}}) as u64;
-// REWRITES-NEXT: lo = v as u64;
+// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = ({{arg[0-9]+}} >> {{_v[0-9]+}}) as u64;
+// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = {{arg[0-9]+}} as u64;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%llu:%llu\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, hi, lo) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // REWRITES-NEXT: return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn mul128({{arg[0-9]+}}: u128, {{arg[0-9]+}}: u128) -> u128 {
-// REWRITES-NEXT: let mut a: u128 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut b: u128 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut __retval: u128 = 0;
-// REWRITES-NEXT: __retval = a * b;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return {{arg[0-9]+}} * {{arg[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut a: i128 = 0;
-// REWRITES-NEXT: let mut b: i128 = 0;
-// REWRITES-NEXT: let mut sum: i128 = 0;
-// REWRITES-NEXT: let mut x: u128 = 0;
-// REWRITES-NEXT: let mut y: u128 = 0;
-// REWRITES-NEXT: let mut prod: u128 = 0;
-// REWRITES-NEXT: let mut cmp: i32 = 0;
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: a = 9000000000000000000i128;
-// REWRITES-NEXT: b = 9000000000000000000i128;
-// REWRITES-NEXT: sum = add128(a, b);
-// REWRITES-NEXT: print128(sum as u128);
-// REWRITES-NEXT: x = 1000000000000u128;
-// REWRITES-NEXT: y = 1000000000000u128;
-// REWRITES-NEXT: prod = mul128(x, y);
-// REWRITES-NEXT: print128(prod);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i128 = 9000000000000000000i128;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i128 = 9000000000000000000i128;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i128 = add128({{_v[0-9]+}}, {{_v[0-9]+}});
+// REWRITES-NEXT: print128({{_v[0-9]+}} as u128);
+// REWRITES-NEXT: let {{_v[0-9]+}}: u128 = 1000000000000u128;
+// REWRITES-NEXT: let {{_v[0-9]+}}: u128 = 1000000000000u128;
+// REWRITES-NEXT: let {{_v[0-9]+}}: u128 = mul128({{_v[0-9]+}}, {{_v[0-9]+}});
+// REWRITES-NEXT: print128({{_v[0-9]+}});
 // REWRITES-NEXT: let {{_v[0-9]+}}: i128 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT: cmp = if sum > {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} > {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, cmp) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

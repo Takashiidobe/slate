@@ -1871,7 +1871,17 @@ impl __SlateVaArgs {
             }
             return;
         }
-        if let Attr::Zero { .. } = init {
+        let is_empty_aggregate = ty.as_ref().is_some_and(|ty| match ty {
+            Type::Array { len, .. } => *len == 0,
+            Type::Custom(name) => self
+                .records
+                .get(name)
+                .is_some_and(|record| record.fields.is_empty()),
+            _ => false,
+        });
+        if matches!(init, Attr::Zero { .. })
+            || (matches!(init, Attr::Poison { .. }) && is_empty_aggregate)
+        {
             if is_c_global && let Some(ty) = ty {
                 self.globals.insert(
                     rust_name.clone(),

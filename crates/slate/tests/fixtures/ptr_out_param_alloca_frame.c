@@ -112,29 +112,18 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut tok: i32 = 0;
-// LOWERING-NEXT:     let mut s: *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut r: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     tok = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"xyz\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     s = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = s;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = s;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(3) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = check_target({{_v[0-9]+}}, {{_v[0-9]+}}, std::ptr::addr_of_mut!(tok));
-// LOWERING-NEXT:     r = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = r;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = tok;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -209,21 +198,16 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut tok: i32 = 0;
-// REWRITES-NEXT: let mut s: *mut i8 = std::ptr::null_mut();
-// REWRITES-NEXT: let mut r: i32 = 0;
-// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: tok = 0;
-// REWRITES-NEXT: s = b"xyz\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = s;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = s;
+// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"xyz\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 3;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(3) };
-// REWRITES-NEXT: r = check_target({{_v[0-9]+}}, {{_v[0-9]+}}, unsafe { &mut (*std::ptr::addr_of_mut!(tok)) });
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = check_target({{_v[0-9]+}}, {{_v[0-9]+}}, unsafe { &mut (*std::ptr::addr_of_mut!(tok)) });
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, r, tok) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, tok) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

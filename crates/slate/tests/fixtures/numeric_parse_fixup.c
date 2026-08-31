@@ -21,6 +21,7 @@ int main(void) {
   printf("%ld %c\n", raw, *end);
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
 // LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
@@ -35,7 +36,6 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut whole: [i8; 3] = [0; 3];
 // LOWERING-NEXT:     let mut whole_long: [i8; 7] = [0; 7];
 // LOWERING-NEXT:     let mut whole_unsigned: [i8; 3] = [0; 3];
@@ -45,9 +45,7 @@ int main(void) {
 // LOWERING-NEXT:     let mut flt: [i8; 13] = [0; 13];
 // LOWERING-NEXT:     let mut end_source: [i8; 7] = [0; 7];
 // LOWERING-NEXT:     let mut end: *mut i8 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut raw: i64 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     whole = [52, 50, 0];
 // LOWERING-NEXT:     whole_long = [45, 49, 50, 51, 52, 53, 0];
 // LOWERING-NEXT:     whole_unsigned = [55, 55, 0];
@@ -86,16 +84,12 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = end_source.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 10;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { strtol({{_v[0-9]+}} as *const i8, std::ptr::addr_of_mut!(end) as *mut *mut i8, {{_v[0-9]+}} as i32) };
-// LOWERING-NEXT:     raw = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%ld %c\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = raw;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = end;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = unsafe { *{{_v[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering

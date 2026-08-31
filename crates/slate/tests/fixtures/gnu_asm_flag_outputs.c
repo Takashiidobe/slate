@@ -51,59 +51,37 @@ int main(void) {
   return 0;
 }
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = left;
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = right;
 // LOWERING-DAG: let {{_v[0-9]+}}: i32;
 // LOWERING-DAG: let {{_v[0-9]+}}: i32;
 // LOWERING-DAG: let {{_v[0-9]+}}: i32;
 // LOWERING-DAG: unsafe {
-// LOWERING-DAG: core::arch::asm!("cmpl {4:e}, {3:e}\n\tsete {0:l}\n\tmovzbl {0:l}, {0:e}\n\tseta {1:l}\n\tmovzbl {1:l}, {1:e}\n\tsetl {2:l}\n\tmovzbl {2:l}, {2:e}", lateout(reg) {{_v[0-9]+}}, lateout(reg) {{_v[0-9]+}}, lateout(reg) {{_v[0-9]+}}, in(reg) {{_v[0-9]+}}, in(reg) {{_v[0-9]+}}, options(att_syntax));
+// LOWERING-DAG: core::arch::asm!("cmpl {4:e}, {3:e}\n\tsete {0:l}\n\tmovzbl {0:l}, {0:e}\n\tseta {1:l}\n\tmovzbl {1:l}, {1:e}\n\tsetl {2:l}\n\tmovzbl {2:l}, {2:e}", lateout(reg) {{_v[0-9]+}}, lateout(reg) {{_v[0-9]+}}, lateout(reg) {{_v[0-9]+}}, in(reg) {{arg[0-9]+}}, in(reg) {{arg[0-9]+}}, options(att_syntax));
 // LOWERING-DAG: }
-// LOWERING-DAG: equal = {{_v[0-9]+}};
-// LOWERING-DAG: above = {{_v[0-9]+}};
-// LOWERING-DAG: less = {{_v[0-9]+}};
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = left;
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = right;
 // LOWERING-DAG: let {{_v[0-9]+}}: i32;
 // LOWERING-DAG: unsafe {
-// LOWERING-DAG: core::arch::asm!("cmp {1:e}, {2:e}\n\tsetz {0:l}\n\tmovzx {0:e}, {0:l}", lateout(reg) {{_v[0-9]+}}, in(reg) {{_v[0-9]+}}, in(reg) {{_v[0-9]+}});
+// LOWERING-DAG: core::arch::asm!("cmp {1:e}, {2:e}\n\tsetz {0:l}\n\tmovzx {0:e}, {0:l}", lateout(reg) {{_v[0-9]+}}, in(reg) {{arg[0-9]+}}, in(reg) {{arg[0-9]+}});
 // LOWERING-DAG: }
-// LOWERING-DAG: equal = {{_v[0-9]+}};
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = value;
 // LOWERING-DAG: let {{_v[0-9]+}}: u16;
 // LOWERING-DAG: let {{_v[0-9]+}}: u64;
 // LOWERING-DAG: unsafe {
-// LOWERING-DAG: core::arch::asm!("testl {2:e}, {2:e}\n\tsets {0:l}\n\tmovzbw {0:l}, {0:x}\n\tsetne {1:l}\n\tmovzbq {1:l}, {1:r}", lateout(reg) {{_v[0-9]+}}, lateout(reg) {{_v[0-9]+}}, in(reg) {{_v[0-9]+}}, options(att_syntax));
+// LOWERING-DAG: core::arch::asm!("testl {2:e}, {2:e}\n\tsets {0:l}\n\tmovzbw {0:l}, {0:x}\n\tsetne {1:l}\n\tmovzbq {1:l}, {1:r}", lateout(reg) {{_v[0-9]+}}, lateout(reg) {{_v[0-9]+}}, in(reg) {{arg[0-9]+}}, options(att_syntax));
 // LOWERING-DAG: }
-// LOWERING-DAG: sign = {{_v[0-9]+}};
-// LOWERING-DAG: nonzero = {{_v[0-9]+}};
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = left;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = right;
 // REWRITES-DAG: let {{_v[0-9]+}}: i32;
 // REWRITES-DAG: let {{_v[0-9]+}}: i32;
 // REWRITES-DAG: let {{_v[0-9]+}}: i32;
 // REWRITES-DAG: unsafe {
-// REWRITES-DAG: core::arch::asm!("cmpl {4:e}, {3:e}\n\tsete {0:l}\n\tmovzbl {0:l}, {0:e}\n\tseta {1:l}\n\tmovzbl {1:l}, {1:e}\n\tsetl {2:l}\n\tmovzbl {2:l}, {2:e}", lateout(reg) {{_v[0-9]+}}, lateout(reg) {{_v[0-9]+}}, lateout(reg) {{_v[0-9]+}}, in(reg) {{_v[0-9]+}}, in(reg) {{_v[0-9]+}}, options(att_syntax));
+// REWRITES-DAG: core::arch::asm!("cmpl {4:e}, {3:e}\n\tsete {0:l}\n\tmovzbl {0:l}, {0:e}\n\tseta {1:l}\n\tmovzbl {1:l}, {1:e}\n\tsetl {2:l}\n\tmovzbl {2:l}, {2:e}", lateout(reg) {{_v[0-9]+}}, lateout(reg) {{_v[0-9]+}}, lateout(reg) {{_v[0-9]+}}, in(reg) {{arg[0-9]+}}, in(reg) {{arg[0-9]+}}, options(att_syntax));
 // REWRITES-DAG: }
-// REWRITES-DAG: equal = {{_v[0-9]+}};
-// REWRITES-DAG: above = {{_v[0-9]+}};
-// REWRITES-DAG: less = {{_v[0-9]+}};
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = left;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = right;
 // REWRITES-DAG: let {{_v[0-9]+}}: i32;
 // REWRITES-DAG: unsafe {
-// REWRITES-DAG: core::arch::asm!("cmp {1:e}, {2:e}\n\tsetz {0:l}\n\tmovzx {0:e}, {0:l}", lateout(reg) {{_v[0-9]+}}, in(reg) {{_v[0-9]+}}, in(reg) {{_v[0-9]+}});
+// REWRITES-DAG: core::arch::asm!("cmp {1:e}, {2:e}\n\tsetz {0:l}\n\tmovzx {0:e}, {0:l}", lateout(reg) {{_v[0-9]+}}, in(reg) {{arg[0-9]+}}, in(reg) {{arg[0-9]+}});
 // REWRITES-DAG: }
-// REWRITES-DAG: equal = {{_v[0-9]+}};
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = value;
 // REWRITES-DAG: let {{_v[0-9]+}}: u16;
 // REWRITES-DAG: let {{_v[0-9]+}}: u64;
 // REWRITES-DAG: unsafe {
-// REWRITES-DAG: core::arch::asm!("testl {2:e}, {2:e}\n\tsets {0:l}\n\tmovzbw {0:l}, {0:x}\n\tsetne {1:l}\n\tmovzbq {1:l}, {1:r}", lateout(reg) {{_v[0-9]+}}, lateout(reg) {{_v[0-9]+}}, in(reg) {{_v[0-9]+}}, options(att_syntax));
+// REWRITES-DAG: core::arch::asm!("testl {2:e}, {2:e}\n\tsets {0:l}\n\tmovzbw {0:l}, {0:x}\n\tsetne {1:l}\n\tmovzbq {1:l}, {1:r}", lateout(reg) {{_v[0-9]+}}, lateout(reg) {{_v[0-9]+}}, in(reg) {{arg[0-9]+}}, options(att_syntax));
 // REWRITES-DAG: }
-// REWRITES-DAG: sign = {{_v[0-9]+}};
-// REWRITES-DAG: nonzero = {{_v[0-9]+}};
 // SLATE-FILECHECK-END rewrites

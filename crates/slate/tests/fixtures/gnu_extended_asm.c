@@ -57,97 +57,55 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn gnu_extended_asm({{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-NEXT:     let mut input: i32 = 0;
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut output: i32 = 0;
-// LOWERING-NEXT:     let mut tied: i32 = 0;
-// LOWERING-NEXT:     let mut early: i32 = 0;
-// LOWERING-NEXT:     input = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = input;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         core::arch::asm!("leal 3({1:e}), {0:e}", lateout(reg) {{_v[0-9]+}}, in(reg) {{_v[0-9]+}}, options(att_syntax));
+// LOWERING-NEXT:         core::arch::asm!("leal 3({1:e}), {0:e}", lateout(reg) {{_v[0-9]+}}, in(reg) {{arg[0-9]+}}, options(att_syntax));
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     output = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = output;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32;
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         core::arch::asm!("addl $2, {0:e}", inlateout(reg) {{_v[0-9]+}} => {{_v[0-9]+}}, options(att_syntax));
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     output = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = output;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32;
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         core::arch::asm!("imull {1:e}, {0:e}", inlateout(reg) {{_v[0-9]+}} => {{_v[0-9]+}}, in(reg) {{_v[0-9]+}}, options(att_syntax));
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     tied = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = tied;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32;
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         core::arch::asm!("movl {1:e}, {0:e}\n\taddl {2:e}, {0:e}", out(reg) {{_v[0-9]+}}, in(reg) {{_v[0-9]+}}, in(reg) {{_v[0-9]+}}, options(att_syntax));
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     early = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = early;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 4;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32;
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         core::arch::asm!("addl ${1}, {0:e}", inlateout(reg) {{_v[0-9]+}} => {{_v[0-9]+}}, const 4, options(att_syntax));
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     early = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = early;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn gnu_numeric_operands({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-NEXT:     let mut left: i32 = 0;
-// LOWERING-NEXT:     let mut right: i32 = 0;
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut result: i32 = 0;
-// LOWERING-NEXT:     left = {{arg[0-9]+}};
-// LOWERING-NEXT:     right = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = left;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = right;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         core::arch::asm!("subl {1:e}, {0:e}", inlateout(reg) {{_v[0-9]+}} => {{_v[0-9]+}}, in(reg) {{_v[0-9]+}}, options(att_syntax));
+// LOWERING-NEXT:         core::arch::asm!("subl {1:e}, {0:e}", inlateout(reg) {{arg[0-9]+}} => {{_v[0-9]+}}, in(reg) {{arg[0-9]+}}, options(att_syntax));
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     result = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = result;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn gnu_multiple_outputs() -> i32 {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut left: i32 = 0;
-// LOWERING-NEXT:     let mut right: i32 = 0;
 // LOWERING-NEXT:     let mut __asm_result: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: 0, __slate_anon_1: 0 };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32;
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         core::arch::asm!("movl $3, {0:e}\n\tmovl $4, {1:e}", lateout(reg) {{_v[0-9]+}}, lateout(reg) {{_v[0-9]+}}, options(att_syntax));
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     left = {{_v[0-9]+}};
-// LOWERING-NEXT:     right = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = left;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 10;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = right;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_extended_asm({{_v[0-9]+}});
@@ -157,8 +115,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_multiple_outputs();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -180,84 +136,53 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn gnu_extended_asm({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT: let mut input: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut output: i32 = 0;
-// REWRITES-NEXT: let mut tied: i32 = 0;
-// REWRITES-NEXT: let mut early: i32 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = input;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32;
 // REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         core::arch::asm!("leal 3({1:e}), {0:e}", lateout(reg) {{_v[0-9]+}}, in(reg) {{_v[0-9]+}}, options(att_syntax));
+// REWRITES-NEXT:         core::arch::asm!("leal 3({1:e}), {0:e}", lateout(reg) {{_v[0-9]+}}, in(reg) {{arg[0-9]+}}, options(att_syntax));
 // REWRITES-NEXT: }
-// REWRITES-NEXT: output = {{_v[0-9]+}};
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = output;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32;
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         core::arch::asm!("addl $2, {0:e}", inlateout(reg) {{_v[0-9]+}} => {{_v[0-9]+}}, options(att_syntax));
 // REWRITES-NEXT: }
-// REWRITES-NEXT: output = {{_v[0-9]+}};
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = output;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 2;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32;
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         core::arch::asm!("imull {1:e}, {0:e}", inlateout(reg) {{_v[0-9]+}} => {{_v[0-9]+}}, in(reg) {{_v[0-9]+}}, options(att_syntax));
 // REWRITES-NEXT: }
-// REWRITES-NEXT: tied = {{_v[0-9]+}};
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = tied;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32;
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         core::arch::asm!("movl {1:e}, {0:e}\n\taddl {2:e}, {0:e}", out(reg) {{_v[0-9]+}}, in(reg) {{_v[0-9]+}}, in(reg) {{_v[0-9]+}}, options(att_syntax));
 // REWRITES-NEXT: }
-// REWRITES-NEXT: early = {{_v[0-9]+}};
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = early;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 4;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32;
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         core::arch::asm!("addl ${1}, {0:e}", inlateout(reg) {{_v[0-9]+}} => {{_v[0-9]+}}, const 4, options(att_syntax));
 // REWRITES-NEXT: }
-// REWRITES-NEXT: early = {{_v[0-9]+}};
-// REWRITES-NEXT: __retval = early;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return {{_v[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn gnu_numeric_operands({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT: let mut left: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut right: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut result: i32 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = left;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = right;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32;
 // REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         core::arch::asm!("subl {1:e}, {0:e}", inlateout(reg) {{_v[0-9]+}} => {{_v[0-9]+}}, in(reg) {{_v[0-9]+}}, options(att_syntax));
+// REWRITES-NEXT:         core::arch::asm!("subl {1:e}, {0:e}", inlateout(reg) {{arg[0-9]+}} => {{_v[0-9]+}}, in(reg) {{arg[0-9]+}}, options(att_syntax));
 // REWRITES-NEXT: }
-// REWRITES-NEXT: result = {{_v[0-9]+}};
-// REWRITES-NEXT: __retval = result;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return {{_v[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn gnu_multiple_outputs() -> i32 {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut left: i32 = 0;
-// REWRITES-NEXT: let mut right: i32 = 0;
 // REWRITES-NEXT: let mut __asm_result: {{anon_struct[0-9A-Za-z_]*}} = {{anon_struct[0-9A-Za-z_]*}} { __slate_anon_0: 0, __slate_anon_1: 0 };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32;
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         core::arch::asm!("movl $3, {0:e}\n\tmovl $4, {1:e}", lateout(reg) {{_v[0-9]+}}, lateout(reg) {{_v[0-9]+}}, options(att_syntax));
 // REWRITES-NEXT: }
-// REWRITES-NEXT: left = {{_v[0-9]+}};
-// REWRITES-NEXT: right = {{_v[0-9]+}};
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 10;
-// REWRITES-NEXT: __retval = left * {{_v[0-9]+}} + right;
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return {{_v[0-9]+}} * {{_v[0-9]+}} + {{_v[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 7;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = gnu_extended_asm({{_v[0-9]+}});
@@ -266,7 +191,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = gnu_numeric_operands({{_v[0-9]+}}, {{_v[0-9]+}});
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = gnu_multiple_outputs();
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

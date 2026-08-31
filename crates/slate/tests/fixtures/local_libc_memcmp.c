@@ -35,11 +35,8 @@ int main(void) {
 // LOWERING-NEXT:     let mut alen: i32 = 0;
 // LOWERING-NEXT:     let mut b: *mut u8 = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut blen: i32 = 0;
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut sa: i32 = 0;
 // LOWERING-NEXT:     let mut sb: i32 = 0;
-// LOWERING-NEXT:     let mut order: i32 = 0;
-// LOWERING-NEXT:     let mut sign: i32 = 0;
 // LOWERING-NEXT:     a = {{arg[0-9]+}};
 // LOWERING-NEXT:     alen = {{arg[0-9]+}};
 // LOWERING-NEXT:     b = {{arg[0-9]+}};
@@ -104,36 +101,27 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 3;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { memcmp({{_v[0-9]+}} as *const core::ffi::c_void, {{_v[0-9]+}} as *const core::ffi::c_void, {{_v[0-9]+}} as usize) };
-// LOWERING-NEXT:     order = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = order;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = order;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} - {{_v[0-9]+}};
-// LOWERING-NEXT:     sign = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = sign;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1000;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} * {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = sa;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = sb;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} - {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut x: [u8; 3] = [0; 3];
 // LOWERING-NEXT:     let mut y: [u8; 3] = [0; 3];
 // LOWERING-NEXT:     let mut z: [u8; 3] = [0; 3];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     x = [1, 2, 3];
 // LOWERING-NEXT:     y = [1, 2, 4];
 // LOWERING-NEXT:     z = [1, 2, 3];
@@ -155,8 +143,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = cmp_bytes({{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -175,11 +161,8 @@ int main(void) {
 // REWRITES-NEXT: let mut alen: i32 = {{arg[0-9]+}}.len() as i32;
 // REWRITES-NEXT: let mut b: *mut u8 = {{arg[0-9]+}}.as_ptr() as *mut u8;
 // REWRITES-NEXT: let mut blen: i32 = {{arg[0-9]+}}.len() as i32;
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut sa: i32 = 0;
 // REWRITES-NEXT: let mut sb: i32 = 0;
-// REWRITES-NEXT: let mut order: i32 = 0;
-// REWRITES-NEXT: let mut sign: i32 = 0;
 // REWRITES-NEXT: sa = 0;
 // REWRITES-NEXT: sb = 0;
 // REWRITES-NEXT: {
@@ -209,24 +192,18 @@ int main(void) {
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 3;
-// REWRITES-NEXT: order = unsafe { {{arg[0-9]+}}[(0usize..({{_v[0-9]+}} as usize) as usize)].cmp(&{{arg[0-9]+}}[(0usize..({{_v[0-9]+}} as usize) as usize)]) as i32 };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { {{arg[0-9]+}}[(0usize..({{_v[0-9]+}} as usize) as usize)].cmp(&{{arg[0-9]+}}[(0usize..({{_v[0-9]+}} as usize) as usize)]) as i32 };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT: sign = ((order > {{_v[0-9]+}}) as i32) - ((order < {{_v[0-9]+}}) as i32);
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1000;
-// REWRITES-NEXT: __retval = sign * {{_v[0-9]+}} + (sa - sb);
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return ((({{_v[0-9]+}} > {{_v[0-9]+}}) as i32) - (({{_v[0-9]+}} < {{_v[0-9]+}}) as i32)) * {{_v[0-9]+}} + (sa - sb);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut x: [u8; 3] = [0; 3];
-// REWRITES-NEXT: let mut y: [u8; 3] = [0; 3];
-// REWRITES-NEXT: let mut z: [u8; 3] = [0; 3];
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: x = [1, 2, 3];
-// REWRITES-NEXT: y = [1, 2, 4];
-// REWRITES-NEXT: z = [1, 2, 3];
+// REWRITES-NEXT: let mut x: [u8; 3] = [1, 2, 3];
+// REWRITES-NEXT: let mut y: [u8; 3] = [1, 2, 4];
+// REWRITES-NEXT: let mut z: [u8; 3] = [1, 2, 3];
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut u8 = x.as_mut_ptr() as *mut u8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 3;
@@ -244,7 +221,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 3;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = cmp_bytes(unsafe { std::slice::from_raw_parts({{_v[0-9]+}} as *const u8, {{_v[0-9]+}} as usize) }, unsafe { std::slice::from_raw_parts({{_v[0-9]+}} as *const u8, {{_v[0-9]+}} as usize) });
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

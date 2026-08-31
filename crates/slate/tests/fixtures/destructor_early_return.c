@@ -33,10 +33,8 @@ int main(int argc, char **argv) {
 // LOWERING-NEXT:     let {{arg[0-9]+}}: i32 = __slate_argv_storage.len() as i32;
 // LOWERING-NEXT:     let {{arg[0-9]+}}: *mut *mut i8 = __slate_argv_ptrs.as_mut_ptr();
 // LOWERING-NEXT:     let mut argc: i32 = 0;
-// LOWERING-NEXT:     let mut argv: *mut *mut i8 = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     argc = {{arg[0-9]+}};
-// LOWERING-NEXT:     argv = {{arg[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     {
@@ -84,7 +82,6 @@ int main(int argc, char **argv) {
 // REWRITES-NEXT: let {{arg[0-9]+}}: i32 = __slate_argv_storage.len() as i32;
 // REWRITES-NEXT: let {{arg[0-9]+}}: *mut *mut i8 = __slate_argv_ptrs.as_mut_ptr();
 // REWRITES-NEXT: let mut argc: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut argv: *mut *mut i8 = {{arg[0-9]+}};
 // REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: {

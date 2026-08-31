@@ -1,4 +1,5 @@
 #include <stdint.h>
+
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
 // REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
@@ -15,10 +16,9 @@
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut object: aligned::Aligned<aligned::A32, OverAligned> = aligned::Aligned(OverAligned { value: 0 });
 // REWRITES-NEXT: let mut local: aligned::Aligned<aligned::A64, i32> = aligned::Aligned(0);
-// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: *object = OverAligned { value: 7 };
 // REWRITES-NEXT: *local = 11;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%zu %zu %zu %d %d\n\0".as_ptr() as *mut i8;
@@ -30,8 +30,8 @@
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 64;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = object.value;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}} % {{_v[0-9]+}}, {{_v[0-9]+}}, *local) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites
 

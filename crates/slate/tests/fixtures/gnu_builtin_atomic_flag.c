@@ -18,34 +18,24 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut flag: bool = false;
-// LOWERING-NEXT:     let mut first: i32 = 0;
-// LOWERING-NEXT:     let mut second: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = false;
 // LOWERING-NEXT:     flag = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = std::ptr::addr_of_mut!(flag) as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = (unsafe { std::sync::atomic::AtomicI8::from_ptr({{_v[0-9]+}}).swap(1, std::sync::atomic::Ordering::SeqCst) }) != 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     first = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = std::ptr::addr_of_mut!(flag) as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = (unsafe { std::sync::atomic::AtomicI8::from_ptr({{_v[0-9]+}}).swap(1, std::sync::atomic::Ordering::SeqCst) }) != 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     second = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = std::ptr::addr_of_mut!(flag) as *mut i8;
 // LOWERING-NEXT:     unsafe { std::sync::atomic::AtomicI8::from_ptr({{_v[0-9]+}}).store(0, std::sync::atomic::Ordering::SeqCst) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = first;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = second;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = flag;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -59,26 +49,21 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut flag: bool = false;
-// REWRITES-NEXT: let mut first: i32 = 0;
-// REWRITES-NEXT: let mut second: i32 = 0;
-// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: flag = false;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = std::ptr::addr_of_mut!(flag) as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: bool = (unsafe { std::sync::atomic::AtomicI8::from_ptr({{_v[0-9]+}}).swap(1, std::sync::atomic::Ordering::SeqCst) }) != 0;
-// REWRITES-NEXT: first = {{_v[0-9]+}} as i32;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = std::ptr::addr_of_mut!(flag) as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: bool = (unsafe { std::sync::atomic::AtomicI8::from_ptr({{_v[0-9]+}}).swap(1, std::sync::atomic::Ordering::SeqCst) }) != 0;
-// REWRITES-NEXT: second = {{_v[0-9]+}} as i32;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = std::ptr::addr_of_mut!(flag) as *mut i8;
 // REWRITES-NEXT: unsafe { std::sync::atomic::AtomicI8::from_ptr({{_v[0-9]+}}).store(0, std::sync::atomic::Ordering::SeqCst) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = first;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = second;
 // REWRITES-NEXT: let {{_v[0-9]+}}: bool = !flag;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}} as i32) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

@@ -32,6 +32,7 @@ int main(void) {
              ? 0
              : 1;
 }
+
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
@@ -63,22 +64,18 @@ int main(void) {
 // REWRITES-NEXT: /// increments a value and records the operation
 // REWRITES-NEXT: /// stores the intermediate result
 // REWRITES-NEXT: fn increment({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT: let mut value: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut next: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT: unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(next), value + {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(next), {{arg[0-9]+}} + {{_v[0-9]+}}) };
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         completed_count = (unsafe { completed_count }) + 1;
 // REWRITES-NEXT: }
-// REWRITES-NEXT: __retval = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(next)) };
-// REWRITES-NEXT: return __retval;
+// REWRITES-NEXT: return unsafe { std::ptr::read_volatile(std::ptr::addr_of!(next)) };
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut holder: Holder = Holder { mode: Mode::MODE_OFF };
-// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: holder = Holder { mode: Mode::MODE_ON };
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: bool = (holder.mode as u32) == {{_v[0-9]+}};
@@ -102,8 +99,8 @@ int main(void) {
 // REWRITES-NEXT: };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT: __retval = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites
 

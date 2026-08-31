@@ -114,27 +114,20 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut range_values: aligned::Aligned<aligned::A16, [i32; 10]> = aligned::Aligned([0; 10]);
 // LOWERING-NEXT:     let mut old_index: [i32; 3] = [0; 3];
 // LOWERING-NEXT:     let mut p: Point = Point { x: 0, y: 0 };
-// LOWERING-NEXT:     let mut five: i32 = 0;
 // LOWERING-NEXT:     let mut c: Castable = unsafe { std::mem::zeroed::<Castable>() };
-// LOWERING-NEXT:     let mut f: aligned::Aligned<aligned::A4, Forward> = aligned::Aligned(Forward::FORWARD_A);
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     *range_values = [0, 0, 9, 9, 9, 9, 0, 0, 0, 0];
 // LOWERING-NEXT:     old_index = [0, 11, 0];
 // LOWERING-NEXT:     p = Point { x: 1, y: 2 };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
-// LOWERING-NEXT:     five = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = std::ptr::addr_of_mut!(c) as *mut i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = five;
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = Forward::FORWARD_B as u32;
-// LOWERING-NEXT:     *f = Forward::FORWARD_B;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 3;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = range_values[({{_v[0-9]+}} as usize)];
@@ -146,7 +139,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { c.i };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = *f as u32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%zu %zu\n\0".as_ptr() as *mut i8;
@@ -165,8 +157,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 4;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
@@ -237,31 +227,27 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut range_values: aligned::Aligned<aligned::A16, [i32; 10]> = aligned::Aligned([0; 10]);
 // REWRITES-NEXT: let mut old_index: [i32; 3] = [0; 3];
 // REWRITES-NEXT: let mut p: Point = Point { x: 0, y: 0 };
-// REWRITES-NEXT: let mut five: i32 = 0;
 // REWRITES-NEXT: let mut c: Castable = unsafe { std::mem::zeroed::<Castable>() };
-// REWRITES-NEXT: let mut f: aligned::Aligned<aligned::A4, Forward> = aligned::Aligned(Forward::FORWARD_A);
-// REWRITES-NEXT: __retval = 0;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: *range_values = [0, 0, 9, 9, 9, 9, 0, 0, 0, 0];
 // REWRITES-NEXT: old_index = [0, 11, 0];
 // REWRITES-NEXT: p = Point { x: 1, y: 2 };
-// REWRITES-NEXT: five = 5;
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 5;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = std::ptr::addr_of_mut!(c) as *mut i32;
 // REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         *{{_v[0-9]+}} = five;
+// REWRITES-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = Forward::FORWARD_B as u32;
-// REWRITES-NEXT: *f = Forward::FORWARD_B;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { c.i };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, range_values[({{_v[0-9]+}} as usize)], old_index[({{_v[0-9]+}} as usize)], p.x + p.y, {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, (*f as u32) as i32) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as i32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%zu %zu\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = std::mem::size_of::<FlexUnion>() as u64;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = std::mem::size_of::<OnlyFlex>() as u64;
@@ -277,7 +263,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%zu\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 4;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

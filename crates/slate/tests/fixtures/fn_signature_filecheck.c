@@ -14,31 +14,14 @@ int main(void) {
 }
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: fn sum3({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-DAG: let mut a: i32 = 0;
-// LOWERING-DAG: let mut b: i32 = 0;
-// LOWERING-DAG: let mut c: i32 = 0;
-// LOWERING-DAG: let mut __retval: i32 = 0;
-// LOWERING-DAG: a = {{arg[0-9]+}};
-// LOWERING-DAG: b = {{arg[0-9]+}};
-// LOWERING-DAG: c = {{arg[0-9]+}};
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = a;
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = b;
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = c;
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-DAG: __retval = {{_v[0-9]+}};
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-DAG: let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{arg[0-9]+}};
 // LOWERING-DAG: return {{_v[0-9]+}};
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn sum3({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-DAG: let mut a: i32 = {{arg[0-9]+}};
-// REWRITES-DAG: let mut b: i32 = {{arg[0-9]+}};
-// REWRITES-DAG: let mut c: i32 = {{arg[0-9]+}};
-// REWRITES-DAG: let mut __retval: i32 = 0;
-// REWRITES-DAG: __retval = a + b + c;
-// REWRITES-DAG: return __retval;
+// REWRITES-DAG: return {{arg[0-9]+}} + {{arg[0-9]+}} + {{arg[0-9]+}};
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

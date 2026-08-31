@@ -154,7 +154,6 @@ int main(void) {
 // LOWERING-DAG: {{_v[0-9]+}}
 // LOWERING-DAG: };
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-DAG: failed = {{_v[0-9]+}};
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
@@ -246,5 +245,5 @@ int main(void) {
 // REWRITES-DAG: let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.im != {{_v[0-9]+}};
 // REWRITES-DAG: {{_v[0-9]+}}
 // REWRITES-DAG: };
-// REWRITES-DAG: failed = {{_v[0-9]+}} as i32;
+// REWRITES-DAG: std::process::exit(({{_v[0-9]+}} as i32) as i32);
 // SLATE-FILECHECK-END rewrites

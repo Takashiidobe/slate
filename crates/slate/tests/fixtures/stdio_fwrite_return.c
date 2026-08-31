@@ -31,7 +31,6 @@ int main(void) {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut f: *mut libc::FILE = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut buf: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
-// LOWERING-NEXT:     let mut n: u64 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"slate_stdio_fwrite_return.tmp\0".as_ptr() as *mut i8;
@@ -60,9 +59,7 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 15;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut libc::FILE = f;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe { fwrite({{_v[0-9]+}} as *const core::ffi::c_void, {{_v[0-9]+}} as usize, {{_v[0-9]+}} as usize, {{_v[0-9]+}} as *mut libc::FILE) }) as u64;
-// LOWERING-NEXT:     n = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%zu\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = n;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut libc::FILE = f;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { fclose({{_v[0-9]+}} as *mut libc::FILE) };
@@ -92,7 +89,6 @@ int main(void) {
 // REWRITES-NEXT: let mut __retval: i32 = 0;
 // REWRITES-NEXT: let mut f: *mut libc::FILE = std::ptr::null_mut();
 // REWRITES-NEXT: let mut buf: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
-// REWRITES-NEXT: let mut n: u64 = 0;
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"slate_stdio_fwrite_return.tmp\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { remove({{_v[0-9]+}} as *const i8) };
@@ -113,9 +109,9 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = buf.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 15;
-// REWRITES-NEXT: n = (unsafe { fwrite(({{_v[0-9]+}} as *mut core::ffi::c_void) as *const core::ffi::c_void, {{_v[0-9]+}} as usize, {{_v[0-9]+}} as usize, f as *mut libc::FILE) }) as u64;
+// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = (unsafe { fwrite(({{_v[0-9]+}} as *mut core::ffi::c_void) as *const core::ffi::c_void, {{_v[0-9]+}} as usize, {{_v[0-9]+}} as usize, f as *mut libc::FILE) }) as u64;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%zu\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, n) };
+// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { fclose(f as *mut libc::FILE) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"slate_stdio_fwrite_return.tmp\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { remove({{_v[0-9]+}} as *const i8) };
