@@ -616,7 +616,6 @@ pub fn emit_generic_with_args_flattened(
         src,
         extra_args,
         &[
-            "--mem2reg",
             "--verify-each=false",
             "--cir-flatten-cfg",
             "--cir-goto-solver",
@@ -631,7 +630,7 @@ pub fn emit_generic_with_args_cfg_flattened(
     emit_generic_with_args_and_cir_opt_flags(
         src,
         extra_args,
-        &["--mem2reg", "--verify-each=false", "--cir-flatten-cfg"],
+        &["--verify-each=false", "--cir-flatten-cfg"],
     )
 }
 

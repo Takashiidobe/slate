@@ -39,6 +39,16 @@ fn contains_goto(op: &Op) -> bool {
     })
 }
 
+fn contains_indirect_goto(op: &Op) -> bool {
+    op.mnemonic() == "indirect_goto"
+        || op.regions.iter().any(|region| {
+            region
+                .blocks
+                .iter()
+                .any(|block| block.ops.iter().any(contains_indirect_goto))
+        })
+}
+
 fn contains_label(op: &Op) -> bool {
     op.mnemonic() == "label"
         || op.regions.iter().any(|region| {
@@ -79,12 +89,11 @@ fn contains_asm_goto(op: &Op) -> bool {
 }
 
 fn needs_goto_flattening(op: &Op) -> bool {
-    op.mnemonic() == "func"
-        && op
-            .regions
-            .first()
-            .is_some_and(|body| body.blocks.len() <= 1 || contains_nested_label(op))
-        && contains_goto(op)
+    op.mnemonic() == "func" && contains_goto(op)
+}
+
+fn needs_indirect_goto_flattening(op: &Op) -> bool {
+    op.mnemonic() == "func" && contains_indirect_goto(op)
 }
 
 fn needs_asm_goto_flattening(op: &Op) -> bool {
@@ -169,6 +178,10 @@ pub fn emit_module(src: &Path, extra_args: &[String]) -> Result<Module, ModuleEr
         Err(error) => return Err(error.into()),
     };
     let mut module = parse_module(&generic)?;
+    if module_needs_flattening(&module, needs_indirect_goto_flattening) {
+        let flat_module = parse_module(&emit_generic_with_args_flattened(src, extra_args)?)?;
+        merge_flattened_functions(&mut module, &flat_module, needs_indirect_goto_flattening);
+    }
     if module_needs_flattening(&module, needs_asm_goto_flattening) {
         let flat_module = parse_module(&emit_generic_with_args_cfg_flattened(src, extra_args)?)?;
         merge_flattened_functions(&mut module, &flat_module, needs_asm_goto_flattening);
