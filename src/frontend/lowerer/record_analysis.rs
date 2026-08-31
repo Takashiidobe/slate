@@ -1,6 +1,34 @@
 use super::*;
 use clang_ir::enums::RecordMemberKind as CirRecordMemberKind;
 
+fn adopt_cir_int_signedness(
+    ast_ty: &mut crate::frontend::c_ast::CType,
+    cir_ty: &crate::frontend::c_ast::CType,
+) {
+    use crate::frontend::c_ast::CType;
+    match (ast_ty, cir_ty) {
+        (CType::Ptr(ast_inner), CType::Ptr(cir_inner)) => {
+            adopt_cir_int_signedness(ast_inner, cir_inner)
+        }
+        (CType::Array(ast_inner, _), CType::Array(cir_inner, _)) => {
+            adopt_cir_int_signedness(ast_inner, cir_inner)
+        }
+        (
+            CType::Int {
+                signed: ast_signed,
+                bits: ast_bits,
+            },
+            CType::Int {
+                signed: cir_signed,
+                bits: cir_bits,
+            },
+        ) if ast_bits == cir_bits => {
+            *ast_signed = *cir_signed;
+        }
+        _ => {}
+    }
+}
+
 pub(super) fn reconcile_anonymous_member_types(
     module: &Module,
     records: &mut BTreeMap<String, crate::frontend::c_ast::Record>,
@@ -59,6 +87,7 @@ pub(super) fn reconcile_anonymous_member_types(
                     field.ty = cir_ty;
                     continue;
                 }
+                adopt_cir_int_signedness(&mut field.ty, &cir_ty);
                 let (CType::Record(ast_name), CType::Record(cir_name)) = (&field.ty, &cir_ty)
                 else {
                     continue;
