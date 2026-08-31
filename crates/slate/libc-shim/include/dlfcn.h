@@ -2,6 +2,12 @@
 #define _SLATE_DLFCN_H
 #include <features.h>
 
+#if defined(__SLATE_LIBC_FREEBSD)
+
+#include <bits/freebsd/dlfcn.h>
+
+#else
+
 enum {
   RTLD_LAZY     = 1,
   RTLD_NOW      = 2,
@@ -35,5 +41,7 @@ int dlinfo(void *, int, void *);
 #if _REDIR_TIME64
 __REDIR(dlsym, __dlsym_time64);
 #endif
+
+#endif 
 
 #endif

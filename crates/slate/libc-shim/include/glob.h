@@ -6,6 +6,12 @@
 #define __NEED_size_t
 #include <bits/types.h>
 
+#if defined(__SLATE_LIBC_FREEBSD)
+
+#include <bits/freebsd/glob.h>
+
+#else
+
 typedef struct {
   size_t gl_pathc;
   char **gl_pathv;
@@ -44,5 +50,7 @@ void globfree(glob_t *);
 #define globfree64 globfree
 #define glob64_t   glob_t
 #endif
+
+#endif 
 
 #endif

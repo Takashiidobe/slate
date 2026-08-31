@@ -3,6 +3,12 @@
 
 #include <features.h>
 
+#if defined(__SLATE_LIBC_FREEBSD)
+
+#include <bits/freebsd/poll.h>
+
+#else
+
 #define POLLIN     0x001
 #define POLLPRI    0x002
 #define POLLOUT    0x004
@@ -43,5 +49,7 @@ int ppoll(struct pollfd *, nfds_t, const struct timespec *, const sigset_t *);
 __REDIR(ppoll, __ppoll_time64);
 #endif
 #endif
+
+#endif 
 
 #endif

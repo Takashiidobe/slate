@@ -3,6 +3,12 @@
 
 #include <features.h>
 
+#if defined(__SLATE_LIBC_FREEBSD)
+
+#include <bits/freebsd/termios.h>
+
+#else
+
 #define NCCS 32
 
 #include <bits/termios.h>
@@ -37,5 +43,7 @@ pid_t tcgetsid(int);
 void cfmakeraw(struct termios *);
 int  cfsetspeed(struct termios *, speed_t);
 #endif
+
+#endif 
 
 #endif

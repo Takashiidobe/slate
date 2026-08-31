@@ -125,6 +125,17 @@ fn freebsd_net_headers() -> Vec<String> {
         .collect()
 }
 
+fn freebsd_process_headers() -> Vec<String> {
+    let manifest =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("libc-shim/freebsd-process-headers.txt");
+    fs::read_to_string(manifest)
+        .expect("read FreeBSD process header manifest")
+        .lines()
+        .filter(|line| !line.is_empty())
+        .map(str::to_string)
+        .collect()
+}
+
 fn macos_filesystem_headers() -> Vec<String> {
     let manifest =
         Path::new(env!("CARGO_MANIFEST_DIR")).join("libc-shim/macos-filesystem-headers.txt");
@@ -420,6 +431,54 @@ fn freebsd_net_header_manifest_compiles_for_x86_64_and_aarch64() {
          _Static_assert(EAI_FAMILY == 5, \"EAI_FAMILY\");\n\
          _Static_assert(sizeof(struct ifaddrs) == 56, \"ifaddrs size\");\n\
          int main(void) {{ struct sockaddr sa; struct sockaddr_in sin; struct sockaddr_in6 sin6; struct sockaddr_un sun; struct addrinfo ai; struct ifaddrs ifa; (void)sa; (void)sin; (void)sin6; (void)sun; (void)ai; (void)ifa; return 0; }}\n"
+    );
+    for arch in [Architecture::X86_64, Architecture::Aarch64] {
+        let config = TestConfig::new(arch, LibcVariant::FreeBsd);
+        compile_test_program(&config, &source).unwrap();
+    }
+}
+
+#[test]
+fn freebsd_process_header_manifest_compiles_for_x86_64_and_aarch64() {
+    let headers = freebsd_process_headers();
+    let includes = headers
+        .iter()
+        .map(|header| format!("#include <{header}>\n"))
+        .collect::<String>();
+    let source = format!(
+        "#define _BSD_SOURCE\n{includes}\n#include <stddef.h>\n\
+         _Static_assert(sizeof(nfds_t) == 4, \"nfds_t size\");\n\
+         _Static_assert(POLLIN == 0x0001, \"POLLIN\");\n\
+         _Static_assert(POLLWRBAND == 0x0100, \"POLLWRBAND\");\n\
+         _Static_assert(sizeof(struct termios) == 44, \"termios size\");\n\
+         _Static_assert(offsetof(struct termios, c_cc) == 16, \"c_cc offset\");\n\
+         _Static_assert(offsetof(struct termios, c_ispeed) == 36, \"c_ispeed offset\");\n\
+         _Static_assert(VINTR == 8, \"VINTR\");\n\
+         _Static_assert(TCSANOW == 0, \"TCSANOW\");\n\
+         _Static_assert(TCIFLUSH == 1, \"TCIFLUSH\");\n\
+         _Static_assert(sizeof(struct passwd) == 80, \"passwd size\");\n\
+         _Static_assert(offsetof(struct passwd, pw_change) == 24, \"pw_change offset\");\n\
+         _Static_assert(offsetof(struct passwd, pw_gecos) == 40, \"pw_gecos offset\");\n\
+         _Static_assert(sizeof(posix_spawnattr_t) == 8, \"posix_spawnattr_t size\");\n\
+         _Static_assert(POSIX_SPAWN_SETSIGDEF == 0x10, \"POSIX_SPAWN_SETSIGDEF\");\n\
+         _Static_assert(WNOHANG == 1, \"WNOHANG\");\n\
+         _Static_assert(WCONTINUED == 4, \"WCONTINUED\");\n\
+         _Static_assert(P_PID == 0, \"P_PID\");\n\
+         _Static_assert(P_ALL == 7, \"P_ALL\");\n\
+         _Static_assert((long)RTLD_DEFAULT == -2, \"RTLD_DEFAULT\");\n\
+         _Static_assert(RTLD_NOLOAD == 0x02000, \"RTLD_NOLOAD\");\n\
+         _Static_assert(sizeof(regex_t) == 32, \"regex_t size\");\n\
+         _Static_assert(REG_NEWLINE == 0010, \"REG_NEWLINE\");\n\
+         _Static_assert(GLOB_APPEND == 0x0001, \"GLOB_APPEND\");\n\
+         _Static_assert(GLOB_NOSPACE == -1, \"GLOB_NOSPACE\");\n\
+         _Static_assert(FNM_PATHNAME == 0x02, \"FNM_PATHNAME\");\n\
+         _Static_assert(FNM_NOESCAPE == 0x01, \"FNM_NOESCAPE\");\n\
+         _Static_assert(sizeof(struct kevent) == 64, \"kevent size\");\n\
+         _Static_assert(offsetof(struct kevent, data) == 16, \"kevent data offset\");\n\
+         _Static_assert(EVFILT_READ == -1, \"EVFILT_READ\");\n\
+         _Static_assert(CTL_KERN == 1, \"CTL_KERN\");\n\
+         _Static_assert(HW_NCPU == 3, \"HW_NCPU\");\n\
+         int main(void) {{ struct pollfd pfd; fd_set fds; struct kevent kev; (void)pfd; (void)fds; (void)kev; return 0; }}\n"
     );
     for arch in [Architecture::X86_64, Architecture::Aarch64] {
         let config = TestConfig::new(arch, LibcVariant::FreeBsd);

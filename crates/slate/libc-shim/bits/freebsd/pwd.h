@@ -1,33 +1,22 @@
-#ifndef _SLATE_PWD_H
-#define _SLATE_PWD_H
+#ifndef _SLATE_BITS_FREEBSD_PWD_H
+#define _SLATE_BITS_FREEBSD_PWD_H
 
-#include <features.h>
-
-#define __NEED_size_t
-#define __NEED_uid_t
-#define __NEED_gid_t
-#ifdef _GNU_SOURCE
-#define __NEED_FILE
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/freebsd/pwd.h> directly; include a public header instead."
 #endif
-#if defined(__SLATE_LIBC_FREEBSD)
-#define __NEED_time_t
-#endif
-#include <bits/types.h>
-
-#if defined(__SLATE_LIBC_FREEBSD)
-
-#include <bits/freebsd/pwd.h>
-
-#else
 
 struct passwd {
-  char *pw_name;
-  char *pw_passwd;
-  uid_t pw_uid;
-  gid_t pw_gid;
-  char *pw_gecos;
-  char *pw_dir;
-  char *pw_shell;
+  char  *pw_name;
+  char  *pw_passwd;
+  uid_t  pw_uid;
+  gid_t  pw_gid;
+  time_t pw_change;
+  char  *pw_class;
+  char  *pw_gecos;
+  char  *pw_dir;
+  char  *pw_shell;
+  time_t pw_expire;
+  int    pw_fields;
 };
 
 #if defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
@@ -45,7 +34,5 @@ int getpwnam_r(const char *, struct passwd *, char *, size_t, struct passwd **);
 struct passwd *fgetpwent(FILE *);
 int            putpwent(const struct passwd *, FILE *);
 #endif
-
-#endif 
 
 #endif

@@ -425,3 +425,126 @@ binds/listens on loopback, reads back the bound address via
 `getsockname`/`sockaddr_storage`, builds a `sockaddr_un` and an
 `addrinfo` hints struct, and calls `getifaddrs`/`freeifaddrs` — both
 architectures check clean with zero warnings.
+
+## Process, terminal, sysctl, and kqueue ABI (`slate-sfzn.10.8`)
+
+`libc-shim/freebsd-process-headers.txt` covers `unistd.h`, `spawn.h`,
+`sys/wait.h`, `poll.h`, `sys/select.h`, `termios.h`, `pwd.h`, `grp.h`,
+`dlfcn.h`, `regex.h`, `glob.h`, `fnmatch.h`, plus two brand-new
+FreeBSD-only headers: `sys/sysctl.h` and `sys/event.h` (kqueue/kevent).
+`sys/select.h` and `grp.h` needed **no overlay at all** — `fd_set`
+(1024-bit, `unsigned long` word array) and `struct group` are
+byte-for-byte identical to the shared shim's Linux-shaped versions,
+oracle-confirmed rather than assumed.
+
+`struct termios` is a from-scratch overlay: FreeBSD's flag bit
+assignments (`IGNBRK=0x1`, `ECHO=0x8`, `ISIG=0x80`, etc.) share no
+numbering scheme with glibc's octal-style bits, `NCCS=20` not 32, and the
+struct itself carries `c_ispeed`/`c_ospeed` as plain trailing `speed_t`
+fields (44 bytes total, `c_cc` at offset 16, `c_ispeed` at offset 36) —
+oracle-verified via the `_Static_assert` sentinel trick, not the
+`__c_ispeed`/`__c_ospeed`-behind-accessor-functions style glibc uses. The
+`V*` control-character indices, baud rate constants, and
+`TCSANOW`/`TCIFLUSH`/`TCOOFF`-family constants all use FreeBSD-specific
+numbering distinct from glibc's.
+
+`struct passwd` gained three FreeBSD-only fields absent from the shared
+shim's POSIX-minimal version — `pw_change`, `pw_class`, `pw_expire`,
+`pw_fields` — interleaved with the common fields in a different order
+(80 bytes total, `pw_change` at offset 24, `pw_gecos` at offset 40,
+oracle-verified). `posix_spawnattr_t`/`posix_spawn_file_actions_t`
+follow the same **opaque-pointer-to-incomplete-struct** pattern
+discovered for pthread types in 10.6 (`typedef struct __posix_spawnattr
+*posix_spawnattr_t;`, 8 bytes) rather than the shared shim's fixed-size
+inline struct — the kernel owns the storage. `POSIX_SPAWN_*` flag values
+use a different bit assignment than the shared shim
+(`SETSIGDEF=0x10`/`SETSIGMASK=0x20` vs. the shim's `4`/`8`), and
+`POSIX_SPAWN_DISABLE_ASLR_NP` replaces the shim's
+`USEVFORK`/`SETSID` (neither exists on FreeBSD).
+
+`sys/wait.h`'s status-decoding macros use a completely different
+algorithm than glibc's bit-shift scheme — FreeBSD's `_WSTATUS`/`_W_INT`
+approach with `_WSTOPPED=0177` and a magic `0x13` (`SIGCONT`) sentinel
+for `WIFCONTINUED`, ported verbatim from the oracle rather than
+reimplemented. `idtype_t` is a 16-member enum in Solaris-inherited order
+(`P_PID=0, P_PPID=1, ..., P_ALL=7, ...`), unrelated to the shared shim's
+4-member `P_ALL=0`-first enum. `WCONTINUED=4` (not 8).
+
+`poll.h`: `nfds_t` is `unsigned int` on FreeBSD, not the shared shim's
+`unsigned long` — a real width divergence, not just a value one.
+`POLLWRNORM` aliases `POLLOUT` (`0x0004`) rather than having its own bit.
+
+`dlfcn.h`: `RTLD_DEFAULT` is `(void *)-2` and `RTLD_SELF` is
+`(void *)-3` (both absent/different from the shared shim's NULL-based
+`RTLD_DEFAULT`), `RTLD_NOLOAD=0x02000` (not `4`), and `RTLD_TRACE`/
+`RTLD_DEEPBIND` are FreeBSD-specific additions.
+
+`regex.h`: `regex_t` is a real 4-field struct (`re_magic`, `re_nsub`,
+`re_endp`, `re_g`; 32 bytes) rather than the shared shim's synthetic
+padded struct, and `REG_*` compile-flag bit assignments are swapped
+relative to the shim (`REG_NOSUB=0004`/`REG_NEWLINE=0010` vs. the shim's
+`8`/`4`). The glibc-only `_GNU_SOURCE` `re_*`/`RE_*` extension API has no
+FreeBSD equivalent and is correctly absent from the FreeBSD branch.
+
+`glob.h`: `glob_t` is structurally very different — FreeBSD's version
+carries `gl_matchc`, an error-callback function pointer, and a full set
+of pluggable `gl_opendir`/`gl_readdir`/`gl_closedir`/`gl_stat`/`gl_lstat`
+function pointers absent from the shared shim's minimal struct.
+`GLOB_*` flag bit assignments are entirely different
+(`GLOB_APPEND=0x0001` vs. the shim's `0x20`), and error return codes are
+negative (`GLOB_NOSPACE=-1`) rather than the shim's positive `1`.
+
+`fnmatch.h`: `FNM_PATHNAME` and `FNM_NOESCAPE` are **swapped** relative
+to the shared shim's values (`0x02`/`0x01` vs. the shim's `0x01`/`0x02`)
+— easy to miss since both flags exist in both profiles with plausible-
+looking values, caught only by checking against the oracle directly.
+
+`unistd.h`'s `_PC_*`/`_SC_*` sysconf/pathconf identifiers are a full
+renumbering relative to glibc (`_SC_ARG_MAX=1` not `0`, `_PC_LINK_MAX=1`
+not `0`, etc.) — these are real runtime-ABI values since a translated
+program calls the real `sysconf`/`fpathconf` on the target. Kept
+deliberately narrow (~120 of FreeBSD's ~125 `_SC_*` names covered; the
+`_CS_*` confstr identifiers are omitted entirely under the FreeBSD
+branch rather than guessed) per the epic's "keep narrow" precedent from
+10.7. Omitted names simply don't compile if used, which is safer than a
+silently wrong value.
+
+`sys/sysctl.h` and `sys/event.h` are new, FreeBSD-only public headers —
+first time this shim has had headers with no cross-libc existence at
+all. Both use `#if defined(__SLATE_LIBC_FREEBSD) ... #endif` with an
+**empty body** (not an `#error`) on other profiles: an unconditional
+`#error` as the file's literal first line is how this codebase already
+marks headers as wholesale-unsupported-everywhere (see
+`libc-shim/include/sys/pidfd.h`), and `tests/libc_shim_suite.rs`'s
+`discover_public_headers` blindly text-matches that pattern to exclude
+such stub files from the Linux/glibc "compile every public header"
+sweep. A conditional `#error` guarded by `__SLATE_LIBC_FREEBSD` doesn't
+match that text-prefix check, so it would have broken the Linux sweep
+outright (confirmed by an initial failed nextest run) rather than being
+silently skipped — hence the empty-body-elsewhere fix instead of a
+hard error.
+
+`sys/sysctl.h` covers `sysctl`/`sysctlbyname`/`sysctlnametomib` plus a
+narrow `CTL_*`/`KERN_*`/`HW_*` MIB-name subset (`CTL_KERN=1`, `HW_NCPU=3`,
+etc.) rather than FreeBSD's full MIB tree. `sys/event.h` covers
+`kqueue`/`kevent`/`EV_SET` and `struct kevent`
+(`{ident: uintptr_t, filter: short, flags: u16, fflags: u32, data: i64,
+udata: *void, ext: [u64; 4]}`, 64 bytes, oracle-verified field offsets)
+plus the `EVFILT_*`/`EV_*` constant sets — the design note explicitly
+calls kqueue "FreeBSD-idiomatic ... represent as first-class FreeBSD-only
+surface rather than trying to unify with a Linux shape" (epoll is not a
+substitute), so no attempt was made to give it a cross-libc shape.
+
+Verified end-to-end via `slate translate` + `cargo check --target
+{x86_64,aarch64}-unknown-freebsd` for a fixture doing
+`posix_spawn`/`waitpid`/`WIFEXITED`, `tcgetattr`/termios flag
+manipulation, `getpwuid`, `sysctl(CTL_HW, HW_NCPU)`, `kqueue`/`EV_SET`,
+and `fnmatch` — both architectures check clean modulo the same benign
+opaque-struct `improper_ctypes` warnings already accepted for the
+`posix_spawnattr_t`/`posix_spawn_file_actions_t` opaque pointers. While
+building this fixture, hit and worked around an unrelated pre-existing
+lowerer bug (filed as `slate-vd43`, not fixed here): on aarch64, `char *`
+**struct fields** lower to `*mut i8` regardless of target, while `char *`
+**local variables** correctly lower to `*mut u8` per AAPCS64's
+unsigned-default — a target-awareness gap in the struct-field type path,
+not anything specific to FreeBSD or to `struct passwd`.
