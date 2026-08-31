@@ -142,6 +142,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.values.insert(result.clone(), Val::Expr(place));
             return;
         }
+        if !op.is_volatile
+            && op.mem_order.is_none()
+            && let Some(Val::Global(name)) = self.values.get(ptr)
+            && let Some(value) =
+                self.const_global_value_expr(name, &self.parent.rust_type(&op.result_ty))
+        {
+            self.materialize_expr(result, value, Some(&op.result_ty));
+            return;
+        }
         let volatile = op.is_volatile;
         let mut value = if volatile {
             Self::unsafe_expr(Expr::Call {
@@ -653,55 +662,53 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         });
     }
 
-    /// Resolve the by-value source of a `cir.copy`: a numeric/char const global
-    /// renders to an array literal (padded to the destination length), while an
-    /// aggregate local relies on the `Copy` derive of arrays and `#[repr(C)]`
-    /// structs. Returns `None` when the source is opaque (raw pointer copy).
     pub(super) fn copy_source_value(&self, dst: &str, src: &str) -> Option<Expr> {
         let dst_ty = self.slot_types.get(dst).or_else(|| {
             self.member_ptrs
                 .get(dst)
                 .and_then(|member| member.field_ty.as_ref())
         });
-        let dst_len = dst_ty.and_then(type_array_len).map(|len| len as usize);
         match self.values.get(src) {
-            Some(Val::Global(name)) => {
-                if let Some(bytes) = self.parent.strings.get(name) {
-                    let ty = dst_ty?;
-                    let elems = byte_array_elems(bytes, ty);
-                    Some(render_array_literal_expr(
-                        &elems,
-                        dst_len.unwrap_or(elems.len()),
-                        Expr::Value(RustValue::I64(0)),
-                    ))
-                } else if let Some(elems) = self.parent.const_arrays.get(name) {
-                    let default = match dst_ty {
-                        Some(Type::Array { elem, .. }) => self.parent.default_value_expr(elem),
-                        _ => Expr::Value(RustValue::I64(0)),
-                    };
-                    Some(render_array_literal_expr(
-                        elems,
-                        dst_len.unwrap_or(elems.len()),
-                        default,
-                    ))
-                } else if let Some(init) = self.parent.const_aggregates.get(name) {
-                    let ty = dst_ty?;
-                    let mut facts: std::collections::VecDeque<FloatingLiteralFact> = self
-                        .parent
-                        .global_floating_literals
-                        .get(name)
-                        .cloned()
-                        .unwrap_or_default()
-                        .into();
-                    self.parent.render_const_value_expr(ty, init, &mut facts)
-                } else if self.parent.const_zero_globals.contains(name) {
-                    dst_ty.map(|ty| self.parent.default_value_expr(ty))
-                } else {
-                    None
-                }
-            }
+            Some(Val::Global(name)) => self.const_global_value_expr(name, dst_ty?),
             _ => self.slot_place(src),
         }
+    }
+
+    fn const_global_value_expr(&self, name: &str, ty: &Type) -> Option<Expr> {
+        let len = type_array_len(ty).map(|len| len as usize);
+        if let Some(bytes) = self.parent.strings.get(name) {
+            let elems = byte_array_elems(bytes, ty);
+            return Some(render_array_literal_expr(
+                &elems,
+                len.unwrap_or(elems.len()),
+                Expr::Value(RustValue::I64(0)),
+            ));
+        }
+        if let Some(elems) = self.parent.const_arrays.get(name) {
+            let default = match ty {
+                Type::Array { elem, .. } => self.parent.default_value_expr(elem),
+                _ => Expr::Value(RustValue::I64(0)),
+            };
+            return Some(render_array_literal_expr(
+                elems,
+                len.unwrap_or(elems.len()),
+                default,
+            ));
+        }
+        if let Some(init) = self.parent.const_aggregates.get(name) {
+            let mut facts: std::collections::VecDeque<FloatingLiteralFact> = self
+                .parent
+                .global_floating_literals
+                .get(name)
+                .cloned()
+                .unwrap_or_default()
+                .into();
+            return self.parent.render_const_value_expr(ty, init, &mut facts);
+        }
+        self.parent
+            .const_zero_globals
+            .contains(name)
+            .then(|| self.parent.default_value_expr(ty))
     }
     pub(super) fn block_addr_dispatch_expr(&self, ptr: &str) -> Option<Expr> {
         let element = self.block_addr_element_ptrs.get(ptr)?;

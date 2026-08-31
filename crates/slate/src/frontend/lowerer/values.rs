@@ -70,6 +70,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         Expr::Var(sanitize_ident(operand))
     }
 
+    pub(super) fn typed_operand_expr(&self, operand: &str, ty: &CirType) -> Expr {
+        if is_cir_function_pointer_type(ty) {
+            self.function_pointer_operand_expr(operand)
+        } else if matches!(ty, CirType::Pointer { .. }) {
+            self.whole_aggregate_pointer_expr(operand, ty)
+                .unwrap_or_else(|| self.pointer_operand_expr(operand))
+        } else {
+            self.operand_expr(operand)
+        }
+    }
+
     pub(super) fn value_or_place_address_expr(&self, operand: &str) -> Expr {
         if self.values.contains_key(operand) {
             return self.operand_expr(operand);
@@ -408,12 +419,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 method: "clone".into(),
                 args: vec![],
             }
-        } else if is_cir_function_pointer_type(ty) {
-            self.function_pointer_operand_expr(operand)
         } else if matches!(ty, CirType::Pointer { .. }) {
-            let expr = self
-                .whole_aggregate_pointer_expr(operand, ty)
-                .unwrap_or_else(|| self.pointer_operand_expr(operand));
+            let expr = self.typed_operand_expr(operand, ty);
             let operand_field_ty = self
                 .member_ptrs
                 .get(operand)
@@ -435,7 +442,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 expr
             }
         } else {
-            self.operand_expr(operand)
+            self.typed_operand_expr(operand, ty)
         }
     }
 
