@@ -2,7 +2,6 @@
 pub enum Pass {
     Goto,
     Switch,
-    EarlyInlineTemps,
     AnonymousStructs,
     ParamSpills,
     ZeroInit,
@@ -72,7 +71,6 @@ impl Pass {
     pub const ALL: &'static [Pass] = &[
         Pass::Goto,
         Pass::Switch,
-        Pass::EarlyInlineTemps,
         Pass::AnonymousStructs,
         Pass::ParamSpills,
         Pass::ZeroInit,
@@ -142,7 +140,6 @@ impl Pass {
         match self {
             Pass::Goto => "goto",
             Pass::Switch => "switch",
-            Pass::EarlyInlineTemps => "early_inline_temps",
             Pass::AnonymousStructs => "anonymous_structs",
             Pass::ParamSpills => "param_spills",
             Pass::ZeroInit => "zero_init",
@@ -213,7 +210,6 @@ impl Pass {
         Some(match name {
             "goto" => Pass::Goto,
             "switch" => Pass::Switch,
-            "early_inline_temps" => Pass::EarlyInlineTemps,
             "anonymous_structs" => Pass::AnonymousStructs,
             "param_spills" => Pass::ParamSpills,
             "zero_init" => Pass::ZeroInit,
