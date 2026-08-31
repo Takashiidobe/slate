@@ -887,7 +887,7 @@ impl ClassifyCtx<'_> {
                         self.observe(&canonical, PointerFact::observe_write);
                     }
                 } else {
-                    self.expr(base);
+                    self.place(base, is_write);
                 }
                 self.expr(index);
             }
@@ -1243,12 +1243,23 @@ pub(in crate::backend) fn apply(program: &mut Program) {
 
     let mut plans: BTreeMap<String, BTreeMap<String, LiftPlan>> = BTreeMap::new();
     let mut param_names: BTreeMap<String, Vec<String>> = BTreeMap::new();
+    let mut param_mutability: BTreeMap<String, Vec<Option<bool>>> = BTreeMap::new();
     {
         let fn_defs = collect_fn_defs(&program.items);
         for (name, f) in &fn_defs {
             param_names.insert(
                 name.clone(),
                 f.params.iter().map(|p| p.name.clone()).collect(),
+            );
+            param_mutability.insert(
+                name.clone(),
+                f.params
+                    .iter()
+                    .map(|p| match &p.ty {
+                        Type::Ptr { mutable, .. } => Some(*mutable),
+                        _ => None,
+                    })
+                    .collect(),
             );
         }
         for (binding, fact) in &facts {
@@ -1288,7 +1299,7 @@ pub(in crate::backend) fn apply(program: &mut Program) {
         return;
     }
 
-    apply_plans(&mut program.items, &plans, &param_names);
+    apply_plans(&mut program.items, &plans, &param_names, &param_mutability);
 }
 
 fn for_each_fn_body<'a>(items: &'a [Item], f: &mut impl FnMut(&'a str, &'a [IndentStmt])) {
@@ -1477,6 +1488,7 @@ fn apply_plans(
     items: &mut [Item],
     plans: &BTreeMap<String, BTreeMap<String, LiftPlan>>,
     param_names: &BTreeMap<String, Vec<String>>,
+    param_mutability: &BTreeMap<String, Vec<Option<bool>>>,
 ) {
     let empty = BTreeMap::new();
     for item in items {
@@ -1498,12 +1510,19 @@ fn apply_plans(
                     own: own_plans,
                     all: plans,
                     param_names,
+                    param_mutability,
                     declared_mutability: &declared_mutability,
                     owned_aliases: &owned_aliases,
+                    return_mutability: match &f.ret {
+                        Some(Type::Ptr { mutable, .. }) => Some(*mutable),
+                        _ => None,
+                    },
                 };
                 rewrite_stmts(&mut f.body, &ctx);
             }
-            Item::InlineMod { items, .. } => apply_plans(items, plans, param_names),
+            Item::InlineMod { items, .. } => {
+                apply_plans(items, plans, param_names, param_mutability)
+            }
             _ => {}
         }
     }
@@ -1632,8 +1651,10 @@ struct LiftCtx<'a> {
     own: &'a BTreeMap<String, LiftPlan>,
     all: &'a BTreeMap<String, BTreeMap<String, LiftPlan>>,
     param_names: &'a BTreeMap<String, Vec<String>>,
+    param_mutability: &'a BTreeMap<String, Vec<Option<bool>>>,
     declared_mutability: &'a BTreeMap<String, bool>,
     owned_aliases: &'a BTreeMap<String, String>,
+    return_mutability: Option<bool>,
 }
 
 fn resolve_alias_root(
@@ -1916,7 +1937,17 @@ fn rewrite_stmt(stmt: &mut Stmt, ctx: &LiftCtx) {
                 operand.visit_exprs_mut(&mut |e| rewrite_expr(e, ctx));
             }
         }
-        Stmt::Expr(expr) | Stmt::Return(Some(expr)) => rewrite_expr(expr, ctx),
+        Stmt::Expr(expr) => rewrite_expr(expr, ctx),
+        Stmt::Return(Some(expr)) => {
+            if let Expr::Var(name) = expr
+                && let Some(plan) = ctx.own.get(name.as_str())
+                && let Some(mutable) = ctx.return_mutability
+            {
+                *expr = to_raw_pointer_as(name.as_str(), plan, mutable);
+            } else {
+                rewrite_expr(expr, ctx);
+            }
+        }
         Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => {}
         Stmt::For { iter, body, .. } => {
             rewrite_expr(iter, ctx);
@@ -2013,7 +2044,14 @@ fn rewrite_expr(expr: &mut Expr, ctx: &LiftCtx) {
                     callee_accepts_directly(callee, index, plan, ctx.all, ctx.param_names)
                 });
                 if !direct {
-                    *arg = to_raw_pointer(name.as_str(), plan);
+                    let target_mutable = callee
+                        .as_deref()
+                        .and_then(|callee| ctx.param_mutability.get(callee))
+                        .and_then(|params| params.get(index))
+                        .copied()
+                        .flatten()
+                        .unwrap_or(plan.mutable);
+                    *arg = to_raw_pointer_as(name.as_str(), plan, target_mutable);
                 }
                 continue;
             }
