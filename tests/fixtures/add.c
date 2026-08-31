@@ -36,7 +36,5 @@ int main(void) {
 // REWRITES-DAG: return {{arg[0-9]+}} + {{arg[0-9]+}};
 // REWRITES-DAG: }
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-DAG: unsafe { printf({{_v[0-9]+}} as *const i8, add({{_v[0-9]+}}, {{_v[0-9]+}})) };
+// REWRITES-DAG: unsafe { printf({{_v[0-9]+}} as *const i8, add(2, 3)) };
 // SLATE-FILECHECK-END rewrites

@@ -1,6 +1,7 @@
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::{Expr, Ident, Prim, RustValue, Stmt, Type, UnaryOp};
+use crate::function_identity::CallBinding;
 
 fn is_temp_name(name: &str) -> bool {
     name.strip_prefix("_v")
@@ -1646,6 +1647,275 @@ impl NodeRule for EffectfulTempForward {
         }
 
         if !node_substitute_var(arena, found.consumer_id, name.as_str(), &init) {
+            return false;
+        }
+        arena.touch_subtree(found.consumer_id);
+
+        let _ = arena.take(id);
+        if let Some(parent_kind) = arena.get_mut(found.parent)
+            && let Some(list) = parent_kind.child_lists_mut().get_mut(found.list_index)
+        {
+            list.remove(found.decl_pos);
+        }
+        true
+    }
+}
+
+fn is_numeric_const_expr(expr: &Expr) -> bool {
+    match expr {
+        Expr::Value(
+            RustValue::I64(_)
+            | RustValue::I128(_)
+            | RustValue::U128(_)
+            | RustValue::Usize(_)
+            | RustValue::Float(_),
+        ) => true,
+        Expr::Unary { expr, .. } | Expr::Cast { expr, .. } => is_numeric_const_expr(expr),
+        Expr::Binary { lhs, rhs, .. } => is_numeric_const_expr(lhs) && is_numeric_const_expr(rhs),
+        _ => false,
+    }
+}
+
+fn canonical_fixed_arity(canonical_type: &str) -> Option<(usize, bool)> {
+    let open = canonical_type.find('(')?;
+    let mut depth = 0usize;
+    let mut params = String::new();
+    for character in canonical_type[open..].chars() {
+        match character {
+            '(' => {
+                depth += 1;
+                if depth == 1 {
+                    continue;
+                }
+            }
+            ')' => {
+                depth -= 1;
+                if depth == 0 {
+                    break;
+                }
+            }
+            _ => {}
+        }
+        params.push(character);
+    }
+    let mut parts: Vec<String> = Vec::new();
+    let mut current = String::new();
+    let mut nesting = 0i32;
+    for character in params.chars() {
+        match character {
+            '(' | '[' | '<' => {
+                nesting += 1;
+                current.push(character);
+            }
+            ')' | ']' | '>' => {
+                nesting -= 1;
+                current.push(character);
+            }
+            ',' if nesting == 0 => {
+                parts.push(current.trim().to_string());
+                current.clear();
+            }
+            _ => current.push(character),
+        }
+    }
+    if !current.trim().is_empty() {
+        parts.push(current.trim().to_string());
+    }
+    if parts.is_empty() || (parts.len() == 1 && parts[0] == "void") {
+        return Some((0, false));
+    }
+    let variadic = parts.last().is_some_and(|part| part == "...");
+    let fixed = if variadic {
+        parts.len() - 1
+    } else {
+        parts.len()
+    };
+    Some((fixed, variadic))
+}
+
+fn is_fixed_param(binding: &CallBinding, index: usize) -> bool {
+    let CallBinding::Direct {
+        canonical_type: Some(canonical_type),
+        ..
+    } = binding
+    else {
+        return false;
+    };
+    canonical_fixed_arity(canonical_type).is_some_and(|(fixed, _)| index < fixed)
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum ArgPos {
+    Fixed,
+    Cast,
+    NonArg,
+}
+
+fn expr_arg_pos(expr: &Expr, name: Ident, ty: Option<&Type>) -> Option<ArgPos> {
+    match expr {
+        Expr::Var(var) => (*var == name).then_some(ArgPos::NonArg),
+        Expr::Cast { expr, ty: cast_ty } => expr_arg_pos(expr, name, ty).map(|pos| match pos {
+            ArgPos::NonArg if ty == Some(cast_ty) => ArgPos::Fixed,
+            ArgPos::NonArg => ArgPos::Cast,
+            other => other,
+        }),
+        Expr::Unary { expr, .. }
+        | Expr::Ref { expr, .. }
+        | Expr::AddrOf { expr, .. }
+        | Expr::Transmute { expr, .. } => expr_arg_pos(expr, name, ty),
+        Expr::Binary { lhs, rhs, .. }
+        | Expr::Range {
+            start: lhs,
+            end: rhs,
+        } => expr_arg_pos(lhs, name, ty).or_else(|| expr_arg_pos(rhs, name, ty)),
+        Expr::Index { base, index } => {
+            expr_arg_pos(base, name, ty).or_else(|| expr_arg_pos(index, name, ty))
+        }
+        Expr::Field { base, .. } | Expr::TupleField { base, .. } => expr_arg_pos(base, name, ty),
+        Expr::Call {
+            func,
+            args,
+            binding,
+        } => {
+            for (index, arg) in args.iter().enumerate() {
+                if let Some(pos) = expr_arg_pos(arg, name, ty) {
+                    return Some(match pos {
+                        ArgPos::NonArg => {
+                            if is_fixed_param(binding, index) {
+                                ArgPos::Fixed
+                            } else {
+                                ArgPos::Cast
+                            }
+                        }
+                        other => other,
+                    });
+                }
+            }
+            expr_arg_pos(func, name, ty)
+        }
+        Expr::Macro { args, .. } => {
+            for arg in args {
+                if let Some(pos) = expr_arg_pos(arg, name, ty) {
+                    return Some(match pos {
+                        ArgPos::NonArg => ArgPos::Cast,
+                        other => other,
+                    });
+                }
+            }
+            None
+        }
+        Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
+            if let Some(pos) = expr_arg_pos(recv, name, ty) {
+                return Some(pos);
+            }
+            for arg in args {
+                if let Some(pos) = expr_arg_pos(arg, name, ty) {
+                    return Some(match pos {
+                        ArgPos::NonArg => ArgPos::Cast,
+                        other => other,
+                    });
+                }
+            }
+            None
+        }
+        Expr::Block(block) | Expr::Unsafe(block) => block
+            .tail
+            .as_deref()
+            .and_then(|tail| expr_arg_pos(tail, name, ty)),
+        _ => (e_ident_count(expr, name) > 0).then_some(ArgPos::NonArg),
+    }
+}
+
+fn consumer_arg_pos(arena: &Arena, id: NodeId, name: Ident, ty: Option<&Type>) -> Option<ArgPos> {
+    match arena.get(id)? {
+        NodeKind::Expr(expr) => expr_arg_pos(expr, name, ty),
+        NodeKind::Return(Some(expr)) => expr_arg_pos(expr, name, ty),
+        NodeKind::Let {
+            init: Some(expr), ..
+        } => expr_arg_pos(expr, name, ty),
+        NodeKind::Assign { value, .. } | NodeKind::CompoundAssign { value, .. } => {
+            expr_arg_pos(value, name, ty)
+        }
+        NodeKind::Unsafe { stmts, tail } if tail.is_none() && stmts.len() == 1 => {
+            consumer_arg_pos(arena, stmts[0], name, ty)
+        }
+        _ => None,
+    }
+}
+
+pub(in crate::backend::engine) struct InlineConstArgTemps;
+
+impl NodeRule for InlineConstArgTemps {
+    fn name(&self) -> &'static str {
+        "inline_temps::const_arg"
+    }
+
+    fn priority(&self) -> u32 {
+        43
+    }
+
+    fn kinds(&self) -> &'static [NodeKindTag] {
+        &[NodeKindTag::Let]
+    }
+
+    fn matches(&self, arena: &Arena, id: NodeId) -> bool {
+        matches!(
+            arena.get(id),
+            Some(NodeKind::Let {
+                name,
+                mutable: false,
+                init: Some(init),
+                ..
+            }) if is_temp_name(name.as_str())
+                && !expr_is_type_anchored(init)
+                && is_numeric_const_expr(init)
+        )
+    }
+
+    fn apply(&self, arena: &mut Arena, id: NodeId) -> bool {
+        let Some(NodeKind::Let {
+            name,
+            mutable: false,
+            init: Some(init),
+            ty,
+        }) = arena.get(id)
+        else {
+            return false;
+        };
+        if !is_temp_name(name.as_str())
+            || expr_is_type_anchored(init)
+            || !is_numeric_const_expr(init)
+        {
+            return false;
+        }
+        let name = *name;
+        let ty = ty.clone();
+        let init = init.clone();
+
+        let root = function_root(arena, id);
+        if node_ident_count(arena, root, name) != 1 {
+            return false;
+        }
+
+        let Some(found) = locate_consumer(arena, id, name) else {
+            return false;
+        };
+
+        let replacement = match consumer_arg_pos(arena, found.consumer_id, name, ty.as_ref()) {
+            Some(ArgPos::Fixed) => init,
+            Some(ArgPos::Cast) => {
+                let Some(ty) = ty else {
+                    return false;
+                };
+                Expr::Cast {
+                    expr: Box::new(init),
+                    ty,
+                }
+            }
+            Some(ArgPos::NonArg) | None => return false,
+        };
+
+        if !node_substitute_var(arena, found.consumer_id, name.as_str(), &replacement) {
             return false;
         }
         arena.touch_subtree(found.consumer_id);
