@@ -179,6 +179,17 @@ fn macos_net_headers() -> Vec<String> {
         .collect()
 }
 
+fn macos_process_headers() -> Vec<String> {
+    let manifest =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("libc-shim/macos-process-headers.txt");
+    fs::read_to_string(manifest)
+        .expect("read macOS process header manifest")
+        .lines()
+        .filter(|line| !line.is_empty())
+        .map(str::to_string)
+        .collect()
+}
+
 fn header_program(headers: &[String]) -> String {
     let includes = headers
         .iter()
@@ -842,6 +853,72 @@ fn macos_net_header_manifest_compiles_for_aarch64() {
     assert!(
         failures.is_empty(),
         "macOS net manifest headers failed standalone compilation:\n{}",
+        failures.join("\n\n")
+    );
+}
+
+#[test]
+fn macos_process_header_manifest_compiles_for_aarch64() {
+    let headers = macos_process_headers();
+    let config = TestConfig::new(Architecture::Aarch64, LibcVariant::Darwin);
+    let includes = headers
+        .iter()
+        .map(|header| format!("#include <{header}>\n"))
+        .collect::<String>();
+    let source = format!(
+        "{includes}\n#include <stddef.h>\n\
+         _Static_assert(sizeof(nfds_t) == 4, \"nfds_t size\");\n\
+         _Static_assert(POLLIN == 0x0001, \"POLLIN\");\n\
+         _Static_assert(POLLWRBAND == 0x0100, \"POLLWRBAND\");\n\
+         _Static_assert(sizeof(struct termios) == 72, \"termios size\");\n\
+         _Static_assert(offsetof(struct termios, c_cc) == 32, \"c_cc offset\");\n\
+         _Static_assert(offsetof(struct termios, c_ispeed) == 56, \"c_ispeed offset\");\n\
+         _Static_assert(VINTR == 8, \"VINTR\");\n\
+         _Static_assert(TCSANOW == 0, \"TCSANOW\");\n\
+         _Static_assert(TCIFLUSH == 1, \"TCIFLUSH\");\n\
+         _Static_assert(sizeof(struct passwd) == 72, \"passwd size\");\n\
+         _Static_assert(offsetof(struct passwd, pw_change) == 24, \"pw_change offset\");\n\
+         _Static_assert(offsetof(struct passwd, pw_gecos) == 40, \"pw_gecos offset\");\n\
+         _Static_assert(sizeof(posix_spawnattr_t) == 8, \"posix_spawnattr_t size\");\n\
+         _Static_assert(POSIX_SPAWN_SETSIGDEF == 0x0004, \"POSIX_SPAWN_SETSIGDEF\");\n\
+         _Static_assert(WNOHANG == 0x00000001, \"WNOHANG\");\n\
+         _Static_assert(WCONTINUED == 0x00000010, \"WCONTINUED\");\n\
+         _Static_assert(P_ALL == 0, \"P_ALL\");\n\
+         _Static_assert(P_PID == 1, \"P_PID\");\n\
+         _Static_assert((long)RTLD_DEFAULT == -2, \"RTLD_DEFAULT\");\n\
+         _Static_assert(RTLD_NOLOAD == 0x10, \"RTLD_NOLOAD\");\n\
+         _Static_assert(sizeof(regex_t) == 32, \"regex_t size\");\n\
+         _Static_assert(REG_NEWLINE == 0010, \"REG_NEWLINE\");\n\
+         _Static_assert(GLOB_APPEND == 0x0001, \"GLOB_APPEND\");\n\
+         _Static_assert(GLOB_NOSPACE == -1, \"GLOB_NOSPACE\");\n\
+         _Static_assert(FNM_PATHNAME == 0x02, \"FNM_PATHNAME\");\n\
+         _Static_assert(FNM_NOESCAPE == 0x01, \"FNM_NOESCAPE\");\n\
+         _Static_assert(sizeof(fd_set) == 128, \"fd_set size\");\n\
+         int main(void) {{ struct pollfd pfd; fd_set fds; struct group gr; (void)pfd; (void)fds; (void)gr; return 0; }}\n"
+    );
+    compile_test_program(&config, &source).unwrap();
+
+    let sdk = std::env::var_os("SLATE_MACOS_SDK")
+        .filter(|path| !path.is_empty())
+        .map(PathBuf::from);
+    let failures = headers
+        .iter()
+        .filter_map(|header| {
+            let source = format!("#include <{header}>\nint main(void) {{ return 0; }}\n");
+            if let Err(error) = compile_test_program(&config, &source) {
+                return Some(format!("{header} against shim:\n{error}"));
+            }
+            if let Some(sdk) = &sdk
+                && let Err(error) = compile_macos_sdk_header(header, sdk)
+            {
+                return Some(format!("{header} against macOS SDK:\n{error}"));
+            }
+            None
+        })
+        .collect::<Vec<_>>();
+    assert!(
+        failures.is_empty(),
+        "macOS process manifest headers failed standalone compilation:\n{}",
         failures.join("\n\n")
     );
 }

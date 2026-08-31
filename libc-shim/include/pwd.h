@@ -9,12 +9,16 @@
 #ifdef _GNU_SOURCE
 #define __NEED_FILE
 #endif
-#if defined(__SLATE_LIBC_FREEBSD)
+#if defined(__SLATE_LIBC_DARWIN) || defined(__SLATE_LIBC_FREEBSD)
 #define __NEED_time_t
 #endif
 #include <bits/types.h>
 
-#if defined(__SLATE_LIBC_FREEBSD)
+#if defined(__SLATE_LIBC_DARWIN)
+
+#include <bits/darwin/pwd.h>
+
+#elif defined(__SLATE_LIBC_FREEBSD)
 
 #include <bits/freebsd/pwd.h>
 
