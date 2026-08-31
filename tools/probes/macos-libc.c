@@ -1,17 +1,24 @@
+#include <arpa/inet.h>
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <ifaddrs.h>
 #include <langinfo.h>
 #include <locale.h>
+#include <netdb.h>
+#include <netinet/in.h>
 #include <pthread.h>
 #include <sched.h>
 #include <semaphore.h>
 #include <setjmp.h>
 #include <signal.h>
+#include <stddef.h>
 #include <stdio.h>
+#include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/statvfs.h>
 #include <sys/time.h>
+#include <sys/un.h>
 #include <sys/ucontext.h>
 #include <time.h>
 #include <uchar.h>
@@ -55,6 +62,39 @@ _Static_assert(__builtin_types_compatible_p(
                            pthread_mutex_t *__restrict,
                            const struct timespec *__restrict)),
                "pthread_cond_timedwait signature");
+_Static_assert(sizeof(struct sockaddr) == 16, "sockaddr");
+_Static_assert(offsetof(struct sockaddr, sa_family) == 1, "sa_family");
+_Static_assert(sizeof(struct sockaddr_storage) == 128, "sockaddr_storage");
+_Static_assert(_Alignof(struct sockaddr_storage) == 8,
+               "sockaddr_storage alignment");
+_Static_assert(sizeof(struct sockaddr_in) == 16, "sockaddr_in");
+_Static_assert(sizeof(struct sockaddr_in6) == 28, "sockaddr_in6");
+_Static_assert(sizeof(struct sockaddr_un) == 106, "sockaddr_un");
+_Static_assert(sizeof(struct msghdr) == 48, "msghdr");
+_Static_assert(sizeof(struct cmsghdr) == 12, "cmsghdr");
+_Static_assert(CMSG_LEN(1) == 13, "CMSG_LEN");
+_Static_assert(CMSG_SPACE(1) == 16, "CMSG_SPACE");
+_Static_assert(sizeof(struct addrinfo) == 48, "addrinfo");
+_Static_assert(offsetof(struct addrinfo, ai_canonname) == 24,
+               "ai_canonname");
+_Static_assert(offsetof(struct addrinfo, ai_addr) == 32, "ai_addr");
+_Static_assert(sizeof(struct ifaddrs) == 56, "ifaddrs");
+_Static_assert(AF_INET6 == 30, "AF_INET6");
+_Static_assert(SOL_SOCKET == 0xffff, "SOL_SOCKET");
+_Static_assert(AI_NUMERICSERV == 0x1000, "AI_NUMERICSERV");
+_Static_assert(NI_NUMERICSCOPE == 0x100, "NI_NUMERICSCOPE");
+_Static_assert(__builtin_types_compatible_p(
+                   __typeof__(&recvfrom),
+                   ssize_t (*)(int, void *, size_t, int,
+                               struct sockaddr *__restrict,
+                               socklen_t *__restrict)),
+               "recvfrom signature");
+_Static_assert(__builtin_types_compatible_p(
+                   __typeof__(&getnameinfo),
+                   int (*)(const struct sockaddr *__restrict, socklen_t,
+                           char *__restrict, socklen_t, char *__restrict,
+                           socklen_t, int)),
+               "getnameinfo signature");
 
 struct slate_macos_stdio_locale_layouts {
   FILE      stream;
@@ -101,6 +141,22 @@ struct slate_macos_pthread_layouts {
   pthread_rwlockattr_t rwlock_attribute;
   sem_t                semaphore;
   struct sched_param   scheduling;
+};
+
+struct slate_macos_network_layouts {
+  struct sockaddr         address;
+  struct sockaddr_storage storage;
+  struct sockaddr_in      ipv4;
+  struct sockaddr_in6     ipv6;
+  struct sockaddr_un      local;
+  struct msghdr           message;
+  struct cmsghdr          control;
+  struct linger           linger;
+  struct addrinfo         resolution;
+  struct hostent          host;
+  struct servent          service;
+  struct protoent         protocol;
+  struct ifaddrs          interface;
 };
 
 pthread_mutex_t  slate_macos_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -161,3 +217,15 @@ int slate_macos_pthread_once(void (*routine)(void)) {
 int slate_macos_semaphore(sem_t *semaphore) { return sem_post(semaphore); }
 
 int slate_macos_sched_yield(void) { return sched_yield(); }
+
+int slate_macos_socket(struct sockaddr_in *address) {
+  int descriptor = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+  return descriptor < 0
+             ? descriptor
+             : bind(descriptor, (const struct sockaddr *)address,
+                    sizeof(*address));
+}
+
+int slate_macos_resolve(const char *node, struct addrinfo **result) {
+  return getaddrinfo(node, "443", 0, result);
+}

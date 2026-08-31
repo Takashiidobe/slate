@@ -169,6 +169,16 @@ fn macos_pthread_headers() -> Vec<String> {
         .collect()
 }
 
+fn macos_net_headers() -> Vec<String> {
+    let manifest = Path::new(env!("CARGO_MANIFEST_DIR")).join("libc-shim/macos-net-headers.txt");
+    fs::read_to_string(manifest)
+        .expect("read macOS net header manifest")
+        .lines()
+        .filter(|line| !line.is_empty())
+        .map(str::to_string)
+        .collect()
+}
+
 fn header_program(headers: &[String]) -> String {
     let includes = headers
         .iter()
@@ -750,6 +760,90 @@ fn macos_pthread_header_manifest_compiles_for_aarch64() {
 
     let error = compile_test_program(&config, "#include <threads.h>\n").unwrap_err();
     assert!(error.contains("threads.h") && error.contains("unavailable"));
+}
+
+#[test]
+fn macos_net_header_manifest_compiles_for_aarch64() {
+    let headers = macos_net_headers();
+    let config = TestConfig::new(Architecture::Aarch64, LibcVariant::Darwin);
+    let includes = headers
+        .iter()
+        .map(|header| format!("#include <{header}>\n"))
+        .collect::<String>();
+    let source = format!(
+        "{includes}\n#include <stddef.h>\n\
+         _Static_assert(sizeof(sa_family_t) == 1, \"sa_family_t\");\n\
+         _Static_assert(sizeof(socklen_t) == 4, \"socklen_t\");\n\
+         _Static_assert(sizeof(struct sockaddr) == 16, \"sockaddr\");\n\
+         _Static_assert(offsetof(struct sockaddr, sa_family) == 1, \"sa_family\");\n\
+         _Static_assert(sizeof(struct sockaddr_storage) == 128, \"sockaddr_storage\");\n\
+         _Static_assert(_Alignof(struct sockaddr_storage) == 8, \"sockaddr_storage alignment\");\n\
+         _Static_assert(sizeof(struct sockaddr_in) == 16, \"sockaddr_in\");\n\
+         _Static_assert(offsetof(struct sockaddr_in, sin_family) == 1, \"sin_family\");\n\
+         _Static_assert(sizeof(struct sockaddr_in6) == 28, \"sockaddr_in6\");\n\
+         _Static_assert(offsetof(struct sockaddr_in6, sin6_addr) == 8, \"sin6_addr\");\n\
+         _Static_assert(sizeof(struct sockaddr_un) == 106, \"sockaddr_un\");\n\
+         _Static_assert(offsetof(struct sockaddr_un, sun_path) == 2, \"sun_path\");\n\
+         _Static_assert(sizeof(struct msghdr) == 48, \"msghdr\");\n\
+         _Static_assert(offsetof(struct msghdr, msg_iovlen) == 24, \"msg_iovlen\");\n\
+         _Static_assert(sizeof(struct cmsghdr) == 12, \"cmsghdr\");\n\
+         _Static_assert(CMSG_LEN(1) == 13, \"CMSG_LEN\");\n\
+         _Static_assert(CMSG_SPACE(1) == 16, \"CMSG_SPACE\");\n\
+         _Static_assert(sizeof(struct addrinfo) == 48, \"addrinfo\");\n\
+         _Static_assert(offsetof(struct addrinfo, ai_canonname) == 24, \"ai_canonname\");\n\
+         _Static_assert(offsetof(struct addrinfo, ai_addr) == 32, \"ai_addr\");\n\
+         _Static_assert(sizeof(struct ifaddrs) == 56, \"ifaddrs\");\n\
+         _Static_assert(AF_INET6 == 30, \"AF_INET6\");\n\
+         _Static_assert(SOL_SOCKET == 0xffff, \"SOL_SOCKET\");\n\
+         _Static_assert(SO_NOSIGPIPE == 0x1022, \"SO_NOSIGPIPE\");\n\
+         _Static_assert(AI_NUMERICSERV == 0x1000, \"AI_NUMERICSERV\");\n\
+         _Static_assert(NI_NUMERICSCOPE == 0x100, \"NI_NUMERICSCOPE\");\n\
+         _Static_assert(EAI_FAMILY == 5, \"EAI_FAMILY\");\n\
+         _Static_assert(__builtin_types_compatible_p(__typeof__(&recvfrom), ssize_t (*)(int, void *, size_t, int, struct sockaddr *__restrict, socklen_t *__restrict)), \"recvfrom signature\");\n\
+         _Static_assert(__builtin_types_compatible_p(__typeof__(&getnameinfo), int (*)(const struct sockaddr *__restrict, socklen_t, char *__restrict, socklen_t, char *__restrict, socklen_t, int)), \"getnameinfo signature\");\n\
+         _Static_assert(__builtin_types_compatible_p(__typeof__(&inet_ntop), const char *(*)(int, const void *__restrict, char *__restrict, socklen_t)), \"inet_ntop signature\");\n\
+         #ifdef SOCK_CLOEXEC\n#error Linux SOCK_CLOEXEC leaked into Darwin\n#endif\n\
+         #ifdef MSG_CMSG_CLOEXEC\n#error Linux MSG_CMSG_CLOEXEC leaked into Darwin\n#endif\n\
+         int main(void) {{ return 0; }}\n"
+    );
+    compile_test_program(&config, &source).unwrap();
+
+    let error = compile_test_program(
+        &config,
+        "#include <sys/socket.h>\nint main(void) { return accept4(0, 0, 0, 0); }\n",
+    )
+    .unwrap_err();
+    assert!(error.contains("accept4"));
+    let error = compile_test_program(
+        &config,
+        "#include <sys/socket.h>\nint main(void) { return sizeof(struct mmsghdr); }\n",
+    )
+    .unwrap_err();
+    assert!(error.contains("mmsghdr"));
+
+    let sdk = std::env::var_os("SLATE_MACOS_SDK")
+        .filter(|path| !path.is_empty())
+        .map(PathBuf::from);
+    let failures = headers
+        .iter()
+        .filter_map(|header| {
+            let source = format!("#include <{header}>\nint main(void) {{ return 0; }}\n");
+            if let Err(error) = compile_test_program(&config, &source) {
+                return Some(format!("{header} against shim:\n{error}"));
+            }
+            if let Some(sdk) = &sdk
+                && let Err(error) = compile_macos_sdk_header(header, sdk)
+            {
+                return Some(format!("{header} against macOS SDK:\n{error}"));
+            }
+            None
+        })
+        .collect::<Vec<_>>();
+    assert!(
+        failures.is_empty(),
+        "macOS net manifest headers failed standalone compilation:\n{}",
+        failures.join("\n\n")
+    );
 }
 
 #[test]

@@ -17,7 +17,11 @@
 #define __NEED_socklen_t
 #include <bits/types.h>
 
-#if defined(__SLATE_LIBC_FREEBSD)
+#if defined(__SLATE_LIBC_DARWIN)
+
+#include <bits/darwin/socket.h>
+
+#elif defined(__SLATE_LIBC_FREEBSD)
 
 #include <bits/freebsd/socket.h>
 

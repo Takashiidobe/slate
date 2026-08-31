@@ -5,7 +5,11 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
-#if defined(__SLATE_LIBC_FREEBSD)
+#if defined(__SLATE_LIBC_DARWIN)
+
+#include <bits/darwin/ifaddrs.h>
+
+#elif defined(__SLATE_LIBC_FREEBSD)
 
 #include <bits/freebsd/ifaddrs.h>
 
