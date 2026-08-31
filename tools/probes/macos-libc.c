@@ -3,6 +3,9 @@
 #include <fcntl.h>
 #include <langinfo.h>
 #include <locale.h>
+#include <pthread.h>
+#include <sched.h>
+#include <semaphore.h>
 #include <setjmp.h>
 #include <signal.h>
 #include <stdio.h>
@@ -15,6 +18,43 @@
 #include <wchar.h>
 #include <wctype.h>
 #include <xlocale.h>
+
+_Static_assert(sizeof(pthread_t) == 8, "pthread_t");
+_Static_assert(sizeof(pthread_key_t) == 8, "pthread_key_t");
+_Static_assert(sizeof(pthread_attr_t) == 64, "pthread_attr_t");
+_Static_assert(sizeof(pthread_mutex_t) == 64, "pthread_mutex_t");
+_Static_assert(sizeof(pthread_mutexattr_t) == 16, "pthread_mutexattr_t");
+_Static_assert(sizeof(pthread_cond_t) == 48, "pthread_cond_t");
+_Static_assert(sizeof(pthread_condattr_t) == 16, "pthread_condattr_t");
+_Static_assert(sizeof(pthread_once_t) == 16, "pthread_once_t");
+_Static_assert(sizeof(pthread_rwlock_t) == 200, "pthread_rwlock_t");
+_Static_assert(sizeof(pthread_rwlockattr_t) == 24, "pthread_rwlockattr_t");
+_Static_assert(sizeof(sem_t) == 4, "sem_t");
+_Static_assert(sizeof(struct sched_param) == 8, "sched_param");
+_Static_assert(_Alignof(pthread_t) == 8, "pthread_t alignment");
+_Static_assert(_Alignof(pthread_key_t) == 8, "pthread_key_t alignment");
+_Static_assert(_Alignof(pthread_attr_t) == 8, "pthread_attr_t alignment");
+_Static_assert(_Alignof(pthread_mutex_t) == 8, "pthread_mutex_t alignment");
+_Static_assert(_Alignof(pthread_mutexattr_t) == 8,
+               "pthread_mutexattr_t alignment");
+_Static_assert(_Alignof(pthread_cond_t) == 8, "pthread_cond_t alignment");
+_Static_assert(_Alignof(pthread_condattr_t) == 8,
+               "pthread_condattr_t alignment");
+_Static_assert(_Alignof(pthread_once_t) == 8, "pthread_once_t alignment");
+_Static_assert(_Alignof(pthread_rwlock_t) == 8, "pthread_rwlock_t alignment");
+_Static_assert(_Alignof(pthread_rwlockattr_t) == 8,
+               "pthread_rwlockattr_t alignment");
+_Static_assert(_Alignof(sem_t) == 4, "sem_t alignment");
+_Static_assert(_Alignof(struct sched_param) == 4, "sched_param alignment");
+_Static_assert(__builtin_types_compatible_p(
+                   __typeof__(&pthread_setcancelstate), int (*)(int, int *)),
+               "pthread_setcancelstate signature");
+_Static_assert(__builtin_types_compatible_p(
+                   __typeof__(&pthread_cond_timedwait),
+                   int (*)(pthread_cond_t *__restrict,
+                           pthread_mutex_t *__restrict,
+                           const struct timespec *__restrict)),
+               "pthread_cond_timedwait signature");
 
 struct slate_macos_stdio_locale_layouts {
   FILE      stream;
@@ -47,6 +87,26 @@ struct slate_macos_time_signal_layouts {
   jmp_buf          jump;
   sigjmp_buf       signal_jump;
 };
+
+struct slate_macos_pthread_layouts {
+  pthread_t            thread;
+  pthread_key_t        key;
+  pthread_attr_t       attribute;
+  pthread_mutex_t      mutex;
+  pthread_mutexattr_t  mutex_attribute;
+  pthread_cond_t       condition;
+  pthread_condattr_t   condition_attribute;
+  pthread_once_t       once;
+  pthread_rwlock_t     rwlock;
+  pthread_rwlockattr_t rwlock_attribute;
+  sem_t                semaphore;
+  struct sched_param   scheduling;
+};
+
+pthread_mutex_t  slate_macos_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t   slate_macos_condition = PTHREAD_COND_INITIALIZER;
+pthread_once_t   slate_macos_once = PTHREAD_ONCE_INIT;
+pthread_rwlock_t slate_macos_rwlock = PTHREAD_RWLOCK_INITIALIZER;
 
 FILE *slate_macos_open(const char *path) { return fopen(path, "r"); }
 
@@ -83,3 +143,21 @@ int slate_macos_sigmask(sigset_t *mask) {
 }
 
 int slate_macos_altstack(stack_t *stack) { return sigaltstack(stack, 0); }
+
+int slate_macos_pthread_create(pthread_t *thread, void *(*entry)(void *),
+                               void *argument) {
+  return pthread_create(thread, 0, entry, argument);
+}
+
+int slate_macos_pthread_timedwait(const struct timespec *deadline) {
+  return pthread_cond_timedwait(&slate_macos_condition, &slate_macos_mutex,
+                                deadline);
+}
+
+int slate_macos_pthread_once(void (*routine)(void)) {
+  return pthread_once(&slate_macos_once, routine);
+}
+
+int slate_macos_semaphore(sem_t *semaphore) { return sem_post(semaphore); }
+
+int slate_macos_sched_yield(void) { return sched_yield(); }

@@ -36,13 +36,15 @@
 #define __NEED_pthread_mutex_t
 #define __NEED_pthread_cond_t
 #define __NEED_pthread_rwlock_t
-#define __NEED_pthread_barrier_t
 #define __NEED_pthread_once_t
 #define __NEED_pthread_mutexattr_t
 #define __NEED_pthread_condattr_t
 #define __NEED_pthread_rwlockattr_t
+#if !defined(__SLATE_LIBC_DARWIN)
+#define __NEED_pthread_barrier_t
 #define __NEED_pthread_barrierattr_t
 #define __NEED_pthread_spinlock_t
+#endif
 #define __NEED_pthread_key_t
 #include <bits/types.h>
 

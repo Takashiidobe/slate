@@ -3,6 +3,12 @@
 
 #include <features.h>
 
+#if defined(__SLATE_LIBC_DARWIN)
+
+#include <bits/darwin/semaphore.h>
+
+#else
+
 #define __NEED_clockid_t
 #define __NEED_time_t
 #define __NEED_struct_timespec
@@ -33,6 +39,8 @@ int    sem_wait(sem_t *);
 #if _REDIR_TIME64
 __REDIR(sem_clockwait, __sem_clockwait_time64);
 __REDIR(sem_timedwait, __sem_timedwait_time64);
+#endif
+
 #endif
 
 #endif

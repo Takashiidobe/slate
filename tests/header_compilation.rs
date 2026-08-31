@@ -4,7 +4,9 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use support::libc_shim::compile_test_program_with_args;
-use support::libc_shim::{Architecture, LibcVariant, TestConfig, compile_test_program};
+use support::libc_shim::{
+    Architecture, FREEBSD_VERSION_NUMBER, LibcVariant, TestConfig, compile_test_program,
+};
 
 fn bionic_headers() -> Vec<String> {
     let manifest = Path::new(env!("CARGO_MANIFEST_DIR")).join("libc-shim/bionic-basic-headers.txt");
@@ -58,6 +60,17 @@ fn macos_stdio_locale_headers() -> Vec<String> {
         .collect()
 }
 
+fn freebsd_headers() -> Vec<String> {
+    let manifest =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("libc-shim/freebsd-basic-headers.txt");
+    fs::read_to_string(manifest)
+        .expect("read FreeBSD header manifest")
+        .lines()
+        .filter(|line| !line.is_empty())
+        .map(str::to_string)
+        .collect()
+}
+
 fn macos_filesystem_headers() -> Vec<String> {
     let manifest =
         Path::new(env!("CARGO_MANIFEST_DIR")).join("libc-shim/macos-filesystem-headers.txt");
@@ -74,6 +87,17 @@ fn macos_time_signal_headers() -> Vec<String> {
         Path::new(env!("CARGO_MANIFEST_DIR")).join("libc-shim/macos-time-signal-headers.txt");
     fs::read_to_string(manifest)
         .expect("read macOS time/signal header manifest")
+        .lines()
+        .filter(|line| !line.is_empty())
+        .map(str::to_string)
+        .collect()
+}
+
+fn macos_pthread_headers() -> Vec<String> {
+    let manifest =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("libc-shim/macos-pthread-headers.txt");
+    fs::read_to_string(manifest)
+        .expect("read macOS pthread header manifest")
         .lines()
         .filter(|line| !line.is_empty())
         .map(str::to_string)
@@ -235,6 +259,32 @@ fn bionic_stdio_locale_header_manifest_compiles_for_64_bit_targets() {
 }
 
 #[test]
+fn freebsd_basic_header_manifest_compiles_for_x86_64_and_aarch64() {
+    let headers = freebsd_headers();
+    for forbidden in [
+        "dirent.h",
+        "pthread.h",
+        "signal.h",
+        "sys/socket.h",
+        "sys/stat.h",
+        "unistd.h",
+    ] {
+        assert!(!headers.iter().any(|header| header == forbidden));
+    }
+    let includes = headers
+        .iter()
+        .map(|header| format!("#include <{header}>\n"))
+        .collect::<String>();
+    let source = format!(
+        "{includes}\n#include <sys/types.h>\n_Static_assert(sizeof(wchar_t) == 4, \"wchar_t\");\n_Static_assert(sizeof(long double) == 16, \"long double\");\n_Static_assert(sizeof(mode_t) == 2, \"mode_t\");\n_Static_assert(sizeof(dev_t) == 8, \"dev_t\");\n_Static_assert(sizeof(nlink_t) == 8, \"nlink_t\");\n_Static_assert(__SLATE_FREEBSD_VERSION__ == {FREEBSD_VERSION_NUMBER}, \"release\");\nint main(void) {{ return 0; }}\n"
+    );
+    for arch in [Architecture::X86_64, Architecture::Aarch64] {
+        let config = TestConfig::new(arch, LibcVariant::FreeBsd);
+        compile_test_program(&config, &source).unwrap();
+    }
+}
+
+#[test]
 fn macos_basic_header_manifest_compiles_for_aarch64() {
     let headers = macos_headers();
     for forbidden in [
@@ -368,6 +418,45 @@ fn macos_time_signal_header_manifest_compiles_for_aarch64() {
 
     let error = compile_test_program(&config, "#include <ucontext.h>\n").unwrap_err();
     assert!(error.contains("process-context interfaces are unavailable"));
+}
+
+#[test]
+fn macos_pthread_header_manifest_compiles_for_aarch64() {
+    let headers = macos_pthread_headers();
+    let config = TestConfig::new(Architecture::Aarch64, LibcVariant::Darwin);
+    let includes = headers
+        .iter()
+        .map(|header| format!("#include <{header}>\n"))
+        .collect::<String>();
+    let source = format!("{includes}\nint main(void) {{ return 0; }}\n");
+    compile_test_program(&config, &source).unwrap();
+
+    let sdk = std::env::var_os("SLATE_MACOS_SDK")
+        .filter(|path| !path.is_empty())
+        .map(PathBuf::from);
+    let failures = headers
+        .iter()
+        .filter_map(|header| {
+            let source = format!("#include <{header}>\nint main(void) {{ return 0; }}\n");
+            if let Err(error) = compile_test_program(&config, &source) {
+                return Some(format!("{header} against shim:\n{error}"));
+            }
+            if let Some(sdk) = &sdk
+                && let Err(error) = compile_macos_sdk_header(header, sdk)
+            {
+                return Some(format!("{header} against macOS SDK:\n{error}"));
+            }
+            None
+        })
+        .collect::<Vec<_>>();
+    assert!(
+        failures.is_empty(),
+        "macOS pthread manifest headers failed standalone compilation:\n{}",
+        failures.join("\n\n")
+    );
+
+    let error = compile_test_program(&config, "#include <threads.h>\n").unwrap_err();
+    assert!(error.contains("threads.h") && error.contains("unavailable"));
 }
 
 #[test]

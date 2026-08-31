@@ -74,6 +74,11 @@ pub enum TargetError {
     },
     #[error("SLATE_ANDROID_API must be at least 21 for the 64-bit Bionic profile, got {api}")]
     AndroidApiTooLow { api: u32 },
+    #[error("unsupported SLATE_FREEBSD_RELEASE `{release}`; only {supported} is currently modeled")]
+    UnsupportedFreeBsdRelease {
+        release: String,
+        supported: &'static str,
+    },
 }
 
 #[derive(Debug, Error)]
@@ -129,6 +134,7 @@ fn libc_shim_args(target: &str) -> Vec<String> {
             if !target.ends_with("windows-msvc")
                 && !target.ends_with("-android")
                 && kernel != Some(Kernel::Darwin)
+                && kernel != Some(Kernel::FreeBSD)
             {
                 for fallback in system_fallback_include_dirs() {
                     args.push("-idirafter".into());
@@ -250,6 +256,9 @@ fn libc_name(triple: &Triple) -> &'static str {
     if triple.kernel == Kernel::Darwin && triple.vendor == Some(Vendor::Apple) {
         return "darwin";
     }
+    if triple.kernel == Kernel::FreeBSD {
+        return "freebsd";
+    }
     if env.is_some_and(|env| env.starts_with("musl")) {
         return "musl";
     }
@@ -271,7 +280,9 @@ fn vendor_name(vendor: Option<Vendor>) -> Result<&'static str, TargetError> {
 
 fn kernel_name(kernel: Kernel) -> Result<&'static str, TargetError> {
     match kernel {
-        Kernel::Linux | Kernel::Win32 | Kernel::Darwin => Ok(kernel.canonicalize()),
+        Kernel::Linux | Kernel::Win32 | Kernel::Darwin | Kernel::FreeBSD => {
+            Ok(kernel.canonicalize())
+        }
         _ => Err(TargetError::UnsupportedKernel { kernel }),
     }
 }
@@ -346,6 +357,9 @@ fn target_features(target: &str) -> Result<TargetFeatures, TargetError> {
     if triple.kernel == Kernel::Darwin && triple.vendor == Some(Vendor::Apple) {
         names.push("__SLATE_PLATFORM_MACOS".into());
     }
+    if triple.kernel == Kernel::FreeBSD {
+        names.push("__SLATE_PLATFORM_FREEBSD".into());
+    }
     Ok(TargetFeatures { names })
 }
 
@@ -376,6 +390,7 @@ pub fn target_config(target: &str) -> Result<TargetConfig, TargetError> {
             Kernel::Linux => "linux",
             Kernel::Darwin => "macos",
             Kernel::Win32 => "windows",
+            Kernel::FreeBSD => "freebsd",
             kernel => return Err(TargetError::UnsupportedKernel { kernel }),
         }
     };
@@ -412,6 +427,25 @@ fn android_api(target: &str) -> Result<Option<u32>, TargetError> {
         return Err(TargetError::AndroidApiTooLow { api });
     }
     Ok(Some(api))
+}
+
+const FREEBSD_SUPPORTED_RELEASE: &str = "15.1";
+const FREEBSD_SUPPORTED_VERSION_NUMBER: u32 = 1_501_000;
+
+fn freebsd_release(target: &str) -> Result<Option<(String, u32)>, TargetError> {
+    let triple = parse_target(target)?;
+    if triple.kernel != Kernel::FreeBSD {
+        return Ok(None);
+    }
+    let release = std::env::var("SLATE_FREEBSD_RELEASE")
+        .unwrap_or_else(|_| FREEBSD_SUPPORTED_RELEASE.to_string());
+    if release != FREEBSD_SUPPORTED_RELEASE {
+        return Err(TargetError::UnsupportedFreeBsdRelease {
+            release,
+            supported: FREEBSD_SUPPORTED_RELEASE,
+        });
+    }
+    Ok(Some((release, FREEBSD_SUPPORTED_VERSION_NUMBER)))
 }
 
 pub fn uses_f64_long_double_abi() -> bool {
@@ -467,7 +501,17 @@ pub fn target_args() -> Result<Vec<String>, TargetError> {
     if let Some(api) = api {
         args.push(format!("-D__SLATE_ANDROID_API__={api}"));
     }
-    let clang_target_name = api.map_or_else(|| target.clone(), |api| format!("{target}{api}"));
+    let freebsd = freebsd_release(&target)?;
+    if let Some((_, version_number)) = &freebsd {
+        args.push(format!("-D__SLATE_FREEBSD_VERSION__={version_number}"));
+    }
+    let clang_target_name = if let Some(api) = api {
+        format!("{target}{api}")
+    } else if let Some((release, _)) = &freebsd {
+        format!("{target}{release}")
+    } else {
+        target.clone()
+    };
     let (clang_target, abi_args) = clang_target(&clang_target_name);
     args.push("-target".into());
     args.push(clang_target.into());

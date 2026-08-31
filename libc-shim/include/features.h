@@ -17,7 +17,7 @@
 #endif
 
 #if defined(__SLATE_KERNEL_LINUX) + defined(__SLATE_KERNEL_WINDOWS) +          \
-        defined(__SLATE_KERNEL_DARWIN) !=                                      \
+        defined(__SLATE_KERNEL_DARWIN) + defined(__SLATE_KERNEL_FREEBSD) !=    \
     1
 #error "Slate requires one supported target kernel."
 #endif
@@ -25,7 +25,7 @@
 #if defined(__SLATE_LIBC_GLIBC) + defined(__SLATE_LIBC_MUSL) +                 \
         defined(__SLATE_LIBC_MINGW) + defined(__SLATE_LIBC_MSVC) +             \
         defined(__SLATE_LIBC_BIONIC) + defined(__SLATE_LIBC_DARWIN) +          \
-        defined(__SLATE_LIBC_GENERIC) !=                                       \
+        defined(__SLATE_LIBC_FREEBSD) + defined(__SLATE_LIBC_GENERIC) !=       \
     1
 #error "Slate requires one supported target libc."
 #endif
@@ -57,7 +57,25 @@
 #error "The macOS platform requires the Darwin libc profile."
 #endif
 
-#if defined(__SLATE_PLATFORM_ANDROID) && defined(__SLATE_PLATFORM_MACOS)
+#if defined(__SLATE_LIBC_FREEBSD)
+#if !defined(__SLATE_PLATFORM_FREEBSD) ||                                      \
+    (!defined(__SLATE_ARCH_X86_64) && !defined(__SLATE_ARCH_AARCH64)) ||       \
+    !defined(__SLATE_KERNEL_FREEBSD) || !defined(__SLATE_OBJ_ELF) ||           \
+    !defined(__SLATE_WORDSIZE_64) || !defined(__SLATE_ENDIAN_LITTLE)
+#error "The FreeBSD libc profile requires x86_64 or AArch64 FreeBSD."
+#endif
+#if !defined(__SLATE_FREEBSD_VERSION__)
+#error "The FreeBSD libc profile requires __SLATE_FREEBSD_VERSION__."
+#endif
+#endif
+
+#if defined(__SLATE_PLATFORM_FREEBSD) && !defined(__SLATE_LIBC_FREEBSD)
+#error "The FreeBSD platform requires the FreeBSD libc profile."
+#endif
+
+#if defined(__SLATE_PLATFORM_ANDROID) + defined(__SLATE_PLATFORM_MACOS) +      \
+        defined(__SLATE_PLATFORM_FREEBSD) >                                    \
+    1
 #error "Slate requires one target platform."
 #endif
 

@@ -74,3 +74,33 @@ FreeBSD fixture, link generated Rust, or execute FreeBSD binaries. Those are
 separate implementation steps. Updating the baseline requires changing the
 release, source commit, both archive identities, checksums, targets, tests, and
 documentation together.
+
+## Target selection
+
+`SLATE_TARGET=x86_64-unknown-freebsd` or `aarch64-unknown-freebsd` select the
+FreeBSD kernel/libc profile in `src/frontend/toolchain.rs`: `__SLATE_KERNEL_FREEBSD`,
+`__SLATE_LIBC_FREEBSD`, `__SLATE_PLATFORM_FREEBSD`, `__SLATE_OBJ_ELF`, LP64,
+little endian. Rust's FreeBSD triples carry no release information, so the
+release baseline is a separate input: `SLATE_FREEBSD_RELEASE`, defaulting to
+`15.1` (the pinned oracle release above). Any other value is diagnosed as
+unsupported rather than silently accepted, since only 15.1's layouts are
+modeled. The resolved release also selects the Clang target
+(`x86_64-unknown-freebsd15.1` / `aarch64-unknown-freebsd15.1`, matching
+`oracle.json`'s `clang_target` fields) and defines
+`__SLATE_FREEBSD_VERSION__` using FreeBSD's own `__FreeBSD_version`
+MMmmmXXX encoding (`1501000` for 15.1-RELEASE).
+
+`libc-shim/freebsd-basic-headers.txt` is the initial supported-header
+manifest: the ISO C headers only (assert/ctype/errno/float/limits/math/
+stddef/stdint/stdio/stdlib/string/time and friends). `bits/types.h` and
+`features.h` gain a `__SLATE_LIBC_FREEBSD` branch for the fundamental
+integer/pointer-width types, sourced from the real 15.1-RELEASE
+`sys/_types.h`/`x86/_types.h`/`arm64/_types.h` in the bootstrapped sysroots
+under `target/freebsd-oracle/sysroots/`, not guessed. Notable divergences
+from the generic LP64 branch: `mode_t` is `uint16_t` (not `uint32_t`),
+`st_blksize`'s `__blksize_t` is `int32_t` even though `off_t`/`blkcnt_t` are
+64-bit, and `wctrans_t` is a plain `int` rather than a pointer type. POSIX
+headers beyond the ISO set (`dirent.h`, `pthread.h`, `signal.h`,
+`sys/socket.h`, `sys/stat.h`, `unistd.h`, ...) are deliberately excluded from
+this manifest until their layouts are checked against the oracle in later
+tickets (`slate-sfzn.10.4`–`.10.13`).

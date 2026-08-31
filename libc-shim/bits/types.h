@@ -31,6 +31,25 @@ typedef unsigned char  __sa_family_t;
 typedef unsigned int   __socklen_t;
 typedef long long      __regoff_t;
 typedef int            __error_t;
+#elif defined(__SLATE_LIBC_FREEBSD)
+typedef unsigned short __mode_t;
+typedef int            __pid_t;
+typedef unsigned int   __uid_t;
+typedef unsigned int   __gid_t;
+typedef unsigned long  __dev_t;
+typedef unsigned long  __nlink_t;
+typedef unsigned int   __useconds_t;
+typedef int            __clockid_t;
+typedef void          *__timer_t;
+typedef int            __clock_t;
+typedef long           __key_t;
+typedef long           __id_t;
+typedef long           __daddr_t;
+typedef char          *__caddr_t;
+typedef unsigned char  __sa_family_t;
+typedef unsigned int   __socklen_t;
+typedef long           __regoff_t;
+typedef int            __error_t;
 #else
 typedef unsigned int       __mode_t;
 typedef int                __pid_t;
@@ -82,6 +101,9 @@ typedef unsigned int __wctype_t;
 #elif defined(__SLATE_LIBC_BIONIC)
 typedef const void *__wctrans_t;
 typedef long        __wctype_t;
+#elif defined(__SLATE_LIBC_FREEBSD)
+typedef int           __wctrans_t;
+typedef unsigned long __wctype_t;
 #else
 typedef const int    *__wctrans_t;
 typedef unsigned long __wctype_t;
@@ -132,6 +154,34 @@ typedef long               __intptr_t;
 typedef unsigned long      __uintptr_t;
 typedef long               __intmax_t;
 typedef unsigned long      __uintmax_t;
+#elif defined(__SLATE_LIBC_FREEBSD)
+typedef unsigned long __size_t;
+typedef long           __ssize_t;
+typedef long           __off_t;
+typedef long           __off64_t;
+typedef long           __time_t;
+typedef long           __suseconds_t;
+typedef unsigned long  __ino_t;
+typedef unsigned long  __ino64_t;
+typedef int            __blksize_t;
+typedef long           __blkcnt_t;
+typedef long           __blkcnt64_t;
+typedef unsigned long  __fsblkcnt_t;
+typedef unsigned long  __fsfilcnt_t;
+typedef long            __int64_t;
+typedef unsigned long   __uint64_t;
+typedef long            __int_least64_t;
+typedef unsigned long   __uint_least64_t;
+typedef long            __int_fast16_t;
+typedef unsigned long   __uint_fast16_t;
+typedef long            __int_fast32_t;
+typedef unsigned long   __uint_fast32_t;
+typedef long            __int_fast64_t;
+typedef unsigned long   __uint_fast64_t;
+typedef long            __intptr_t;
+typedef unsigned long   __uintptr_t;
+typedef long            __intmax_t;
+typedef unsigned long   __uintmax_t;
 #elif defined(__SLATE_LIBC_MSVC)
 typedef __SIZE_TYPE__      __size_t;
 typedef __PTRDIFF_TYPE__   __ssize_t;
@@ -263,6 +313,12 @@ typedef struct __fpos_t {
 } __fpos_t;
 #endif
 
+#if defined(__SLATE_LIBC_DARWIN)
+
+#include <bits/darwin/pthread-types.h>
+
+#else
+
 typedef union {
 #if defined(__SLATE_ARCH_AARCH64) && !defined(__SLATE_LIBC_MUSL)
   char __size[64];
@@ -290,11 +346,7 @@ typedef struct {
   char __size[32];
 } __pthread_barrier_t;
 
-#if defined(__SLATE_LIBC_DARWIN)
-typedef long __pthread_once_t;
-#else
 typedef int __pthread_once_t;
-#endif
 
 typedef unsigned long __pthread_t;
 
@@ -321,6 +373,8 @@ typedef union {
 typedef volatile int __pthread_spinlock_t;
 
 typedef unsigned int __pthread_key_t;
+
+#endif
 #endif
 
 typedef __builtin_va_list __va_list;

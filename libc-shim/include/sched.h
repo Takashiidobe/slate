@@ -3,6 +3,12 @@
 
 #include <features.h>
 
+#if defined(__SLATE_LIBC_DARWIN)
+
+#include <bits/darwin/sched.h>
+
+#else
+
 #define __NEED_struct_timespec
 #define __NEED_pid_t
 #define __NEED_time_t
@@ -140,6 +146,8 @@ __CPU_op_func_S(AND, &) __CPU_op_func_S(OR, |) __CPU_op_func_S(XOR, ^)
 
 #if _REDIR_TIME64
     __REDIR(sched_rr_get_interval, __sched_rr_get_interval_time64);
+#endif
+
 #endif
 
 #endif

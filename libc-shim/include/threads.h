@@ -4,6 +4,10 @@
 #include <features.h>
 #include <time.h>
 
+#if defined(__SLATE_LIBC_DARWIN)
+#error "<threads.h> is unavailable for the Darwin libc profile (__STDC_NO_THREADS__ is defined)."
+#endif
+
 #define __NEED_cnd_t
 #define __NEED_mtx_t
 
