@@ -17,6 +17,12 @@
 #define __NEED_socklen_t
 #include <bits/types.h>
 
+#if defined(__SLATE_LIBC_FREEBSD)
+
+#include <bits/freebsd/socket.h>
+
+#else
+
 struct msghdr {
   void         *msg_name;
   socklen_t     msg_namelen;
@@ -418,5 +424,7 @@ int sockatmark(int);
 __REDIR(recvmmsg, __recvmmsg_time64);
 #endif
 #endif
+
+#endif 
 
 #endif

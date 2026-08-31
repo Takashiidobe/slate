@@ -5,6 +5,12 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
+#if defined(__SLATE_LIBC_FREEBSD)
+
+#include <bits/freebsd/ifaddrs.h>
+
+#else
+
 struct ifaddrs {
   struct ifaddrs  *ifa_next;
   char            *ifa_name;
@@ -22,5 +28,7 @@ struct ifaddrs {
 
 void freeifaddrs(struct ifaddrs *);
 int  getifaddrs(struct ifaddrs **);
+
+#endif 
 
 #endif

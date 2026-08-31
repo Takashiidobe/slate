@@ -7,6 +7,10 @@
 
 #include <bits/darwin/sched.h>
 
+#elif defined(__SLATE_LIBC_FREEBSD)
+
+#include <bits/freebsd/sched.h>
+
 #else
 
 #define __NEED_struct_timespec

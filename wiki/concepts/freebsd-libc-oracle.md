@@ -277,3 +277,151 @@ Verified end-to-end via `slate translate` + `cargo check --target
 `libc` crate, for a fixture exercising `clock_gettime`, `gettimeofday`,
 `sigaction`/`sigemptyset`/`raise` with a `SA_SIGINFO` handler, on both
 architectures — clean with zero warnings.
+
+## pthread (libthr) and synchronization ABI (`slate-sfzn.10.6`)
+
+`libc-shim/freebsd-pthread-headers.txt` extends the manifest with
+`pthread.h`, `semaphore.h`, and `sched.h`.
+
+The headline finding: unlike glibc/NPTL (fixed-size opaque byte arrays,
+e.g. 40-byte `pthread_mutex_t`) and Darwin/libpthread (fixed-size opaque
+structs with a `long __sig` signature field, e.g. 56-byte
+`pthread_mutex_t`), **every FreeBSD libthr pthread type except
+`pthread_once_t` and `pthread_key_t` is a plain pointer to an incomplete
+struct** (`typedef struct pthread_mutex *pthread_mutex_t;`, confirmed for
+`pthread_t`/`pthread_attr_t`/`pthread_mutex_t`/`pthread_mutexattr_t`/
+`pthread_cond_t`/`pthread_condattr_t`/`pthread_rwlock_t`/
+`pthread_rwlockattr_t`/`pthread_barrier_t`/`pthread_barrierattr_t`/
+`pthread_spinlock_t` — all 8 bytes on LP64, oracle-verified for both
+architectures). The kernel allocates and owns the pointee; user code never
+sees its layout. This makes the storage-size/alignment problem the ticket
+raised almost moot for FreeBSD specifically — the design note's "opaque
+storage as ABI" concern is real for glibc and Darwin but resolves to "it's
+a pointer" here. `pthread_key_t` is a plain `int`. `pthread_once_t` is the
+one real aggregate: `struct { int state; pthread_mutex_t mutex; }`, 16
+bytes (4-byte `state` padded to 8, then an 8-byte pointer), oracle-verified
+via `sizeof`.
+
+Because every lock type is a pointer, the static initializer macros are
+correspondingly simple: `PTHREAD_MUTEX_INITIALIZER`/
+`PTHREAD_COND_INITIALIZER`/`PTHREAD_RWLOCK_INITIALIZER` are all just
+`NULL` (the kernel lazily allocates real storage on first use), and
+`PTHREAD_ONCE_INIT` is `{PTHREAD_NEEDS_INIT, NULL}` i.e. `{0, NULL}`.
+`PTHREAD_ADAPTIVE_MUTEX_INITIALIZER_NP` is the sentinel `(pthread_mutex_t)1`
+(distinguishing "not yet allocated" from "use the adaptive variant").
+
+Mutex-type enum values start at 1, not 0:
+`PTHREAD_MUTEX_ERRORCHECK=1, PTHREAD_MUTEX_RECURSIVE=2,
+PTHREAD_MUTEX_NORMAL=3, PTHREAD_MUTEX_ADAPTIVE_NP=4`, with
+`PTHREAD_MUTEX_DEFAULT` aliasing `PTHREAD_MUTEX_ERRORCHECK` (not
+`PTHREAD_MUTEX_NORMAL` like Darwin's `PTHREAD_MUTEX_DEFAULT`). Robust-mutex
+support (`PTHREAD_MUTEX_STALLED=0`/`PTHREAD_MUTEX_ROBUST=1`,
+`pthread_mutex_consistent`, `pthread_mutexattr_get/setrobust`) is present
+and matches the shared shim's existing values. `PTHREAD_STACK_MIN` is
+architecture-dependent — `2048` on x86_64, `4096` on aarch64 — reusing the
+same per-arch `machine/_limits.h` `__MINSIGSTKSZ` derivation established
+for `MINSIGSTKSZ` in 10.5, not Darwin's fixed value.
+
+`sem_t` (`libc-shim/bits/freebsd/semaphore.h`) is a real 16-byte value
+type (not a pointer, and not glibc's 32-byte struct or Darwin's 4-byte
+`int`): `struct { uint32_t _magic; struct { volatile uint32_t _count;
+uint32_t _flags; } _kern; uint32_t _padding; }`, oracle-verified via
+`sizeof`. `SEM_VALUE_MAX` is `INT_MAX` (`0x7fffffff`), unlike Darwin's
+`32767`.
+
+`sched.h`: FreeBSD's real `sched.h` is nearly empty (just CPU-affinity
+declarations) and pulls `SCHED_*`/`struct sched_param` from
+`sys/sched.h`. Scheduling-policy numbering starts at 1, distinct from
+both Linux's 0-based numbering and Darwin's own values:
+`SCHED_FIFO=1, SCHED_OTHER=2, SCHED_RR=3`. `struct sched_param` is just
+`{ int sched_priority; }` — 4 bytes, no reserved padding fields like the
+shared shim's glibc-shaped struct.
+
+Verified end-to-end via `slate translate` + `cargo check --target
+{x86_64,aarch64}-unknown-freebsd` against the generated Rust using the real
+`libc` crate, for a fixture exercising `pthread_create`/`pthread_join`,
+`pthread_mutex_lock`/`unlock` on a `PTHREAD_MUTEX_INITIALIZER` mutex,
+`pthread_once`, and `sem_init`/`sem_wait`/`sem_post`/`sem_destroy`, on both
+architectures — compiles clean modulo the same benign opaque-struct
+`improper_ctypes` warnings already present for Darwin's `__dirstream`.
+
+## Sockets and network ABI (`slate-sfzn.10.7`)
+
+`libc-shim/freebsd-net-headers.txt` covers `sys/socket.h`, `netinet/in.h`,
+`sys/un.h`, `netdb.h`, `arpa/inet.h`, `ifaddrs.h`. Unlike pthread/sem/sched
+(10.6), which had no Darwin overlay precedent to draw structure from,
+sockets also had none — the shared shim's `sys/socket.h` etc. were purely
+Linux-shaped with no libc branching at all, so FreeBSD needed the same
+"full self-contained overlay" pattern used for Darwin's own divergent
+subsystems, gated by a new `#if defined(__SLATE_LIBC_FREEBSD)` branch ahead
+of the existing Linux-shaped `#else`.
+
+The headline finding, confirmed by the ticket's own design note: **every
+FreeBSD sockaddr variant carries a leading `unsigned char sa_len` byte**
+before `sa_family_t sa_family` — the classic BSD length-prefixed sockaddr
+convention glibc dropped decades ago. This shifts every subsequent field's
+offset relative to glibc, and the specific padding differs from Darwin's
+own sockaddr layout too (independently oracle-verified, not assumed
+identical): `struct sockaddr` is `{sa_len:1, sa_family:1, sa_data:14}` = 16
+bytes; `sockaddr_in` is `{sin_len:1, sin_family:1, sin_port:2, sin_addr:4,
+sin_zero:8}` = 16 bytes with `sin_family` at offset 1; `sockaddr_in6` is
+`{sin6_len:1, sin6_family:1, sin6_port:2, sin6_flowinfo:4, sin6_addr:16,
+sin6_scope_id:4}` = 28 bytes with `sin6_addr` at offset 8; `sockaddr_un` is
+`{sun_len:1, sun_family:1, sun_path:SUNPATHLEN}` with `SUNPATHLEN=104`
+(not glibc's 108), total 106 bytes, `sun_path` at offset 2;
+`sockaddr_storage` follows the same `_SS_PAD1SIZE`/`_SS_PAD2SIZE` algebra
+as Darwin/glibc (128 bytes total) but starts with `ss_len`/`ss_family`
+instead of just `ss_family`. All sizes/offsets were verified with the
+`_Static_assert(... == 0xDEAD0000 + __LINE__, ...)` sentinel trick against
+both oracle sysroots, not derived by inspection alone.
+
+`AF_INET6` is a three-way divergence across every libc profile this repo
+supports: **28** on FreeBSD, `10` on Linux, `30` on Darwin — none of the
+three values may be reused for another. `SOL_SOCKET` is `0xffff` on
+FreeBSD, not `1` like Linux/Darwin — a option-level constant with the same
+kind of "looks portable, isn't" trap as `AF_INET6`. `SO_*` option values
+also live on a different numbering scheme: boolean flags are low bitmask
+values (`SO_REUSEADDR=0x4`) but `SO_SNDBUF`/`SO_RCVBUF`/`SO_ERROR`/etc. are
+non-contiguous values starting at `0x1001`, unlike Linux's flat small
+integers.
+
+`struct msghdr`/`struct cmsghdr`/`struct linger` are structurally
+identical to the generic shim (no BSD-specific padding quirks at LP64), so
+only the CMSG macros needed reimplementing against FreeBSD's real
+`_ALIGN`-based alignment (word-aligned to `sizeof(long)`, matching the
+oracle's `sys/socket.h` macros verbatim) rather than glibc's
+`size_t`-based `CMSG_ALIGN`.
+
+`netdb.h`'s `struct addrinfo` has a **different field order** than the
+shared shim's Linux-shaped version: FreeBSD puts `ai_canonname` before
+`ai_addr` (`{flags, family, socktype, protocol, addrlen, canonname, addr,
+next}`), not after — oracle-verified via `offsetof`, since silently
+copying the Linux field order would have produced an ABI-incompatible
+struct despite identical member types. `EAI_*` codes are **positive** on
+FreeBSD (`EAI_FAMILY=5`), not negative like the shared shim's glibc-shaped
+values. `NI_MAXHOST=1025` (not 255). `hostent`/`servent`/`protoent`/
+`netent` have identical layouts to the shared shim, so only their
+constants needed FreeBSD values, not new struct definitions.
+
+`ifaddrs.h`: FreeBSD's `struct ifaddrs` has a **separate `ifa_dstaddr`
+field**, not a union of `ifa_broadaddr`/`ifa_dstaddr` like the shared
+shim's Linux-shaped version — `ifa_broadaddr` is a `#define` alias for the
+same field instead. `arpa/inet.h` needed no FreeBSD overlay at all: its
+function signatures are identical and it only depends on types
+(`in_addr_t`, `socklen_t`) that already dispatch correctly through
+`netinet/in.h`'s and `bits/types.h`'s existing FreeBSD branches.
+
+Kept deliberately narrow per the ticket's design note ("exclude
+routing-socket internals and kernel networking"): only the commonly-used
+subset of `SO_*`/`IP_*`/`IPV6_*`/`PF_*`/`AF_*` constants is defined (core
+socket lifecycle, `AF_UNIX`/`AF_INET`/`AF_INET6`/`AF_ROUTE`/`AF_LINK`,
+`IPPROTO_{IP,ICMP,IGMP,TCP,UDP,IPV6,ICMPV6,RAW}`, basic multicast/option
+constants) rather than exhaustively porting FreeBSD's full option surface.
+
+Verified end-to-end via `slate translate` + `cargo check --target
+{x86_64,aarch64}-unknown-freebsd` against the generated Rust using the real
+`libc` crate, for a fixture that creates a TCP socket, sets `SO_REUSEADDR`,
+binds/listens on loopback, reads back the bound address via
+`getsockname`/`sockaddr_storage`, builds a `sockaddr_un` and an
+`addrinfo` hints struct, and calls `getifaddrs`/`freeifaddrs` — both
+architectures check clean with zero warnings.
