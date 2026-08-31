@@ -116,6 +116,7 @@
 #define SIOCPROTOPRIVATE 0x89E0
 
 #if defined(__SLATE_LIBC_GLIBC)
+#include <sys/ttydefaults.h>
 int ioctl(int, unsigned long, ...);
 #elif defined(__SLATE_LIBC_MUSL)
 int ioctl(int, int, ...);

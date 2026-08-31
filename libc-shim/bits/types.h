@@ -492,6 +492,17 @@ struct timespec {
 #endif
 #undef __NEED_struct_timespec
 
+#if defined(__NEED_struct_winsize) && !defined(__DEFINED_struct_winsize)
+struct winsize {
+  unsigned short ws_row;
+  unsigned short ws_col;
+  unsigned short ws_xpixel;
+  unsigned short ws_ypixel;
+};
+#define __DEFINED_struct_winsize
+#endif
+#undef __NEED_struct_winsize
+
 #if defined(__NEED_FILE) && !defined(__DEFINED_FILE)
 #if defined(__SLATE_LIBC_MSVC)
 #include <bits/msvc/types.h>

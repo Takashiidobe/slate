@@ -105,4 +105,6 @@
 #define IOCSIZE_MASK  (_IOC_SIZEMASK << _IOC_SIZESHIFT)
 #define IOCSIZE_SHIFT (_IOC_SIZESHIFT)
 
+#include <bits/generic/ioctl-requests.h>
+
 #endif
