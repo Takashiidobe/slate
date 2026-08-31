@@ -6,7 +6,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     fn lower_return_value(&mut self, operand: Option<&String>) {
-        let value = operand.map(|operand| self.operand_expr(operand));
+        let value = operand.map(|operand| {
+            self.value_type(operand).map_or_else(
+                || self.operand_expr(operand),
+                |ty| self.typed_operand_expr(operand, ty),
+            )
+        });
         if self.is_main {
             let code = value.unwrap_or(Expr::Value(RustValue::I64(0)));
             let dtor_stmts: Vec<Stmt> = self
