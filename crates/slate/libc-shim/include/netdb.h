@@ -9,7 +9,11 @@
 #include <bits/types.h>
 #endif
 
-#if defined(__SLATE_LIBC_FREEBSD)
+#if defined(__SLATE_LIBC_DARWIN)
+
+#include <bits/darwin/netdb.h>
+
+#elif defined(__SLATE_LIBC_FREEBSD)
 
 #include <bits/freebsd/netdb.h>
 

@@ -9,7 +9,11 @@
 #define __NEED_uint32_t
 #include <bits/types.h>
 
-#if defined(__SLATE_LIBC_FREEBSD)
+#if defined(__SLATE_LIBC_DARWIN)
+
+#include <bits/darwin/in.h>
+
+#elif defined(__SLATE_LIBC_FREEBSD)
 
 #include <bits/freebsd/in.h>
 

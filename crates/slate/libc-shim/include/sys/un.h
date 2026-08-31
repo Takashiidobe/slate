@@ -5,13 +5,17 @@
 #include <sys/types.h>
 
 #define __NEED_sa_family_t
-#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE) || defined(__SLATE_LIBC_DARWIN)
 #define __NEED_size_t
 #endif
 
 #include <bits/types.h>
 
-#if defined(__SLATE_LIBC_FREEBSD)
+#if defined(__SLATE_LIBC_DARWIN)
+
+#include <bits/darwin/un.h>
+
+#elif defined(__SLATE_LIBC_FREEBSD)
 
 #include <bits/freebsd/un.h>
 
