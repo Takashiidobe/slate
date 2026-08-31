@@ -23,7 +23,7 @@ done:
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(thread_local)]
 // LOWERING-NEXT: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[thread_local]
 // LOWERING-NEXT: static mut counter: i32 = 5;
@@ -104,7 +104,7 @@ done:
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(thread_local)]
 // REWRITES-NEXT: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[thread_local]
 // REWRITES-NEXT: static mut counter: i32 = 5;
@@ -151,16 +151,16 @@ done:
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             4 => {
 // REWRITES-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, unsafe { counter }) };
+// REWRITES-NEXT:                         unsafe { printf({{_v[0-9]+}} as *const i8, unsafe { counter }) };
 // REWRITES-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT:                         let {{_v[0-9]+}}: i32 = f_oo();
-// REWRITES-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// REWRITES-NEXT:                         unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // REWRITES-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"%s\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT:                         let {{_v[0-9]+}}: *mut i8 = pretty();
-// REWRITES-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// REWRITES-NEXT:                         unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // REWRITES-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT:                         let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// REWRITES-NEXT:                         unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // REWRITES-NEXT:                         {{__state[0-9]+}} = 5;
 // REWRITES-NEXT:                         continue '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }

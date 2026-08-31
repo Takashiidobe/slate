@@ -1,3 +1,4 @@
+mod dead_store;
 mod inline_temps;
 mod libc_call;
 mod raw_ptr_alias;
@@ -15,6 +16,7 @@ pub(super) fn registry() -> Vec<Box<dyn NodeRule>> {
         Box::new(singleton_scopes::DoWhileLoopUnwrap),
         Box::new(singleton_scopes::SingletonUnwrap),
         Box::new(inline_temps::LateInlineTemps),
+        Box::new(dead_store::DeadStore),
     ];
     rules.extend(libc_call::rules());
     rules

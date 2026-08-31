@@ -31,7 +31,7 @@ int main(void) {
 }
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
@@ -125,7 +125,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
@@ -159,18 +159,15 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT: let mut suite: suite_t = suite_t { tests: std::ptr::null_mut(), ntests: 0 };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 2;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc(({{_v[0-9]+}} * {{_v[0-9]+}}) as usize) };
 // REWRITES-NEXT: suite.tests = {{_v[0-9]+}} as *mut Option<unsafe extern "C" fn()>;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut Option<unsafe extern "C" fn()> = suite.tests;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut Option<unsafe extern "C" fn()> = unsafe { {{_v[0-9]+}}.add(0) };
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         *{{_v[0-9]+}} = Some(test_a);
 // REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut Option<unsafe extern "C" fn()> = suite.tests;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut Option<unsafe extern "C" fn()> = unsafe { {{_v[0-9]+}}.add(1) };
 // REWRITES-NEXT: unsafe {
@@ -189,7 +186,7 @@ int main(void) {
 // REWRITES-NEXT:                                     let {{_v[0-9]+}}: *mut Option<unsafe extern "C" fn()> = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
 // REWRITES-NEXT:                                     unsafe { unsafe { *{{_v[0-9]+}} }.unwrap()() };
 // REWRITES-NEXT:                                     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT:                                     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, unsafe { last_ran }) };
+// REWRITES-NEXT:                                     unsafe { printf({{_v[0-9]+}} as *const i8, unsafe { last_ran }) };
 // REWRITES-NEXT:                     }
 // REWRITES-NEXT:                     i = i + 1;
 // REWRITES-NEXT:         }

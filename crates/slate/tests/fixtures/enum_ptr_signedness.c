@@ -19,7 +19,7 @@ int main(void) {
 }
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[allow(non_camel_case_types)]
@@ -74,7 +74,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[allow(non_camel_case_types)]
@@ -101,23 +101,20 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT: let mut data: [u32; 3] = [0, 1, 2];
 // REWRITES-NEXT: let mut p: palette = palette { start: std::ptr::null_mut(), top: std::ptr::null_mut() };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut u32 = data.as_mut_ptr() as *mut u32;
 // REWRITES-NEXT: p.start = {{_v[0-9]+}} as *mut color_t;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut u32 = data.as_mut_ptr() as *mut u32;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 3;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut u32 = unsafe { {{_v[0-9]+}}.add(3) };
 // REWRITES-NEXT: p.top = {{_v[0-9]+}} as *mut color_t;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut u32 = p.start as *mut u32;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut u32 = unsafe { {{_v[0-9]+}}.add(1) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { *{{_v[0-9]+}} };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as i32) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as i32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut u32 = p.top as *mut u32;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = unsafe { {{_v[0-9]+}}.offset_from(p.start as *mut u32) as i64 };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as i32) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as i32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }

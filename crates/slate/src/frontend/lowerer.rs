@@ -1083,6 +1083,7 @@ impl<'a> Lowerer<'a> {
             Lint::NonSnakeCase,
             Lint::NonUpperCaseGlobals,
             Lint::ArithmeticOverflow,
+            Lint::UnconditionalPanic,
             Lint::SuspiciousRuntimeSymbolDefinitions,
             Lint::UnpredictableFunctionPointerComparisons,
             Lint::UnusedComparisons,

@@ -55,7 +55,7 @@ int main(void) {
 }
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
@@ -216,7 +216,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
@@ -253,7 +253,7 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn quiet_callback({{arg[0-9]+}}: i32) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"quiet %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{arg[0-9]+}}) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{arg[0-9]+}}) };
 // REWRITES-NEXT: return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -269,20 +269,18 @@ int main(void) {
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"panicky %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, x) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, x) };
 // REWRITES-NEXT: return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT: let mut c: Ctx = Ctx { run: None };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: c.run = unsafe { std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32, i32)>>(dispatcher as *const ()) };
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         g_callback = unsafe { std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32)>>(quiet_callback as *const ()) };
 // REWRITES-NEXT: }
 // REWRITES-NEXT: {
 // REWRITES-NEXT:         let mut i: i32 = 0;
-// REWRITES-NEXT:         i = 0;
 // REWRITES-NEXT:         '__loop0: loop {
 // REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = 2;
 // REWRITES-NEXT:                     if !(i < {{_v[0-9]+}}) {
@@ -299,7 +297,7 @@ int main(void) {
 // REWRITES-NEXT:                                                                                                                                             failures = (unsafe { failures }) + 1;
 // REWRITES-NEXT:                                                                                                             }
 // REWRITES-NEXT:                                                                                                             let {{_v[0-9]+}}: *mut i8 = b"recovered quiet %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT:                                                                                                             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, i) };
+// REWRITES-NEXT:                                                                                                             unsafe { printf({{_v[0-9]+}} as *const i8, i) };
 // REWRITES-NEXT:                                                                                                             break '__continue0;
 // REWRITES-NEXT:                                                                                 }
 // REWRITES-NEXT:                                                         }
@@ -315,7 +313,6 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-NEXT: {
 // REWRITES-NEXT:         let mut i2: i32 = 0;
-// REWRITES-NEXT:         i2 = 0;
 // REWRITES-NEXT:         '__loop1: loop {
 // REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = 5;
 // REWRITES-NEXT:                     if !(i2 < {{_v[0-9]+}}) {
@@ -332,7 +329,7 @@ int main(void) {
 // REWRITES-NEXT:                                                                                                                                             failures = (unsafe { failures }) + 1;
 // REWRITES-NEXT:                                                                                                             }
 // REWRITES-NEXT:                                                                                                             let {{_v[0-9]+}}: *mut i8 = b"recovered panicky %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT:                                                                                                             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, i2) };
+// REWRITES-NEXT:                                                                                                             unsafe { printf({{_v[0-9]+}} as *const i8, i2) };
 // REWRITES-NEXT:                                                                                                             break '__continue1;
 // REWRITES-NEXT:                                                                                 }
 // REWRITES-NEXT:                                                         }
@@ -344,7 +341,7 @@ int main(void) {
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"failures=%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, unsafe { failures }) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, unsafe { failures }) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }

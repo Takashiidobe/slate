@@ -16,6 +16,9 @@ pub(in crate::backend) trait NodeRule {
     }
     fn matches(&self, arena: &Arena, id: NodeId) -> bool;
     fn apply(&self, arena: &mut Arena, id: NodeId) -> bool;
+    fn requeues_producers(&self) -> bool {
+        false
+    }
 }
 
 const EDIT_BUDGET: usize = 200_000;
@@ -122,6 +125,7 @@ fn run_worklist(arena: &mut Arena, registry: &RuleRegistry) {
             .declared_name()
             .map(|name| arena.def_use_neighbors(name).to_vec())
             .unwrap_or_default();
+        let prior_reads: Vec<Ident> = arena.reads(id).to_vec();
         let candidates: Vec<&dyn NodeRule> = registry
             .candidates(kind.tag(), kind.call_anchor())
             .into_iter()
@@ -145,6 +149,13 @@ fn run_worklist(arena: &mut Arena, registry: &RuleRegistry) {
                 for &neighbor in &def_use_targets {
                     if arena.get(neighbor).is_some() {
                         worklist.insert(neighbor.index());
+                    }
+                }
+                if rule.requeues_producers() {
+                    for &name in &prior_reads {
+                        if let Some(producer) = arena.definition(name) {
+                            worklist.insert(producer.index());
+                        }
                     }
                 }
                 break;

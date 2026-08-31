@@ -25,6 +25,7 @@ int main(void) {
   // @lowering-end
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = first;
@@ -35,7 +36,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, first, second, value) };
+// REWRITES-DAG: unsafe { printf({{_v[0-9]+}} as *const i8, first, second, value) };
 // SLATE-FILECHECK-END rewrites
 
 // COMMON-DAG: let mut result: i32 = 0;

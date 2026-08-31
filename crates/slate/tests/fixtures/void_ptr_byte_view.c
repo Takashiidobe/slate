@@ -39,7 +39,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: {
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut u8 = src as *mut u8;
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add(p as usize) };
+// REWRITES-DAG: unsafe { {{_v[0-9]+}}.add(p as usize) };
 // REWRITES-DAG: if ((unsafe { __arg0_view[(p as usize)] }) as i32) != (b as i32) {
 // REWRITES-DAG: __retval = 0;
 // REWRITES-DAG: return __retval;

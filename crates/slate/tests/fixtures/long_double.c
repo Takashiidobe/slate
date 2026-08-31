@@ -247,7 +247,7 @@ int main(void) {
 }
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C, align(16))]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
@@ -1214,7 +1214,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C, align(16))]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
@@ -1338,7 +1338,7 @@ int main(void) {
 // REWRITES-NEXT: let mut u16: u16 = 0;
 // REWRITES-NEXT: let mut i32: i32 = 0;
 // REWRITES-NEXT: let mut u32: u32 = 0;
-// REWRITES-NEXT: let mut i64: i64 = 0;
+// REWRITES-NEXT: let mut i64: i64 = -123456789012345i64;
 // REWRITES-NEXT: let mut u64: u64 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 5, 192]);
 // REWRITES-NEXT: i8 = __slate_f80_to_i8({{_v[0-9]+}});
@@ -1394,7 +1394,6 @@ int main(void) {
 // REWRITES-NEXT:                     unsafe { abort() };
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
-// REWRITES-NEXT: i64 = -123456789012345i64;
 // REWRITES-NEXT: {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i64(i64);
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 0, 242, 190, 27, 12, 145, 224, 45, 192]);
@@ -1412,7 +1411,7 @@ int main(void) {
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"i8=%d u8=%u i16=%d u16=%u i32=%d u32=%u i64=%lld u64=%llu\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, i8 as i32, u8 as i32, i16 as i32, u16 as i32, i32, u32, i64, u64) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, i8 as i32, u8 as i32, i16 as i32, u16 as i32, i32, u32, i64, u64) };
 // REWRITES-NEXT: return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -1439,7 +1438,7 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"i128=%lld u128_hi=%llu u128_lo=%llu\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 64;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, i128 as i64, (u128 >> {{_v[0-9]+}}) as u64, (u128 & 18446744073709551615u128) as u64) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, i128 as i64, (u128 >> {{_v[0-9]+}}) as u64, (u128 & 18446744073709551615u128) as u64) };
 // REWRITES-NEXT: return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -1604,13 +1603,13 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = {{_v[0-9]+}}.to_i128() as i64;
 // REWRITES-NEXT: let {{_v[0-9]+}}: bitint::BUint<300, 5, 40> = *ub300;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = {{_v[0-9]+}}.to_u128() as u64;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // REWRITES-NEXT: return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn print_ld({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: LongDouble) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%s=%La\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { __slate_printf__ri32_pi8_pi8_f80({{_v[0-9]+}} as *mut i8, {{arg[0-9]+}} as *mut i8, {{arg[0-9]+}}) };
+// REWRITES-NEXT: unsafe { __slate_printf__ri32_pi8_pi8_f80({{_v[0-9]+}} as *mut i8, {{arg[0-9]+}} as *mut i8, {{arg[0-9]+}}) };
 // REWRITES-NEXT: return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -1747,13 +1746,12 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 4;
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ldexpl__rf80_f80_i32({{_v[0-9]+}}, {{_v[0-9]+}} as i32) };
 // REWRITES-NEXT: print_ld({{_v[0-9]+}}, {{_v[0-9]+}});
-// REWRITES-NEXT: exp = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"frexp\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 5, 64]);
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = unsafe { __slate_frexpl__rf80_f80_pi32({{_v[0-9]+}}, std::ptr::addr_of_mut!(exp) as *mut i32) };
 // REWRITES-NEXT: print_ld({{_v[0-9]+}}, {{_v[0-9]+}});
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"frexp_exp=%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, exp) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, exp) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"isnan=%d isinf=%d signbit_neg=%d signbit_pos=%d isfinite=%d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = unsafe { __slate_nanl__rf80_pi8({{_v[0-9]+}} as *const i8) };
@@ -1762,7 +1760,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as i32, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as i32, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"epsilon\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 192, 63]);
 // REWRITES-NEXT: print_ld({{_v[0-9]+}}, {{_v[0-9]+}});
@@ -1791,7 +1789,6 @@ int main(void) {
 // REWRITES-NEXT: unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(ten), {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
 // REWRITES-NEXT: unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(three), {{_v[0-9]+}}) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} / {{_v[0-9]+}};
@@ -1806,14 +1803,13 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = unsafe { __slate_remainderl__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
 // REWRITES-NEXT: print_ld({{_v[0-9]+}}, {{_v[0-9]+}});
-// REWRITES-NEXT: quo = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"remquo\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = unsafe { __slate_remquol__rf80_f80_f80_pi32({{_v[0-9]+}}, {{_v[0-9]+}}, std::ptr::addr_of_mut!(quo) as *mut i32) };
 // REWRITES-NEXT: print_ld({{_v[0-9]+}}, {{_v[0-9]+}});
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"remquo_quo=%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, quo) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, quo) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"scalbn\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 3;
@@ -1862,11 +1858,11 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = unsafe { __slate_llroundl__ri64_f80({{_v[0-9]+}} / {{_v[0-9]+}}) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"ilogb=%d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { __slate_ilogbl__ri32_f80({{_v[0-9]+}}) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"logb\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = unsafe { __slate_logbl__rf80_f80({{_v[0-9]+}}) };
@@ -1918,11 +1914,11 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}} != {{_v[0-9]+}} || {{_v[0-9]+}} != {{_v[0-9]+}}) as i32;
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vone)) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vzero)) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, ({{_v[0-9]+}} != {{_v[0-9]+}} || {{_v[0-9]+}} != {{_v[0-9]+}}) as i32) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, ({{_v[0-9]+}} != {{_v[0-9]+}} || {{_v[0-9]+}} != {{_v[0-9]+}}) as i32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"subnormal_isnormal=%d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vsub)) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: bool = __slate_f80_is_fp_class({{_v[0-9]+}}, 264);
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as i32) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as i32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
 // REWRITES-NEXT: unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(vtwo), {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"islessgreater_lt=%d islessgreater_eq=%d islessgreater_nan=%d\n\0".as_ptr() as *mut i8;
@@ -1934,14 +1930,14 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}} < {{_v[0-9]+}} || {{_v[0-9]+}} > {{_v[0-9]+}}) as i32;
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vnan)) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vone)) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, ({{_v[0-9]+}} < {{_v[0-9]+}} || {{_v[0-9]+}} > {{_v[0-9]+}}) as i32) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, ({{_v[0-9]+}} < {{_v[0-9]+}} || {{_v[0-9]+}} > {{_v[0-9]+}}) as i32) };
 // REWRITES-NEXT: ten_plain = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
 // REWRITES-NEXT: canon = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { __slate_canonicalizel__ri32_pf80_pf80(std::ptr::addr_of_mut!(canon), std::ptr::addr_of_mut!(ten_plain)) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"canonicalize\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: print_ld({{_v[0-9]+}}, canon);
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"canonicalize_r=%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"ldbl_min\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 0]);
 // REWRITES-NEXT: print_ld({{_v[0-9]+}}, {{_v[0-9]+}});
@@ -1955,28 +1951,27 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 16384;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = -4931;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 4932;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // REWRITES-NEXT: return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63]);
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 1, 64]);
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = truncate_long_double({{_v[0-9]+}} + {{_v[0-9]+}});
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]);
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = mix_long_double({{_v[0-9]+}}, {{_v[0-9]+}});
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = truncate_long_double({{_v[0-9]+}});
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 7;
 // REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i32({{_v[0-9]+}});
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = truncate_long_double({{_v[0-9]+}} / LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]));
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // REWRITES-NEXT: check_int_casts();
 // REWRITES-NEXT: check_i128_casts();
 // REWRITES-NEXT: check_bitint_casts();

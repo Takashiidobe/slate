@@ -12,7 +12,7 @@ int main(void) {
 }
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
 // LOWERING-NEXT:     fn fopen(_0: *const i8, _1: *const i8) -> *mut libc::FILE;
@@ -58,7 +58,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
 // REWRITES-NEXT:     fn fopen(_0: *const i8, _1: *const i8) -> *mut libc::FILE;
@@ -85,10 +85,10 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut libc::FILE = f;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"value: %d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 7;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { fprintf({{_v[0-9]+}} as *mut libc::FILE, {{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { fclose(f as *mut libc::FILE) };
+// REWRITES-NEXT: unsafe { fprintf({{_v[0-9]+}} as *mut libc::FILE, {{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe { fclose(f as *mut libc::FILE) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"slate_fprintf_non_standard.tmp\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { remove({{_v[0-9]+}} as *const i8) };
+// REWRITES-NEXT: unsafe { remove({{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: std::process::exit(__retval as i32);
 // REWRITES-NEXT: }

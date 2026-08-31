@@ -24,7 +24,7 @@ int main(void) {
 }
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
@@ -89,7 +89,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
@@ -106,7 +106,6 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT: let mut w: Wide = Wide { tag: 0, value: 0, uvalue: 0 };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: w.tag = 7;
 // REWRITES-NEXT: w.value = -1234567890123456789i128;
 // REWRITES-NEXT: w.uvalue = 12345678901234567890u128;
@@ -116,20 +115,20 @@ int main(void) {
 // REWRITES-NEXT: w.uvalue = w.uvalue * {{_v[0-9]+}};
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = w.tag;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%llu\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 64;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, (w.value >> {{_v[0-9]+}}) as u64) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, (w.value >> {{_v[0-9]+}}) as u64) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%llu\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, w.value as u64) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, w.value as u64) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%llu\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 64;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, (w.uvalue >> {{_v[0-9]+}}) as u64) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, (w.uvalue >> {{_v[0-9]+}}) as u64) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%llu\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, w.uvalue as u64) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, w.uvalue as u64) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%zu\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = std::mem::size_of::<Wide>() as u64;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }

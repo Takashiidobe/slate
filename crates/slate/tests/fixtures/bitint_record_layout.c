@@ -80,7 +80,7 @@ int main(void) {
 // REWRITES-DAG: let {{_v[0-9]+}}: i64 = 0;
 // REWRITES-DAG: let {{_v[0-9]+}}: i64 = 1;
 // REWRITES-DAG: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, (unsafe { (*values)[({{_v[0-9]+}} as usize)].tail }) as i32, (unsafe { item.bytes[({{_v[0-9]+}} as usize)] }) as i32, (unsafe { item.bytes[({{_v[0-9]+}} as usize)] }) as i32, (unsafe { item.bytes[({{_v[0-9]+}} as usize)] }) as i32) };
+// REWRITES-DAG: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, (unsafe { (*values)[({{_v[0-9]+}} as usize)].tail }) as i32, (unsafe { item.bytes[({{_v[0-9]+}} as usize)] }) as i32, (unsafe { item.bytes[({{_v[0-9]+}} as usize)] }) as i32, (unsafe { item.bytes[({{_v[0-9]+}} as usize)] }) as i32) };
 // SLATE-FILECHECK-END rewrites
 
 // COMMON-DAG: bitint::BInt::<65, 2, 16>::from_i128(333 as i128)

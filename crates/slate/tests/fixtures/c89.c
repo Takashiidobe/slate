@@ -202,7 +202,7 @@ int main(void) {
 }
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C, align(16))]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
@@ -874,7 +874,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C, align(16))]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
@@ -1297,7 +1297,6 @@ int main(void) {
 // REWRITES-NEXT: let mut array: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
 // REWRITES-NEXT: let mut copied_value: i32 = 0;
 // REWRITES-NEXT: let mut source_value: i32 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 2;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 3;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = -5;
@@ -1311,10 +1310,8 @@ int main(void) {
 // REWRITES-NEXT: point.x = 31;
 // REWRITES-NEXT: point.y = 37;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = 6;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = ({{_v[0-9]+}} as u32) << 29 >> 29;
 // REWRITES-NEXT: bits.__bitfield_0.set_low(({{_v[0-9]+}} as u32) << 29 >> 29);
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = -3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}} as i32) << 28 >> 28;
 // REWRITES-NEXT: bits.__bitfield_0.set_high(({{_v[0-9]+}} as i32) << 28 >> 28);
 // REWRITES-NEXT: unsafe {
 // REWRITES-NEXT:         number.integer = 41;
@@ -1402,17 +1399,15 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = (bits.__bitfield_0.high() as i32) << 28 >> 28;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { number.integer };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(0) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(3) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + unsafe { *{{_v[0-9]+}} };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = copied_value;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 53;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 6;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { Some(c89_add).unwrap()({{_v[0-9]+}}, {{_v[0-9]+}}) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}} + {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}} + {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }

@@ -33,7 +33,7 @@ int main(void) {
 }
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
@@ -128,7 +128,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
@@ -179,10 +179,8 @@ int main(void) {
 // REWRITES-NEXT: let mut buffer: [u8; 4] = [0; 4];
 // REWRITES-NEXT: let mut size_read: u64 = 0;
 // REWRITES-NEXT: let mut parser: parser_t = parser_t { read_handler: None, read_handler_data: std::ptr::null_mut() };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: *tag = [116, 97, 103, 58, 121, 97, 109, 108, 46, 111, 114, 103, 44, 50, 48, 48, 50, 58, 115, 116, 114, 0];
 // REWRITES-NEXT: buffer = [0, 0, 0, 0];
-// REWRITES-NEXT: size_read = 0;
 // REWRITES-NEXT: parser.read_handler = unsafe { std::mem::transmute::<*const (), Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut u8, u64, *mut u64) -> i32>>(read_bytes as *const ()) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut u8 = input.as_mut_ptr() as *mut u8;
 // REWRITES-NEXT: parser.read_handler_data = {{_v[0-9]+}} as *mut core::ffi::c_void;
@@ -194,7 +192,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %lu %c %c\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 4;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, size_read, buffer[({{_v[0-9]+}} as usize)] as i32, tag[({{_v[0-9]+}} as usize)] as i32) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, size_read, buffer[({{_v[0-9]+}} as usize)] as i32, tag[({{_v[0-9]+}} as usize)] as i32) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }

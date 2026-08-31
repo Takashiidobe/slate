@@ -21,10 +21,8 @@ int run_a(void) {
 // REWRITES-DAG: let mut items: aligned::Aligned<aligned::A16, [Item; 2]> = aligned::Aligned([Item { value: 0, weight: 0 }; 2]);
 // REWRITES-DAG: let mut total: i32 = 0;
 // REWRITES-DAG: *items = [Item { value: 1, weight: 10 }, Item { value: 2, weight: 20 }];
-// REWRITES-DAG: total = 0;
 // REWRITES-DAG: {
 // REWRITES-DAG: let mut i: i32 = 0;
-// REWRITES-DAG: i = 0;
 // REWRITES-DAG: loop {
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = 2;
 // REWRITES-DAG: if !(i < {{_v[0-9]+}}) {

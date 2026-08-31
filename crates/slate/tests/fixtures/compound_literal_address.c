@@ -78,14 +78,12 @@ int main(void) {
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut Slice = make_slice(unsafe { &mut (*std::ptr::addr_of_mut!(_compoundliteral2)) }, {{_v[0-9]+}}, {{_v[0-9]+}} - {{_v[0-9]+}});
 // REWRITES-DAG: unsafe { std::ptr::copy({{_v[0-9]+}}, std::ptr::addr_of_mut!(second), 1) };
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = b"%c %lu %c %lu\n\0".as_ptr() as *mut i8;
-// REWRITES-DAG: let {{_v[0-9]+}}: i64 = 0;
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = first.data;
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = (unsafe { *{{_v[0-9]+}} }) as i32;
 // REWRITES-DAG: let {{_v[0-9]+}}: u64 = first.length;
-// REWRITES-DAG: let {{_v[0-9]+}}: i64 = 0;
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = second.data;
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
 // REWRITES-DAG: let {{_v[0-9]+}}: u64 = second.length;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, (unsafe { *{{_v[0-9]+}} }) as i32, {{_v[0-9]+}}) };
+// REWRITES-DAG: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, (unsafe { *{{_v[0-9]+}} }) as i32, {{_v[0-9]+}}) };
 // SLATE-FILECHECK-END rewrites

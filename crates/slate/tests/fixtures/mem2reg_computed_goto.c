@@ -65,21 +65,17 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: unsafe fn walk({{arg[0-9]+}}: *mut i32) {
 // REWRITES-DAG: let mut position: *mut i32 = std::ptr::null_mut();
-// REWRITES-DAG: let mut {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
 // REWRITES-DAG: let mut {{__state[0-9]+}}: i32 = 0;
 // REWRITES-DAG: '{{__dispatch[0-9]+}}: loop {
 // REWRITES-DAG: match {{__state[0-9]+}} {
 // REWRITES-DAG: 0 => {
 // REWRITES-DAG: position = {{arg[0-9]+}};
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut core::ffi::c_void = 1usize as *mut core::ffi::c_void;
 // REWRITES-DAG: {{__state[0-9]+}} = [1, 2][(((unsafe { *position }) as i64) as usize)];
 // REWRITES-DAG: continue '{{__dispatch[0-9]+}};
 // REWRITES-DAG: }
 // REWRITES-DAG: 1 => {
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut i32 = position;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-DAG: position = unsafe { {{_v[0-9]+}}.add(1) };
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut core::ffi::c_void = 1usize as *mut core::ffi::c_void;
 // REWRITES-DAG: {{__state[0-9]+}} = [1, 2][(((unsafe { *position }) as i64) as usize)];
 // REWRITES-DAG: continue '{{__dispatch[0-9]+}};
 // REWRITES-DAG: }

@@ -10,7 +10,7 @@ int main(void) {
   return 0;
 }
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
 // LOWERING-NEXT:     static mut stdout: *mut libc::FILE;
@@ -50,7 +50,7 @@ int main(void) {
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
 // REWRITES-NEXT:     static mut stdout: *mut libc::FILE;
@@ -65,7 +65,7 @@ int main(void) {
 // REWRITES-NEXT: __retval = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"slate_perror_intervening_missing.tmp\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: rc = unsafe { remove({{_v[0-9]+}} as *const i8) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { fflush((unsafe { stdout }) as *mut libc::FILE) };
+// REWRITES-NEXT: unsafe { fflush((unsafe { stdout }) as *mut libc::FILE) };
 // REWRITES-NEXT: {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = rc < {{_v[0-9]+}};

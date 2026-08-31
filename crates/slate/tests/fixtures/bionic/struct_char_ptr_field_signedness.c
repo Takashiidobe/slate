@@ -15,7 +15,7 @@ int main(void) {
   return strcmp(entry_name(&entry), "root") == 0 ? 0 : 1;
 }
 // SLATE-FILECHECK-BEGIN lowering-bionic-aarch64
-// LOWERING-BIONIC-AARCH64: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-BIONIC-AARCH64: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-BIONIC-AARCH64-EMPTY:
 // LOWERING-BIONIC-AARCH64-NEXT: #[repr(C)]
 // LOWERING-BIONIC-AARCH64-NEXT: #[derive(Clone, Copy)]
@@ -51,7 +51,7 @@ int main(void) {
 // SLATE-FILECHECK-END lowering-bionic-aarch64
 
 // SLATE-FILECHECK-BEGIN rewrites-bionic-aarch64
-// REWRITES-BIONIC-AARCH64: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-BIONIC-AARCH64: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-BIONIC-AARCH64-EMPTY:
 // REWRITES-BIONIC-AARCH64-NEXT: #[repr(C)]
 // REWRITES-BIONIC-AARCH64-NEXT: #[derive(Clone, Copy)]

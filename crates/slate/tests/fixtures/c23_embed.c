@@ -26,7 +26,7 @@ int main(void) {
              : 1;
 }
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: static mut main_data: [u8; 4] = [67, 50, 51, 10];
 // LOWERING-EMPTY:
@@ -244,7 +244,7 @@ int main(void) {
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: static mut main_data: [u8; 4] = [67, 50, 51, 10];
 // REWRITES-EMPTY:
@@ -259,18 +259,14 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT: let mut framed_ok: i32 = 0;
 // REWRITES-NEXT: let mut empty_ok: i32 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: {
 // REWRITES-NEXT:         let mut i: u64 = 0;
-// REWRITES-NEXT:         i = 0;
 // REWRITES-NEXT:         loop {
 // REWRITES-NEXT:                     let {{_v[0-9]+}}: u64 = 4;
 // REWRITES-NEXT:                     if !(i < {{_v[0-9]+}}) {
 // REWRITES-NEXT:                                     break;
 // REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     {
-// REWRITES-NEXT:                                     let {{_v[0-9]+}}: i32 = unsafe { putchar(((unsafe { main_data[(i as usize)] }) as i32) as i32) };
-// REWRITES-NEXT:                     }
+// REWRITES-NEXT:                     unsafe { putchar(((unsafe { main_data[(i as usize)] }) as i32) as i32) };
 // REWRITES-NEXT:                     i = i + 1;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }

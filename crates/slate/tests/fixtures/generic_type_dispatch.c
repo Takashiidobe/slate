@@ -38,5 +38,5 @@ int main(void) {
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut i32 = array.as_mut_ptr() as *mut i32;
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = pointer_score({{_v[0-9]+}});
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-DAG: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // SLATE-FILECHECK-END rewrites

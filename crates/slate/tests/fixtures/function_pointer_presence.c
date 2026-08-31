@@ -21,7 +21,7 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn maybe_apply({{arg[0-9]+}}: Option<unsafe extern "C" fn(i32) -> i32>, {{arg[0-9]+}}: i32) -> i32 {
 // LOWERING-NEXT:     let mut op: Option<unsafe extern "C" fn(i32) -> i32> = None;

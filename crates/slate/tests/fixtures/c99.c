@@ -151,7 +151,7 @@ int main(void) {
 }
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
 // LOWERING-NEXT:     fn __muldc3(a: f64, b: f64, c: f64, d: f64) -> num_complex::Complex<f64>;
@@ -866,7 +866,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
 // REWRITES-NEXT:     fn __muldc3(a: f64, b: f64, c: f64, d: f64) -> num_complex::Complex<f64>;
@@ -980,14 +980,13 @@ int main(void) {
 // REWRITES-NEXT: total = 0;
 // REWRITES-NEXT: {
 // REWRITES-NEXT:         let mut index: i32 = 0;
-// REWRITES-NEXT:         index = 0;
 // REWRITES-NEXT:         loop {
 // REWRITES-NEXT:                     if !(index < length) {
 // REWRITES-NEXT:                                     break;
 // REWRITES-NEXT:                     }
 // REWRITES-NEXT:                     {
 // REWRITES-NEXT:                                     let {{_v[0-9]+}}: *mut i32 = values;
-// REWRITES-NEXT:                                     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset((index as i64) as isize) };
+// REWRITES-NEXT:                                     unsafe { {{_v[0-9]+}}.offset((index as i64) as isize) };
 // REWRITES-NEXT:                                     total = total + unsafe { __arg40_view[(index as usize)] };
 // REWRITES-NEXT:                     }
 // REWRITES-NEXT:                     index = index + 1;
@@ -1009,13 +1008,10 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c99_qualified_array_sum({{arg[0-9]+}}: *mut i32) -> i32 {
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = unsafe { {{arg[0-9]+}}.add(0) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = unsafe { {{arg[0-9]+}}.add(1) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = unsafe { {{arg[0-9]+}}.add(2) };
 // REWRITES-NEXT: return {{_v[0-9]+}} + unsafe { *{{_v[0-9]+}} };
 // REWRITES-NEXT: }
@@ -1200,7 +1196,6 @@ int main(void) {
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:                     *{{_v[0-9]+}} = 51;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i64 = 1;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:                     *{{_v[0-9]+}} = 53;
@@ -1317,7 +1312,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i64 = 0;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i64 = 1;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = c99_restrict_sum(unsafe { &(*std::ptr::addr_of_mut!(qualified_values[({{_v[0-9]+}} as usize)])) }, unsafe { &(*std::ptr::addr_of_mut!(qualified_values[({{_v[0-9]+}} as usize)])) });
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT:         unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // REWRITES-NEXT: }
 // REWRITES-NEXT: std::process::exit(__retval as i32);
 // REWRITES-NEXT: }

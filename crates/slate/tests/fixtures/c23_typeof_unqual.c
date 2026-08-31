@@ -35,5 +35,5 @@ int main(void) {
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut i32 = std::ptr::null_mut();
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}} == {{_v[0-9]+}}) as i32;
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.to_u128() as i32;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}} + {{_v[0-9]+}}) };
+// REWRITES-DAG: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}} + {{_v[0-9]+}}) };
 // SLATE-FILECHECK-END rewrites

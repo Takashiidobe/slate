@@ -33,7 +33,7 @@ int main(void) {
 }
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
 // LOWERING-NEXT:     fn malloc(_0: usize) -> *mut core::ffi::c_void;
@@ -129,7 +129,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
 // REWRITES-NEXT:     fn malloc(_0: usize) -> *mut core::ffi::c_void;
@@ -141,8 +141,6 @@ int main(void) {
 // REWRITES-NEXT: let mut flag: i32 = {{arg[0-9]+}};
 // REWRITES-NEXT: let mut p: *mut i32 = std::ptr::null_mut();
 // REWRITES-NEXT: let mut q: *mut i32 = std::ptr::null_mut();
-// REWRITES-NEXT: p = std::ptr::null_mut();
-// REWRITES-NEXT: q = std::ptr::null_mut();
 // REWRITES-NEXT: {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = flag != 0;
 // REWRITES-NEXT:         if {{_v[0-9]+}} {
@@ -158,10 +156,10 @@ int main(void) {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = p == q;
 // REWRITES-NEXT:         if {{_v[0-9]+}} {
 // REWRITES-NEXT:                     let {{_v[0-9]+}}: *mut i8 = b"same\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8) };
+// REWRITES-NEXT:                     unsafe { printf({{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT:         } else {
 // REWRITES-NEXT:                     let {{_v[0-9]+}}: *mut i8 = b"diff\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8) };
+// REWRITES-NEXT:                     unsafe { printf({{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
 // REWRITES-NEXT: {
@@ -171,7 +169,7 @@ int main(void) {
 // REWRITES-NEXT:                                     *p = 1;
 // REWRITES-NEXT:                     }
 // REWRITES-NEXT:                     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, unsafe { *p }) };
+// REWRITES-NEXT:                     unsafe { printf({{_v[0-9]+}} as *const i8, unsafe { *p }) };
 // REWRITES-NEXT:                     unsafe { free((p as *mut core::ffi::c_void) as *mut core::ffi::c_void) };
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
@@ -182,7 +180,7 @@ int main(void) {
 // REWRITES-NEXT:                                     *q = 2;
 // REWRITES-NEXT:                     }
 // REWRITES-NEXT:                     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, unsafe { *q }) };
+// REWRITES-NEXT:                     unsafe { printf({{_v[0-9]+}} as *const i8, unsafe { *q }) };
 // REWRITES-NEXT:                     unsafe { free((q as *mut core::ffi::c_void) as *mut core::ffi::c_void) };
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
@@ -190,11 +188,10 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = compute({{_v[0-9]+}});
+// REWRITES-NEXT: compute({{_v[0-9]+}});
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = compute({{_v[0-9]+}});
+// REWRITES-NEXT: compute({{_v[0-9]+}});
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }

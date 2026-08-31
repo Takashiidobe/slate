@@ -51,5 +51,5 @@ int main(void) {
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = 8;
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = 9;
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = unsafe { Some(address_taken).unwrap()({{_v[0-9]+}}, {{_v[0-9]+}}) };
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-DAG: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // SLATE-FILECHECK-END rewrites

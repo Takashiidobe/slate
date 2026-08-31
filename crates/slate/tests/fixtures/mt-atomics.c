@@ -25,7 +25,7 @@ int main(void) {
 }
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[allow(non_camel_case_types)]
@@ -140,7 +140,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[allow(non_camel_case_types)]
@@ -182,7 +182,7 @@ int main(void) {
 // REWRITES-NEXT:                     }
 // REWRITES-NEXT:                     {
 // REWRITES-NEXT:                                     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:                                     let {{_v[0-9]+}}: i32 = unsafe { std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(counter)).fetch_add({{_v[0-9]+}}, std::sync::atomic::Ordering::SeqCst) };
+// REWRITES-NEXT:                                     unsafe { std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(counter)).fetch_add({{_v[0-9]+}}, std::sync::atomic::Ordering::SeqCst) };
 // REWRITES-NEXT:                     }
 // REWRITES-NEXT:                     i = i + 1;
 // REWRITES-NEXT:         }
@@ -192,7 +192,6 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT: let mut threads: aligned::Aligned<aligned::A16, [u64; 4]> = aligned::Aligned([0; 4]);
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: {
 // REWRITES-NEXT:         let mut i: i32 = 0;
 // REWRITES-NEXT:         i = 0;
@@ -205,14 +204,13 @@ int main(void) {
 // REWRITES-NEXT:                                     let {{_v[0-9]+}}: i64 = i as i64;
 // REWRITES-NEXT:                                     let {{_v[0-9]+}}: *mut __pthread_attr_t = std::ptr::null_mut();
 // REWRITES-NEXT:                                     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// REWRITES-NEXT:                                     let {{_v[0-9]+}}: i32 = unsafe { pthread_create(std::ptr::addr_of_mut!(threads[({{_v[0-9]+}} as usize)]) as *mut u64, {{_v[0-9]+}} as *const __pthread_attr_t, Some(worker), {{_v[0-9]+}} as *mut core::ffi::c_void) };
+// REWRITES-NEXT:                                     unsafe { pthread_create(std::ptr::addr_of_mut!(threads[({{_v[0-9]+}} as usize)]) as *mut u64, {{_v[0-9]+}} as *const __pthread_attr_t, Some(worker), {{_v[0-9]+}} as *mut core::ffi::c_void) };
 // REWRITES-NEXT:                     }
 // REWRITES-NEXT:                     i = i + 1;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
 // REWRITES-NEXT: {
 // REWRITES-NEXT:         let mut i2: i32 = 0;
-// REWRITES-NEXT:         i2 = 0;
 // REWRITES-NEXT:         loop {
 // REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = 4;
 // REWRITES-NEXT:                     if !(i2 < {{_v[0-9]+}}) {
@@ -220,14 +218,14 @@ int main(void) {
 // REWRITES-NEXT:                     }
 // REWRITES-NEXT:                     {
 // REWRITES-NEXT:                                     let {{_v[0-9]+}}: *mut *mut core::ffi::c_void = std::ptr::null_mut();
-// REWRITES-NEXT:                                     let {{_v[0-9]+}}: i32 = unsafe { pthread_join(threads[((i2 as i64) as usize)] as u64, {{_v[0-9]+}} as *mut *mut core::ffi::c_void) };
+// REWRITES-NEXT:                                     unsafe { pthread_join(threads[((i2 as i64) as usize)] as u64, {{_v[0-9]+}} as *mut *mut core::ffi::c_void) };
 // REWRITES-NEXT:                     }
 // REWRITES-NEXT:                     i2 = i2 + 1;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT: }
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(counter)).load(std::sync::atomic::Ordering::SeqCst) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }

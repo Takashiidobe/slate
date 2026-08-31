@@ -7,7 +7,7 @@ int main(int argc, char **argv) {
 }
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
 // LOWERING-NEXT:     fn abort() -> !;
@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
 // REWRITES-NEXT:     fn abort() -> !;
@@ -52,8 +52,7 @@ int main(int argc, char **argv) {
 // REWRITES-NEXT: let mut __slate_argv_ptrs: Vec<*mut i8> = __slate_argv_storage.iter().map(|arg| arg.as_ptr() as *mut i8).collect();
 // REWRITES-NEXT: __slate_argv_ptrs.push(std::ptr::null_mut());
 // REWRITES-NEXT: let {{arg[0-9]+}}: i32 = __slate_argv_storage.len() as i32;
-// REWRITES-NEXT: let {{arg[0-9]+}}: *mut *mut i8 = __slate_argv_ptrs.as_mut_ptr();
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT: __slate_argv_ptrs.as_mut_ptr();
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: bool = {{arg[0-9]+}} == {{_v[0-9]+}};
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} {
@@ -65,7 +64,7 @@ int main(int argc, char **argv) {
 // REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }

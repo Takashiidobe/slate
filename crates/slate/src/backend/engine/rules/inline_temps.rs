@@ -81,7 +81,7 @@ fn is_movable_pure_expr(expr: &Expr) -> bool {
 }
 
 #[derive(Default, Clone, Copy)]
-struct Effects {
+pub(super) struct Effects {
     unknown_call: bool,
     method_call: bool,
     macro_expansion: bool,
@@ -106,7 +106,7 @@ impl Effects {
         }
     }
 
-    fn is_side_effect(self) -> bool {
+    pub(super) fn is_side_effect(self) -> bool {
         self.unknown_call
             || self.method_call
             || self.macro_expansion
@@ -170,7 +170,7 @@ fn call_effects(expr: &Expr) -> Effects {
     }
 }
 
-fn expr_effects(expr: &Expr) -> Effects {
+pub(super) fn expr_effects(expr: &Expr) -> Effects {
     match expr {
         Expr::Value(_)
         | Expr::Str(_)

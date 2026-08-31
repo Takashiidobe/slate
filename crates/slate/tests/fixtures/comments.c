@@ -34,7 +34,7 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: /// selects an operating mode
 // REWRITES-NEXT: #[repr(C)]
@@ -75,7 +75,6 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT: let mut holder: Holder = Holder { mode: Mode::MODE_OFF };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: holder = Holder { mode: Mode::MODE_ON };
 // REWRITES-NEXT: let {{_v[0-9]+}}: u32 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: bool = (holder.mode as u32) == {{_v[0-9]+}};

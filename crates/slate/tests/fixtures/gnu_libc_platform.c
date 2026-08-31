@@ -108,7 +108,7 @@ int main(void) {
 }
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
@@ -770,7 +770,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
@@ -860,7 +860,7 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn __slate_strndupa_finish({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: u64) -> *mut i8 {
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = {{arg[0-9]+}} as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { memcpy(({{_v[0-9]+}} as *mut core::ffi::c_void) as *mut core::ffi::c_void, ({{arg[0-9]+}} as *mut core::ffi::c_void) as *const core::ffi::c_void, {{arg[0-9]+}} as usize) };
+// REWRITES-NEXT: unsafe { memcpy(({{_v[0-9]+}} as *mut core::ffi::c_void) as *mut core::ffi::c_void, ({{arg[0-9]+}} as *mut core::ffi::c_void) as *const core::ffi::c_void, {{arg[0-9]+}} as usize) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i8 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add({{arg[0-9]+}} as usize) };
 // REWRITES-NEXT: unsafe {
@@ -1105,7 +1105,7 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = unsafe { re_set_syntax(({{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} | {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} | {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} | {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} | {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} | {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} | {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} | {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} | {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} | {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} | {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} | {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}}) as u64) };
+// REWRITES-NEXT: unsafe { re_set_syntax(({{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} | {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} | {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} | {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} | {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} | {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} | {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} | {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} | {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} | {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} | {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} | {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}} << {{_v[0-9]+}}) as u64) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"sl(a|e)te\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 9;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = (unsafe { re_compile_pattern({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as usize, std::ptr::addr_of_mut!(expression) as *mut re_pattern_buffer) }) as *mut i8;
@@ -1126,7 +1126,6 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 2;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) + ((paths.gl_pathc == {{_v[0-9]+}}) as i32);
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut *mut i8 = paths.gl_pathv;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = unsafe { *{{_v[0-9]+}} };
@@ -1134,7 +1133,6 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { strcmp({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as *const i8) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32);
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 1;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut *mut i8 = paths.gl_pathv;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut *mut i8 = unsafe { {{_v[0-9]+}}.add(1) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = unsafe { *{{_v[0-9]+}} };
@@ -1185,7 +1183,6 @@ int main(void) {
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} != {{_v[0-9]+}}) as i32) + ((information.dli_fname != ({{_v[0-9]+}} as *mut i8)) as i32);
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = (unsafe { gnu_get_libc_version() }) as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
@@ -1195,13 +1192,12 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = gnu_environment_extensions();
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = gnu_time_extensions();
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = gnu_pattern_extensions();
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = gnu_runtime_extensions();
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}} + {{_v[0-9]+}}) };
+// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}} + {{_v[0-9]+}}) };
 // REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }

@@ -22,5 +22,5 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, (unsafe { enabled }) as i32, (unsafe { disabled }) as i32) };
+// REWRITES-DAG: unsafe { printf({{_v[0-9]+}} as *const i8, (unsafe { enabled }) as i32, (unsafe { disabled }) as i32) };
 // SLATE-FILECHECK-END rewrites
