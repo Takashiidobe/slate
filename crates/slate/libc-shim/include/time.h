@@ -7,6 +7,10 @@
 
 #include <bits/darwin/time.h>
 
+#elif defined(__SLATE_LIBC_FREEBSD)
+
+#include <bits/freebsd/time.h>
+
 #elif defined(__SLATE_LIBC_MSVC)
 
 #define __NEED_size_t

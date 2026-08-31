@@ -11,6 +11,10 @@
 
 #include <bits/darwin/signal.h>
 
+#elif defined(__SLATE_LIBC_FREEBSD)
+
+#include <bits/freebsd/signal.h>
+
 #elif defined(__SLATE_LIBC_MSVC)
 
 #include <bits/msvc/signal.h>

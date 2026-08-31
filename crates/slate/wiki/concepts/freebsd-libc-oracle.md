@@ -212,3 +212,68 @@ Verified end-to-end via `slate translate` + `cargo check --target
 {x86_64,aarch64}-unknown-freebsd` against the generated Rust using the real
 `libc` crate, for a fixture exercising `open`/`fstat`/`opendir`/`readdir`/
 `statvfs`, on both architectures.
+
+## Time and signal ABI (`slate-sfzn.10.5`)
+
+`libc-shim/freebsd-time-signal-headers.txt` extends the manifest with
+`time.h`, `sys/time.h`, `signal.h`, and `sys/signal.h`.
+
+`CLOCKS_PER_SEC` is `128` on FreeBSD, not `1000000` like glibc/Darwin — a
+genuine surprise caught from the oracle header rather than assumed.
+`libc-shim/bits/freebsd/time.h` models the full real clock-ID set
+(`CLOCK_REALTIME=0`, `CLOCK_VIRTUAL=1`, `CLOCK_PROF=2`, `CLOCK_MONOTONIC=4`,
+`CLOCK_UPTIME=5`, `CLOCK_UPTIME_PRECISE=7`, `CLOCK_UPTIME_FAST=8`,
+`CLOCK_REALTIME_PRECISE=9`, `CLOCK_REALTIME_FAST=10`,
+`CLOCK_MONOTONIC_PRECISE=11`, `CLOCK_MONOTONIC_FAST=12`,
+`CLOCK_SECOND=13`, `CLOCK_THREAD_CPUTIME_ID=14`,
+`CLOCK_PROCESS_CPUTIME_ID=15`, `CLOCK_TAI=16`), including the FreeBSD-only
+IDs named in the ticket (`CLOCK_UPTIME`, `CLOCK_UPTIME_PRECISE`,
+`CLOCK_UPTIME_FAST`, `CLOCK_SECOND`) plus the Linux-compat aliases
+(`CLOCK_BOOTTIME`, `CLOCK_REALTIME_COARSE`, `CLOCK_MONOTONIC_COARSE`).
+`struct tm` matches Darwin's shape (`long tm_gmtoff`, `char *tm_zone`
+fields, not glibc's `__tm_gmtoff`/`__tm_zone` naming convention). `time.h`
+and `sys/time.h` are both self-contained overlays (matching the existing
+Darwin precedent) rather than gated branches inside the shared headers,
+since FreeBSD's visible surface differs enough from glibc's to make
+per-line gating unreadable.
+
+`sigset_t` (`libc-shim/bits/types.h`) is FreeBSD's real
+`struct { unsigned int __bits[4]; }` — 16 bytes, 4 32-bit words for 128
+signal numbers — genuinely distinct from both glibc's 128-byte/1024-bit
+mask and Darwin's plain 4-byte `unsigned int` mask. This was the previous
+gap: FreeBSD fell through to the generic glibc-shaped `__sigset_t` branch
+before this ticket.
+
+Signal numbers 1–33 match Darwin's assignment exactly (`SIGHUP=1` ..
+`SIGUSR2=31`), but FreeBSD additionally defines `SIGTHR=32`/`SIGLIBRT=33`
+and a realtime range `SIGRTMIN=65`/`SIGRTMAX=126` that Darwin has neither
+of. `struct sigaction` is 32 bytes: the handler union at offset 0,
+`sa_flags` at offset 8, then `sigset_t sa_mask` at offset 12 — note the
+field order is `sa_flags` *before* `sa_mask`, the reverse of Darwin's
+`sa_mask`-before-`sa_flags` layout, both verified via `offsetof` against
+the oracle. `siginfo_t` is 80 bytes: `si_signo`, `si_errno`, `si_code`,
+`si_pid`, `si_uid`, `si_status`, `si_addr`, `si_value` (union sigval, 8
+bytes) at offsets 0/4/8/12/16/20/24/32, followed by a 40-byte reserved
+`_reason` union modeled as `long __spare1__; int __spare2__[7];` to match
+the real trailing size without modeling every one of FreeBSD's
+signal-specific sub-unions (`_fault`/`_timer`/`_mesgq`/`_poll`/`_capsicum`)
+that the ticket's scope doesn't require. `ILL_*` code numbering diverges
+from Darwin's own reordering of the same names (FreeBSD:
+`ILL_ILLOPC=1,ILL_ILLOPN=2,ILL_ILLADR=3,ILL_ILLTRP=4,...`; Darwin permutes
+`ILL_ILLTRP`/`ILL_PRVOPC` earlier) — caught by diffing against the oracle
+rather than reusing Darwin's block. `FPE_*`, `SEGV_*`, `BUS_*`, `TRAP_*`,
+`CLD_*`, `POLL_*`, and `SI_*` code numbering all matched Darwin's values
+exactly. `MINSIGSTKSZ` is architecture-dependent (`512*4=2048` on x86_64,
+`1024*4=4096` on aarch64, both read from the real per-arch
+`machine/_limits.h`), unlike Darwin's single fixed `32768`.
+
+`stack_t`/`sigaltstack` field layout (`void *ss_sp; size_t ss_size; int
+ss_flags;`) matches Darwin's shape exactly, so no divergence there beyond
+the `SS_ONSTACK=0x0001`/`SS_DISABLE=0x0004` values (also identical to
+Darwin's).
+
+Verified end-to-end via `slate translate` + `cargo check --target
+{x86_64,aarch64}-unknown-freebsd` against the generated Rust using the real
+`libc` crate, for a fixture exercising `clock_gettime`, `gettimeofday`,
+`sigaction`/`sigemptyset`/`raise` with a `SA_SIGINFO` handler, on both
+architectures — clean with zero warnings.

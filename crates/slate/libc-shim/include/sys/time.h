@@ -7,6 +7,10 @@
 
 #include <bits/darwin/sys/time.h>
 
+#elif defined(__SLATE_LIBC_FREEBSD)
+
+#include <bits/freebsd/sys/time.h>
+
 #else
 
 #include <sys/select.h>
