@@ -15,13 +15,21 @@ int     cfsetispeed(struct termios *, speed_t);
 int tcgetattr(int, struct termios *);
 int tcsetattr(int, int, const struct termios *);
 
+#if defined(__SLATE_LIBC_MUSL)
+#define __NEED_struct_winsize
+#endif
+#define __NEED_pid_t
+#include <bits/types.h>
+
+#if defined(__SLATE_LIBC_MUSL)
+int tcgetwinsize(int, struct winsize *);
+int tcsetwinsize(int, const struct winsize *);
+#endif
+
 int tcsendbreak(int, int);
 int tcdrain(int);
 int tcflush(int, int);
 int tcflow(int, int);
-
-#define __NEED_pid_t
-#include <bits/types.h>
 
 pid_t tcgetsid(int);
 
