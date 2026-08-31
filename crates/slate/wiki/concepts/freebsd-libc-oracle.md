@@ -543,8 +543,49 @@ and `fnmatch` — both architectures check clean modulo the same benign
 opaque-struct `improper_ctypes` warnings already accepted for the
 `posix_spawnattr_t`/`posix_spawn_file_actions_t` opaque pointers. While
 building this fixture, hit and worked around an unrelated pre-existing
-lowerer bug (filed as `slate-vd43`, not fixed here): on aarch64, `char *`
+lowerer bug (filed as `slate-vd43`, fixed separately): on aarch64, `char *`
 **struct fields** lower to `*mut i8` regardless of target, while `char *`
 **local variables** correctly lower to `*mut u8` per AAPCS64's
 unsigned-default — a target-awareness gap in the struct-field type path,
 not anything specific to FreeBSD or to `struct passwd`.
+
+## String, memory, and randomness extensions (`slate-sfzn.10.9`)
+
+This ticket's original design assumed FreeBSD's `qsort_r` diverges from
+glibc's — the context-pointer argument sitting in a different position,
+with the comparator taking it first instead of last — and planned a
+FreeBSD-specific function-pointer typedef to model that. **The oracle
+disproves this for the 15.1 baseline.** FreeBSD 14 changed `qsort_r`'s
+prototype to comply with POSIX: `void qsort_r(void *, size_t, size_t, int
+(*)(const void *, const void *, void *), void *);` — byte-for-byte the
+same shape already declared in the shared shim (comparator `(a, b, arg)`,
+`arg` last). The historical BSD order (`thunk` before `compar`; comparator
+takes `thunk` first) survives only as a symbol-versioned compat shim
+(`qsort_r@FBSD_1.0` / `__qsort_r_compat`) for binaries linked against the
+pre-14 ABI; any new translation gets the POSIX-shaped declaration, which
+this repo already had. No FreeBSD-specific overlay was correct to add
+here — doing so would have modeled an ABI FreeBSD itself no longer
+exposes to new code.
+
+`strlcpy`/`strlcat` (`string.h`) and `reallocarray`/`arc4random`/
+`arc4random_buf`/`arc4random_uniform` (`stdlib.h`) all matched the shared
+shim's existing declarations exactly against both oracle arches — same
+signatures, same `__BSD_VISIBLE` gating that lines up with the shim's
+existing `_GNU_SOURCE || _BSD_SOURCE` guard (on by default for FreeBSD,
+same as every other libc profile here). `string.h`/`stdlib.h` were
+already in `freebsd-basic-headers.txt` from `slate-sfzn.10.2` and already
+pass the header-compile suite.
+
+`qsort_s` (C11 Annex K) does exist on FreeBSD, but pulling it in would
+require modeling `rsize_t`/`errno_t`/`constraint_handler_t` — machinery
+this shim has never implemented for any libc profile — for a function
+neither the ticket's acceptance criteria nor its core ask require. Left
+out of scope, consistent with the epic's "keep narrow" precedent
+(`slate-sfzn.10.7`/`.10.8`).
+
+Net result: **zero `libc-shim` code changes.** Verified end-to-end via
+`slate translate` + `cargo check --target {x86_64,aarch64}-unknown-freebsd`
+for a fixture exercising `strlcpy`/`strlcat`, `reallocarray`, `qsort_r`
+with a context-carrying comparator, and
+`arc4random`/`arc4random_buf`/`arc4random_uniform` — both architectures
+check clean with zero warnings.
