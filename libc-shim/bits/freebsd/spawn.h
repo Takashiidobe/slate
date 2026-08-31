@@ -1,46 +1,22 @@
-#ifndef _SLATE_SPAWN_H
-#define _SLATE_SPAWN_H
+#ifndef _SLATE_BITS_FREEBSD_SPAWN_H
+#define _SLATE_BITS_FREEBSD_SPAWN_H
 
-#include <features.h>
-
-#define __NEED_mode_t
-#define __NEED_pid_t
-#define __NEED_sigset_t
-#include <bits/types.h>
-
-#if defined(__SLATE_LIBC_FREEBSD)
-
-#include <bits/freebsd/spawn.h>
-
-#else
+#if !defined(_SLATE_LIBC)
+#error "Never include <bits/freebsd/spawn.h> directly; include a public header instead."
+#endif
 
 struct sched_param;
 
-#define POSIX_SPAWN_RESETIDS      1
-#define POSIX_SPAWN_SETPGROUP     2
-#define POSIX_SPAWN_SETSIGDEF     4
-#define POSIX_SPAWN_SETSIGMASK    8
-#define POSIX_SPAWN_SETSCHEDPARAM 16
-#define POSIX_SPAWN_SETSCHEDULER  32
-#define POSIX_SPAWN_USEVFORK      64
-#define POSIX_SPAWN_SETSID        128
+typedef struct __posix_spawnattr           *posix_spawnattr_t;
+typedef struct __posix_spawn_file_actions  *posix_spawn_file_actions_t;
 
-typedef struct {
-  int      __flags;
-  pid_t    __pgrp;
-  sigset_t __def;
-  sigset_t __mask;
-  int      __prio;
-  int      __pol;
-  void    *__fn;
-  char     __pad[64 - sizeof(void *)];
-} posix_spawnattr_t;
-
-typedef struct {
-  int   __pad0[2];
-  void *__actions;
-  int   __pad[16];
-} posix_spawn_file_actions_t;
+#define POSIX_SPAWN_RESETIDS         0x01
+#define POSIX_SPAWN_SETPGROUP        0x02
+#define POSIX_SPAWN_SETSCHEDPARAM    0x04
+#define POSIX_SPAWN_SETSCHEDULER     0x08
+#define POSIX_SPAWN_SETSIGDEF        0x10
+#define POSIX_SPAWN_SETSIGMASK       0x20
+#define POSIX_SPAWN_DISABLE_ASLR_NP  0x40
 
 int posix_spawn(pid_t *__restrict, const char *__restrict,
                 const posix_spawn_file_actions_t *,
@@ -87,13 +63,5 @@ int posix_spawn_file_actions_addopen(posix_spawn_file_actions_t *__restrict,
                                      int, const char *__restrict, int, mode_t);
 int posix_spawn_file_actions_addclose(posix_spawn_file_actions_t *, int);
 int posix_spawn_file_actions_adddup2(posix_spawn_file_actions_t *, int, int);
-
-#if defined(_BSD_SOURCE) || defined(_GNU_SOURCE)
-int posix_spawn_file_actions_addchdir_np(posix_spawn_file_actions_t *__restrict,
-                                         const char *__restrict);
-int posix_spawn_file_actions_addfchdir_np(posix_spawn_file_actions_t *, int);
-#endif
-
-#endif 
 
 #endif

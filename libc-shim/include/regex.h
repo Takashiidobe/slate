@@ -7,6 +7,12 @@
 #define __NEED_size_t
 #include <bits/types.h>
 
+#if defined(__SLATE_LIBC_FREEBSD)
+
+#include <bits/freebsd/regex.h>
+
+#else
+
 typedef struct re_pattern_buffer {
   size_t re_nsub;
   void  *__opaque, *__padding[4];
@@ -110,5 +116,7 @@ regoff_t     re_match(regex_t *__restrict, const char *__restrict, size_t,
 regoff_t     re_search(regex_t *__restrict, const char *__restrict, size_t,
                        regoff_t, regoff_t, void *__restrict);
 #endif
+
+#endif 
 
 #endif

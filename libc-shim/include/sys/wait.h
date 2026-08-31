@@ -7,6 +7,12 @@
 #define __NEED_id_t
 #include <bits/types.h>
 
+#if defined(__SLATE_LIBC_FREEBSD)
+
+#include <bits/freebsd/wait.h>
+
+#else
+
 typedef enum { P_ALL = 0, P_PID = 1, P_PGID = 2, P_PIDFD = 3 } idtype_t;
 
 pid_t wait(int *);
@@ -52,5 +58,7 @@ __REDIR(wait3, __wait3_time64);
 __REDIR(wait4, __wait4_time64);
 #endif
 #endif
+
+#endif 
 
 #endif

@@ -1,6 +1,14 @@
 #ifndef _SLATE_FNMATCH_H
 #define _SLATE_FNMATCH_H
 
+#include <features.h>
+
+#if defined(__SLATE_LIBC_FREEBSD)
+
+#include <bits/freebsd/fnmatch.h>
+
+#else
+
 enum {
   FNM_PATHNAME    = 0x1,
   FNM_FILE_NAME   = FNM_PATHNAME,
@@ -17,5 +25,7 @@ enum {
 };
 
 int fnmatch(const char *, const char *, int);
+
+#endif 
 
 #endif
