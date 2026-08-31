@@ -451,6 +451,57 @@ fn write_project_modules(
     Ok(written)
 }
 
+#[derive(Default)]
+struct ProjectModules {
+    paths: Vec<PathBuf>,
+    programs: Vec<rust_ast::Program>,
+    aliases: BTreeMap<String, CirType>,
+    bitfield_storages: frontend::BitfieldStorages,
+}
+
+impl ProjectModules {
+    fn collect_shared_type_inputs(&mut self, module: &Module) {
+        self.aliases.extend(module.type_aliases.clone());
+        self.bitfield_storages
+            .extend(frontend::collect_bitfield_storages(module));
+    }
+
+    fn push(&mut self, path: PathBuf, program: rust_ast::Program) {
+        self.paths.push(path);
+        self.programs.push(program);
+    }
+
+    fn push_module(&mut self, path: PathBuf, module: &Module, program: rust_ast::Program) {
+        self.collect_shared_type_inputs(module);
+        self.push(path, program);
+    }
+
+    fn push_shared_types(
+        &mut self,
+        crate_src: &Path,
+        shared_records: BTreeMap<String, c_ast::Record>,
+        shared_enums: BTreeMap<String, c_ast::Enum>,
+        shims: &mut BTreeMap<String, rust_ast::ExternFnDecl>,
+    ) -> bool {
+        if shared_records.is_empty() && shared_enums.is_empty() {
+            return false;
+        }
+        let records: Vec<_> = shared_records.into_values().collect();
+        let enums: Vec<_> = shared_enums.into_values().collect();
+        let program =
+            frontend::lower_shared_types(&records, &enums, &self.aliases, &self.bitfield_storages);
+        for shim in collect_program_shims(&program) {
+            shims.entry(shim.name.clone()).or_insert(shim);
+        }
+        self.push(crate_src.join("types.rs"), program);
+        true
+    }
+
+    fn write(self) -> Result<Vec<PathBuf>, String> {
+        write_project_modules(self.paths, self.programs)
+    }
+}
+
 fn merge_target_programs(variants: &[(rust_ast::Cfg, rust_ast::Program)]) -> rust_ast::Program {
     if variants.len() <= 1 {
         return variants.first().map(|(_, p)| p.clone()).unwrap_or_default();
@@ -1109,13 +1160,8 @@ fn translate_project_lib_crate_with_manifest(
 
     let mut shims: BTreeMap<String, rust_ast::ExternFnDecl> = BTreeMap::new();
     let mut written = Vec::new();
-    let mut module_paths: Vec<PathBuf> = Vec::new();
-    let mut module_progs: Vec<rust_ast::Program> = Vec::new();
-    let mut merged_aliases: BTreeMap<String, CirType> = BTreeMap::new();
-    let mut merged_bitfield_storages = frontend::BitfieldStorages::new();
+    let mut project_modules = ProjectModules::default();
     for (stem, path, module, unit, warning_items) in loaded_modules {
-        merged_aliases.extend(module.type_aliases.clone());
-        merged_bitfield_storages.extend(frontend::collect_bitfield_storages(&module));
         let mut ctx = ctx::Ctx::default();
         let mut program = frontend::lower_with_project(&module, &unit, &mut ctx, &project);
         for d in &ctx.diagnostics.items {
@@ -1131,28 +1177,11 @@ fn translate_project_lib_crate_with_manifest(
         }
         directive_translate::insert_directive_items(&mut program, warning_items);
         let output = crate_src.join(stem).with_extension("rs");
-        module_paths.push(output);
-        module_progs.push(backend::apply_with(program, &fixup_skip));
+        project_modules.push_module(output, &module, backend::apply_with(program, &fixup_skip));
     }
 
-    let has_shared_types = !shared_records.is_empty() || !shared_enums.is_empty();
-    if has_shared_types {
-        let records: Vec<_> = shared_records.into_values().collect();
-        let enums: Vec<_> = shared_enums.into_values().collect();
-        let shared_program = frontend::lower_shared_types(
-            &records,
-            &enums,
-            &merged_aliases,
-            &merged_bitfield_storages,
-        );
-        for shim in collect_program_shims(&shared_program) {
-            shims
-                .entry(shim.name.clone())
-                .or_insert_with(|| shim.clone());
-        }
-        module_paths.push(crate_src.join("types.rs"));
-        module_progs.push(shared_program);
-    }
+    let has_shared_types =
+        project_modules.push_shared_types(&crate_src, shared_records, shared_enums, &mut shims);
 
     let mut lib_rs = String::new();
     for feature in &project.crate_features {
@@ -1221,12 +1250,11 @@ fn translate_project_lib_crate_with_manifest(
             }
             directive_translate::insert_directive_items(&mut program, warning_items);
             let output = crate_tests.join(&stem).with_extension("rs");
-            module_paths.push(output);
-            module_progs.push(backend::apply_with(program, &fixup_skip));
+            project_modules.push(output, backend::apply_with(program, &fixup_skip));
             test_modules.push(stem);
         }
     }
-    written.extend(write_project_modules(module_paths, module_progs)?);
+    written.extend(project_modules.write()?);
     if uses_slate_support {
         write_slate_support(crate_dir)?;
     }
@@ -1483,10 +1511,7 @@ fn translate_project_lib_crate_with_compile_commands(
     }
     let mut shims = BTreeMap::new();
     let mut written = Vec::new();
-    let mut module_paths: Vec<PathBuf> = Vec::new();
-    let mut module_progs: Vec<rust_ast::Program> = Vec::new();
-    let mut merged_aliases: BTreeMap<String, CirType> = BTreeMap::new();
-    let mut merged_bitfield_storages = frontend::BitfieldStorages::new();
+    let mut project_modules = ProjectModules::default();
     for (stem, variants) in &loaded_by_stem {
         let mut programs = Vec::new();
         for cfg in &cfgs {
@@ -1494,8 +1519,7 @@ fn translate_project_lib_crate_with_compile_commands(
                 programs.push((cfg.clone(), rust_ast::Program::default()));
                 continue;
             };
-            merged_aliases.extend(variant.module.type_aliases.clone());
-            merged_bitfield_storages.extend(frontend::collect_bitfield_storages(&variant.module));
+            project_modules.collect_shared_type_inputs(&variant.module);
             let variant_facts = facts.get(cfg).expect("variant facts");
             let project = frontend::ProjectInfo {
                 cross_module: variant_facts.defined.clone(),
@@ -1540,28 +1564,11 @@ fn translate_project_lib_crate_with_compile_commands(
                 .or_insert_with(|| shim.clone());
         }
         let output = crate_src.join(stem).with_extension("rs");
-        module_paths.push(output);
-        module_progs.push(program);
+        project_modules.push(output, program);
     }
-    let has_shared_types = !shared_records.is_empty() || !shared_enums.is_empty();
-    if has_shared_types {
-        let records: Vec<_> = shared_records.into_values().collect();
-        let enums: Vec<_> = shared_enums.into_values().collect();
-        let shared_program = frontend::lower_shared_types(
-            &records,
-            &enums,
-            &merged_aliases,
-            &merged_bitfield_storages,
-        );
-        for shim in collect_program_shims(&shared_program) {
-            shims
-                .entry(shim.name.clone())
-                .or_insert_with(|| shim.clone());
-        }
-        module_paths.push(crate_src.join("types.rs"));
-        module_progs.push(shared_program);
-    }
-    written.extend(write_project_modules(module_paths, module_progs)?);
+    let has_shared_types =
+        project_modules.push_shared_types(&crate_src, shared_records, shared_enums, &mut shims);
+    written.extend(project_modules.write()?);
 
     let mut lib_rs = String::new();
     for feature in &crate_features {
@@ -1857,10 +1864,7 @@ fn translate_project_with_targets(
     let targets = target_variants(extra_targets)?;
     let mut written = Vec::new();
     let mut shims: BTreeMap<String, rust_ast::ExternFnDecl> = BTreeMap::new();
-    let mut module_paths: Vec<PathBuf> = Vec::new();
-    let mut module_progs: Vec<rust_ast::Program> = Vec::new();
-    let mut merged_aliases: BTreeMap<String, CirType> = BTreeMap::new();
-    let mut merged_bitfield_storages = frontend::BitfieldStorages::new();
+    let mut project_modules = ProjectModules::default();
     for (stem, path) in &modules {
         let is_root = *stem == root;
         let project = frontend::ProjectInfo {
@@ -1901,8 +1905,7 @@ fn translate_project_with_targets(
                     continue;
                 }
             };
-            merged_aliases.extend(module.type_aliases.clone());
-            merged_bitfield_storages.extend(frontend::collect_bitfield_storages(&module));
+            project_modules.collect_shared_type_inputs(&module);
             let unit = match c_ast::parse_file_with_args(path, &target.clang_args) {
                 Ok(u) => u,
                 Err(e) => {
@@ -1948,27 +1951,10 @@ fn translate_project_with_targets(
             stem.clone()
         };
         let output = crate_src.join(file).with_extension("rs");
-        module_paths.push(output);
-        module_progs.push(program);
+        project_modules.push(output, program);
     }
-    if has_shared_types {
-        let records: Vec<_> = shared_records.into_values().collect();
-        let enums: Vec<_> = shared_enums.into_values().collect();
-        let shared_program = frontend::lower_shared_types(
-            &records,
-            &enums,
-            &merged_aliases,
-            &merged_bitfield_storages,
-        );
-        for shim in collect_program_shims(&shared_program) {
-            shims
-                .entry(shim.name.clone())
-                .or_insert_with(|| shim.clone());
-        }
-        module_paths.push(crate_src.join("types.rs"));
-        module_progs.push(shared_program);
-    }
-    written.extend(write_project_modules(module_paths, module_progs)?);
+    project_modules.push_shared_types(&crate_src, shared_records, shared_enums, &mut shims);
+    written.extend(project_modules.write()?);
 
     let shim_output = crate_src.join("slate_shims.c");
     let has_shims = !shims.is_empty();
@@ -2248,10 +2234,7 @@ fn translate_project_with_compile_commands(
     // pass 2: lower each unit with project-wide knowledge and write its module.
     let mut written = Vec::new();
     let mut shims: BTreeMap<String, rust_ast::ExternFnDecl> = BTreeMap::new();
-    let mut module_paths: Vec<PathBuf> = Vec::new();
-    let mut module_progs: Vec<rust_ast::Program> = Vec::new();
-    let mut merged_aliases: BTreeMap<String, CirType> = BTreeMap::new();
-    let mut merged_bitfield_storages = frontend::BitfieldStorages::new();
+    let mut project_modules = ProjectModules::default();
     for (stem, path) in &modules {
         let is_root = *stem == root;
         let project = frontend::ProjectInfo {
@@ -2296,8 +2279,7 @@ fn translate_project_with_compile_commands(
                     continue;
                 }
             };
-            merged_aliases.extend(module.type_aliases.clone());
-            merged_bitfield_storages.extend(frontend::collect_bitfield_storages(&module));
+            project_modules.collect_shared_type_inputs(&module);
             let unit = match c_ast::parse_file_with_project_records_and_args(
                 path,
                 project_dir,
@@ -2350,27 +2332,10 @@ fn translate_project_with_compile_commands(
             stem.clone()
         };
         let output = crate_src.join(file).with_extension("rs");
-        module_paths.push(output);
-        module_progs.push(program);
+        project_modules.push(output, program);
     }
-    if has_shared_types {
-        let records: Vec<_> = shared_records.into_values().collect();
-        let enums: Vec<_> = shared_enums.into_values().collect();
-        let shared_program = frontend::lower_shared_types(
-            &records,
-            &enums,
-            &merged_aliases,
-            &merged_bitfield_storages,
-        );
-        for shim in collect_program_shims(&shared_program) {
-            shims
-                .entry(shim.name.clone())
-                .or_insert_with(|| shim.clone());
-        }
-        module_paths.push(crate_src.join("types.rs"));
-        module_progs.push(shared_program);
-    }
-    written.extend(write_project_modules(module_paths, module_progs)?);
+    project_modules.push_shared_types(&crate_src, shared_records, shared_enums, &mut shims);
+    written.extend(project_modules.write()?);
 
     let shim_output = crate_src.join("slate_shims.c");
     let has_shims = !shims.is_empty();
