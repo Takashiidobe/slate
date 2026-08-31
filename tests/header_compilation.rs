@@ -93,6 +93,17 @@ fn freebsd_filesystem_headers() -> Vec<String> {
         .collect()
 }
 
+fn freebsd_time_signal_headers() -> Vec<String> {
+    let manifest =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("libc-shim/freebsd-time-signal-headers.txt");
+    fs::read_to_string(manifest)
+        .expect("read FreeBSD time/signal header manifest")
+        .lines()
+        .filter(|line| !line.is_empty())
+        .map(str::to_string)
+        .collect()
+}
+
 fn macos_filesystem_headers() -> Vec<String> {
     let manifest =
         Path::new(env!("CARGO_MANIFEST_DIR")).join("libc-shim/macos-filesystem-headers.txt");
@@ -299,6 +310,50 @@ fn freebsd_basic_header_manifest_compiles_for_x86_64_and_aarch64() {
         .collect::<String>();
     let source = format!(
         "{includes}\n#include <sys/types.h>\n_Static_assert(sizeof(wchar_t) == 4, \"wchar_t\");\n_Static_assert(sizeof(long double) == 16, \"long double\");\n_Static_assert(sizeof(mode_t) == 2, \"mode_t\");\n_Static_assert(sizeof(dev_t) == 8, \"dev_t\");\n_Static_assert(sizeof(nlink_t) == 8, \"nlink_t\");\n_Static_assert(__SLATE_FREEBSD_VERSION__ == {FREEBSD_VERSION_NUMBER}, \"release\");\nint main(void) {{ return 0; }}\n"
+    );
+    for arch in [Architecture::X86_64, Architecture::Aarch64] {
+        let config = TestConfig::new(arch, LibcVariant::FreeBsd);
+        compile_test_program(&config, &source).unwrap();
+    }
+}
+
+#[test]
+fn freebsd_time_signal_header_manifest_compiles_for_x86_64_and_aarch64() {
+    let headers = freebsd_time_signal_headers();
+    let includes = headers
+        .iter()
+        .map(|header| format!("#include <{header}>\n"))
+        .collect::<String>();
+    let source = format!(
+        "{includes}\n#include <stddef.h>\n\
+         _Static_assert(CLOCKS_PER_SEC == 128, \"CLOCKS_PER_SEC\");\n\
+         _Static_assert(CLOCK_REALTIME == 0, \"CLOCK_REALTIME\");\n\
+         _Static_assert(CLOCK_MONOTONIC == 4, \"CLOCK_MONOTONIC\");\n\
+         _Static_assert(CLOCK_UPTIME == 5, \"CLOCK_UPTIME\");\n\
+         _Static_assert(CLOCK_UPTIME_PRECISE == 7, \"CLOCK_UPTIME_PRECISE\");\n\
+         _Static_assert(CLOCK_UPTIME_FAST == 8, \"CLOCK_UPTIME_FAST\");\n\
+         _Static_assert(CLOCK_SECOND == 13, \"CLOCK_SECOND\");\n\
+         _Static_assert(CLOCK_THREAD_CPUTIME_ID == 14, \"CLOCK_THREAD_CPUTIME_ID\");\n\
+         _Static_assert(CLOCK_PROCESS_CPUTIME_ID == 15, \"CLOCK_PROCESS_CPUTIME_ID\");\n\
+         _Static_assert(SIGHUP == 1, \"SIGHUP\");\n\
+         _Static_assert(SIGKILL == 9, \"SIGKILL\");\n\
+         _Static_assert(SIGBUS == 10, \"SIGBUS\");\n\
+         _Static_assert(SIGUSR1 == 30, \"SIGUSR1\");\n\
+         _Static_assert(SIGUSR2 == 31, \"SIGUSR2\");\n\
+         _Static_assert(SIGRTMIN == 65, \"SIGRTMIN\");\n\
+         _Static_assert(SIGRTMAX == 126, \"SIGRTMAX\");\n\
+         _Static_assert(sizeof(sigset_t) == 16, \"sigset_t size\");\n\
+         _Static_assert(sizeof(siginfo_t) == 80, \"siginfo_t size\");\n\
+         _Static_assert(offsetof(siginfo_t, si_pid) == 12, \"si_pid offset\");\n\
+         _Static_assert(offsetof(siginfo_t, si_uid) == 16, \"si_uid offset\");\n\
+         _Static_assert(offsetof(siginfo_t, si_addr) == 24, \"si_addr offset\");\n\
+         _Static_assert(offsetof(siginfo_t, si_value) == 32, \"si_value offset\");\n\
+         _Static_assert(sizeof(struct sigaction) == 32, \"sigaction size\");\n\
+         _Static_assert(offsetof(struct sigaction, sa_flags) == 8, \"sa_flags offset\");\n\
+         _Static_assert(offsetof(struct sigaction, sa_mask) == 12, \"sa_mask offset\");\n\
+         _Static_assert(ILL_ILLOPN == 2, \"ILL_ILLOPN\");\n\
+         _Static_assert(ILL_ILLTRP == 4, \"ILL_ILLTRP\");\n\
+         int main(void) {{ sigset_t s; struct sigaction sa; siginfo_t si; (void)s; (void)sa; (void)si; return 0; }}\n"
     );
     for arch in [Architecture::X86_64, Architecture::Aarch64] {
         let config = TestConfig::new(arch, LibcVariant::FreeBsd);

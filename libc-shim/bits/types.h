@@ -89,6 +89,10 @@ typedef int __slate_wchar_t;
 
 #if defined(__SLATE_LIBC_DARWIN)
 typedef unsigned int __sigset_t;
+#elif defined(__SLATE_LIBC_FREEBSD)
+typedef struct {
+  unsigned int __bits[4];
+} __sigset_t;
 #elif !defined(__SLATE_LIBC_MSVC)
 typedef struct {
   unsigned long __bits[128 / sizeof(unsigned long)];
