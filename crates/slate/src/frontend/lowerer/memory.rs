@@ -148,6 +148,15 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 .is_some_and(|value| value >= i128::from(len))
         });
         let elem_ty = op.result_ty.pointee().map(|ty| self.parent.rust_type(ty));
+        if let Some(labels) = self.local_block_addr_arrays.get(&op.base).cloned() {
+            self.block_addr_element_ptrs.insert(
+                op.result.clone(),
+                BlockAddrElementPtr {
+                    labels,
+                    index: index_expr.clone(),
+                },
+            );
+        }
         if let Some(Val::Global(name)) = self.values.get(&op.base).cloned() {
             if let Some(labels) = self.parent.block_addr_globals.get(&name) {
                 self.block_addr_element_ptrs.insert(

@@ -261,6 +261,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     pub(super) fn lower_copy(&mut self, op: &inst::Copy) {
         let dst = &op.dst;
         let src = &op.src;
+        if let Some(Val::Global(name)) = self.values.get(src)
+            && let Some(labels) = self.parent.block_addr_globals.get(name)
+        {
+            self.local_block_addr_arrays
+                .insert(dst.clone(), labels.clone());
+            return;
+        }
         if self.slot_types.get(dst).is_some_and(|ty| match ty {
             Type::Array { len, .. } => *len == 0,
             Type::Custom(name) => self
