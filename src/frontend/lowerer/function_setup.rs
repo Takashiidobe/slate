@@ -637,9 +637,18 @@ impl<'a> Lowerer<'a> {
             .known_functions
             .get(name)
             .unwrap_or(&FunctionIdentity::Unknown);
+        let rust_name = sanitize_ident(name).into_string();
+        let mut attrs = Vec::new();
+        if rust_name != name {
+            let mut link_name = name.strip_prefix('\u{1}').unwrap_or(name);
+            if crate::frontend::toolchain::active_target() == "aarch64-apple-darwin" {
+                link_name = link_name.strip_prefix('_').unwrap_or(link_name);
+            }
+            attrs.push(RustAttr::LinkName(link_name.to_string()));
+        }
         let mut decl = ExternFnDecl {
-            attrs: Vec::new(),
-            name: name.into(),
+            attrs,
+            name: rust_name,
             identity,
             declared_type: self.function_types.get(name).cloned(),
             params,

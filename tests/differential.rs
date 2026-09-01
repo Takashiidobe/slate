@@ -330,6 +330,67 @@ fn check_generated_rust_for_target(
     })
 }
 
+fn check_generated_macho_symbols(
+    name: &str,
+    target: &str,
+    rust: &str,
+    work_dir: &Path,
+) -> Result<(), String> {
+    let rustc = std::env::var("RUSTC").unwrap_or_else(|_| "rustc".into());
+    let libdir = Command::new(&rustc)
+        .args(["--print", "target-libdir", "--target", target])
+        .output()
+        .map_err(|error| format!("spawn {rustc}: {error}"))?;
+    let libdir = PathBuf::from(String::from_utf8_lossy(&libdir.stdout).trim());
+    if !libdir.is_dir() {
+        eprintln!("skip  {name} Mach-O symbol check: {target} is not installed");
+        return Ok(());
+    }
+    std::fs::create_dir_all(work_dir)
+        .map_err(|error| format!("create {}: {error}", work_dir.display()))?;
+    let source = work_dir.join(format!("{name}.rs"));
+    let object = work_dir.join(format!("{name}.o"));
+    std::fs::write(&source, rust)
+        .map_err(|error| format!("write {}: {error}", source.display()))?;
+    let output = Command::new(&rustc)
+        .args([
+            "--edition=2024",
+            "--crate-type=lib",
+            "--emit=obj",
+            "-C",
+            "link-dead-code=yes",
+            "--target",
+            target,
+            "-o",
+        ])
+        .arg(&object)
+        .arg(&source)
+        .output()
+        .map_err(|error| format!("spawn {rustc}: {error}"))?;
+    if !output.status.success() {
+        return Err(format!(
+            "generated Rust object compilation failed:\n{}",
+            String::from_utf8_lossy(&output.stderr)
+        ));
+    }
+    let readobj = std::env::var("SLATE_LLVM_READOBJ").unwrap_or_else(|_| "llvm-readobj".into());
+    let output = Command::new(&readobj)
+        .arg("--symbols")
+        .arg(&object)
+        .output()
+        .map_err(|error| format!("spawn {readobj}: {error}"))?;
+    if !output.status.success() {
+        return Err(String::from_utf8_lossy(&output.stderr).into_owned());
+    }
+    let symbols = String::from_utf8_lossy(&output.stdout);
+    for expected in ["_fopen$DARWIN_EXTSN", "___error", "___stdinp"] {
+        if !symbols.contains(&format!("Name: {expected}")) {
+            return Err(format!("missing Mach-O symbol `{expected}`:\n{symbols}"));
+        }
+    }
+    Ok(())
+}
+
 fn run_cross_target_fixture(
     name: &str,
     flavor: FixtureFlavor,
@@ -439,6 +500,14 @@ fn run_cross_target_fixture(
             &rust,
             &work_dir.join("target-check"),
         )?;
+        if name == "redirect_facts" {
+            check_generated_macho_symbols(
+                name,
+                flavor.translation_target().unwrap(),
+                &rust,
+                &work_dir.join("macho-symbols"),
+            )?;
+        }
     }
     support::filecheck::check_generated_rust_with_prefixes(
         &fixture,
