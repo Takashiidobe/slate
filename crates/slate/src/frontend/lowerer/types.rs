@@ -518,7 +518,7 @@ pub(super) fn is_abi_coercion_record_name(name: &str) -> bool {
 fn ctype_abi_sig(ty: &crate::frontend::c_ast::CType) -> String {
     use crate::frontend::c_ast::CType;
     match ty {
-        CType::Int { signed, bits } => format!("{}{bits}", if *signed { "i" } else { "u" }),
+        CType::Int { signed, bits, .. } => format!("{}{bits}", if *signed { "i" } else { "u" }),
         CType::Float { bits } => format!("f{bits}"),
         CType::Bool => "b".to_string(),
         CType::Ptr(_) | CType::FuncPtr { .. } => "p".to_string(),
@@ -784,7 +784,11 @@ pub(super) fn cir_type_to_ctype(
         return CType::Float { bits: 80 };
     }
     if let Some((signed, bits)) = resolved_integer_parts(ty, aliases) {
-        return CType::Int { signed, bits };
+        return CType::Int {
+            signed,
+            bits,
+            is_char: false,
+        };
     }
     if let Some((element, size)) = ty.as_array() {
         return CType::Array(Box::new(cir_type_to_ctype(element, aliases)), Some(size));
@@ -814,5 +818,6 @@ pub(super) fn cir_type_to_ctype(
     CType::Int {
         signed: true,
         bits: 32,
+        is_char: false,
     }
 }

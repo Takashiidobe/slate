@@ -73,6 +73,18 @@ transpile-all:
         exit 1
     fi
 
+# regenerate the lowering FileCheck blocks in every fixture, leaving rewrites blocks frozen
+regen-lowering *paths="tests/fixtures/*.c":
+    python3 tools/update_filecheck.py --in-place --profile lowering {{paths}}
+
+# regenerate the rewrites FileCheck blocks in every fixture, leaving lowering blocks frozen
+regen-rewrites *paths="tests/fixtures/*.c":
+    python3 tools/update_filecheck.py --in-place --profile rewrites {{paths}}
+
+# regenerate both FileCheck profiles in every fixture
+regen-filecheck *paths="tests/fixtures/*.c":
+    python3 tools/update_filecheck.py --in-place --profile both {{paths}}
+
 # cargo check every already-transpiled crate; keeps going past per-project failures and reports them at the end
 check-all:
     #!/usr/bin/env bash

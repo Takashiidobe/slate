@@ -187,10 +187,19 @@ pub struct Decl {
 pub enum CType {
     Void,
     Bool,
-    Int { signed: bool, bits: u32 },
-    Float { bits: u32 },
+    Int {
+        signed: bool,
+        bits: u32,
+        is_char: bool,
+    },
+    Float {
+        bits: u32,
+    },
     Ptr(Box<CType>),
-    FuncPtr { ret: Box<CType>, params: Vec<CType> },
+    FuncPtr {
+        ret: Box<CType>,
+        params: Vec<CType>,
+    },
     Array(Box<CType>, Option<u64>),
     Record(String),
     Enum(String),
@@ -2338,9 +2347,11 @@ fn parse_c_type(s: &str) -> CType {
         CType::Enum(enum_rust_name(name.trim()))
     } else {
         let signed = !s.contains("unsigned");
+        let is_char = s.contains("char") && !s.contains("signed");
         CType::Int {
             signed,
             bits: int_bits(s),
+            is_char,
         }
     }
 }
@@ -2494,7 +2505,11 @@ fn parse_bitint_type(s: &str) -> Option<CType> {
         .strip_suffix(')')?
         .parse()
         .ok()?;
-    Some(CType::Int { signed, bits })
+    Some(CType::Int {
+        signed,
+        bits,
+        is_char: false,
+    })
 }
 
 fn has_body(node: &Value) -> bool {

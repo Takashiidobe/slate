@@ -1,4 +1,4 @@
-use crate::backend::rust_ast::{Prim, Type};
+use crate::backend::rust_ast::{CLibType, Prim, Type};
 
 pub(super) fn repair_function_signature(
     spelling: Option<&str>,
@@ -68,6 +68,10 @@ fn repair_typedef_type(spelling: &str, ty: &mut Type) -> bool {
         *ty = repaired;
         return true;
     }
+    if matches!(ty, Type::Prim(Prim::I8 | Prim::U8)) && is_plain_char(spelling) {
+        *ty = Type::CLib(CLibType::CHAR);
+        return true;
+    }
     match ty {
         Type::Ptr { mutable, inner } => spelling.rfind('*').is_some_and(|star| {
             let pointee = spelling[..star].trim();
@@ -81,6 +85,13 @@ fn repair_typedef_type(spelling: &str, ty: &mut Type) -> bool {
             .is_some_and(|bracket| repair_typedef_type(spelling[..bracket].trim(), elem.as_mut())),
         _ => false,
     }
+}
+
+fn is_plain_char(spelling: &str) -> bool {
+    spelling
+        .split_whitespace()
+        .filter(|word| !matches!(*word, "const" | "volatile" | "restrict" | "_Atomic"))
+        .eq(std::iter::once("char"))
 }
 
 fn pointer_sized_type(spelling: &str) -> Option<Type> {
