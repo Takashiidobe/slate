@@ -79,6 +79,8 @@ pub enum Error {
     },
     #[error("unknown SLATE_SKIP_PASS: {name}")]
     UnknownSkipPass { name: String },
+    #[error("format generated Rust: {message}")]
+    Format { message: String },
 }
 
 pub fn translate(path: &Path) -> Result<String, Error> {
@@ -87,7 +89,8 @@ pub fn translate(path: &Path) -> Result<String, Error> {
 
 pub fn translate_with_args(path: &Path, extra_args: &[String]) -> Result<String, Error> {
     let (_, program) = lowered_program_with_args(path, extra_args)?;
-    Ok(backend::apply_with(program, &skip_set_from_env()?).emit())
+    let source = backend::apply_with(program, &skip_set_from_env()?).emit();
+    backend::format_rust(&source).map_err(|message| Error::Format { message })
 }
 
 pub fn lowered_program(path: &Path) -> Result<(Module, rust_ast::Program), Error> {

@@ -91,6 +91,8 @@ pub enum DirectiveError {
         path: PathBuf,
         diagnostics: ctx::Diagnostics,
     },
+    #[error("format generated Rust: {message}")]
+    Format { message: String },
 }
 
 #[derive(Debug, Clone)]
@@ -128,7 +130,7 @@ pub fn translate_directives(path: &Path) -> Result<String, DirectiveError> {
         None => {
             let mut program = translate_one(path, &[])?.program;
             insert_directive_items(&mut program, directive_items);
-            return Ok(program.emit());
+            return format_program(&program);
         }
         Some(plan) => plan,
     };
@@ -145,7 +147,11 @@ pub fn translate_directives(path: &Path) -> Result<String, DirectiveError> {
     }
     let mut program = merge_variants(&baseline, &variants, &plan.pp);
     insert_directive_items(&mut program, directive_items);
-    Ok(program.emit())
+    format_program(&program)
+}
+
+fn format_program(program: &Program) -> Result<String, DirectiveError> {
+    backend::format_rust(&program.emit()).map_err(|message| DirectiveError::Format { message })
 }
 
 fn directive_items(pp: &Preprocessing) -> Result<Vec<Item>, DirectiveError> {

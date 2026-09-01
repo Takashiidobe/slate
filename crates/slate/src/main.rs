@@ -123,7 +123,7 @@ fn reject_active_unsupported_file(path: &Path, context: &str) -> Result<(), Stri
 fn fixup_debug(args: &[String]) -> Result<String, String> {
     let (path, options) = parse_fixup_debug_args(args)?;
     let (_, program) = lowered_program(path)?;
-    Ok(backend::debug_with(program, options))
+    backend::format_rust(&backend::debug_with(program, options))
 }
 
 fn parse_fixup_debug_args(args: &[String]) -> Result<(&Path, backend::DebugOptions), String> {
@@ -444,8 +444,7 @@ fn write_project_modules(
     backend::propagate_unwind_abi_across_project(&mut programs);
     let mut written = Vec::new();
     for (output, program) in paths.iter().zip(&programs) {
-        std::fs::write(output, program.emit())
-            .map_err(|e| format!("write {}: {e}", output.display()))?;
+        backend::write_rust(output, &program.emit())?;
         written.push(output.clone());
     }
     Ok(written)
@@ -746,13 +745,13 @@ fn write_aligned_support(crate_dir: &Path) -> Result<(), String> {
             aligned_dir.join("LICENSE-APACHE"),
             include_str!("../vendor/aligned/LICENSE-APACHE"),
         ),
-        (
-            src_dir.join("lib.rs"),
-            include_str!("../vendor/aligned/src/lib.rs"),
-        ),
     ] {
         std::fs::write(&path, contents).map_err(|e| format!("write {}: {e}", path.display()))?;
     }
+    backend::write_rust(
+        &src_dir.join("lib.rs"),
+        include_str!("../vendor/aligned/src/lib.rs"),
+    )?;
     Ok(())
 }
 
@@ -760,18 +759,13 @@ fn write_bitint_support(crate_dir: &Path) -> Result<(), String> {
     let bitint_dir = crate_dir.join("bitint");
     let src_dir = bitint_dir.join("src");
     std::fs::create_dir_all(&src_dir).map_err(|e| format!("create {}: {e}", src_dir.display()))?;
-    for (path, contents) in [
-        (
-            bitint_dir.join("Cargo.toml"),
-            include_str!("../vendor/bitint/Cargo.toml"),
-        ),
-        (
-            src_dir.join("lib.rs"),
-            include_str!("../vendor/bitint/src/lib.rs"),
-        ),
-    ] {
-        std::fs::write(&path, contents).map_err(|e| format!("write {}: {e}", path.display()))?;
-    }
+    let manifest = bitint_dir.join("Cargo.toml");
+    std::fs::write(&manifest, include_str!("../vendor/bitint/Cargo.toml"))
+        .map_err(|e| format!("write {}: {e}", manifest.display()))?;
+    backend::write_rust(
+        &src_dir.join("lib.rs"),
+        include_str!("../vendor/bitint/src/lib.rs"),
+    )?;
     Ok(())
 }
 
@@ -808,8 +802,7 @@ fn write_num_complex_support(crate_dir: &Path) -> Result<(), String> {
         ),
         ("pow.rs", include_str!("../vendor/num-complex/src/pow.rs")),
     ] {
-        std::fs::write(src_dir.join(source), contents)
-            .map_err(|e| format!("write {}: {e}", src_dir.join(source).display()))?;
+        backend::write_rust(&src_dir.join(source), contents)?;
     }
     Ok(())
 }
@@ -830,8 +823,8 @@ proc-macro = true
 "#,
     )
     .map_err(|e| format!("write {}: {e}", support_dir.join("Cargo.toml").display()))?;
-    std::fs::write(
-        src_dir.join("lib.rs"),
+    backend::write_rust(
+        &src_dir.join("lib.rs"),
         r#"#![feature(proc_macro_diagnostic, proc_macro_value)]
 
 extern crate proc_macro;
@@ -855,19 +848,17 @@ pub fn warning(input: TokenStream) -> TokenStream {
 }
 "#,
     )
-    .map_err(|e| format!("write {}: {e}", src_dir.join("lib.rs").display()))
 }
 
 fn write_c_shims(crate_dir: &Path, shims: &[rust_ast::ExternFnDecl]) -> Result<(), String> {
-    std::fs::write(
-        crate_dir.join("build.rs"),
+    backend::write_rust(
+        &crate_dir.join("build.rs"),
         r#"fn main() {
     println!("cargo:rerun-if-changed=src/slate_shims.c");
     cc::Build::new().file("src/slate_shims.c").compile("slate_shims");
 }
 "#,
-    )
-    .map_err(|e| format!("write {}: {e}", crate_dir.join("build.rs").display()))?;
+    )?;
     let shim_path = crate_dir.join("src/slate_shims.c");
     std::fs::write(&shim_path, c_shim::render_shim_c_source(shims))
         .map_err(|e| format!("write {}: {e}", shim_path.display()))
@@ -1197,8 +1188,7 @@ fn translate_project_lib_crate_with_manifest(
             .collect::<String>(),
     );
     let lib_rs_path = crate_src.join("lib.rs");
-    std::fs::write(&lib_rs_path, lib_rs)
-        .map_err(|e| format!("write {}: {e}", lib_rs_path.display()))?;
+    backend::write_rust(&lib_rs_path, &lib_rs)?;
     written.push(lib_rs_path);
 
     let mut test_modules = Vec::new();
@@ -1594,8 +1584,7 @@ fn translate_project_lib_crate_with_compile_commands(
         lib_rs.push_str(&format!("pub mod {};\n", codegen::escape_ident(stem)));
     }
     let lib_rs_path = crate_src.join("lib.rs");
-    std::fs::write(&lib_rs_path, lib_rs)
-        .map_err(|error| format!("write {}: {error}", lib_rs_path.display()))?;
+    backend::write_rust(&lib_rs_path, &lib_rs)?;
     written.push(lib_rs_path);
 
     if uses_slate_support {
@@ -2544,8 +2533,9 @@ fn emit_c_fixture_tree(
             .parent()
             .ok_or_else(|| format!("missing parent: {}", output.display()))?;
         std::fs::create_dir_all(parent).map_err(|e| format!("create {}: {e}", parent.display()))?;
-        std::fs::write(&output, translator(&input)?)
-            .map_err(|e| format!("write {}: {e}", output.display()))?;
+        let rust = translator(&input)?;
+        std::fs::write(&output, rust)
+            .map_err(|error| format!("write {}: {error}", output.display()))?;
         report.push_str(&format!("wrote {}\n", output.display()));
     }
     Ok(report)
@@ -2626,8 +2616,9 @@ fn emit_lowered_fixtures() -> Result<String, String> {
             .file_stem()
             .ok_or_else(|| format!("missing file stem: {}", input.display()))?;
         let output = out_dir.join(name).with_extension("rs");
-        std::fs::write(&output, lowered_rust(&input)?)
-            .map_err(|e| format!("write {}: {e}", output.display()))?;
+        let rust = lowered_rust(&input)?;
+        std::fs::write(&output, rust)
+            .map_err(|error| format!("write {}: {error}", output.display()))?;
         report.push_str(&format!("wrote {}\n", output.display()));
     }
 
@@ -2636,5 +2627,5 @@ fn emit_lowered_fixtures() -> Result<String, String> {
 
 fn lowered_rust(path: &Path) -> Result<String, String> {
     let (_, program) = lowered_program(path)?;
-    Ok(program.emit())
+    backend::format_rust(&program.emit())
 }
