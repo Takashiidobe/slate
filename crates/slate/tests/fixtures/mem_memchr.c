@@ -26,9 +26,28 @@ int main(void) {
   return 0;
 }
 
+// REWRITES-DAG: fn __slate_memchr(
+// REWRITES-LABEL: {{^}}fn main() {
+// REWRITES-NOT: let mut hit
+// REWRITES-NOT: let mut miss
+// REWRITES-NOT: let mut nul_after
+// REWRITES-NOT: map_or(std::ptr::null_mut()
+// REWRITES: {{^}}}
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(
+// LOWERING-NEXT:     dead_code,
+// LOWERING-NEXT:     unused,
+// LOWERING-NEXT:     non_camel_case_types,
+// LOWERING-NEXT:     non_snake_case,
+// LOWERING-NEXT:     non_upper_case_globals,
+// LOWERING-NEXT:     arithmetic_overflow,
+// LOWERING-NEXT:     unconditional_panic,
+// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-NEXT:     unused_comparisons
+// LOWERING-NEXT: )]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn __slate_memchr(s: *const core::ffi::c_void, c: i32, n: usize) -> *mut core::ffi::c_void {
 // LOWERING-NEXT:     let b: u8 = c as u8;
@@ -47,11 +66,12 @@ int main(void) {
 // LOWERING-NEXT: struct __SlateAllocaFrame0(u64, [i8; 4], [u8; 4], [u8; 8]);
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
-// LOWERING-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut {{__slate_alloca_frame[0-9]+}}: __SlateAllocaFrame0 = __SlateAllocaFrame0(0, [0; 4], [0; 4], [0; 8]);
+// LOWERING-NEXT:     let mut {{__slate_alloca_frame[0-9]+}}: __SlateAllocaFrame0 =
+// LOWERING-NEXT:         __SlateAllocaFrame0(0, [0; 4], [0; 4], [0; 8]);
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.3 = [10, 20, 30, 40, 50, 60, 70, 80];
 // LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.2 = [9, 8, 7, 6];
@@ -136,16 +156,21 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { {{_v[0-9]+}}.offset_from({{_v[0-9]+}}) as i64 };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = {{__slate_alloca_frame[0-9]+}}.2.as_mut_ptr() as *mut u8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { {{_v[0-9]+}}.offset_from({{_v[0-9]+}}) as i64 };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:         printf(
+// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
-
-// REWRITES-DAG: fn __slate_memchr(
-// REWRITES-LABEL: {{^}}fn main() {
-// REWRITES-NOT: let mut hit
-// REWRITES-NOT: let mut miss
-// REWRITES-NOT: let mut nul_after
-// REWRITES-NOT: map_or(std::ptr::null_mut()
-// REWRITES: {{^}}}

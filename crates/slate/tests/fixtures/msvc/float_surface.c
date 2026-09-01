@@ -40,3 +40,43 @@ TYPE_IS(&_fpclass, int (*)(double));
 TYPE_IS(&_scalbf, float (*)(float, long));
 
 int main(void) { return 0; }
+
+// SLATE-FILECHECK-BEGIN lowering-msvc
+// LOWERING-MSVC: #![allow(
+// LOWERING-MSVC-NEXT:     dead_code,
+// LOWERING-MSVC-NEXT:     unused,
+// LOWERING-MSVC-NEXT:     non_camel_case_types,
+// LOWERING-MSVC-NEXT:     non_snake_case,
+// LOWERING-MSVC-NEXT:     non_upper_case_globals,
+// LOWERING-MSVC-NEXT:     arithmetic_overflow,
+// LOWERING-MSVC-NEXT:     unconditional_panic,
+// LOWERING-MSVC-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-MSVC-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-MSVC-NEXT:     unused_comparisons
+// LOWERING-MSVC-NEXT: )]
+// LOWERING-MSVC-EMPTY:
+// LOWERING-MSVC-NEXT: fn main() {
+// LOWERING-MSVC-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-MSVC-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-MSVC-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-MSVC-NEXT: }
+// SLATE-FILECHECK-END lowering-msvc
+
+// SLATE-FILECHECK-BEGIN rewrites-msvc
+// REWRITES-MSVC: #![allow(
+// REWRITES-MSVC-NEXT:     dead_code,
+// REWRITES-MSVC-NEXT:     unused,
+// REWRITES-MSVC-NEXT:     non_camel_case_types,
+// REWRITES-MSVC-NEXT:     non_snake_case,
+// REWRITES-MSVC-NEXT:     non_upper_case_globals,
+// REWRITES-MSVC-NEXT:     arithmetic_overflow,
+// REWRITES-MSVC-NEXT:     unconditional_panic,
+// REWRITES-MSVC-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-MSVC-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-MSVC-NEXT:     unused_comparisons
+// REWRITES-MSVC-NEXT: )]
+// REWRITES-MSVC-EMPTY:
+// REWRITES-MSVC-NEXT: fn main() {
+// REWRITES-MSVC-NEXT:     std::process::exit(0 as i32);
+// REWRITES-MSVC-NEXT: }
+// SLATE-FILECHECK-END rewrites-msvc

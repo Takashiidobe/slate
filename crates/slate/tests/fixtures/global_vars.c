@@ -24,9 +24,21 @@ int main(void) {
   printf("%d %d %d\n", counter, zeroed, numbers[2]);
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(
+// LOWERING-NEXT:     dead_code,
+// LOWERING-NEXT:     unused,
+// LOWERING-NEXT:     non_camel_case_types,
+// LOWERING-NEXT:     non_snake_case,
+// LOWERING-NEXT:     non_upper_case_globals,
+// LOWERING-NEXT:     arithmetic_overflow,
+// LOWERING-NEXT:     unconditional_panic,
+// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-NEXT:     unused_comparisons
+// LOWERING-NEXT: )]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
@@ -34,7 +46,6 @@ int main(void) {
 // LOWERING-NEXT:     left: i32,
 // LOWERING-NEXT:     right: i32,
 // LOWERING-NEXT: }
-// LOWERING-EMPTY:
 // LOWERING-EMPTY:
 // LOWERING-NEXT: static mut counter: i32 = 4;
 // LOWERING-EMPTY:
@@ -45,7 +56,7 @@ int main(void) {
 // LOWERING-NEXT: static mut zeroed: i32 = 0;
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
-// LOWERING-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn adjust({{arg[0-9]+}}: i32) -> i32 {
@@ -86,13 +97,13 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 6;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = adjust({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { counter };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { zeroed };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 2;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { (*numbers)[({{_v[0-9]+}} as usize)] };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
@@ -100,7 +111,18 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(
+// REWRITES-NEXT:     dead_code,
+// REWRITES-NEXT:     unused,
+// REWRITES-NEXT:     non_camel_case_types,
+// REWRITES-NEXT:     non_snake_case,
+// REWRITES-NEXT:     non_upper_case_globals,
+// REWRITES-NEXT:     arithmetic_overflow,
+// REWRITES-NEXT:     unconditional_panic,
+// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-NEXT:     unused_comparisons
+// REWRITES-NEXT: )]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
@@ -108,7 +130,6 @@ int main(void) {
 // REWRITES-NEXT:     left: i32,
 // REWRITES-NEXT:     right: i32,
 // REWRITES-NEXT: }
-// REWRITES-EMPTY:
 // REWRITES-EMPTY:
 // REWRITES-NEXT: static mut counter: i32 = 4;
 // REWRITES-EMPTY:
@@ -119,37 +140,37 @@ int main(void) {
 // REWRITES-NEXT: static mut zeroed: i32 = 0;
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
-// REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn adjust({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         counter = (unsafe { counter }) + {{arg[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         zeroed = (unsafe { zeroed }) + unsafe { counter };
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*numbers)[({{_v[0-9]+}} as usize)] = (unsafe { zeroed }) - unsafe { (*numbers)[({{_v[0-9]+}} as usize)] };
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 1;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         pair.right = (unsafe { pair.right }) + unsafe { (*numbers)[({{_v[0-9]+}} as usize)] };
-// REWRITES-NEXT: }
-// REWRITES-NEXT: return (unsafe { pair.left }) + unsafe { pair.right };
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*numbers)[({{_v[0-9]+}} as usize)] =
+// REWRITES-NEXT:             (unsafe { zeroed }) - unsafe { (*numbers)[((0 as i64) as usize)] };
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         pair.right = (unsafe { pair.right }) + unsafe { (*numbers)[((1 as i64) as usize)] };
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     return (unsafe { pair.left }) + unsafe { pair.right };
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 6;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = adjust({{_v[0-9]+}});
-// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, unsafe { counter }, unsafe { zeroed }, unsafe { (*numbers)[({{_v[0-9]+}} as usize)] }) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), adjust(6)) };
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         printf(
+// REWRITES-NEXT:             c"%d %d %d\n".as_ptr(),
+// REWRITES-NEXT:             unsafe { counter },
+// REWRITES-NEXT:             unsafe { zeroed },
+// REWRITES-NEXT:             unsafe { (*numbers)[((2 as i64) as usize)] },
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

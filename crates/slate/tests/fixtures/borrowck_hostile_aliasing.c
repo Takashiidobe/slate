@@ -134,9 +134,21 @@ int main(void) {
          global_alias_with_local(), type_punning());
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(
+// LOWERING-NEXT:     dead_code,
+// LOWERING-NEXT:     unused,
+// LOWERING-NEXT:     non_camel_case_types,
+// LOWERING-NEXT:     non_snake_case,
+// LOWERING-NEXT:     non_upper_case_globals,
+// LOWERING-NEXT:     arithmetic_overflow,
+// LOWERING-NEXT:     unconditional_panic,
+// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-NEXT:     unused_comparisons
+// LOWERING-NEXT: )]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
@@ -144,7 +156,6 @@ int main(void) {
 // LOWERING-NEXT:     data: [i8; 8],
 // LOWERING-NEXT:     cursor: *mut i8,
 // LOWERING-NEXT: }
-// LOWERING-EMPTY:
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
@@ -154,7 +165,6 @@ int main(void) {
 // LOWERING-NEXT:     prev: *mut Node,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: struct Pair {
@@ -162,14 +172,12 @@ int main(void) {
 // LOWERING-NEXT:     hi: i32,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: union Pun {
 // LOWERING-NEXT:     i: i32,
 // LOWERING-NEXT:     f: f32,
 // LOWERING-NEXT: }
-// LOWERING-EMPTY:
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
@@ -180,11 +188,10 @@ int main(void) {
 // LOWERING-NEXT:     right: *mut Tree,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-EMPTY:
 // LOWERING-NEXT: static mut g_ptr: *mut i32 = std::ptr::null_mut();
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
-// LOWERING-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn add_in_place({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: *mut i32) {
@@ -238,14 +245,38 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn circular_list() -> i32 {
-// LOWERING-NEXT:     let mut a: Node = Node { val: 0, next: std::ptr::null_mut(), prev: std::ptr::null_mut() };
-// LOWERING-NEXT:     let mut b: Node = Node { val: 0, next: std::ptr::null_mut(), prev: std::ptr::null_mut() };
-// LOWERING-NEXT:     let mut c: Node = Node { val: 0, next: std::ptr::null_mut(), prev: std::ptr::null_mut() };
+// LOWERING-NEXT:     let mut a: Node = Node {
+// LOWERING-NEXT:         val: 0,
+// LOWERING-NEXT:         next: std::ptr::null_mut(),
+// LOWERING-NEXT:         prev: std::ptr::null_mut(),
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let mut b: Node = Node {
+// LOWERING-NEXT:         val: 0,
+// LOWERING-NEXT:         next: std::ptr::null_mut(),
+// LOWERING-NEXT:         prev: std::ptr::null_mut(),
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let mut c: Node = Node {
+// LOWERING-NEXT:         val: 0,
+// LOWERING-NEXT:         next: std::ptr::null_mut(),
+// LOWERING-NEXT:         prev: std::ptr::null_mut(),
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     let mut cur: *mut Node = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut sum: i32 = 0;
-// LOWERING-NEXT:     a = Node { val: 1, next: std::ptr::null_mut(), prev: std::ptr::null_mut() };
-// LOWERING-NEXT:     b = Node { val: 2, next: std::ptr::null_mut(), prev: std::ptr::null_mut() };
-// LOWERING-NEXT:     c = Node { val: 3, next: std::ptr::null_mut(), prev: std::ptr::null_mut() };
+// LOWERING-NEXT:     a = Node {
+// LOWERING-NEXT:         val: 1,
+// LOWERING-NEXT:         next: std::ptr::null_mut(),
+// LOWERING-NEXT:         prev: std::ptr::null_mut(),
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     b = Node {
+// LOWERING-NEXT:         val: 2,
+// LOWERING-NEXT:         next: std::ptr::null_mut(),
+// LOWERING-NEXT:         prev: std::ptr::null_mut(),
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     c = Node {
+// LOWERING-NEXT:         val: 3,
+// LOWERING-NEXT:         next: std::ptr::null_mut(),
+// LOWERING-NEXT:         prev: std::ptr::null_mut(),
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     a.next = std::ptr::addr_of_mut!(b);
 // LOWERING-NEXT:     b.next = std::ptr::addr_of_mut!(c);
 // LOWERING-NEXT:     c.next = std::ptr::addr_of_mut!(a);
@@ -300,10 +331,30 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn parent_pointer_tree() -> i32 {
-// LOWERING-NEXT:     let mut root: Tree = Tree { val: 0, parent: std::ptr::null_mut(), left: std::ptr::null_mut(), right: std::ptr::null_mut() };
-// LOWERING-NEXT:     let mut left: Tree = Tree { val: 0, parent: std::ptr::null_mut(), left: std::ptr::null_mut(), right: std::ptr::null_mut() };
-// LOWERING-NEXT:     let mut right: Tree = Tree { val: 0, parent: std::ptr::null_mut(), left: std::ptr::null_mut(), right: std::ptr::null_mut() };
-// LOWERING-NEXT:     root = Tree { val: 1, parent: std::ptr::null_mut(), left: std::ptr::null_mut(), right: std::ptr::null_mut() };
+// LOWERING-NEXT:     let mut root: Tree = Tree {
+// LOWERING-NEXT:         val: 0,
+// LOWERING-NEXT:         parent: std::ptr::null_mut(),
+// LOWERING-NEXT:         left: std::ptr::null_mut(),
+// LOWERING-NEXT:         right: std::ptr::null_mut(),
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let mut left: Tree = Tree {
+// LOWERING-NEXT:         val: 0,
+// LOWERING-NEXT:         parent: std::ptr::null_mut(),
+// LOWERING-NEXT:         left: std::ptr::null_mut(),
+// LOWERING-NEXT:         right: std::ptr::null_mut(),
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let mut right: Tree = Tree {
+// LOWERING-NEXT:         val: 0,
+// LOWERING-NEXT:         parent: std::ptr::null_mut(),
+// LOWERING-NEXT:         left: std::ptr::null_mut(),
+// LOWERING-NEXT:         right: std::ptr::null_mut(),
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     root = Tree {
+// LOWERING-NEXT:         val: 1,
+// LOWERING-NEXT:         parent: std::ptr::null_mut(),
+// LOWERING-NEXT:         left: std::ptr::null_mut(),
+// LOWERING-NEXT:         right: std::ptr::null_mut(),
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
 // LOWERING-NEXT:     left.val = {{_v[0-9]+}};
 // LOWERING-NEXT:     left.parent = std::ptr::addr_of_mut!(root);
@@ -343,7 +394,10 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn self_referential_struct() -> i32 {
-// LOWERING-NEXT:     let mut buf: Buf = Buf { data: [0; 8], cursor: std::ptr::null_mut() };
+// LOWERING-NEXT:     let mut buf: Buf = Buf {
+// LOWERING-NEXT:         data: [0; 8],
+// LOWERING-NEXT:         cursor: std::ptr::null_mut(),
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         let mut i: i32 = 0;
 // LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 0;
@@ -439,7 +493,10 @@ int main(void) {
 // LOWERING-NEXT:     *values = [1, 2, 3, 4, 5];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 4;
-// LOWERING-NEXT:     reverse_in_place(std::ptr::addr_of_mut!(values[({{_v[0-9]+}} as usize)]), std::ptr::addr_of_mut!(values[({{_v[0-9]+}} as usize)]));
+// LOWERING-NEXT:     reverse_in_place(
+// LOWERING-NEXT:         std::ptr::addr_of_mut!(values[({{_v[0-9]+}} as usize)]),
+// LOWERING-NEXT:         std::ptr::addr_of_mut!(values[({{_v[0-9]+}} as usize)]),
+// LOWERING-NEXT:     );
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = values[({{_v[0-9]+}} as usize)];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 10000;
@@ -532,7 +589,19 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = overlapping_array_pointers();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = global_alias_with_local();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = type_punning();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:         printf(
+// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
@@ -540,7 +609,18 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(
+// REWRITES-NEXT:     dead_code,
+// REWRITES-NEXT:     unused,
+// REWRITES-NEXT:     non_camel_case_types,
+// REWRITES-NEXT:     non_snake_case,
+// REWRITES-NEXT:     non_upper_case_globals,
+// REWRITES-NEXT:     arithmetic_overflow,
+// REWRITES-NEXT:     unconditional_panic,
+// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-NEXT:     unused_comparisons
+// REWRITES-NEXT: )]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
@@ -548,7 +628,6 @@ int main(void) {
 // REWRITES-NEXT:     data: [i8; 8],
 // REWRITES-NEXT:     cursor: *mut i8,
 // REWRITES-NEXT: }
-// REWRITES-EMPTY:
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
@@ -558,7 +637,6 @@ int main(void) {
 // REWRITES-NEXT:     prev: *mut Node,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: struct Pair {
@@ -566,14 +644,12 @@ int main(void) {
 // REWRITES-NEXT:     hi: i32,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: union Pun {
 // REWRITES-NEXT:     i: i32,
 // REWRITES-NEXT:     f: f32,
 // REWRITES-NEXT: }
-// REWRITES-EMPTY:
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
@@ -584,237 +660,267 @@ int main(void) {
 // REWRITES-NEXT:     right: *mut Tree,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-EMPTY:
 // REWRITES-NEXT: static mut g_ptr: *mut i32 = std::ptr::null_mut();
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
-// REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn add_in_place({{arg[0-9]+}}: &mut i32, {{arg[0-9]+}}: &i32) {
-// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         *({{arg[0-9]+}} as *mut i32) = (unsafe { *({{arg[0-9]+}} as *mut i32) }) + unsafe { *({{arg[0-9]+}} as *const i32) };
-// REWRITES-NEXT: }
-// REWRITES-NEXT: return;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn alias_same_object() -> i32 {
-// REWRITES-NEXT: let mut x: i32 = 0;
-// REWRITES-NEXT: x = 5;
-// REWRITES-NEXT: add_in_place(unsafe { &mut (*std::ptr::addr_of_mut!(x)) }, unsafe { &(*std::ptr::addr_of_mut!(x)) });
-// REWRITES-NEXT: return x;
+// REWRITES-NEXT:     let mut x: i32 = 0;
+// REWRITES-NEXT:     x = 5;
+// REWRITES-NEXT:     add_in_place(unsafe { &mut (*std::ptr::addr_of_mut!(x)) }, unsafe {
+// REWRITES-NEXT:         &(*std::ptr::addr_of_mut!(x))
+// REWRITES-NEXT:     });
+// REWRITES-NEXT:     return x;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn pair_lo({{arg[0-9]+}}: &mut Pair) -> *mut i32 {
-// REWRITES-NEXT: return unsafe { std::ptr::addr_of_mut!((*({{arg[0-9]+}} as *mut Pair)).lo) };
+// REWRITES-NEXT:     return unsafe { std::ptr::addr_of_mut!((*({{arg[0-9]+}} as *mut Pair)).lo) };
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn pair_hi({{arg[0-9]+}}: &mut Pair) -> *mut i32 {
-// REWRITES-NEXT: return unsafe { std::ptr::addr_of_mut!((*({{arg[0-9]+}} as *mut Pair)).hi) };
+// REWRITES-NEXT:     return unsafe { std::ptr::addr_of_mut!((*({{arg[0-9]+}} as *mut Pair)).hi) };
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn alias_struct_fields() -> i32 {
-// REWRITES-NEXT: let mut pair: Pair = Pair { lo: 1, hi: 2 };
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = pair_lo(unsafe { &mut (*std::ptr::addr_of_mut!(pair)) });
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = pair_hi(unsafe { &mut (*std::ptr::addr_of_mut!(pair)) });
-// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:     let mut pair: Pair = Pair { lo: 1, hi: 2 };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = pair_lo(unsafe { &mut (*std::ptr::addr_of_mut!(pair)) });
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = pair_hi(unsafe { &mut (*std::ptr::addr_of_mut!(pair)) });
+// REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         *{{_v[0-9]+}} = (unsafe { *{{_v[0-9]+}} }) + unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT: }
-// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         *{{_v[0-9]+}} = (unsafe { *{{_v[0-9]+}} }) + unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT: }
-// REWRITES-NEXT: return pair.lo + pair.hi;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     return pair.lo + pair.hi;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn circular_list() -> i32 {
-// REWRITES-NEXT: let mut a: Node = Node { val: 1, next: std::ptr::null_mut(), prev: std::ptr::null_mut() };
-// REWRITES-NEXT: let mut b: Node = Node { val: 2, next: std::ptr::null_mut(), prev: std::ptr::null_mut() };
-// REWRITES-NEXT: let mut c: Node = Node { val: 3, next: std::ptr::null_mut(), prev: std::ptr::null_mut() };
-// REWRITES-NEXT: let mut cur: *mut Node = std::ptr::null_mut();
-// REWRITES-NEXT: let mut sum: i32 = 0;
-// REWRITES-NEXT: a.next = std::ptr::addr_of_mut!(b);
-// REWRITES-NEXT: b.next = std::ptr::addr_of_mut!(c);
-// REWRITES-NEXT: c.next = std::ptr::addr_of_mut!(a);
-// REWRITES-NEXT: a.prev = std::ptr::addr_of_mut!(c);
-// REWRITES-NEXT: b.prev = std::ptr::addr_of_mut!(a);
-// REWRITES-NEXT: c.prev = std::ptr::addr_of_mut!(b);
-// REWRITES-NEXT: cur = std::ptr::addr_of_mut!(a);
-// REWRITES-NEXT: sum = 0;
-// REWRITES-NEXT: {
+// REWRITES-NEXT:     let mut a: Node = Node {
+// REWRITES-NEXT:         val: 1,
+// REWRITES-NEXT:         next: std::ptr::null_mut(),
+// REWRITES-NEXT:         prev: std::ptr::null_mut(),
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let mut b: Node = Node {
+// REWRITES-NEXT:         val: 2,
+// REWRITES-NEXT:         next: std::ptr::null_mut(),
+// REWRITES-NEXT:         prev: std::ptr::null_mut(),
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let mut c: Node = Node {
+// REWRITES-NEXT:         val: 3,
+// REWRITES-NEXT:         next: std::ptr::null_mut(),
+// REWRITES-NEXT:         prev: std::ptr::null_mut(),
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let mut cur: *mut Node = std::ptr::null_mut();
+// REWRITES-NEXT:     let mut sum: i32 = 0;
+// REWRITES-NEXT:     a.next = std::ptr::addr_of_mut!(b);
+// REWRITES-NEXT:     b.next = std::ptr::addr_of_mut!(c);
+// REWRITES-NEXT:     c.next = std::ptr::addr_of_mut!(a);
+// REWRITES-NEXT:     a.prev = std::ptr::addr_of_mut!(c);
+// REWRITES-NEXT:     b.prev = std::ptr::addr_of_mut!(a);
+// REWRITES-NEXT:     c.prev = std::ptr::addr_of_mut!(b);
+// REWRITES-NEXT:     cur = std::ptr::addr_of_mut!(a);
+// REWRITES-NEXT:     sum = 0;
+// REWRITES-NEXT:     {
 // REWRITES-NEXT:         let mut i: i32 = 0;
 // REWRITES-NEXT:         i = 0;
 // REWRITES-NEXT:         loop {
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = 6;
-// REWRITES-NEXT:                     if !(i < {{_v[0-9]+}}) {
-// REWRITES-NEXT:                                     break;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     {
-// REWRITES-NEXT:                                     sum = sum + unsafe { (*cur).val };
-// REWRITES-NEXT:                                     cur = unsafe { (*cur).next };
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     i = i + 1;
+// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 6;
+// REWRITES-NEXT:             if !(i < {{_v[0-9]+}}) {
+// REWRITES-NEXT:                 break;
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             {
+// REWRITES-NEXT:                 sum = sum + unsafe { (*cur).val };
+// REWRITES-NEXT:                 cur = unsafe { (*cur).next };
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             i = i + 1;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 10;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut Node = unsafe { (*cur).prev };
-// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 10;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut Node = unsafe { (*cur).prev };
+// REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         (*{{_v[0-9]+}}).val = (unsafe { (*{{_v[0-9]+}}).val }) + {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: return sum + a.val + b.val + c.val;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     return sum + a.val + b.val + c.val;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn parent_pointer_tree() -> i32 {
-// REWRITES-NEXT: let mut root: Tree = Tree { val: 1, parent: std::ptr::null_mut(), left: std::ptr::null_mut(), right: std::ptr::null_mut() };
-// REWRITES-NEXT: let mut left: Tree = Tree { val: 0, parent: std::ptr::null_mut(), left: std::ptr::null_mut(), right: std::ptr::null_mut() };
-// REWRITES-NEXT: let mut right: Tree = Tree { val: 0, parent: std::ptr::null_mut(), left: std::ptr::null_mut(), right: std::ptr::null_mut() };
-// REWRITES-NEXT: left.val = 2;
-// REWRITES-NEXT: left.parent = std::ptr::addr_of_mut!(root);
-// REWRITES-NEXT: left.left = std::ptr::null_mut();
-// REWRITES-NEXT: left.right = std::ptr::null_mut();
-// REWRITES-NEXT: right.val = 3;
-// REWRITES-NEXT: right.parent = std::ptr::addr_of_mut!(root);
-// REWRITES-NEXT: right.left = std::ptr::null_mut();
-// REWRITES-NEXT: right.right = std::ptr::null_mut();
-// REWRITES-NEXT: root.left = std::ptr::addr_of_mut!(left);
-// REWRITES-NEXT: root.right = std::ptr::addr_of_mut!(right);
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut Tree = left.parent;
-// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:     let mut root: Tree = Tree {
+// REWRITES-NEXT:         val: 1,
+// REWRITES-NEXT:         parent: std::ptr::null_mut(),
+// REWRITES-NEXT:         left: std::ptr::null_mut(),
+// REWRITES-NEXT:         right: std::ptr::null_mut(),
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let mut left: Tree = Tree {
+// REWRITES-NEXT:         val: 0,
+// REWRITES-NEXT:         parent: std::ptr::null_mut(),
+// REWRITES-NEXT:         left: std::ptr::null_mut(),
+// REWRITES-NEXT:         right: std::ptr::null_mut(),
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let mut right: Tree = Tree {
+// REWRITES-NEXT:         val: 0,
+// REWRITES-NEXT:         parent: std::ptr::null_mut(),
+// REWRITES-NEXT:         left: std::ptr::null_mut(),
+// REWRITES-NEXT:         right: std::ptr::null_mut(),
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     left.val = 2;
+// REWRITES-NEXT:     left.parent = std::ptr::addr_of_mut!(root);
+// REWRITES-NEXT:     left.left = std::ptr::null_mut();
+// REWRITES-NEXT:     left.right = std::ptr::null_mut();
+// REWRITES-NEXT:     right.val = 3;
+// REWRITES-NEXT:     right.parent = std::ptr::addr_of_mut!(root);
+// REWRITES-NEXT:     right.left = std::ptr::null_mut();
+// REWRITES-NEXT:     right.right = std::ptr::null_mut();
+// REWRITES-NEXT:     root.left = std::ptr::addr_of_mut!(left);
+// REWRITES-NEXT:     root.right = std::ptr::addr_of_mut!(right);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut Tree = left.parent;
+// REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         (*{{_v[0-9]+}}).val = (unsafe { (*{{_v[0-9]+}}).val }) + left.val;
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut Tree = right.parent;
-// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut Tree = right.parent;
+// REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         (*{{_v[0-9]+}}).val = (unsafe { (*{{_v[0-9]+}}).val }) + right.val;
-// REWRITES-NEXT: }
-// REWRITES-NEXT: return root.val + left.val + right.val;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     return root.val + left.val + right.val;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn self_referential_struct() -> i32 {
-// REWRITES-NEXT: let mut buf: Buf = Buf { data: [0; 8], cursor: std::ptr::null_mut() };
-// REWRITES-NEXT: {
+// REWRITES-NEXT:     let mut buf: Buf = Buf {
+// REWRITES-NEXT:         data: [0; 8],
+// REWRITES-NEXT:         cursor: std::ptr::null_mut(),
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     {
 // REWRITES-NEXT:         let mut i: i32 = 0;
 // REWRITES-NEXT:         i = 0;
 // REWRITES-NEXT:         loop {
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = 8;
-// REWRITES-NEXT:                     if !(i < {{_v[0-9]+}}) {
-// REWRITES-NEXT:                                     break;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = 97;
-// REWRITES-NEXT:                     buf.data[((i as i64) as usize)] = ({{_v[0-9]+}} + i) as i8;
-// REWRITES-NEXT:                     i = i + 1;
+// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 8;
+// REWRITES-NEXT:             if !(i < {{_v[0-9]+}}) {
+// REWRITES-NEXT:                 break;
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 97;
+// REWRITES-NEXT:             buf.data[((i as i64) as usize)] = ({{_v[0-9]+}} + i) as i8;
+// REWRITES-NEXT:             i = i + 1;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: buf.cursor = std::ptr::addr_of_mut!(buf.data[({{_v[0-9]+}} as usize)]);
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = buf.cursor;
-// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     buf.cursor = std::ptr::addr_of_mut!(buf.data[((3 as i64) as usize)]);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = buf.cursor;
+// REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         *{{_v[0-9]+}} = (((unsafe { *{{_v[0-9]+}} }) as i32) + {{_v[0-9]+}}) as i8;
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = buf.data[({{_v[0-9]+}} as usize)] as i32;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = buf.cursor;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 97;
-// REWRITES-NEXT: return {{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32) - {{_v[0-9]+}} * {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = buf.data[((3 as i64) as usize)] as i32;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = buf.cursor;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 97;
+// REWRITES-NEXT:     return {{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32) - {{_v[0-9]+}} * {{_v[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn reverse_in_place({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: *mut i32) {
-// REWRITES-NEXT: let mut lo: *mut i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut hi: *mut i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: loop {
+// REWRITES-NEXT:     let mut lo: *mut i32 = {{arg[0-9]+}};
+// REWRITES-NEXT:     let mut hi: *mut i32 = {{arg[0-9]+}};
+// REWRITES-NEXT:     loop {
 // REWRITES-NEXT:         if !(lo < hi) {
-// REWRITES-NEXT:                     break;
+// REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         {
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { *lo };
-// REWRITES-NEXT:                     unsafe {
-// REWRITES-NEXT:                                     *lo = unsafe { *hi };
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     unsafe {
-// REWRITES-NEXT:                                     *hi = {{_v[0-9]+}};
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: *mut i32 = lo;
-// REWRITES-NEXT:                     lo = unsafe { {{_v[0-9]+}}.add(1) };
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: *mut i32 = hi;
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = -1;
-// REWRITES-NEXT:                     hi = unsafe { {{_v[0-9]+}}.offset({{_v[0-9]+}} as isize) };
+// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { *lo };
+// REWRITES-NEXT:             unsafe {
+// REWRITES-NEXT:                 *lo = unsafe { *hi };
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             unsafe {
+// REWRITES-NEXT:                 *hi = {{_v[0-9]+}};
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             let {{_v[0-9]+}}: *mut i32 = lo;
+// REWRITES-NEXT:             lo = unsafe { {{_v[0-9]+}}.add(1) };
+// REWRITES-NEXT:             let {{_v[0-9]+}}: *mut i32 = hi;
+// REWRITES-NEXT:             hi = unsafe { {{_v[0-9]+}}.offset((-1 as i32) as isize) };
 // REWRITES-NEXT:         }
-// REWRITES-NEXT: }
-// REWRITES-NEXT: return;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn overlapping_array_pointers() -> i32 {
-// REWRITES-NEXT: let mut values: aligned::Aligned<aligned::A16, [i32; 5]> = aligned::Aligned([0; 5]);
-// REWRITES-NEXT: *values = [1, 2, 3, 4, 5];
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 4;
-// REWRITES-NEXT: reverse_in_place(std::ptr::addr_of_mut!(values[({{_v[0-9]+}} as usize)]), std::ptr::addr_of_mut!(values[({{_v[0-9]+}} as usize)]));
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 10000;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 1;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1000;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 100;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 10;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 4;
-// REWRITES-NEXT: return values[({{_v[0-9]+}} as usize)] * {{_v[0-9]+}} + values[({{_v[0-9]+}} as usize)] * {{_v[0-9]+}} + values[({{_v[0-9]+}} as usize)] * {{_v[0-9]+}} + values[({{_v[0-9]+}} as usize)] * {{_v[0-9]+}} + values[({{_v[0-9]+}} as usize)];
+// REWRITES-NEXT:     let mut values: aligned::Aligned<aligned::A16, [i32; 5]> = aligned::Aligned([0; 5]);
+// REWRITES-NEXT:     *values = [1, 2, 3, 4, 5];
+// REWRITES-NEXT:     reverse_in_place(
+// REWRITES-NEXT:         std::ptr::addr_of_mut!(values[((0 as i64) as usize)]),
+// REWRITES-NEXT:         std::ptr::addr_of_mut!(values[((4 as i64) as usize)]),
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 10000;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1000;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 100;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 10;
+// REWRITES-NEXT:     return values[((0 as i64) as usize)] * {{_v[0-9]+}}
+// REWRITES-NEXT:         + values[((1 as i64) as usize)] * {{_v[0-9]+}}
+// REWRITES-NEXT:         + values[((2 as i64) as usize)] * {{_v[0-9]+}}
+// REWRITES-NEXT:         + values[((3 as i64) as usize)] * {{_v[0-9]+}}
+// REWRITES-NEXT:         + values[((4 as i64) as usize)];
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn capture_global({{arg[0-9]+}}: *mut i32) {
-// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         g_ptr = {{arg[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: return;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn global_alias_with_local() -> i32 {
-// REWRITES-NEXT: let mut x: i32 = 0;
-// REWRITES-NEXT: x = 7;
-// REWRITES-NEXT: capture_global(std::ptr::addr_of_mut!(x));
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = unsafe { g_ptr };
-// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:     let mut x: i32 = 0;
+// REWRITES-NEXT:     x = 7;
+// REWRITES-NEXT:     capture_global(std::ptr::addr_of_mut!(x));
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { g_ptr };
+// REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         *{{_v[0-9]+}} = (unsafe { *{{_v[0-9]+}} }) + {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT: x = x + {{_v[0-9]+}};
-// REWRITES-NEXT: return x + unsafe { *unsafe { g_ptr } };
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     x = x + {{_v[0-9]+}};
+// REWRITES-NEXT:     return x + unsafe { *unsafe { g_ptr } };
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn type_punning() -> i32 {
-// REWRITES-NEXT: let mut u: Pun = unsafe { std::mem::zeroed::<Pun>() };
-// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:     let mut u: Pun = unsafe { std::mem::zeroed::<Pun>() };
+// REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         u.f = 1.0;
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { u.i };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { u.i };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         u.i = (unsafe { u.i }) + {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} == unsafe { u.i } {
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} == unsafe { u.i } {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = -1;
-// REWRITES-NEXT:     {{_v[0-9]+}}
-// REWRITES-NEXT: } else {
+// REWRITES-NEXT:         {{_v[0-9]+}}
+// REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = (unsafe { u.f }) as i32;
-// REWRITES-NEXT:     {{_v[0-9]+}}
-// REWRITES-NEXT: };
-// REWRITES-NEXT: return {{_v[0-9]+}};
+// REWRITES-NEXT:         {{_v[0-9]+}}
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     return {{_v[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = alias_same_object();
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = alias_struct_fields();
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = circular_list();
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = parent_pointer_tree();
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = self_referential_struct();
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = overlapping_array_pointers();
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = global_alias_with_local();
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = type_punning();
-// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         printf(
+// REWRITES-NEXT:             c"%d %d %d %d %d %d %d %d\n".as_ptr(),
+// REWRITES-NEXT:             alias_same_object(),
+// REWRITES-NEXT:             alias_struct_fields(),
+// REWRITES-NEXT:             circular_list(),
+// REWRITES-NEXT:             parent_pointer_tree(),
+// REWRITES-NEXT:             self_referential_struct(),
+// REWRITES-NEXT:             overlapping_array_pointers(),
+// REWRITES-NEXT:             global_alias_with_local(),
+// REWRITES-NEXT:             type_punning(),
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

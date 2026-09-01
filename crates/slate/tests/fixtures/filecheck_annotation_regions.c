@@ -19,6 +19,7 @@ int main(void) {
   // @rewrite-end
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = 6;
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = 7;
@@ -29,8 +30,6 @@ int main(void) {
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = 6;
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = 7;
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} * {{_v[0-9]+}};
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
-// REWRITES-DAG: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = b"_v9 anon_4 anon_struct_i32\0".as_ptr() as *mut i8;
-// REWRITES-DAG: unsafe { puts({{_v[0-9]+}} as *const i8) };
+// REWRITES-DAG: unsafe { printf(c"%d %d %d\n".as_ptr(), {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-DAG: unsafe { puts(c"_v9 anon_4 anon_struct_i32".as_ptr()) };
 // SLATE-FILECHECK-END rewrites

@@ -16,6 +16,7 @@ int main(void) {
   unsigned char buf[4] = {7, 7, 7, 7};
   return all_bytes_identical(buf, 4);
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: {
 // LOWERING-DAG: let {{_v[0-9]+}}: u64 = p;

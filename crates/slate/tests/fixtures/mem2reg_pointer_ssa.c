@@ -26,6 +26,7 @@ int main(void) {
   printf("%d\n", *return_global() + **return_global_pointer() + *return_element());
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: fn return_global() -> *mut i32 {
 // LOWERING-DAG: return std::ptr::addr_of_mut!(value);
@@ -47,7 +48,6 @@ int main(void) {
 // REWRITES-DAG: return std::ptr::addr_of_mut!(value_pointer);
 // REWRITES-DAG: }
 // REWRITES-DAG: fn return_element() -> *mut i32 {
-// REWRITES-DAG: let {{_v[0-9]+}}: i64 = 1;
-// REWRITES-DAG: return unsafe { std::ptr::addr_of_mut!(values[({{_v[0-9]+}} as usize)]) };
+// REWRITES-DAG: return unsafe { std::ptr::addr_of_mut!(values[((1 as i64) as usize)]) };
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

@@ -46,9 +46,24 @@ int main(void) {
   return 0;
 }
 
+// REWRITES-DAG: let _v{{[0-9]+}}: f64 = m.total;
+// REWRITES-DAG: unsafe { s.total }
+// REWRITES-DAG: (unsafe { s.tag }) as i32
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(
+// LOWERING-NEXT:     dead_code,
+// LOWERING-NEXT:     unused,
+// LOWERING-NEXT:     non_camel_case_types,
+// LOWERING-NEXT:     non_snake_case,
+// LOWERING-NEXT:     non_upper_case_globals,
+// LOWERING-NEXT:     arithmetic_overflow,
+// LOWERING-NEXT:     unconditional_panic,
+// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-NEXT:     unused_comparisons
+// LOWERING-NEXT: )]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
@@ -59,7 +74,6 @@ int main(void) {
 // LOWERING-NEXT:     total: f64,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: union Scalar {
@@ -69,13 +83,17 @@ int main(void) {
 // LOWERING-NEXT:     total: f64,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
-// LOWERING-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn struct_values() -> i32 {
-// LOWERING-NEXT:     let mut m: Mixed = Mixed { tag: 0, code: 0, ratio: 0.0, total: 0.0 };
+// LOWERING-NEXT:     let mut m: Mixed = Mixed {
+// LOWERING-NEXT:         tag: 0,
+// LOWERING-NEXT:         code: 0,
+// LOWERING-NEXT:         ratio: 0.0,
+// LOWERING-NEXT:         total: 0.0,
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = 65;
 // LOWERING-NEXT:     m.tag = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = 200;
@@ -87,18 +105,18 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%c\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = m.tag;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%u\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = m.code;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%f\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = m.ratio;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} as f64;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%f\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = m.total;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = m.code;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
@@ -127,20 +145,16 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = struct_values();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%f\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 4.5;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = union_double({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = 90;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = union_char({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
-
-// REWRITES-DAG: let _v{{[0-9]+}}: f64 = m.total;
-// REWRITES-DAG: unsafe { s.total }
-// REWRITES-DAG: (unsafe { s.tag }) as i32

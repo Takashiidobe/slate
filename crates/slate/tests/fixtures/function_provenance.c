@@ -212,8 +212,22 @@ int main(void) {
   return project_state == 80 ? 1 : 58;
 }
 
+// REWRITES-LABEL: {{^}}fn exit(status: i32) {
+// REWRITES: {{^}}}
+
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING: #![allow(
+// LOWERING-NEXT:     dead_code,
+// LOWERING-NEXT:     unused,
+// LOWERING-NEXT:     non_camel_case_types,
+// LOWERING-NEXT:     non_snake_case,
+// LOWERING-NEXT:     non_upper_case_globals,
+// LOWERING-NEXT:     arithmetic_overflow,
+// LOWERING-NEXT:     unconditional_panic,
+// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-NEXT:     unused_comparisons
+// LOWERING-NEXT: )]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: static mut project_state: i32 = 0;
 // LOWERING-EMPTY:
@@ -284,7 +298,11 @@ int main(void) {
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn memcpy({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: u64) -> *mut core::ffi::c_void {
+// LOWERING-NEXT: fn memcpy(
+// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
+// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
+// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
+// LOWERING-NEXT: ) -> *mut core::ffi::c_void {
 // LOWERING-NEXT:     let mut dst: *mut core::ffi::c_void = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut src: *mut core::ffi::c_void = std::ptr::null_mut();
 // LOWERING-NEXT:     dst = {{arg[0-9]+}};
@@ -308,7 +326,11 @@ int main(void) {
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn memmove({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: u64) -> *mut core::ffi::c_void {
+// LOWERING-NEXT: fn memmove(
+// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
+// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
+// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
+// LOWERING-NEXT: ) -> *mut core::ffi::c_void {
 // LOWERING-NEXT:     let mut dst: *mut core::ffi::c_void = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut src: *mut core::ffi::c_void = std::ptr::null_mut();
 // LOWERING-NEXT:     dst = {{arg[0-9]+}};
@@ -824,7 +846,12 @@ int main(void) {
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn fread({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: u64, {{arg[0-9]+}}: u64, {{arg[0-9]+}}: *mut core::ffi::c_void) -> u64 {
+// LOWERING-NEXT: fn fread(
+// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
+// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
+// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
+// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
+// LOWERING-NEXT: ) -> u64 {
 // LOWERING-NEXT:     let mut size: u64 = 0;
 // LOWERING-NEXT:     let mut count: u64 = 0;
 // LOWERING-NEXT:     let mut stream: *mut core::ffi::c_void = std::ptr::null_mut();
@@ -863,7 +890,12 @@ int main(void) {
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn fwrite({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: u64, {{arg[0-9]+}}: u64, {{arg[0-9]+}}: *mut core::ffi::c_void) -> u64 {
+// LOWERING-NEXT: fn fwrite(
+// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
+// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
+// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
+// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
+// LOWERING-NEXT: ) -> u64 {
 // LOWERING-NEXT:     let mut size: u64 = 0;
 // LOWERING-NEXT:     let mut count: u64 = 0;
 // LOWERING-NEXT:     let mut stream: *mut core::ffi::c_void = std::ptr::null_mut();
@@ -1068,9 +1100,15 @@ int main(void) {
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn pthread_create({{arg[0-9]+}}: *mut u64, {{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> *mut core::ffi::c_void>, {{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
+// LOWERING-NEXT: fn pthread_create(
+// LOWERING-NEXT:     {{arg[0-9]+}}: *mut u64,
+// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
+// LOWERING-NEXT:     {{arg[0-9]+}}: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> *mut core::ffi::c_void>,
+// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
+// LOWERING-NEXT: ) -> i32 {
 // LOWERING-NEXT:     let mut attr: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut start: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> *mut core::ffi::c_void> = None;
+// LOWERING-NEXT:     let mut start: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> *mut core::ffi::c_void> =
+// LOWERING-NEXT:         None;
 // LOWERING-NEXT:     let mut arg: *mut core::ffi::c_void = std::ptr::null_mut();
 // LOWERING-NEXT:     attr = {{arg[0-9]+}};
 // LOWERING-NEXT:     start = {{arg[0-9]+}};
@@ -1086,7 +1124,8 @@ int main(void) {
 // LOWERING-NEXT:         {{_v[0-9]+}}
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> *mut core::ffi::c_void> = start;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> *mut core::ffi::c_void> =
+// LOWERING-NEXT:             start;
 // LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.is_some();
 // LOWERING-NEXT:         {{_v[0-9]+}}
 // LOWERING-NEXT:     } else {
@@ -1129,10 +1168,17 @@ int main(void) {
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn qsort({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: u64, {{arg[0-9]+}}: u64, {{arg[0-9]+}}: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32>) {
+// LOWERING-NEXT: fn qsort(
+// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
+// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
+// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
+// LOWERING-NEXT:     {{arg[0-9]+}}: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32>,
+// LOWERING-NEXT: ) {
 // LOWERING-NEXT:     let mut count: u64 = 0;
 // LOWERING-NEXT:     let mut size: u64 = 0;
-// LOWERING-NEXT:     let mut callback: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32> = None;
+// LOWERING-NEXT:     let mut callback: Option<
+// LOWERING-NEXT:         unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
+// LOWERING-NEXT:     > = None;
 // LOWERING-NEXT:     count = {{arg[0-9]+}};
 // LOWERING-NEXT:     size = {{arg[0-9]+}};
 // LOWERING-NEXT:     callback = {{arg[0-9]+}};
@@ -1154,7 +1200,9 @@ int main(void) {
 // LOWERING-NEXT:         {{_v[0-9]+}}
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32> = callback;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<
+// LOWERING-NEXT:             unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
+// LOWERING-NEXT:         > = callback;
 // LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.is_some();
 // LOWERING-NEXT:         {{_v[0-9]+}}
 // LOWERING-NEXT:     } else {
@@ -1178,11 +1226,19 @@ int main(void) {
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn bsearch({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: u64, {{arg[0-9]+}}: u64, {{arg[0-9]+}}: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32>) -> *mut core::ffi::c_void {
+// LOWERING-NEXT: fn bsearch(
+// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
+// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
+// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
+// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
+// LOWERING-NEXT:     {{arg[0-9]+}}: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32>,
+// LOWERING-NEXT: ) -> *mut core::ffi::c_void {
 // LOWERING-NEXT:     let mut base: *mut core::ffi::c_void = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut count: u64 = 0;
 // LOWERING-NEXT:     let mut size: u64 = 0;
-// LOWERING-NEXT:     let mut callback: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32> = None;
+// LOWERING-NEXT:     let mut callback: Option<
+// LOWERING-NEXT:         unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
+// LOWERING-NEXT:     > = None;
 // LOWERING-NEXT:     base = {{arg[0-9]+}};
 // LOWERING-NEXT:     count = {{arg[0-9]+}};
 // LOWERING-NEXT:     size = {{arg[0-9]+}};
@@ -1213,7 +1269,9 @@ int main(void) {
 // LOWERING-NEXT:         {{_v[0-9]+}}
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32> = callback;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<
+// LOWERING-NEXT:             unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
+// LOWERING-NEXT:         > = callback;
 // LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.is_some();
 // LOWERING-NEXT:         {{_v[0-9]+}}
 // LOWERING-NEXT:     } else {
@@ -1262,7 +1320,11 @@ int main(void) {
 // LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(real), {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 1;
 // LOWERING-NEXT:     thread = {{_v[0-9]+}};
-// LOWERING-NEXT:     strlen_call = unsafe { std::mem::transmute::<*const (), Option<unsafe extern "C" fn(*mut i8) -> u64>>(strlen as *const ()) };
+// LOWERING-NEXT:     strlen_call = unsafe {
+// LOWERING-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C" fn(*mut i8) -> u64>>(
+// LOWERING-NEXT:             strlen as *const (),
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = malloc({{_v[0-9]+}});
 // LOWERING-NEXT:     ptr = {{_v[0-9]+}};
@@ -1320,7 +1382,8 @@ int main(void) {
 // LOWERING-NEXT:                 {
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut core::ffi::c_void = ptr;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: u64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) };
-// LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut core::ffi::c_void = realloc({{_v[0-9]+}} as *mut core::ffi::c_void, {{_v[0-9]+}});
+// LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut core::ffi::c_void =
+// LOWERING-NEXT:                         realloc({{_v[0-9]+}} as *mut core::ffi::c_void, {{_v[0-9]+}});
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: u64 = 16;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
@@ -1372,7 +1435,11 @@ int main(void) {
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut i8 = b.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: u64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) };
-// LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut core::ffi::c_void = memcpy({{_v[0-9]+}} as *mut core::ffi::c_void, {{_v[0-9]+}} as *mut core::ffi::c_void, {{_v[0-9]+}});
+// LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut core::ffi::c_void = memcpy(
+// LOWERING-NEXT:                         {{_v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-NEXT:                         {{_v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-NEXT:                         {{_v[0-9]+}},
+// LOWERING-NEXT:                     );
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut i8 = a.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
@@ -1400,7 +1467,11 @@ int main(void) {
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut i8 = b.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: u64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) };
-// LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut core::ffi::c_void = memmove({{_v[0-9]+}} as *mut core::ffi::c_void, {{_v[0-9]+}} as *mut core::ffi::c_void, {{_v[0-9]+}});
+// LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut core::ffi::c_void = memmove(
+// LOWERING-NEXT:                         {{_v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-NEXT:                         {{_v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-NEXT:                         {{_v[0-9]+}},
+// LOWERING-NEXT:                     );
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut i8 = a.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
@@ -1427,7 +1498,8 @@ int main(void) {
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(number)) };
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: u64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) };
-// LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut core::ffi::c_void = memset({{_v[0-9]+}} as *mut core::ffi::c_void, {{_v[0-9]+}}, {{_v[0-9]+}});
+// LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut core::ffi::c_void =
+// LOWERING-NEXT:                         memset({{_v[0-9]+}} as *mut core::ffi::c_void, {{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut i8 = a.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
@@ -1454,7 +1526,8 @@ int main(void) {
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(number)) };
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: u64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) };
-// LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut core::ffi::c_void = memchr({{_v[0-9]+}} as *mut core::ffi::c_void, {{_v[0-9]+}}, {{_v[0-9]+}});
+// LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut core::ffi::c_void =
+// LOWERING-NEXT:                         memchr({{_v[0-9]+}} as *mut core::ffi::c_void, {{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: u64 = 24;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
@@ -1676,7 +1749,11 @@ int main(void) {
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut i8 = b.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: u64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) };
-// LOWERING-NEXT:                     let {{_v[0-9]+}}: i32 = memcmp({{_v[0-9]+}} as *mut core::ffi::c_void, {{_v[0-9]+}} as *mut core::ffi::c_void, {{_v[0-9]+}});
+// LOWERING-NEXT:                     let {{_v[0-9]+}}: i32 = memcmp(
+// LOWERING-NEXT:                         {{_v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-NEXT:                         {{_v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-NEXT:                         {{_v[0-9]+}},
+// LOWERING-NEXT:                     );
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: i32 = 13;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
 // LOWERING-NEXT:                     if {{_v[0-9]+}} {
@@ -2091,7 +2168,12 @@ int main(void) {
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: u64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) };
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: u64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) };
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut core::ffi::c_void = stream;
-// LOWERING-NEXT:                     let {{_v[0-9]+}}: u64 = fread({{_v[0-9]+}} as *mut core::ffi::c_void, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}} as *mut core::ffi::c_void);
+// LOWERING-NEXT:                     let {{_v[0-9]+}}: u64 = fread(
+// LOWERING-NEXT:                         {{_v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-NEXT:                         {{_v[0-9]+}},
+// LOWERING-NEXT:                         {{_v[0-9]+}},
+// LOWERING-NEXT:                         {{_v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-NEXT:                     );
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: u64 = 56;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
 // LOWERING-NEXT:                     if {{_v[0-9]+}} {
@@ -2118,7 +2200,12 @@ int main(void) {
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: u64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) };
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: u64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) };
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut core::ffi::c_void = stream;
-// LOWERING-NEXT:                     let {{_v[0-9]+}}: u64 = fwrite({{_v[0-9]+}} as *mut core::ffi::c_void, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}} as *mut core::ffi::c_void);
+// LOWERING-NEXT:                     let {{_v[0-9]+}}: u64 = fwrite(
+// LOWERING-NEXT:                         {{_v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-NEXT:                         {{_v[0-9]+}},
+// LOWERING-NEXT:                         {{_v[0-9]+}},
+// LOWERING-NEXT:                         {{_v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-NEXT:                     );
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: u64 = 57;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
 // LOWERING-NEXT:                     if {{_v[0-9]+}} {
@@ -2558,7 +2645,12 @@ int main(void) {
 // LOWERING-NEXT:                 {
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut core::ffi::c_void = ptr;
-// LOWERING-NEXT:                     let {{_v[0-9]+}}: i32 = pthread_create(std::ptr::addr_of_mut!(thread), {{_v[0-9]+}} as *mut core::ffi::c_void, Some(start), {{_v[0-9]+}} as *mut core::ffi::c_void);
+// LOWERING-NEXT:                     let {{_v[0-9]+}}: i32 = pthread_create(
+// LOWERING-NEXT:                         std::ptr::addr_of_mut!(thread),
+// LOWERING-NEXT:                         {{_v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-NEXT:                         Some(start),
+// LOWERING-NEXT:                         {{_v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-NEXT:                     );
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: i32 = 78;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
 // LOWERING-NEXT:                     if {{_v[0-9]+}} {
@@ -2636,7 +2728,13 @@ int main(void) {
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: u64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) };
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: u64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(count)) };
-// LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut core::ffi::c_void = bsearch({{_v[0-9]+}} as *mut core::ffi::c_void, {{_v[0-9]+}} as *mut core::ffi::c_void, {{_v[0-9]+}}, {{_v[0-9]+}}, Some(compare));
+// LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut core::ffi::c_void = bsearch(
+// LOWERING-NEXT:                         {{_v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-NEXT:                         {{_v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-NEXT:                         {{_v[0-9]+}},
+// LOWERING-NEXT:                         {{_v[0-9]+}},
+// LOWERING-NEXT:                         Some(compare),
+// LOWERING-NEXT:                     );
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: u64 = 56;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
@@ -2668,6 +2766,3 @@ int main(void) {
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
-
-// REWRITES-LABEL: {{^}}fn exit(status: i32) {
-// REWRITES: {{^}}}

@@ -59,9 +59,21 @@ int main(void) {
   printf("failures=%d\n", failures);
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(
+// LOWERING-NEXT:     dead_code,
+// LOWERING-NEXT:     unused,
+// LOWERING-NEXT:     non_camel_case_types,
+// LOWERING-NEXT:     non_snake_case,
+// LOWERING-NEXT:     non_upper_case_globals,
+// LOWERING-NEXT:     arithmetic_overflow,
+// LOWERING-NEXT:     unconditional_panic,
+// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-NEXT:     unused_comparisons
+// LOWERING-NEXT: )]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[allow(non_camel_case_types)]
@@ -71,13 +83,11 @@ int main(void) {
 // LOWERING-NEXT:     STATUS_FAIL = 1,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: struct Dispatcher {
 // LOWERING-NEXT:     run: Option<unsafe extern "C" fn(i32) -> u32>,
 // LOWERING-NEXT: }
-// LOWERING-EMPTY:
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
@@ -87,8 +97,13 @@ int main(void) {
 // LOWERING-NEXT:     __saved_mask: [u64; 16],
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-EMPTY:
-// LOWERING-NEXT: static mut env: aligned::Aligned<aligned::A16, [__slate_jmp_buf_tag; 1]> = aligned::Aligned([__slate_jmp_buf_tag { __regs: [0; 8], __mask_was_saved: 0, __saved_mask: [0; 16] }; 1]);
+// LOWERING-NEXT: static mut env: aligned::Aligned<aligned::A16, [__slate_jmp_buf_tag; 1]> = aligned::Aligned(
+// LOWERING-NEXT:     [__slate_jmp_buf_tag {
+// LOWERING-NEXT:         __regs: [0; 8],
+// LOWERING-NEXT:         __mask_was_saved: 0,
+// LOWERING-NEXT:         __saved_mask: [0; 16],
+// LOWERING-NEXT:     }; 1],
+// LOWERING-NEXT: );
 // LOWERING-EMPTY:
 // LOWERING-NEXT: static mut failures: i32 = 0;
 // LOWERING-EMPTY:
@@ -97,7 +112,7 @@ int main(void) {
 // LOWERING-NEXT: unsafe extern "C" {
 // LOWERING-NEXT:     fn longjmp(_0: *mut __slate_jmp_buf_tag, _1: i32) -> !;
 // LOWERING-NEXT:     fn setjmp(_0: *mut __slate_jmp_buf_tag) -> i32;
-// LOWERING-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: extern "C" fn panicky_callback({{arg[0-9]+}}: i32) {
@@ -108,14 +123,15 @@ int main(void) {
 // LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 2;
 // LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
 // LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag = std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
+// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag =
+// LOWERING-NEXT:                 std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
 // LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:             unsafe { longjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag, {{_v[0-9]+}} as i32) };
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"callback %d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = x;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
@@ -127,7 +143,8 @@ int main(void) {
 // LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 3;
 // LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
 // LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag = std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
+// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag =
+// LOWERING-NEXT:                 std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
 // LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:             unsafe { longjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag, {{_v[0-9]+}} as i32) };
 // LOWERING-NEXT:         }
@@ -147,9 +164,17 @@ int main(void) {
 // LOWERING-NEXT:     let mut d: Dispatcher = Dispatcher { run: None };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         g_callback = unsafe { std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32)>>(panicky_callback as *const ()) };
+// LOWERING-NEXT:         g_callback = unsafe {
+// LOWERING-NEXT:             std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32)>>(
+// LOWERING-NEXT:                 panicky_callback as *const (),
+// LOWERING-NEXT:             )
+// LOWERING-NEXT:         };
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     d.run = unsafe { std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32) -> u32>>(risky as *const ()) };
+// LOWERING-NEXT:     d.run = unsafe {
+// LOWERING-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32) -> u32>>(
+// LOWERING-NEXT:             risky as *const (),
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         let mut i: i32 = 0;
 // LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 0;
@@ -164,7 +189,8 @@ int main(void) {
 // LOWERING-NEXT:             '__continue0: {
 // LOWERING-NEXT:                 {
 // LOWERING-NEXT:                     {
-// LOWERING-NEXT:                         let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag = std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
+// LOWERING-NEXT:                         let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag =
+// LOWERING-NEXT:                             std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
 // LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };
 // LOWERING-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // LOWERING-NEXT:                         if {{_v[0-9]+}} {
@@ -175,7 +201,8 @@ int main(void) {
 // LOWERING-NEXT:                             }
 // LOWERING-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"recovered risky %d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:                             let {{_v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// LOWERING-NEXT:                             let {{_v[0-9]+}}: i32 =
+// LOWERING-NEXT:                                 unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
 // LOWERING-NEXT:                             break '__continue0;
 // LOWERING-NEXT:                         }
 // LOWERING-NEXT:                     }
@@ -189,7 +216,11 @@ int main(void) {
 // LOWERING-NEXT:             i = {{_v[0-9]+}};
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     d.run = unsafe { std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32) -> u32>>(content_like as *const ()) };
+// LOWERING-NEXT:     d.run = unsafe {
+// LOWERING-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32) -> u32>>(
+// LOWERING-NEXT:             content_like as *const (),
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         let mut i2: i32 = 0;
 // LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 0;
@@ -204,7 +235,8 @@ int main(void) {
 // LOWERING-NEXT:             '__continue1: {
 // LOWERING-NEXT:                 {
 // LOWERING-NEXT:                     {
-// LOWERING-NEXT:                         let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag = std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
+// LOWERING-NEXT:                         let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag =
+// LOWERING-NEXT:                             std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
 // LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };
 // LOWERING-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // LOWERING-NEXT:                         if {{_v[0-9]+}} {
@@ -213,9 +245,11 @@ int main(void) {
 // LOWERING-NEXT:                             unsafe {
 // LOWERING-NEXT:                                 failures = {{_v[0-9]+}};
 // LOWERING-NEXT:                             }
-// LOWERING-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"recovered content_like %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:                             let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-NEXT:                                 b"recovered content_like %d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:                             let {{_v[0-9]+}}: i32 = i2;
-// LOWERING-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// LOWERING-NEXT:                             let {{_v[0-9]+}}: i32 =
+// LOWERING-NEXT:                                 unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
 // LOWERING-NEXT:                             break '__continue1;
 // LOWERING-NEXT:                         }
 // LOWERING-NEXT:                     }
@@ -231,7 +265,7 @@ int main(void) {
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"failures=%d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { failures };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
@@ -239,7 +273,18 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(
+// REWRITES-NEXT:     dead_code,
+// REWRITES-NEXT:     unused,
+// REWRITES-NEXT:     non_camel_case_types,
+// REWRITES-NEXT:     non_snake_case,
+// REWRITES-NEXT:     non_upper_case_globals,
+// REWRITES-NEXT:     arithmetic_overflow,
+// REWRITES-NEXT:     unconditional_panic,
+// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-NEXT:     unused_comparisons
+// REWRITES-NEXT: )]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[allow(non_camel_case_types)]
@@ -249,13 +294,11 @@ int main(void) {
 // REWRITES-NEXT:     STATUS_FAIL = 1,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: struct Dispatcher {
 // REWRITES-NEXT:     run: Option<unsafe extern "C" fn(i32) -> u32>,
 // REWRITES-NEXT: }
-// REWRITES-EMPTY:
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
@@ -265,8 +308,13 @@ int main(void) {
 // REWRITES-NEXT:     __saved_mask: [u64; 16],
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-EMPTY:
-// REWRITES-NEXT: static mut env: aligned::Aligned<aligned::A16, [__slate_jmp_buf_tag; 1]> = aligned::Aligned([__slate_jmp_buf_tag { __regs: [0; 8], __mask_was_saved: 0, __saved_mask: [0; 16] }; 1]);
+// REWRITES-NEXT: static mut env: aligned::Aligned<aligned::A16, [__slate_jmp_buf_tag; 1]> = aligned::Aligned(
+// REWRITES-NEXT:     [__slate_jmp_buf_tag {
+// REWRITES-NEXT:         __regs: [0; 8],
+// REWRITES-NEXT:         __mask_was_saved: 0,
+// REWRITES-NEXT:         __saved_mask: [0; 16],
+// REWRITES-NEXT:     }; 1],
+// REWRITES-NEXT: );
 // REWRITES-EMPTY:
 // REWRITES-NEXT: static mut failures: i32 = 0;
 // REWRITES-EMPTY:
@@ -275,112 +323,129 @@ int main(void) {
 // REWRITES-NEXT: unsafe extern "C" {
 // REWRITES-NEXT:     fn longjmp(_0: *mut __slate_jmp_buf_tag, _1: i32) -> !;
 // REWRITES-NEXT:     fn setjmp(_0: *mut __slate_jmp_buf_tag) -> i32;
-// REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn panicky_callback({{arg[0-9]+}}: i32) {
-// REWRITES-NEXT: let mut x: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: {
+// REWRITES-NEXT:     let mut x: i32 = {{arg[0-9]+}};
+// REWRITES-NEXT:     {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 2;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = x == {{_v[0-9]+}};
 // REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag = std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:                     unsafe { longjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag, {{_v[0-9]+}} as i32) };
+// REWRITES-NEXT:             unsafe {
+// REWRITES-NEXT:                 longjmp(
+// REWRITES-NEXT:                     std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>()
+// REWRITES-NEXT:                         as *mut __slate_jmp_buf_tag,
+// REWRITES-NEXT:                     1 as i32,
+// REWRITES-NEXT:                 )
+// REWRITES-NEXT:             };
 // REWRITES-NEXT:         }
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"callback %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, x) };
-// REWRITES-NEXT: return;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     unsafe { printf(c"callback %d\n".as_ptr(), x) };
+// REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn risky({{arg[0-9]+}}: i32) -> u32 {
-// REWRITES-NEXT: let mut x: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: {
+// REWRITES-NEXT:     let mut x: i32 = {{arg[0-9]+}};
+// REWRITES-NEXT:     {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 3;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = x == {{_v[0-9]+}};
 // REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag = std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:                     unsafe { longjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag, {{_v[0-9]+}} as i32) };
+// REWRITES-NEXT:             unsafe {
+// REWRITES-NEXT:                 longjmp(
+// REWRITES-NEXT:                     std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>()
+// REWRITES-NEXT:                         as *mut __slate_jmp_buf_tag,
+// REWRITES-NEXT:                     1 as i32,
+// REWRITES-NEXT:                 )
+// REWRITES-NEXT:             };
 // REWRITES-NEXT:         }
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = Status::STATUS_OK as u32;
-// REWRITES-NEXT: return {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = Status::STATUS_OK as u32;
+// REWRITES-NEXT:     return {{_v[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn content_like({{arg[0-9]+}}: i32) -> u32 {
-// REWRITES-NEXT: unsafe { unsafe { g_callback }.unwrap()({{arg[0-9]+}}) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = Status::STATUS_OK as u32;
-// REWRITES-NEXT: return {{_v[0-9]+}};
+// REWRITES-NEXT:     unsafe { unsafe { g_callback }.unwrap()({{arg[0-9]+}}) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = Status::STATUS_OK as u32;
+// REWRITES-NEXT:     return {{_v[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut d: Dispatcher = Dispatcher { run: None };
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         g_callback = unsafe { std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32)>>(panicky_callback as *const ()) };
-// REWRITES-NEXT: }
-// REWRITES-NEXT: d.run = unsafe { std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32) -> u32>>(risky as *const ()) };
-// REWRITES-NEXT: {
+// REWRITES-NEXT:     let mut d: Dispatcher = Dispatcher { run: None };
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         g_callback = unsafe {
+// REWRITES-NEXT:             std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32)>>(
+// REWRITES-NEXT:                 panicky_callback as *const (),
+// REWRITES-NEXT:             )
+// REWRITES-NEXT:         };
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     d.run = unsafe {
+// REWRITES-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32) -> u32>>(
+// REWRITES-NEXT:             risky as *const (),
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     {
 // REWRITES-NEXT:         let mut i: i32 = 0;
 // REWRITES-NEXT:         '__loop0: loop {
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = 5;
-// REWRITES-NEXT:                     if !(i < {{_v[0-9]+}}) {
-// REWRITES-NEXT:                                     break;
+// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 5;
+// REWRITES-NEXT:             if !(i < {{_v[0-9]+}}) {
+// REWRITES-NEXT:                 break;
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             '__continue0: {
+// REWRITES-NEXT:                 {
+// REWRITES-NEXT:                     {
+// REWRITES-NEXT:                         let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag =
+// REWRITES-NEXT:                             std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
+// REWRITES-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };
+// REWRITES-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// REWRITES-NEXT:                         if {{_v[0-9]+}} {
+// REWRITES-NEXT:                             unsafe {
+// REWRITES-NEXT:                                 failures = (unsafe { failures }) + 1;
+// REWRITES-NEXT:                             }
+// REWRITES-NEXT:                             unsafe { printf(c"recovered risky %d\n".as_ptr(), i) };
+// REWRITES-NEXT:                             break '__continue0;
+// REWRITES-NEXT:                         }
 // REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     '__continue0: {
-// REWRITES-NEXT:                                     {
-// REWRITES-NEXT:                                                         {
-// REWRITES-NEXT:                                                                                 let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag = std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
-// REWRITES-NEXT:                                                                                 let {{_v[0-9]+}}: i32 = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };
-// REWRITES-NEXT:                                                                                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// REWRITES-NEXT:                                                                                 if {{_v[0-9]+}} {
-// REWRITES-NEXT:                                                                                                             unsafe {
-// REWRITES-NEXT:                                                                                                                                             failures = (unsafe { failures }) + 1;
-// REWRITES-NEXT:                                                                                                             }
-// REWRITES-NEXT:                                                                                                             let {{_v[0-9]+}}: *mut i8 = b"recovered risky %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT:                                                                                                             unsafe { printf({{_v[0-9]+}} as *const i8, i) };
-// REWRITES-NEXT:                                                                                                             break '__continue0;
-// REWRITES-NEXT:                                                                                 }
-// REWRITES-NEXT:                                                         }
-// REWRITES-NEXT:                                                         unsafe { d.run.unwrap()(i) };
-// REWRITES-NEXT:                                     }
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     i = i + 1;
+// REWRITES-NEXT:                     unsafe { d.run.unwrap()(i) };
+// REWRITES-NEXT:                 }
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             i = i + 1;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT: }
-// REWRITES-NEXT: d.run = unsafe { std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32) -> u32>>(content_like as *const ()) };
-// REWRITES-NEXT: {
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     d.run = unsafe {
+// REWRITES-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32) -> u32>>(
+// REWRITES-NEXT:             content_like as *const (),
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     {
 // REWRITES-NEXT:         let mut i2: i32 = 0;
 // REWRITES-NEXT:         '__loop1: loop {
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = 5;
-// REWRITES-NEXT:                     if !(i2 < {{_v[0-9]+}}) {
-// REWRITES-NEXT:                                     break;
+// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 5;
+// REWRITES-NEXT:             if !(i2 < {{_v[0-9]+}}) {
+// REWRITES-NEXT:                 break;
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             '__continue1: {
+// REWRITES-NEXT:                 {
+// REWRITES-NEXT:                     {
+// REWRITES-NEXT:                         let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag =
+// REWRITES-NEXT:                             std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
+// REWRITES-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };
+// REWRITES-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// REWRITES-NEXT:                         if {{_v[0-9]+}} {
+// REWRITES-NEXT:                             unsafe {
+// REWRITES-NEXT:                                 failures = (unsafe { failures }) + 1;
+// REWRITES-NEXT:                             }
+// REWRITES-NEXT:                             unsafe { printf(c"recovered content_like %d\n".as_ptr(), i2) };
+// REWRITES-NEXT:                             break '__continue1;
+// REWRITES-NEXT:                         }
 // REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     '__continue1: {
-// REWRITES-NEXT:                                     {
-// REWRITES-NEXT:                                                         {
-// REWRITES-NEXT:                                                                                 let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag = std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
-// REWRITES-NEXT:                                                                                 let {{_v[0-9]+}}: i32 = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };
-// REWRITES-NEXT:                                                                                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// REWRITES-NEXT:                                                                                 if {{_v[0-9]+}} {
-// REWRITES-NEXT:                                                                                                             unsafe {
-// REWRITES-NEXT:                                                                                                                                             failures = (unsafe { failures }) + 1;
-// REWRITES-NEXT:                                                                                                             }
-// REWRITES-NEXT:                                                                                                             let {{_v[0-9]+}}: *mut i8 = b"recovered content_like %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT:                                                                                                             unsafe { printf({{_v[0-9]+}} as *const i8, i2) };
-// REWRITES-NEXT:                                                                                                             break '__continue1;
-// REWRITES-NEXT:                                                                                 }
-// REWRITES-NEXT:                                                         }
-// REWRITES-NEXT:                                                         unsafe { d.run.unwrap()(i2) };
-// REWRITES-NEXT:                                     }
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     i2 = i2 + 1;
+// REWRITES-NEXT:                     unsafe { d.run.unwrap()(i2) };
+// REWRITES-NEXT:                 }
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             i2 = i2 + 1;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"failures=%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, unsafe { failures }) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     unsafe { printf(c"failures=%d\n".as_ptr(), unsafe { failures }) };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

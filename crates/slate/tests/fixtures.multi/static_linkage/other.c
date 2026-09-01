@@ -5,6 +5,13 @@ static int local(int x) { return x * base; }
 int compute(int x) { return local(x) + 1; }
 // @rewrite-fn-end
 
+// LOWERING-DAG: {{^}}static mut base: i32 = 100;
+// LOWERING-NOT: pub static mut base
+// LOWERING-LABEL: {{^}}fn local(
+// LOWERING: {{^}}}
+// LOWERING-LABEL: {{^}}pub extern "C" fn compute(
+// LOWERING: {{^}}}
+
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn local({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-DAG: return {{arg[0-9]+}} * unsafe { base };
@@ -16,10 +23,3 @@ int compute(int x) { return local(x) + 1; }
 // REWRITES-DAG: return {{_v[0-9]+}} + {{_v[0-9]+}};
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites
-
-// LOWERING-DAG: {{^}}static mut base: i32 = 100;
-// LOWERING-NOT: pub static mut base
-// LOWERING-LABEL: {{^}}fn local(
-// LOWERING: {{^}}}
-// LOWERING-LABEL: {{^}}pub extern "C" fn compute(
-// LOWERING: {{^}}}

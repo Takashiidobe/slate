@@ -17,6 +17,7 @@ static int cpuid_leaf1_nonzero(void) {
 int main(void) {
   return cpuid_leaf1_nonzero();
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = 1;
 // LOWERING-DAG: let {{_v[0-9]+}}: u32;

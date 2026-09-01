@@ -15,6 +15,7 @@ TARGET_FIXTURE_DIRECTORIES = {"bionic", "macos", "msvc"}
 SOURCE_ROOT_PATTERN = "__SLATE_FILECHECK_SOURCE_ROOT__"
 FIXTURE_STD_OVERRIDES = {
     "gnu_asm_register_variable": "gnu23",
+    "c23_typeof_unqual": "gnu23",
 }
 
 
@@ -360,14 +361,39 @@ def target_environment(triple):
     return environment
 
 
+def default_targets_for_path(path):
+    parts = path.resolve().parts
+    if "bionic" in parts or path.parent.name == "bionic":
+        return [
+            ("BIONIC-AARCH64", target_environment("aarch64-linux-android")),
+            ("BIONIC-X86_64", target_environment("x86_64-linux-android")),
+        ]
+    if "macos" in parts or path.parent.name == "macos":
+        return [
+            ("MACOS", target_environment("aarch64-apple-darwin")),
+        ]
+    if "msvc" in parts or path.parent.name == "msvc":
+        return [
+            ("MSVC", target_environment("x86_64-pc-windows-msvc")),
+        ]
+    if ("fixtures.link" in parts and "long_double" in parts) or (
+        path.parent.name == "long_double" and "fixtures.link" in str(path)
+    ):
+        return [
+            ("X86_64-GNU", target_environment("x86_64-unknown-linux-gnu")),
+        ]
+    return []
+
+
 def update_path(path, profiles, in_place, target_mode):
-    if path.parent.name in TARGET_FIXTURE_DIRECTORIES and not target_mode:
-        print(f"skip: {path}: target fixture requires --target", file=sys.stderr)
-        return
+    if not path.is_file():
+        raise ValueError(f"path is not a file: {path}")
     source = path.read_text()
     instrumented, annotations = instrument_annotations(source)
     if target_mode:
-        source = remove_generated_block(remove_generated_block(source, "LOWERING"), "REWRITES")
+        source = remove_generated_block(
+            remove_generated_block(source, "LOWERING"), "REWRITES"
+        )
     updated = source
     blocks = []
     annotation_outputs = {}
@@ -387,34 +413,43 @@ def update_path(path, profiles, in_place, target_mode):
             )
             continue
         updated = remove_generated_block(updated, profile)
-        if annotations:
-            cache_key = (tuple(command[:-1]), tuple(sorted(environment.items())))
-            if cache_key not in annotation_outputs:
-                lowered_command = [*command[:-1], "translate-lowered"]
-                rewritten_command = [*command[:-1], "translate"]
-                annotation_outputs[cache_key] = (
-                    normalize_source_paths(
-                        translate_instrumented(
-                            path, instrumented, rewritten_command, environment
+        try:
+            if annotations:
+                cache_key = (tuple(command[:-1]), tuple(sorted(environment.items())))
+                if cache_key not in annotation_outputs:
+                    lowered_command = [*command[:-1], "translate-lowered"]
+                    rewritten_command = [*command[:-1], "translate"]
+                    annotation_outputs[cache_key] = (
+                        normalize_source_paths(
+                            translate_instrumented(
+                                path, instrumented, rewritten_command, environment
+                            ),
+                            path,
                         ),
-                        path,
-                    ),
-                    normalize_source_paths(
-                        translate_instrumented(
-                            path, instrumented, lowered_command, environment
+                        normalize_source_paths(
+                            translate_instrumented(
+                                path, instrumented, lowered_command, environment
+                            ),
+                            path,
                         ),
-                        path,
-                    ),
+                    )
+                rewritten, lowered = annotation_outputs[cache_key]
+                checks = render_annotation_checks(
+                    annotations, rewritten, lowered, profile
                 )
-            rewritten, lowered = annotation_outputs[cache_key]
-            checks = render_annotation_checks(
-                annotations, rewritten, lowered, profile
-            )
-        else:
-            rust = normalize_source_paths(
-                translate_output(path, command, environment), path
-            )
-            checks = render_checks(rust, profile)
+            else:
+                rust = normalize_source_paths(
+                    translate_output(path, command, environment), path
+                )
+                checks = render_checks(rust, profile)
+        except RuntimeError as error:
+            if target_mode:
+                print(
+                    f"skip: {path}: {profile} translation failed; leaving block untouched",
+                    file=sys.stderr,
+                )
+                return
+            raise
         if not checks:
             raise RuntimeError(f"{path}: generated Rust contains no functions")
         blocks.append(generated_block(checks, profile))
@@ -566,6 +601,21 @@ def update_project(project, profiles, in_place, slate, library):
                 sys.stdout.write(updated)
 
 
+def make_profiles(slate, targets, profile_name):
+    profiles = []
+    if profile_name in ("lowering", "both"):
+        for prefix, environment in targets or [("", {})]:
+            profiles.append(
+                (f"LOWERING-{prefix}".rstrip("-"), [*slate, "translate-lowered"], environment)
+            )
+    if profile_name in ("rewrites", "both"):
+        for prefix, environment in targets or [("", {})]:
+            profiles.append(
+                (f"REWRITES-{prefix}".rstrip("-"), [*slate, "translate"], environment)
+            )
+    return profiles
+
+
 def main(argv):
     parser = argparse.ArgumentParser(description="generate stable Slate FileCheck scaffolding")
     parser.add_argument("paths", nargs="+", type=Path)
@@ -585,31 +635,57 @@ def main(argv):
     if (args.project or args.library_project) and args.target:
         parser.error("project FileCheck generation does not support --target")
     slate = args.slate.split()
-    profiles = []
-    targets = []
+    explicit_targets = []
     for target in args.target or []:
         prefix, separator, triple = target.partition("=")
         if not separator or not prefix or not triple:
             parser.error(f"--target must be PREFIX=TRIPLE, got {target!r}")
-        targets.append((prefix, target_environment(triple)))
-    if args.profile in ("lowering", "both"):
-        for prefix, environment in targets or [("", {})]:
-            profiles.append((f"LOWERING-{prefix}".rstrip("-"), [*slate, "translate-lowered"], environment))
-    if args.profile in ("rewrites", "both"):
-        for prefix, environment in targets or [("", {})]:
-            profiles.append((f"REWRITES-{prefix}".rstrip("-"), [*slate, "translate"], environment))
+        explicit_targets.append((prefix, target_environment(triple)))
+
     for path in args.paths:
         if args.project or args.library_project:
             if not path.is_dir():
-                parser.error(f"project path is not a directory: {path}")
-            update_project(
-                path,
-                profiles,
-                args.in_place,
-                slate,
-                args.library_project,
+                if path.is_file():
+                    path = path.parent
+                    if args.library_project and path.name == "src":
+                        path = path.parent
+                else:
+                    parser.error(f"project path does not exist: {path}")
+            sub_projects = (
+                [
+                    p
+                    for p in sorted(path.iterdir())
+                    if p.is_dir() and project_sources(p, args.library_project)
+                ]
+                if (
+                    path.name.startswith("fixtures.multi")
+                    or path.name.startswith("fixtures.library")
+                )
+                else [path]
             )
+            profiles = make_profiles(slate, explicit_targets, args.profile)
+            for proj in sub_projects:
+                try:
+                    update_project(
+                        proj,
+                        profiles,
+                        args.in_place,
+                        slate,
+                        args.library_project,
+                    )
+                except RuntimeError as error:
+                    print(f"skip: {proj}: {error}", file=sys.stderr)
+        elif path.is_dir():
+            c_files = sorted(path.glob("*.c"))
+            if not c_files:
+                c_files = sorted(path.rglob("*.c"))
+            for c_file in c_files:
+                targets = explicit_targets if explicit_targets else default_targets_for_path(c_file)
+                profiles = make_profiles(slate, targets, args.profile)
+                update_path(c_file, profiles, args.in_place, bool(targets))
         else:
+            targets = explicit_targets if explicit_targets else default_targets_for_path(path)
+            profiles = make_profiles(slate, targets, args.profile)
             update_path(path, profiles, args.in_place, bool(targets))
     return 0
 
@@ -620,3 +696,4 @@ if __name__ == "__main__":
     except (RuntimeError, ValueError) as error:
         print(f"error: {error}", file=sys.stderr)
         raise SystemExit(1)
+

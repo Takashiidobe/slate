@@ -50,6 +50,7 @@ int main(void) {
          compare_flag_widths(-1));
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: let {{_v[0-9]+}}: i32;
 // LOWERING-DAG: let {{_v[0-9]+}}: i32;

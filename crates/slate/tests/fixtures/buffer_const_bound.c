@@ -62,6 +62,7 @@ int main(void) {
   printf("%d %d %d %d %d\n", r, a[0], a[2], r2, r3);
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: let {{_v[0-9]+}}: *mut i32 = arr.as_mut_ptr() as *mut i32;
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = sum_fixed({{_v[0-9]+}});

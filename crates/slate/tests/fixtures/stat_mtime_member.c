@@ -7,9 +7,21 @@ int main(void) {
     return 1;
   printf("%lld\n", (long long)info.st_mtime);
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(
+// LOWERING-NEXT:     dead_code,
+// LOWERING-NEXT:     unused,
+// LOWERING-NEXT:     non_camel_case_types,
+// LOWERING-NEXT:     non_snake_case,
+// LOWERING-NEXT:     non_upper_case_globals,
+// LOWERING-NEXT:     arithmetic_overflow,
+// LOWERING-NEXT:     unconditional_panic,
+// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-NEXT:     unused_comparisons
+// LOWERING-NEXT: )]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
@@ -31,21 +43,75 @@ int main(void) {
 // LOWERING-NEXT:     __unused: [i64; 3],
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
-// LOWERING-NEXT:     fn stat(_0: *const i8, _1: *mut stat) -> i32;
-// LOWERING-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// LOWERING-NEXT:     fn stat(_0: *const core::ffi::c_char, _1: *mut stat) -> i32;
+// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut info: stat = stat { st_dev: 0, st_ino: 0, st_nlink: 0, st_mode: 0, st_uid: 0, st_gid: 0, __pad0: 0, st_rdev: 0, st_size: 0, st_blksize: 0, st_blocks: 0, st_atim: libc::timespec { tv_sec: 0, tv_nsec: 0 }, st_mtim: libc::timespec { tv_sec: 0, tv_nsec: 0 }, st_ctim: libc::timespec { tv_sec: 0, tv_nsec: 0 }, __unused: [0; 3] };
+// LOWERING-NEXT:     let mut info: stat = stat {
+// LOWERING-NEXT:         st_dev: 0,
+// LOWERING-NEXT:         st_ino: 0,
+// LOWERING-NEXT:         st_nlink: 0,
+// LOWERING-NEXT:         st_mode: 0,
+// LOWERING-NEXT:         st_uid: 0,
+// LOWERING-NEXT:         st_gid: 0,
+// LOWERING-NEXT:         __pad0: 0,
+// LOWERING-NEXT:         st_rdev: 0,
+// LOWERING-NEXT:         st_size: 0,
+// LOWERING-NEXT:         st_blksize: 0,
+// LOWERING-NEXT:         st_blocks: 0,
+// LOWERING-NEXT:         st_atim: libc::timespec {
+// LOWERING-NEXT:             tv_sec: 0,
+// LOWERING-NEXT:             tv_nsec: 0,
+// LOWERING-NEXT:         },
+// LOWERING-NEXT:         st_mtim: libc::timespec {
+// LOWERING-NEXT:             tv_sec: 0,
+// LOWERING-NEXT:             tv_nsec: 0,
+// LOWERING-NEXT:         },
+// LOWERING-NEXT:         st_ctim: libc::timespec {
+// LOWERING-NEXT:             tv_sec: 0,
+// LOWERING-NEXT:             tv_nsec: 0,
+// LOWERING-NEXT:         },
+// LOWERING-NEXT:         __unused: [0; 3],
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     info = stat { st_dev: 0, st_ino: 0, st_nlink: 0, st_mode: 0, st_uid: 0, st_gid: 0, __pad0: 0, st_rdev: 0, st_size: 0, st_blksize: 0, st_blocks: 0, st_atim: libc::timespec { tv_sec: 0, tv_nsec: 0 }, st_mtim: libc::timespec { tv_sec: 0, tv_nsec: 0 }, st_ctim: libc::timespec { tv_sec: 0, tv_nsec: 0 }, __unused: [0; 3] };
+// LOWERING-NEXT:     info = stat {
+// LOWERING-NEXT:         st_dev: 0,
+// LOWERING-NEXT:         st_ino: 0,
+// LOWERING-NEXT:         st_nlink: 0,
+// LOWERING-NEXT:         st_mode: 0,
+// LOWERING-NEXT:         st_uid: 0,
+// LOWERING-NEXT:         st_gid: 0,
+// LOWERING-NEXT:         __pad0: 0,
+// LOWERING-NEXT:         st_rdev: 0,
+// LOWERING-NEXT:         st_size: 0,
+// LOWERING-NEXT:         st_blksize: 0,
+// LOWERING-NEXT:         st_blocks: 0,
+// LOWERING-NEXT:         st_atim: libc::timespec {
+// LOWERING-NEXT:             tv_sec: 0,
+// LOWERING-NEXT:             tv_nsec: 0,
+// LOWERING-NEXT:         },
+// LOWERING-NEXT:         st_mtim: libc::timespec {
+// LOWERING-NEXT:             tv_sec: 0,
+// LOWERING-NEXT:             tv_nsec: 0,
+// LOWERING-NEXT:         },
+// LOWERING-NEXT:         st_ctim: libc::timespec {
+// LOWERING-NEXT:             tv_sec: 0,
+// LOWERING-NEXT:             tv_nsec: 0,
+// LOWERING-NEXT:         },
+// LOWERING-NEXT:         __unused: [0; 3],
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         let {{_v[0-9]+}}: *mut i8 = b"/dev/null\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { stat({{_v[0-9]+}} as *const i8, std::ptr::addr_of_mut!(info) as *mut stat) };
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:             stat(
+// LOWERING-NEXT:                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:                 std::ptr::addr_of_mut!(info) as *mut stat,
+// LOWERING-NEXT:             )
+// LOWERING-NEXT:         };
 // LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
 // LOWERING-NEXT:         if {{_v[0-9]+}} {
@@ -57,7 +123,7 @@ int main(void) {
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%lld\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = info.st_mtim.tv_sec;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
@@ -65,7 +131,18 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(
+// REWRITES-NEXT:     dead_code,
+// REWRITES-NEXT:     unused,
+// REWRITES-NEXT:     non_camel_case_types,
+// REWRITES-NEXT:     non_snake_case,
+// REWRITES-NEXT:     non_upper_case_globals,
+// REWRITES-NEXT:     arithmetic_overflow,
+// REWRITES-NEXT:     unconditional_panic,
+// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-NEXT:     unused_comparisons
+// REWRITES-NEXT: )]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
@@ -87,30 +164,82 @@ int main(void) {
 // REWRITES-NEXT:     __unused: [i64; 3],
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
-// REWRITES-NEXT:     fn stat(_0: *const i8, _1: *mut stat) -> i32;
-// REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// REWRITES-NEXT:     fn stat(_0: *const core::ffi::c_char, _1: *mut stat) -> i32;
+// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut info: stat = stat { st_dev: 0, st_ino: 0, st_nlink: 0, st_mode: 0, st_uid: 0, st_gid: 0, __pad0: 0, st_rdev: 0, st_size: 0, st_blksize: 0, st_blocks: 0, st_atim: libc::timespec { tv_sec: 0, tv_nsec: 0 }, st_mtim: libc::timespec { tv_sec: 0, tv_nsec: 0 }, st_ctim: libc::timespec { tv_sec: 0, tv_nsec: 0 }, __unused: [0; 3] };
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: info = stat { st_dev: 0, st_ino: 0, st_nlink: 0, st_mode: 0, st_uid: 0, st_gid: 0, __pad0: 0, st_rdev: 0, st_size: 0, st_blksize: 0, st_blocks: 0, st_atim: libc::timespec { tv_sec: 0, tv_nsec: 0 }, st_mtim: libc::timespec { tv_sec: 0, tv_nsec: 0 }, st_ctim: libc::timespec { tv_sec: 0, tv_nsec: 0 }, __unused: [0; 3] };
-// REWRITES-NEXT: {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = b"/dev/null\0".as_ptr() as *mut i8;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { stat({{_v[0-9]+}} as *const i8, std::ptr::addr_of_mut!(info) as *mut stat) };
+// REWRITES-NEXT:     let mut __retval: i32 = 0;
+// REWRITES-NEXT:     let mut info: stat = stat {
+// REWRITES-NEXT:         st_dev: 0,
+// REWRITES-NEXT:         st_ino: 0,
+// REWRITES-NEXT:         st_nlink: 0,
+// REWRITES-NEXT:         st_mode: 0,
+// REWRITES-NEXT:         st_uid: 0,
+// REWRITES-NEXT:         st_gid: 0,
+// REWRITES-NEXT:         __pad0: 0,
+// REWRITES-NEXT:         st_rdev: 0,
+// REWRITES-NEXT:         st_size: 0,
+// REWRITES-NEXT:         st_blksize: 0,
+// REWRITES-NEXT:         st_blocks: 0,
+// REWRITES-NEXT:         st_atim: libc::timespec {
+// REWRITES-NEXT:             tv_sec: 0,
+// REWRITES-NEXT:             tv_nsec: 0,
+// REWRITES-NEXT:         },
+// REWRITES-NEXT:         st_mtim: libc::timespec {
+// REWRITES-NEXT:             tv_sec: 0,
+// REWRITES-NEXT:             tv_nsec: 0,
+// REWRITES-NEXT:         },
+// REWRITES-NEXT:         st_ctim: libc::timespec {
+// REWRITES-NEXT:             tv_sec: 0,
+// REWRITES-NEXT:             tv_nsec: 0,
+// REWRITES-NEXT:         },
+// REWRITES-NEXT:         __unused: [0; 3],
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     __retval = 0;
+// REWRITES-NEXT:     info = stat {
+// REWRITES-NEXT:         st_dev: 0,
+// REWRITES-NEXT:         st_ino: 0,
+// REWRITES-NEXT:         st_nlink: 0,
+// REWRITES-NEXT:         st_mode: 0,
+// REWRITES-NEXT:         st_uid: 0,
+// REWRITES-NEXT:         st_gid: 0,
+// REWRITES-NEXT:         __pad0: 0,
+// REWRITES-NEXT:         st_rdev: 0,
+// REWRITES-NEXT:         st_size: 0,
+// REWRITES-NEXT:         st_blksize: 0,
+// REWRITES-NEXT:         st_blocks: 0,
+// REWRITES-NEXT:         st_atim: libc::timespec {
+// REWRITES-NEXT:             tv_sec: 0,
+// REWRITES-NEXT:             tv_nsec: 0,
+// REWRITES-NEXT:         },
+// REWRITES-NEXT:         st_mtim: libc::timespec {
+// REWRITES-NEXT:             tv_sec: 0,
+// REWRITES-NEXT:             tv_nsec: 0,
+// REWRITES-NEXT:         },
+// REWRITES-NEXT:         st_ctim: libc::timespec {
+// REWRITES-NEXT:             tv_sec: 0,
+// REWRITES-NEXT:             tv_nsec: 0,
+// REWRITES-NEXT:         },
+// REWRITES-NEXT:         __unused: [0; 3],
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe {
+// REWRITES-NEXT:             stat(
+// REWRITES-NEXT:                 c"/dev/null".as_ptr(),
+// REWRITES-NEXT:                 std::ptr::addr_of_mut!(info) as *mut stat,
+// REWRITES-NEXT:             )
+// REWRITES-NEXT:         };
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
 // REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:                     __retval = 1;
-// REWRITES-NEXT:                     std::process::exit(__retval as i32);
+// REWRITES-NEXT:             __retval = 1;
+// REWRITES-NEXT:             std::process::exit(__retval as i32);
 // REWRITES-NEXT:         }
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%lld\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = info.st_mtim.tv_sec;
-// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = info.st_mtim.tv_sec;
+// REWRITES-NEXT:     unsafe { printf(c"%lld\n".as_ptr(), {{_v[0-9]+}}) };
+// REWRITES-NEXT:     std::process::exit(__retval as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

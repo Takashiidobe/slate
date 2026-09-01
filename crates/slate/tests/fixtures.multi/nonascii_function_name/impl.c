@@ -3,6 +3,7 @@
 int π(int value) { return value * 2 + 1; }
 // @rewrite-fn-end
 // @lowering-fn-end
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: #[unsafe(export_name = "\u{3c0}")]
 // LOWERING-DAG: pub extern "C" fn π({{arg[0-9]+}}: i32) -> i32 {

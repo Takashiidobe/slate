@@ -20,11 +20,23 @@ int main(void) {
   printf("%d %d %llu\n", first != 0, second >= first, crc32_probe());
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(abi_unadjusted)]
 // LOWERING-NEXT: #![feature(link_llvm_intrinsics)]
 // LOWERING-NEXT: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(
+// LOWERING-NEXT:     dead_code,
+// LOWERING-NEXT:     unused,
+// LOWERING-NEXT:     non_camel_case_types,
+// LOWERING-NEXT:     non_snake_case,
+// LOWERING-NEXT:     non_upper_case_globals,
+// LOWERING-NEXT:     arithmetic_overflow,
+// LOWERING-NEXT:     unconditional_panic,
+// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-NEXT:     unused_comparisons
+// LOWERING-NEXT: )]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
@@ -33,9 +45,8 @@ int main(void) {
 // LOWERING-NEXT:     __slate_anon_1: u32,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
-// LOWERING-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[target_feature(enable = "sse4.2")]
@@ -103,7 +114,7 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} >= {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = unsafe { crc32_probe() };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
@@ -136,7 +147,18 @@ int main(void) {
 // REWRITES: #![feature(abi_unadjusted)]
 // REWRITES-NEXT: #![feature(link_llvm_intrinsics)]
 // REWRITES-NEXT: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(
+// REWRITES-NEXT:     dead_code,
+// REWRITES-NEXT:     unused,
+// REWRITES-NEXT:     non_camel_case_types,
+// REWRITES-NEXT:     non_snake_case,
+// REWRITES-NEXT:     non_upper_case_globals,
+// REWRITES-NEXT:     arithmetic_overflow,
+// REWRITES-NEXT:     unconditional_panic,
+// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-NEXT:     unused_comparisons
+// REWRITES-NEXT: )]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
@@ -145,71 +167,65 @@ int main(void) {
 // REWRITES-NEXT:     __slate_anon_1: u32,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
-// REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[target_feature(enable = "sse4.2")]
 // REWRITES-NEXT: unsafe fn _mm_crc32_u8({{arg[0-9]+}}: u32, {{arg[0-9]+}}: u8) -> u32 {
-// REWRITES-NEXT: return unsafe { __slate_intrinsic_x86_sse42_crc32_32_8_f27bf8581dad0801({{arg[0-9]+}}, {{arg[0-9]+}}) };
+// REWRITES-NEXT:     return unsafe { __slate_intrinsic_x86_sse42_crc32_32_8_f27bf8581dad0801({{arg[0-9]+}}, {{arg[0-9]+}}) };
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[target_feature(enable = "sse4.2")]
 // REWRITES-NEXT: unsafe fn _mm_crc32_u16({{arg[0-9]+}}: u32, {{arg[0-9]+}}: u16) -> u32 {
-// REWRITES-NEXT: return unsafe { __slate_intrinsic_x86_sse42_crc32_32_16_658f6bf45a185a4a({{arg[0-9]+}}, {{arg[0-9]+}}) };
+// REWRITES-NEXT:     return unsafe { __slate_intrinsic_x86_sse42_crc32_32_16_658f6bf45a185a4a({{arg[0-9]+}}, {{arg[0-9]+}}) };
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[target_feature(enable = "sse4.2")]
 // REWRITES-NEXT: unsafe fn _mm_crc32_u32({{arg[0-9]+}}: u32, {{arg[0-9]+}}: u32) -> u32 {
-// REWRITES-NEXT: return unsafe { __slate_intrinsic_x86_sse42_crc32_32_32_f5e6b09e791bc818({{arg[0-9]+}}, {{arg[0-9]+}}) };
+// REWRITES-NEXT:     return unsafe { __slate_intrinsic_x86_sse42_crc32_32_32_f5e6b09e791bc818({{arg[0-9]+}}, {{arg[0-9]+}}) };
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[target_feature(enable = "sse4.2")]
 // REWRITES-NEXT: unsafe fn _mm_crc32_u64({{arg[0-9]+}}: u64, {{arg[0-9]+}}: u64) -> u64 {
-// REWRITES-NEXT: return unsafe { __slate_intrinsic_x86_sse42_crc32_64_64_a6b1e708219fb1bb({{arg[0-9]+}}, {{arg[0-9]+}}) };
+// REWRITES-NEXT:     return unsafe { __slate_intrinsic_x86_sse42_crc32_64_64_a6b1e708219fb1bb({{arg[0-9]+}}, {{arg[0-9]+}}) };
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[target_feature(enable = "popcnt,sse3,sse4.1,sse4.2,ssse3")]
 // REWRITES-NEXT: unsafe fn crc32_probe() -> u64 {
-// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u8 = 18;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { _mm_crc32_u8({{_v[0-9]+}}, {{_v[0-9]+}}) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: u16 = 13398;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { _mm_crc32_u16({{_v[0-9]+}}, {{_v[0-9]+}}) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = 2023406814;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = unsafe { _mm_crc32_u32({{_v[0-9]+}}, {{_v[0-9]+}}) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 1311768467463790320u64;
-// REWRITES-NEXT: return unsafe { _mm_crc32_u64({{_v[0-9]+}} as u64, {{_v[0-9]+}}) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { _mm_crc32_u8(0, 18) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { _mm_crc32_u16({{_v[0-9]+}}, 13398) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { _mm_crc32_u32({{_v[0-9]+}}, 2023406814) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 1311768467463790320u64;
+// REWRITES-NEXT:     return unsafe { _mm_crc32_u64({{_v[0-9]+}} as u64, {{_v[0-9]+}}) };
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = 0;
-// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         unsafe { __slate_intrinsic_x86_sse2_pause_8e00570d6f1f8c6c() };
-// REWRITES-NEXT: }
-// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         unsafe { __slate_intrinsic_x86_sse2_lfence_b6f7983e420a3939() };
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = unsafe { __slate_intrinsic_x86_rdtsc_319a3f94c908d021() };
-// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = unsafe { __slate_intrinsic_x86_rdtsc_319a3f94c908d021() };
+// REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         unsafe { __slate_intrinsic_x86_sse2_mfence_bb861e7376322ce() };
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: {{anon_struct[0-9A-Za-z_]*}} = unsafe { __slate_intrinsic_x86_rdtscp_a57815630f0a5a97() };
-// REWRITES-NEXT: let {{_v[0-9]+}}: u32 = {{_v[0-9]+}}.__slate_anon_1;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = {{_v[0-9]+}}.__slate_anon_0;
-// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: {{anon_struct[0-9A-Za-z_]*}} = unsafe { __slate_intrinsic_x86_rdtscp_a57815630f0a5a97() };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}}.__slate_anon_0;
+// REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         unsafe { __slate_intrinsic_x86_sse_sfence_f8b270d178b3d220() };
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d %llu\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}} != {{_v[0-9]+}}) as i32;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}} >= {{_v[0-9]+}}) as i32;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = unsafe { crc32_probe() };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 0;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         printf(
+// REWRITES-NEXT:             c"%d %d %llu\n".as_ptr(),
+// REWRITES-NEXT:             ({{_v[0-9]+}} != {{_v[0-9]+}}) as i32,
+// REWRITES-NEXT:             ({{_v[0-9]+}} >= {{_v[0-9]+}}) as i32,
+// REWRITES-NEXT:             unsafe { crc32_probe() },
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "unadjusted" {

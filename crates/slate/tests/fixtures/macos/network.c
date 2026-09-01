@@ -124,6 +124,7 @@ unsigned int slate_first_interface_flags(void) {
 }
 // @rewrite-fn-end
 // @lowering-fn-end
+
 // SLATE-FILECHECK-BEGIN lowering-macos
 // LOWERING-MACOS-DAG: unsafe fn slate_listen_ipv4({{arg[0-9]+}}: *mut sockaddr_in) -> i32 {
 // LOWERING-MACOS-DAG: let mut __retval: i32 = 0;
@@ -187,13 +188,18 @@ unsigned int slate_first_interface_flags(void) {
 // LOWERING-MACOS-DAG: (*{{arg[0-9]+}}).sun_family = {{_v[0-9]+}};
 // LOWERING-MACOS-DAG: }
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut i8 = (unsafe { std::ptr::addr_of_mut!((*{{arg[0-9]+}}).sun_path) }) as *mut i8;
-// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut i8 = unsafe { strcpy({{_v[0-9]+}} as *mut i8, {{arg[0-9]+}} as *const i8) };
+// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut i8 = (unsafe {
+// LOWERING-MACOS-DAG: strcpy(
+// LOWERING-MACOS-DAG: {{_v[0-9]+}} as *mut core::ffi::c_char,
+// LOWERING-MACOS-DAG: {{arg[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-MACOS-DAG: )
+// LOWERING-MACOS-DAG: }) as *mut i8;
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut sockaddr = {{arg[0-9]+}} as *mut sockaddr;
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: u64 = 106;
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: u64 = 104;
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} - {{_v[0-9]+}};
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut i8 = (unsafe { std::ptr::addr_of_mut!((*{{arg[0-9]+}}).sun_path) }) as *mut i8;
-// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: u64 = (unsafe { strlen({{_v[0-9]+}} as *const i8) }) as u64;
+// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: u64 = (unsafe { strlen({{_v[0-9]+}} as *const core::ffi::c_char) }) as u64;
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} as u32;
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = unsafe { bind({{arg[0-9]+}} as i32, {{_v[0-9]+}} as *const sockaddr, {{_v[0-9]+}} as u32) };
@@ -201,10 +207,28 @@ unsigned int slate_first_interface_flags(void) {
 // LOWERING-MACOS-DAG: }
 // LOWERING-MACOS-DAG: unsafe fn slate_resolve({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut *mut addrinfo) -> i32 {
 // LOWERING-MACOS-DAG: let mut result: *mut *mut addrinfo = std::ptr::null_mut();
-// LOWERING-MACOS-DAG: let mut hints: addrinfo = addrinfo { ai_flags: 0, ai_family: 0, ai_socktype: 0, ai_protocol: 0, ai_addrlen: 0, ai_canonname: std::ptr::null_mut(), ai_addr: std::ptr::null_mut(), ai_next: std::ptr::null_mut() };
+// LOWERING-MACOS-DAG: let mut hints: addrinfo = addrinfo {
+// LOWERING-MACOS-DAG: ai_flags: 0,
+// LOWERING-MACOS-DAG: ai_family: 0,
+// LOWERING-MACOS-DAG: ai_socktype: 0,
+// LOWERING-MACOS-DAG: ai_protocol: 0,
+// LOWERING-MACOS-DAG: ai_addrlen: 0,
+// LOWERING-MACOS-DAG: ai_canonname: std::ptr::null_mut(),
+// LOWERING-MACOS-DAG: ai_addr: std::ptr::null_mut(),
+// LOWERING-MACOS-DAG: ai_next: std::ptr::null_mut(),
+// LOWERING-MACOS-DAG: };
 // LOWERING-MACOS-DAG: let mut status: i32 = 0;
 // LOWERING-MACOS-DAG: result = {{arg[0-9]+}};
-// LOWERING-MACOS-DAG: hints = addrinfo { ai_flags: 0, ai_family: 0, ai_socktype: 0, ai_protocol: 0, ai_addrlen: 0, ai_canonname: std::ptr::null_mut(), ai_addr: std::ptr::null_mut(), ai_next: std::ptr::null_mut() };
+// LOWERING-MACOS-DAG: hints = addrinfo {
+// LOWERING-MACOS-DAG: ai_flags: 0,
+// LOWERING-MACOS-DAG: ai_family: 0,
+// LOWERING-MACOS-DAG: ai_socktype: 0,
+// LOWERING-MACOS-DAG: ai_protocol: 0,
+// LOWERING-MACOS-DAG: ai_addrlen: 0,
+// LOWERING-MACOS-DAG: ai_canonname: std::ptr::null_mut(),
+// LOWERING-MACOS-DAG: ai_addr: std::ptr::null_mut(),
+// LOWERING-MACOS-DAG: ai_next: std::ptr::null_mut(),
+// LOWERING-MACOS-DAG: };
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = 30;
 // LOWERING-MACOS-DAG: hints.ai_family = {{_v[0-9]+}};
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = 2;
@@ -215,7 +239,14 @@ unsigned int slate_first_interface_flags(void) {
 // LOWERING-MACOS-DAG: hints.ai_flags = {{_v[0-9]+}};
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut i8 = b"53\0".as_ptr() as *mut i8;
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut *mut addrinfo = result;
-// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = unsafe { getaddrinfo({{arg[0-9]+}} as *const i8, {{_v[0-9]+}} as *const i8, std::ptr::addr_of_mut!(hints) as *const addrinfo, {{_v[0-9]+}} as *mut *mut addrinfo) };
+// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-MACOS-DAG: getaddrinfo(
+// LOWERING-MACOS-DAG: {{arg[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-MACOS-DAG: {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-MACOS-DAG: std::ptr::addr_of_mut!(hints) as *const addrinfo,
+// LOWERING-MACOS-DAG: {{_v[0-9]+}} as *mut *mut addrinfo,
+// LOWERING-MACOS-DAG: )
+// LOWERING-MACOS-DAG: };
 // LOWERING-MACOS-DAG: status = {{_v[0-9]+}};
 // LOWERING-MACOS-DAG: {
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = status;
@@ -274,7 +305,8 @@ unsigned int slate_first_interface_flags(void) {
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: *mut ifaddrs = std::ptr::null_mut();
 // LOWERING-MACOS-DAG: addresses = {{_v[0-9]+}};
 // LOWERING-MACOS-DAG: {
-// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = unsafe { getifaddrs(std::ptr::addr_of_mut!(addresses) as *mut *mut ifaddrs) };
+// LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 =
+// LOWERING-MACOS-DAG: unsafe { getifaddrs(std::ptr::addr_of_mut!(addresses) as *mut *mut ifaddrs) };
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
 // LOWERING-MACOS-DAG: let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
@@ -306,11 +338,7 @@ unsigned int slate_first_interface_flags(void) {
 // SLATE-FILECHECK-BEGIN rewrites-macos
 // REWRITES-MACOS-DAG: unsafe fn slate_listen_ipv4({{arg[0-9]+}}: *mut sockaddr_in) -> i32 {
 // REWRITES-MACOS-DAG: let mut __retval: i32 = 0;
-// REWRITES-MACOS-DAG: let mut socket_fd: i32 = 0;
-// REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = 6;
-// REWRITES-MACOS-DAG: socket_fd = unsafe { socket({{_v[0-9]+}} as i32, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as i32) };
+// REWRITES-MACOS-DAG: let mut socket_fd: i32 = unsafe { socket(2 as i32, 1 as i32, 6 as i32) };
 // REWRITES-MACOS-DAG: {
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-MACOS-DAG: if socket_fd < {{_v[0-9]+}} {
@@ -324,20 +352,23 @@ unsigned int slate_first_interface_flags(void) {
 // REWRITES-MACOS-DAG: unsafe {
 // REWRITES-MACOS-DAG: (*{{arg[0-9]+}}).sin_family = 2;
 // REWRITES-MACOS-DAG: }
-// REWRITES-MACOS-DAG: let {{_v[0-9]+}}: u32 = 2130706433;
-// REWRITES-MACOS-DAG: let {{_v[0-9]+}}: u32 = unsafe { htonl({{_v[0-9]+}} as u32) };
+// REWRITES-MACOS-DAG: let {{_v[0-9]+}}: u32 = unsafe { htonl(2130706433 as u32) };
 // REWRITES-MACOS-DAG: unsafe {
 // REWRITES-MACOS-DAG: (*{{arg[0-9]+}}).sin_addr.s_addr = {{_v[0-9]+}};
 // REWRITES-MACOS-DAG: }
-// REWRITES-MACOS-DAG: let {{_v[0-9]+}}: u32 = 16;
-// REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = unsafe { bind(socket_fd as i32, ({{arg[0-9]+}} as *mut sockaddr) as *const sockaddr, {{_v[0-9]+}} as u32) };
+// REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = unsafe {
+// REWRITES-MACOS-DAG: bind(
+// REWRITES-MACOS-DAG: socket_fd as i32,
+// REWRITES-MACOS-DAG: ({{arg[0-9]+}} as *mut sockaddr) as *const sockaddr,
+// REWRITES-MACOS-DAG: 16 as u32,
+// REWRITES-MACOS-DAG: )
+// REWRITES-MACOS-DAG: };
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: bool = true;
 // REWRITES-MACOS-DAG: {{_v[0-9]+}}
 // REWRITES-MACOS-DAG: } else {
-// REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = 8;
-// REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = unsafe { listen(socket_fd as i32, {{_v[0-9]+}} as i32) };
+// REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = unsafe { listen(socket_fd as i32, 8 as i32) };
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-MACOS-DAG: {{_v[0-9]+}}
 // REWRITES-MACOS-DAG: };
@@ -352,26 +383,46 @@ unsigned int slate_first_interface_flags(void) {
 // REWRITES-MACOS-DAG: (*{{arg[0-9]+}}).sun_family = 1;
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: *mut i8 = (unsafe { std::ptr::addr_of_mut!((*{{arg[0-9]+}}).sun_path) }) as *mut i8;
-// REWRITES-MACOS-DAG: let {{_v[0-9]+}}: *mut i8 = unsafe { strcpy({{_v[0-9]+}} as *mut i8, {{arg[0-9]+}} as *const i8) };
+// REWRITES-MACOS-DAG: (unsafe {
+// REWRITES-MACOS-DAG: strcpy(
+// REWRITES-MACOS-DAG: {{_v[0-9]+}} as *mut core::ffi::c_char,
+// REWRITES-MACOS-DAG: {{arg[0-9]+}} as *const core::ffi::c_char,
+// REWRITES-MACOS-DAG: )
+// REWRITES-MACOS-DAG: }) as *mut i8;
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: *mut sockaddr = {{arg[0-9]+}} as *mut sockaddr;
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: u64 = 106;
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: u64 = 104;
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} - {{_v[0-9]+}};
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: *mut i8 = (unsafe { std::ptr::addr_of_mut!((*{{arg[0-9]+}}).sun_path) }) as *mut i8;
-// REWRITES-MACOS-DAG: let {{_v[0-9]+}}: u64 = (unsafe { strlen({{_v[0-9]+}} as *const i8) }) as u64;
-// REWRITES-MACOS-DAG: return unsafe { bind({{arg[0-9]+}} as i32, {{_v[0-9]+}} as *const sockaddr, (({{_v[0-9]+}} + {{_v[0-9]+}}) as u32) as u32) };
+// REWRITES-MACOS-DAG: let {{_v[0-9]+}}: u64 = (unsafe { strlen({{_v[0-9]+}} as *const core::ffi::c_char) }) as u64;
+// REWRITES-MACOS-DAG: return unsafe { bind({{arg[0-9]+}} as i32, {{_v[0-9]+}} as *const sockaddr, ({{_v[0-9]+}} + {{_v[0-9]+}}) as u32) };
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: unsafe fn slate_resolve({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut *mut addrinfo) -> i32 {
 // REWRITES-MACOS-DAG: let mut result: *mut *mut addrinfo = {{arg[0-9]+}};
-// REWRITES-MACOS-DAG: let mut hints: addrinfo = addrinfo { ai_flags: 0, ai_family: 0, ai_socktype: 0, ai_protocol: 0, ai_addrlen: 0, ai_canonname: std::ptr::null_mut(), ai_addr: std::ptr::null_mut(), ai_next: std::ptr::null_mut() };
+// REWRITES-MACOS-DAG: let mut hints: addrinfo = addrinfo {
+// REWRITES-MACOS-DAG: ai_flags: 0,
+// REWRITES-MACOS-DAG: ai_family: 0,
+// REWRITES-MACOS-DAG: ai_socktype: 0,
+// REWRITES-MACOS-DAG: ai_protocol: 0,
+// REWRITES-MACOS-DAG: ai_addrlen: 0,
+// REWRITES-MACOS-DAG: ai_canonname: std::ptr::null_mut(),
+// REWRITES-MACOS-DAG: ai_addr: std::ptr::null_mut(),
+// REWRITES-MACOS-DAG: ai_next: std::ptr::null_mut(),
+// REWRITES-MACOS-DAG: };
 // REWRITES-MACOS-DAG: let mut status: i32 = 0;
 // REWRITES-MACOS-DAG: hints.ai_family = 30;
 // REWRITES-MACOS-DAG: hints.ai_socktype = 2;
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = 4096;
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = 1024;
 // REWRITES-MACOS-DAG: hints.ai_flags = {{_v[0-9]+}} | {{_v[0-9]+}};
-// REWRITES-MACOS-DAG: let {{_v[0-9]+}}: *mut i8 = b"53\0".as_ptr() as *mut i8;
-// REWRITES-MACOS-DAG: status = unsafe { getaddrinfo({{arg[0-9]+}} as *const i8, {{_v[0-9]+}} as *const i8, std::ptr::addr_of_mut!(hints) as *const addrinfo, result as *mut *mut addrinfo) };
+// REWRITES-MACOS-DAG: status = unsafe {
+// REWRITES-MACOS-DAG: getaddrinfo(
+// REWRITES-MACOS-DAG: {{arg[0-9]+}} as *const core::ffi::c_char,
+// REWRITES-MACOS-DAG: c"53".as_ptr(),
+// REWRITES-MACOS-DAG: std::ptr::addr_of_mut!(hints) as *const addrinfo,
+// REWRITES-MACOS-DAG: result as *mut *mut addrinfo,
+// REWRITES-MACOS-DAG: )
+// REWRITES-MACOS-DAG: };
 // REWRITES-MACOS-DAG: {
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: bool = status == {{_v[0-9]+}};
@@ -412,7 +463,8 @@ unsigned int slate_first_interface_flags(void) {
 // REWRITES-MACOS-DAG: let mut addresses: *mut ifaddrs = std::ptr::null_mut();
 // REWRITES-MACOS-DAG: addresses = std::ptr::null_mut();
 // REWRITES-MACOS-DAG: {
-// REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = unsafe { getifaddrs(std::ptr::addr_of_mut!(addresses) as *mut *mut ifaddrs) };
+// REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 =
+// REWRITES-MACOS-DAG: unsafe { getifaddrs(std::ptr::addr_of_mut!(addresses) as *mut *mut ifaddrs) };
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} != {{_v[0-9]+}} {
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: bool = true;

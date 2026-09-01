@@ -10,3 +10,38 @@ long double probe(void) {
 int main(void) { return 0; }
 // REWRITES-MSVC-DAG: fn store_long_double(_0: *mut f64);
 // REWRITES-MSVC-DAG: fn load_long_double(_0: *const f64) -> *const f64;
+
+// SLATE-FILECHECK-BEGIN lowering-msvc
+// LOWERING-MSVC: #![allow(
+// LOWERING-MSVC-NEXT:     dead_code,
+// LOWERING-MSVC-NEXT:     unused,
+// LOWERING-MSVC-NEXT:     non_camel_case_types,
+// LOWERING-MSVC-NEXT:     non_snake_case,
+// LOWERING-MSVC-NEXT:     non_upper_case_globals,
+// LOWERING-MSVC-NEXT:     arithmetic_overflow,
+// LOWERING-MSVC-NEXT:     unconditional_panic,
+// LOWERING-MSVC-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-MSVC-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-MSVC-NEXT:     unused_comparisons
+// LOWERING-MSVC-NEXT: )]
+// LOWERING-MSVC-EMPTY:
+// LOWERING-MSVC-NEXT: unsafe extern "C" {
+// LOWERING-MSVC-NEXT:     fn store_long_double(_0: *mut f64);
+// LOWERING-MSVC-NEXT:     fn load_long_double(_0: *const f64) -> *const f64;
+// LOWERING-MSVC-NEXT: }
+// LOWERING-MSVC-EMPTY:
+// LOWERING-MSVC-NEXT: fn probe() -> f64 {
+// LOWERING-MSVC-NEXT:     let mut value: f64 = 0.0;
+// LOWERING-MSVC-NEXT:     unsafe { store_long_double(std::ptr::addr_of_mut!(value) as *mut f64) };
+// LOWERING-MSVC-NEXT:     let {{_v[0-9]+}}: *mut f64 =
+// LOWERING-MSVC-NEXT:         (unsafe { load_long_double(std::ptr::addr_of_mut!(value) as *const f64) }) as *mut f64;
+// LOWERING-MSVC-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { *{{_v[0-9]+}} };
+// LOWERING-MSVC-NEXT:     return {{_v[0-9]+}};
+// LOWERING-MSVC-NEXT: }
+// LOWERING-MSVC-EMPTY:
+// LOWERING-MSVC-NEXT: fn main() {
+// LOWERING-MSVC-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-MSVC-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-MSVC-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-MSVC-NEXT: }
+// SLATE-FILECHECK-END lowering-msvc

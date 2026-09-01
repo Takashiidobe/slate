@@ -14,6 +14,7 @@ int main(void) {
   int buf[4] = {1, 2, 3, 4};
   return sum_ints(buf, 4);
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: let {{_v[0-9]+}}: u64 = i;
 // LOWERING-DAG: let {{_v[0-9]+}}: *mut core::ffi::c_void = src;

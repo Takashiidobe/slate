@@ -1,41 +1,4 @@
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
-// REWRITES-EMPTY:
-// REWRITES-NEXT: #[cfg(target_arch = "x86_64")]
-// REWRITES-NEXT: core::arch::global_asm!(".weak pragma_weak_alias\n.set pragma_weak_alias, pragma_weak_target", options(att_syntax, raw));
-// REWRITES-EMPTY:
-// REWRITES-NEXT: unsafe extern "C" {
-// REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
-// REWRITES-NEXT:     fn pragma_weak_alias(_0: i32) -> i32;
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: #[unsafe(no_mangle)]
-// REWRITES-NEXT: pub extern "C" fn pragma_weak_target({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 7;
-// REWRITES-NEXT: return {{arg[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn pragma_actual({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT: return {{arg[0-9]+}} * {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 29;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { pragma_weak_alias({{_v[0-9]+}} as i32) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: bool = (Some(pragma_weak_alias).unwrap() as *const u8) == (Some(pragma_weak_target).unwrap() as *const u8);
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 13;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = pragma_actual({{_v[0-9]+}});
-// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
-// REWRITES-NEXT: }
-// SLATE-FILECHECK-END rewrites
-
 // LOWERING-DAG: .weak pragma_weak_alias\n.set pragma_weak_alias, pragma_weak_target
 // LOWERING-DAG: fn pragma_weak_alias(_0: i32) -> i32;
 // LOWERING-DAG: fn pragma_actual(arg0: i32) -> i32 {
@@ -56,3 +19,57 @@ int main(void) {
          pragma_weak_alias == pragma_weak_target, pragma_renamed(13));
   return 0;
 }
+
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES: #![feature(c_variadic)]
+// REWRITES-NEXT: #![allow(
+// REWRITES-NEXT:     dead_code,
+// REWRITES-NEXT:     unused,
+// REWRITES-NEXT:     non_camel_case_types,
+// REWRITES-NEXT:     non_snake_case,
+// REWRITES-NEXT:     non_upper_case_globals,
+// REWRITES-NEXT:     arithmetic_overflow,
+// REWRITES-NEXT:     unconditional_panic,
+// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-NEXT:     unused_comparisons
+// REWRITES-NEXT: )]
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[cfg(target_arch = "x86_64")]
+// REWRITES-NEXT: core::arch::global_asm!(
+// REWRITES-NEXT:     ".weak pragma_weak_alias\n.set pragma_weak_alias, pragma_weak_target",
+// REWRITES-NEXT:     options(att_syntax, raw)
+// REWRITES-NEXT: );
+// REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// REWRITES-NEXT:     fn pragma_weak_alias(_0: i32) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[unsafe(no_mangle)]
+// REWRITES-NEXT: pub extern "C" fn pragma_weak_target({{arg[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 7;
+// REWRITES-NEXT:     return {{arg[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn pragma_actual({{arg[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 3;
+// REWRITES-NEXT:     return {{arg[0-9]+}} * {{_v[0-9]+}};
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { pragma_weak_alias(29 as i32) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = (Some(pragma_weak_alias).unwrap() as *const u8)
+// REWRITES-NEXT:         == (Some(pragma_weak_target).unwrap() as *const u8);
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         printf(
+// REWRITES-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{_v[0-9]+}} as i32,
+// REWRITES-NEXT:             pragma_actual(13),
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// SLATE-FILECHECK-END rewrites

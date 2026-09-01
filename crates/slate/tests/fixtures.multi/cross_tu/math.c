@@ -5,6 +5,7 @@ int square(int x) { return x * x; }
 // @lowering-fn-begin
 int cube(int x) { return square(x) * x; }
 // @lowering-fn-end
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: #[unsafe(no_mangle)]
 // LOWERING-DAG: pub extern "C" fn square({{arg[0-9]+}}: i32) -> i32 {

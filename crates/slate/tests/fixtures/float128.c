@@ -20,9 +20,21 @@ int main(void) {
     return 7;
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(f128)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(
+// LOWERING-NEXT:     dead_code,
+// LOWERING-NEXT:     unused,
+// LOWERING-NEXT:     non_camel_case_types,
+// LOWERING-NEXT:     non_snake_case,
+// LOWERING-NEXT:     non_upper_case_globals,
+// LOWERING-NEXT:     arithmetic_overflow,
+// LOWERING-NEXT:     unconditional_panic,
+// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-NEXT:     unused_comparisons
+// LOWERING-NEXT: )]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn add({{arg[0-9]+}}: f128, {{arg[0-9]+}}: f128) -> f128 {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f128 = {{arg[0-9]+}} + {{arg[0-9]+}};
@@ -135,84 +147,94 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(f128)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(
+// REWRITES-NEXT:     dead_code,
+// REWRITES-NEXT:     unused,
+// REWRITES-NEXT:     non_camel_case_types,
+// REWRITES-NEXT:     non_snake_case,
+// REWRITES-NEXT:     non_upper_case_globals,
+// REWRITES-NEXT:     arithmetic_overflow,
+// REWRITES-NEXT:     unconditional_panic,
+// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-NEXT:     unused_comparisons
+// REWRITES-NEXT: )]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn add({{arg[0-9]+}}: f128, {{arg[0-9]+}}: f128) -> f128 {
-// REWRITES-NEXT: return {{arg[0-9]+}} + {{arg[0-9]+}};
+// REWRITES-NEXT:     return {{arg[0-9]+}} + {{arg[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut one: f128 = 0.0f128;
-// REWRITES-NEXT: let mut tiny: f128 = 0.0f128;
-// REWRITES-NEXT: let mut sum: f128 = 0.0f128;
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: f128 = 1.000000e+00f128;
-// REWRITES-NEXT: one = {{_v[0-9]+}};
-// REWRITES-NEXT: let {{_v[0-9]+}}: f128 = 7.88860905221011805411728565282786229E-31f128;
-// REWRITES-NEXT: tiny = {{_v[0-9]+}};
-// REWRITES-NEXT: sum = add(one, tiny);
-// REWRITES-NEXT: {
+// REWRITES-NEXT:     let mut __retval: i32 = 0;
+// REWRITES-NEXT:     let mut one: f128 = 0.0f128;
+// REWRITES-NEXT:     let mut tiny: f128 = 0.0f128;
+// REWRITES-NEXT:     let mut sum: f128 = 0.0f128;
+// REWRITES-NEXT:     __retval = 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f128 = 1.000000e+00f128;
+// REWRITES-NEXT:     one = {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f128 = 7.88860905221011805411728565282786229E-31f128;
+// REWRITES-NEXT:     tiny = {{_v[0-9]+}};
+// REWRITES-NEXT:     sum = add(one, tiny);
+// REWRITES-NEXT:     {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = sum == one;
 // REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:                     __retval = 1;
-// REWRITES-NEXT:                     std::process::exit(__retval as i32);
+// REWRITES-NEXT:             __retval = 1;
+// REWRITES-NEXT:             std::process::exit(__retval as i32);
 // REWRITES-NEXT:         }
-// REWRITES-NEXT: }
-// REWRITES-NEXT: {
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = sum - one != tiny;
 // REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:                     __retval = 2;
-// REWRITES-NEXT:                     std::process::exit(__retval as i32);
+// REWRITES-NEXT:             __retval = 2;
+// REWRITES-NEXT:             std::process::exit(__retval as i32);
 // REWRITES-NEXT:         }
-// REWRITES-NEXT: }
-// REWRITES-NEXT: {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 42;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: f128 = {{_v[0-9]+}} as f128;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: f128 = (42 as i32) as f128;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: f128 = 4.200000e+01f128;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
 // REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:                     __retval = 3;
-// REWRITES-NEXT:                     std::process::exit(__retval as i32);
+// REWRITES-NEXT:             __retval = 3;
+// REWRITES-NEXT:             std::process::exit(__retval as i32);
 // REWRITES-NEXT:         }
-// REWRITES-NEXT: }
-// REWRITES-NEXT: {
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: f128 = 4.275000e+01f128;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 42;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ({{_v[0-9]+}} as i32) != {{_v[0-9]+}};
 // REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:                     __retval = 4;
-// REWRITES-NEXT:                     std::process::exit(__retval as i32);
+// REWRITES-NEXT:             __retval = 4;
+// REWRITES-NEXT:             std::process::exit(__retval as i32);
 // REWRITES-NEXT:         }
-// REWRITES-NEXT: }
-// REWRITES-NEXT: {
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: f128 = 1.500000e+00f128;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: f64 = 1.5;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ({{_v[0-9]+}} as f64) != {{_v[0-9]+}};
 // REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:                     __retval = 5;
-// REWRITES-NEXT:                     std::process::exit(__retval as i32);
+// REWRITES-NEXT:             __retval = 5;
+// REWRITES-NEXT:             std::process::exit(__retval as i32);
 // REWRITES-NEXT:         }
-// REWRITES-NEXT: }
-// REWRITES-NEXT: {
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = 16;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = 16;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
 // REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:                     __retval = 6;
-// REWRITES-NEXT:                     std::process::exit(__retval as i32);
+// REWRITES-NEXT:             __retval = 6;
+// REWRITES-NEXT:             std::process::exit(__retval as i32);
 // REWRITES-NEXT:         }
-// REWRITES-NEXT: }
-// REWRITES-NEXT: {
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = 16;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = 16;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
 // REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:                     __retval = 7;
-// REWRITES-NEXT:                     std::process::exit(__retval as i32);
+// REWRITES-NEXT:             __retval = 7;
+// REWRITES-NEXT:             std::process::exit(__retval as i32);
 // REWRITES-NEXT:         }
-// REWRITES-NEXT: }
-// REWRITES-NEXT: __retval = 0;
-// REWRITES-NEXT: std::process::exit(__retval as i32);
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     __retval = 0;
+// REWRITES-NEXT:     std::process::exit(__retval as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

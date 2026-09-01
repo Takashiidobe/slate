@@ -5,3 +5,32 @@ long double f(void) { return LDBL_TRUE_MIN; }
 int main(void) { return f() == 0.0L; }
 // REWRITES-MSVC-DAG: f64::from_bits
 // REWRITES-MSVC-NOT: LongDouble
+
+// SLATE-FILECHECK-BEGIN lowering-msvc
+// LOWERING-MSVC: #![allow(
+// LOWERING-MSVC-NEXT:     dead_code,
+// LOWERING-MSVC-NEXT:     unused,
+// LOWERING-MSVC-NEXT:     non_camel_case_types,
+// LOWERING-MSVC-NEXT:     non_snake_case,
+// LOWERING-MSVC-NEXT:     non_upper_case_globals,
+// LOWERING-MSVC-NEXT:     arithmetic_overflow,
+// LOWERING-MSVC-NEXT:     unconditional_panic,
+// LOWERING-MSVC-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-MSVC-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-MSVC-NEXT:     unused_comparisons
+// LOWERING-MSVC-NEXT: )]
+// LOWERING-MSVC-EMPTY:
+// LOWERING-MSVC-NEXT: fn f() -> f64 {
+// LOWERING-MSVC-NEXT:     let {{_v[0-9]+}}: f64 = 0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005;
+// LOWERING-MSVC-NEXT:     return {{_v[0-9]+}};
+// LOWERING-MSVC-NEXT: }
+// LOWERING-MSVC-EMPTY:
+// LOWERING-MSVC-NEXT: fn main() {
+// LOWERING-MSVC-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-MSVC-NEXT:     let {{_v[0-9]+}}: f64 = f();
+// LOWERING-MSVC-NEXT:     let {{_v[0-9]+}}: f64 = 0.0;
+// LOWERING-MSVC-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-MSVC-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-MSVC-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-MSVC-NEXT: }
+// SLATE-FILECHECK-END lowering-msvc

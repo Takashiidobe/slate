@@ -114,3 +114,163 @@ int main(void) { return printf("%d\n", errno == 0); }
 // REWRITES-MACOS-DAG: _7: f64
 // REWRITES-MACOS-DAG: next_arg::<i32>()
 // REWRITES-MACOS-NOT: f128
+
+// SLATE-FILECHECK-BEGIN lowering-macos
+// LOWERING-MACOS: #![feature(c_variadic)]
+// LOWERING-MACOS-NEXT: #![allow(
+// LOWERING-MACOS-NEXT:     dead_code,
+// LOWERING-MACOS-NEXT:     unused,
+// LOWERING-MACOS-NEXT:     non_camel_case_types,
+// LOWERING-MACOS-NEXT:     non_snake_case,
+// LOWERING-MACOS-NEXT:     non_upper_case_globals,
+// LOWERING-MACOS-NEXT:     arithmetic_overflow,
+// LOWERING-MACOS-NEXT:     unconditional_panic,
+// LOWERING-MACOS-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-MACOS-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-MACOS-NEXT:     unused_comparisons
+// LOWERING-MACOS-NEXT: )]
+// LOWERING-MACOS-EMPTY:
+// LOWERING-MACOS-NEXT: unsafe extern "C" {
+// LOWERING-MACOS-NEXT:     fn darwin_import(
+// LOWERING-MACOS-NEXT:         _0: usize,
+// LOWERING-MACOS-NEXT:         _1: isize,
+// LOWERING-MACOS-NEXT:         _2: isize,
+// LOWERING-MACOS-NEXT:         _3: usize,
+// LOWERING-MACOS-NEXT:         _4: i32,
+// LOWERING-MACOS-NEXT:         _5: i64,
+// LOWERING-MACOS-NEXT:         _6: u64,
+// LOWERING-MACOS-NEXT:         _7: f64,
+// LOWERING-MACOS-NEXT:     ) -> i64;
+// LOWERING-MACOS-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// LOWERING-MACOS-NEXT:     fn __error() -> *mut i32;
+// LOWERING-MACOS-NEXT: }
+// LOWERING-MACOS-EMPTY:
+// LOWERING-MACOS-NEXT: struct __SlateVaArg {
+// LOWERING-MACOS-NEXT:     value: Box<dyn std::any::Any>,
+// LOWERING-MACOS-NEXT:     size: usize,
+// LOWERING-MACOS-NEXT: }
+// LOWERING-MACOS-EMPTY:
+// LOWERING-MACOS-NEXT: impl __SlateVaArg {
+// LOWERING-MACOS-NEXT:     fn new<T: 'static>(value: T) -> Self {
+// LOWERING-MACOS-NEXT:         Self {
+// LOWERING-MACOS-NEXT:             value: Box::new(value),
+// LOWERING-MACOS-NEXT:             size: std::mem::size_of::<T>(),
+// LOWERING-MACOS-NEXT:         }
+// LOWERING-MACOS-NEXT:     }
+// LOWERING-MACOS-EMPTY:
+// LOWERING-MACOS-NEXT:     fn read<T: Copy + 'static>(&self) -> T {
+// LOWERING-MACOS-NEXT:         if let Some(value) = self.value.downcast_ref::<T>() {
+// LOWERING-MACOS-NEXT:             return *value;
+// LOWERING-MACOS-NEXT:         }
+// LOWERING-MACOS-NEXT:         assert!(self.size >= std::mem::size_of::<T>());
+// LOWERING-MACOS-NEXT:         unsafe {
+// LOWERING-MACOS-NEXT:             std::ptr::read_unaligned(
+// LOWERING-MACOS-NEXT:                 (self.value.as_ref() as *const dyn std::any::Any) as *const () as *const T,
+// LOWERING-MACOS-NEXT:             )
+// LOWERING-MACOS-NEXT:         }
+// LOWERING-MACOS-NEXT:     }
+// LOWERING-MACOS-NEXT: }
+// LOWERING-MACOS-EMPTY:
+// LOWERING-MACOS-NEXT: #[derive(Clone)]
+// LOWERING-MACOS-NEXT: struct __SlateVaArgs {
+// LOWERING-MACOS-NEXT:     args: Option<std::rc::Rc<Vec<__SlateVaArg>>>,
+// LOWERING-MACOS-NEXT:     index: usize,
+// LOWERING-MACOS-NEXT: }
+// LOWERING-MACOS-EMPTY:
+// LOWERING-MACOS-NEXT: impl __SlateVaArgs {
+// LOWERING-MACOS-NEXT:     fn new(args: Vec<__SlateVaArg>) -> Self {
+// LOWERING-MACOS-NEXT:         Self {
+// LOWERING-MACOS-NEXT:             args: Some(std::rc::Rc::new(args)),
+// LOWERING-MACOS-NEXT:             index: 0,
+// LOWERING-MACOS-NEXT:         }
+// LOWERING-MACOS-NEXT:     }
+// LOWERING-MACOS-EMPTY:
+// LOWERING-MACOS-NEXT:     const fn empty() -> Self {
+// LOWERING-MACOS-NEXT:         Self {
+// LOWERING-MACOS-NEXT:             args: None,
+// LOWERING-MACOS-NEXT:             index: 0,
+// LOWERING-MACOS-NEXT:         }
+// LOWERING-MACOS-NEXT:     }
+// LOWERING-MACOS-EMPTY:
+// LOWERING-MACOS-NEXT:     fn next_arg<T: Copy + 'static>(&mut self) -> T {
+// LOWERING-MACOS-NEXT:         if std::mem::size_of::<T>() == 0 {
+// LOWERING-MACOS-NEXT:             return unsafe { std::mem::zeroed() };
+// LOWERING-MACOS-NEXT:         }
+// LOWERING-MACOS-NEXT:         let args = self.args.as_ref().expect("va_arg with no arguments");
+// LOWERING-MACOS-NEXT:         let value = args[self.index].read::<T>();
+// LOWERING-MACOS-NEXT:         self.index += 1;
+// LOWERING-MACOS-NEXT:         value
+// LOWERING-MACOS-NEXT:     }
+// LOWERING-MACOS-NEXT: }
+// LOWERING-MACOS-EMPTY:
+// LOWERING-MACOS-NEXT: fn call_darwin_import(
+// LOWERING-MACOS-NEXT:     {{arg[0-9]+}}: u64,
+// LOWERING-MACOS-NEXT:     {{arg[0-9]+}}: i64,
+// LOWERING-MACOS-NEXT:     {{arg[0-9]+}}: i64,
+// LOWERING-MACOS-NEXT:     {{arg[0-9]+}}: u64,
+// LOWERING-MACOS-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-MACOS-NEXT:     {{arg[0-9]+}}: i64,
+// LOWERING-MACOS-NEXT:     {{arg[0-9]+}}: u64,
+// LOWERING-MACOS-NEXT:     {{arg[0-9]+}}: f64,
+// LOWERING-MACOS-NEXT: ) -> i64 {
+// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i64 = unsafe {
+// LOWERING-MACOS-NEXT:         darwin_import(
+// LOWERING-MACOS-NEXT:             {{arg[0-9]+}} as usize,
+// LOWERING-MACOS-NEXT:             {{arg[0-9]+}} as isize,
+// LOWERING-MACOS-NEXT:             {{arg[0-9]+}} as isize,
+// LOWERING-MACOS-NEXT:             {{arg[0-9]+}} as usize,
+// LOWERING-MACOS-NEXT:             {{arg[0-9]+}} as i32,
+// LOWERING-MACOS-NEXT:             {{arg[0-9]+}} as i64,
+// LOWERING-MACOS-NEXT:             {{arg[0-9]+}} as u64,
+// LOWERING-MACOS-NEXT:             {{arg[0-9]+}} as f64,
+// LOWERING-MACOS-NEXT:         )
+// LOWERING-MACOS-NEXT:     };
+// LOWERING-MACOS-NEXT:     return {{_v[0-9]+}};
+// LOWERING-MACOS-NEXT: }
+// LOWERING-MACOS-EMPTY:
+// LOWERING-MACOS-NEXT: unsafe fn darwin_variadic_count({{arg[0-9]+}}: i32, mut __slate_va_args: __SlateVaArgs) -> i32 {
+// LOWERING-MACOS-NEXT:     let mut count: i32 = 0;
+// LOWERING-MACOS-NEXT:     let mut values: __SlateVaArgs = __SlateVaArgs::empty();
+// LOWERING-MACOS-NEXT:     let mut total: i32 = 0;
+// LOWERING-MACOS-NEXT:     count = {{arg[0-9]+}};
+// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-MACOS-NEXT:     total = {{_v[0-9]+}};
+// LOWERING-MACOS-NEXT:     unsafe {
+// LOWERING-MACOS-NEXT:         values = __slate_va_args.clone();
+// LOWERING-MACOS-NEXT:     }
+// LOWERING-MACOS-NEXT:     {
+// LOWERING-MACOS-NEXT:         let mut i: i32 = 0;
+// LOWERING-MACOS-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-MACOS-NEXT:         i = {{_v[0-9]+}};
+// LOWERING-MACOS-NEXT:         loop {
+// LOWERING-MACOS-NEXT:             let {{_v[0-9]+}}: i32 = i;
+// LOWERING-MACOS-NEXT:             let {{_v[0-9]+}}: i32 = count;
+// LOWERING-MACOS-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
+// LOWERING-MACOS-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-MACOS-NEXT:                 break;
+// LOWERING-MACOS-NEXT:             }
+// LOWERING-MACOS-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { values.next_arg::<i32>() };
+// LOWERING-MACOS-NEXT:             let {{_v[0-9]+}}: i32 = total;
+// LOWERING-MACOS-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-MACOS-NEXT:             total = {{_v[0-9]+}};
+// LOWERING-MACOS-NEXT:             let {{_v[0-9]+}}: i32 = i;
+// LOWERING-MACOS-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-MACOS-NEXT:             i = {{_v[0-9]+}};
+// LOWERING-MACOS-NEXT:         }
+// LOWERING-MACOS-NEXT:     }
+// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = total;
+// LOWERING-MACOS-NEXT:     return {{_v[0-9]+}};
+// LOWERING-MACOS-NEXT: }
+// LOWERING-MACOS-EMPTY:
+// LOWERING-MACOS-NEXT: fn main() {
+// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { __error() };
+// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
+// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
+// LOWERING-MACOS-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-MACOS-NEXT: }
+// SLATE-FILECHECK-END lowering-macos

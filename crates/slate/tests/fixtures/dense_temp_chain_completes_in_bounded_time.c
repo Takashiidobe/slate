@@ -414,14 +414,26 @@ int main(void) {
   printf("%ld\n", sum);
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(
+// LOWERING-NEXT:     dead_code,
+// LOWERING-NEXT:     unused,
+// LOWERING-NEXT:     non_camel_case_types,
+// LOWERING-NEXT:     non_snake_case,
+// LOWERING-NEXT:     non_upper_case_globals,
+// LOWERING-NEXT:     arithmetic_overflow,
+// LOWERING-NEXT:     unconditional_panic,
+// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-NEXT:     unused_comparisons
+// LOWERING-NEXT: )]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: static mut results: aligned::Aligned<aligned::A16, [i64; 400]> = aligned::Aligned([0; 400]);
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
-// LOWERING-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn compute({{arg[0-9]+}}: i64) {
@@ -4461,7 +4473,7 @@ int main(void) {
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%ld\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = sum;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
@@ -4469,2839 +4481,2847 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(
+// REWRITES-NEXT:     dead_code,
+// REWRITES-NEXT:     unused,
+// REWRITES-NEXT:     non_camel_case_types,
+// REWRITES-NEXT:     non_snake_case,
+// REWRITES-NEXT:     non_upper_case_globals,
+// REWRITES-NEXT:     arithmetic_overflow,
+// REWRITES-NEXT:     unconditional_panic,
+// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-NEXT:     unused_comparisons
+// REWRITES-NEXT: )]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: static mut results: aligned::Aligned<aligned::A16, [i64; 400]> = aligned::Aligned([0; 400]);
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
-// REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn compute({{arg[0-9]+}}: i64) {
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 1;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 1;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 4;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 5;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 4;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 6;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 5;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 7;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 6;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 7;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 9;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 8;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 10;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 9;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 11;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 10;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 12;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 11;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 13;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 12;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 14;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 13;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 15;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 14;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 16;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 15;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 17;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 16;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 18;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 17;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 19;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 18;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 20;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 19;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 21;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 20;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 22;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 21;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 23;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 22;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 24;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 23;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 25;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 24;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 26;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 25;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 27;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 26;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 28;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 27;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 29;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 28;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 30;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 29;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 31;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 30;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 32;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 31;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 33;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 32;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 34;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 33;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 35;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 34;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 36;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 35;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 37;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 36;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 38;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 37;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 39;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 38;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 40;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 39;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 41;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 40;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 42;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 41;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 43;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 42;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 44;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 43;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 45;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 44;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 46;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 45;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 47;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 46;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 48;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 47;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 49;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 48;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 50;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 49;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 51;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 50;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 52;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 51;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 53;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 52;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 54;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 53;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 55;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 54;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 56;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 55;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 57;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 56;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 58;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 57;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 59;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 58;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 60;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 59;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 61;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 60;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 62;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 61;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 63;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 62;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 64;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 63;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 65;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 64;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 66;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 65;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 67;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 66;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 68;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 67;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 69;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 68;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 70;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 69;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 71;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 70;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 72;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 71;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 73;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 72;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 74;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 73;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 75;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 74;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 76;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 75;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 77;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 76;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 78;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 77;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 79;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 78;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 80;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 79;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 81;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 80;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 82;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 81;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 83;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 82;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 84;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 83;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 85;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 84;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 86;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 85;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 87;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 86;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 88;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 87;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 89;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 88;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 90;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 89;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 91;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 90;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 92;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 91;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 93;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 92;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 94;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 93;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 95;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 94;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 96;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 95;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 97;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 96;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 98;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 97;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 99;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 98;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 100;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 99;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 101;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 100;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 102;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 101;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 103;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 102;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 104;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 103;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 105;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 104;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 106;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 105;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 107;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 106;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 108;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 107;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 109;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 108;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 110;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 109;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 111;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 110;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 112;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 111;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 113;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 112;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 114;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 113;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 115;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 114;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 116;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 115;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 117;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 116;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 118;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 117;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 119;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 118;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 120;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 119;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 121;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 120;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 122;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 121;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 123;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 122;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 124;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 123;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 125;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 124;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 126;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 125;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 127;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 126;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 128;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 127;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 129;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 128;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 130;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 129;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 131;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 130;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 132;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 131;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 133;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 132;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 134;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 133;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 135;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 134;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 136;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 135;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 137;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 136;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 138;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 137;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 139;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 138;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 140;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 139;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 141;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 140;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 142;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 141;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 143;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 142;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 144;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 143;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 145;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 144;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 146;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 145;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 147;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 146;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 148;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 147;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 149;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 148;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 150;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 149;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 151;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 150;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 152;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 151;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 153;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 152;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 154;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 153;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 155;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 154;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 156;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 155;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 157;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 156;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 158;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 157;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 159;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 158;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 160;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 159;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 161;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 160;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 162;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 161;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 163;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 162;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 164;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 163;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 165;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 164;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 166;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 165;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 167;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 166;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 168;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 167;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 169;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 168;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 170;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 169;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 171;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 170;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 172;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 171;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 173;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 172;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 174;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 173;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 175;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 174;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 176;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 175;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 177;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 176;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 178;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 177;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 179;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 178;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 180;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 179;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 181;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 180;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 182;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 181;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 183;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 182;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 184;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 183;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 185;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 184;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 186;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 185;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 187;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 186;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 188;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 187;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 189;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 188;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 190;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 189;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 191;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 190;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 192;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 191;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 193;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 192;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 194;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 193;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 195;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 194;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 196;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 195;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 197;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 196;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 198;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 197;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 199;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 198;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 200;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 199;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 201;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 200;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 202;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 201;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 203;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 202;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 204;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 203;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 205;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 204;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 206;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 205;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 207;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 206;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 208;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 207;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 209;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 208;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 210;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 209;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 211;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 210;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 212;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 211;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 213;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 212;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 214;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 213;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 215;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 214;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 216;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 215;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 217;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 216;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 218;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 217;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 219;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 218;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 220;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 219;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 221;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 220;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 222;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 221;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 223;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 222;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 224;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 223;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 225;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 224;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 226;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 225;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 227;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 226;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 228;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 227;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 229;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 228;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 230;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 229;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 231;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 230;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 232;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 231;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 233;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 232;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 234;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 233;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 235;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 234;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 236;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 235;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 237;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 236;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 238;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 237;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 239;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 238;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 240;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 239;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 241;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 240;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 242;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 241;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 243;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 242;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 244;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 243;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 245;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 244;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 246;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 245;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 247;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 246;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 248;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 247;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 249;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 248;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 250;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 249;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 251;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 250;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 252;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 251;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 253;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 252;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 254;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 253;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 255;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 254;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 256;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 255;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 257;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 256;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 258;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 257;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 259;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 258;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 260;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 259;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 261;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 260;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 262;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 261;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 263;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 262;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 264;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 263;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 265;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 264;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 266;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 265;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 267;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 266;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 268;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 267;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 269;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 268;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 270;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 269;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 271;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 270;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 272;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 271;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 273;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 272;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 274;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 273;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 275;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 274;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 276;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 275;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 277;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 276;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 278;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 277;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 279;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 278;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 280;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 279;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 281;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 280;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 282;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 281;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 283;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 282;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 284;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 283;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 285;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 284;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 286;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 285;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 287;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 286;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 288;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 287;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 289;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 288;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 290;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 289;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 291;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 290;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 292;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 291;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 293;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 292;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 294;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 293;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 295;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 294;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 296;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 295;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 297;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 296;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 298;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 297;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 299;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 298;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 300;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 299;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 301;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 300;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 302;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 301;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 303;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 302;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 304;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 303;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 305;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 304;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 306;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 305;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 307;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 306;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 308;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 307;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 309;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 308;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 310;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 309;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 311;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 310;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 312;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 311;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 313;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 312;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 314;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 313;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 315;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 314;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 316;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 315;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 317;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 316;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 318;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 317;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 319;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 318;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 320;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 319;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 321;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 320;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 322;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 321;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 323;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 322;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 324;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 323;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 325;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 324;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 326;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 325;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 327;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 326;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 328;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 327;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 329;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 328;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 330;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 329;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 331;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 330;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 332;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 331;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 333;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 332;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 334;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 333;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 335;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 334;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 336;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 335;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 337;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 336;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 338;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 337;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 339;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 338;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 340;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 339;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 341;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 340;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 342;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 341;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 343;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 342;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 344;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 343;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 345;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 344;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 346;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 345;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 347;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 346;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 348;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 347;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 349;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 348;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 350;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 349;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 351;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 350;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 352;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 351;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 353;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 352;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 354;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 353;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 355;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 354;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 356;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 355;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 357;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 356;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 358;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 357;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 359;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 358;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 360;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 359;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 361;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 360;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 362;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 361;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 363;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 362;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 364;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 363;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 365;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 364;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 366;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 365;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 367;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 366;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 368;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 367;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 369;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 368;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 370;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 369;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 371;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 370;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 372;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 371;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 373;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 372;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 374;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 373;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 375;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 374;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 376;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 375;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 377;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 376;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 378;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 377;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 379;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 378;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 380;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 379;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 381;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 380;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 382;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 381;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 383;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 382;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 384;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 383;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 385;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 384;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 386;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 385;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 387;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 386;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 388;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 387;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 389;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 388;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 390;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 389;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 391;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 390;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 392;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 391;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 393;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 392;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 394;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 393;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 395;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 394;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 396;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 395;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 397;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 396;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 398;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 397;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 399;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 398;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 400;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 399;
-// REWRITES-NEXT: unsafe {
-// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
-// REWRITES-NEXT: }
-// REWRITES-NEXT: return;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 0;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 1;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 4;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 5;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 4;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 6;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 5;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 7;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 6;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 7;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 9;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 8;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 10;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 9;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 11;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 10;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 12;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 11;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 13;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 12;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 14;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 13;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 15;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 14;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 16;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 15;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 17;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 16;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 18;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 17;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 19;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 18;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 20;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 19;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 21;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 20;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 22;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 21;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 23;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 22;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 24;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 23;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 25;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 24;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 26;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 25;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 27;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 26;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 28;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 27;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 29;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 28;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 30;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 29;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 31;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 30;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 32;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 31;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 33;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 32;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 34;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 33;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 35;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 34;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 36;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 35;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 37;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 36;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 38;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 37;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 39;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 38;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 40;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 39;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 41;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 40;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 42;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 41;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 43;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 42;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 44;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 43;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 45;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 44;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 46;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 45;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 47;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 46;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 48;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 47;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 49;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 48;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 50;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 49;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 51;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 50;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 52;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 51;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 53;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 52;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 54;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 53;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 55;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 54;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 56;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 55;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 57;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 56;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 58;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 57;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 59;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 58;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 60;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 59;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 61;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 60;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 62;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 61;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 63;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 62;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 64;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 63;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 65;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 64;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 66;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 65;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 67;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 66;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 68;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 67;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 69;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 68;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 70;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 69;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 71;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 70;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 72;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 71;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 73;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 72;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 74;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 73;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 75;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 74;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 76;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 75;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 77;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 76;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 78;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 77;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 79;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 78;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 80;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 79;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 81;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 80;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 82;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 81;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 83;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 82;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 84;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 83;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 85;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 84;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 86;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 85;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 87;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 86;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 88;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 87;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 89;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 88;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 90;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 89;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 91;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 90;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 92;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 91;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 93;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 92;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 94;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 93;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 95;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 94;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 96;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 95;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 97;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 96;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 98;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 97;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 99;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 98;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 100;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 99;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 101;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 100;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 102;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 101;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 103;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 102;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 104;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 103;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 105;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 104;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 106;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 105;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 107;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 106;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 108;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 107;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 109;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 108;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 110;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 109;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 111;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 110;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 112;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 111;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 113;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 112;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 114;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 113;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 115;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 114;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 116;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 115;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 117;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 116;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 118;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 117;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 119;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 118;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 120;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 119;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 121;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 120;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 122;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 121;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 123;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 122;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 124;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 123;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 125;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 124;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 126;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 125;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 127;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 126;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 128;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 127;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 129;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 128;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 130;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 129;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 131;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 130;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 132;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 131;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 133;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 132;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 134;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 133;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 135;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 134;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 136;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 135;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 137;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 136;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 138;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 137;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 139;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 138;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 140;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 139;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 141;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 140;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 142;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 141;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 143;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 142;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 144;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 143;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 145;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 144;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 146;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 145;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 147;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 146;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 148;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 147;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 149;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 148;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 150;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 149;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 151;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 150;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 152;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 151;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 153;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 152;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 154;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 153;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 155;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 154;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 156;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 155;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 157;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 156;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 158;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 157;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 159;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 158;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 160;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 159;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 161;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 160;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 162;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 161;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 163;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 162;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 164;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 163;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 165;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 164;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 166;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 165;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 167;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 166;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 168;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 167;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 169;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 168;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 170;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 169;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 171;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 170;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 172;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 171;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 173;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 172;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 174;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 173;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 175;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 174;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 176;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 175;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 177;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 176;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 178;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 177;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 179;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 178;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 180;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 179;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 181;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 180;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 182;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 181;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 183;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 182;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 184;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 183;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 185;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 184;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 186;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 185;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 187;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 186;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 188;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 187;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 189;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 188;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 190;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 189;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 191;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 190;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 192;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 191;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 193;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 192;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 194;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 193;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 195;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 194;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 196;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 195;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 197;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 196;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 198;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 197;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 199;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 198;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 200;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 199;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 201;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 200;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 202;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 201;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 203;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 202;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 204;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 203;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 205;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 204;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 206;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 205;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 207;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 206;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 208;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 207;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 209;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 208;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 210;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 209;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 211;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 210;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 212;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 211;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 213;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 212;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 214;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 213;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 215;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 214;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 216;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 215;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 217;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 216;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 218;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 217;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 219;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 218;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 220;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 219;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 221;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 220;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 222;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 221;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 223;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 222;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 224;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 223;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 225;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 224;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 226;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 225;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 227;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 226;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 228;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 227;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 229;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 228;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 230;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 229;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 231;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 230;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 232;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 231;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 233;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 232;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 234;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 233;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 235;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 234;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 236;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 235;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 237;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 236;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 238;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 237;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 239;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 238;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 240;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 239;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 241;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 240;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 242;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 241;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 243;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 242;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 244;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 243;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 245;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 244;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 246;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 245;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 247;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 246;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 248;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 247;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 249;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 248;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 250;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 249;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 251;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 250;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 252;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 251;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 253;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 252;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 254;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 253;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 255;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 254;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 256;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 255;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 257;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 256;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 258;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 257;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 259;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 258;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 260;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 259;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 261;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 260;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 262;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 261;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 263;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 262;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 264;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 263;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 265;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 264;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 266;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 265;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 267;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 266;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 268;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 267;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 269;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 268;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 270;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 269;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 271;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 270;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 272;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 271;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 273;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 272;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 274;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 273;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 275;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 274;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 276;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 275;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 277;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 276;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 278;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 277;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 279;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 278;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 280;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 279;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 281;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 280;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 282;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 281;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 283;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 282;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 284;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 283;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 285;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 284;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 286;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 285;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 287;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 286;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 288;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 287;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 289;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 288;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 290;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 289;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 291;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 290;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 292;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 291;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 293;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 292;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 294;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 293;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 295;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 294;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 296;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 295;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 297;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 296;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 298;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 297;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 299;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 298;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 300;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 299;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 301;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 300;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 302;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 301;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 303;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 302;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 304;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 303;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 305;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 304;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 306;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 305;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 307;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 306;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 308;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 307;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 309;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 308;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 310;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 309;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 311;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 310;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 312;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 311;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 313;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 312;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 314;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 313;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 315;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 314;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 316;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 315;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 317;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 316;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 318;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 317;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 319;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 318;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 320;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 319;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 321;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 320;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 322;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 321;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 323;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 322;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 324;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 323;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 325;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 324;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 326;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 325;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 327;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 326;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 328;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 327;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 329;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 328;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 330;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 329;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 331;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 330;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 332;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 331;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 333;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 332;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 334;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 333;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 335;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 334;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 336;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 335;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 337;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 336;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 338;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 337;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 339;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 338;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 340;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 339;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 341;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 340;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 342;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 341;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 343;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 342;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 344;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 343;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 345;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 344;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 346;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 345;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 347;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 346;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 348;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 347;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 349;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 348;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 350;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 349;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 351;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 350;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 352;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 351;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 353;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 352;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 354;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 353;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 355;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 354;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 356;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 355;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 357;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 356;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 358;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 357;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 359;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 358;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 360;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 359;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 361;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 360;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 362;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 361;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 363;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 362;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 364;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 363;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 365;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 364;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 366;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 365;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 367;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 366;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 368;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 367;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 369;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 368;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 370;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 369;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 371;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 370;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 372;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 371;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 373;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 372;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 374;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 373;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 375;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 374;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 376;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 375;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 377;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 376;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 378;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 377;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 379;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 378;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 380;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 379;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 381;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 380;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 382;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 381;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 383;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 382;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 384;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 383;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 385;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 384;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 386;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 385;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 387;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 386;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 388;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 387;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 389;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 388;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 390;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 389;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 391;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 390;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 392;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 391;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 393;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 392;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 394;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 393;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 395;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 394;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 396;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 395;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 397;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 396;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 398;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 397;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 399;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 398;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 400;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 399;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*results)[({{_v[0-9]+}} as usize)] = ({{arg[0-9]+}} + {{_v[0-9]+}}) * {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut sum: i64 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 1;
-// REWRITES-NEXT: compute({{_v[0-9]+}});
-// REWRITES-NEXT: {
+// REWRITES-NEXT:     let mut sum: i64 = 0;
+// REWRITES-NEXT:     compute(1);
+// REWRITES-NEXT:     {
 // REWRITES-NEXT:         let mut i: i32 = 0;
 // REWRITES-NEXT:         i = 0;
 // REWRITES-NEXT:         loop {
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = 400;
-// REWRITES-NEXT:                     if !(i < {{_v[0-9]+}}) {
-// REWRITES-NEXT:                                     break;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     {
-// REWRITES-NEXT:                                     sum = sum + unsafe { (*results)[((i as i64) as usize)] };
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     i = i + 1;
+// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 400;
+// REWRITES-NEXT:             if !(i < {{_v[0-9]+}}) {
+// REWRITES-NEXT:                 break;
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             {
+// REWRITES-NEXT:                 sum = sum + unsafe { (*results)[((i as i64) as usize)] };
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             i = i + 1;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%ld\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, sum) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     unsafe { printf(c"%ld\n".as_ptr(), sum) };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

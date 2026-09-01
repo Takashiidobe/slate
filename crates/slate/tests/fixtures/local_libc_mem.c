@@ -12,15 +12,35 @@ int main(void) {
   printf("%s\n", moved);
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(
+// LOWERING-NEXT:     dead_code,
+// LOWERING-NEXT:     unused,
+// LOWERING-NEXT:     non_camel_case_types,
+// LOWERING-NEXT:     non_snake_case,
+// LOWERING-NEXT:     non_upper_case_globals,
+// LOWERING-NEXT:     arithmetic_overflow,
+// LOWERING-NEXT:     unconditional_panic,
+// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-NEXT:     unused_comparisons
+// LOWERING-NEXT: )]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
-// LOWERING-NEXT:     fn memcpy(_0: *mut core::ffi::c_void, _1: *const core::ffi::c_void, _2: usize) -> *mut core::ffi::c_void;
+// LOWERING-NEXT:     fn memcpy(
+// LOWERING-NEXT:         _0: *mut core::ffi::c_void,
+// LOWERING-NEXT:         _1: *const core::ffi::c_void,
+// LOWERING-NEXT:         _2: usize,
+// LOWERING-NEXT:     ) -> *mut core::ffi::c_void;
 // LOWERING-NEXT:     fn memset(_0: *mut core::ffi::c_void, _1: i32, _2: usize) -> *mut core::ffi::c_void;
-// LOWERING-NEXT:     fn memmove(_0: *mut core::ffi::c_void, _1: *const core::ffi::c_void, _2: usize) -> *mut core::ffi::c_void;
-// LOWERING-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// LOWERING-NEXT:     fn memmove(
+// LOWERING-NEXT:         _0: *mut core::ffi::c_void,
+// LOWERING-NEXT:         _1: *const core::ffi::c_void,
+// LOWERING-NEXT:         _2: usize,
+// LOWERING-NEXT:     ) -> *mut core::ffi::c_void;
+// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
@@ -34,14 +54,21 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = src.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 6;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { memcpy({{_v[0-9]+}} as *mut core::ffi::c_void, {{_v[0-9]+}} as *const core::ffi::c_void, {{_v[0-9]+}} as usize) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe {
+// LOWERING-NEXT:         memcpy(
+// LOWERING-NEXT:             {{_v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_void,
+// LOWERING-NEXT:             {{_v[0-9]+}} as usize,
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = dst.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(5) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 65;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 3;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { memset({{_v[0-9]+}} as *mut core::ffi::c_void, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as usize) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void =
+// LOWERING-NEXT:         unsafe { memset({{_v[0-9]+}} as *mut core::ffi::c_void, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as usize) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 8;
 // LOWERING-NEXT:     dst[({{_v[0-9]+}} as usize)] = {{_v[0-9]+}};
@@ -50,10 +77,16 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = dst.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 9;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { memmove({{_v[0-9]+}} as *mut core::ffi::c_void, {{_v[0-9]+}} as *const core::ffi::c_void, {{_v[0-9]+}} as usize) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe {
+// LOWERING-NEXT:         memmove(
+// LOWERING-NEXT:             {{_v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_void,
+// LOWERING-NEXT:             {{_v[0-9]+}} as usize,
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%s\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = moved.as_mut_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
@@ -61,40 +94,70 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(
+// REWRITES-NEXT:     dead_code,
+// REWRITES-NEXT:     unused,
+// REWRITES-NEXT:     non_camel_case_types,
+// REWRITES-NEXT:     non_snake_case,
+// REWRITES-NEXT:     non_upper_case_globals,
+// REWRITES-NEXT:     arithmetic_overflow,
+// REWRITES-NEXT:     unconditional_panic,
+// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-NEXT:     unused_comparisons
+// REWRITES-NEXT: )]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
-// REWRITES-NEXT:     fn memcpy(_0: *mut core::ffi::c_void, _1: *const core::ffi::c_void, _2: usize) -> *mut core::ffi::c_void;
+// REWRITES-NEXT:     fn memcpy(
+// REWRITES-NEXT:         _0: *mut core::ffi::c_void,
+// REWRITES-NEXT:         _1: *const core::ffi::c_void,
+// REWRITES-NEXT:         _2: usize,
+// REWRITES-NEXT:     ) -> *mut core::ffi::c_void;
 // REWRITES-NEXT:     fn memset(_0: *mut core::ffi::c_void, _1: i32, _2: usize) -> *mut core::ffi::c_void;
-// REWRITES-NEXT:     fn memmove(_0: *mut core::ffi::c_void, _1: *const core::ffi::c_void, _2: usize) -> *mut core::ffi::c_void;
-// REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// REWRITES-NEXT:     fn memmove(
+// REWRITES-NEXT:         _0: *mut core::ffi::c_void,
+// REWRITES-NEXT:         _1: *const core::ffi::c_void,
+// REWRITES-NEXT:         _2: usize,
+// REWRITES-NEXT:     ) -> *mut core::ffi::c_void;
+// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut dst: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
-// REWRITES-NEXT: let mut src: [i8; 8] = [104, 101, 108, 108, 111, 0, 0, 0];
-// REWRITES-NEXT: let mut moved: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = dst.as_mut_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = src.as_mut_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 6;
-// REWRITES-NEXT: unsafe { std::ptr::copy_nonoverlapping((({{_v[0-9]+}} as *mut core::ffi::c_void) as *const core::ffi::c_void) as *const u8, ({{_v[0-9]+}} as *mut core::ffi::c_void) as *mut u8, ({{_v[0-9]+}} as usize) as usize) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = dst.as_mut_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(5) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 65;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 3;
-// REWRITES-NEXT: unsafe { std::ptr::write_bytes((({{_v[0-9]+}} as *mut core::ffi::c_void) as *mut core::ffi::c_void) as *mut u8, ({{_v[0-9]+}} as i32) as u8, ({{_v[0-9]+}} as usize) as usize) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 8;
-// REWRITES-NEXT: dst[({{_v[0-9]+}} as usize)] = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = moved.as_mut_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = dst.as_mut_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 9;
-// REWRITES-NEXT: unsafe { std::ptr::copy((({{_v[0-9]+}} as *mut core::ffi::c_void) as *const core::ffi::c_void) as *const u8, ({{_v[0-9]+}} as *mut core::ffi::c_void) as *mut u8, ({{_v[0-9]+}} as usize) as usize) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%s\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = moved.as_mut_ptr() as *mut i8;
-// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let mut dst: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
+// REWRITES-NEXT:     let mut src: [i8; 8] = [104, 101, 108, 108, 111, 0, 0, 0];
+// REWRITES-NEXT:     let mut moved: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = dst.as_mut_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = src.as_mut_ptr() as *mut i8;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         std::ptr::copy_nonoverlapping(
+// REWRITES-NEXT:             ({{_v[0-9]+}} as *mut core::ffi::c_void) as *const u8,
+// REWRITES-NEXT:             ({{_v[0-9]+}} as *mut core::ffi::c_void) as *mut u8,
+// REWRITES-NEXT:             (6 as u64) as usize,
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = dst.as_mut_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(5) };
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         std::ptr::write_bytes(
+// REWRITES-NEXT:             ({{_v[0-9]+}} as *mut core::ffi::c_void) as *mut u8,
+// REWRITES-NEXT:             (65 as i32) as u8,
+// REWRITES-NEXT:             (3 as u64) as usize,
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 8;
+// REWRITES-NEXT:     dst[({{_v[0-9]+}} as usize)] = 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = moved.as_mut_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = dst.as_mut_ptr() as *mut i8;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         std::ptr::copy(
+// REWRITES-NEXT:             ({{_v[0-9]+}} as *mut core::ffi::c_void) as *const u8,
+// REWRITES-NEXT:             ({{_v[0-9]+}} as *mut core::ffi::c_void) as *mut u8,
+// REWRITES-NEXT:             (9 as u64) as usize,
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { printf(c"%s\n".as_ptr(), moved.as_mut_ptr() as *mut i8) };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

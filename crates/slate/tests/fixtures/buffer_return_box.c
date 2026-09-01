@@ -80,12 +80,10 @@ int main(void) {
   }
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = 4;
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut i32 = Box::into_raw(make({{_v[0-9]+}})).cast::<i32>();
+// REWRITES-DAG: let {{_v[0-9]+}}: *mut i32 = Box::into_raw(make(4)).cast::<i32>();
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut i32 = Box::into_raw(make8()).cast::<i32>();
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-DAG: m = maybe({{_v[0-9]+}});
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut i32 = allocfree({{_v[0-9]+}});
+// REWRITES-DAG: m = maybe(2);
+// REWRITES-DAG: let {{_v[0-9]+}}: *mut i32 = allocfree(3);
 // SLATE-FILECHECK-END rewrites

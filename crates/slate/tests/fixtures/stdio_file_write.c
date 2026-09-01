@@ -22,17 +22,35 @@ int main(void) {
   remove("slate_stdio_file_write.tmp");
   return 0;
 }
+
+// REWRITES-LABEL: {{^}}fn main() {
+// REWRITES-NOT: unsafe { fputs((c"owned\n"
+// REWRITES-NOT: unsafe { fgets(
+// REWRITES-NOT: unsafe { fclose(
+// REWRITES: {{^}}}
+
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING: #![allow(
+// LOWERING-NEXT:     dead_code,
+// LOWERING-NEXT:     unused,
+// LOWERING-NEXT:     non_camel_case_types,
+// LOWERING-NEXT:     non_snake_case,
+// LOWERING-NEXT:     non_upper_case_globals,
+// LOWERING-NEXT:     arithmetic_overflow,
+// LOWERING-NEXT:     unconditional_panic,
+// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-NEXT:     unused_comparisons
+// LOWERING-NEXT: )]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
 // LOWERING-NEXT:     static mut stdout: *mut libc::FILE;
-// LOWERING-NEXT:     fn remove(_0: *const i8) -> i32;
-// LOWERING-NEXT:     fn fopen(_0: *const i8, _1: *const i8) -> *mut libc::FILE;
-// LOWERING-NEXT:     fn puts(_0: *const i8) -> i32;
-// LOWERING-NEXT:     fn fputs(_0: *const i8, _1: *mut libc::FILE) -> i32;
+// LOWERING-NEXT:     fn remove(_0: *const core::ffi::c_char) -> i32;
+// LOWERING-NEXT:     fn fopen(_0: *const core::ffi::c_char, _1: *const core::ffi::c_char) -> *mut libc::FILE;
+// LOWERING-NEXT:     fn puts(_0: *const core::ffi::c_char) -> i32;
+// LOWERING-NEXT:     fn fputs(_0: *const core::ffi::c_char, _1: *mut libc::FILE) -> i32;
 // LOWERING-NEXT:     fn fclose(_0: *mut libc::FILE) -> i32;
-// LOWERING-NEXT:     fn fgets(_0: *mut i8, _1: i32, _2: *mut libc::FILE) -> *mut i8;
+// LOWERING-NEXT:     fn fgets(_0: *mut core::ffi::c_char, _1: i32, _2: *mut libc::FILE) -> *mut core::ffi::c_char;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
@@ -43,10 +61,15 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"slate_stdio_file_write.tmp\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { remove({{_v[0-9]+}} as *const i8) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { remove({{_v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"slate_stdio_file_write.tmp\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"w\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut libc::FILE = unsafe { fopen({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as *const i8) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut libc::FILE = unsafe {
+// LOWERING-NEXT:         fopen(
+// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     f = {{_v[0-9]+}};
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         let {{_v[0-9]+}}: *mut libc::FILE = f;
@@ -54,7 +77,7 @@ int main(void) {
 // LOWERING-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
 // LOWERING-NEXT:         if {{_v[0-9]+}} {
 // LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"open-fail\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { puts({{_v[0-9]+}} as *const i8) };
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { puts({{_v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:             __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = __retval;
@@ -63,12 +86,17 @@ int main(void) {
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"owned\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut libc::FILE = f;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { fputs({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as *mut libc::FILE) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { fputs({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}} as *mut libc::FILE) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut libc::FILE = f;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { fclose({{_v[0-9]+}} as *mut libc::FILE) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"slate_stdio_file_write.tmp\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"r\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut libc::FILE = unsafe { fopen({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as *const i8) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut libc::FILE = unsafe {
+// LOWERING-NEXT:         fopen(
+// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     g = {{_v[0-9]+}};
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         let {{_v[0-9]+}}: *mut libc::FILE = g;
@@ -76,7 +104,7 @@ int main(void) {
 // LOWERING-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
 // LOWERING-NEXT:         if {{_v[0-9]+}} {
 // LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"reopen-fail\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { puts({{_v[0-9]+}} as *const i8) };
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { puts({{_v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:             __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = __retval;
@@ -87,23 +115,23 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = buf.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 16;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut libc::FILE = g;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { fgets({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}} as i32, {{_v[0-9]+}} as *mut libc::FILE) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = (unsafe {
+// LOWERING-NEXT:         fgets(
+// LOWERING-NEXT:             {{_v[0-9]+}} as *mut core::ffi::c_char,
+// LOWERING-NEXT:             {{_v[0-9]+}} as i32,
+// LOWERING-NEXT:             {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     }) as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut libc::FILE = g;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { fclose({{_v[0-9]+}} as *mut libc::FILE) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = buf.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stdout };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { fputs({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as *mut libc::FILE) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { fputs({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}} as *mut libc::FILE) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"slate_stdio_file_write.tmp\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { remove({{_v[0-9]+}} as *const i8) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { remove({{_v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
-
-// REWRITES-LABEL: {{^}}fn main() {
-// REWRITES-NOT: unsafe { fputs((c"owned\n"
-// REWRITES-NOT: unsafe { fgets(
-// REWRITES-NOT: unsafe { fclose(
-// REWRITES: {{^}}}

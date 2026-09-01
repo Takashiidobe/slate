@@ -14,6 +14,7 @@ void set_measurement(struct measurement *measurement, long double value) {
 }
 
 int format_pi(char *out, size_t n) { return strfroml(out, n, "%.1f", 3.5L); }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
 // LOWERING-DAG: let {{_v[0-9]+}}: LongDouble = {{arg[0-9]+}} + {{_v[0-9]+}};

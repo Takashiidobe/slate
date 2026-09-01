@@ -25,19 +25,35 @@ done:
   return 0;
 }
 
+// REWRITES-DAG: 1 => {
+// REWRITES-DAG: r = 20;
+// REWRITES-DAG: _ => {
+// REWRITES-DAG: r = 30;
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(
+// LOWERING-NEXT:     dead_code,
+// LOWERING-NEXT:     unused,
+// LOWERING-NEXT:     non_camel_case_types,
+// LOWERING-NEXT:     non_snake_case,
+// LOWERING-NEXT:     non_upper_case_globals,
+// LOWERING-NEXT:     arithmetic_overflow,
+// LOWERING-NEXT:     unconditional_panic,
+// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-NEXT:     unused_comparisons
+// LOWERING-NEXT: )]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
-// LOWERING-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut x: i32 = 0;
 // LOWERING-NEXT:     let mut r: i32 = 0;
-// LOWERING-NEXT: let mut {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let mut {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let mut {{__state[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     '{{__dispatch[0-9]+}}: loop {
 // LOWERING-NEXT:         match {{__state[0-9]+}} {
@@ -115,7 +131,7 @@ done:
 // LOWERING-NEXT:             12 => {
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = r;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:                 __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = __retval;
@@ -128,8 +144,3 @@ done:
 // LOWERING-NEXT:     }
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
-
-// REWRITES-DAG: 1 => {
-// REWRITES-DAG: r = 20;
-// REWRITES-DAG: _ => {
-// REWRITES-DAG: r = 30;

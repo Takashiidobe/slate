@@ -12,6 +12,7 @@ int main(void) {
   printf("%d\n", sum3(2, 3, 4));
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: fn sum3({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{arg[0-9]+}};

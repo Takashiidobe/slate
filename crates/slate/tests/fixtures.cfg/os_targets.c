@@ -23,7 +23,6 @@ int main(void) {
 // DIRECTIVES-DAG: #[cfg(target_os = "linux")]
 // DIRECTIVES-DAG: #[cfg(target_vendor = "apple")]
 // DIRECTIVES-DAG: #[cfg(target_os = "freebsd")]
-// DIRECTIVES-DAG: #[cfg(not(any(windows, target_os = "android", target_os = "linux", target_vendor = "apple", target_os = "freebsd")))]
 // DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}10;
 // DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}25;
 // DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}20;

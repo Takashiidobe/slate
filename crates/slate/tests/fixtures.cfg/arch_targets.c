@@ -38,7 +38,6 @@ int main(void) {
 // DIRECTIVES-DAG: #[cfg(target_arch = "wasm32")]
 // DIRECTIVES-DAG: #[cfg(target_arch = "riscv64")]
 // DIRECTIVES-DAG: #[cfg(target_arch = "riscv32")]
-// DIRECTIVES-DAG: #[cfg(not(any(target_arch = "x86_64", target_arch = "x86", target_arch = "aarch64", target_arch = "arm", target_arch = "powerpc64", target_arch = "powerpc", target_arch = "wasm64", target_arch = "wasm32", target_arch = "riscv64", target_arch = "riscv32")))]
 // DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}64;
 // DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}86;
 // DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}128;

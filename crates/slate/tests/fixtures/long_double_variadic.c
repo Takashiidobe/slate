@@ -10,9 +10,23 @@ int main(void) {
   return 0;
 }
 
+// LOWERING-DAG: fn __slate_printf__ri32_pi8_f80(
+// LOWERING-DAG: fn __slate_sscanf__ri32_pi8_pi8_pf80(
+
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(
+// REWRITES-NEXT:     dead_code,
+// REWRITES-NEXT:     unused,
+// REWRITES-NEXT:     non_camel_case_types,
+// REWRITES-NEXT:     non_snake_case,
+// REWRITES-NEXT:     non_upper_case_globals,
+// REWRITES-NEXT:     arithmetic_overflow,
+// REWRITES-NEXT:     unconditional_panic,
+// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-NEXT:     unused_comparisons
+// REWRITES-NEXT: )]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C, align(16))]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
@@ -20,91 +34,131 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: impl core::ops::Add for LongDouble {
 // REWRITES-NEXT:     type Output = LongDouble;
-// REWRITES-NEXT:     fn add(self, o: LongDouble) -> LongDouble { __slate_f80_add(self, o) }
+// REWRITES-NEXT:     fn add(self, o: LongDouble) -> LongDouble {
+// REWRITES-NEXT:         __slate_f80_add(self, o)
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: impl core::ops::Sub for LongDouble {
 // REWRITES-NEXT:     type Output = LongDouble;
-// REWRITES-NEXT:     fn sub(self, o: LongDouble) -> LongDouble { __slate_f80_sub(self, o) }
+// REWRITES-NEXT:     fn sub(self, o: LongDouble) -> LongDouble {
+// REWRITES-NEXT:         __slate_f80_sub(self, o)
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: impl core::ops::Mul for LongDouble {
 // REWRITES-NEXT:     type Output = LongDouble;
-// REWRITES-NEXT:     fn mul(self, o: LongDouble) -> LongDouble { __slate_f80_mul(self, o) }
+// REWRITES-NEXT:     fn mul(self, o: LongDouble) -> LongDouble {
+// REWRITES-NEXT:         __slate_f80_mul(self, o)
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: impl core::ops::Div for LongDouble {
 // REWRITES-NEXT:     type Output = LongDouble;
-// REWRITES-NEXT:     fn div(self, o: LongDouble) -> LongDouble { __slate_f80_div(self, o) }
+// REWRITES-NEXT:     fn div(self, o: LongDouble) -> LongDouble {
+// REWRITES-NEXT:         __slate_f80_div(self, o)
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: impl core::ops::AddAssign for LongDouble {
-// REWRITES-NEXT:     fn add_assign(&mut self, o: LongDouble) { {
-// REWRITES-NEXT:     *self = __slate_f80_add(*self, o);
-// REWRITES-NEXT: } }
+// REWRITES-NEXT:     fn add_assign(&mut self, o: LongDouble) {
+// REWRITES-NEXT:         {
+// REWRITES-NEXT:             *self = __slate_f80_add(*self, o);
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: impl core::ops::SubAssign for LongDouble {
-// REWRITES-NEXT:     fn sub_assign(&mut self, o: LongDouble) { {
-// REWRITES-NEXT:     *self = __slate_f80_sub(*self, o);
-// REWRITES-NEXT: } }
+// REWRITES-NEXT:     fn sub_assign(&mut self, o: LongDouble) {
+// REWRITES-NEXT:         {
+// REWRITES-NEXT:             *self = __slate_f80_sub(*self, o);
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: impl core::ops::MulAssign for LongDouble {
-// REWRITES-NEXT:     fn mul_assign(&mut self, o: LongDouble) { {
-// REWRITES-NEXT:     *self = __slate_f80_mul(*self, o);
-// REWRITES-NEXT: } }
+// REWRITES-NEXT:     fn mul_assign(&mut self, o: LongDouble) {
+// REWRITES-NEXT:         {
+// REWRITES-NEXT:             *self = __slate_f80_mul(*self, o);
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: impl core::ops::DivAssign for LongDouble {
-// REWRITES-NEXT:     fn div_assign(&mut self, o: LongDouble) { {
-// REWRITES-NEXT:     *self = __slate_f80_div(*self, o);
-// REWRITES-NEXT: } }
+// REWRITES-NEXT:     fn div_assign(&mut self, o: LongDouble) {
+// REWRITES-NEXT:         {
+// REWRITES-NEXT:             *self = __slate_f80_div(*self, o);
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: impl core::ops::Neg for LongDouble {
 // REWRITES-NEXT:     type Output = LongDouble;
-// REWRITES-NEXT:     fn neg(self) -> LongDouble { __slate_f80_neg(self) }
+// REWRITES-NEXT:     fn neg(self) -> LongDouble {
+// REWRITES-NEXT:         __slate_f80_neg(self)
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: impl core::cmp::PartialEq for LongDouble {
-// REWRITES-NEXT:     fn eq(&self, other: &LongDouble) -> bool { __slate_f80_eq(*self, *other) }
+// REWRITES-NEXT:     fn eq(&self, other: &LongDouble) -> bool {
+// REWRITES-NEXT:         __slate_f80_eq(*self, *other)
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: impl core::cmp::PartialOrd for LongDouble {
-// REWRITES-NEXT:     fn partial_cmp(&self, other: &LongDouble) -> Option<std::cmp::Ordering> { if __slate_f80_lt(*self, *other) { Some(std::cmp::Ordering::Less) } else { if __slate_f80_gt(*self, *other) { Some(std::cmp::Ordering::Greater) } else { if __slate_f80_eq(*self, *other) { Some(std::cmp::Ordering::Equal) } else { None } } } }
+// REWRITES-NEXT:     fn partial_cmp(&self, other: &LongDouble) -> Option<std::cmp::Ordering> {
+// REWRITES-NEXT:         if __slate_f80_lt(*self, *other) {
+// REWRITES-NEXT:             Some(std::cmp::Ordering::Less)
+// REWRITES-NEXT:         } else {
+// REWRITES-NEXT:             if __slate_f80_gt(*self, *other) {
+// REWRITES-NEXT:                 Some(std::cmp::Ordering::Greater)
+// REWRITES-NEXT:             } else {
+// REWRITES-NEXT:                 if __slate_f80_eq(*self, *other) {
+// REWRITES-NEXT:                     Some(std::cmp::Ordering::Equal)
+// REWRITES-NEXT:                 } else {
+// REWRITES-NEXT:                     None
+// REWRITES-NEXT:                 }
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
-// REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
-// REWRITES-NEXT:     fn sscanf(_0: *const i8, _1: *const i8, ...) -> i32;
+// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// REWRITES-NEXT:     fn sscanf(_0: *const core::ffi::c_char, _1: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut y: LongDouble = LongDouble([0; 10]);
-// REWRITES-NEXT: let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%La\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: unsafe { __slate_printf__ri32_pi8_f80({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}}) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%.21Lf\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: unsafe { __slate_printf__ri32_pi8_f80({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}}) };
-// REWRITES-NEXT: {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = b"0x1.0000000000000001p+0\0".as_ptr() as *mut i8;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = b"%La\0".as_ptr() as *mut i8;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { __slate_sscanf__ri32_pi8_pi8_pf80({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}} as *mut i8, std::ptr::addr_of_mut!(y)) };
+// REWRITES-NEXT:     let mut y: LongDouble = LongDouble([0; 10]);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// REWRITES-NEXT:     unsafe { __slate_printf__ri32_pi8_f80(b"%La\n\0".as_ptr() as *mut i8, {{_v[0-9]+}}) };
+// REWRITES-NEXT:     unsafe { __slate_printf__ri32_pi8_f80(b"%.21Lf\n\0".as_ptr() as *mut i8, {{_v[0-9]+}}) };
+// REWRITES-NEXT:     {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe {
+// REWRITES-NEXT:             __slate_sscanf__ri32_pi8_pi8_pf80(
+// REWRITES-NEXT:                 b"0x1.0000000000000001p+0\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:                 b"%La\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:                 std::ptr::addr_of_mut!(y),
+// REWRITES-NEXT:             )
+// REWRITES-NEXT:         };
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
 // REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: *mut i8 = b"%La\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT:                     unsafe { __slate_printf__ri32_pi8_f80({{_v[0-9]+}} as *mut i8, y) };
+// REWRITES-NEXT:             unsafe { __slate_printf__ri32_pi8_f80(b"%La\n\0".as_ptr() as *mut i8, y) };
 // REWRITES-NEXT:         }
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
-// REWRITES-NEXT:     safe fn __slate_cf80_div(a: num_complex::Complex<LongDouble>, b: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
-// REWRITES-NEXT:     safe fn __slate_cf80_mul(a: num_complex::Complex<LongDouble>, b: num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     safe fn __slate_cf80_div(
+// REWRITES-NEXT:         a: num_complex::Complex<LongDouble>,
+// REWRITES-NEXT:         b: num_complex::Complex<LongDouble>,
+// REWRITES-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// REWRITES-NEXT:     safe fn __slate_cf80_mul(
+// REWRITES-NEXT:         a: num_complex::Complex<LongDouble>,
+// REWRITES-NEXT:         b: num_complex::Complex<LongDouble>,
+// REWRITES-NEXT:     ) -> num_complex::Complex<LongDouble>;
 // REWRITES-NEXT:     safe fn __slate_f80_abs(a: LongDouble) -> LongDouble;
 // REWRITES-NEXT:     safe fn __slate_f80_add(a: LongDouble, b: LongDouble) -> LongDouble;
 // REWRITES-NEXT:     safe fn __slate_f80_ceil(a: LongDouble) -> LongDouble;
@@ -159,6 +213,3 @@ int main(void) {
 // REWRITES-NEXT:     fn __slate_sscanf__ri32_pi8_pi8_pf80(_0: *mut i8, _1: *mut i8, _2: *mut LongDouble) -> i32;
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites
-
-// LOWERING-DAG: fn __slate_printf__ri32_pi8_f80(
-// LOWERING-DAG: fn __slate_sscanf__ri32_pi8_pi8_pf80(

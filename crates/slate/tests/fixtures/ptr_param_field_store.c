@@ -20,6 +20,7 @@ int main(void) {
     printf("%d %d\n", p.a, p.b);
     return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: unsafe {
 // LOWERING-DAG: (*{{arg[0-9]+}}).a = {{arg[0-9]+}};

@@ -16,6 +16,7 @@ int cpuid_leaf7_ebx_nonzero(void) {
 int main(void) {
   return cpuid_leaf7_ebx_nonzero();
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = 7;
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = 0;
