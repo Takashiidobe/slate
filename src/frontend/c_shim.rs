@@ -26,6 +26,7 @@ fn c_type_for_tag(tag: &str) -> String {
         "f32" => "float",
         "f64" => "double",
         "bool" => "_Bool",
+        "c" => "char",
         "v" => "void",
         "ld" => "double",
         "f80" => "__slate_f80",

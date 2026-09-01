@@ -602,6 +602,7 @@ pub(super) fn long_double_shim_type_tag(ty: &Type) -> String {
         Type::Prim(Prim::F64) => "f64".into(),
         Type::Prim(Prim::F128) => "lq".into(),
         Type::Prim(Prim::Bool) => "bool".into(),
+        Type::CLib(clib) if *clib == CLibType::CHAR => "c".into(),
         Type::LongDouble => "f80".into(),
         Type::Complex(inner) if matches!(inner.as_ref(), Type::LongDouble) => "cf80".into(),
         Type::Unit => "v".into(),
