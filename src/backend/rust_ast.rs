@@ -1153,6 +1153,7 @@ pub struct CLibType {
 
 impl CLibType {
     pub const VOID: Self = Self::new("void", "core::ffi::c_void", 1, CLibInitializer::ScalarZero);
+    pub const CHAR: Self = Self::new("char", "core::ffi::c_char", 1, CLibInitializer::ScalarZero);
 
     pub const fn new(
         c_name: &'static str,

@@ -1966,6 +1966,7 @@ impl __SlateVaArgs {
                         Box::new(crate::frontend::c_ast::CType::Int {
                             signed: false,
                             bits: 8,
+                            is_char: false,
                         }),
                         Some(0),
                     ),
@@ -2952,7 +2953,7 @@ fn c_type_to_type(ty: &crate::frontend::c_ast::CType, va_list_boxed: bool) -> Ty
     match ty {
         CType::Void => Type::Unit,
         CType::Bool => Type::Prim(Prim::Bool),
-        CType::Int { signed, bits } => match (signed, bits) {
+        CType::Int { signed, bits, .. } => match (signed, bits) {
             (true, 8) => Type::Prim(Prim::I8),
             (false, 8) => Type::Prim(Prim::U8),
             (true, 16) => Type::Prim(Prim::I16),
