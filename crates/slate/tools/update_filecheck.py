@@ -275,12 +275,12 @@ def generated_block(checks, prefix):
 
 
 def remove_generated_block(source, prefix):
-    begin = f"// SLATE-FILECHECK-BEGIN {prefix.lower()}"
-    end = f"// SLATE-FILECHECK-END {prefix.lower()}"
+    profile = re.escape(prefix.lower())
     pattern = re.compile(
-        rf"(?ms)^\s*{re.escape(begin)}\n.*?^\s*{re.escape(end)}\n?"
+        rf"(?ms)^\s*//[^\n]*SLATE-FILECHECK-BEGIN\s+{profile}(?=\s|$)[^\n]*(?:\n|$)"
+        rf".*?^\s*//[^\n]*SLATE-FILECHECK-END\s+{profile}(?=\s|$)[^\n]*(?:\n|$)"
     )
-    return pattern.sub("", source, count=1)
+    return pattern.sub("", source)
 
 
 def has_handwritten_block(source, prefix):
@@ -290,11 +290,10 @@ def has_handwritten_block(source, prefix):
 
 
 def insert_generated_blocks(source, blocks):
-    lines = source.splitlines()
-    directive = re.compile(r"^\s*//\s*(?:COMMON|LOWERING|REWRITES)(?:-[A-Z0-9_-]+)?:")
-    index = next((index for index, line in enumerate(lines) if directive.match(line)), len(lines))
-    lines[index:index] = ["\n\n".join(blocks), ""]
-    return "\n".join(lines).rstrip("\n") + "\n"
+    source = source.rstrip("\n")
+    separator = "\n\n" if source else ""
+    blocks = "\n\n".join(blocks)
+    return f"{source}{separator}{blocks}\n"
 
 
 def translate_output(path, command, environment=None):
