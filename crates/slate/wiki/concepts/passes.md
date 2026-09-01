@@ -71,16 +71,26 @@ The engine builds an `Arena` of AST nodes per function and applies `NodeRule`s,
 rescheduling affected nodes until a fixed point. The current registry
 (`engine/rules/mod.rs`, in order):
 
-1. `EarlyInlineTemps` (`inline_temps.rs`) — inline single-use pure temps, early.
-2. `ZeroInitFold` (`zero_init.rs`) — fuse a zero-init `let` with the assignment
+1. `ZeroInitFold` (`zero_init.rs`) — fuse a zero-init `let` with the assignment
    that overwrites it.
-3. `RawPtrAliasElide` (`raw_ptr_alias.rs`) — collapse redundant raw-pointer
+2. `RawPtrAliasElide` (`raw_ptr_alias.rs`) — collapse redundant raw-pointer
    alias locals.
-4. `WhileLoopUnwrap` / `DoWhileLoopUnwrap` / `SingletonUnwrap`
+3. `WhileLoopUnwrap` / `DoWhileLoopUnwrap` / `SingletonUnwrap`
    (`singleton_scopes.rs`) — unwrap a loop's redundant body scope around its
    negated-break guard, and one-statement `{ }` scopes.
-5. `LateInlineTemps` (`inline_temps.rs`) — inline single-use pure temps, late.
-6. `libc_call::rules()` (`libc_call.rs`) — the libc call-rewrite table
+4. `LateInlineTemps` (`inline_temps.rs`) — inline single-use temps into their
+   sole use (pure temps generally; effectful/atomic ones into an adjacent use).
+5. `EffectfulTempForward` (`inline_temps.rs`) — sink a single-use effectful
+   temp (chiefly a call result) forward into its one argument position.
+6. `InlineConstArgTemps` (`inline_temps.rs`) — inline a non-type-anchored
+   numeric-constant temp into its sole call/macro argument.
+7. `PeelCasts` (`peel_casts.rs`) — drop a redundant outer cast in an adjacent
+   pair: `(e as T) as T`, and `(e as A) as B` where `A`,`B` are thin raw
+   pointers and `e` provably yields a pointer/integer. Never drops a float or
+   narrowing intermediate; never touches a reference operand.
+8. `DeadStore` (`dead_store.rs`) — delete a `let` with no def-use readers when
+   its initializer is side-effect-free.
+9. `libc_call::rules()` (`libc_call.rs`) — the libc call-rewrite table
    (`memcpy`/`memmove`/`memset`/`str*`/… → native Rust or `Box`/slice ops),
    matched by call anchor.
 
