@@ -1,5 +1,8 @@
 # c-corpus -> transpiled workflow (slate-a28e.10). Override with:
 #   just corpus=/other/path transpile-redis
+set unstable
+set lists
+
 corpus := env_var_or_default("SLATE_C_CORPUS", "/home/takashi/c-corpus")
 
 default:
@@ -73,17 +76,38 @@ transpile-all:
         exit 1
     fi
 
+filecheck_files := split(`find tests/fixtures -maxdepth 1 -type f -name '*.c' -printf '%p\n' | sort | tr '\n' ' '`)
+filecheck_projects := split(`rg -l '@(lowering|rewrite)(-fn)?-(begin|not-begin)' tests/fixtures.multi -g '*.c' | cut -d/ -f1-3 | sort -u | tr '\n' ' '`)
+filecheck_libraries := split(`rg -l '@(lowering|rewrite)(-fn)?-(begin|not-begin)' tests/fixtures.library -g '*.c' | cut -d/ -f1-3 | sort -u | tr '\n' ' '`)
+filecheck_fixtures := filecheck_files ++ filecheck_projects ++ filecheck_libraries
+filecheck_jobs := if num_jobs() { num_jobs() } else { "8" }
+
 # regenerate the lowering FileCheck blocks in every fixture, leaving rewrites blocks frozen
-regen-lowering *paths="tests/fixtures/*.c":
-    python3 tools/update_filecheck.py --in-place --profile lowering {{paths}}
+regen-lowering *paths=filecheck_fixtures:
+    just --jobs {{filecheck_jobs}} _regen-filechecks lowering {{quote(paths)}}
 
 # regenerate the rewrites FileCheck blocks in every fixture, leaving lowering blocks frozen
-regen-rewrites *paths="tests/fixtures/*.c":
-    python3 tools/update_filecheck.py --in-place --profile rewrites {{paths}}
+regen-rewrites *paths=filecheck_fixtures:
+    just --jobs {{filecheck_jobs}} _regen-filechecks rewrites {{quote(paths)}}
 
 # regenerate both FileCheck profiles in every fixture
-regen-filecheck *paths="tests/fixtures/*.c":
-    python3 tools/update_filecheck.py --in-place --profile both {{paths}}
+regen-filecheck *paths=filecheck_fixtures:
+    just --jobs {{filecheck_jobs}} _regen-filechecks both {{quote(paths)}}
+
+[private]
+[parallel]
+_regen-filechecks profile *paths: *(_regen-filecheck profile *paths)
+
+[private]
+_regen-filecheck profile path:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    case {{quote(path)}} in
+        tests/fixtures.multi/*) mode=--project ;;
+        tests/fixtures.library/*) mode=--library-project ;;
+        *) mode= ;;
+    esac
+    python3 tools/update_filecheck.py $mode --in-place --profile {{quote(profile)}} {{quote(path)}}
 
 # cargo check every already-transpiled crate; keeps going past per-project failures and reports them at the end
 check-all:
