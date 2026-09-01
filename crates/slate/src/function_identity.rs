@@ -32,6 +32,7 @@ pub enum Known {
     StrTol,
     StrToul,
     StrTod,
+    StrTold,
     StrFromL,
     Printf,
     FPrintf,
@@ -114,6 +115,7 @@ impl Known {
             Self::StrTol => "strtol",
             Self::StrToul => "strtoul",
             Self::StrTod => "strtod",
+            Self::StrTold => "strtold",
             Self::StrFromL => "strfroml",
             Self::Printf => "printf",
             Self::FPrintf => "fprintf",
@@ -177,6 +179,7 @@ impl Known {
             | Self::StrTol
             | Self::StrToul
             | Self::StrTod
+            | Self::StrTold
             | Self::StrFromL
             | Self::Exit
             | Self::Abort
@@ -277,6 +280,7 @@ impl Known {
             "strtol" => (Self::StrTol, "stdlib.h"),
             "strtoul" => (Self::StrToul, "stdlib.h"),
             "strtod" => (Self::StrTod, "stdlib.h"),
+            "strtold" => (Self::StrTold, "stdlib.h"),
             "strfroml" => (Self::StrFromL, "stdlib.h"),
             "printf" => (Self::Printf, "stdio.h"),
             "fprintf" => (Self::FPrintf, "stdio.h"),

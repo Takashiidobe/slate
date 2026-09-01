@@ -807,7 +807,7 @@ fn library_crate_links_generated_c_abi_shim_for_long_double_libc_call() {
         std::fs::read_to_string(crate_dir.join("src/slate_shims.c")).expect("read slate_shims.c");
     assert!(shim_c.contains("strfroml"));
     assert!(shim_c.contains("(long double)"));
-    assert!(shim_c.contains("int strfroml(char *, size_t, const char *, long double);"));
+    assert!(!shim_c.contains("int strfroml("));
 
     let run_tests = std::process::Command::new("cargo")
         .args(["test", "--quiet", "--tests", "--manifest-path"])

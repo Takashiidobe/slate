@@ -233,7 +233,7 @@ fn warning_uses_a_self_contained_compile_time_fallback() {
     let rust = translate("warning_directives.c");
 
     assert!(rust.contains(
-        "#[deprecated(note = \"WARNING_TOKEN \\\"quoted\\\" C:\\\\tmp\")]\nconst __SLATE_WARNING_0: () = {  };\n\nconst _: () = __SLATE_WARNING_0;"
+        "#[deprecated(note = \"WARNING_TOKEN \\\"quoted\\\" C:\\\\tmp\")]\nconst __SLATE_WARNING_0: () = {};\n\nconst _: () = __SLATE_WARNING_0;"
     ));
     assert!(!rust.contains("selected warning"));
     let output = compile_with_cfgs("warning_standalone", &rust, &[]);

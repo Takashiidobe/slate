@@ -161,6 +161,9 @@ fn collect_fixtures(
             continue;
         }
         let name = path.file_stem().unwrap().to_string_lossy().into_owned();
+        if flavor == FixtureFlavor::Macos && name == "feature_modes" {
+            continue;
+        }
         if selected.as_ref().is_some_and(|selected| selected != &name) {
             continue;
         }

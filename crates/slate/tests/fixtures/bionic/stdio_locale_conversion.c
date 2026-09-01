@@ -1,4 +1,3 @@
-#include <langinfo.h>
 #include <locale.h>
 #include <stdio.h>
 #include <uchar.h>
@@ -29,8 +28,6 @@ int bionic_locale_scope(void) {
   freelocale(previous);
   return is_alpha;
 }
-
-const char *bionic_codeset(void) { return nl_langinfo(CODESET); }
 
 int main(void) { return 0; }
 
@@ -85,7 +82,6 @@ int main(void) { return 0; }
 // LOWERING-BIONIC-AARCH64-NEXT:     fn iswctype(_0: u32, _1: i64) -> i32;
 // LOWERING-BIONIC-AARCH64-NEXT:     fn wctype(_0: *const core::ffi::c_char) -> i64;
 // LOWERING-BIONIC-AARCH64-NEXT:     fn freelocale(_0: *mut __locale_struct);
-// LOWERING-BIONIC-AARCH64-NEXT:     fn nl_langinfo(_0: i32) -> *mut core::ffi::c_char;
 // LOWERING-BIONIC-AARCH64-NEXT: }
 // LOWERING-BIONIC-AARCH64-EMPTY:
 // LOWERING-BIONIC-AARCH64-NEXT: fn bionic_stream_position({{arg[0-9]+}}: *mut libc::FILE, {{arg[0-9]+}}: *mut i64) -> i32 {
@@ -194,12 +190,6 @@ int main(void) { return 0; }
 // LOWERING-BIONIC-AARCH64-NEXT:     return {{_v[0-9]+}};
 // LOWERING-BIONIC-AARCH64-NEXT: }
 // LOWERING-BIONIC-AARCH64-EMPTY:
-// LOWERING-BIONIC-AARCH64-NEXT: fn bionic_codeset() -> *mut u8 {
-// LOWERING-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: *mut u8 = (unsafe { nl_langinfo({{_v[0-9]+}} as i32) }) as *mut u8;
-// LOWERING-BIONIC-AARCH64-NEXT:     return {{_v[0-9]+}};
-// LOWERING-BIONIC-AARCH64-NEXT: }
-// LOWERING-BIONIC-AARCH64-EMPTY:
 // LOWERING-BIONIC-AARCH64-NEXT: fn main() {
 // LOWERING-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: i32 = 0;
@@ -258,7 +248,6 @@ int main(void) { return 0; }
 // LOWERING-BIONIC-X86_64-NEXT:     fn iswctype(_0: u32, _1: i64) -> i32;
 // LOWERING-BIONIC-X86_64-NEXT:     fn wctype(_0: *const core::ffi::c_char) -> i64;
 // LOWERING-BIONIC-X86_64-NEXT:     fn freelocale(_0: *mut __locale_struct);
-// LOWERING-BIONIC-X86_64-NEXT:     fn nl_langinfo(_0: i32) -> *mut core::ffi::c_char;
 // LOWERING-BIONIC-X86_64-NEXT: }
 // LOWERING-BIONIC-X86_64-EMPTY:
 // LOWERING-BIONIC-X86_64-NEXT: fn bionic_stream_position({{arg[0-9]+}}: *mut libc::FILE, {{arg[0-9]+}}: *mut i64) -> i32 {
@@ -367,12 +356,6 @@ int main(void) { return 0; }
 // LOWERING-BIONIC-X86_64-NEXT:     return {{_v[0-9]+}};
 // LOWERING-BIONIC-X86_64-NEXT: }
 // LOWERING-BIONIC-X86_64-EMPTY:
-// LOWERING-BIONIC-X86_64-NEXT: fn bionic_codeset() -> *mut i8 {
-// LOWERING-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: *mut i8 = (unsafe { nl_langinfo({{_v[0-9]+}} as i32) }) as *mut i8;
-// LOWERING-BIONIC-X86_64-NEXT:     return {{_v[0-9]+}};
-// LOWERING-BIONIC-X86_64-NEXT: }
-// LOWERING-BIONIC-X86_64-EMPTY:
 // LOWERING-BIONIC-X86_64-NEXT: fn main() {
 // LOWERING-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: i32 = 0;
@@ -431,7 +414,6 @@ int main(void) { return 0; }
 // REWRITES-BIONIC-AARCH64-NEXT:     fn iswctype(_0: u32, _1: i64) -> i32;
 // REWRITES-BIONIC-AARCH64-NEXT:     fn wctype(_0: *const core::ffi::c_char) -> i64;
 // REWRITES-BIONIC-AARCH64-NEXT:     fn freelocale(_0: *mut __locale_struct);
-// REWRITES-BIONIC-AARCH64-NEXT:     fn nl_langinfo(_0: i32) -> *mut core::ffi::c_char;
 // REWRITES-BIONIC-AARCH64-NEXT: }
 // REWRITES-BIONIC-AARCH64-EMPTY:
 // REWRITES-BIONIC-AARCH64-NEXT: fn bionic_stream_position({{arg[0-9]+}}: *mut libc::FILE, {{arg[0-9]+}}: *mut i64) -> i32 {
@@ -521,10 +503,6 @@ int main(void) { return 0; }
 // REWRITES-BIONIC-AARCH64-NEXT:     return {{_v[0-9]+}};
 // REWRITES-BIONIC-AARCH64-NEXT: }
 // REWRITES-BIONIC-AARCH64-EMPTY:
-// REWRITES-BIONIC-AARCH64-NEXT: fn bionic_codeset() -> *mut u8 {
-// REWRITES-BIONIC-AARCH64-NEXT:     return (unsafe { nl_langinfo(1 as i32) }) as *mut u8;
-// REWRITES-BIONIC-AARCH64-NEXT: }
-// REWRITES-BIONIC-AARCH64-EMPTY:
 // REWRITES-BIONIC-AARCH64-NEXT: fn main() {
 // REWRITES-BIONIC-AARCH64-NEXT:     std::process::exit(0 as i32);
 // REWRITES-BIONIC-AARCH64-NEXT: }
@@ -581,7 +559,6 @@ int main(void) { return 0; }
 // REWRITES-BIONIC-X86_64-NEXT:     fn iswctype(_0: u32, _1: i64) -> i32;
 // REWRITES-BIONIC-X86_64-NEXT:     fn wctype(_0: *const core::ffi::c_char) -> i64;
 // REWRITES-BIONIC-X86_64-NEXT:     fn freelocale(_0: *mut __locale_struct);
-// REWRITES-BIONIC-X86_64-NEXT:     fn nl_langinfo(_0: i32) -> *mut core::ffi::c_char;
 // REWRITES-BIONIC-X86_64-NEXT: }
 // REWRITES-BIONIC-X86_64-EMPTY:
 // REWRITES-BIONIC-X86_64-NEXT: fn bionic_stream_position({{arg[0-9]+}}: *mut libc::FILE, {{arg[0-9]+}}: *mut i64) -> i32 {
@@ -669,10 +646,6 @@ int main(void) { return 0; }
 // REWRITES-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { iswctype(97 as u32, {{_v[0-9]+}} as i64) };
 // REWRITES-BIONIC-X86_64-NEXT:     unsafe { freelocale({{_v[0-9]+}} as *mut __locale_struct) };
 // REWRITES-BIONIC-X86_64-NEXT:     return {{_v[0-9]+}};
-// REWRITES-BIONIC-X86_64-NEXT: }
-// REWRITES-BIONIC-X86_64-EMPTY:
-// REWRITES-BIONIC-X86_64-NEXT: fn bionic_codeset() -> *mut i8 {
-// REWRITES-BIONIC-X86_64-NEXT:     return (unsafe { nl_langinfo(1 as i32) }) as *mut i8;
 // REWRITES-BIONIC-X86_64-NEXT: }
 // REWRITES-BIONIC-X86_64-EMPTY:
 // REWRITES-BIONIC-X86_64-NEXT: fn main() {

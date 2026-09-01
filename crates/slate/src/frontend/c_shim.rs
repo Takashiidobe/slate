@@ -167,20 +167,20 @@ fn render_typed_shim(shim: &ExternFnDecl) -> Option<String> {
             .join(", ");
         format!("{rust_ret} {original}({rust_params});\n")
     } else {
-        let mut prototype_params = shim
-            .params
-            .iter()
-            .map(|param| param.ty.clone())
-            .collect::<Vec<_>>();
-        let mut prototype_ret = shim.ret.clone();
-        let repaired = repair_function_signature(
-            shim.declared_type.as_deref(),
-            &mut prototype_params,
-            &mut prototype_ret,
-        );
-        if shim.identity != FunctionIdentity::Unknown && !repaired {
+        if shim.identity != FunctionIdentity::Unknown {
             String::new()
         } else {
+            let mut prototype_params = shim
+                .params
+                .iter()
+                .map(|param| param.ty.clone())
+                .collect::<Vec<_>>();
+            let mut prototype_ret = shim.ret.clone();
+            repair_function_signature(
+                shim.declared_type.as_deref(),
+                &mut prototype_params,
+                &mut prototype_ret,
+            );
             let c_ret = prototype_ret
                 .as_ref()
                 .map(|ty| c_type_for_rust_type(ty, false))
