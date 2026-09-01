@@ -70,9 +70,9 @@ fn has_rewrite(expr: &Expr) -> bool {
 }
 
 fn rewrite_kind(kind: &mut NodeKind) -> bool {
-    kind_exprs_mut(kind).into_iter().fold(false, |changed, expr| {
-        changed | rewrite_expr(expr)
-    })
+    kind_exprs_mut(kind)
+        .into_iter()
+        .fold(false, |changed, expr| changed | rewrite_expr(expr))
 }
 
 fn kind_has_rewrite(kind: &NodeKind) -> bool {

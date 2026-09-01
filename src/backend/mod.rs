@@ -1,11 +1,13 @@
 pub mod codegen;
 mod engine;
+mod format;
 mod interproc;
 pub mod rust_ast;
 pub mod trace;
 
 use crate::backend::rust_ast::Program;
 
+pub use format::{format_rust, write_rust};
 pub use trace::Pass;
 
 #[derive(Debug, Clone, Default)]
