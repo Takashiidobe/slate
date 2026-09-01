@@ -1,4 +1,4 @@
-# Slate
+# Slate - an idiomatic C23 to Rust Transpiler
 
 Slate is an idiomatic C to Rust transpiler inspired by
 [C2Rust](https://c2rust.com/).
