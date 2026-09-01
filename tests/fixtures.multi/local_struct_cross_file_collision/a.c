@@ -15,21 +15,42 @@ int run_a(void) {
 }
 // @rewrite-fn-end
 
+// LOWERING-DAG: struct Item
+// LOWERING-DAG: value: i32
+// LOWERING-DAG: weight: i32
+
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: #[unsafe(no_mangle)]
 // REWRITES-DAG: pub extern "C" fn run_a() -> i32 {
-// REWRITES-DAG: let mut items: aligned::Aligned<aligned::A16, [Item; 2]> = aligned::Aligned([Item { value: 0, weight: 0 }; 2]);
+// REWRITES-DAG: let mut items: aligned::Aligned<aligned::A16, [Item; 2]> = aligned::Aligned(
+// REWRITES-DAG: [Item {
+// REWRITES-DAG: value: 0,
+// REWRITES-DAG: weight: 0,
+// REWRITES-DAG: }; 2],
+// REWRITES-DAG: );
 // REWRITES-DAG: let mut total: i32 = 0;
-// REWRITES-DAG: *items = [Item { value: 1, weight: 10 }, Item { value: 2, weight: 20 }];
+// REWRITES-DAG: *items = [
+// REWRITES-DAG: Item {
+// REWRITES-DAG: value: 1,
+// REWRITES-DAG: weight: 10,
+// REWRITES-DAG: },
+// REWRITES-DAG: Item {
+// REWRITES-DAG: value: 2,
+// REWRITES-DAG: weight: 20,
+// REWRITES-DAG: },
+// REWRITES-DAG: ];
+// REWRITES-DAG: total = 0;
 // REWRITES-DAG: {
 // REWRITES-DAG: let mut i: i32 = 0;
+// REWRITES-DAG: i = 0;
 // REWRITES-DAG: loop {
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = 2;
 // REWRITES-DAG: if !(i < {{_v[0-9]+}}) {
 // REWRITES-DAG: break;
 // REWRITES-DAG: }
 // REWRITES-DAG: {
-// REWRITES-DAG: total = total + items[((i as i64) as usize)].value * items[((i as i64) as usize)].weight;
+// REWRITES-DAG: total = total
+// REWRITES-DAG: + items[((i as i64) as usize)].value * items[((i as i64) as usize)].weight;
 // REWRITES-DAG: }
 // REWRITES-DAG: i = i + 1;
 // REWRITES-DAG: }
@@ -37,7 +58,3 @@ int run_a(void) {
 // REWRITES-DAG: return total;
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites
-
-// LOWERING-DAG: struct Item
-// LOWERING-DAG: value: i32
-// LOWERING-DAG: weight: i32

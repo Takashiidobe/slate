@@ -9,6 +9,7 @@ __attribute__((target("bmi"))) int bmi_probe(int x) {
 int main(void) {
   return bmi_probe(41);
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: #[target_feature(enable = "bmi1")]
 // LOWERING-DAG: unsafe fn bmi_probe({{arg[0-9]+}}: i32) -> i32 {

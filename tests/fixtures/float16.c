@@ -26,13 +26,25 @@ int main(void) {
                             (_Float16)3.0f16));
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(f16)]
 // LOWERING-NEXT: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(
+// LOWERING-NEXT:     dead_code,
+// LOWERING-NEXT:     unused,
+// LOWERING-NEXT:     non_camel_case_types,
+// LOWERING-NEXT:     non_snake_case,
+// LOWERING-NEXT:     non_upper_case_globals,
+// LOWERING-NEXT:     arithmetic_overflow,
+// LOWERING-NEXT:     unconditional_panic,
+// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-NEXT:     unused_comparisons
+// LOWERING-NEXT: )]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
-// LOWERING-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: struct __SlateVaArg {
@@ -42,7 +54,10 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: impl __SlateVaArg {
 // LOWERING-NEXT:     fn new<T: 'static>(value: T) -> Self {
-// LOWERING-NEXT:         Self { value: Box::new(value), size: std::mem::size_of::<T>() }
+// LOWERING-NEXT:         Self {
+// LOWERING-NEXT:             value: Box::new(value),
+// LOWERING-NEXT:             size: std::mem::size_of::<T>(),
+// LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-EMPTY:
 // LOWERING-NEXT:     fn read<T: Copy + 'static>(&self) -> T {
@@ -66,11 +81,17 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: impl __SlateVaArgs {
 // LOWERING-NEXT:     fn new(args: Vec<__SlateVaArg>) -> Self {
-// LOWERING-NEXT:         Self { args: Some(std::rc::Rc::new(args)), index: 0 }
+// LOWERING-NEXT:         Self {
+// LOWERING-NEXT:             args: Some(std::rc::Rc::new(args)),
+// LOWERING-NEXT:             index: 0,
+// LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-EMPTY:
 // LOWERING-NEXT:     const fn empty() -> Self {
-// LOWERING-NEXT:         Self { args: None, index: 0 }
+// LOWERING-NEXT:         Self {
+// LOWERING-NEXT:             args: None,
+// LOWERING-NEXT:             index: 0,
+// LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-EMPTY:
 // LOWERING-NEXT:     fn next_arg<T: Copy + 'static>(&mut self) -> T {
@@ -147,19 +168,28 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f16 = add16({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f16 = mul16({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f16 = 1.0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f16 = 2.0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f16 = 3.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f16 = unsafe { sum_variadic({{_v[0-9]+}}, __SlateVaArgs::new(vec![__SlateVaArg::new({{_v[0-9]+}}), __SlateVaArg::new({{_v[0-9]+}}), __SlateVaArg::new({{_v[0-9]+}})])) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f16 = unsafe {
+// LOWERING-NEXT:         sum_variadic(
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             __SlateVaArgs::new(vec![
+// LOWERING-NEXT:                 __SlateVaArg::new({{_v[0-9]+}}),
+// LOWERING-NEXT:                 __SlateVaArg::new({{_v[0-9]+}}),
+// LOWERING-NEXT:                 __SlateVaArg::new({{_v[0-9]+}}),
+// LOWERING-NEXT:             ]),
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
@@ -168,10 +198,21 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(f16)]
 // REWRITES-NEXT: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(
+// REWRITES-NEXT:     dead_code,
+// REWRITES-NEXT:     unused,
+// REWRITES-NEXT:     non_camel_case_types,
+// REWRITES-NEXT:     non_snake_case,
+// REWRITES-NEXT:     non_upper_case_globals,
+// REWRITES-NEXT:     arithmetic_overflow,
+// REWRITES-NEXT:     unconditional_panic,
+// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-NEXT:     unused_comparisons
+// REWRITES-NEXT: )]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
-// REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: struct __SlateVaArg {
@@ -181,7 +222,10 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: impl __SlateVaArg {
 // REWRITES-NEXT:     fn new<T: 'static>(value: T) -> Self {
-// REWRITES-NEXT:         Self { value: Box::new(value), size: std::mem::size_of::<T>() }
+// REWRITES-NEXT:         Self {
+// REWRITES-NEXT:             value: Box::new(value),
+// REWRITES-NEXT:             size: std::mem::size_of::<T>(),
+// REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
 // REWRITES-EMPTY:
 // REWRITES-NEXT:     fn read<T: Copy + 'static>(&self) -> T {
@@ -205,11 +249,17 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: impl __SlateVaArgs {
 // REWRITES-NEXT:     fn new(args: Vec<__SlateVaArg>) -> Self {
-// REWRITES-NEXT:         Self { args: Some(std::rc::Rc::new(args)), index: 0 }
+// REWRITES-NEXT:         Self {
+// REWRITES-NEXT:             args: Some(std::rc::Rc::new(args)),
+// REWRITES-NEXT:             index: 0,
+// REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
 // REWRITES-EMPTY:
 // REWRITES-NEXT:     const fn empty() -> Self {
-// REWRITES-NEXT:         Self { args: None, index: 0 }
+// REWRITES-NEXT:         Self {
+// REWRITES-NEXT:             args: None,
+// REWRITES-NEXT:             index: 0,
+// REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
 // REWRITES-EMPTY:
 // REWRITES-NEXT:     fn next_arg<T: Copy + 'static>(&mut self) -> T {
@@ -224,57 +274,59 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn add16({{arg[0-9]+}}: f16, {{arg[0-9]+}}: f16) -> f16 {
-// REWRITES-NEXT: return (({{arg[0-9]+}} as f32) + ({{arg[0-9]+}} as f32)) as f16;
+// REWRITES-NEXT:     return (({{arg[0-9]+}} as f32) + ({{arg[0-9]+}} as f32)) as f16;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn mul16({{arg[0-9]+}}: f16, {{arg[0-9]+}}: f16) -> f16 {
-// REWRITES-NEXT: return (({{arg[0-9]+}} as f32) * ({{arg[0-9]+}} as f32)) as f16;
+// REWRITES-NEXT:     return (({{arg[0-9]+}} as f32) * ({{arg[0-9]+}} as f32)) as f16;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe fn sum_variadic({{arg[0-9]+}}: i32, mut __slate_va_args: __SlateVaArgs) -> f16 {
-// REWRITES-NEXT: let mut n: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut ap: __SlateVaArgs = __SlateVaArgs::empty();
-// REWRITES-NEXT: let mut total: f16 = 0.0f16;
-// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:     let mut n: i32 = {{arg[0-9]+}};
+// REWRITES-NEXT:     let mut ap: __SlateVaArgs = __SlateVaArgs::empty();
+// REWRITES-NEXT:     let mut total: f16 = 0.0f16;
+// REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         ap = __slate_va_args.clone();
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT: total = {{_v[0-9]+}} as f16;
-// REWRITES-NEXT: {
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     total = (0 as i32) as f16;
+// REWRITES-NEXT:     {
 // REWRITES-NEXT:         let mut i: i32 = 0;
 // REWRITES-NEXT:         i = 0;
 // REWRITES-NEXT:         loop {
-// REWRITES-NEXT:                     if !(i < n) {
-// REWRITES-NEXT:                                     break;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     {
-// REWRITES-NEXT:                                     let {{_v[0-9]+}}: f32 = total as f32;
-// REWRITES-NEXT:                                     let {{_v[0-9]+}}: f16 = unsafe { ap.next_arg::<f16>() };
-// REWRITES-NEXT:                                     total = ({{_v[0-9]+}} + ({{_v[0-9]+}} as f32)) as f16;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     i = i + 1;
+// REWRITES-NEXT:             if !(i < n) {
+// REWRITES-NEXT:                 break;
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             {
+// REWRITES-NEXT:                 let {{_v[0-9]+}}: f32 = total as f32;
+// REWRITES-NEXT:                 let {{_v[0-9]+}}: f16 = unsafe { ap.next_arg::<f16>() };
+// REWRITES-NEXT:                 total = ({{_v[0-9]+}} + ({{_v[0-9]+}} as f32)) as f16;
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             i = i + 1;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT: }
-// REWRITES-NEXT: return total;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     return total;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let {{_v[0-9]+}}: f16 = 3.0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: f16 = 4.0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: f16 = add16({{_v[0-9]+}}, {{_v[0-9]+}});
-// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as i32) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: f16 = mul16({{_v[0-9]+}}, {{_v[0-9]+}});
-// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as i32) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: f16 = 1.0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: f16 = 2.0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: f16 = 3.0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: f16 = unsafe { sum_variadic({{_v[0-9]+}}, __SlateVaArgs::new(vec![__SlateVaArg::new({{_v[0-9]+}}), __SlateVaArg::new({{_v[0-9]+}}), __SlateVaArg::new({{_v[0-9]+}})])) };
-// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}} as i32) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f16 = 3.0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f16 = 4.0;
+// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), add16({{_v[0-9]+}}, {{_v[0-9]+}}) as i32) };
+// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), mul16({{_v[0-9]+}}, {{_v[0-9]+}}) as i32) };
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         printf(
+// REWRITES-NEXT:             c"%d\n".as_ptr(),
+// REWRITES-NEXT:             (unsafe {
+// REWRITES-NEXT:                 sum_variadic(
+// REWRITES-NEXT:                     3,
+// REWRITES-NEXT:                     __SlateVaArgs::new(vec![
+// REWRITES-NEXT:                         __SlateVaArg::new(1.0 as f16),
+// REWRITES-NEXT:                         __SlateVaArg::new(2.0 as f16),
+// REWRITES-NEXT:                         __SlateVaArg::new(3.0 as f16),
+// REWRITES-NEXT:                     ]),
+// REWRITES-NEXT:                 )
+// REWRITES-NEXT:             }) as i32,
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

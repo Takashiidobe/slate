@@ -77,9 +77,13 @@ transpile-all:
     fi
 
 filecheck_files := split(`find tests/fixtures -maxdepth 1 -type f -name '*.c' -printf '%p\n' | sort | tr '\n' ' '`)
+filecheck_bionic := split(`find tests/fixtures/bionic -type f -name '*.c' -printf '%p\n' | sort | tr '\n' ' '`)
+filecheck_macos := split(`find tests/fixtures/macos -type f -name '*.c' -printf '%p\n' | sort | tr '\n' ' '`)
+filecheck_msvc := split(`find tests/fixtures/msvc -type f -name '*.c' -printf '%p\n' | sort | tr '\n' ' '`)
+filecheck_link := split(`rg -l '@(lowering|rewrite)(-fn)?-(begin|not-begin)|(LOWERING|REWRITES)-' tests/fixtures.link -g '*.c' | sort | tr '\n' ' '`)
 filecheck_projects := split(`rg -l '@(lowering|rewrite)(-fn)?-(begin|not-begin)' tests/fixtures.multi -g '*.c' | cut -d/ -f1-3 | sort -u | tr '\n' ' '`)
 filecheck_libraries := split(`rg -l '@(lowering|rewrite)(-fn)?-(begin|not-begin)' tests/fixtures.library -g '*.c' | cut -d/ -f1-3 | sort -u | tr '\n' ' '`)
-filecheck_fixtures := filecheck_files ++ filecheck_projects ++ filecheck_libraries
+filecheck_fixtures := filecheck_files ++ filecheck_bionic ++ filecheck_macos ++ filecheck_msvc ++ filecheck_link ++ filecheck_projects ++ filecheck_libraries
 filecheck_jobs := if num_jobs() { num_jobs() } else { "8" }
 
 # regenerate the lowering FileCheck blocks in every fixture, leaving rewrites blocks frozen
@@ -103,8 +107,8 @@ _regen-filecheck profile path:
     #!/usr/bin/env bash
     set -euo pipefail
     case {{quote(path)}} in
-        tests/fixtures.multi/*) mode=--project ;;
-        tests/fixtures.library/*) mode=--library-project ;;
+        tests/fixtures.multi*) mode=--project ;;
+        tests/fixtures.library*) mode=--library-project ;;
         *) mode= ;;
     esac
     python3 tools/update_filecheck.py $mode --in-place --profile {{quote(profile)}} {{quote(path)}}

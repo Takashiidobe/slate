@@ -7,9 +7,13 @@ int main(void) {
   printf("%s %s\n", names[0], names[1]);
   // @rewrite-end
 }
+
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = b"%s %s\n\0".as_ptr() as *mut i8;
-// REWRITES-DAG: let {{_v[0-9]+}}: i64 = 0;
-// REWRITES-DAG: let {{_v[0-9]+}}: i64 = 1;
-// REWRITES-DAG: unsafe { printf({{_v[0-9]+}} as *const i8, unsafe { (*names)[({{_v[0-9]+}} as usize)] }, unsafe { (*names)[({{_v[0-9]+}} as usize)] }) };
+// REWRITES-DAG: unsafe {
+// REWRITES-DAG: printf(
+// REWRITES-DAG: c"%s %s\n".as_ptr(),
+// REWRITES-DAG: unsafe { (*names)[((0 as i64) as usize)] },
+// REWRITES-DAG: unsafe { (*names)[((1 as i64) as usize)] },
+// REWRITES-DAG: )
+// REWRITES-DAG: };
 // SLATE-FILECHECK-END rewrites

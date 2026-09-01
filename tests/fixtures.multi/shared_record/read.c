@@ -5,6 +5,7 @@
 int read_pair(struct Pair *pair) { return pair->left + pair->right; }
 // @rewrite-fn-end
 // @lowering-fn-end
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: #[unsafe(no_mangle)]
 // LOWERING-DAG: pub unsafe extern "C" fn read_pair({{arg[0-9]+}}: *mut Pair) -> i32 {

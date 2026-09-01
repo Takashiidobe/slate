@@ -5,6 +5,7 @@
 int read_payload(struct Box *box) { return box->payload.value; }
 // @rewrite-fn-end
 // @lowering-fn-end
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: #[unsafe(no_mangle)]
 // LOWERING-DAG: pub unsafe extern "C" fn read_payload({{arg[0-9]+}}: *mut Box) -> i32 {

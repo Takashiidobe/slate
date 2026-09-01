@@ -210,13 +210,25 @@ int main(void) {
          preprocessor_total, type_total, control_total, removal_total);
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(thread_local)]
 // LOWERING-NEXT: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(
+// LOWERING-NEXT:     dead_code,
+// LOWERING-NEXT:     unused,
+// LOWERING-NEXT:     non_camel_case_types,
+// LOWERING-NEXT:     non_snake_case,
+// LOWERING-NEXT:     non_upper_case_globals,
+// LOWERING-NEXT:     arithmetic_overflow,
+// LOWERING-NEXT:     unconditional_panic,
+// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-NEXT:     unused_comparisons
+// LOWERING-NEXT: )]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[deprecated(note = "C23 warning directive probe")]
-// LOWERING-NEXT: const __SLATE_WARNING_0: () = {  };
+// LOWERING-NEXT: const __SLATE_WARNING_0: () = {};
 // LOWERING-EMPTY:
 // LOWERING-NEXT: const _: () = __SLATE_WARNING_0;
 // LOWERING-EMPTY:
@@ -228,7 +240,6 @@ int main(void) {
 // LOWERING-NEXT:     C23_FIXED_SECOND = 1,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[allow(non_camel_case_types)]
 // LOWERING-NEXT: #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
@@ -236,14 +247,12 @@ int main(void) {
 // LOWERING-NEXT:     C23_WIDE_VALUE = 0,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: struct C23Empty {
 // LOWERING-NEXT:     first: i32,
 // LOWERING-NEXT:     second: i32,
 // LOWERING-NEXT: }
-// LOWERING-EMPTY:
 // LOWERING-EMPTY:
 // LOWERING-NEXT: static mut c23_embedded: [u8; 3] = [67, 50, 51];
 // LOWERING-EMPTY:
@@ -258,7 +267,7 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
 // LOWERING-NEXT:     fn exit(_0: i32) -> !;
-// LOWERING-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: struct __SlateVaArg {
@@ -268,7 +277,10 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: impl __SlateVaArg {
 // LOWERING-NEXT:     fn new<T: 'static>(value: T) -> Self {
-// LOWERING-NEXT:         Self { value: Box::new(value), size: std::mem::size_of::<T>() }
+// LOWERING-NEXT:         Self {
+// LOWERING-NEXT:             value: Box::new(value),
+// LOWERING-NEXT:             size: std::mem::size_of::<T>(),
+// LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-EMPTY:
 // LOWERING-NEXT:     fn read<T: Copy + 'static>(&self) -> T {
@@ -292,11 +304,17 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: impl __SlateVaArgs {
 // LOWERING-NEXT:     fn new(args: Vec<__SlateVaArg>) -> Self {
-// LOWERING-NEXT:         Self { args: Some(std::rc::Rc::new(args)), index: 0 }
+// LOWERING-NEXT:         Self {
+// LOWERING-NEXT:             args: Some(std::rc::Rc::new(args)),
+// LOWERING-NEXT:             index: 0,
+// LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-EMPTY:
 // LOWERING-NEXT:     const fn empty() -> Self {
-// LOWERING-NEXT:         Self { args: None, index: 0 }
+// LOWERING-NEXT:         Self {
+// LOWERING-NEXT:             args: None,
+// LOWERING-NEXT:             index: 0,
+// LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-EMPTY:
 // LOWERING-NEXT:     fn next_arg<T: Copy + 'static>(&mut self) -> T {
@@ -359,7 +377,11 @@ int main(void) {
 // LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = value;
 // LOWERING-NEXT:         {
 // LOWERING-NEXT:             let __switch_value0 = {{_v[0-9]+}};
-// LOWERING-NEXT:             let mut __switch_case0: i32 = match __switch_value0 { 1 => 0, 2 => 1, _ => 2 };
+// LOWERING-NEXT:             let mut __switch_case0: i32 = match __switch_value0 {
+// LOWERING-NEXT:                 1 => 0,
+// LOWERING-NEXT:                 2 => 1,
+// LOWERING-NEXT:                 _ => 2,
+// LOWERING-NEXT:             };
 // LOWERING-NEXT:             '__switch0: loop {
 // LOWERING-NEXT:                 match __switch_case0 {
 // LOWERING-NEXT:                     0 => {
@@ -426,7 +448,10 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut empty_struct: C23Empty = C23Empty { first: 0, second: 0 };
+// LOWERING-NEXT:     let mut empty_struct: C23Empty = C23Empty {
+// LOWERING-NEXT:         first: 0,
+// LOWERING-NEXT:         second: 0,
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     let mut empty_array: [i32; 3] = [0; 3];
 // LOWERING-NEXT:     let mut qualified_array: [i32; 3] = [0; 3];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
@@ -441,7 +466,10 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bitint::BUint<17, 1, 4> = bitint::BUint::<17, 1, 4>::from_decimal_str("100000");
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 165;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = 90;
-// LOWERING-NEXT:     empty_struct = C23Empty { first: 0, second: 0 };
+// LOWERING-NEXT:     empty_struct = C23Empty {
+// LOWERING-NEXT:         first: 0,
+// LOWERING-NEXT:         second: 0,
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     empty_array = [0, 0, 0];
 // LOWERING-NEXT:     qualified_array = [2, 3, 5];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u16 = 37;
@@ -571,7 +599,12 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 103;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 107;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { c23_relaxed_variadic(__SlateVaArgs::new(vec![__SlateVaArg::new({{_v[0-9]+}}), __SlateVaArg::new({{_v[0-9]+}})])) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:         c23_relaxed_variadic(__SlateVaArgs::new(vec![
+// LOWERING-NEXT:             __SlateVaArg::new({{_v[0-9]+}}),
+// LOWERING-NEXT:             __SlateVaArg::new({{_v[0-9]+}}),
+// LOWERING-NEXT:         ]))
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 202311;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 202311;
@@ -586,7 +619,17 @@ int main(void) {
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     c23_label_before_brace();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:         printf(
+// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
@@ -595,10 +638,21 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(thread_local)]
 // REWRITES-NEXT: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(
+// REWRITES-NEXT:     dead_code,
+// REWRITES-NEXT:     unused,
+// REWRITES-NEXT:     non_camel_case_types,
+// REWRITES-NEXT:     non_snake_case,
+// REWRITES-NEXT:     non_upper_case_globals,
+// REWRITES-NEXT:     arithmetic_overflow,
+// REWRITES-NEXT:     unconditional_panic,
+// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-NEXT:     unused_comparisons
+// REWRITES-NEXT: )]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[deprecated(note = "C23 warning directive probe")]
-// REWRITES-NEXT: const __SLATE_WARNING_0: () = {  };
+// REWRITES-NEXT: const __SLATE_WARNING_0: () = {};
 // REWRITES-EMPTY:
 // REWRITES-NEXT: const _: () = __SLATE_WARNING_0;
 // REWRITES-EMPTY:
@@ -610,7 +664,6 @@ int main(void) {
 // REWRITES-NEXT:     C23_FIXED_SECOND = 1,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[allow(non_camel_case_types)]
 // REWRITES-NEXT: #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
@@ -618,14 +671,12 @@ int main(void) {
 // REWRITES-NEXT:     C23_WIDE_VALUE = 0,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: struct C23Empty {
 // REWRITES-NEXT:     first: i32,
 // REWRITES-NEXT:     second: i32,
 // REWRITES-NEXT: }
-// REWRITES-EMPTY:
 // REWRITES-EMPTY:
 // REWRITES-NEXT: static mut c23_embedded: [u8; 3] = [67, 50, 51];
 // REWRITES-EMPTY:
@@ -640,7 +691,7 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
 // REWRITES-NEXT:     fn exit(_0: i32) -> !;
-// REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: struct __SlateVaArg {
@@ -650,7 +701,10 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: impl __SlateVaArg {
 // REWRITES-NEXT:     fn new<T: 'static>(value: T) -> Self {
-// REWRITES-NEXT:         Self { value: Box::new(value), size: std::mem::size_of::<T>() }
+// REWRITES-NEXT:         Self {
+// REWRITES-NEXT:             value: Box::new(value),
+// REWRITES-NEXT:             size: std::mem::size_of::<T>(),
+// REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
 // REWRITES-EMPTY:
 // REWRITES-NEXT:     fn read<T: Copy + 'static>(&self) -> T {
@@ -674,11 +728,17 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: impl __SlateVaArgs {
 // REWRITES-NEXT:     fn new(args: Vec<__SlateVaArg>) -> Self {
-// REWRITES-NEXT:         Self { args: Some(std::rc::Rc::new(args)), index: 0 }
+// REWRITES-NEXT:         Self {
+// REWRITES-NEXT:             args: Some(std::rc::Rc::new(args)),
+// REWRITES-NEXT:             index: 0,
+// REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
 // REWRITES-EMPTY:
 // REWRITES-NEXT:     const fn empty() -> Self {
-// REWRITES-NEXT:         Self { args: None, index: 0 }
+// REWRITES-NEXT:         Self {
+// REWRITES-NEXT:             args: None,
+// REWRITES-NEXT:             index: 0,
+// REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
 // REWRITES-EMPTY:
 // REWRITES-NEXT:     fn next_arg<T: Copy + 'static>(&mut self) -> T {
@@ -694,189 +754,222 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[must_use]
 // REWRITES-NEXT: fn c23_nodiscard_value() -> i32 {
-// REWRITES-NEXT: return 47;
+// REWRITES-NEXT:     return 47;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c23_unnamed_parameter({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT: return {{arg[0-9]+}};
+// REWRITES-NEXT:     return {{arg[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c23_label_declaration({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT: let mut value: i32 = 0;
-// REWRITES-NEXT: let mut __retval: i32 = 0;
-// REWRITES-NEXT: let mut result: i32 = 0;
-// REWRITES-NEXT: let mut {{__state[0-9]+}}: i32 = 0;
-// REWRITES-NEXT: '{{__dispatch[0-9]+}}: loop {
+// REWRITES-NEXT:     let mut value: i32 = 0;
+// REWRITES-NEXT:     let mut __retval: i32 = 0;
+// REWRITES-NEXT:     let mut result: i32 = 0;
+// REWRITES-NEXT:     let mut {{__state[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     '{{__dispatch[0-9]+}}: loop {
 // REWRITES-NEXT:         match {{__state[0-9]+}} {
 // REWRITES-NEXT:             0 => {
-// REWRITES-NEXT:                         value = {{arg[0-9]+}};
-// REWRITES-NEXT:                         {{__state[0-9]+}} = 1;
-// REWRITES-NEXT:                         continue '{{__dispatch[0-9]+}};
+// REWRITES-NEXT:                 value = {{arg[0-9]+}};
+// REWRITES-NEXT:                 {{__state[0-9]+}} = 1;
+// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             1 => {
-// REWRITES-NEXT:                         let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:                         result = value + {{_v[0-9]+}};
-// REWRITES-NEXT:                         __retval = result;
-// REWRITES-NEXT:                         return __retval;
+// REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:                 result = value + {{_v[0-9]+}};
+// REWRITES-NEXT:                 __retval = result;
+// REWRITES-NEXT:                 return __retval;
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             _ => {
-// REWRITES-NEXT:                         unreachable!();
+// REWRITES-NEXT:                 unreachable!();
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:         }
-// REWRITES-NEXT: }
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c23_switch_fallthrough({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT: let mut value: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT: let mut result: i32 = 0;
-// REWRITES-NEXT: result = 0;
-// REWRITES-NEXT: {
+// REWRITES-NEXT:     let mut value: i32 = {{arg[0-9]+}};
+// REWRITES-NEXT:     let mut result: i32 = 0;
+// REWRITES-NEXT:     result = 0;
+// REWRITES-NEXT:     {
 // REWRITES-NEXT:         {
-// REWRITES-NEXT:                     let __switch_value0 = value;
-// REWRITES-NEXT:                     let mut __switch_case0: i32 = match __switch_value0 { 1 => 0, 2 => 1, _ => 2 };
-// REWRITES-NEXT:                     '__switch0: loop {
-// REWRITES-NEXT:                                     match __switch_case0 {
-// REWRITES-NEXT:                                         0 => {
-// REWRITES-NEXT:                                                             let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:                                                             result = result + {{_v[0-9]+}};
-// REWRITES-NEXT:                                                             __switch_case0 = 1;
-// REWRITES-NEXT:                                                             continue '__switch0;
-// REWRITES-NEXT:                                         }
-// REWRITES-NEXT:                                         1 => {
-// REWRITES-NEXT:                                                             let {{_v[0-9]+}}: i32 = 5;
-// REWRITES-NEXT:                                                             result = result + {{_v[0-9]+}};
-// REWRITES-NEXT:                                                             break '__switch0;
-// REWRITES-NEXT:                                         }
-// REWRITES-NEXT:                                         2 => {
-// REWRITES-NEXT:                                                             break '__switch0;
-// REWRITES-NEXT:                                         }
-// REWRITES-NEXT:                                         _ => {
-// REWRITES-NEXT:                                                             break '__switch0;
-// REWRITES-NEXT:                                         }
-// REWRITES-NEXT:                                     }
+// REWRITES-NEXT:             let __switch_value0 = value;
+// REWRITES-NEXT:             let mut __switch_case0: i32 = match __switch_value0 {
+// REWRITES-NEXT:                 1 => 0,
+// REWRITES-NEXT:                 2 => 1,
+// REWRITES-NEXT:                 _ => 2,
+// REWRITES-NEXT:             };
+// REWRITES-NEXT:             '__switch0: loop {
+// REWRITES-NEXT:                 match __switch_case0 {
+// REWRITES-NEXT:                     0 => {
+// REWRITES-NEXT:                         let {{_v[0-9]+}}: i32 = 3;
+// REWRITES-NEXT:                         result = result + {{_v[0-9]+}};
+// REWRITES-NEXT:                         __switch_case0 = 1;
+// REWRITES-NEXT:                         continue '__switch0;
 // REWRITES-NEXT:                     }
+// REWRITES-NEXT:                     1 => {
+// REWRITES-NEXT:                         let {{_v[0-9]+}}: i32 = 5;
+// REWRITES-NEXT:                         result = result + {{_v[0-9]+}};
+// REWRITES-NEXT:                         break '__switch0;
+// REWRITES-NEXT:                     }
+// REWRITES-NEXT:                     2 => {
+// REWRITES-NEXT:                         break '__switch0;
+// REWRITES-NEXT:                     }
+// REWRITES-NEXT:                     _ => {
+// REWRITES-NEXT:                         break '__switch0;
+// REWRITES-NEXT:                     }
+// REWRITES-NEXT:                 }
+// REWRITES-NEXT:             }
 // REWRITES-NEXT:         }
-// REWRITES-NEXT: }
-// REWRITES-NEXT: return result;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     return result;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe fn c23_relaxed_variadic(mut __slate_va_args: __SlateVaArgs) -> i32 {
-// REWRITES-NEXT: let mut arguments: __SlateVaArgs = __SlateVaArgs::empty();
-// REWRITES-NEXT: unsafe {
+// REWRITES-NEXT:     let mut arguments: __SlateVaArgs = __SlateVaArgs::empty();
+// REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         arguments = __slate_va_args.clone();
-// REWRITES-NEXT: }
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { arguments.next_arg::<i32>() };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { arguments.next_arg::<i32>() };
-// REWRITES-NEXT: return {{_v[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { arguments.next_arg::<i32>() };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { arguments.next_arg::<i32>() };
+// REWRITES-NEXT:     return {{_v[0-9]+}} + {{_v[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c23_never_return() -> ! {
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 99;
-// REWRITES-NEXT: unsafe { std::process::exit({{_v[0-9]+}} as i32) }
+// REWRITES-NEXT:     unsafe { std::process::exit(99 as i32) }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c23_label_before_brace() {
-// REWRITES-NEXT: let mut {{__state[0-9]+}}: i32 = 0;
-// REWRITES-NEXT: '{{__dispatch[0-9]+}}: loop {
+// REWRITES-NEXT:     let mut {{__state[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     '{{__dispatch[0-9]+}}: loop {
 // REWRITES-NEXT:         match {{__state[0-9]+}} {
 // REWRITES-NEXT:             0 => {
-// REWRITES-NEXT:                         {{__state[0-9]+}} = 1;
-// REWRITES-NEXT:                         continue '{{__dispatch[0-9]+}};
+// REWRITES-NEXT:                 {{__state[0-9]+}} = 1;
+// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             1 => {
-// REWRITES-NEXT:                         return;
+// REWRITES-NEXT:                 return;
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             _ => {
-// REWRITES-NEXT:                         break '{{__dispatch[0-9]+}};
+// REWRITES-NEXT:                 break '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:         }
-// REWRITES-NEXT: }
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut empty_struct: C23Empty = C23Empty { first: 0, second: 0 };
-// REWRITES-NEXT: let mut empty_array: [i32; 3] = [0, 0, 0];
-// REWRITES-NEXT: let mut qualified_array: [i32; 3] = [2, 3, 5];
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 61;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 67;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 71;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 79;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 5;
-// REWRITES-NEXT: let {{_v[0-9]+}}: bitint::BInt<17, 1, 4> = bitint::BInt::<17, 1, 4>::from_decimal_str("-12345");
-// REWRITES-NEXT: let {{_v[0-9]+}}: bitint::BUint<17, 1, 4> = bitint::BUint::<17, 1, 4>::from_decimal_str("100000");
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 165;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u8 = 90;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u16 = 37;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 8589934591u64;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = std::ptr::null_mut();
-// REWRITES-NEXT: let {{_v[0-9]+}}: bool = true;
-// REWRITES-NEXT: let {{_v[0-9]+}}: bool = false;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 83;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = (unsafe { c23_file_constant }) + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.to_i128() as i32;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.to_u128() as i32;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 4;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 1;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 7;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 11;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 13;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 1;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 4;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = ((({{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}}) as u64) + {{_v[0-9]+}} + ({{_v[0-9]+}} as u64) + ({{_v[0-9]+}} as u64) + ((unsafe { main_utf8_text[({{_v[0-9]+}} as usize)] }) as u64) + ((unsafe { main_utf8_text[({{_v[0-9]+}} as usize)] }) as u64) + (empty_struct.first as u64) + (empty_array[({{_v[0-9]+}} as usize)] as u64) + (qualified_array[({{_v[0-9]+}} as usize)] as u64) + (qualified_array[({{_v[0-9]+}} as usize)] as u64) + ({{_v[0-9]+}} as u64) + ((({{_v[0-9]+}} == 8589934591u64) as i32) as u64) + ({{_v[0-9]+}} as u64) + {{_v[0-9]+}} + (({{_v[0-9]+}} + {{_v[0-9]+}}) as u64) + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}}) as i32;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = c23_nodiscard_value();
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 23;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 29;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 1;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + ((unsafe { c23_embedded[({{_v[0-9]+}} as usize)] }) as i32) + ((unsafe { c23_embedded[({{_v[0-9]+}} as usize)] }) as i32) + ((unsafe { c23_embedded[({{_v[0-9]+}} as usize)] }) as i32);
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = std::ptr::null_mut();
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) + ({{_v[0-9]+}} as i32);
-// REWRITES-NEXT: let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32) + unsafe { c23_thread_value };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 89;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 97;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = c23_unnamed_parameter({{_v[0-9]+}}, {{_v[0-9]+}});
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 101;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = c23_label_declaration({{_v[0-9]+}});
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = c23_switch_fallthrough({{_v[0-9]+}});
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 103;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 107;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = unsafe { c23_relaxed_variadic(__SlateVaArgs::new(vec![__SlateVaArg::new({{_v[0-9]+}}), __SlateVaArg::new({{_v[0-9]+}})])) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 202311;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 202311;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}} == {{_v[0-9]+}}) as i32;
-// REWRITES-NEXT: {
+// REWRITES-NEXT:     let mut empty_struct: C23Empty = C23Empty {
+// REWRITES-NEXT:         first: 0,
+// REWRITES-NEXT:         second: 0,
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let mut empty_array: [i32; 3] = [0, 0, 0];
+// REWRITES-NEXT:     let mut qualified_array: [i32; 3] = [2, 3, 5];
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 61;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 67;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 71;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 79;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BInt<17, 1, 4> = bitint::BInt::<17, 1, 4>::from_decimal_str("-12345");
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BUint<17, 1, 4> = bitint::BUint::<17, 1, 4>::from_decimal_str("100000");
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 165;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 8589934591u64;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = std::ptr::null_mut();
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = true;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = false;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = (unsafe { c23_file_constant }) + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.to_i128() as i32;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.to_u128() as i32;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 4;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = (5 as i32) as u64;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = (90 as u8) as u64;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = (37 as u16) as u64;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = (83 as i32) as u64;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 7;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 11;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 13;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 3;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 4;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = ((({{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}}) as u64)
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + ((unsafe { main_utf8_text[((0 as i64) as usize)] }) as u64)
+// REWRITES-NEXT:         + ((unsafe { main_utf8_text[((1 as i64) as usize)] }) as u64)
+// REWRITES-NEXT:         + (empty_struct.first as u64)
+// REWRITES-NEXT:         + (empty_array[((0 as i64) as usize)] as u64)
+// REWRITES-NEXT:         + (qualified_array[((0 as i64) as usize)] as u64)
+// REWRITES-NEXT:         + (qualified_array[((2 as i64) as usize)] as u64)
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + ((({{_v[0-9]+}} == 8589934591u64) as i32) as u64)
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + (({{_v[0-9]+}} + {{_v[0-9]+}}) as u64)
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}) as i32;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = c23_nodiscard_value();
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 23;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 29;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + ((unsafe { c23_embedded[((0 as i64) as usize)] }) as i32)
+// REWRITES-NEXT:         + ((unsafe { c23_embedded[((1 as i64) as usize)] }) as i32)
+// REWRITES-NEXT:         + ((unsafe { c23_embedded[((2 as i64) as usize)] }) as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = std::ptr::null_mut();
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32) + unsafe { c23_thread_value };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = c23_unnamed_parameter(89, 97);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = c23_label_declaration(101);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = c23_switch_fallthrough(1);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
+// REWRITES-NEXT:         c23_relaxed_variadic(__SlateVaArgs::new(vec![
+// REWRITES-NEXT:             __SlateVaArg::new(103 as i32),
+// REWRITES-NEXT:             __SlateVaArg::new(107 as i32),
+// REWRITES-NEXT:         ]))
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 202311;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 202311;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}} == {{_v[0-9]+}}) as i32;
+// REWRITES-NEXT:     {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c23_never_flag)) };
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:                     c23_never_return();
+// REWRITES-NEXT:             c23_never_return();
 // REWRITES-NEXT:         }
-// REWRITES-NEXT: }
-// REWRITES-NEXT: c23_label_before_brace();
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     c23_label_before_brace();
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         printf(
+// REWRITES-NEXT:             c"%d %d %d %d %d %d\n".as_ptr(),
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

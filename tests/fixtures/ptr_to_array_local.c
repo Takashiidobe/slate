@@ -16,6 +16,7 @@ int main(void) {
   printf("%d\n", sum);
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: p = std::ptr::addr_of_mut!(*src);
 // SLATE-FILECHECK-END lowering

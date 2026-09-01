@@ -31,9 +31,21 @@ int main(void) {
   printf("%d %d\n", first(), second());
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(
+// LOWERING-NEXT:     dead_code,
+// LOWERING-NEXT:     unused,
+// LOWERING-NEXT:     non_camel_case_types,
+// LOWERING-NEXT:     non_snake_case,
+// LOWERING-NEXT:     non_upper_case_globals,
+// LOWERING-NEXT:     arithmetic_overflow,
+// LOWERING-NEXT:     unconditional_panic,
+// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-NEXT:     unused_comparisons
+// LOWERING-NEXT: )]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[allow(non_camel_case_types)]
@@ -43,14 +55,12 @@ int main(void) {
 // LOWERING-NEXT:     ERR_BAD = 5,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: struct Rec {
 // LOWERING-NEXT:     text: *mut i8,
 // LOWERING-NEXT:     code: u32,
 // LOWERING-NEXT: }
-// LOWERING-EMPTY:
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
@@ -60,15 +70,28 @@ int main(void) {
 // LOWERING-NEXT:     code: u32,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
-// LOWERING-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn first() -> i32 {
-// LOWERING-NEXT:     let mut items: aligned::Aligned<aligned::A16, [Rec; 2]> = aligned::Aligned([Rec { text: std::ptr::null_mut(), code: 0 }; 2]);
+// LOWERING-NEXT:     let mut items: aligned::Aligned<aligned::A16, [Rec; 2]> = aligned::Aligned(
+// LOWERING-NEXT:         [Rec {
+// LOWERING-NEXT:             text: std::ptr::null_mut(),
+// LOWERING-NEXT:             code: 0,
+// LOWERING-NEXT:         }; 2],
+// LOWERING-NEXT:     );
 // LOWERING-NEXT:     let mut total: i32 = 0;
-// LOWERING-NEXT:     *items = [Rec { text: b"a\0".as_ptr() as *mut i8, code: 0 }, Rec { text: b"bb\0".as_ptr() as *mut i8, code: 5 }];
+// LOWERING-NEXT:     *items = [
+// LOWERING-NEXT:         Rec {
+// LOWERING-NEXT:             text: b"a\0".as_ptr() as *mut i8,
+// LOWERING-NEXT:             code: 0,
+// LOWERING-NEXT:         },
+// LOWERING-NEXT:         Rec {
+// LOWERING-NEXT:             text: b"bb\0".as_ptr() as *mut i8,
+// LOWERING-NEXT:             code: 5,
+// LOWERING-NEXT:         },
+// LOWERING-NEXT:     ];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     {
@@ -110,9 +133,26 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn second() -> i32 {
-// LOWERING-NEXT:     let mut items: aligned::Aligned<aligned::A16, [Rec_0; 2]> = aligned::Aligned([Rec_0 { n: 0, text: std::ptr::null_mut(), code: 0 }; 2]);
+// LOWERING-NEXT:     let mut items: aligned::Aligned<aligned::A16, [Rec_0; 2]> = aligned::Aligned(
+// LOWERING-NEXT:         [Rec_0 {
+// LOWERING-NEXT:             n: 0,
+// LOWERING-NEXT:             text: std::ptr::null_mut(),
+// LOWERING-NEXT:             code: 0,
+// LOWERING-NEXT:         }; 2],
+// LOWERING-NEXT:     );
 // LOWERING-NEXT:     let mut total: i32 = 0;
-// LOWERING-NEXT:     *items = [Rec_0 { n: 5, text: b"x\0".as_ptr() as *mut i8, code: 0 }, Rec_0 { n: 6, text: b"y\0".as_ptr() as *mut i8, code: 5 }];
+// LOWERING-NEXT:     *items = [
+// LOWERING-NEXT:         Rec_0 {
+// LOWERING-NEXT:             n: 5,
+// LOWERING-NEXT:             text: b"x\0".as_ptr() as *mut i8,
+// LOWERING-NEXT:             code: 0,
+// LOWERING-NEXT:         },
+// LOWERING-NEXT:         Rec_0 {
+// LOWERING-NEXT:             n: 6,
+// LOWERING-NEXT:             text: b"y\0".as_ptr() as *mut i8,
+// LOWERING-NEXT:             code: 5,
+// LOWERING-NEXT:         },
+// LOWERING-NEXT:     ];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     {
@@ -163,7 +203,7 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = first();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = second();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
@@ -171,7 +211,18 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(
+// REWRITES-NEXT:     dead_code,
+// REWRITES-NEXT:     unused,
+// REWRITES-NEXT:     non_camel_case_types,
+// REWRITES-NEXT:     non_snake_case,
+// REWRITES-NEXT:     non_upper_case_globals,
+// REWRITES-NEXT:     arithmetic_overflow,
+// REWRITES-NEXT:     unconditional_panic,
+// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-NEXT:     unused_comparisons
+// REWRITES-NEXT: )]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[allow(non_camel_case_types)]
@@ -181,14 +232,12 @@ int main(void) {
 // REWRITES-NEXT:     ERR_BAD = 5,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: struct Rec {
 // REWRITES-NEXT:     text: *mut i8,
 // REWRITES-NEXT:     code: u32,
 // REWRITES-NEXT: }
-// REWRITES-EMPTY:
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
@@ -198,66 +247,93 @@ int main(void) {
 // REWRITES-NEXT:     code: u32,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
-// REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn first() -> i32 {
-// REWRITES-NEXT: let mut items: aligned::Aligned<aligned::A16, [Rec; 2]> = aligned::Aligned([Rec { text: std::ptr::null_mut(), code: 0 }; 2]);
-// REWRITES-NEXT: let mut total: i32 = 0;
-// REWRITES-NEXT: *items = [Rec { text: b"a\0".as_ptr() as *mut i8, code: 0 }, Rec { text: b"bb\0".as_ptr() as *mut i8, code: 5 }];
-// REWRITES-NEXT: total = 0;
-// REWRITES-NEXT: {
+// REWRITES-NEXT:     let mut items: aligned::Aligned<aligned::A16, [Rec; 2]> = aligned::Aligned(
+// REWRITES-NEXT:         [Rec {
+// REWRITES-NEXT:             text: std::ptr::null_mut(),
+// REWRITES-NEXT:             code: 0,
+// REWRITES-NEXT:         }; 2],
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let mut total: i32 = 0;
+// REWRITES-NEXT:     *items = [
+// REWRITES-NEXT:         Rec {
+// REWRITES-NEXT:             text: b"a\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:             code: 0,
+// REWRITES-NEXT:         },
+// REWRITES-NEXT:         Rec {
+// REWRITES-NEXT:             text: b"bb\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:             code: 5,
+// REWRITES-NEXT:         },
+// REWRITES-NEXT:     ];
+// REWRITES-NEXT:     total = 0;
+// REWRITES-NEXT:     {
 // REWRITES-NEXT:         let mut i: u32 = 0;
 // REWRITES-NEXT:         i = 0;
 // REWRITES-NEXT:         loop {
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: u64 = i as u64;
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: u64 = 32;
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: u64 = std::mem::size_of::<Rec>() as u64;
-// REWRITES-NEXT:                     if !({{_v[0-9]+}} < {{_v[0-9]+}} / {{_v[0-9]+}}) {
-// REWRITES-NEXT:                                     break;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = items[((i as u64) as usize)].code as i32;
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: *mut i8 = items[((i as u64) as usize)].text;
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
-// REWRITES-NEXT:                     total = total + ({{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32));
-// REWRITES-NEXT:                     i = i + 1;
+// REWRITES-NEXT:             let {{_v[0-9]+}}: u64 = i as u64;
+// REWRITES-NEXT:             let {{_v[0-9]+}}: u64 = 32;
+// REWRITES-NEXT:             let {{_v[0-9]+}}: u64 = std::mem::size_of::<Rec>() as u64;
+// REWRITES-NEXT:             if !({{_v[0-9]+}} < {{_v[0-9]+}} / {{_v[0-9]+}}) {
+// REWRITES-NEXT:                 break;
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = items[((i as u64) as usize)].code as i32;
+// REWRITES-NEXT:             let {{_v[0-9]+}}: *mut i8 = items[((i as u64) as usize)].text;
+// REWRITES-NEXT:             let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
+// REWRITES-NEXT:             total = total + ({{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32));
+// REWRITES-NEXT:             i = i + 1;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT: }
-// REWRITES-NEXT: return total;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     return total;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn second() -> i32 {
-// REWRITES-NEXT: let mut items: aligned::Aligned<aligned::A16, [Rec_0; 2]> = aligned::Aligned([Rec_0 { n: 0, text: std::ptr::null_mut(), code: 0 }; 2]);
-// REWRITES-NEXT: let mut total: i32 = 0;
-// REWRITES-NEXT: *items = [Rec_0 { n: 5, text: b"x\0".as_ptr() as *mut i8, code: 0 }, Rec_0 { n: 6, text: b"y\0".as_ptr() as *mut i8, code: 5 }];
-// REWRITES-NEXT: total = 0;
-// REWRITES-NEXT: {
+// REWRITES-NEXT:     let mut items: aligned::Aligned<aligned::A16, [Rec_0; 2]> = aligned::Aligned(
+// REWRITES-NEXT:         [Rec_0 {
+// REWRITES-NEXT:             n: 0,
+// REWRITES-NEXT:             text: std::ptr::null_mut(),
+// REWRITES-NEXT:             code: 0,
+// REWRITES-NEXT:         }; 2],
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let mut total: i32 = 0;
+// REWRITES-NEXT:     *items = [
+// REWRITES-NEXT:         Rec_0 {
+// REWRITES-NEXT:             n: 5,
+// REWRITES-NEXT:             text: b"x\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:             code: 0,
+// REWRITES-NEXT:         },
+// REWRITES-NEXT:         Rec_0 {
+// REWRITES-NEXT:             n: 6,
+// REWRITES-NEXT:             text: b"y\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:             code: 5,
+// REWRITES-NEXT:         },
+// REWRITES-NEXT:     ];
+// REWRITES-NEXT:     total = 0;
+// REWRITES-NEXT:     {
 // REWRITES-NEXT:         let mut i: u32 = 0;
 // REWRITES-NEXT:         i = 0;
 // REWRITES-NEXT:         loop {
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: u64 = 48;
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: u64 = 24;
-// REWRITES-NEXT:                     if !((i as u64) < {{_v[0-9]+}} / {{_v[0-9]+}}) {
-// REWRITES-NEXT:                                     break;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = (items[((i as u64) as usize)].n as i32) + (items[((i as u64) as usize)].code as i32);
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: *mut i8 = items[((i as u64) as usize)].text;
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
-// REWRITES-NEXT:                     total = total + ({{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32));
-// REWRITES-NEXT:                     i = i + 1;
+// REWRITES-NEXT:             let {{_v[0-9]+}}: u64 = 48;
+// REWRITES-NEXT:             let {{_v[0-9]+}}: u64 = 24;
+// REWRITES-NEXT:             if !((i as u64) < {{_v[0-9]+}} / {{_v[0-9]+}}) {
+// REWRITES-NEXT:                 break;
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = (items[((i as u64) as usize)].n as i32)
+// REWRITES-NEXT:                 + (items[((i as u64) as usize)].code as i32);
+// REWRITES-NEXT:             let {{_v[0-9]+}}: *mut i8 = items[((i as u64) as usize)].text;
+// REWRITES-NEXT:             let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
+// REWRITES-NEXT:             total = total + ({{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32));
+// REWRITES-NEXT:             i = i + 1;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT: }
-// REWRITES-NEXT: return total;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     return total;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = first();
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = second();
-// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     unsafe { printf(c"%d %d\n".as_ptr(), first(), second()) };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

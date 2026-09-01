@@ -74,3 +74,291 @@ int main(void) { return 0; }
 // REWRITES-NOT: struct LongDouble
 // REWRITES-BIONIC-AARCH64-DAG: _4: u32
 // REWRITES-BIONIC-X86_64-DAG: _4: i32
+
+// SLATE-FILECHECK-BEGIN lowering-bionic-aarch64
+// LOWERING-BIONIC-AARCH64: #![feature(f128)]
+// LOWERING-BIONIC-AARCH64-NEXT: #![allow(
+// LOWERING-BIONIC-AARCH64-NEXT:     dead_code,
+// LOWERING-BIONIC-AARCH64-NEXT:     unused,
+// LOWERING-BIONIC-AARCH64-NEXT:     non_camel_case_types,
+// LOWERING-BIONIC-AARCH64-NEXT:     non_snake_case,
+// LOWERING-BIONIC-AARCH64-NEXT:     non_upper_case_globals,
+// LOWERING-BIONIC-AARCH64-NEXT:     arithmetic_overflow,
+// LOWERING-BIONIC-AARCH64-NEXT:     unconditional_panic,
+// LOWERING-BIONIC-AARCH64-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-BIONIC-AARCH64-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-BIONIC-AARCH64-NEXT:     unused_comparisons
+// LOWERING-BIONIC-AARCH64-NEXT: )]
+// LOWERING-BIONIC-AARCH64-EMPTY:
+// LOWERING-BIONIC-AARCH64-NEXT: #[repr(C)]
+// LOWERING-BIONIC-AARCH64-NEXT: #[derive(Clone, Copy)]
+// LOWERING-BIONIC-AARCH64-NEXT: struct __va_list {}
+// LOWERING-BIONIC-AARCH64-EMPTY:
+// LOWERING-BIONIC-AARCH64-NEXT: unsafe extern "C" {
+// LOWERING-BIONIC-AARCH64-NEXT:     fn bionic_import(_0: usize, _1: isize, _2: isize, _3: usize, _4: u32, _5: u32, _6: f128)
+// LOWERING-BIONIC-AARCH64-NEXT:     -> i64;
+// LOWERING-BIONIC-AARCH64-NEXT: }
+// LOWERING-BIONIC-AARCH64-EMPTY:
+// LOWERING-BIONIC-AARCH64-NEXT: struct __SlateVaArg {
+// LOWERING-BIONIC-AARCH64-NEXT:     value: Box<dyn std::any::Any>,
+// LOWERING-BIONIC-AARCH64-NEXT:     size: usize,
+// LOWERING-BIONIC-AARCH64-NEXT: }
+// LOWERING-BIONIC-AARCH64-EMPTY:
+// LOWERING-BIONIC-AARCH64-NEXT: impl __SlateVaArg {
+// LOWERING-BIONIC-AARCH64-NEXT:     fn new<T: 'static>(value: T) -> Self {
+// LOWERING-BIONIC-AARCH64-NEXT:         Self {
+// LOWERING-BIONIC-AARCH64-NEXT:             value: Box::new(value),
+// LOWERING-BIONIC-AARCH64-NEXT:             size: std::mem::size_of::<T>(),
+// LOWERING-BIONIC-AARCH64-NEXT:         }
+// LOWERING-BIONIC-AARCH64-NEXT:     }
+// LOWERING-BIONIC-AARCH64-EMPTY:
+// LOWERING-BIONIC-AARCH64-NEXT:     fn read<T: Copy + 'static>(&self) -> T {
+// LOWERING-BIONIC-AARCH64-NEXT:         if let Some(value) = self.value.downcast_ref::<T>() {
+// LOWERING-BIONIC-AARCH64-NEXT:             return *value;
+// LOWERING-BIONIC-AARCH64-NEXT:         }
+// LOWERING-BIONIC-AARCH64-NEXT:         assert!(self.size >= std::mem::size_of::<T>());
+// LOWERING-BIONIC-AARCH64-NEXT:         unsafe {
+// LOWERING-BIONIC-AARCH64-NEXT:             std::ptr::read_unaligned(
+// LOWERING-BIONIC-AARCH64-NEXT:                 (self.value.as_ref() as *const dyn std::any::Any) as *const () as *const T,
+// LOWERING-BIONIC-AARCH64-NEXT:             )
+// LOWERING-BIONIC-AARCH64-NEXT:         }
+// LOWERING-BIONIC-AARCH64-NEXT:     }
+// LOWERING-BIONIC-AARCH64-NEXT: }
+// LOWERING-BIONIC-AARCH64-EMPTY:
+// LOWERING-BIONIC-AARCH64-NEXT: #[derive(Clone)]
+// LOWERING-BIONIC-AARCH64-NEXT: struct __SlateVaArgs {
+// LOWERING-BIONIC-AARCH64-NEXT:     args: Option<std::rc::Rc<Vec<__SlateVaArg>>>,
+// LOWERING-BIONIC-AARCH64-NEXT:     index: usize,
+// LOWERING-BIONIC-AARCH64-NEXT: }
+// LOWERING-BIONIC-AARCH64-EMPTY:
+// LOWERING-BIONIC-AARCH64-NEXT: impl __SlateVaArgs {
+// LOWERING-BIONIC-AARCH64-NEXT:     fn new(args: Vec<__SlateVaArg>) -> Self {
+// LOWERING-BIONIC-AARCH64-NEXT:         Self {
+// LOWERING-BIONIC-AARCH64-NEXT:             args: Some(std::rc::Rc::new(args)),
+// LOWERING-BIONIC-AARCH64-NEXT:             index: 0,
+// LOWERING-BIONIC-AARCH64-NEXT:         }
+// LOWERING-BIONIC-AARCH64-NEXT:     }
+// LOWERING-BIONIC-AARCH64-EMPTY:
+// LOWERING-BIONIC-AARCH64-NEXT:     const fn empty() -> Self {
+// LOWERING-BIONIC-AARCH64-NEXT:         Self {
+// LOWERING-BIONIC-AARCH64-NEXT:             args: None,
+// LOWERING-BIONIC-AARCH64-NEXT:             index: 0,
+// LOWERING-BIONIC-AARCH64-NEXT:         }
+// LOWERING-BIONIC-AARCH64-NEXT:     }
+// LOWERING-BIONIC-AARCH64-EMPTY:
+// LOWERING-BIONIC-AARCH64-NEXT:     fn next_arg<T: Copy + 'static>(&mut self) -> T {
+// LOWERING-BIONIC-AARCH64-NEXT:         if std::mem::size_of::<T>() == 0 {
+// LOWERING-BIONIC-AARCH64-NEXT:             return unsafe { std::mem::zeroed() };
+// LOWERING-BIONIC-AARCH64-NEXT:         }
+// LOWERING-BIONIC-AARCH64-NEXT:         let args = self.args.as_ref().expect("va_arg with no arguments");
+// LOWERING-BIONIC-AARCH64-NEXT:         let value = args[self.index].read::<T>();
+// LOWERING-BIONIC-AARCH64-NEXT:         self.index += 1;
+// LOWERING-BIONIC-AARCH64-NEXT:         value
+// LOWERING-BIONIC-AARCH64-NEXT:     }
+// LOWERING-BIONIC-AARCH64-NEXT: }
+// LOWERING-BIONIC-AARCH64-EMPTY:
+// LOWERING-BIONIC-AARCH64-NEXT: fn call_bionic_import(
+// LOWERING-BIONIC-AARCH64-NEXT:     {{arg[0-9]+}}: u64,
+// LOWERING-BIONIC-AARCH64-NEXT:     {{arg[0-9]+}}: i64,
+// LOWERING-BIONIC-AARCH64-NEXT:     {{arg[0-9]+}}: i64,
+// LOWERING-BIONIC-AARCH64-NEXT:     {{arg[0-9]+}}: u64,
+// LOWERING-BIONIC-AARCH64-NEXT:     {{arg[0-9]+}}: u32,
+// LOWERING-BIONIC-AARCH64-NEXT:     {{arg[0-9]+}}: u32,
+// LOWERING-BIONIC-AARCH64-NEXT:     {{arg[0-9]+}}: f128,
+// LOWERING-BIONIC-AARCH64-NEXT: ) -> i64 {
+// LOWERING-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: i64 = unsafe {
+// LOWERING-BIONIC-AARCH64-NEXT:         bionic_import(
+// LOWERING-BIONIC-AARCH64-NEXT:             {{arg[0-9]+}} as usize,
+// LOWERING-BIONIC-AARCH64-NEXT:             {{arg[0-9]+}} as isize,
+// LOWERING-BIONIC-AARCH64-NEXT:             {{arg[0-9]+}} as isize,
+// LOWERING-BIONIC-AARCH64-NEXT:             {{arg[0-9]+}} as usize,
+// LOWERING-BIONIC-AARCH64-NEXT:             {{arg[0-9]+}} as u32,
+// LOWERING-BIONIC-AARCH64-NEXT:             {{arg[0-9]+}} as u32,
+// LOWERING-BIONIC-AARCH64-NEXT:             {{arg[0-9]+}} as f128,
+// LOWERING-BIONIC-AARCH64-NEXT:         )
+// LOWERING-BIONIC-AARCH64-NEXT:     };
+// LOWERING-BIONIC-AARCH64-NEXT:     return {{_v[0-9]+}};
+// LOWERING-BIONIC-AARCH64-NEXT: }
+// LOWERING-BIONIC-AARCH64-EMPTY:
+// LOWERING-BIONIC-AARCH64-NEXT: unsafe fn bionic_variadic_count({{arg[0-9]+}}: i32, mut __slate_va_args: __SlateVaArgs) -> i32 {
+// LOWERING-BIONIC-AARCH64-NEXT:     let mut count: i32 = 0;
+// LOWERING-BIONIC-AARCH64-NEXT:     let mut values: __SlateVaArgs = __SlateVaArgs::empty();
+// LOWERING-BIONIC-AARCH64-NEXT:     let mut total: i32 = 0;
+// LOWERING-BIONIC-AARCH64-NEXT:     count = {{arg[0-9]+}};
+// LOWERING-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-BIONIC-AARCH64-NEXT:     total = {{_v[0-9]+}};
+// LOWERING-BIONIC-AARCH64-NEXT:     unsafe {
+// LOWERING-BIONIC-AARCH64-NEXT:         values = __slate_va_args.clone();
+// LOWERING-BIONIC-AARCH64-NEXT:     }
+// LOWERING-BIONIC-AARCH64-NEXT:     {
+// LOWERING-BIONIC-AARCH64-NEXT:         let mut i: i32 = 0;
+// LOWERING-BIONIC-AARCH64-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-BIONIC-AARCH64-NEXT:         i = {{_v[0-9]+}};
+// LOWERING-BIONIC-AARCH64-NEXT:         loop {
+// LOWERING-BIONIC-AARCH64-NEXT:             let {{_v[0-9]+}}: i32 = i;
+// LOWERING-BIONIC-AARCH64-NEXT:             let {{_v[0-9]+}}: i32 = count;
+// LOWERING-BIONIC-AARCH64-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
+// LOWERING-BIONIC-AARCH64-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-BIONIC-AARCH64-NEXT:                 break;
+// LOWERING-BIONIC-AARCH64-NEXT:             }
+// LOWERING-BIONIC-AARCH64-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { values.next_arg::<i32>() };
+// LOWERING-BIONIC-AARCH64-NEXT:             let {{_v[0-9]+}}: i32 = total;
+// LOWERING-BIONIC-AARCH64-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-BIONIC-AARCH64-NEXT:             total = {{_v[0-9]+}};
+// LOWERING-BIONIC-AARCH64-NEXT:             let {{_v[0-9]+}}: i32 = i;
+// LOWERING-BIONIC-AARCH64-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-BIONIC-AARCH64-NEXT:             i = {{_v[0-9]+}};
+// LOWERING-BIONIC-AARCH64-NEXT:         }
+// LOWERING-BIONIC-AARCH64-NEXT:     }
+// LOWERING-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: i32 = total;
+// LOWERING-BIONIC-AARCH64-NEXT:     return {{_v[0-9]+}};
+// LOWERING-BIONIC-AARCH64-NEXT: }
+// LOWERING-BIONIC-AARCH64-EMPTY:
+// LOWERING-BIONIC-AARCH64-NEXT: fn main() {
+// LOWERING-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-BIONIC-AARCH64-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-BIONIC-AARCH64-NEXT: }
+// SLATE-FILECHECK-END lowering-bionic-aarch64
+
+// SLATE-FILECHECK-BEGIN lowering-bionic-x86_64
+// LOWERING-BIONIC-X86_64: #![feature(f128)]
+// LOWERING-BIONIC-X86_64-NEXT: #![allow(
+// LOWERING-BIONIC-X86_64-NEXT:     dead_code,
+// LOWERING-BIONIC-X86_64-NEXT:     unused,
+// LOWERING-BIONIC-X86_64-NEXT:     non_camel_case_types,
+// LOWERING-BIONIC-X86_64-NEXT:     non_snake_case,
+// LOWERING-BIONIC-X86_64-NEXT:     non_upper_case_globals,
+// LOWERING-BIONIC-X86_64-NEXT:     arithmetic_overflow,
+// LOWERING-BIONIC-X86_64-NEXT:     unconditional_panic,
+// LOWERING-BIONIC-X86_64-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-BIONIC-X86_64-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-BIONIC-X86_64-NEXT:     unused_comparisons
+// LOWERING-BIONIC-X86_64-NEXT: )]
+// LOWERING-BIONIC-X86_64-EMPTY:
+// LOWERING-BIONIC-X86_64-NEXT: unsafe extern "C" {
+// LOWERING-BIONIC-X86_64-NEXT:     fn bionic_import(_0: usize, _1: isize, _2: isize, _3: usize, _4: i32, _5: u32, _6: f128)
+// LOWERING-BIONIC-X86_64-NEXT:     -> i64;
+// LOWERING-BIONIC-X86_64-NEXT: }
+// LOWERING-BIONIC-X86_64-EMPTY:
+// LOWERING-BIONIC-X86_64-NEXT: struct __SlateVaArg {
+// LOWERING-BIONIC-X86_64-NEXT:     value: Box<dyn std::any::Any>,
+// LOWERING-BIONIC-X86_64-NEXT:     size: usize,
+// LOWERING-BIONIC-X86_64-NEXT: }
+// LOWERING-BIONIC-X86_64-EMPTY:
+// LOWERING-BIONIC-X86_64-NEXT: impl __SlateVaArg {
+// LOWERING-BIONIC-X86_64-NEXT:     fn new<T: 'static>(value: T) -> Self {
+// LOWERING-BIONIC-X86_64-NEXT:         Self {
+// LOWERING-BIONIC-X86_64-NEXT:             value: Box::new(value),
+// LOWERING-BIONIC-X86_64-NEXT:             size: std::mem::size_of::<T>(),
+// LOWERING-BIONIC-X86_64-NEXT:         }
+// LOWERING-BIONIC-X86_64-NEXT:     }
+// LOWERING-BIONIC-X86_64-EMPTY:
+// LOWERING-BIONIC-X86_64-NEXT:     fn read<T: Copy + 'static>(&self) -> T {
+// LOWERING-BIONIC-X86_64-NEXT:         if let Some(value) = self.value.downcast_ref::<T>() {
+// LOWERING-BIONIC-X86_64-NEXT:             return *value;
+// LOWERING-BIONIC-X86_64-NEXT:         }
+// LOWERING-BIONIC-X86_64-NEXT:         assert!(self.size >= std::mem::size_of::<T>());
+// LOWERING-BIONIC-X86_64-NEXT:         unsafe {
+// LOWERING-BIONIC-X86_64-NEXT:             std::ptr::read_unaligned(
+// LOWERING-BIONIC-X86_64-NEXT:                 (self.value.as_ref() as *const dyn std::any::Any) as *const () as *const T,
+// LOWERING-BIONIC-X86_64-NEXT:             )
+// LOWERING-BIONIC-X86_64-NEXT:         }
+// LOWERING-BIONIC-X86_64-NEXT:     }
+// LOWERING-BIONIC-X86_64-NEXT: }
+// LOWERING-BIONIC-X86_64-EMPTY:
+// LOWERING-BIONIC-X86_64-NEXT: #[derive(Clone)]
+// LOWERING-BIONIC-X86_64-NEXT: struct __SlateVaArgs {
+// LOWERING-BIONIC-X86_64-NEXT:     args: Option<std::rc::Rc<Vec<__SlateVaArg>>>,
+// LOWERING-BIONIC-X86_64-NEXT:     index: usize,
+// LOWERING-BIONIC-X86_64-NEXT: }
+// LOWERING-BIONIC-X86_64-EMPTY:
+// LOWERING-BIONIC-X86_64-NEXT: impl __SlateVaArgs {
+// LOWERING-BIONIC-X86_64-NEXT:     fn new(args: Vec<__SlateVaArg>) -> Self {
+// LOWERING-BIONIC-X86_64-NEXT:         Self {
+// LOWERING-BIONIC-X86_64-NEXT:             args: Some(std::rc::Rc::new(args)),
+// LOWERING-BIONIC-X86_64-NEXT:             index: 0,
+// LOWERING-BIONIC-X86_64-NEXT:         }
+// LOWERING-BIONIC-X86_64-NEXT:     }
+// LOWERING-BIONIC-X86_64-EMPTY:
+// LOWERING-BIONIC-X86_64-NEXT:     const fn empty() -> Self {
+// LOWERING-BIONIC-X86_64-NEXT:         Self {
+// LOWERING-BIONIC-X86_64-NEXT:             args: None,
+// LOWERING-BIONIC-X86_64-NEXT:             index: 0,
+// LOWERING-BIONIC-X86_64-NEXT:         }
+// LOWERING-BIONIC-X86_64-NEXT:     }
+// LOWERING-BIONIC-X86_64-EMPTY:
+// LOWERING-BIONIC-X86_64-NEXT:     fn next_arg<T: Copy + 'static>(&mut self) -> T {
+// LOWERING-BIONIC-X86_64-NEXT:         if std::mem::size_of::<T>() == 0 {
+// LOWERING-BIONIC-X86_64-NEXT:             return unsafe { std::mem::zeroed() };
+// LOWERING-BIONIC-X86_64-NEXT:         }
+// LOWERING-BIONIC-X86_64-NEXT:         let args = self.args.as_ref().expect("va_arg with no arguments");
+// LOWERING-BIONIC-X86_64-NEXT:         let value = args[self.index].read::<T>();
+// LOWERING-BIONIC-X86_64-NEXT:         self.index += 1;
+// LOWERING-BIONIC-X86_64-NEXT:         value
+// LOWERING-BIONIC-X86_64-NEXT:     }
+// LOWERING-BIONIC-X86_64-NEXT: }
+// LOWERING-BIONIC-X86_64-EMPTY:
+// LOWERING-BIONIC-X86_64-NEXT: fn call_bionic_import(
+// LOWERING-BIONIC-X86_64-NEXT:     {{arg[0-9]+}}: u64,
+// LOWERING-BIONIC-X86_64-NEXT:     {{arg[0-9]+}}: i64,
+// LOWERING-BIONIC-X86_64-NEXT:     {{arg[0-9]+}}: i64,
+// LOWERING-BIONIC-X86_64-NEXT:     {{arg[0-9]+}}: u64,
+// LOWERING-BIONIC-X86_64-NEXT:     {{arg[0-9]+}}: i32,
+// LOWERING-BIONIC-X86_64-NEXT:     {{arg[0-9]+}}: u32,
+// LOWERING-BIONIC-X86_64-NEXT:     {{arg[0-9]+}}: f128,
+// LOWERING-BIONIC-X86_64-NEXT: ) -> i64 {
+// LOWERING-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: i64 = unsafe {
+// LOWERING-BIONIC-X86_64-NEXT:         bionic_import(
+// LOWERING-BIONIC-X86_64-NEXT:             {{arg[0-9]+}} as usize,
+// LOWERING-BIONIC-X86_64-NEXT:             {{arg[0-9]+}} as isize,
+// LOWERING-BIONIC-X86_64-NEXT:             {{arg[0-9]+}} as isize,
+// LOWERING-BIONIC-X86_64-NEXT:             {{arg[0-9]+}} as usize,
+// LOWERING-BIONIC-X86_64-NEXT:             {{arg[0-9]+}} as i32,
+// LOWERING-BIONIC-X86_64-NEXT:             {{arg[0-9]+}} as u32,
+// LOWERING-BIONIC-X86_64-NEXT:             {{arg[0-9]+}} as f128,
+// LOWERING-BIONIC-X86_64-NEXT:         )
+// LOWERING-BIONIC-X86_64-NEXT:     };
+// LOWERING-BIONIC-X86_64-NEXT:     return {{_v[0-9]+}};
+// LOWERING-BIONIC-X86_64-NEXT: }
+// LOWERING-BIONIC-X86_64-EMPTY:
+// LOWERING-BIONIC-X86_64-NEXT: unsafe fn bionic_variadic_count({{arg[0-9]+}}: i32, mut __slate_va_args: __SlateVaArgs) -> i32 {
+// LOWERING-BIONIC-X86_64-NEXT:     let mut count: i32 = 0;
+// LOWERING-BIONIC-X86_64-NEXT:     let mut values: __SlateVaArgs = __SlateVaArgs::empty();
+// LOWERING-BIONIC-X86_64-NEXT:     let mut total: i32 = 0;
+// LOWERING-BIONIC-X86_64-NEXT:     count = {{arg[0-9]+}};
+// LOWERING-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-BIONIC-X86_64-NEXT:     total = {{_v[0-9]+}};
+// LOWERING-BIONIC-X86_64-NEXT:     unsafe {
+// LOWERING-BIONIC-X86_64-NEXT:         values = __slate_va_args.clone();
+// LOWERING-BIONIC-X86_64-NEXT:     }
+// LOWERING-BIONIC-X86_64-NEXT:     {
+// LOWERING-BIONIC-X86_64-NEXT:         let mut i: i32 = 0;
+// LOWERING-BIONIC-X86_64-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-BIONIC-X86_64-NEXT:         i = {{_v[0-9]+}};
+// LOWERING-BIONIC-X86_64-NEXT:         loop {
+// LOWERING-BIONIC-X86_64-NEXT:             let {{_v[0-9]+}}: i32 = i;
+// LOWERING-BIONIC-X86_64-NEXT:             let {{_v[0-9]+}}: i32 = count;
+// LOWERING-BIONIC-X86_64-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
+// LOWERING-BIONIC-X86_64-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-BIONIC-X86_64-NEXT:                 break;
+// LOWERING-BIONIC-X86_64-NEXT:             }
+// LOWERING-BIONIC-X86_64-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { values.next_arg::<i32>() };
+// LOWERING-BIONIC-X86_64-NEXT:             let {{_v[0-9]+}}: i32 = total;
+// LOWERING-BIONIC-X86_64-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-BIONIC-X86_64-NEXT:             total = {{_v[0-9]+}};
+// LOWERING-BIONIC-X86_64-NEXT:             let {{_v[0-9]+}}: i32 = i;
+// LOWERING-BIONIC-X86_64-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-BIONIC-X86_64-NEXT:             i = {{_v[0-9]+}};
+// LOWERING-BIONIC-X86_64-NEXT:         }
+// LOWERING-BIONIC-X86_64-NEXT:     }
+// LOWERING-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: i32 = total;
+// LOWERING-BIONIC-X86_64-NEXT:     return {{_v[0-9]+}};
+// LOWERING-BIONIC-X86_64-NEXT: }
+// LOWERING-BIONIC-X86_64-EMPTY:
+// LOWERING-BIONIC-X86_64-NEXT: fn main() {
+// LOWERING-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-BIONIC-X86_64-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-BIONIC-X86_64-NEXT: }
+// SLATE-FILECHECK-END lowering-bionic-x86_64

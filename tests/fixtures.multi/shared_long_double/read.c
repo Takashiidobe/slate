@@ -5,6 +5,7 @@
 int read_marker(struct Box *box) { return box->marker; }
 // @rewrite-fn-end
 // @lowering-fn-end
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: #[unsafe(no_mangle)]
 // LOWERING-DAG: pub unsafe extern "C" fn read_marker({{arg[0-9]+}}: *mut Box) -> i32 {

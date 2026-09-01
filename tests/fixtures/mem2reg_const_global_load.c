@@ -27,6 +27,7 @@ int main(void) {
   printf("%d\n", byte.value + initialize_chars());
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: fn make_byte() -> i8 {
 // LOWERING-DAG: let mut coerce: Byte = Byte { value: 0 };

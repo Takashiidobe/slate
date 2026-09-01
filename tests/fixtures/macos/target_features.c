@@ -36,8 +36,20 @@ _Static_assert(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ == 110000,
                "macOS 11 deployment target required");
 
 int main(void) { return 0; }
+
 // SLATE-FILECHECK-BEGIN lowering-macos
-// LOWERING-MACOS: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-MACOS: #![allow(
+// LOWERING-MACOS-NEXT:     dead_code,
+// LOWERING-MACOS-NEXT:     unused,
+// LOWERING-MACOS-NEXT:     non_camel_case_types,
+// LOWERING-MACOS-NEXT:     non_snake_case,
+// LOWERING-MACOS-NEXT:     non_upper_case_globals,
+// LOWERING-MACOS-NEXT:     arithmetic_overflow,
+// LOWERING-MACOS-NEXT:     unconditional_panic,
+// LOWERING-MACOS-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-MACOS-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-MACOS-NEXT:     unused_comparisons
+// LOWERING-MACOS-NEXT: )]
 // LOWERING-MACOS-EMPTY:
 // LOWERING-MACOS-NEXT: fn main() {
 // LOWERING-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = 0;
@@ -47,11 +59,20 @@ int main(void) { return 0; }
 // SLATE-FILECHECK-END lowering-macos
 
 // SLATE-FILECHECK-BEGIN rewrites-macos
-// REWRITES-MACOS: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-MACOS: #![allow(
+// REWRITES-MACOS-NEXT:     dead_code,
+// REWRITES-MACOS-NEXT:     unused,
+// REWRITES-MACOS-NEXT:     non_camel_case_types,
+// REWRITES-MACOS-NEXT:     non_snake_case,
+// REWRITES-MACOS-NEXT:     non_upper_case_globals,
+// REWRITES-MACOS-NEXT:     arithmetic_overflow,
+// REWRITES-MACOS-NEXT:     unconditional_panic,
+// REWRITES-MACOS-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-MACOS-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-MACOS-NEXT:     unused_comparisons
+// REWRITES-MACOS-NEXT: )]
 // REWRITES-MACOS-EMPTY:
 // REWRITES-MACOS-NEXT: fn main() {
-// REWRITES-MACOS-NEXT: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-MACOS-NEXT: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-MACOS-NEXT: std::process::exit({{_v[0-9]+}} as i32);
+// REWRITES-MACOS-NEXT:     std::process::exit(0 as i32);
 // REWRITES-MACOS-NEXT: }
 // SLATE-FILECHECK-END rewrites-macos

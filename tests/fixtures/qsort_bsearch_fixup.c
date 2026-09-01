@@ -32,9 +32,21 @@ int main(void) {
          found ? found->value : -1);
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(
+// LOWERING-NEXT:     dead_code,
+// LOWERING-NEXT:     unused,
+// LOWERING-NEXT:     non_camel_case_types,
+// LOWERING-NEXT:     non_snake_case,
+// LOWERING-NEXT:     non_upper_case_globals,
+// LOWERING-NEXT:     arithmetic_overflow,
+// LOWERING-NEXT:     unconditional_panic,
+// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-NEXT:     unused_comparisons
+// LOWERING-NEXT: )]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
@@ -43,11 +55,21 @@ int main(void) {
 // LOWERING-NEXT:     value: i32,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
-// LOWERING-NEXT:     fn qsort(_0: *mut core::ffi::c_void, _1: usize, _2: usize, _3: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32>);
-// LOWERING-NEXT:     fn bsearch(_0: *const core::ffi::c_void, _1: *const core::ffi::c_void, _2: usize, _3: usize, _4: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32>) -> *mut core::ffi::c_void;
-// LOWERING-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// LOWERING-NEXT:     fn qsort(
+// LOWERING-NEXT:         _0: *mut core::ffi::c_void,
+// LOWERING-NEXT:         _1: usize,
+// LOWERING-NEXT:         _2: usize,
+// LOWERING-NEXT:         _3: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32>,
+// LOWERING-NEXT:     );
+// LOWERING-NEXT:     fn bsearch(
+// LOWERING-NEXT:         _0: *const core::ffi::c_void,
+// LOWERING-NEXT:         _1: *const core::ffi::c_void,
+// LOWERING-NEXT:         _2: usize,
+// LOWERING-NEXT:         _3: usize,
+// LOWERING-NEXT:         _4: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32>,
+// LOWERING-NEXT:     ) -> *mut core::ffi::c_void;
+// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: extern "C" fn cmp_int({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
@@ -72,7 +94,8 @@ int main(void) {
 // LOWERING-NEXT:     let mut nums: aligned::Aligned<aligned::A16, [i32; 5]> = aligned::Aligned([0; 5]);
 // LOWERING-NEXT:     let mut key: i32 = 0;
 // LOWERING-NEXT:     let mut hit: *mut i32 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut items: aligned::Aligned<aligned::A16, [Item; 4]> = aligned::Aligned([Item { key: 0, value: 0 }; 4]);
+// LOWERING-NEXT:     let mut items: aligned::Aligned<aligned::A16, [Item; 4]> =
+// LOWERING-NEXT:         aligned::Aligned([Item { key: 0, value: 0 }; 4]);
 // LOWERING-NEXT:     let mut needle: Item = Item { key: 0, value: 0 };
 // LOWERING-NEXT:     let mut found: *mut Item = std::ptr::null_mut();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
@@ -83,28 +106,63 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 5;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 4;
-// LOWERING-NEXT:     unsafe { qsort({{_v[0-9]+}} as *mut core::ffi::c_void, {{_v[0-9]+}} as usize, {{_v[0-9]+}} as usize, Some(cmp_int)) };
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         qsort(
+// LOWERING-NEXT:             {{_v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-NEXT:             {{_v[0-9]+}} as usize,
+// LOWERING-NEXT:             {{_v[0-9]+}} as usize,
+// LOWERING-NEXT:             Some(cmp_int),
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(key) as *mut core::ffi::c_void;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = nums.as_mut_ptr() as *mut i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 5;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 4;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { bsearch({{_v[0-9]+}} as *const core::ffi::c_void, {{_v[0-9]+}} as *const core::ffi::c_void, {{_v[0-9]+}} as usize, {{_v[0-9]+}} as usize, Some(cmp_int)) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe {
+// LOWERING-NEXT:         bsearch(
+// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_void,
+// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_void,
+// LOWERING-NEXT:             {{_v[0-9]+}} as usize,
+// LOWERING-NEXT:             {{_v[0-9]+}} as usize,
+// LOWERING-NEXT:             Some(cmp_int),
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{_v[0-9]+}} as *mut i32;
 // LOWERING-NEXT:     hit = {{_v[0-9]+}};
-// LOWERING-NEXT:     *items = [Item { key: 3, value: 30 }, Item { key: 1, value: 10 }, Item { key: 4, value: 40 }, Item { key: 2, value: 20 }];
+// LOWERING-NEXT:     *items = [
+// LOWERING-NEXT:         Item { key: 3, value: 30 },
+// LOWERING-NEXT:         Item { key: 1, value: 10 },
+// LOWERING-NEXT:         Item { key: 4, value: 40 },
+// LOWERING-NEXT:         Item { key: 2, value: 20 },
+// LOWERING-NEXT:     ];
 // LOWERING-NEXT:     needle = Item { key: 4, value: 0 };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut Item = items.as_mut_ptr() as *mut Item;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 4;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = std::mem::size_of::<Item>() as u64;
-// LOWERING-NEXT:     unsafe { qsort({{_v[0-9]+}} as *mut core::ffi::c_void, {{_v[0-9]+}} as usize, {{_v[0-9]+}} as usize, Some(cmp_item)) };
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         qsort(
+// LOWERING-NEXT:             {{_v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-NEXT:             {{_v[0-9]+}} as usize,
+// LOWERING-NEXT:             {{_v[0-9]+}} as usize,
+// LOWERING-NEXT:             Some(cmp_item),
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(needle) as *mut core::ffi::c_void;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut Item = items.as_mut_ptr() as *mut Item;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 4;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = std::mem::size_of::<Item>() as u64;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { bsearch({{_v[0-9]+}} as *const core::ffi::c_void, {{_v[0-9]+}} as *const core::ffi::c_void, {{_v[0-9]+}} as usize, {{_v[0-9]+}} as usize, Some(cmp_item)) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe {
+// LOWERING-NEXT:         bsearch(
+// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_void,
+// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_void,
+// LOWERING-NEXT:             {{_v[0-9]+}} as usize,
+// LOWERING-NEXT:             {{_v[0-9]+}} as usize,
+// LOWERING-NEXT:             Some(cmp_item),
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut Item = {{_v[0-9]+}} as *mut Item;
 // LOWERING-NEXT:     found = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d\n\0".as_ptr() as *mut i8;
@@ -132,7 +190,7 @@ int main(void) {
 // LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = -1;
 // LOWERING-NEXT:         {{_v[0-9]+}}
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
@@ -140,7 +198,18 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(
+// REWRITES-NEXT:     dead_code,
+// REWRITES-NEXT:     unused,
+// REWRITES-NEXT:     non_camel_case_types,
+// REWRITES-NEXT:     non_snake_case,
+// REWRITES-NEXT:     non_upper_case_globals,
+// REWRITES-NEXT:     arithmetic_overflow,
+// REWRITES-NEXT:     unconditional_panic,
+// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-NEXT:     unused_comparisons
+// REWRITES-NEXT: )]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
@@ -149,77 +218,111 @@ int main(void) {
 // REWRITES-NEXT:     value: i32,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
-// REWRITES-NEXT:     fn qsort(_0: *mut core::ffi::c_void, _1: usize, _2: usize, _3: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32>);
-// REWRITES-NEXT:     fn bsearch(_0: *const core::ffi::c_void, _1: *const core::ffi::c_void, _2: usize, _3: usize, _4: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32>) -> *mut core::ffi::c_void;
-// REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// REWRITES-NEXT:     fn qsort(
+// REWRITES-NEXT:         _0: *mut core::ffi::c_void,
+// REWRITES-NEXT:         _1: usize,
+// REWRITES-NEXT:         _2: usize,
+// REWRITES-NEXT:         _3: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32>,
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     fn bsearch(
+// REWRITES-NEXT:         _0: *const core::ffi::c_void,
+// REWRITES-NEXT:         _1: *const core::ffi::c_void,
+// REWRITES-NEXT:         _2: usize,
+// REWRITES-NEXT:         _3: usize,
+// REWRITES-NEXT:         _4: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32>,
+// REWRITES-NEXT:     ) -> *mut core::ffi::c_void;
+// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn cmp_int({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
-// REWRITES-NEXT: return (unsafe { *({{arg[0-9]+}} as *mut i32) }) - unsafe { *({{arg[0-9]+}} as *mut i32) };
+// REWRITES-NEXT:     return (unsafe { *({{arg[0-9]+}} as *mut i32) }) - unsafe { *({{arg[0-9]+}} as *mut i32) };
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn cmp_item({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
-// REWRITES-NEXT: return (unsafe { (*({{arg[0-9]+}} as *mut Item)).key }) - unsafe { (*({{arg[0-9]+}} as *mut Item)).key };
+// REWRITES-NEXT:     return (unsafe { (*({{arg[0-9]+}} as *mut Item)).key }) - unsafe { (*({{arg[0-9]+}} as *mut Item)).key };
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let mut nums: aligned::Aligned<aligned::A16, [i32; 5]> = aligned::Aligned([0; 5]);
-// REWRITES-NEXT: let mut key: i32 = 0;
-// REWRITES-NEXT: let mut hit: *mut i32 = std::ptr::null_mut();
-// REWRITES-NEXT: let mut items: aligned::Aligned<aligned::A16, [Item; 4]> = aligned::Aligned([Item { key: 0, value: 0 }; 4]);
-// REWRITES-NEXT: let mut needle: Item = Item { key: 0, value: 0 };
-// REWRITES-NEXT: let mut found: *mut Item = std::ptr::null_mut();
-// REWRITES-NEXT: *nums = [4, 1, 5, 3, 2];
-// REWRITES-NEXT: key = 3;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = nums.as_mut_ptr() as *mut i32;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 5;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 4;
-// REWRITES-NEXT: unsafe { qsort(({{_v[0-9]+}} as *mut core::ffi::c_void) as *mut core::ffi::c_void, {{_v[0-9]+}} as usize, {{_v[0-9]+}} as usize, Some(cmp_int)) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(key) as *mut core::ffi::c_void;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i32 = nums.as_mut_ptr() as *mut i32;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 5;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 4;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { bsearch({{_v[0-9]+}} as *const core::ffi::c_void, ({{_v[0-9]+}} as *mut core::ffi::c_void) as *const core::ffi::c_void, {{_v[0-9]+}} as usize, {{_v[0-9]+}} as usize, Some(cmp_int)) };
-// REWRITES-NEXT: hit = {{_v[0-9]+}} as *mut i32;
-// REWRITES-NEXT: *items = [Item { key: 3, value: 30 }, Item { key: 1, value: 10 }, Item { key: 4, value: 40 }, Item { key: 2, value: 20 }];
-// REWRITES-NEXT: needle = Item { key: 4, value: 0 };
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut Item = items.as_mut_ptr() as *mut Item;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 4;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = std::mem::size_of::<Item>() as u64;
-// REWRITES-NEXT: unsafe { qsort({{_v[0-9]+}} as *mut core::ffi::c_void, {{_v[0-9]+}} as usize, {{_v[0-9]+}} as usize, Some(cmp_item)) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(needle) as *mut core::ffi::c_void;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut Item = items.as_mut_ptr() as *mut Item;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = 4;
-// REWRITES-NEXT: let {{_v[0-9]+}}: u64 = std::mem::size_of::<Item>() as u64;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { bsearch({{_v[0-9]+}} as *const core::ffi::c_void, {{_v[0-9]+}} as *const core::ffi::c_void, {{_v[0-9]+}} as usize, {{_v[0-9]+}} as usize, Some(cmp_item)) };
-// REWRITES-NEXT: found = {{_v[0-9]+}} as *mut Item;
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 0;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = nums[({{_v[0-9]+}} as usize)];
-// REWRITES-NEXT: let {{_v[0-9]+}}: i64 = 4;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = nums[({{_v[0-9]+}} as usize)];
-// REWRITES-NEXT: let {{_v[0-9]+}}: bool = hit != std::ptr::null_mut();
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} {
+// REWRITES-NEXT:     let mut nums: aligned::Aligned<aligned::A16, [i32; 5]> = aligned::Aligned([0; 5]);
+// REWRITES-NEXT:     let mut key: i32 = 0;
+// REWRITES-NEXT:     let mut hit: *mut i32 = std::ptr::null_mut();
+// REWRITES-NEXT:     let mut items: aligned::Aligned<aligned::A16, [Item; 4]> =
+// REWRITES-NEXT:         aligned::Aligned([Item { key: 0, value: 0 }; 4]);
+// REWRITES-NEXT:     let mut needle: Item = Item { key: 0, value: 0 };
+// REWRITES-NEXT:     let mut found: *mut Item = std::ptr::null_mut();
+// REWRITES-NEXT:     *nums = [4, 1, 5, 3, 2];
+// REWRITES-NEXT:     key = 3;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         qsort(
+// REWRITES-NEXT:             nums.as_mut_ptr() as *mut core::ffi::c_void,
+// REWRITES-NEXT:             (5 as u64) as usize,
+// REWRITES-NEXT:             (4 as u64) as usize,
+// REWRITES-NEXT:             Some(cmp_int),
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(key) as *mut core::ffi::c_void;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = nums.as_mut_ptr() as *mut i32;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe {
+// REWRITES-NEXT:         bsearch(
+// REWRITES-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_void,
+// REWRITES-NEXT:             ({{_v[0-9]+}} as *mut core::ffi::c_void) as *const core::ffi::c_void,
+// REWRITES-NEXT:             (5 as u64) as usize,
+// REWRITES-NEXT:             (4 as u64) as usize,
+// REWRITES-NEXT:             Some(cmp_int),
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     hit = {{_v[0-9]+}} as *mut i32;
+// REWRITES-NEXT:     *items = [
+// REWRITES-NEXT:         Item { key: 3, value: 30 },
+// REWRITES-NEXT:         Item { key: 1, value: 10 },
+// REWRITES-NEXT:         Item { key: 4, value: 40 },
+// REWRITES-NEXT:         Item { key: 2, value: 20 },
+// REWRITES-NEXT:     ];
+// REWRITES-NEXT:     needle = Item { key: 4, value: 0 };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut Item = items.as_mut_ptr() as *mut Item;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         qsort(
+// REWRITES-NEXT:             {{_v[0-9]+}} as *mut core::ffi::c_void,
+// REWRITES-NEXT:             (4 as u64) as usize,
+// REWRITES-NEXT:             (std::mem::size_of::<Item>() as u64) as usize,
+// REWRITES-NEXT:             Some(cmp_item),
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(needle) as *mut core::ffi::c_void;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut Item = items.as_mut_ptr() as *mut Item;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = std::mem::size_of::<Item>() as u64;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe {
+// REWRITES-NEXT:         bsearch(
+// REWRITES-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_void,
+// REWRITES-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_void,
+// REWRITES-NEXT:             (4 as u64) as usize,
+// REWRITES-NEXT:             {{_v[0-9]+}} as usize,
+// REWRITES-NEXT:             Some(cmp_item),
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     found = {{_v[0-9]+}} as *mut Item;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = nums[((0 as i64) as usize)];
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = nums[((4 as i64) as usize)];
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = hit != std::ptr::null_mut();
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { *hit };
-// REWRITES-NEXT:     {{_v[0-9]+}}
-// REWRITES-NEXT: } else {
+// REWRITES-NEXT:         {{_v[0-9]+}}
+// REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = -1;
-// REWRITES-NEXT:     {{_v[0-9]+}}
-// REWRITES-NEXT: };
-// REWRITES-NEXT: let {{_v[0-9]+}}: bool = found != std::ptr::null_mut();
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} {
+// REWRITES-NEXT:         {{_v[0-9]+}}
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = found != std::ptr::null_mut();
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { (*found).value };
-// REWRITES-NEXT:     {{_v[0-9]+}}
-// REWRITES-NEXT: } else {
+// REWRITES-NEXT:         {{_v[0-9]+}}
+// REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = -1;
-// REWRITES-NEXT:     {{_v[0-9]+}}
-// REWRITES-NEXT: };
-// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:         {{_v[0-9]+}}
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

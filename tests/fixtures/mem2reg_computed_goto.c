@@ -20,6 +20,7 @@ int main(void) {
   printf("done\n");
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: unsafe fn walk({{arg[0-9]+}}: *mut i32) {
 // LOWERING-DAG: let mut position: *mut i32 = std::ptr::null_mut();

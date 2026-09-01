@@ -24,6 +24,7 @@ int main(void) {
   printf("%d %d\n", row.cells[1], value);
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = 9;
 // LOWERING-DAG: let {{_v[0-9]+}}: i64 = 1;

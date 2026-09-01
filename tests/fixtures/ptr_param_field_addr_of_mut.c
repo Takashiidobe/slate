@@ -37,6 +37,7 @@ int main(void) {
     printf("%d %d %d\n", r.dict.x, r.io.y, r.cctx);
     return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: freeDict(unsafe { std::ptr::addr_of_mut!((*{{arg[0-9]+}}).dict) });
 // LOWERING-DAG: syncDestroy(unsafe { std::ptr::addr_of_mut!((*{{arg[0-9]+}}).io) });

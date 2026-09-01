@@ -20,6 +20,7 @@ int main(void) {
   printf("%d\n", kept);
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = 1;
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = 2;
@@ -32,6 +33,5 @@ int main(void) {
 // REWRITES-NOT: let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NOT: let {{_v[0-9]+}}: i32 = 2;
 // REWRITES-NOT: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = 9;
-// REWRITES-DAG: noisy({{_v[0-9]+}});
+// REWRITES-DAG: noisy(9);
 // SLATE-FILECHECK-END rewrites

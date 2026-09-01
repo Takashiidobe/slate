@@ -30,6 +30,7 @@ int main(void) {
   printf("%d %d\n", classify_zero(0), classify_zero(9));
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: {{__state[0-9]+}} = 1;
 // LOWERING-DAG: continue '{{__dispatch[0-9]+}};

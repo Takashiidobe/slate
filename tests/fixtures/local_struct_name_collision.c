@@ -64,9 +64,21 @@ int main(void) {
   printf("%d %d %d\n", sum_docs(), sum_flags(), sum_movements());
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING-NEXT: #![allow(
+// LOWERING-NEXT:     dead_code,
+// LOWERING-NEXT:     unused,
+// LOWERING-NEXT:     non_camel_case_types,
+// LOWERING-NEXT:     non_snake_case,
+// LOWERING-NEXT:     non_upper_case_globals,
+// LOWERING-NEXT:     arithmetic_overflow,
+// LOWERING-NEXT:     unconditional_panic,
+// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-NEXT:     unused_comparisons
+// LOWERING-NEXT: )]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
@@ -75,14 +87,12 @@ int main(void) {
 // LOWERING-NEXT:     expectedStatus: i32,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: struct TestCase_0 {
 // LOWERING-NEXT:     usesParameterEntities: i32,
 // LOWERING-NEXT:     weight: i32,
 // LOWERING-NEXT: }
-// LOWERING-EMPTY:
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
@@ -91,15 +101,32 @@ int main(void) {
 // LOWERING-NEXT:     input: *mut i8,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
-// LOWERING-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn sum_docs() -> i32 {
-// LOWERING-NEXT:     let mut cases: aligned::Aligned<aligned::A16, [TestCase; 3]> = aligned::Aligned([TestCase { doc: std::ptr::null_mut(), expectedStatus: 0 }; 3]);
+// LOWERING-NEXT:     let mut cases: aligned::Aligned<aligned::A16, [TestCase; 3]> = aligned::Aligned(
+// LOWERING-NEXT:         [TestCase {
+// LOWERING-NEXT:             doc: std::ptr::null_mut(),
+// LOWERING-NEXT:             expectedStatus: 0,
+// LOWERING-NEXT:         }; 3],
+// LOWERING-NEXT:     );
 // LOWERING-NEXT:     let mut total: i32 = 0;
-// LOWERING-NEXT:     *cases = [TestCase { doc: b"a\0".as_ptr() as *mut i8, expectedStatus: 1 }, TestCase { doc: b"bb\0".as_ptr() as *mut i8, expectedStatus: 2 }, TestCase { doc: b"ccc\0".as_ptr() as *mut i8, expectedStatus: 3 }];
+// LOWERING-NEXT:     *cases = [
+// LOWERING-NEXT:         TestCase {
+// LOWERING-NEXT:             doc: b"a\0".as_ptr() as *mut i8,
+// LOWERING-NEXT:             expectedStatus: 1,
+// LOWERING-NEXT:         },
+// LOWERING-NEXT:         TestCase {
+// LOWERING-NEXT:             doc: b"bb\0".as_ptr() as *mut i8,
+// LOWERING-NEXT:             expectedStatus: 2,
+// LOWERING-NEXT:         },
+// LOWERING-NEXT:         TestCase {
+// LOWERING-NEXT:             doc: b"ccc\0".as_ptr() as *mut i8,
+// LOWERING-NEXT:             expectedStatus: 3,
+// LOWERING-NEXT:         },
+// LOWERING-NEXT:     ];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     {
@@ -139,9 +166,23 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn sum_flags() -> i32 {
-// LOWERING-NEXT:     let mut cases: aligned::Aligned<aligned::A16, [TestCase_0; 2]> = aligned::Aligned([TestCase_0 { usesParameterEntities: 0, weight: 0 }; 2]);
+// LOWERING-NEXT:     let mut cases: aligned::Aligned<aligned::A16, [TestCase_0; 2]> = aligned::Aligned(
+// LOWERING-NEXT:         [TestCase_0 {
+// LOWERING-NEXT:             usesParameterEntities: 0,
+// LOWERING-NEXT:             weight: 0,
+// LOWERING-NEXT:         }; 2],
+// LOWERING-NEXT:     );
 // LOWERING-NEXT:     let mut total: i32 = 0;
-// LOWERING-NEXT:     *cases = [TestCase_0 { usesParameterEntities: 1, weight: 10 }, TestCase_0 { usesParameterEntities: 0, weight: 20 }];
+// LOWERING-NEXT:     *cases = [
+// LOWERING-NEXT:         TestCase_0 {
+// LOWERING-NEXT:             usesParameterEntities: 1,
+// LOWERING-NEXT:             weight: 10,
+// LOWERING-NEXT:         },
+// LOWERING-NEXT:         TestCase_0 {
+// LOWERING-NEXT:             usesParameterEntities: 0,
+// LOWERING-NEXT:             weight: 20,
+// LOWERING-NEXT:         },
+// LOWERING-NEXT:     ];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     {
@@ -188,9 +229,27 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn sum_movements() -> i32 {
-// LOWERING-NEXT:     let mut cases: aligned::Aligned<aligned::A16, [TestCase_1; 3]> = aligned::Aligned([TestCase_1 { expectedMovementInChars: 0, input: std::ptr::null_mut() }; 3]);
+// LOWERING-NEXT:     let mut cases: aligned::Aligned<aligned::A16, [TestCase_1; 3]> = aligned::Aligned(
+// LOWERING-NEXT:         [TestCase_1 {
+// LOWERING-NEXT:             expectedMovementInChars: 0,
+// LOWERING-NEXT:             input: std::ptr::null_mut(),
+// LOWERING-NEXT:         }; 3],
+// LOWERING-NEXT:     );
 // LOWERING-NEXT:     let mut total: i32 = 0;
-// LOWERING-NEXT:     *cases = [TestCase_1 { expectedMovementInChars: 1, input: b"x\0".as_ptr() as *mut i8 }, TestCase_1 { expectedMovementInChars: 2, input: b"yy\0".as_ptr() as *mut i8 }, TestCase_1 { expectedMovementInChars: 3, input: b"zzz\0".as_ptr() as *mut i8 }];
+// LOWERING-NEXT:     *cases = [
+// LOWERING-NEXT:         TestCase_1 {
+// LOWERING-NEXT:             expectedMovementInChars: 1,
+// LOWERING-NEXT:             input: b"x\0".as_ptr() as *mut i8,
+// LOWERING-NEXT:         },
+// LOWERING-NEXT:         TestCase_1 {
+// LOWERING-NEXT:             expectedMovementInChars: 2,
+// LOWERING-NEXT:             input: b"yy\0".as_ptr() as *mut i8,
+// LOWERING-NEXT:         },
+// LOWERING-NEXT:         TestCase_1 {
+// LOWERING-NEXT:             expectedMovementInChars: 3,
+// LOWERING-NEXT:             input: b"zzz\0".as_ptr() as *mut i8,
+// LOWERING-NEXT:         },
+// LOWERING-NEXT:     ];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     {
@@ -235,7 +294,7 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = sum_docs();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = sum_flags();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = sum_movements();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
@@ -243,7 +302,18 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// REWRITES-NEXT: #![allow(
+// REWRITES-NEXT:     dead_code,
+// REWRITES-NEXT:     unused,
+// REWRITES-NEXT:     non_camel_case_types,
+// REWRITES-NEXT:     non_snake_case,
+// REWRITES-NEXT:     non_upper_case_globals,
+// REWRITES-NEXT:     arithmetic_overflow,
+// REWRITES-NEXT:     unconditional_panic,
+// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-NEXT:     unused_comparisons
+// REWRITES-NEXT: )]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
@@ -252,14 +322,12 @@ int main(void) {
 // REWRITES-NEXT:     expectedStatus: i32,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: struct TestCase_0 {
 // REWRITES-NEXT:     usesParameterEntities: i32,
 // REWRITES-NEXT:     weight: i32,
 // REWRITES-NEXT: }
-// REWRITES-EMPTY:
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
@@ -268,96 +336,148 @@ int main(void) {
 // REWRITES-NEXT:     input: *mut i8,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
-// REWRITES-NEXT:     fn printf(_0: *const i8, ...) -> i32;
+// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn sum_docs() -> i32 {
-// REWRITES-NEXT: let mut cases: aligned::Aligned<aligned::A16, [TestCase; 3]> = aligned::Aligned([TestCase { doc: std::ptr::null_mut(), expectedStatus: 0 }; 3]);
-// REWRITES-NEXT: let mut total: i32 = 0;
-// REWRITES-NEXT: *cases = [TestCase { doc: b"a\0".as_ptr() as *mut i8, expectedStatus: 1 }, TestCase { doc: b"bb\0".as_ptr() as *mut i8, expectedStatus: 2 }, TestCase { doc: b"ccc\0".as_ptr() as *mut i8, expectedStatus: 3 }];
-// REWRITES-NEXT: total = 0;
-// REWRITES-NEXT: {
+// REWRITES-NEXT:     let mut cases: aligned::Aligned<aligned::A16, [TestCase; 3]> = aligned::Aligned(
+// REWRITES-NEXT:         [TestCase {
+// REWRITES-NEXT:             doc: std::ptr::null_mut(),
+// REWRITES-NEXT:             expectedStatus: 0,
+// REWRITES-NEXT:         }; 3],
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let mut total: i32 = 0;
+// REWRITES-NEXT:     *cases = [
+// REWRITES-NEXT:         TestCase {
+// REWRITES-NEXT:             doc: b"a\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:             expectedStatus: 1,
+// REWRITES-NEXT:         },
+// REWRITES-NEXT:         TestCase {
+// REWRITES-NEXT:             doc: b"bb\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:             expectedStatus: 2,
+// REWRITES-NEXT:         },
+// REWRITES-NEXT:         TestCase {
+// REWRITES-NEXT:             doc: b"ccc\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:             expectedStatus: 3,
+// REWRITES-NEXT:         },
+// REWRITES-NEXT:     ];
+// REWRITES-NEXT:     total = 0;
+// REWRITES-NEXT:     {
 // REWRITES-NEXT:         let mut i: i32 = 0;
 // REWRITES-NEXT:         i = 0;
 // REWRITES-NEXT:         loop {
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:                     if !(i < {{_v[0-9]+}}) {
-// REWRITES-NEXT:                                     break;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     {
-// REWRITES-NEXT:                                     let {{_v[0-9]+}}: *mut i8 = cases[((i as i64) as usize)].doc;
-// REWRITES-NEXT:                                     let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
-// REWRITES-NEXT:                                     total = total + ((unsafe { *{{_v[0-9]+}} }) as i32) * cases[((i as i64) as usize)].expectedStatus;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     i = i + 1;
+// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 3;
+// REWRITES-NEXT:             if !(i < {{_v[0-9]+}}) {
+// REWRITES-NEXT:                 break;
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             {
+// REWRITES-NEXT:                 let {{_v[0-9]+}}: *mut i8 = cases[((i as i64) as usize)].doc;
+// REWRITES-NEXT:                 let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
+// REWRITES-NEXT:                 total = total
+// REWRITES-NEXT:                     + ((unsafe { *{{_v[0-9]+}} }) as i32) * cases[((i as i64) as usize)].expectedStatus;
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             i = i + 1;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT: }
-// REWRITES-NEXT: return total;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     return total;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn sum_flags() -> i32 {
-// REWRITES-NEXT: let mut cases: aligned::Aligned<aligned::A16, [TestCase_0; 2]> = aligned::Aligned([TestCase_0 { usesParameterEntities: 0, weight: 0 }; 2]);
-// REWRITES-NEXT: let mut total: i32 = 0;
-// REWRITES-NEXT: *cases = [TestCase_0 { usesParameterEntities: 1, weight: 10 }, TestCase_0 { usesParameterEntities: 0, weight: 20 }];
-// REWRITES-NEXT: total = 0;
-// REWRITES-NEXT: {
+// REWRITES-NEXT:     let mut cases: aligned::Aligned<aligned::A16, [TestCase_0; 2]> = aligned::Aligned(
+// REWRITES-NEXT:         [TestCase_0 {
+// REWRITES-NEXT:             usesParameterEntities: 0,
+// REWRITES-NEXT:             weight: 0,
+// REWRITES-NEXT:         }; 2],
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let mut total: i32 = 0;
+// REWRITES-NEXT:     *cases = [
+// REWRITES-NEXT:         TestCase_0 {
+// REWRITES-NEXT:             usesParameterEntities: 1,
+// REWRITES-NEXT:             weight: 10,
+// REWRITES-NEXT:         },
+// REWRITES-NEXT:         TestCase_0 {
+// REWRITES-NEXT:             usesParameterEntities: 0,
+// REWRITES-NEXT:             weight: 20,
+// REWRITES-NEXT:         },
+// REWRITES-NEXT:     ];
+// REWRITES-NEXT:     total = 0;
+// REWRITES-NEXT:     {
 // REWRITES-NEXT:         let mut i: i32 = 0;
 // REWRITES-NEXT:         i = 0;
 // REWRITES-NEXT:         loop {
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-NEXT:                     if !(i < {{_v[0-9]+}}) {
-// REWRITES-NEXT:                                     break;
+// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 2;
+// REWRITES-NEXT:             if !(i < {{_v[0-9]+}}) {
+// REWRITES-NEXT:                 break;
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             {
+// REWRITES-NEXT:                 {
+// REWRITES-NEXT:                     let {{_v[0-9]+}}: bool = cases[((i as i64) as usize)].usesParameterEntities != 0;
+// REWRITES-NEXT:                     if {{_v[0-9]+}} {
+// REWRITES-NEXT:                         total = total + cases[((i as i64) as usize)].weight;
+// REWRITES-NEXT:                     } else {
+// REWRITES-NEXT:                         total = total - cases[((i as i64) as usize)].weight;
 // REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     {
-// REWRITES-NEXT:                                     {
-// REWRITES-NEXT:                                                         let {{_v[0-9]+}}: bool = cases[((i as i64) as usize)].usesParameterEntities != 0;
-// REWRITES-NEXT:                                                         if {{_v[0-9]+}} {
-// REWRITES-NEXT:                                                                                 total = total + cases[((i as i64) as usize)].weight;
-// REWRITES-NEXT:                                                         } else {
-// REWRITES-NEXT:                                                                                 total = total - cases[((i as i64) as usize)].weight;
-// REWRITES-NEXT:                                                         }
-// REWRITES-NEXT:                                     }
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     i = i + 1;
+// REWRITES-NEXT:                 }
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             i = i + 1;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT: }
-// REWRITES-NEXT: return total;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     return total;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn sum_movements() -> i32 {
-// REWRITES-NEXT: let mut cases: aligned::Aligned<aligned::A16, [TestCase_1; 3]> = aligned::Aligned([TestCase_1 { expectedMovementInChars: 0, input: std::ptr::null_mut() }; 3]);
-// REWRITES-NEXT: let mut total: i32 = 0;
-// REWRITES-NEXT: *cases = [TestCase_1 { expectedMovementInChars: 1, input: b"x\0".as_ptr() as *mut i8 }, TestCase_1 { expectedMovementInChars: 2, input: b"yy\0".as_ptr() as *mut i8 }, TestCase_1 { expectedMovementInChars: 3, input: b"zzz\0".as_ptr() as *mut i8 }];
-// REWRITES-NEXT: total = 0;
-// REWRITES-NEXT: {
+// REWRITES-NEXT:     let mut cases: aligned::Aligned<aligned::A16, [TestCase_1; 3]> = aligned::Aligned(
+// REWRITES-NEXT:         [TestCase_1 {
+// REWRITES-NEXT:             expectedMovementInChars: 0,
+// REWRITES-NEXT:             input: std::ptr::null_mut(),
+// REWRITES-NEXT:         }; 3],
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let mut total: i32 = 0;
+// REWRITES-NEXT:     *cases = [
+// REWRITES-NEXT:         TestCase_1 {
+// REWRITES-NEXT:             expectedMovementInChars: 1,
+// REWRITES-NEXT:             input: b"x\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:         },
+// REWRITES-NEXT:         TestCase_1 {
+// REWRITES-NEXT:             expectedMovementInChars: 2,
+// REWRITES-NEXT:             input: b"yy\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:         },
+// REWRITES-NEXT:         TestCase_1 {
+// REWRITES-NEXT:             expectedMovementInChars: 3,
+// REWRITES-NEXT:             input: b"zzz\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:         },
+// REWRITES-NEXT:     ];
+// REWRITES-NEXT:     total = 0;
+// REWRITES-NEXT:     {
 // REWRITES-NEXT:         let mut i: i32 = 0;
 // REWRITES-NEXT:         i = 0;
 // REWRITES-NEXT:         loop {
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:                     if !(i < {{_v[0-9]+}}) {
-// REWRITES-NEXT:                                     break;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     {
-// REWRITES-NEXT:                                     let {{_v[0-9]+}}: i32 = cases[((i as i64) as usize)].expectedMovementInChars;
-// REWRITES-NEXT:                                     let {{_v[0-9]+}}: *mut i8 = cases[((i as i64) as usize)].input;
-// REWRITES-NEXT:                                     let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
-// REWRITES-NEXT:                                     total = total + ({{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32));
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     i = i + 1;
+// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 3;
+// REWRITES-NEXT:             if !(i < {{_v[0-9]+}}) {
+// REWRITES-NEXT:                 break;
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             {
+// REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = cases[((i as i64) as usize)].expectedMovementInChars;
+// REWRITES-NEXT:                 let {{_v[0-9]+}}: *mut i8 = cases[((i as i64) as usize)].input;
+// REWRITES-NEXT:                 let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
+// REWRITES-NEXT:                 total = total + ({{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32));
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             i = i + 1;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT: }
-// REWRITES-NEXT: return total;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     return total;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT: let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = sum_docs();
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = sum_flags();
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = sum_movements();
-// REWRITES-NEXT: unsafe { printf({{_v[0-9]+}} as *const i8, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// REWRITES-NEXT: let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT: std::process::exit({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         printf(
+// REWRITES-NEXT:             c"%d %d %d\n".as_ptr(),
+// REWRITES-NEXT:             sum_docs(),
+// REWRITES-NEXT:             sum_flags(),
+// REWRITES-NEXT:             sum_movements(),
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

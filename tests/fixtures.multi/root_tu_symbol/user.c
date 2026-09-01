@@ -5,6 +5,7 @@ int root_helper(void);
 int call_root_helper(void) { return root_helper(); }
 // @rewrite-fn-end
 // @lowering-fn-end
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: #[unsafe(no_mangle)]
 // LOWERING-DAG: pub extern "C" fn call_root_helper() -> i32 {

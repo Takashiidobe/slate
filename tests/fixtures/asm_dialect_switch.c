@@ -25,6 +25,7 @@ int main(void) {
   printf("%d %d\n", intel_add(5), att_subtract(5));
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: let {{_v[0-9]+}}: i32;
 // LOWERING-DAG: unsafe {

@@ -3,6 +3,7 @@
 int read_ptr(int *p) { return *p; }
 // @rewrite-fn-end
 // @lowering-fn-end
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: #[unsafe(no_mangle)]
 // LOWERING-DAG: pub unsafe extern "C" fn read_ptr({{arg[0-9]+}}: *mut i32) -> i32 {

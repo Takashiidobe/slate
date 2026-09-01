@@ -7,6 +7,7 @@ int mode_value(struct Holder *holder) {
 }
 // @rewrite-fn-end
 // @lowering-fn-end
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: #[unsafe(no_mangle)]
 // LOWERING-DAG: pub unsafe extern "C" fn mode_value({{arg[0-9]+}}: *mut Holder) -> i32 {

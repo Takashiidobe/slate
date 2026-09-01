@@ -20,8 +20,25 @@ int main(void) {
   return total == 10 ? 0 : 1;
 }
 
+// REWRITES-DAG: .is_some()
+// REWRITES-NOT: != None
+// REWRITES-NOT: == None
+// REWRITES-NOT: std::ptr::null_mut()
+// REWRITES-NOT: let _v{{[0-9]+}}: Option<fn(i32) -> i32> = op;
+
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING: #![allow(dead_code, unused, non_camel_case_types, non_snake_case, non_upper_case_globals, arithmetic_overflow, unconditional_panic, suspicious_runtime_symbol_definitions, unpredictable_function_pointer_comparisons, unused_comparisons)]
+// LOWERING: #![allow(
+// LOWERING-NEXT:     dead_code,
+// LOWERING-NEXT:     unused,
+// LOWERING-NEXT:     non_camel_case_types,
+// LOWERING-NEXT:     non_snake_case,
+// LOWERING-NEXT:     non_upper_case_globals,
+// LOWERING-NEXT:     arithmetic_overflow,
+// LOWERING-NEXT:     unconditional_panic,
+// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-NEXT:     unused_comparisons
+// LOWERING-NEXT: )]
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn maybe_apply({{arg[0-9]+}}: Option<unsafe extern "C" fn(i32) -> i32>, {{arg[0-9]+}}: i32) -> i32 {
 // LOWERING-NEXT:     let mut op: Option<unsafe extern "C" fn(i32) -> i32> = None;
@@ -65,7 +82,11 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 4;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = maybe_apply({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     total = {{_v[0-9]+}};
-// LOWERING-NEXT:     op = unsafe { std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32) -> i32>>(bump as *const ()) };
+// LOWERING-NEXT:     op = unsafe {
+// LOWERING-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32) -> i32>>(
+// LOWERING-NEXT:             bump as *const (),
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> i32> = op;
 // LOWERING-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> i32> = None;
@@ -101,9 +122,3 @@ int main(void) {
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
-
-// REWRITES-DAG: .is_some()
-// REWRITES-NOT: != None
-// REWRITES-NOT: == None
-// REWRITES-NOT: std::ptr::null_mut()
-// REWRITES-NOT: let _v{{[0-9]+}}: Option<fn(i32) -> i32> = op;

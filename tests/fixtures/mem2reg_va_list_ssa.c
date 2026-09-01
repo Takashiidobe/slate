@@ -19,6 +19,7 @@ int main(void) {
   printf("%d\n", relay(1, 37));
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: fn consume(mut {{arg[0-9]+}}: __SlateVaArgs) -> i32 {
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = unsafe { {{arg[0-9]+}}.next_arg::<i32>() };

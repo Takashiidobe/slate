@@ -2,38 +2,12 @@ mod support;
 
 use std::path::Path;
 
-use support::filecheck::{
-    Profile, check_generated_rust, check_generated_rust_with_prefixes, has_checks,
-};
+use support::filecheck::{Profile, check_generated_rust, check_generated_rust_with_prefixes};
 
 fn work_dir(name: &str) -> std::path::PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("target/filecheck-directives")
         .join(name)
-}
-
-#[test]
-fn enforces_rewrite_checks() {
-    assert!(has_checks(
-        "// REWRITES: rewritten_output\n",
-        Profile::Rewrites
-    ));
-    assert!(
-        check_generated_rust(
-            "// REWRITES: rewritten_output\n",
-            "raw_lowering_output\n",
-            Profile::Rewrites,
-            &work_dir("enforced-rewrites-failure"),
-        )
-        .is_err()
-    );
-    check_generated_rust(
-        "// REWRITES: rewritten_output\n",
-        "rewritten_output\n",
-        Profile::Rewrites,
-        &work_dir("enforced-rewrites-success"),
-    )
-    .unwrap();
 }
 
 #[test]

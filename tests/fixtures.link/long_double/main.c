@@ -691,3 +691,8200 @@ int main(void) {
 // REWRITES-X86_64-GNU-DAG: fn ext_load(_0: *const LongDouble) -> LongDouble;
 // REWRITES-X86_64-GNU-DAG: fn __slate_ext_store__rv_pf80_f80(_0: *mut LongDouble
 // REWRITES-X86_64-GNU-DAG: fn __slate_ext_load__rf80_pf80(_0: *const LongDouble
+
+// SLATE-FILECHECK-BEGIN lowering-x86_64-gnu
+// LOWERING-X86_64-GNU: #![feature(c_variadic)]
+// LOWERING-X86_64-GNU-NEXT: #![allow(
+// LOWERING-X86_64-GNU-NEXT:     dead_code,
+// LOWERING-X86_64-GNU-NEXT:     unused,
+// LOWERING-X86_64-GNU-NEXT:     non_camel_case_types,
+// LOWERING-X86_64-GNU-NEXT:     non_snake_case,
+// LOWERING-X86_64-GNU-NEXT:     non_upper_case_globals,
+// LOWERING-X86_64-GNU-NEXT:     arithmetic_overflow,
+// LOWERING-X86_64-GNU-NEXT:     unconditional_panic,
+// LOWERING-X86_64-GNU-NEXT:     suspicious_runtime_symbol_definitions,
+// LOWERING-X86_64-GNU-NEXT:     unpredictable_function_pointer_comparisons,
+// LOWERING-X86_64-GNU-NEXT:     unused_comparisons
+// LOWERING-X86_64-GNU-NEXT: )]
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: #[repr(C, align(16))]
+// LOWERING-X86_64-GNU-NEXT: #[derive(Clone, Copy)]
+// LOWERING-X86_64-GNU-NEXT: struct LongDouble([u8; 10]);
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: impl core::ops::Add for LongDouble {
+// LOWERING-X86_64-GNU-NEXT:     type Output = LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn add(self, o: LongDouble) -> LongDouble {
+// LOWERING-X86_64-GNU-NEXT:         __slate_f80_add(self, o)
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: impl core::ops::Sub for LongDouble {
+// LOWERING-X86_64-GNU-NEXT:     type Output = LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn sub(self, o: LongDouble) -> LongDouble {
+// LOWERING-X86_64-GNU-NEXT:         __slate_f80_sub(self, o)
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: impl core::ops::Mul for LongDouble {
+// LOWERING-X86_64-GNU-NEXT:     type Output = LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn mul(self, o: LongDouble) -> LongDouble {
+// LOWERING-X86_64-GNU-NEXT:         __slate_f80_mul(self, o)
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: impl core::ops::Div for LongDouble {
+// LOWERING-X86_64-GNU-NEXT:     type Output = LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn div(self, o: LongDouble) -> LongDouble {
+// LOWERING-X86_64-GNU-NEXT:         __slate_f80_div(self, o)
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: impl core::ops::AddAssign for LongDouble {
+// LOWERING-X86_64-GNU-NEXT:     fn add_assign(&mut self, o: LongDouble) {
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             *self = __slate_f80_add(*self, o);
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: impl core::ops::SubAssign for LongDouble {
+// LOWERING-X86_64-GNU-NEXT:     fn sub_assign(&mut self, o: LongDouble) {
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             *self = __slate_f80_sub(*self, o);
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: impl core::ops::MulAssign for LongDouble {
+// LOWERING-X86_64-GNU-NEXT:     fn mul_assign(&mut self, o: LongDouble) {
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             *self = __slate_f80_mul(*self, o);
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: impl core::ops::DivAssign for LongDouble {
+// LOWERING-X86_64-GNU-NEXT:     fn div_assign(&mut self, o: LongDouble) {
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             *self = __slate_f80_div(*self, o);
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: impl core::ops::Neg for LongDouble {
+// LOWERING-X86_64-GNU-NEXT:     type Output = LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn neg(self) -> LongDouble {
+// LOWERING-X86_64-GNU-NEXT:         __slate_f80_neg(self)
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: impl core::cmp::PartialEq for LongDouble {
+// LOWERING-X86_64-GNU-NEXT:     fn eq(&self, other: &LongDouble) -> bool {
+// LOWERING-X86_64-GNU-NEXT:         __slate_f80_eq(*self, *other)
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: impl core::cmp::PartialOrd for LongDouble {
+// LOWERING-X86_64-GNU-NEXT:     fn partial_cmp(&self, other: &LongDouble) -> Option<std::cmp::Ordering> {
+// LOWERING-X86_64-GNU-NEXT:         if __slate_f80_lt(*self, *other) {
+// LOWERING-X86_64-GNU-NEXT:             Some(std::cmp::Ordering::Less)
+// LOWERING-X86_64-GNU-NEXT:         } else {
+// LOWERING-X86_64-GNU-NEXT:             if __slate_f80_gt(*self, *other) {
+// LOWERING-X86_64-GNU-NEXT:                 Some(std::cmp::Ordering::Greater)
+// LOWERING-X86_64-GNU-NEXT:             } else {
+// LOWERING-X86_64-GNU-NEXT:                 if __slate_f80_eq(*self, *other) {
+// LOWERING-X86_64-GNU-NEXT:                     Some(std::cmp::Ordering::Equal)
+// LOWERING-X86_64-GNU-NEXT:                 } else {
+// LOWERING-X86_64-GNU-NEXT:                     None
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: #[repr(C)]
+// LOWERING-X86_64-GNU-NEXT: #[derive(Clone, Copy)]
+// LOWERING-X86_64-GNU-NEXT: struct ld_box {
+// LOWERING-X86_64-GNU-NEXT:     tag: u8,
+// LOWERING-X86_64-GNU-NEXT:     x: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:     tail: u32,
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: #[repr(C)]
+// LOWERING-X86_64-GNU-NEXT: #[derive(Clone, Copy)]
+// LOWERING-X86_64-GNU-NEXT: struct ld_nested {
+// LOWERING-X86_64-GNU-NEXT:     head: u16,
+// LOWERING-X86_64-GNU-NEXT:     pair: ld_pair,
+// LOWERING-X86_64-GNU-NEXT:     bytes: [u8; 3],
+// LOWERING-X86_64-GNU-NEXT:     z: LongDouble,
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: #[repr(C)]
+// LOWERING-X86_64-GNU-NEXT: #[derive(Clone, Copy)]
+// LOWERING-X86_64-GNU-NEXT: struct ld_pair {
+// LOWERING-X86_64-GNU-NEXT:     a: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:     b: LongDouble,
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: #[repr(C)]
+// LOWERING-X86_64-GNU-NEXT: #[derive(Clone, Copy)]
+// LOWERING-X86_64-GNU-NEXT: union ld_union {
+// LOWERING-X86_64-GNU-NEXT:     ld: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:     bytes: [u8; 16],
+// LOWERING-X86_64-GNU-NEXT:     u64: u64,
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: static mut checks: i32 = 0;
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: static mut failures: i32 = 0;
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: unsafe extern "C" {
+// LOWERING-X86_64-GNU-NEXT:     static mut ext_global_ld: LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     static mut stderr: *mut libc::FILE;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_sizeof_ld() -> usize;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_alignof_ld() -> usize;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_sizeof_box() -> usize;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_alignof_box() -> usize;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_offset_box_x() -> usize;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_offset_box_tail() -> usize;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_sizeof_pair() -> usize;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_alignof_pair() -> usize;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_sizeof_nested() -> usize;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_alignof_nested() -> usize;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_offset_nested_pair() -> usize;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_offset_nested_z() -> usize;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_sizeof_union() -> usize;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_alignof_union() -> usize;
+// LOWERING-X86_64-GNU-NEXT:     fn nextafterl(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn strtold(_0: *const core::ffi::c_char, _1: *mut *mut core::ffi::c_char) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_add(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_sub(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_mul(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_div(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_neg(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_from_i64(_0: i64) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_from_u64(_0: u64) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_to_i64(_0: LongDouble) -> i64;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_to_u64(_0: LongDouble) -> u64;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_from_double(_0: f64) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_from_float(_0: f32) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_to_double(_0: LongDouble) -> f64;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_to_float(_0: LongDouble) -> f32;
+// LOWERING-X86_64-GNU-NEXT:     fn nanl(_0: *const core::ffi::c_char) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_identity(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_eq(_0: LongDouble, _1: LongDouble) -> i32;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_lt(_0: LongDouble, _1: LongDouble) -> i32;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_le(_0: LongDouble, _1: LongDouble) -> i32;
+// LOWERING-X86_64-GNU-NEXT:     fn __errno_location() -> *mut i32;
+// LOWERING-X86_64-GNU-NEXT:     fn strcmp(_0: *const core::ffi::c_char, _1: *const core::ffi::c_char) -> i32;
+// LOWERING-X86_64-GNU-NEXT:     fn snprintf(_0: *mut core::ffi::c_char, _1: usize, _2: *const core::ffi::c_char, ...) -> i32;
+// LOWERING-X86_64-GNU-NEXT:     fn frexpl(_0: LongDouble, _1: *mut i32) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn ldexpl(_0: LongDouble, _1: i32) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn sqrtl(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn powl(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn fmodl(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn remainderl(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_sum10(
+// LOWERING-X86_64-GNU-NEXT:         _0: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _1: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _2: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _3: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _4: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _5: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _6: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _7: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _8: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _9: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:     ) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_mix_abi(
+// LOWERING-X86_64-GNU-NEXT:         _0: i64,
+// LOWERING-X86_64-GNU-NEXT:         _1: f64,
+// LOWERING-X86_64-GNU-NEXT:         _2: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _3: u32,
+// LOWERING-X86_64-GNU-NEXT:         _4: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _5: f32,
+// LOWERING-X86_64-GNU-NEXT:         _6: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _7: i32,
+// LOWERING-X86_64-GNU-NEXT:         _8: f64,
+// LOWERING-X86_64-GNU-NEXT:         _9: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:     ) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_call_cb(
+// LOWERING-X86_64-GNU-NEXT:         _0: Option<unsafe extern "C" fn(LongDouble, LongDouble) -> LongDouble>,
+// LOWERING-X86_64-GNU-NEXT:         _1: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _2: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:     ) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_box_roundtrip(_0: *mut ld_box, _1: *mut ld_box);
+// LOWERING-X86_64-GNU-NEXT:     fn ext_pair_make(_0: *mut ld_pair, _1: LongDouble, _2: LongDouble);
+// LOWERING-X86_64-GNU-NEXT:     fn memset(_0: *mut core::ffi::c_void, _1: i32, _2: usize) -> *mut core::ffi::c_void;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_nested_roundtrip(_0: *mut ld_nested, _1: *mut ld_nested);
+// LOWERING-X86_64-GNU-NEXT:     fn ext_array_sum(_0: *const LongDouble, _1: usize) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_store(_0: *mut LongDouble, _1: LongDouble);
+// LOWERING-X86_64-GNU-NEXT:     fn ext_load(_0: *const LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn memcpy(
+// LOWERING-X86_64-GNU-NEXT:         _0: *mut core::ffi::c_void,
+// LOWERING-X86_64-GNU-NEXT:         _1: *const core::ffi::c_void,
+// LOWERING-X86_64-GNU-NEXT:         _2: usize,
+// LOWERING-X86_64-GNU-NEXT:     ) -> *mut core::ffi::c_void;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_vsum(_0: i32, ...) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_global_get() -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn ext_global_set(_0: LongDouble);
+// LOWERING-X86_64-GNU-NEXT:     fn fprintf(_0: *mut libc::FILE, _1: *const core::ffi::c_char, ...) -> i32;
+// LOWERING-X86_64-GNU-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: struct __SlateVaArg {
+// LOWERING-X86_64-GNU-NEXT:     value: Box<dyn std::any::Any>,
+// LOWERING-X86_64-GNU-NEXT:     size: usize,
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: impl __SlateVaArg {
+// LOWERING-X86_64-GNU-NEXT:     fn new<T: 'static>(value: T) -> Self {
+// LOWERING-X86_64-GNU-NEXT:         Self {
+// LOWERING-X86_64-GNU-NEXT:             value: Box::new(value),
+// LOWERING-X86_64-GNU-NEXT:             size: std::mem::size_of::<T>(),
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT:     fn read<T: Copy + 'static>(&self) -> T {
+// LOWERING-X86_64-GNU-NEXT:         if let Some(value) = self.value.downcast_ref::<T>() {
+// LOWERING-X86_64-GNU-NEXT:             return *value;
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:         assert!(self.size >= std::mem::size_of::<T>());
+// LOWERING-X86_64-GNU-NEXT:         unsafe {
+// LOWERING-X86_64-GNU-NEXT:             std::ptr::read_unaligned(
+// LOWERING-X86_64-GNU-NEXT:                 (self.value.as_ref() as *const dyn std::any::Any) as *const () as *const T,
+// LOWERING-X86_64-GNU-NEXT:             )
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: #[derive(Clone)]
+// LOWERING-X86_64-GNU-NEXT: struct __SlateVaArgs {
+// LOWERING-X86_64-GNU-NEXT:     args: Option<std::rc::Rc<Vec<__SlateVaArg>>>,
+// LOWERING-X86_64-GNU-NEXT:     index: usize,
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: impl __SlateVaArgs {
+// LOWERING-X86_64-GNU-NEXT:     fn new(args: Vec<__SlateVaArg>) -> Self {
+// LOWERING-X86_64-GNU-NEXT:         Self {
+// LOWERING-X86_64-GNU-NEXT:             args: Some(std::rc::Rc::new(args)),
+// LOWERING-X86_64-GNU-NEXT:             index: 0,
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT:     const fn empty() -> Self {
+// LOWERING-X86_64-GNU-NEXT:         Self {
+// LOWERING-X86_64-GNU-NEXT:             args: None,
+// LOWERING-X86_64-GNU-NEXT:             index: 0,
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT:     fn next_arg<T: Copy + 'static>(&mut self) -> T {
+// LOWERING-X86_64-GNU-NEXT:         if std::mem::size_of::<T>() == 0 {
+// LOWERING-X86_64-GNU-NEXT:             return unsafe { std::mem::zeroed() };
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:         let args = self.args.as_ref().expect("va_arg with no arguments");
+// LOWERING-X86_64-GNU-NEXT:         let value = args[self.index].read::<T>();
+// LOWERING-X86_64-GNU-NEXT:         self.index += 1;
+// LOWERING-X86_64-GNU-NEXT:         value
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: fn ld_kind() -> *mut i8 {
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"x87-extended\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: fn test_format_and_layout() {
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:         b"long double: kind=%s sizeof=%zu align=%zu mant=%d max_exp=%d\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut i8 = ld_kind();
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u64 = 16;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u64 = 16;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i32 = 64 as i32;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i32 = 16384 as i32;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = 64;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = 53;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 16384;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 1024;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                     } else {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = false;
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                     };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = true;
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                     } else {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 64;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 64;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = 16384;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = 16384;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                         } else {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: bool = false;
+// LOWERING-X86_64-GNU-NEXT:                             {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                     };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = true;
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                     } else {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 64;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 113;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = 16384;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = 16384;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                         } else {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: bool = false;
+// LOWERING-X86_64-GNU-NEXT:                             {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                     };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 192;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"(LDBL_MANT_DIG == 53 && LDBL_MAX_EXP == 1024) || (LDBL_MANT_DIG == 64 && LDBL_MAX_EXP == 16384) || (LDBL_MANT_DIG == 113 && LDBL_MAX_EXP == 16384)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = 16;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = (unsafe { ext_sizeof_ld() }) as u64;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 194;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                             b"sizeof(long double) == ext_sizeof_ld()\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = 16;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = (unsafe { ext_alignof_ld() }) as u64;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 195;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"(size_t)ALIGNOF(long double) == ext_alignof_ld()\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = std::mem::size_of::<ld_box>() as u64;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = (unsafe { ext_sizeof_box() }) as u64;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 197;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                             b"sizeof(struct ld_box) == ext_sizeof_box()\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = std::mem::align_of::<ld_box>() as u64;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = (unsafe { ext_alignof_box() }) as u64;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 198;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                             b"(size_t)ALIGNOF(struct ld_box) == ext_alignof_box()\0".as_ptr()
+// LOWERING-X86_64-GNU-NEXT:                                 as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = 16;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = (unsafe { ext_offset_box_x() }) as u64;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 199;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"offsetof(struct ld_box, x) == ext_offset_box_x()\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = std::mem::size_of::<ld_pair>() as u64;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = (unsafe { ext_offset_box_tail() }) as u64;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 200;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                             b"offsetof(struct ld_box, tail) == ext_offset_box_tail()\0".as_ptr()
+// LOWERING-X86_64-GNU-NEXT:                                 as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = 32;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = (unsafe { ext_sizeof_pair() }) as u64;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 202;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                             b"sizeof(struct ld_pair) == ext_sizeof_pair()\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = std::mem::align_of::<ld_pair>() as u64;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = (unsafe { ext_alignof_pair() }) as u64;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 203;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                             b"(size_t)ALIGNOF(struct ld_pair) == ext_alignof_pair()\0".as_ptr()
+// LOWERING-X86_64-GNU-NEXT:                                 as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = std::mem::size_of::<ld_nested>() as u64;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = (unsafe { ext_sizeof_nested() }) as u64;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 205;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"sizeof(struct ld_nested) == ext_sizeof_nested()\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = std::mem::align_of::<ld_nested>() as u64;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = (unsafe { ext_alignof_nested() }) as u64;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 206;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                             b"(size_t)ALIGNOF(struct ld_nested) == ext_alignof_nested()\0".as_ptr()
+// LOWERING-X86_64-GNU-NEXT:                                 as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = std::mem::size_of::<ld_union>() as u64;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = (unsafe { ext_offset_nested_pair() }) as u64;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 207;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                             b"offsetof(struct ld_nested, pair) == ext_offset_nested_pair()\0"
+// LOWERING-X86_64-GNU-NEXT:                                 .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = 64;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = (unsafe { ext_offset_nested_z() }) as u64;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 208;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                             b"offsetof(struct ld_nested, z) == ext_offset_nested_z()\0".as_ptr()
+// LOWERING-X86_64-GNU-NEXT:                                 as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = std::mem::align_of::<ld_union>() as u64;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = (unsafe { ext_sizeof_union() }) as u64;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 210;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                             b"sizeof(union ld_union) == ext_sizeof_union()\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = 16;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = (unsafe { ext_alignof_union() }) as u64;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 211;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                             b"(size_t)ALIGNOF(union ld_union) == ext_alignof_union()\0".as_ptr()
+// LOWERING-X86_64-GNU-NEXT:                                 as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     return;
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: /// 2^53 + 1
+// LOWERING-X86_64-GNU-NEXT: fn test_literals_and_precision_boundaries() {
+// LOWERING-X86_64-GNU-NEXT:     let mut one: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut eps: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut n1: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut n2: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut via_parse_64: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut via_parse_113: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut end: *mut i8 = std::ptr::null_mut();
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:     one = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 192, 63]);
+// LOWERING-X86_64-GNU-NEXT:     eps = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u64 = 9007199254740993u64;
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = one;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = eps;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = one;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 224;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"one + eps != one\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = one;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = eps;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = one;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} - {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 check_got_ = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = eps;
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_ = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 225;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"(one + eps) - one\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"eps\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_2: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_2: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = one;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { __slate_nextafterl__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = one;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} - {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 check_got_2 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = eps;
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_2 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_2;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_2;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 226;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"nextafterl(one, 2.0L) - one\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"eps\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_2;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_2;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u64({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     n1 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u64 = 9007199254740992u64;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u64({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     n2 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = n1;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = n2;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 233;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"n1 != n2\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
+// LOWERING-X86_64-GNU-NEXT:     end = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"0x1.0000000000000002p0\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe {
+// LOWERING-X86_64-GNU-NEXT:         __slate_strtold__rf80_pc_ppc(
+// LOWERING-X86_64-GNU-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:             std::ptr::addr_of_mut!(end) as *mut *mut core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:         )
+// LOWERING-X86_64-GNU-NEXT:     };
+// LOWERING-X86_64-GNU-NEXT:     via_parse_64 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: *mut i8 = end;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = end;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i8 = unsafe { *{{_v[0-9]+}} };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                     } else {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = false;
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                     };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 238;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"end != NULL && *end == '\\0'\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = via_parse_64;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 240;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"via_parse_64 != 1.0L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_3: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_3: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = via_parse_64;
+// LOWERING-X86_64-GNU-NEXT:                 check_got_3 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([1, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_3 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_3;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_3;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 241;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"via_parse_64\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"0x1.0000000000000002p0L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_3;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_3;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
+// LOWERING-X86_64-GNU-NEXT:     end = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"0x1.0000000000000000000000000001p0\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe {
+// LOWERING-X86_64-GNU-NEXT:         __slate_strtold__rf80_pc_ppc(
+// LOWERING-X86_64-GNU-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:             std::ptr::addr_of_mut!(end) as *mut *mut core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:         )
+// LOWERING-X86_64-GNU-NEXT:     };
+// LOWERING-X86_64-GNU-NEXT:     via_parse_113 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: *mut i8 = end;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = end;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i8 = unsafe { *{{_v[0-9]+}} };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                     } else {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = false;
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                     };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 248;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"end != NULL && *end == '\\0'\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = via_parse_113;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 253;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"via_parse_113 == 1.0L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let mut wide: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:         let mut through_double: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([1, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:         wide = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: f64 = 1.0;
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:         through_double = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             loop {
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                     unsafe {
+// LOWERING-X86_64-GNU-NEXT:                         checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                     {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = wide;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = through_double;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                             unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             }
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = 261;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"wide != through_double\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 )
+// LOWERING-X86_64-GNU-NEXT:                             };
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:                 if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                     break;
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let mut huge_but_finite: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 207, 71]);
+// LOWERING-X86_64-GNU-NEXT:         unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(huge_but_finite), {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             loop {
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                     unsafe {
+// LOWERING-X86_64-GNU-NEXT:                         checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                     {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(huge_but_finite)) };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = __slate_f80_is_fp_class({{_v[0-9]+}}, 504);
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                             unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             }
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = 268;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"isfinite(huge_but_finite)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 )
+// LOWERING-X86_64-GNU-NEXT:                             };
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:                 if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                     break;
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             loop {
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                     unsafe {
+// LOWERING-X86_64-GNU-NEXT:                         checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                     {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(huge_but_finite)) };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: f64 = 179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368.0;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                             unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             }
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = 269;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                                 b"huge_but_finite > (long double)DBL_MAX\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 )
+// LOWERING-X86_64-GNU-NEXT:                             };
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:                 if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                     break;
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     return;
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: /// Conditional operator and comma operator force long-double temporaries.
+// LOWERING-X86_64-GNU-NEXT: /// Conditional operator and comma operator force long-double temporaries.
+// LOWERING-X86_64-GNU-NEXT: fn test_arithmetic_and_temporaries() {
+// LOWERING-X86_64-GNU-NEXT:     let mut a: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut b: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut c: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut x: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut y: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([128, 247, 230, 213, 196, 179, 162, 145, 19, 64]);
+// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(a), {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 42, 59, 76, 93, 110, 127, 128, 248, 191]);
+// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(b), {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 2, 64]);
+// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(c), {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(b)) };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 check_got_ = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(b)) };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_add__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_ = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 281;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"a + b\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"ext_add(a, b)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_2: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_2: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(b)) };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} - {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 check_got_2 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(b)) };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_sub__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_2 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_2;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_2;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 282;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"a - b\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"ext_sub(a, b)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_2;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_2;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_3: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_3: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(b)) };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} * {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 check_got_3 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(b)) };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_mul__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_3 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_3;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_3;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 283;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"a * b\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"ext_mul(a, b)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_3;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_3;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_4: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_4: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c)) };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} / {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 check_got_4 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c)) };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_div__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_4 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_4;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_4;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 284;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"a / c\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"ext_div(a, c)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_4;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_4;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_5: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_5: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = -{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 check_got_5 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_neg__rf80_f80({{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_5 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_5;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_5;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 285;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"-a\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"ext_neg(a)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_5;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_5;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(b)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} * {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 1, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} / {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(b)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} - {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 252, 63]);
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} / {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 128, 128, 244, 63]);
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = -{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_fma({{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     x = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(b)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_add__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_mul__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 1, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_div__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(b)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_sub__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 252, 63]);
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_div__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 128, 128, 244, 63]);
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_mul__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_sub__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     y = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_6: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_6: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = x;
+// LOWERING-X86_64-GNU-NEXT:                 check_got_6 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = y;
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_6 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_6;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_6;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 291;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"x\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"y\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_6;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_6;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let mut q: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:         unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(q), {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 254, 63]);
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(q)) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(q), {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(q)) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} * {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(q), {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 253, 63]);
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(q)) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} - {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(q), {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(q)) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} / {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(q), {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             loop {
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let mut check_got_7: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                     let mut check_expected_7: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(q)) };
+// LOWERING-X86_64-GNU-NEXT:                     check_got_7 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 136, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:                     check_expected_7 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                     unsafe {
+// LOWERING-X86_64-GNU-NEXT:                         checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                     {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_7;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_7;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                             unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             }
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                                 b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0".as_ptr()
+// LOWERING-X86_64-GNU-NEXT:                                     as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = 299;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"q\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"2.125L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_got_7;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_expected_7;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 )
+// LOWERING-X86_64-GNU-NEXT:                             };
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:                 if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                     break;
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(q)) };
+// LOWERING-X86_64-GNU-NEXT:         todo!("long double constant without Clang AST value");
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + _223;
+// LOWERING-X86_64-GNU-NEXT:         unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(q), {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             loop {
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let mut check_got_8: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                     let mut check_expected_8: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(q)) };
+// LOWERING-X86_64-GNU-NEXT:                     check_got_8 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:                     check_expected_8 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                     unsafe {
+// LOWERING-X86_64-GNU-NEXT:                         checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                     {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                             unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             }
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                                 b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0".as_ptr()
+// LOWERING-X86_64-GNU-NEXT:                                     as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = 301;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"q\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"3.125L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_got_8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_expected_8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 )
+// LOWERING-X86_64-GNU-NEXT:                             };
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:                 if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                     break;
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(q)) };
+// LOWERING-X86_64-GNU-NEXT:         todo!("long double constant without Clang AST value");
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} - _226;
+// LOWERING-X86_64-GNU-NEXT:         unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(q), {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             loop {
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let mut check_got_9: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                     let mut check_expected_9: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(q)) };
+// LOWERING-X86_64-GNU-NEXT:                     check_got_9 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 136, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:                     check_expected_9 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                     unsafe {
+// LOWERING-X86_64-GNU-NEXT:                         checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                     {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_9;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_9;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                             unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             }
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                                 b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0".as_ptr()
+// LOWERING-X86_64-GNU-NEXT:                                     as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = 303;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"q\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"2.125L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_got_9;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_expected_9;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 )
+// LOWERING-X86_64-GNU-NEXT:                             };
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:                 if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                     break;
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_10: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_10: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// LOWERING-X86_64-GNU-NEXT:                 check_got_10 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(a)) };
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_10 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_10;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_10;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 307;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"(1 ? a : (double)b)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"a\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_10;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_10;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_11: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_11: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(b)) };
+// LOWERING-X86_64-GNU-NEXT:                 x = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = x;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 check_got_11 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(b)) };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_11 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_11;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_11;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 308;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"(x = b, x + 1.0L)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"b + 1.0L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_11;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_11;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     return;
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: fn test_casts_and_usual_conversions() {
+// LOWERING-X86_64-GNU-NEXT:     let mut si: aligned::Aligned<aligned::A16, [i64; 7]> = aligned::Aligned([0; 7]);
+// LOWERING-X86_64-GNU-NEXT:     let mut ui: aligned::Aligned<aligned::A16, [u64; 6]> = aligned::Aligned([0; 6]);
+// LOWERING-X86_64-GNU-NEXT:     let mut i: u64 = 0;
+// LOWERING-X86_64-GNU-NEXT:     *si = [
+// LOWERING-X86_64-GNU-NEXT:         0,
+// LOWERING-X86_64-GNU-NEXT:         1,
+// LOWERING-X86_64-GNU-NEXT:         -1,
+// LOWERING-X86_64-GNU-NEXT:         2147483647,
+// LOWERING-X86_64-GNU-NEXT:         -2147483647,
+// LOWERING-X86_64-GNU-NEXT:         9007199254740991,
+// LOWERING-X86_64-GNU-NEXT:         -9007199254740991,
+// LOWERING-X86_64-GNU-NEXT:     ];
+// LOWERING-X86_64-GNU-NEXT:     *ui = [
+// LOWERING-X86_64-GNU-NEXT:         0,
+// LOWERING-X86_64-GNU-NEXT:         1,
+// LOWERING-X86_64-GNU-NEXT:         4294967295,
+// LOWERING-X86_64-GNU-NEXT:         9007199254740991,
+// LOWERING-X86_64-GNU-NEXT:         9007199254740993,
+// LOWERING-X86_64-GNU-NEXT:         18446744073709551615,
+// LOWERING-X86_64-GNU-NEXT:     ];
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = 0;
+// LOWERING-X86_64-GNU-NEXT:         i = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: u64 = i;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: u64 = 56;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: u64 = 8;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} / {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 loop {
+// LOWERING-X86_64-GNU-NEXT:                     {
+// LOWERING-X86_64-GNU-NEXT:                         let mut check_got_: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                         let mut check_expected_: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: u64 = i;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i64 = si[({{_v[0-9]+}} as usize)];
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i64({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                         check_got_ = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: u64 = i;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i64 = si[({{_v[0-9]+}} as usize)];
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                             unsafe { __slate_ext_from_i64__rf80_i64({{_v[0-9]+}} as i64) };
+// LOWERING-X86_64-GNU-NEXT:                         check_expected_ = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_got_;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_expected_;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                                 let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                     failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                                 }
+// LOWERING-X86_64-GNU-NEXT:                                 let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                                 let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                                     b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0".as_ptr()
+// LOWERING-X86_64-GNU-NEXT:                                         as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                                 let {{_v[0-9]+}}: i32 = 328;
+// LOWERING-X86_64-GNU-NEXT:                                 let {{_v[0-9]+}}: *mut i8 = b"(long double)si[i]\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                                 let {{_v[0-9]+}}: *mut i8 = b"ext_from_i64(si[i])\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                                 let {{_v[0-9]+}}: LongDouble = check_got_;
+// LOWERING-X86_64-GNU-NEXT:                                 let {{_v[0-9]+}}: LongDouble = check_expected_;
+// LOWERING-X86_64-GNU-NEXT:                                 let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                     __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                         {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                         {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                         {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                         {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                         {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                         {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                         {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                     )
+// LOWERING-X86_64-GNU-NEXT:                                 };
+// LOWERING-X86_64-GNU-NEXT:                             }
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:                     if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         break;
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: u64 = i;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:             i = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = 0;
+// LOWERING-X86_64-GNU-NEXT:         i = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: u64 = i;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: u64 = 48;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: u64 = 8;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} / {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 loop {
+// LOWERING-X86_64-GNU-NEXT:                     {
+// LOWERING-X86_64-GNU-NEXT:                         let mut check_got_2: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                         let mut check_expected_2: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: u64 = i;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: u64 = ui[({{_v[0-9]+}} as usize)];
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u64({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                         check_got_2 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: u64 = i;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: u64 = ui[({{_v[0-9]+}} as usize)];
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                             unsafe { __slate_ext_from_u64__rf80_u64({{_v[0-9]+}} as u64) };
+// LOWERING-X86_64-GNU-NEXT:                         check_expected_2 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_got_2;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_expected_2;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                                 let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                     failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                                 }
+// LOWERING-X86_64-GNU-NEXT:                                 let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                                 let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                                     b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0".as_ptr()
+// LOWERING-X86_64-GNU-NEXT:                                         as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                                 let {{_v[0-9]+}}: i32 = 331;
+// LOWERING-X86_64-GNU-NEXT:                                 let {{_v[0-9]+}}: *mut i8 = b"(long double)ui[i]\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                                 let {{_v[0-9]+}}: *mut i8 = b"ext_from_u64(ui[i])\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                                 let {{_v[0-9]+}}: LongDouble = check_got_2;
+// LOWERING-X86_64-GNU-NEXT:                                 let {{_v[0-9]+}}: LongDouble = check_expected_2;
+// LOWERING-X86_64-GNU-NEXT:                                 let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                     __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                         {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                         {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                         {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                         {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                         {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                         {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                         {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                     )
+// LOWERING-X86_64-GNU-NEXT:                                 };
+// LOWERING-X86_64-GNU-NEXT:                             }
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:                     if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         break;
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: u64 = i;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:             i = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 63, 180, 150, 19, 64]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i64 = __slate_f80_to_i64({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 63, 180, 150, 19, 64]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i64 = unsafe { __slate_ext_to_i64__ri64_f80({{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 333;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"(int64_t)1234567.875L == ext_to_i64(1234567.875L)\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 63, 180, 150, 19, 192]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i64 = __slate_f80_to_i64({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 63, 180, 150, 19, 192]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i64 = unsafe { __slate_ext_to_i64__ri64_f80({{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 334;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"(int64_t)-1234567.875L == ext_to_i64(-1234567.875L)\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 63, 180, 150, 19, 64]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = __slate_f80_to_u64({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 63, 180, 150, 19, 64]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = unsafe { __slate_ext_to_u64__ru64_f80({{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 335;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"(uint64_t)1234567.875L == ext_to_u64(1234567.875L)\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 224, 254, 191]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i64 = __slate_f80_to_i64({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i64 = 0;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 336;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"(int64_t)-0.875L == 0\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let mut d: f64 = 0.0;
+// LOWERING-X86_64-GNU-NEXT:         let mut f: f32 = 0.0;
+// LOWERING-X86_64-GNU-NEXT:         let mut ld1: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:         let mut ld2: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: f64 = 1048576.0000000002;
+// LOWERING-X86_64-GNU-NEXT:         unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(d), {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: f32 = 1024.00012;
+// LOWERING-X86_64-GNU-NEXT:         unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(f), {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(d)) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:         ld1 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: f32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f)) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:         ld2 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             loop {
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let mut check_got_3: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                     let mut check_expected_3: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = ld1;
+// LOWERING-X86_64-GNU-NEXT:                     check_got_3 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(d)) };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                         unsafe { __slate_ext_from_double__rf80_f64({{_v[0-9]+}} as f64) };
+// LOWERING-X86_64-GNU-NEXT:                     check_expected_3 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                     unsafe {
+// LOWERING-X86_64-GNU-NEXT:                         checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                     {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_3;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_3;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                             unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             }
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                                 b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0".as_ptr()
+// LOWERING-X86_64-GNU-NEXT:                                     as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = 343;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"ld1\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"ext_from_double(d)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_got_3;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_expected_3;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 )
+// LOWERING-X86_64-GNU-NEXT:                             };
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:                 if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                     break;
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             loop {
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let mut check_got_4: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                     let mut check_expected_4: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = ld2;
+// LOWERING-X86_64-GNU-NEXT:                     check_got_4 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: f32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f)) };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                         unsafe { __slate_ext_from_float__rf80_f32({{_v[0-9]+}} as f32) };
+// LOWERING-X86_64-GNU-NEXT:                     check_expected_4 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                     unsafe {
+// LOWERING-X86_64-GNU-NEXT:                         checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                     {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_4;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_4;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                             unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             }
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                                 b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0".as_ptr()
+// LOWERING-X86_64-GNU-NEXT:                                     as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = 344;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"ld2\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"ext_from_float(f)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_got_4;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_expected_4;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 )
+// LOWERING-X86_64-GNU-NEXT:                             };
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:                 if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                     break;
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             loop {
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                     unsafe {
+// LOWERING-X86_64-GNU-NEXT:                         checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                     {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = ld1;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: f64 = __slate_f80_to_f64({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = ld1;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: f64 = unsafe { __slate_ext_to_double__rf64_f80({{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                             unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             }
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = 345;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                                 b"(double)ld1 == ext_to_double(ld1)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 )
+// LOWERING-X86_64-GNU-NEXT:                             };
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:                 if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                     break;
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             loop {
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                     unsafe {
+// LOWERING-X86_64-GNU-NEXT:                         checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                     {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = ld2;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: f32 = __slate_f80_to_f32({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = ld2;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: f32 = unsafe { __slate_ext_to_float__rf32_f80({{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                             unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             }
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = 346;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                                 b"(float)ld2 == ext_to_float(ld2)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 )
+// LOWERING-X86_64-GNU-NEXT:                             };
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:                 if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                     break;
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let mut i32: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:         let mut u64: u64 = 0;
+// LOWERING-X86_64-GNU-NEXT:         let mut f2: f32 = 0.0;
+// LOWERING-X86_64-GNU-NEXT:         let mut d2: f64 = 0.0;
+// LOWERING-X86_64-GNU-NEXT:         let mut ld: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = -17;
+// LOWERING-X86_64-GNU-NEXT:         unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(i32), {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = 9007199254740993u64;
+// LOWERING-X86_64-GNU-NEXT:         unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(u64), {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: f32 = 0.25;
+// LOWERING-X86_64-GNU-NEXT:         unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(f2), {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: f64 = -0.125;
+// LOWERING-X86_64-GNU-NEXT:         unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(d2), {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:         unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(ld), {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             loop {
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let mut check_got_5: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                     let mut check_expected_5: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ld)) };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(i32)) };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i32({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     check_got_5 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ld)) };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(i32)) };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i32({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_add__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                     check_expected_5 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                     unsafe {
+// LOWERING-X86_64-GNU-NEXT:                         checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                     {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_5;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_5;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                             unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             }
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                                 b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0".as_ptr()
+// LOWERING-X86_64-GNU-NEXT:                                     as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = 357;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"ld + i32\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                                 b"ext_add(ld, (long double)i32)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_got_5;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_expected_5;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 )
+// LOWERING-X86_64-GNU-NEXT:                             };
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:                 if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                     break;
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             loop {
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let mut check_got_6: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                     let mut check_expected_6: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ld)) };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(u64)) };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u64({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     check_got_6 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ld)) };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(u64)) };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u64({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_add__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                     check_expected_6 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                     unsafe {
+// LOWERING-X86_64-GNU-NEXT:                         checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                     {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_6;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_6;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                             unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             }
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                                 b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0".as_ptr()
+// LOWERING-X86_64-GNU-NEXT:                                     as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = 358;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"ld + u64\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                                 b"ext_add(ld, (long double)u64)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_got_6;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_expected_6;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 )
+// LOWERING-X86_64-GNU-NEXT:                             };
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:                 if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                     break;
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             loop {
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let mut check_got_7: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                     let mut check_expected_7: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ld)) };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: f32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f2)) };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     check_got_7 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ld)) };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: f32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f2)) };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_add__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                     check_expected_7 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                     unsafe {
+// LOWERING-X86_64-GNU-NEXT:                         checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                     {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_7;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_7;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                             unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             }
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                                 b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0".as_ptr()
+// LOWERING-X86_64-GNU-NEXT:                                     as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = 359;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"ld + f\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                                 b"ext_add(ld, (long double)f)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_got_7;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_expected_7;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 )
+// LOWERING-X86_64-GNU-NEXT:                             };
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:                 if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                     break;
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             loop {
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let mut check_got_8: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                     let mut check_expected_8: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ld)) };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(d2)) };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     check_got_8 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ld)) };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(d2)) };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_add__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                     check_expected_8 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                     unsafe {
+// LOWERING-X86_64-GNU-NEXT:                         checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                     {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                             unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             }
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                                 b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0".as_ptr()
+// LOWERING-X86_64-GNU-NEXT:                                     as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = 360;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"ld + d\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                                 b"ext_add(ld, (long double)d)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_got_8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_expected_8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 )
+// LOWERING-X86_64-GNU-NEXT:                             };
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:                 if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                     break;
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     return;
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: fn test_special_values_and_comparisons() {
+// LOWERING-X86_64-GNU-NEXT:     let mut pz: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut nz: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut inf: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut ninf: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut nan: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-NEXT:     pz = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
+// LOWERING-X86_64-GNU-NEXT:     nz = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: f32 = f32::from_bits(0x7f800000);
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     inf = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: f32 = f32::from_bits(0xff800000);
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     ninf = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { __slate_nanl__rf80_pc({{_v[0-9]+}} as *const core::ffi::c_char) };
+// LOWERING-X86_64-GNU-NEXT:     nan = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = pz;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = nz;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 371;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"pz == nz\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = pz;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = __slate_f80_signbit({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 372;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"!signbit(pz)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = nz;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = __slate_f80_signbit({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 373;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"signbit(nz)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = pz;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_identity__rf80_f80({{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                 check_got_ = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = pz;
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_ = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = __slate_f80_signbit({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = __slate_f80_signbit({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                     } else {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = false;
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                     };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                             b"FAIL line %d: signed-zero mismatch\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 374;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_2: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_2: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = nz;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_identity__rf80_f80({{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                 check_got_2 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = nz;
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_2 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_2;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_2;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_2;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = __slate_f80_signbit({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_2;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = __slate_f80_signbit({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                     } else {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = false;
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                     };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                             b"FAIL line %d: signed-zero mismatch\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 375;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_3: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_3: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = pz;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_neg__rf80_f80({{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                 check_got_3 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = nz;
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_3 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_3;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_3;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_3;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = __slate_f80_signbit({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_3;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = __slate_f80_signbit({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                     } else {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = false;
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                     };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                             b"FAIL line %d: signed-zero mismatch\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 376;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_4: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_4: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = nz;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_neg__rf80_f80({{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                 check_got_4 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = pz;
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_4 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_4;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_4;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_4;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = __slate_f80_signbit({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_4;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = __slate_f80_signbit({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                     } else {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = false;
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                     };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                             b"FAIL line %d: signed-zero mismatch\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 377;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = inf;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = __slate_f80_is_fp_class({{_v[0-9]+}}, 516);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = inf;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                     } else {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = false;
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                     };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 379;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"isinf(inf) && inf > 0.0L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = ninf;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = __slate_f80_is_fp_class({{_v[0-9]+}}, 516);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = ninf;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                     } else {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = false;
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                     };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 380;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"isinf(ninf) && ninf < 0.0L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = nan;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = __slate_f80_is_fp_class({{_v[0-9]+}}, 3);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 381;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"isnan(nan)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = nan;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = nan;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 382;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"!(nan == nan)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = nan;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 383;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"!(nan < 0.0L)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = nan;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 384;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"!(nan > 0.0L)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = nan;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} <= {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 385;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"!(nan <= 0.0L)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = nan;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} >= {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 386;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"!(nan >= 0.0L)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = nan;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = nan;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 387;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"nan != nan\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = pz;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = nz;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { __slate_ext_eq__ri32_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 389;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"ext_eq(pz, nz)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { __slate_ext_lt__ri32_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 390;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"ext_lt(-1.0L, 1.0L)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { __slate_ext_le__ri32_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 391;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"ext_le(1.0L, 1.0L)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = nan;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = nan;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { __slate_ext_eq__ri32_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 392;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"!ext_eq(nan, nan)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = nan;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { __slate_ext_lt__ri32_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 393;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"!ext_lt(nan, 0.0L)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = nz;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = __slate_f80_copysign({{_v[0-9]+}}, {{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = __slate_f80_signbit({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 395;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"signbit(copysignl(1.0L, nz))\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = pz;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = __slate_f80_copysign({{_v[0-9]+}}, {{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = __slate_f80_signbit({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 396;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"!signbit(copysignl(1.0L, pz))\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     return;
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: fn test_libc_and_libm_externs() {
+// LOWERING-X86_64-GNU-NEXT:     let mut end: *mut i8 = std::ptr::null_mut();
+// LOWERING-X86_64-GNU-NEXT:     let mut x: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut ip: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut fp: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut fr: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut e: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:     let mut buf: aligned::Aligned<aligned::A16, [i8; 256]> = aligned::Aligned([0; 256]);
+// LOWERING-X86_64-GNU-NEXT:     let mut end2: *mut i8 = std::ptr::null_mut();
+// LOWERING-X86_64-GNU-NEXT:     let mut n: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"  -0x1.23456789abcdef0123456789p+17tail\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
+// LOWERING-X86_64-GNU-NEXT:     end = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:     e = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
+// LOWERING-X86_64-GNU-NEXT:     end2 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { __errno_location() };
+// LOWERING-X86_64-GNU-NEXT:     unsafe {
+// LOWERING-X86_64-GNU-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe {
+// LOWERING-X86_64-GNU-NEXT:         __slate_strtold__rf80_pc_ppc(
+// LOWERING-X86_64-GNU-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:             std::ptr::addr_of_mut!(end) as *mut *mut core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:         )
+// LOWERING-X86_64-GNU-NEXT:     };
+// LOWERING-X86_64-GNU-NEXT:     x = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: *mut i8 = end;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 413;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"end != NULL\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: *mut i8 = end;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: *mut i8 = b"tail\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                         strcmp(
+// LOWERING-X86_64-GNU-NEXT:                             {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                             {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                         )
+// LOWERING-X86_64-GNU-NEXT:                     };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 414;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"strcmp(end, \"tail\") == 0\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: *mut i32 = unsafe { __errno_location() };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 415;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"errno == 0\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = x;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 416;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"x < 0.0L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut i8 = buf.as_mut_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u64 = 256;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%La\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = x;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:         __slate_snprintf__ri32_pi8_u64_pi8_f80({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}} as u64, {{_v[0-9]+}} as *mut i8, {{_v[0-9]+}})
+// LOWERING-X86_64-GNU-NEXT:     };
+// LOWERING-X86_64-GNU-NEXT:     n = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = n;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = n;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} as u64;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: u64 = 256;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                     } else {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = false;
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                     };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 420;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                             b"n > 0 && (size_t)n < sizeof(buf)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: *mut i8 = buf.as_mut_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     __slate_strtold__rf80_pc_ppc(
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                         std::ptr::addr_of_mut!(end2) as *mut *mut core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                     )
+// LOWERING-X86_64-GNU-NEXT:                 };
+// LOWERING-X86_64-GNU-NEXT:                 check_got_ = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = x;
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_ = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 421;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"strtold(buf, &end2)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"x\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: *mut i8 = end2;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = end2;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i8 = unsafe { *{{_v[0-9]+}} };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                     } else {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = false;
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                     };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 422;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                             b"end2 != NULL && *end2 == '\\0'\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 231, 192, 12, 192]);
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_fract({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_trunc({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     ip = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     fp = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_2: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_2: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = ip;
+// LOWERING-X86_64-GNU-NEXT:                 check_got_2 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 228, 192, 12, 192]);
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_2 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_2;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_2;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 425;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"ip\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"-12345.0L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_2;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_2;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_3: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_3: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = fp;
+// LOWERING-X86_64-GNU-NEXT:                 check_got_3 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 254, 191]);
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_3 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_3;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_3;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 426;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"fp\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"-0.75L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_3;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_3;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 9, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:         unsafe { __slate_frexpl__rf80_f80_pi32({{_v[0-9]+}}, std::ptr::addr_of_mut!(e) as *mut i32) };
+// LOWERING-X86_64-GNU-NEXT:     fr = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_4: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_4: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = fr;
+// LOWERING-X86_64-GNU-NEXT:                 check_got_4 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 254, 63]);
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_4 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_4;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_4;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 429;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"fr\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"0.75L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_4;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_4;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = e;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = 11;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 430;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"e == 11\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_5: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_5: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = fr;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = e;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                     unsafe { __slate_ldexpl__rf80_f80_i32({{_v[0-9]+}}, {{_v[0-9]+}} as i32) };
+// LOWERING-X86_64-GNU-NEXT:                 check_got_5 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 9, 64]);
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_5 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_5;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_5;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 431;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"ldexpl(fr, e)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"0x1.8p+10L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_5;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_5;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_6: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_6: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { __slate_sqrtl__rf80_f80({{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                 check_got_6 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_6 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_6;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_6;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 433;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"sqrtl(4.0L)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"2.0L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_6;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_6;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_7: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_7: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { __slate_powl__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                 check_got_7 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 216, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_7 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_7;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_7;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 434;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"powl(1.5L, 3.0L)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"3.375L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_7;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_7;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_8: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_8: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = __slate_f80_fma({{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                 check_got_8 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 2, 64]);
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_8 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_8;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_8;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 435;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"fmal(2.0L, 3.0L, 4.0L)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"10.0L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_9: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_9: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 140, 3, 64]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { __slate_fmodl__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                 check_got_9 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_9 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_9;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_9;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 436;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"fmodl(17.5L, 3.0L)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"2.5L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_9;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_9;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_10: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_10: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 176, 1, 64]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { __slate_remainderl__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                 check_got_10 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 254, 191]);
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_10 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_10;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_10;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 437;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"remainderl(5.5L, 2.0L)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"-0.5L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_10;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_10;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_11: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_11: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 255, 191]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = __slate_f80_floor({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                 check_got_11 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 192]);
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_11 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_11;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_11;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 438;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"floorl(-1.25L)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"-2.0L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_11;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_11;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_12: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_12: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 255, 191]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = __slate_f80_ceil({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                 check_got_12 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]);
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_12 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_12;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_12;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 439;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"ceill(-1.25L)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"-1.0L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_12;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_12;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_13: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_13: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 224, 255, 191]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = __slate_f80_trunc({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                 check_got_13 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]);
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_13 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_13;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_13;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 440;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"truncl(-1.75L)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"-1.0L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_13;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_13;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let mut toward: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { __slate_nextafterl__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:         toward = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             loop {
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                     unsafe {
+// LOWERING-X86_64-GNU-NEXT:                         checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                     {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = toward;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                             unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             }
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = 444;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"toward > 1.0L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 )
+// LOWERING-X86_64-GNU-NEXT:                             };
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:                 if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                     break;
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             loop {
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let mut check_got_14: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                     let mut check_expected_14: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = toward;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} - {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     check_got_14 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 192, 63]);
+// LOWERING-X86_64-GNU-NEXT:                     check_expected_14 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                     unsafe {
+// LOWERING-X86_64-GNU-NEXT:                         checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                     {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_14;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_14;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                             unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             }
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                                 b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0".as_ptr()
+// LOWERING-X86_64-GNU-NEXT:                                     as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = 445;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"toward - 1.0L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"LDBL_EPSILON\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_got_14;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_expected_14;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 )
+// LOWERING-X86_64-GNU-NEXT:                             };
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:                 if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                     break;
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let mut tiny: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { __slate_nextafterl__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:         tiny = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             loop {
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                     unsafe {
+// LOWERING-X86_64-GNU-NEXT:                         checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                     {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = tiny;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                             unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             }
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = 450;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"tiny > 0.0L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 )
+// LOWERING-X86_64-GNU-NEXT:                             };
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:                 if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                     break;
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             loop {
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                     unsafe {
+// LOWERING-X86_64-GNU-NEXT:                         checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                     {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = tiny;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 0]);
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                             unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             }
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = 451;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"tiny < LDBL_MIN\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 )
+// LOWERING-X86_64-GNU-NEXT:                             };
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:                 if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                     break;
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             loop {
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                     unsafe {
+// LOWERING-X86_64-GNU-NEXT:                         checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                     {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = tiny;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = __slate_f80_is_fp_class({{_v[0-9]+}}, 96);
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = 2;
+// LOWERING-X86_64-GNU-NEXT:                             {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                         } else {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: bool = __slate_f80_is_fp_class({{_v[0-9]+}}, 3);
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                                 let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                             } else {
+// LOWERING-X86_64-GNU-NEXT:                                 let {{_v[0-9]+}}: bool = __slate_f80_is_fp_class({{_v[0-9]+}}, 516);
+// LOWERING-X86_64-GNU-NEXT:                                 let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                                     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                                 } else {
+// LOWERING-X86_64-GNU-NEXT:                                     let {{_v[0-9]+}}: bool = __slate_f80_is_fp_class({{_v[0-9]+}}, 264);
+// LOWERING-X86_64-GNU-NEXT:                                     let {{_v[0-9]+}}: i32 = 4;
+// LOWERING-X86_64-GNU-NEXT:                                     let {{_v[0-9]+}}: i32 = 3;
+// LOWERING-X86_64-GNU-NEXT:                                     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                                 };
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                             };
+// LOWERING-X86_64-GNU-NEXT:                             {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 3;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                             unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             }
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = 452;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                                 b"fpclassify(tiny) == FP_SUBNORMAL\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 )
+// LOWERING-X86_64-GNU-NEXT:                             };
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:                 if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                     break;
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     return;
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: #[unsafe(no_mangle)]
+// LOWERING-X86_64-GNU-NEXT: #[inline(never)]
+// LOWERING-X86_64-GNU-NEXT: extern "C" fn local_cb({{arg[0-9]+}}: LongDouble, {{arg[0-9]+}}: LongDouble) -> LongDouble {
+// LOWERING-X86_64-GNU-NEXT:     let mut x: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut y: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(x), {{arg[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(y), {{arg[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(y)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} / {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = -{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_fma({{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 238, 63]);
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: fn test_extern_function_abi() {
+// LOWERING-X86_64-GNU-NEXT:     let mut a0: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut a1: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut a2: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut a3: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut a4: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut a5: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut a6: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut a7: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut a8: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut a9: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut expected: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:     a0 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 254, 63]);
+// LOWERING-X86_64-GNU-NEXT:     a1 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 253, 63]);
+// LOWERING-X86_64-GNU-NEXT:     a2 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 252, 63]);
+// LOWERING-X86_64-GNU-NEXT:     a3 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 251, 63]);
+// LOWERING-X86_64-GNU-NEXT:     a4 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 250, 63]);
+// LOWERING-X86_64-GNU-NEXT:     a5 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 249, 63]);
+// LOWERING-X86_64-GNU-NEXT:     a6 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 248, 63]);
+// LOWERING-X86_64-GNU-NEXT:     a7 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 247, 63]);
+// LOWERING-X86_64-GNU-NEXT:     a8 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 246, 63]);
+// LOWERING-X86_64-GNU-NEXT:     a9 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = a0;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = a1;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = a2;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = a3;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = a4;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = a5;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = a6;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = a7;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = a8;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = a9;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     expected = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([120, 111, 94, 77, 60, 43, 26, 137, 39, 64]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_identity__rf80_f80({{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                 check_got_ = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([120, 111, 94, 77, 60, 43, 26, 137, 39, 64]);
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_ = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 471;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"ext_identity(0x1.123456789abcdef012345678p+40L)\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                             b"0x1.123456789abcdef012345678p+40L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_2: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_2: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = a0;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = a1;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = a2;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = a3;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = a4;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = a5;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = a6;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = a7;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = a8;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = a9;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     __slate_ext_sum10__rf80_f80_f80_f80_f80_f80_f80_f80_f80_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                     )
+// LOWERING-X86_64-GNU-NEXT:                 };
+// LOWERING-X86_64-GNU-NEXT:                 check_got_2 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = expected;
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_2 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_2;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_2;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 472;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"ext_sum10(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9)\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"expected\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_2;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_2;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let mut i0: i64 = 0;
+// LOWERING-X86_64-GNU-NEXT:         let mut d0: f64 = 0.0;
+// LOWERING-X86_64-GNU-NEXT:         let mut a: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:         let mut u0: u32 = 0;
+// LOWERING-X86_64-GNU-NEXT:         let mut b: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:         let mut f0: f32 = 0.0;
+// LOWERING-X86_64-GNU-NEXT:         let mut c: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:         let mut i1: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:         let mut d1: f64 = 0.0;
+// LOWERING-X86_64-GNU-NEXT:         let mut d: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:         let mut local: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i64 = -123456789;
+// LOWERING-X86_64-GNU-NEXT:         i0 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: f64 = 192.0;
+// LOWERING-X86_64-GNU-NEXT:         d0 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([120, 111, 94, 77, 60, 43, 26, 137, 4, 64]);
+// LOWERING-X86_64-GNU-NEXT:         a = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u32 = 12345;
+// LOWERING-X86_64-GNU-NEXT:         u0 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 8, 25, 42, 59, 204, 252, 191]);
+// LOWERING-X86_64-GNU-NEXT:         b = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: f32 = 0.75;
+// LOWERING-X86_64-GNU-NEXT:         f0 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 128, 128, 8, 64]);
+// LOWERING-X86_64-GNU-NEXT:         c = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = -77;
+// LOWERING-X86_64-GNU-NEXT:         i1 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: f64 = -0.125;
+// LOWERING-X86_64-GNU-NEXT:         d1 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 128, 255, 255, 244, 63]);
+// LOWERING-X86_64-GNU-NEXT:         d = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = a;
+// LOWERING-X86_64-GNU-NEXT:         unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(local), {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(local)) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = b;
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(local), {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(local)) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = c;
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} - {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(local), {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(local)) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = d;
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(local), {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(local)) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i64 = i0;
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i64({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(local), {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(local)) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u32 = u0;
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u32({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} - {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(local), {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(local)) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: f64 = d0;
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(local), {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(local)) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: f32 = f0;
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} - {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(local), {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(local)) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = i1;
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i32({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(local), {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(local)) };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: f64 = d1;
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} - {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(local), {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             loop {
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let mut check_got_3: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                     let mut check_expected_3: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i64 = i0;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: f64 = d0;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = a;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u32 = u0;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = b;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: f32 = f0;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = c;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = i1;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: f64 = d1;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = d;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                         __slate_ext_mix_abi__rf80_i64_f64_f80_u32_f80_f32_f80_i32_f64_f80(
+// LOWERING-X86_64-GNU-NEXT:                             {{_v[0-9]+}} as i64,
+// LOWERING-X86_64-GNU-NEXT:                             {{_v[0-9]+}} as f64,
+// LOWERING-X86_64-GNU-NEXT:                             {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             {{_v[0-9]+}} as u32,
+// LOWERING-X86_64-GNU-NEXT:                             {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             {{_v[0-9]+}} as f32,
+// LOWERING-X86_64-GNU-NEXT:                             {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                             {{_v[0-9]+}} as f64,
+// LOWERING-X86_64-GNU-NEXT:                             {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                         )
+// LOWERING-X86_64-GNU-NEXT:                     };
+// LOWERING-X86_64-GNU-NEXT:                     check_got_3 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(local)) };
+// LOWERING-X86_64-GNU-NEXT:                     check_expected_3 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                     unsafe {
+// LOWERING-X86_64-GNU-NEXT:                         checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                     {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_3;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_3;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                             unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             }
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                                 b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0".as_ptr()
+// LOWERING-X86_64-GNU-NEXT:                                     as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = 497;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                                 b"ext_mix_abi(i0, d0, a, u0, b, f0, c, i1, d1, d)\0".as_ptr()
+// LOWERING-X86_64-GNU-NEXT:                                     as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"local\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_got_3;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_expected_3;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 )
+// LOWERING-X86_64-GNU-NEXT:                             };
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:                 if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                     break;
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let mut fp: Option<unsafe extern "C" fn(LongDouble, LongDouble) -> LongDouble> = None;
+// LOWERING-X86_64-GNU-NEXT:         unsafe {
+// LOWERING-X86_64-GNU-NEXT:             std::ptr::write_volatile(std::ptr::addr_of_mut!(fp), unsafe {
+// LOWERING-X86_64-GNU-NEXT:                 std::mem::transmute::<
+// LOWERING-X86_64-GNU-NEXT:                     *const (),
+// LOWERING-X86_64-GNU-NEXT:                     Option<unsafe extern "C" fn(LongDouble, LongDouble) -> LongDouble>,
+// LOWERING-X86_64-GNU-NEXT:                 >(__slate_ext_add__rf80_f80_f80 as *const ())
+// LOWERING-X86_64-GNU-NEXT:             })
+// LOWERING-X86_64-GNU-NEXT:         };
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             loop {
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let mut check_got_4: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                     let mut check_expected_4: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(LongDouble, LongDouble) -> LongDouble> =
+// LOWERING-X86_64-GNU-NEXT:                         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(fp)) };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 128, 145, 3, 64]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 248, 191]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = unsafe { {{_v[0-9]+}}.unwrap()({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                     check_got_4 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 128, 145, 3, 64]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 248, 191]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     check_expected_4 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                     unsafe {
+// LOWERING-X86_64-GNU-NEXT:                         checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                     {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_4;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_4;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                             unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             }
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                                 b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0".as_ptr()
+// LOWERING-X86_64-GNU-NEXT:                                     as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = 504;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                                 b"fp(0x1.23p+4L, -0x1.2p-7L)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"0x1.23p+4L + -0x1.2p-7L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_got_4;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_expected_4;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 )
+// LOWERING-X86_64-GNU-NEXT:                             };
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:                 if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                     break;
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let mut a10: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:         let mut b2: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 128, 196, 179, 162, 145, 7, 64]);
+// LOWERING-X86_64-GNU-NEXT:         a10 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 240, 230, 213, 251, 191]);
+// LOWERING-X86_64-GNU-NEXT:         b2 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             loop {
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let mut check_got_5: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                     let mut check_expected_5: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = a10;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = b2;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                         __slate_ext_call_cb__rf80_x_f80_f80(Some(__slate_ld_local_cb), {{_v[0-9]+}}, {{_v[0-9]+}})
+// LOWERING-X86_64-GNU-NEXT:                     };
+// LOWERING-X86_64-GNU-NEXT:                     check_got_5 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = a10;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = b2;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = local_cb({{_v[0-9]+}}, {{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                     check_expected_5 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                     unsafe {
+// LOWERING-X86_64-GNU-NEXT:                         checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                     {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_5;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_5;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                             unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             }
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                                 b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0".as_ptr()
+// LOWERING-X86_64-GNU-NEXT:                                     as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = 511;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                                 b"ext_call_cb(local_cb, a, b)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"local_cb(a, b)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_got_5;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_expected_5;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 )
+// LOWERING-X86_64-GNU-NEXT:                             };
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:                 if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                     break;
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     return;
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: fn test_struct_union_array_and_pointer_abi() {
+// LOWERING-X86_64-GNU-NEXT:     let mut b: ld_box = ld_box {
+// LOWERING-X86_64-GNU-NEXT:         tag: 0,
+// LOWERING-X86_64-GNU-NEXT:         x: LongDouble([0; 10]),
+// LOWERING-X86_64-GNU-NEXT:         tail: 0,
+// LOWERING-X86_64-GNU-NEXT:     };
+// LOWERING-X86_64-GNU-NEXT:     let mut r: ld_box = ld_box {
+// LOWERING-X86_64-GNU-NEXT:         tag: 0,
+// LOWERING-X86_64-GNU-NEXT:         x: LongDouble([0; 10]),
+// LOWERING-X86_64-GNU-NEXT:         tail: 0,
+// LOWERING-X86_64-GNU-NEXT:     };
+// LOWERING-X86_64-GNU-NEXT:     let mut p: ld_pair = ld_pair {
+// LOWERING-X86_64-GNU-NEXT:         a: LongDouble([0; 10]),
+// LOWERING-X86_64-GNU-NEXT:         b: LongDouble([0; 10]),
+// LOWERING-X86_64-GNU-NEXT:     };
+// LOWERING-X86_64-GNU-NEXT:     let mut n: ld_nested = ld_nested {
+// LOWERING-X86_64-GNU-NEXT:         head: 0,
+// LOWERING-X86_64-GNU-NEXT:         pair: ld_pair {
+// LOWERING-X86_64-GNU-NEXT:             a: LongDouble([0; 10]),
+// LOWERING-X86_64-GNU-NEXT:             b: LongDouble([0; 10]),
+// LOWERING-X86_64-GNU-NEXT:         },
+// LOWERING-X86_64-GNU-NEXT:         bytes: [0; 3],
+// LOWERING-X86_64-GNU-NEXT:         z: LongDouble([0; 10]),
+// LOWERING-X86_64-GNU-NEXT:     };
+// LOWERING-X86_64-GNU-NEXT:     let mut nr: ld_nested = ld_nested {
+// LOWERING-X86_64-GNU-NEXT:         head: 0,
+// LOWERING-X86_64-GNU-NEXT:         pair: ld_pair {
+// LOWERING-X86_64-GNU-NEXT:             a: LongDouble([0; 10]),
+// LOWERING-X86_64-GNU-NEXT:             b: LongDouble([0; 10]),
+// LOWERING-X86_64-GNU-NEXT:         },
+// LOWERING-X86_64-GNU-NEXT:         bytes: [0; 3],
+// LOWERING-X86_64-GNU-NEXT:         z: LongDouble([0; 10]),
+// LOWERING-X86_64-GNU-NEXT:     };
+// LOWERING-X86_64-GNU-NEXT:     let mut arr: [LongDouble; 7] = [LongDouble([0; 10]); 7];
+// LOWERING-X86_64-GNU-NEXT:     let mut copy: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut raw: aligned::Aligned<aligned::A16, [u8; 16]> = aligned::Aligned([0; 16]);
+// LOWERING-X86_64-GNU-NEXT:     let mut i: u64 = 0;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u8 = 49;
+// LOWERING-X86_64-GNU-NEXT:     b.tag = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([128, 247, 230, 213, 196, 179, 162, 145, 11, 64]);
+// LOWERING-X86_64-GNU-NEXT:     b.x = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u32 = 305419896;
+// LOWERING-X86_64-GNU-NEXT:     b.tail = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: ld_box = b;
+// LOWERING-X86_64-GNU-NEXT:     let mut byval: ld_box = ld_box {
+// LOWERING-X86_64-GNU-NEXT:         tag: 0,
+// LOWERING-X86_64-GNU-NEXT:         x: LongDouble([0; 10]),
+// LOWERING-X86_64-GNU-NEXT:         tail: 0,
+// LOWERING-X86_64-GNU-NEXT:     };
+// LOWERING-X86_64-GNU-NEXT:     byval = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     unsafe {
+// LOWERING-X86_64-GNU-NEXT:         __slate_ext_box_roundtrip__rv_px_px(
+// LOWERING-X86_64-GNU-NEXT:             std::ptr::addr_of_mut!(r) as *mut ld_box,
+// LOWERING-X86_64-GNU-NEXT:             std::ptr::addr_of_mut!(byval) as *mut ld_box,
+// LOWERING-X86_64-GNU-NEXT:         )
+// LOWERING-X86_64-GNU-NEXT:     };
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u8 = r.tag;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u8 = b.tag;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} as u32;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u32 = 90;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} ^ {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u8 = {{_v[0-9]+}} as u8;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 530;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                             b"r.tag == (unsigned char)(b.tag ^ 0x5aU)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = r.x;
+// LOWERING-X86_64-GNU-NEXT:                 check_got_ = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = b.x;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 246, 63]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_ = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 531;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"r.x\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"b.x + 0x1p-9L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u32 = r.tail;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u32 = b.tail;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u32 = 2779077210u32;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} ^ {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 532;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                             b"r.tail == (b.tail ^ UINT32_C(0xa5a55a5a))\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([136, 136, 136, 136, 136, 136, 136, 136, 2, 192]);
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([16, 17, 17, 17, 17, 17, 17, 145, 252, 63]);
+// LOWERING-X86_64-GNU-NEXT:     unsafe {
+// LOWERING-X86_64-GNU-NEXT:         __slate_ext_pair_make__rv_px_f80_f80(std::ptr::addr_of_mut!(p) as *mut ld_pair, {{_v[0-9]+}}, {{_v[0-9]+}})
+// LOWERING-X86_64-GNU-NEXT:     };
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_2: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_2: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = p.a;
+// LOWERING-X86_64-GNU-NEXT:                 check_got_2 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([136, 136, 136, 136, 136, 136, 136, 136, 2, 192]);
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_2 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_2;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_2;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 535;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"p.a\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"-0x1.111111111111111p+3L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_2;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_2;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_3: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_3: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = p.b;
+// LOWERING-X86_64-GNU-NEXT:                 check_got_3 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([16, 17, 17, 17, 17, 17, 17, 145, 252, 63]);
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_3 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_3;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_3;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 536;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"p.b\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"0x1.222222222222222p-3L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_3;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_3;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(n) as *mut core::ffi::c_void;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u64 = 80;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe {
+// LOWERING-X86_64-GNU-NEXT:         memset(
+// LOWERING-X86_64-GNU-NEXT:             {{_v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-X86_64-GNU-NEXT:             {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:             {{_v[0-9]+}} as usize,
+// LOWERING-X86_64-GNU-NEXT:         )
+// LOWERING-X86_64-GNU-NEXT:     };
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u16 = 4660;
+// LOWERING-X86_64-GNU-NEXT:     n.head = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 2, 64]);
+// LOWERING-X86_64-GNU-NEXT:     n.pair.a = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 176, 2, 192]);
+// LOWERING-X86_64-GNU-NEXT:     n.pair.b = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u8 = 16;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i64 = 0;
+// LOWERING-X86_64-GNU-NEXT:     n.bytes[({{_v[0-9]+}} as usize)] = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u8 = 32;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i64 = 1;
+// LOWERING-X86_64-GNU-NEXT:     n.bytes[({{_v[0-9]+}} as usize)] = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u8 = 64;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// LOWERING-X86_64-GNU-NEXT:     n.bytes[({{_v[0-9]+}} as usize)] = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 240, 1, 64]);
+// LOWERING-X86_64-GNU-NEXT:     n.z = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: ld_nested = n;
+// LOWERING-X86_64-GNU-NEXT:     let mut byval2: ld_nested = ld_nested {
+// LOWERING-X86_64-GNU-NEXT:         head: 0,
+// LOWERING-X86_64-GNU-NEXT:         pair: ld_pair {
+// LOWERING-X86_64-GNU-NEXT:             a: LongDouble([0; 10]),
+// LOWERING-X86_64-GNU-NEXT:             b: LongDouble([0; 10]),
+// LOWERING-X86_64-GNU-NEXT:         },
+// LOWERING-X86_64-GNU-NEXT:         bytes: [0; 3],
+// LOWERING-X86_64-GNU-NEXT:         z: LongDouble([0; 10]),
+// LOWERING-X86_64-GNU-NEXT:     };
+// LOWERING-X86_64-GNU-NEXT:     byval2 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     unsafe {
+// LOWERING-X86_64-GNU-NEXT:         __slate_ext_nested_roundtrip__rv_px_px(
+// LOWERING-X86_64-GNU-NEXT:             std::ptr::addr_of_mut!(nr) as *mut ld_nested,
+// LOWERING-X86_64-GNU-NEXT:             std::ptr::addr_of_mut!(byval2) as *mut ld_nested,
+// LOWERING-X86_64-GNU-NEXT:         )
+// LOWERING-X86_64-GNU-NEXT:     };
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u16 = nr.head;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u16 = n.head;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = 21930;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} ^ {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u16 = {{_v[0-9]+}} as u16;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 547;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"nr.head == (uint16_t)(n.head ^ UINT16_C(0x55aa))\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_4: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_4: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = nr.pair.a;
+// LOWERING-X86_64-GNU-NEXT:                 check_got_4 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 2, 64]);
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_4 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_4;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_4;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 548;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"nr.pair.a\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"10.0L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_4;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_4;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_5: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_5: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = nr.pair.b;
+// LOWERING-X86_64-GNU-NEXT:                 check_got_5 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 208, 2, 192]);
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_5 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_5;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_5;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 549;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"nr.pair.b\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"-13.0L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_5;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_5;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i64 = 0;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u8 = nr.bytes[({{_v[0-9]+}} as usize)];
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i64 = 0;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u8 = n.bytes[({{_v[0-9]+}} as usize)];
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} as u32;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u32 = 1;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} ^ {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u8 = {{_v[0-9]+}} as u8;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 550;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"nr.bytes[0] == (unsigned char)(n.bytes[0] ^ 1U)\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i64 = 1;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u8 = nr.bytes[({{_v[0-9]+}} as usize)];
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i64 = 1;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u8 = n.bytes[({{_v[0-9]+}} as usize)];
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} as u32;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u32 = 2;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} ^ {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u8 = {{_v[0-9]+}} as u8;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 551;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"nr.bytes[1] == (unsigned char)(n.bytes[1] ^ 2U)\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i64 = 2;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u8 = nr.bytes[({{_v[0-9]+}} as usize)];
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i64 = 2;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u8 = n.bytes[({{_v[0-9]+}} as usize)];
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} as u32;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u32 = 4;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} ^ {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: u8 = {{_v[0-9]+}} as u8;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 552;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"nr.bytes[2] == (unsigned char)(n.bytes[2] ^ 4U)\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_6: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_6: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = nr.z;
+// LOWERING-X86_64-GNU-NEXT:                 check_got_6 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 240, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_6 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_6;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_6;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 553;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"nr.z\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"3.75L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_6;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_6;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = 0;
+// LOWERING-X86_64-GNU-NEXT:         i = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: u64 = i;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: u64 = 112;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: u64 = 16;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} / {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: u64 = i;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: u64 = 1;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u64({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 2, 64]);
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} / {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: u64 = i;
+// LOWERING-X86_64-GNU-NEXT:             arr[({{_v[0-9]+}} as usize)] = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: u64 = i;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:             i = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_7: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_7: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: *mut LongDouble = arr.as_mut_ptr() as *mut LongDouble;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: u64 = 112;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: u64 = 16;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} / {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                     unsafe { __slate_ext_array_sum__rf80_pf80_usize({{_v[0-9]+}}, {{_v[0-9]+}} as usize) };
+// LOWERING-X86_64-GNU-NEXT:                 check_got_7 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 224, 0, 64]);
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_7 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_7;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_7;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 557;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"ext_array_sum(arr, sizeof(arr) / sizeof(arr[0]))\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"3.5L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_7;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_7;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-NEXT:     copy = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([192, 179, 162, 145, 128, 247, 230, 213, 32, 192]);
+// LOWERING-X86_64-GNU-NEXT:     unsafe { __slate_ext_store__rv_pf80_f80(std::ptr::addr_of_mut!(copy), {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_8: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_8: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = copy;
+// LOWERING-X86_64-GNU-NEXT:                 check_got_8 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                     LongDouble([192, 179, 162, 145, 128, 247, 230, 213, 32, 192]);
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_8 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_8;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_8;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 561;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"copy\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"-0x1.abcdef012345678p+33L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_9: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_9: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                     unsafe { __slate_ext_load__rf80_pf80(std::ptr::addr_of_mut!(copy)) };
+// LOWERING-X86_64-GNU-NEXT:                 check_got_9 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = copy;
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_9 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_9;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_9;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 562;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"ext_load(&copy)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"copy\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_9;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_9;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([112, 86, 52, 146, 239, 205, 171, 137, 235, 63]);
+// LOWERING-X86_64-GNU-NEXT:     copy = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut u8 = raw.as_mut_ptr() as *mut u8;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(copy) as *mut core::ffi::c_void;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u64 = 16;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe {
+// LOWERING-X86_64-GNU-NEXT:         memcpy(
+// LOWERING-X86_64-GNU-NEXT:             {{_v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-X86_64-GNU-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_void,
+// LOWERING-X86_64-GNU-NEXT:             {{_v[0-9]+}} as usize,
+// LOWERING-X86_64-GNU-NEXT:         )
+// LOWERING-X86_64-GNU-NEXT:     };
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-NEXT:     copy = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(copy) as *mut core::ffi::c_void;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut u8 = raw.as_mut_ptr() as *mut u8;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u64 = 16;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe {
+// LOWERING-X86_64-GNU-NEXT:         memcpy(
+// LOWERING-X86_64-GNU-NEXT:             {{_v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-X86_64-GNU-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_void,
+// LOWERING-X86_64-GNU-NEXT:             {{_v[0-9]+}} as usize,
+// LOWERING-X86_64-GNU-NEXT:         )
+// LOWERING-X86_64-GNU-NEXT:     };
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_10: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_10: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = copy;
+// LOWERING-X86_64-GNU-NEXT:                 check_got_10 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([112, 86, 52, 146, 239, 205, 171, 137, 235, 63]);
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_10 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_10;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_10;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 570;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"copy\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"0x1.13579bdf2468acep-20L\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_10;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_10;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let mut u: ld_union = unsafe { std::mem::zeroed::<ld_union>() };
+// LOWERING-X86_64-GNU-NEXT:         let mut v: ld_union = unsafe { std::mem::zeroed::<ld_union>() };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = LongDouble([248, 222, 188, 154, 112, 86, 52, 146, 18, 192]);
+// LOWERING-X86_64-GNU-NEXT:         unsafe {
+// LOWERING-X86_64-GNU-NEXT:             u.ld = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(v) as *mut core::ffi::c_void;
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(u) as *mut core::ffi::c_void;
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: u64 = 16;
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe {
+// LOWERING-X86_64-GNU-NEXT:             memcpy(
+// LOWERING-X86_64-GNU-NEXT:                 {{_v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-X86_64-GNU-NEXT:                 {{_v[0-9]+}} as *const core::ffi::c_void,
+// LOWERING-X86_64-GNU-NEXT:                 {{_v[0-9]+}} as usize,
+// LOWERING-X86_64-GNU-NEXT:             )
+// LOWERING-X86_64-GNU-NEXT:         };
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             loop {
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let mut check_got_11: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                     let mut check_expected_11: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = unsafe { v.ld };
+// LOWERING-X86_64-GNU-NEXT:                     check_got_11 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = unsafe { u.ld };
+// LOWERING-X86_64-GNU-NEXT:                     check_expected_11 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                     unsafe {
+// LOWERING-X86_64-GNU-NEXT:                         checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                     {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_11;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_11;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                             unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             }
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                                 b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0".as_ptr()
+// LOWERING-X86_64-GNU-NEXT:                                     as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = 577;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"v.ld\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"u.ld\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_got_11;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_expected_11;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 )
+// LOWERING-X86_64-GNU-NEXT:                             };
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:                 if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                     break;
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     return;
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: #[inline(never)]
+// LOWERING-X86_64-GNU-NEXT: unsafe fn local_vsum({{arg[0-9]+}}: i32, mut __slate_va_args: __SlateVaArgs) -> LongDouble {
+// LOWERING-X86_64-GNU-NEXT:     let mut n: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:     let mut ap: __SlateVaArgs = __SlateVaArgs::empty();
+// LOWERING-X86_64-GNU-NEXT:     let mut r: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut i: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:     n = {{arg[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// LOWERING-X86_64-GNU-NEXT:     r = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     unsafe {
+// LOWERING-X86_64-GNU-NEXT:         ap = __slate_va_args.clone();
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:         i = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = i;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = n;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: LongDouble = unsafe { ap.next_arg::<LongDouble>() };
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: LongDouble = r;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:             r = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = i;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:             i = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = r;
+// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: /// Translated va_arg(long double).
+// LOWERING-X86_64-GNU-NEXT: /// Translated va_arg(long double).
+// LOWERING-X86_64-GNU-NEXT: /// Translated caller -> native C variadic callee.
+// LOWERING-X86_64-GNU-NEXT: /// Translated caller -> native C variadic callee.
+// LOWERING-X86_64-GNU-NEXT: fn test_varargs() {
+// LOWERING-X86_64-GNU-NEXT:     let mut a: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut b: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut c: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut d: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut expected: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut buf: aligned::Aligned<aligned::A16, [i8; 128]> = aligned::Aligned([0; 128]);
+// LOWERING-X86_64-GNU-NEXT:     let mut end: *mut i8 = std::ptr::null_mut();
+// LOWERING-X86_64-GNU-NEXT:     let mut n: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:     a = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 253, 63]);
+// LOWERING-X86_64-GNU-NEXT:     b = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 251, 191]);
+// LOWERING-X86_64-GNU-NEXT:     c = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 247, 63]);
+// LOWERING-X86_64-GNU-NEXT:     d = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = a;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = b;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = c;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = d;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     expected = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 4;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = a;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = b;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = c;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = d;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     local_vsum(
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                         __SlateVaArgs::new(vec![
+// LOWERING-X86_64-GNU-NEXT:                             __SlateVaArg::new({{_v[0-9]+}}),
+// LOWERING-X86_64-GNU-NEXT:                             __SlateVaArg::new({{_v[0-9]+}}),
+// LOWERING-X86_64-GNU-NEXT:                             __SlateVaArg::new({{_v[0-9]+}}),
+// LOWERING-X86_64-GNU-NEXT:                             __SlateVaArg::new({{_v[0-9]+}}),
+// LOWERING-X86_64-GNU-NEXT:                         ]),
+// LOWERING-X86_64-GNU-NEXT:                     )
+// LOWERING-X86_64-GNU-NEXT:                 };
+// LOWERING-X86_64-GNU-NEXT:                 check_got_ = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = expected;
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_ = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 592;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"local_vsum(4, a, b, c, d)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"expected\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_2: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_2: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 4;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = a;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = b;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = c;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = d;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     __slate_ext_vsum__rf80_i32_f80_f80_f80_f80({{_v[0-9]+}} as i32, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}})
+// LOWERING-X86_64-GNU-NEXT:                 };
+// LOWERING-X86_64-GNU-NEXT:                 check_got_2 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = expected;
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_2 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_2;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_2;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 595;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"ext_vsum(4, a, b, c, d)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"expected\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_2;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_2;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut i8 = buf.as_mut_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: u64 = 128;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%.21La\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = expected;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:         __slate_snprintf__ri32_pi8_u64_pi8_f80({{_v[0-9]+}} as *mut i8, {{_v[0-9]+}} as u64, {{_v[0-9]+}} as *mut i8, {{_v[0-9]+}})
+// LOWERING-X86_64-GNU-NEXT:     };
+// LOWERING-X86_64-GNU-NEXT:     n = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = n;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = n;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} as u64;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: u64 = 128;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                     } else {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = false;
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                     };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 599;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                             b"n > 0 && (size_t)n < sizeof(buf)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
+// LOWERING-X86_64-GNU-NEXT:     end = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_3: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_3: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: *mut i8 = buf.as_mut_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     __slate_strtold__rf80_pc_ppc(
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                         std::ptr::addr_of_mut!(end) as *mut *mut core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                     )
+// LOWERING-X86_64-GNU-NEXT:                 };
+// LOWERING-X86_64-GNU-NEXT:                 check_got_3 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = expected;
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_3 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_3;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_3;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 601;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"strtold(buf, &end)\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"expected\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_3;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_3;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: *mut i8 = end;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = end;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i8 = unsafe { *{{_v[0-9]+}} };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                     } else {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = false;
+// LOWERING-X86_64-GNU-NEXT:                         {{_v[0-9]+}}
+// LOWERING-X86_64-GNU-NEXT:                     };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 602;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"end != NULL && *end == '\\0'\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             fprintf(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     return;
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: fn test_extern_global() {
+// LOWERING-X86_64-GNU-NEXT:     let mut old: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut a: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut b: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { ext_global_ld };
+// LOWERING-X86_64-GNU-NEXT:     old = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([196, 179, 162, 145, 128, 247, 230, 213, 26, 192]);
+// LOWERING-X86_64-GNU-NEXT:     a = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([132, 3, 131, 2, 130, 1, 129, 128, 224, 63]);
+// LOWERING-X86_64-GNU-NEXT:     b = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = a;
+// LOWERING-X86_64-GNU-NEXT:     unsafe {
+// LOWERING-X86_64-GNU-NEXT:         ext_global_ld = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_global_get__rf80() };
+// LOWERING-X86_64-GNU-NEXT:                 check_got_ = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = a;
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_ = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 611;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"ext_global_get()\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"a\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = b;
+// LOWERING-X86_64-GNU-NEXT:     unsafe { __slate_ext_global_set__rv_f80({{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_2: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_2: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { ext_global_ld };
+// LOWERING-X86_64-GNU-NEXT:                 check_got_2 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = b;
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_2 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_2;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_2;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 614;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"ext_global_ld\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"b\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_2;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_2;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = old;
+// LOWERING-X86_64-GNU-NEXT:     unsafe { __slate_ext_global_set__rv_f80({{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_got_3: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let mut check_expected_3: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = unsafe { ext_global_ld };
+// LOWERING-X86_64-GNU-NEXT:                 check_got_3 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = old;
+// LOWERING-X86_64-GNU-NEXT:                 check_expected_3 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 unsafe {
+// LOWERING-X86_64-GNU-NEXT:                     checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_got_3;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = check_expected_3;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                         unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0"
+// LOWERING-X86_64-GNU-NEXT:                             .as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 617;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"ext_global_ld\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: *mut i8 = b"old\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_3;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_3;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                             __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             )
+// LOWERING-X86_64-GNU-NEXT:                         };
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     return;
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: #[inline(never)]
+// LOWERING-X86_64-GNU-NEXT: fn local_identity({{arg[0-9]+}}: LongDouble) -> LongDouble {
+// LOWERING-X86_64-GNU-NEXT:     let mut y: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(y), {{arg[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(y)) };
+// LOWERING-X86_64-GNU-NEXT:     return {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: fn test_control_flow_and_spills() {
+// LOWERING-X86_64-GNU-NEXT:     let mut seed: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut x: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:     let mut i: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([248, 230, 213, 196, 179, 162, 145, 128, 3, 64]);
+// LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(seed), {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(seed)) };
+// LOWERING-X86_64-GNU-NEXT:     x = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:         i = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         loop {
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = i;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 200;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:             if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                 break;
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             {
+// LOWERING-X86_64-GNU-NEXT:                 let mut t: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = i;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 17;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} % {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 8;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} - {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i32({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 243, 63]);
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} * {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 t = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = i;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = 3;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} & {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = x;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = t;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         x = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     } else {
+// LOWERING-X86_64-GNU-NEXT:                         {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = i;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = 3;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} & {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                                 let {{_v[0-9]+}}: LongDouble = x;
+// LOWERING-X86_64-GNU-NEXT:                                 let {{_v[0-9]+}}: LongDouble = t;
+// LOWERING-X86_64-GNU-NEXT:                                 let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} - {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                                 x = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             } else {
+// LOWERING-X86_64-GNU-NEXT:                                 {
+// LOWERING-X86_64-GNU-NEXT:                                     let {{_v[0-9]+}}: i32 = i;
+// LOWERING-X86_64-GNU-NEXT:                                     let {{_v[0-9]+}}: i32 = 3;
+// LOWERING-X86_64-GNU-NEXT:                                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} & {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                                     let {{_v[0-9]+}}: i32 = 2;
+// LOWERING-X86_64-GNU-NEXT:                                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                                         let {{_v[0-9]+}}: LongDouble = x;
+// LOWERING-X86_64-GNU-NEXT:                                         let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                                             LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:                                         let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                                             LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 235, 63]);
+// LOWERING-X86_64-GNU-NEXT:                                         let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                                         let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} * {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                                         x = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                                     } else {
+// LOWERING-X86_64-GNU-NEXT:                                         let {{_v[0-9]+}}: LongDouble = x;
+// LOWERING-X86_64-GNU-NEXT:                                         let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                                             LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:                                         let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                                             LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 235, 63]);
+// LOWERING-X86_64-GNU-NEXT:                                         let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                                         let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} / {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                                         x = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                                     }
+// LOWERING-X86_64-GNU-NEXT:                                 }
+// LOWERING-X86_64-GNU-NEXT:                             }
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = i;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = 19;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} % {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = x;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = local_identity({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                         x = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = i;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = 31;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} % {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = x;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_identity__rf80_f80({{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                         x = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = i;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:             i = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let mut y: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(seed)) };
+// LOWERING-X86_64-GNU-NEXT:         y = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:             i = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:             loop {
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = i;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 200;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                 if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                     break;
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let mut t2: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = i;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = 17;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} % {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = 8;
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} - {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i32({{_v[0-9]+}});
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 243, 63]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = unsafe { __slate_ext_mul__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                     t2 = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = i;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 3;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} & {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = y;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = t2;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                                 unsafe { __slate_ext_add__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                             y = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         } else {
+// LOWERING-X86_64-GNU-NEXT:                             {
+// LOWERING-X86_64-GNU-NEXT:                                 let {{_v[0-9]+}}: i32 = i;
+// LOWERING-X86_64-GNU-NEXT:                                 let {{_v[0-9]+}}: i32 = 3;
+// LOWERING-X86_64-GNU-NEXT:                                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} & {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                                 let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-X86_64-GNU-NEXT:                                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                                 if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                                     let {{_v[0-9]+}}: LongDouble = y;
+// LOWERING-X86_64-GNU-NEXT:                                     let {{_v[0-9]+}}: LongDouble = t2;
+// LOWERING-X86_64-GNU-NEXT:                                     let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                                         unsafe { __slate_ext_sub__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                                     y = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                                 } else {
+// LOWERING-X86_64-GNU-NEXT:                                     {
+// LOWERING-X86_64-GNU-NEXT:                                         let {{_v[0-9]+}}: i32 = i;
+// LOWERING-X86_64-GNU-NEXT:                                         let {{_v[0-9]+}}: i32 = 3;
+// LOWERING-X86_64-GNU-NEXT:                                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} & {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                                         let {{_v[0-9]+}}: i32 = 2;
+// LOWERING-X86_64-GNU-NEXT:                                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                                         if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                                             let {{_v[0-9]+}}: LongDouble = y;
+// LOWERING-X86_64-GNU-NEXT:                                             let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:                                             let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 235, 63]);
+// LOWERING-X86_64-GNU-NEXT:                                             let {{_v[0-9]+}}: LongDouble = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                                 __slate_ext_add__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}})
+// LOWERING-X86_64-GNU-NEXT:                                             };
+// LOWERING-X86_64-GNU-NEXT:                                             let {{_v[0-9]+}}: LongDouble = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                                 __slate_ext_mul__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}})
+// LOWERING-X86_64-GNU-NEXT:                                             };
+// LOWERING-X86_64-GNU-NEXT:                                             y = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                                         } else {
+// LOWERING-X86_64-GNU-NEXT:                                             let {{_v[0-9]+}}: LongDouble = y;
+// LOWERING-X86_64-GNU-NEXT:                                             let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-X86_64-GNU-NEXT:                                             let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                                                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 235, 63]);
+// LOWERING-X86_64-GNU-NEXT:                                             let {{_v[0-9]+}}: LongDouble = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                                 __slate_ext_add__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}})
+// LOWERING-X86_64-GNU-NEXT:                                             };
+// LOWERING-X86_64-GNU-NEXT:                                             let {{_v[0-9]+}}: LongDouble = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                                 __slate_ext_div__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}})
+// LOWERING-X86_64-GNU-NEXT:                                             };
+// LOWERING-X86_64-GNU-NEXT:                                             y = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                                         }
+// LOWERING-X86_64-GNU-NEXT:                                     }
+// LOWERING-X86_64-GNU-NEXT:                                 }
+// LOWERING-X86_64-GNU-NEXT:                             }
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                     {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = i;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 19;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} % {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = y;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                                 unsafe { __slate_ext_identity__rf80_f80({{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                             y = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                     {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = i;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 31;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} % {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = y;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble =
+// LOWERING-X86_64-GNU-NEXT:                                 unsafe { __slate_ext_identity__rf80_f80({{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:                             y = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = i;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                 i = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:         {
+// LOWERING-X86_64-GNU-NEXT:             loop {
+// LOWERING-X86_64-GNU-NEXT:                 {
+// LOWERING-X86_64-GNU-NEXT:                     let mut check_got_: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                     let mut check_expected_: LongDouble = LongDouble([0; 10]);
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = x;
+// LOWERING-X86_64-GNU-NEXT:                     check_got_ = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = y;
+// LOWERING-X86_64-GNU-NEXT:                     check_expected_ = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                     unsafe {
+// LOWERING-X86_64-GNU-NEXT:                         checks = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                     {
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_got_;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: LongDouble = check_expected_;
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                         if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-X86_64-GNU-NEXT:                             unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 failures = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:                             }
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 =
+// LOWERING-X86_64-GNU-NEXT:                                 b"FAIL line %d: %s != %s (got=%La expected=%La)\n\0".as_ptr()
+// LOWERING-X86_64-GNU-NEXT:                                     as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = 664;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"x\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: *mut i8 = b"y\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_got_;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: LongDouble = check_expected_;
+// LOWERING-X86_64-GNU-NEXT:                             let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as i32,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}} as *mut i8,
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                                 )
+// LOWERING-X86_64-GNU-NEXT:                             };
+// LOWERING-X86_64-GNU-NEXT:                         }
+// LOWERING-X86_64-GNU-NEXT:                     }
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-X86_64-GNU-NEXT:                 if !{{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:                     break;
+// LOWERING-X86_64-GNU-NEXT:                 }
+// LOWERING-X86_64-GNU-NEXT:             }
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     return;
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: fn main() {
+// LOWERING-X86_64-GNU-NEXT:     let mut __retval: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     test_format_and_layout();
+// LOWERING-X86_64-GNU-NEXT:     test_literals_and_precision_boundaries();
+// LOWERING-X86_64-GNU-NEXT:     test_arithmetic_and_temporaries();
+// LOWERING-X86_64-GNU-NEXT:     test_casts_and_usual_conversions();
+// LOWERING-X86_64-GNU-NEXT:     test_special_values_and_comparisons();
+// LOWERING-X86_64-GNU-NEXT:     test_libc_and_libm_externs();
+// LOWERING-X86_64-GNU-NEXT:     test_extern_function_abi();
+// LOWERING-X86_64-GNU-NEXT:     test_struct_union_array_and_pointer_abi();
+// LOWERING-X86_64-GNU-NEXT:     test_varargs();
+// LOWERING-X86_64-GNU-NEXT:     test_extern_global();
+// LOWERING-X86_64-GNU-NEXT:     test_control_flow_and_spills();
+// LOWERING-X86_64-GNU-NEXT:     {
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:         if {{_v[0-9]+}} {
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: *mut libc::FILE = unsafe { stderr };
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: *mut i8 = b"long-double torture: %d/%d checks FAILED\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { failures };
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-X86_64-GNU-NEXT:                 fprintf(
+// LOWERING-X86_64-GNU-NEXT:                     {{_v[0-9]+}} as *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:                     {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                     {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                 )
+// LOWERING-X86_64-GNU-NEXT:             };
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-X86_64-GNU-NEXT:             __retval = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:             let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-X86_64-GNU-NEXT:             std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-X86_64-GNU-NEXT:         }
+// LOWERING-X86_64-GNU-NEXT:     }
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"long-double torture: PASS (%d checks)\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { checks };
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-X86_64-GNU-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-X86_64-GNU-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-X86_64-GNU-NEXT: }
+// LOWERING-X86_64-GNU-EMPTY:
+// LOWERING-X86_64-GNU-NEXT: unsafe extern "C" {
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_cf80_div(
+// LOWERING-X86_64-GNU-NEXT:         a: num_complex::Complex<LongDouble>,
+// LOWERING-X86_64-GNU-NEXT:         b: num_complex::Complex<LongDouble>,
+// LOWERING-X86_64-GNU-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_cf80_mul(
+// LOWERING-X86_64-GNU-NEXT:         a: num_complex::Complex<LongDouble>,
+// LOWERING-X86_64-GNU-NEXT:         b: num_complex::Complex<LongDouble>,
+// LOWERING-X86_64-GNU-NEXT:     ) -> num_complex::Complex<LongDouble>;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_add__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_array_sum__rf80_pf80_usize(_0: *const LongDouble, _1: usize) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_box_roundtrip__rv_px_px(_0: *mut ld_box, _1: *mut ld_box);
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_call_cb__rf80_x_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:         _0: Option<unsafe extern "C" fn(LongDouble, LongDouble) -> LongDouble>,
+// LOWERING-X86_64-GNU-NEXT:         _1: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _2: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:     ) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_div__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_eq__ri32_f80_f80(_0: LongDouble, _1: LongDouble) -> i32;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_from_double__rf80_f64(_0: f64) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_from_float__rf80_f32(_0: f32) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_from_i64__rf80_i64(_0: i64) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_from_u64__rf80_u64(_0: u64) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_global_get__rf80() -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_global_set__rv_f80(_0: LongDouble);
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_identity__rf80_f80(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_le__ri32_f80_f80(_0: LongDouble, _1: LongDouble) -> i32;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_load__rf80_pf80(_0: *const LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_lt__ri32_f80_f80(_0: LongDouble, _1: LongDouble) -> i32;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_mix_abi__rf80_i64_f64_f80_u32_f80_f32_f80_i32_f64_f80(
+// LOWERING-X86_64-GNU-NEXT:         _0: i64,
+// LOWERING-X86_64-GNU-NEXT:         _1: f64,
+// LOWERING-X86_64-GNU-NEXT:         _2: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _3: u32,
+// LOWERING-X86_64-GNU-NEXT:         _4: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _5: f32,
+// LOWERING-X86_64-GNU-NEXT:         _6: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _7: i32,
+// LOWERING-X86_64-GNU-NEXT:         _8: f64,
+// LOWERING-X86_64-GNU-NEXT:         _9: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:     ) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_mul__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_neg__rf80_f80(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_nested_roundtrip__rv_px_px(_0: *mut ld_nested, _1: *mut ld_nested);
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_pair_make__rv_px_f80_f80(_0: *mut ld_pair, _1: LongDouble, _2: LongDouble);
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_store__rv_pf80_f80(_0: *mut LongDouble, _1: LongDouble);
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_sub__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_sum10__rf80_f80_f80_f80_f80_f80_f80_f80_f80_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:         _0: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _1: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _2: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _3: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _4: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _5: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _6: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _7: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _8: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _9: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:     ) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_to_double__rf64_f80(_0: LongDouble) -> f64;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_to_float__rf32_f80(_0: LongDouble) -> f32;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_to_i64__ri64_f80(_0: LongDouble) -> i64;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_to_u64__ru64_f80(_0: LongDouble) -> u64;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_vsum__rf80_i32_f80_f80_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:         _0: i32,
+// LOWERING-X86_64-GNU-NEXT:         _1: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _2: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _3: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _4: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:     ) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_abs(a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_add(a: LongDouble, b: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_ceil(a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_copysign(a: LongDouble, b: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_div(a: LongDouble, b: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_eq(a: LongDouble, b: LongDouble) -> bool;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_floor(a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_fma(a: LongDouble, b: LongDouble, c: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_fmax(a: LongDouble, b: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_fmin(a: LongDouble, b: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_fract(a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_from_bool(a: bool) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_from_f32(a: f32) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_from_f64(a: f64) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_from_i128(a: i128) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_from_i16(a: i16) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_from_i32(a: i32) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_from_i64(a: i64) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_from_i8(a: i8) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_from_u128(a: u128) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_from_u16(a: u16) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_from_u32(a: u32) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_from_u64(a: u64) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_from_u8(a: u8) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_ge(a: LongDouble, b: LongDouble) -> bool;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_gt(a: LongDouble, b: LongDouble) -> bool;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_is_fp_class(a: LongDouble, flags: i32) -> bool;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_le(a: LongDouble, b: LongDouble) -> bool;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_lt(a: LongDouble, b: LongDouble) -> bool;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_mul(a: LongDouble, b: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_ne(a: LongDouble, b: LongDouble) -> bool;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_neg(a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_rint(a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_round(a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_signbit(a: LongDouble) -> bool;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_sub(a: LongDouble, b: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_to_bool(a: LongDouble) -> bool;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_to_f32(a: LongDouble) -> f32;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_to_f64(a: LongDouble) -> f64;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_to_i128(a: LongDouble) -> i128;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_to_i16(a: LongDouble) -> i16;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_to_i32(a: LongDouble) -> i32;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_to_i64(a: LongDouble) -> i64;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_to_i8(a: LongDouble) -> i8;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_to_u128(a: LongDouble) -> u128;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_to_u16(a: LongDouble) -> u16;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_to_u32(a: LongDouble) -> u32;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_to_u64(a: LongDouble) -> u64;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_to_u8(a: LongDouble) -> u8;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_f80_trunc(a: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_fmodl__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_fprintf__ri32_px_pi8_i32_pi8_pi8_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:         _0: *mut libc::FILE,
+// LOWERING-X86_64-GNU-NEXT:         _1: *mut i8,
+// LOWERING-X86_64-GNU-NEXT:         _2: i32,
+// LOWERING-X86_64-GNU-NEXT:         _3: *mut i8,
+// LOWERING-X86_64-GNU-NEXT:         _4: *mut i8,
+// LOWERING-X86_64-GNU-NEXT:         _5: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:         _6: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:     ) -> i32;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_frexpl__rf80_f80_pi32(_0: LongDouble, _1: *mut i32) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     safe fn __slate_ld_local_cb(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_ldexpl__rf80_f80_i32(_0: LongDouble, _1: i32) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_nanl__rf80_pc(_0: *const core::ffi::c_char) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_nextafterl__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_powl__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_remainderl__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_snprintf__ri32_pi8_u64_pi8_f80(
+// LOWERING-X86_64-GNU-NEXT:         _0: *mut i8,
+// LOWERING-X86_64-GNU-NEXT:         _1: u64,
+// LOWERING-X86_64-GNU-NEXT:         _2: *mut i8,
+// LOWERING-X86_64-GNU-NEXT:         _3: LongDouble,
+// LOWERING-X86_64-GNU-NEXT:     ) -> i32;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_sqrtl__rf80_f80(_0: LongDouble) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT:     fn __slate_strtold__rf80_pc_ppc(
+// LOWERING-X86_64-GNU-NEXT:         _0: *const core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:         _1: *mut *mut core::ffi::c_char,
+// LOWERING-X86_64-GNU-NEXT:     ) -> LongDouble;
+// LOWERING-X86_64-GNU-NEXT: }
+// SLATE-FILECHECK-END lowering-x86_64-gnu

@@ -12,6 +12,7 @@ int main(void) {
   printf("%zu\n", n);
   return 0;
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: let {{_v[0-9]+}}: *mut i8 = b"hello\0".as_ptr() as *mut i8;
 // LOWERING-DAG: let {{_v[0-9]+}}: u64 = (unsafe { strlen({{_v[0-9]+}} as *const core::ffi::c_char) }) as u64;
