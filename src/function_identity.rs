@@ -1,338 +1,95 @@
-use crate::backend::rust_ast::Expr;
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum Known {
-    Malloc,
-    Calloc,
-    Realloc,
-    Free,
-    MemCpy,
-    MemMove,
-    MemSet,
-    MemChr,
-    StrLen,
-    StrNLen,
-    StrCpy,
-    StrCat,
-    StrNCpy,
-    StrNCat,
-    StrCmp,
-    StrNCmp,
-    MemCmp,
-    StrChr,
-    StrRChr,
-    StrStr,
-    StrPBrk,
-    StrSpn,
-    StrCSpn,
-    Atoi,
-    Atol,
-    Atoll,
-    Atof,
-    StrTol,
-    StrToul,
-    StrTod,
-    StrTold,
-    StrFromL,
-    Printf,
-    FPrintf,
-    SPrintf,
-    SNPrintf,
-    Exit,
-    Abort,
-    Puts,
-    FOpen,
-    FPuts,
-    FGets,
-    FRead,
-    FWrite,
-    FClose,
-    FFlush,
-    Remove,
-    Perror,
-    ToUpper,
-    ToLower,
-    IsAlpha,
-    IsDigit,
-    IsUpper,
-    IsLower,
-    IsAlnum,
-    IsXDigit,
-    IsPunct,
-    IsCntrl,
-    IsGraph,
-    IsPrint,
-    IsSpace,
-    Sin,
-    Cos,
-    Tan,
-    Log,
-    Log10,
-    Log2,
-    Pow,
-    Sqrt,
-    Exp,
-    Exp2,
-    Fmod,
-    Lround,
-    Llround,
-    PthreadCreate,
-    PthreadJoin,
-    Qsort,
-    Bsearch,
+macro_rules! known_function_catalog {
+    ($entry:ident) => {
+        $entry! {
+            Malloc, "malloc", "stdlib.h"; Calloc, "calloc", "stdlib.h";
+            Realloc, "realloc", "stdlib.h"; Free, "free", "stdlib.h";
+            MemCpy, "memcpy", "string.h"; MemMove, "memmove", "string.h";
+            MemSet, "memset", "string.h"; MemChr, "memchr", "string.h";
+            StrLen, "strlen", "string.h"; StrNLen, "strnlen", "string.h";
+            StrCpy, "strcpy", "string.h"; StrCat, "strcat", "string.h";
+            StrNCpy, "strncpy", "string.h"; StrNCat, "strncat", "string.h";
+            StrCmp, "strcmp", "string.h"; StrNCmp, "strncmp", "string.h";
+            MemCmp, "memcmp", "string.h"; StrChr, "strchr", "string.h";
+            StrRChr, "strrchr", "string.h"; StrStr, "strstr", "string.h";
+            StrPBrk, "strpbrk", "string.h"; StrSpn, "strspn", "string.h";
+            StrCSpn, "strcspn", "string.h"; Atoi, "atoi", "stdlib.h";
+            Atol, "atol", "stdlib.h"; Atoll, "atoll", "stdlib.h";
+            Atof, "atof", "stdlib.h"; StrTol, "strtol", "stdlib.h";
+            StrToul, "strtoul", "stdlib.h"; StrTod, "strtod", "stdlib.h";
+            StrTold, "strtold", "stdlib.h"; StrFromL, "strfroml", "stdlib.h";
+            Printf, "printf", "stdio.h"; FPrintf, "fprintf", "stdio.h";
+            SPrintf, "sprintf", "stdio.h"; SNPrintf, "snprintf", "stdio.h";
+            Exit, "exit", "stdlib.h"; Abort, "abort", "stdlib.h";
+            Puts, "puts", "stdio.h"; FOpen, "fopen", "stdio.h";
+            FPuts, "fputs", "stdio.h"; FGets, "fgets", "stdio.h";
+            FRead, "fread", "stdio.h"; FWrite, "fwrite", "stdio.h";
+            FClose, "fclose", "stdio.h"; FFlush, "fflush", "stdio.h";
+            Remove, "remove", "stdio.h"; Perror, "perror", "stdio.h";
+            ToUpper, "toupper", "ctype.h"; ToLower, "tolower", "ctype.h";
+            IsAlpha, "isalpha", "ctype.h"; IsDigit, "isdigit", "ctype.h";
+            IsUpper, "isupper", "ctype.h"; IsLower, "islower", "ctype.h";
+            IsAlnum, "isalnum", "ctype.h"; IsXDigit, "isxdigit", "ctype.h";
+            IsPunct, "ispunct", "ctype.h"; IsCntrl, "iscntrl", "ctype.h";
+            IsGraph, "isgraph", "ctype.h"; IsPrint, "isprint", "ctype.h";
+            IsSpace, "isspace", "ctype.h"; Sin, "sin", "math.h";
+            Cos, "cos", "math.h"; Tan, "tan", "math.h"; Log, "log", "math.h";
+            Log10, "log10", "math.h"; Log2, "log2", "math.h"; Pow, "pow", "math.h";
+            Sqrt, "sqrt", "math.h"; Exp, "exp", "math.h"; Exp2, "exp2", "math.h";
+            Fmod, "fmod", "math.h"; Lround, "lround", "math.h";
+            Llround, "llround", "math.h"; PthreadCreate, "pthread_create", "pthread.h";
+            PthreadJoin, "pthread_join", "pthread.h"; Qsort, "qsort", "stdlib.h";
+            Bsearch, "bsearch", "stdlib.h";
+        }
+    };
 }
 
-impl Known {
-    pub fn symbol(self) -> &'static str {
-        match self {
-            Self::Malloc => "malloc",
-            Self::Calloc => "calloc",
-            Self::Realloc => "realloc",
-            Self::Free => "free",
-            Self::MemCpy => "memcpy",
-            Self::MemMove => "memmove",
-            Self::MemSet => "memset",
-            Self::MemChr => "memchr",
-            Self::StrLen => "strlen",
-            Self::StrNLen => "strnlen",
-            Self::StrCpy => "strcpy",
-            Self::StrCat => "strcat",
-            Self::StrNCpy => "strncpy",
-            Self::StrNCat => "strncat",
-            Self::StrCmp => "strcmp",
-            Self::StrNCmp => "strncmp",
-            Self::MemCmp => "memcmp",
-            Self::StrChr => "strchr",
-            Self::StrRChr => "strrchr",
-            Self::StrStr => "strstr",
-            Self::StrPBrk => "strpbrk",
-            Self::StrSpn => "strspn",
-            Self::StrCSpn => "strcspn",
-            Self::Atoi => "atoi",
-            Self::Atol => "atol",
-            Self::Atoll => "atoll",
-            Self::Atof => "atof",
-            Self::StrTol => "strtol",
-            Self::StrToul => "strtoul",
-            Self::StrTod => "strtod",
-            Self::StrTold => "strtold",
-            Self::StrFromL => "strfroml",
-            Self::Printf => "printf",
-            Self::FPrintf => "fprintf",
-            Self::SPrintf => "sprintf",
-            Self::SNPrintf => "snprintf",
-            Self::Exit => "exit",
-            Self::Abort => "abort",
-            Self::Puts => "puts",
-            Self::FOpen => "fopen",
-            Self::FPuts => "fputs",
-            Self::FGets => "fgets",
-            Self::FRead => "fread",
-            Self::FWrite => "fwrite",
-            Self::FClose => "fclose",
-            Self::FFlush => "fflush",
-            Self::Remove => "remove",
-            Self::Perror => "perror",
-            Self::ToUpper => "toupper",
-            Self::ToLower => "tolower",
-            Self::IsAlpha => "isalpha",
-            Self::IsDigit => "isdigit",
-            Self::IsUpper => "isupper",
-            Self::IsLower => "islower",
-            Self::IsAlnum => "isalnum",
-            Self::IsXDigit => "isxdigit",
-            Self::IsPunct => "ispunct",
-            Self::IsCntrl => "iscntrl",
-            Self::IsGraph => "isgraph",
-            Self::IsPrint => "isprint",
-            Self::IsSpace => "isspace",
-            Self::Sin => "sin",
-            Self::Cos => "cos",
-            Self::Tan => "tan",
-            Self::Log => "log",
-            Self::Log10 => "log10",
-            Self::Log2 => "log2",
-            Self::Pow => "pow",
-            Self::Sqrt => "sqrt",
-            Self::Exp => "exp",
-            Self::Exp2 => "exp2",
-            Self::Fmod => "fmod",
-            Self::Lround => "lround",
-            Self::Llround => "llround",
-            Self::PthreadCreate => "pthread_create",
-            Self::PthreadJoin => "pthread_join",
-            Self::Qsort => "qsort",
-            Self::Bsearch => "bsearch",
+macro_rules! define_known {
+    ($($variant:ident, $symbol:literal, $header:literal;)*) => {
+        #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+        pub enum Known {
+            $($variant,)*
         }
-    }
 
-    pub fn header(self) -> &'static str {
-        match self {
-            Self::Malloc
-            | Self::Calloc
-            | Self::Realloc
-            | Self::Free
-            | Self::Atoi
-            | Self::Atol
-            | Self::Atoll
-            | Self::Atof
-            | Self::StrTol
-            | Self::StrToul
-            | Self::StrTod
-            | Self::StrTold
-            | Self::StrFromL
-            | Self::Exit
-            | Self::Abort
-            | Self::Qsort
-            | Self::Bsearch => "stdlib.h",
-            Self::MemCpy
-            | Self::MemMove
-            | Self::MemSet
-            | Self::MemChr
-            | Self::StrLen
-            | Self::StrNLen
-            | Self::StrCpy
-            | Self::StrCat
-            | Self::StrNCpy
-            | Self::StrNCat
-            | Self::StrCmp
-            | Self::StrNCmp
-            | Self::MemCmp
-            | Self::StrChr
-            | Self::StrRChr
-            | Self::StrStr
-            | Self::StrPBrk
-            | Self::StrSpn
-            | Self::StrCSpn => "string.h",
-            Self::Printf
-            | Self::FPrintf
-            | Self::SPrintf
-            | Self::SNPrintf
-            | Self::Puts
-            | Self::FOpen
-            | Self::FPuts
-            | Self::FGets
-            | Self::FRead
-            | Self::FWrite
-            | Self::FClose
-            | Self::FFlush
-            | Self::Remove
-            | Self::Perror => "stdio.h",
-            Self::ToUpper
-            | Self::ToLower
-            | Self::IsAlpha
-            | Self::IsDigit
-            | Self::IsUpper
-            | Self::IsLower
-            | Self::IsAlnum
-            | Self::IsXDigit
-            | Self::IsPunct
-            | Self::IsCntrl
-            | Self::IsGraph
-            | Self::IsPrint
-            | Self::IsSpace => "ctype.h",
-            Self::Sin
-            | Self::Cos
-            | Self::Tan
-            | Self::Log
-            | Self::Log10
-            | Self::Log2
-            | Self::Pow
-            | Self::Sqrt
-            | Self::Exp
-            | Self::Exp2
-            | Self::Fmod
-            | Self::Lround
-            | Self::Llround => "math.h",
-            Self::PthreadCreate | Self::PthreadJoin => "pthread.h",
+        impl Known {
+            pub fn symbol(self) -> &'static str {
+                match self {
+                    $(Self::$variant => $symbol,)*
+                }
+            }
+
+            pub fn header(self) -> &'static str {
+                match self {
+                    $(Self::$variant => $header,)*
+                }
+            }
+
+            pub fn from_symbol(symbol: &str) -> Option<Self> {
+                match symbol {
+                    $($symbol => Some(Self::$variant),)*
+                    _ => None,
+                }
+            }
+
+            fn from_builtin_symbol(symbol: &str) -> Option<Self> {
+                symbol
+                    .strip_prefix("__builtin_")
+                    .and_then(Self::from_symbol)
+                    .or(match symbol {
+                        "__builtin_bit_cast" => Some(Self::MemCpy),
+                        "__builtin_bcopy" => Some(Self::MemMove),
+                        "__builtin_bzero" => Some(Self::MemSet),
+                        _ => None,
+                    })
+            }
+
+            fn classify(name: &str, headers: &[&str]) -> Option<Self> {
+                Self::from_symbol(name).filter(|known| headers.contains(&known.header()))
+            }
         }
-    }
-
-    fn classify(name: &str, headers: &[&str]) -> Option<Self> {
-        let (known, header) = match name {
-            "malloc" => (Self::Malloc, "stdlib.h"),
-            "calloc" => (Self::Calloc, "stdlib.h"),
-            "realloc" => (Self::Realloc, "stdlib.h"),
-            "free" => (Self::Free, "stdlib.h"),
-            "memcpy" => (Self::MemCpy, "string.h"),
-            "memmove" => (Self::MemMove, "string.h"),
-            "memset" => (Self::MemSet, "string.h"),
-            "memchr" => (Self::MemChr, "string.h"),
-            "strlen" => (Self::StrLen, "string.h"),
-            "strnlen" => (Self::StrNLen, "string.h"),
-            "strcpy" => (Self::StrCpy, "string.h"),
-            "strcat" => (Self::StrCat, "string.h"),
-            "strncpy" => (Self::StrNCpy, "string.h"),
-            "strncat" => (Self::StrNCat, "string.h"),
-            "strcmp" => (Self::StrCmp, "string.h"),
-            "strncmp" => (Self::StrNCmp, "string.h"),
-            "memcmp" => (Self::MemCmp, "string.h"),
-            "strchr" => (Self::StrChr, "string.h"),
-            "strrchr" => (Self::StrRChr, "string.h"),
-            "strstr" => (Self::StrStr, "string.h"),
-            "strpbrk" => (Self::StrPBrk, "string.h"),
-            "strspn" => (Self::StrSpn, "string.h"),
-            "strcspn" => (Self::StrCSpn, "string.h"),
-            "atoi" => (Self::Atoi, "stdlib.h"),
-            "atol" => (Self::Atol, "stdlib.h"),
-            "atoll" => (Self::Atoll, "stdlib.h"),
-            "atof" => (Self::Atof, "stdlib.h"),
-            "strtol" => (Self::StrTol, "stdlib.h"),
-            "strtoul" => (Self::StrToul, "stdlib.h"),
-            "strtod" => (Self::StrTod, "stdlib.h"),
-            "strtold" => (Self::StrTold, "stdlib.h"),
-            "strfroml" => (Self::StrFromL, "stdlib.h"),
-            "printf" => (Self::Printf, "stdio.h"),
-            "fprintf" => (Self::FPrintf, "stdio.h"),
-            "sprintf" => (Self::SPrintf, "stdio.h"),
-            "snprintf" => (Self::SNPrintf, "stdio.h"),
-            "exit" => (Self::Exit, "stdlib.h"),
-            "abort" => (Self::Abort, "stdlib.h"),
-            "puts" => (Self::Puts, "stdio.h"),
-            "fopen" => (Self::FOpen, "stdio.h"),
-            "fputs" => (Self::FPuts, "stdio.h"),
-            "fgets" => (Self::FGets, "stdio.h"),
-            "fread" => (Self::FRead, "stdio.h"),
-            "fwrite" => (Self::FWrite, "stdio.h"),
-            "fclose" => (Self::FClose, "stdio.h"),
-            "fflush" => (Self::FFlush, "stdio.h"),
-            "remove" => (Self::Remove, "stdio.h"),
-            "perror" => (Self::Perror, "stdio.h"),
-            "toupper" => (Self::ToUpper, "ctype.h"),
-            "tolower" => (Self::ToLower, "ctype.h"),
-            "isalpha" => (Self::IsAlpha, "ctype.h"),
-            "isdigit" => (Self::IsDigit, "ctype.h"),
-            "isupper" => (Self::IsUpper, "ctype.h"),
-            "islower" => (Self::IsLower, "ctype.h"),
-            "isalnum" => (Self::IsAlnum, "ctype.h"),
-            "isxdigit" => (Self::IsXDigit, "ctype.h"),
-            "ispunct" => (Self::IsPunct, "ctype.h"),
-            "iscntrl" => (Self::IsCntrl, "ctype.h"),
-            "isgraph" => (Self::IsGraph, "ctype.h"),
-            "isprint" => (Self::IsPrint, "ctype.h"),
-            "isspace" => (Self::IsSpace, "ctype.h"),
-            "sin" => (Self::Sin, "math.h"),
-            "cos" => (Self::Cos, "math.h"),
-            "tan" => (Self::Tan, "math.h"),
-            "log" => (Self::Log, "math.h"),
-            "log10" => (Self::Log10, "math.h"),
-            "log2" => (Self::Log2, "math.h"),
-            "pow" => (Self::Pow, "math.h"),
-            "sqrt" => (Self::Sqrt, "math.h"),
-            "exp" => (Self::Exp, "math.h"),
-            "exp2" => (Self::Exp2, "math.h"),
-            "fmod" => (Self::Fmod, "math.h"),
-            "lround" => (Self::Lround, "math.h"),
-            "llround" => (Self::Llround, "math.h"),
-            "pthread_create" => (Self::PthreadCreate, "pthread.h"),
-            "pthread_join" => (Self::PthreadJoin, "pthread.h"),
-            "qsort" => (Self::Qsort, "stdlib.h"),
-            "bsearch" => (Self::Bsearch, "stdlib.h"),
-            _ => return None,
-        };
-        headers.contains(&header).then_some(known)
-    }
+    };
 }
+
+known_function_catalog!(define_known);
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum FunctionIdentity {
@@ -360,10 +117,10 @@ pub enum CallBinding {
 }
 
 impl CallBinding {
-    pub fn direct_unknown(canonical_type: Option<String>) -> Self {
+    pub fn unknown() -> Self {
         Self::Direct {
             identity: FunctionIdentity::Unknown,
-            canonical_type,
+            canonical_type: None,
         }
     }
 
@@ -387,27 +144,7 @@ pub fn classify_function<'a>(
     if !valid_function_type(canonical_type) {
         return FunctionIdentity::Unknown;
     }
-    let builtin = match name {
-        "__builtin_memcpy" | "__builtin_bit_cast" => Some(Known::MemCpy),
-        "__builtin_memmove" | "__builtin_bcopy" => Some(Known::MemMove),
-        "__builtin_memset" | "__builtin_bzero" => Some(Known::MemSet),
-        "__builtin_memchr" => Some(Known::MemChr),
-        "__builtin_sin" => Some(Known::Sin),
-        "__builtin_cos" => Some(Known::Cos),
-        "__builtin_tan" => Some(Known::Tan),
-        "__builtin_log" => Some(Known::Log),
-        "__builtin_log10" => Some(Known::Log10),
-        "__builtin_log2" => Some(Known::Log2),
-        "__builtin_pow" => Some(Known::Pow),
-        "__builtin_sqrt" => Some(Known::Sqrt),
-        "__builtin_exp" => Some(Known::Exp),
-        "__builtin_exp2" => Some(Known::Exp2),
-        "__builtin_fmod" => Some(Known::Fmod),
-        "__builtin_lround" => Some(Known::Lround),
-        "__builtin_llround" => Some(Known::Llround),
-        _ => None,
-    };
-    if let Some(known) = builtin {
+    if let Some(known) = Known::from_builtin_symbol(name) {
         return FunctionIdentity::Known(known);
     }
     if provenance != Provenance::TrustedHeader {
@@ -440,11 +177,4 @@ fn valid_function_type(canonical_type: &str) -> bool {
         }
     }
     false
-}
-
-pub fn known_call(expr: &Expr) -> Option<Known> {
-    let Expr::Call { binding, .. } = expr else {
-        return None;
-    };
-    binding.known()
 }

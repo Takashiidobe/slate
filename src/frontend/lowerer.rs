@@ -962,8 +962,8 @@ impl<'a> Lowerer<'a> {
             SourceLocation::File { file, line, column } => {
                 let point = SourcePoint {
                     file: file.clone(),
-                    line: *line,
-                    col: *column,
+                    line: *line as u64,
+                    col: *column as u64,
                 };
                 self.floating_literals
                     .get(&FloatingLiteralLoc {
@@ -1021,14 +1021,14 @@ impl<'a> Lowerer<'a> {
         }
         loc.and_then(|raw| self.resolve_source_loc(raw))
             .and_then(|loc| self.call_bindings.get(&loc).cloned())
-            .unwrap_or_else(|| CallBinding::direct_unknown(None))
+            .unwrap_or(CallBinding::unknown())
     }
 
     fn resolve_source_loc(&self, raw: &SourceLocation) -> Option<Loc> {
         match raw {
             SourceLocation::File { line, column, .. } => Some(Loc {
-                line: *line,
-                col: *column,
+                line: *line as u64,
+                col: *column as u64,
             }),
             _ => None,
         }
@@ -3168,11 +3168,8 @@ fn record_field_offset(
 }
 
 fn align_to(value: u64, align: u64) -> u64 {
-    if align <= 1 {
-        value
-    } else {
-        value.div_ceil(align) * align
-    }
+    let align = align.min(1);
+    value.div_ceil(align) * align
 }
 
 fn ctype_uses_long_double(ty: &crate::frontend::c_ast::CType) -> bool {
