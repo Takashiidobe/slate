@@ -16,6 +16,7 @@ int main(void) {
   // @lowering-end
   // @rewrite-end
 }
+
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: fn add({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{arg[0-9]+}};
@@ -25,8 +26,8 @@ int main(void) {
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = 2;
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = 3;
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = add({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// SLATE-FILECHECK-END lowering
+// LOWERING-DAG: let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const
+// core::ffi::c_char, {{_v[0-9]+}}) }; SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn add({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {

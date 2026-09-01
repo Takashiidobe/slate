@@ -150,6 +150,13 @@ signature/call-site lift, wrapping the call statement is enough, since the
 bridged call only appears once the lift fires. Re-run the tool whenever the
 generated output legitimately changes so the checked-in block stays in sync.
 
+Generated blocks are identified by their `SLATE-FILECHECK-BEGIN` and
+`SLATE-FILECHECK-END` markers and are always regenerated at the end of the C
+file. Handwritten FileCheck directives remain before them. The updater also
+recognizes an end marker reflowed into another `//` comment by a formatter, so
+format-on-save followed by regeneration repairs the block instead of treating
+its checks as handwritten.
+
 ## Per-fixture clang flags
 
 Fixtures emit CIR at `-O0` by default. Some bugs only exist in optimized CIR

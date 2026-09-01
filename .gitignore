@@ -3,6 +3,7 @@
 transpiled/
 diagnostics
 .env
+__pycache__/
 
 /tools/macro-dump-plugin/build/
 
