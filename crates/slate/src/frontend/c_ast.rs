@@ -260,15 +260,15 @@ pub enum Expr {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Loc {
-    pub line: u32,
-    pub col: u32,
+    pub line: u64,
+    pub col: u64,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct SourcePoint {
     pub file: String,
-    pub line: u32,
-    pub col: u32,
+    pub line: u64,
+    pub col: u64,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -638,8 +638,8 @@ fn parse_plugin_events(stderr: &str) -> PluginEvents {
 fn plugin_source_point(value: &Value) -> Option<SourcePoint> {
     Some(SourcePoint {
         file: value.get("file")?.as_str()?.to_string(),
-        line: value.get("line")?.as_u64()? as u32,
-        col: value.get("column")?.as_u64()? as u32,
+        line: value.get("line")?.as_u64()?,
+        col: value.get("column")?.as_u64()?,
     })
 }
 
@@ -1906,10 +1906,10 @@ fn expansion_offset(node: &Value) -> Option<usize> {
 fn loc_from_offset(source: &str, offset: usize) -> Option<Loc> {
     let prefix = source.get(..offset)?;
     Some(Loc {
-        line: prefix.bytes().filter(|byte| *byte == b'\n').count() as u32 + 1,
+        line: prefix.bytes().filter(|byte| *byte == b'\n').count() as u64 + 1,
         col: prefix
             .rsplit_once('\n')
-            .map_or(prefix.len(), |(_, line)| line.len()) as u32
+            .map_or(prefix.len(), |(_, line)| line.len()) as u64
             + 1,
     })
 }
@@ -2267,8 +2267,8 @@ fn parse_expr(node: &Value) -> Option<Expr> {
             let binding = fact
                 .as_ref()
                 .map(|fact| fact.binding.clone())
-                .unwrap_or_else(|| CallBinding::direct_unknown(None));
-            let loc = fact.and_then(|fact| fact.loc).or_else(|| loc(node));
+                .unwrap_or(CallBinding::unknown());
+            let loc = fact.and_then(|fact| fact.loc).or(loc(node));
             Some(Expr::Call { args, binding, loc })
         }
         _ => children(node).first().and_then(|child| parse_expr(child)),
@@ -2672,8 +2672,8 @@ fn normalize_comment_line(line: &str) -> String {
 fn loc(node: &Value) -> Option<Loc> {
     let loc = node.get("loc")?;
     Some(Loc {
-        line: loc.get("line")?.as_u64()? as u32,
-        col: loc.get("col")?.as_u64()? as u32,
+        line: loc.get("line")?.as_u64()?,
+        col: loc.get("col")?.as_u64()?,
     })
 }
 

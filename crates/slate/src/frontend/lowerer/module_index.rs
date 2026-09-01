@@ -11,8 +11,8 @@ pub(super) fn source_point(loc: &SourceLocation) -> Option<SourcePoint> {
     match loc {
         SourceLocation::File { file, line, column } => Some(SourcePoint {
             file: file.clone(),
-            line: *line,
-            col: *column,
+            line: *line as u64,
+            col: *column as u64,
         }),
         SourceLocation::Fused(locations) => locations.iter().find_map(source_point),
         SourceLocation::Callsite { expansion, .. } => source_point(expansion),
