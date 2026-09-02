@@ -17,14 +17,21 @@ fn adopt_cir_int_signedness(
             CType::Int {
                 signed: ast_signed,
                 bits: ast_bits,
-                ..
             },
             CType::Int {
                 signed: cir_signed,
                 bits: cir_bits,
-                ..
             },
         ) if ast_bits == cir_bits => {
+            *ast_signed = *cir_signed;
+        }
+        (
+            CType::Char { signed: ast_signed },
+            CType::Int {
+                signed: cir_signed,
+                bits: 8,
+            },
+        ) => {
             *ast_signed = *cir_signed;
         }
         _ => {}
@@ -206,10 +213,9 @@ fn normalize_record_shape(ty: &crate::frontend::c_ast::CType) -> crate::frontend
             ret: Box::new(normalize_record_shape(ret)),
             params: params.iter().map(normalize_record_shape).collect(),
         },
-        CType::Enum(_) | CType::Int { .. } => CType::Int {
+        CType::Enum(_) | CType::Int { .. } | CType::Char { .. } => CType::Int {
             signed: false,
             bits: 0,
-            is_char: false,
         },
         CType::Complex(inner) => CType::Complex(Box::new(normalize_record_shape(inner))),
         other => other.clone(),
