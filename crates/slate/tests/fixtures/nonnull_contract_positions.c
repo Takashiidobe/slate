@@ -124,11 +124,11 @@ int main(void) {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     return {{_v[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}} + {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn difference({{arg[0-9]+}}: &i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: &i32) -> i32 {
-// REWRITES-NEXT:     return (unsafe { *({{arg[0-9]+}} as *const i32) }) - {{arg[0-9]+}} * unsafe { *({{arg[0-9]+}} as *const i32) };
+// REWRITES-NEXT:     (unsafe { *({{arg[0-9]+}} as *const i32) }) - {{arg[0-9]+}} * unsafe { *({{arg[0-9]+}} as *const i32) }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

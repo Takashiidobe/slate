@@ -61,6 +61,6 @@ long feature_level(void) { return __DARWIN_C_LEVEL; }
 // REWRITES-MACOS-NEXT: compile_error!("\"Darwin extensions missing\"");
 // REWRITES-MACOS-EMPTY:
 // REWRITES-MACOS-NEXT: fn feature_level() -> i64 {
-// REWRITES-MACOS-NEXT:     return 900000;
+// REWRITES-MACOS-NEXT:     900000
 // REWRITES-MACOS-NEXT: }
 // SLATE-FILECHECK-END rewrites-macos

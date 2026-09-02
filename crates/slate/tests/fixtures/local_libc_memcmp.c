@@ -207,7 +207,7 @@ int main(void) {
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < 0;
-// REWRITES-NEXT:     return (({{_v[0-9]+}} as i32) - ({{_v[0-9]+}} as i32)) * 1000 + (sa - sb);
+// REWRITES-NEXT:     (({{_v[0-9]+}} as i32) - ({{_v[0-9]+}} as i32)) * 1000 + (sa - sb)
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

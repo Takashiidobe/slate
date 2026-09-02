@@ -83,7 +83,7 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn sadd({{arg[0-9]+}}: i16, {{arg[0-9]+}}: i16) -> i16 {
-// REWRITES-NEXT:     return (({{arg[0-9]+}} as i32) + ({{arg[0-9]+}} as i32)) as i16;
+// REWRITES-NEXT:     (({{arg[0-9]+}} as i32) + ({{arg[0-9]+}} as i32)) as i16
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

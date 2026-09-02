@@ -115,7 +115,7 @@ int main(void) {
 // REWRITES-NEXT:         total += i;
 // REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return total;
+// REWRITES-NEXT:     total
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

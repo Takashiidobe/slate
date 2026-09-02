@@ -105,7 +105,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe { touch({{arg[0-9]+}}) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{arg[0-9]+}} };
 // REWRITES-NEXT:     unsafe { free({{arg[0-9]+}} as *mut core::ffi::c_void) };
-// REWRITES-NEXT:     return {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

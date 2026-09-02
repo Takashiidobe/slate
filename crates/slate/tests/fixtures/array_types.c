@@ -127,7 +127,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
 // REWRITES-NEXT:     values[({{_v[0-9]+}} as usize)] =
 // REWRITES-NEXT:         ((values[((0 as i64) as usize)] as i32) + (values[((1 as i64) as usize)] as i32)) as i8;
-// REWRITES-NEXT:     return values[((2 as i64) as usize)] as i32;
+// REWRITES-NEXT:     values[((2 as i64) as usize)] as i32
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn pick_double_array({{arg[0-9]+}}: i32) -> f64 {
@@ -138,7 +138,7 @@ int main(void) {
 // REWRITES-NEXT:     values[({{_v[0-9]+}} as usize)] = 2.5;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
 // REWRITES-NEXT:     values[({{_v[0-9]+}} as usize)] = values[((0 as i64) as usize)] + values[((1 as i64) as usize)];
-// REWRITES-NEXT:     return values[(({{arg[0-9]+}} as i64) as usize)];
+// REWRITES-NEXT:     values[(({{arg[0-9]+}} as i64) as usize)]
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

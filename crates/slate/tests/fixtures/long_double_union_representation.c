@@ -361,7 +361,7 @@ int main(void) { printf("%d\n", convert(6.75L)); }
 // REWRITES-NEXT:         bits.f80 = {{arg[0-9]+}};
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { bits.f80 };
-// REWRITES-NEXT:     return __slate_f80_to_i32({{_v[0-9]+}});
+// REWRITES-NEXT:     __slate_f80_to_i32({{_v[0-9]+}})
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

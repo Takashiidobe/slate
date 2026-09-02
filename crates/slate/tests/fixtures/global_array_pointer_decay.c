@@ -110,11 +110,11 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u32 = unsafe { {{arg[0-9]+}}.add(0) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { *{{_v[0-9]+}} };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u32 = unsafe { {{arg[0-9]+}}.add(2) };
-// REWRITES-NEXT:     return {{_v[0-9]+}} + unsafe { *{{_v[0-9]+}} };
+// REWRITES-NEXT:     {{_v[0-9]+}} + unsafe { *{{_v[0-9]+}} }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn middle({{arg[0-9]+}}: &[u32; 3]) -> u32 {
-// REWRITES-NEXT:     return unsafe { (*({{arg[0-9]+}} as *const [u32; 3]))[((1 as i64) as usize)] };
+// REWRITES-NEXT:     unsafe { (*({{arg[0-9]+}} as *const [u32; 3]))[((1 as i64) as usize)] }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

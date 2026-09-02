@@ -124,7 +124,7 @@ int main(void) {
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         _ => {}
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return out;
+// REWRITES-NEXT:     out
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

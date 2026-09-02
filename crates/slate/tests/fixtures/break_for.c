@@ -125,7 +125,6 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn first_multiple(mut n: i32, mut m: i32) -> i32 {
-// REWRITES-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     i = 1;
 // REWRITES-NEXT:     loop {
@@ -134,8 +133,7 @@ int main(void) {
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i % m == 0;
 // REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             __retval = i;
-// REWRITES-NEXT:             return __retval;
+// REWRITES-NEXT:             return i;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i > 100;
 // REWRITES-NEXT:         if {{_v[0-9]+}} {
@@ -143,8 +141,7 @@ int main(void) {
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     __retval = -1;
-// REWRITES-NEXT:     return __retval;
+// REWRITES-NEXT:     -1
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

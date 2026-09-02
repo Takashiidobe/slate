@@ -780,7 +780,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} + (({{_v[0-9]+}} as i32) as i64);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = (unsafe { strerrordesc_np(22 as i32) }) as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
-// REWRITES-NEXT:     return ({{_v[0-9]+}} + (({{_v[0-9]+}} as i32) as i64)) as i32;
+// REWRITES-NEXT:     ({{_v[0-9]+}} + (({{_v[0-9]+}} as i32) as i64)) as i32
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn gnu_argz_extensions() -> i32 {
@@ -855,7 +855,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
 // REWRITES-NEXT:     unsafe { free(argz as *mut core::ffi::c_void) };
-// REWRITES-NEXT:     return {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn gnu_envz_extensions() -> i32 {
@@ -929,7 +929,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = length == 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
 // REWRITES-NEXT:     unsafe { free(envz as *mut core::ffi::c_void) };
-// REWRITES-NEXT:     return {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

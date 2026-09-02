@@ -1,5 +1,5 @@
 use crate::backend::engine::NodeRule;
-use crate::backend::engine::arena::{Arena, NodeId, NodeKind, NodeKindTag};
+use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::{BinOp, Expr, Ident, Prim, RustValue, Stmt, Type, UnaryOp};
 use crate::function_identity::CallBinding;
 
@@ -1348,7 +1348,7 @@ impl NodeRule for LateInlineTemps {
         &[NodeKindTag::Let]
     }
 
-    fn matches(&self, arena: &Arena, id: NodeId) -> bool {
+    fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
         matches!(
             arena.get(id),
             Some(NodeKind::Let {
@@ -1360,7 +1360,7 @@ impl NodeRule for LateInlineTemps {
         )
     }
 
-    fn apply(&self, arena: &mut Arena, id: NodeId) -> bool {
+    fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
         let Some(NodeKind::Let {
             name,
             mutable: false,
@@ -1483,7 +1483,7 @@ impl NodeRule for EffectfulTempForward {
         &[NodeKindTag::Let]
     }
 
-    fn matches(&self, arena: &Arena, id: NodeId) -> bool {
+    fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
         matches!(
             arena.get(id),
             Some(NodeKind::Let {
@@ -1495,7 +1495,7 @@ impl NodeRule for EffectfulTempForward {
         )
     }
 
-    fn apply(&self, arena: &mut Arena, id: NodeId) -> bool {
+    fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
         let Some(NodeKind::Let {
             name,
             mutable: false,
@@ -1782,7 +1782,7 @@ impl NodeRule for InlineConstArgTemps {
         &[NodeKindTag::Let]
     }
 
-    fn matches(&self, arena: &Arena, id: NodeId) -> bool {
+    fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
         matches!(
             arena.get(id),
             Some(NodeKind::Let {
@@ -1796,7 +1796,7 @@ impl NodeRule for InlineConstArgTemps {
         )
     }
 
-    fn apply(&self, arena: &mut Arena, id: NodeId) -> bool {
+    fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
         let Some(NodeKind::Let {
             name,
             mutable: false,

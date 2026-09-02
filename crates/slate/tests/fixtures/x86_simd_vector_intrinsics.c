@@ -388,12 +388,12 @@ int main(void) {
 // REWRITES-NEXT: fn _mm_set_epi32({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> [i64; 2] {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: [i64; 2] =
 // REWRITES-NEXT:         unsafe { std::mem::transmute::<[i32; 4], [i64; 2]>([{{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}]) };
-// REWRITES-NEXT:     return {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[inline(always)]
 // REWRITES-NEXT: fn _mm_set1_epi32({{arg[0-9]+}}: i32) -> [i64; 2] {
-// REWRITES-NEXT:     return _mm_set_epi32({{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}});
+// REWRITES-NEXT:     _mm_set_epi32({{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}})
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[inline(always)]
@@ -408,7 +408,7 @@ int main(void) {
 // REWRITES-NEXT:             {{_v[0-9]+}}[3usize] + {{_v[0-9]+}}[3usize],
 // REWRITES-NEXT:         ])
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     return {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[inline(always)]
@@ -451,20 +451,20 @@ int main(void) {
 // REWRITES-NEXT:             {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}},
 // REWRITES-NEXT:         ])
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     return {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[inline(always)]
 // REWRITES-NEXT: fn _mm_set1_epi8({{arg[0-9]+}}: i8) -> [i64; 2] {
-// REWRITES-NEXT:     return _mm_set_epi8(
+// REWRITES-NEXT:     _mm_set_epi8(
 // REWRITES-NEXT:         {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}},
 // REWRITES-NEXT:         {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}},
-// REWRITES-NEXT:     );
+// REWRITES-NEXT:     )
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[inline(always)]
 // REWRITES-NEXT: fn _mm_setzero_si128() -> [i64; 2] {
-// REWRITES-NEXT:     return [0, 0];
+// REWRITES-NEXT:     [0, 0]
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[target_feature(enable = "sse3,ssse3")]
@@ -489,7 +489,7 @@ int main(void) {
 // REWRITES-NEXT:         {{_v[0-9]+}}[15usize].wrapping_abs(),
 // REWRITES-NEXT:     ];
 // REWRITES-NEXT:     let {{_v[0-9]+}}: [i64; 2] = unsafe { std::mem::transmute::<[i8; 16], [i64; 2]>({{_v[0-9]+}}) };
-// REWRITES-NEXT:     return {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[target_feature(enable = "sse3,ssse3")]
@@ -504,7 +504,7 @@ int main(void) {
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     .to_array();
 // REWRITES-NEXT:     let {{_v[0-9]+}}: [i64; 2] = unsafe { std::mem::transmute::<[i8; 16], [i64; 2]>({{_v[0-9]+}}) };
-// REWRITES-NEXT:     return {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[target_feature(enable = "sse3,ssse3")]
@@ -534,12 +534,12 @@ int main(void) {
 // REWRITES-NEXT:             {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}},
 // REWRITES-NEXT:         ])
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     return {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[target_feature(enable = "avx,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
 // REWRITES-NEXT: unsafe fn _mm256_set1_epi32({{arg[0-9]+}}: i32) -> [i64; 4] {
-// REWRITES-NEXT:     return unsafe { _mm256_set_epi32({{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}) };
+// REWRITES-NEXT:     unsafe { _mm256_set_epi32({{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}, {{arg[0-9]+}}) }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[target_feature(enable = "avx,avx2,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
@@ -558,7 +558,7 @@ int main(void) {
 // REWRITES-NEXT:             {{_v[0-9]+}}[7usize] + {{_v[0-9]+}}[7usize],
 // REWRITES-NEXT:         ])
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     return {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[target_feature(enable = "avx,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]

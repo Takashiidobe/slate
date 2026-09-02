@@ -1,10 +1,12 @@
 int printf(const char *, ...);
 
+// @rewrite-fn-begin
 #ifdef MY_FEATURE
-static int feature_code(void) { return 10; }
+int feature_code(void) { return 10; }
 #else
-static int feature_code(void) { return 20; }
+int feature_code(void) { return 20; }
 #endif
+// @rewrite-fn-end
 
 int main(void) {
   printf("%d\n", feature_code());
@@ -12,5 +14,9 @@ int main(void) {
 }
 // DIRECTIVES-DAG: #[cfg(feature = "my_feature")]
 // DIRECTIVES-DAG: #[cfg(not(feature = "my_feature"))]
-// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}10;
-// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}20;
+
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES-DAG: fn feature_code() -> i32 {
+// REWRITES-DAG:     20
+// REWRITES-DAG: }
+// SLATE-FILECHECK-END rewrites

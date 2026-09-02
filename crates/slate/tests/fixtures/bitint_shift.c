@@ -132,7 +132,7 @@ int main(void) {
 // REWRITES-DAG:     let {{_v[0-9]+}}: bitint::BUint<129, 3, 24> = {{_v[0-9]+}} << {{_v[0-9]+}} >> {{_v[0-9]+}} << {{_v[0-9]+}} >> {{_v[0-9]+}} << {{_v[0-9]+}};
 // REWRITES-DAG:     let {{_v[0-9]+}}: bitint::BUint<129, 3, 24> = bitint::BUint::<129, 3, 24>::from_i128({{arg[0-9]+}} as i128);
 // REWRITES-DAG:     let {{_v[0-9]+}}: bitint::BUint<129, 3, 24> = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-DAG:     return {{_v[0-9]+}}.to_u128() as i32;
+// REWRITES-DAG:     {{_v[0-9]+}}.to_u128() as i32
 // REWRITES-DAG: }
 // REWRITES-DAG: fn shift_across_limbs({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-DAG:     let {{_v[0-9]+}}: bitint::BUint<129, 3, 24> = bitint::BUint::<129, 3, 24>::from_decimal_str("1");
@@ -140,7 +140,7 @@ int main(void) {
 // REWRITES-DAG:     let {{_v[0-9]+}}: i32 = 127;
 // REWRITES-DAG:     let {{_v[0-9]+}}: bitint::BUint<129, 3, 24> = {{_v[0-9]+}} << {{_v[0-9]+}} >> {{_v[0-9]+}};
 // REWRITES-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.to_u128() as i32;
-// REWRITES-DAG:     return {{_v[0-9]+}} + {{arg[0-9]+}};
+// REWRITES-DAG:     {{_v[0-9]+}} + {{arg[0-9]+}}
 // REWRITES-DAG: }
 // REWRITES-DAG: fn shift_signed_arithmetic({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-DAG:     let {{_v[0-9]+}}: bitint::BInt<256, 4, 32> = bitint::BInt::<256, 4, 32>::from_decimal_str("-1024");
@@ -148,13 +148,13 @@ int main(void) {
 // REWRITES-DAG:     let {{_v[0-9]+}}: i32 = 2;
 // REWRITES-DAG:     let {{_v[0-9]+}}: bitint::BInt<256, 4, 32> = {{_v[0-9]+}} >> {{_v[0-9]+}} << {{_v[0-9]+}};
 // REWRITES-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.to_i128() as i32;
-// REWRITES-DAG:     return {{_v[0-9]+}} + {{arg[0-9]+}};
+// REWRITES-DAG:     {{_v[0-9]+}} + {{arg[0-9]+}}
 // REWRITES-DAG: }
 // REWRITES-DAG: fn shift_by_bitint({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-DAG:     let {{_v[0-9]+}}: bitint::BInt<256, 4, 32> = bitint::BInt::<256, 4, 32>::from_decimal_str("4");
 // REWRITES-DAG:     let {{_v[0-9]+}}: bitint::BInt<256, 4, 32> = bitint::BInt::<256, 4, 32>::from_decimal_str("3");
 // REWRITES-DAG:     let {{_v[0-9]+}}: bitint::BInt<256, 4, 32> = {{_v[0-9]+}} << {{_v[0-9]+}} >> {{_v[0-9]+}};
 // REWRITES-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.to_i128() as i32;
-// REWRITES-DAG:     return {{_v[0-9]+}} + {{arg[0-9]+}};
+// REWRITES-DAG:     {{_v[0-9]+}} + {{arg[0-9]+}}
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

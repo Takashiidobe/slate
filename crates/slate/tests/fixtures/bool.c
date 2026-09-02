@@ -116,15 +116,15 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn from_int({{arg[0-9]+}}: i32) -> bool {
-// REWRITES-NEXT:     return {{arg[0-9]+}} != 0;
+// REWRITES-NEXT:     {{arg[0-9]+}} != 0
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn from_compare({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> bool {
-// REWRITES-NEXT:     return {{arg[0-9]+}} < {{arg[0-9]+}};
+// REWRITES-NEXT:     {{arg[0-9]+}} < {{arg[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn use_bool({{arg[0-9]+}}: bool) -> i32 {
-// REWRITES-NEXT:     return {{arg[0-9]+}} as i32;
+// REWRITES-NEXT:     {{arg[0-9]+}} as i32
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

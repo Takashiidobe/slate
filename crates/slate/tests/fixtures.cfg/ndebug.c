@@ -1,10 +1,12 @@
 #include <stdio.h>
 
+// @rewrite-fn-begin
 #if defined(NDEBUG)
-static int debug_code(void) { return 0; }
+int debug_code(void) { return 0; }
 #else
-static int debug_code(void) { return 1; }
+int debug_code(void) { return 1; }
 #endif
+// @rewrite-fn-end
 
 int main(void) {
   printf("%d\n", debug_code());
@@ -12,5 +14,9 @@ int main(void) {
 }
 // DIRECTIVES-DAG: #[cfg(not(debug_assertions))]
 // DIRECTIVES-DAG: #[cfg(debug_assertions)]
-// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}0;
-// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}1;
+
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES-DAG: fn debug_code() -> i32 {
+// REWRITES-DAG:     1
+// REWRITES-DAG: }
+// SLATE-FILECHECK-END rewrites

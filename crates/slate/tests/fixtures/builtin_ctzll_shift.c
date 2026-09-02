@@ -80,7 +80,7 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn lowest_bit({{arg[0-9]+}}: u64) -> u64 {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 1;
-// REWRITES-NEXT:     return {{_v[0-9]+}} << ((({{arg[0-9]+}}.trailing_zeros() as u64) as i32) as u64);
+// REWRITES-NEXT:     {{_v[0-9]+}} << ((({{arg[0-9]+}}.trailing_zeros() as u64) as i32) as u64)
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

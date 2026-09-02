@@ -812,7 +812,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe { free(aligned as *mut core::ffi::c_void) };
 // REWRITES-NEXT:     unsafe { free(page as *mut core::ffi::c_void) };
 // REWRITES-NEXT:     unsafe { free(rounded as *mut core::ffi::c_void) };
-// REWRITES-NEXT:     return {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn gnu_obstack_extensions() -> i32 {
@@ -1011,7 +1011,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     return {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

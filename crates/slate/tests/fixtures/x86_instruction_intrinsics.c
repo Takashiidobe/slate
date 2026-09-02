@@ -173,22 +173,22 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[target_feature(enable = "sse4.2")]
 // REWRITES-NEXT: unsafe fn _mm_crc32_u8({{arg[0-9]+}}: u32, {{arg[0-9]+}}: u8) -> u32 {
-// REWRITES-NEXT:     return unsafe { __slate_intrinsic_x86_sse42_crc32_32_8_f27bf8581dad0801({{arg[0-9]+}}, {{arg[0-9]+}}) };
+// REWRITES-NEXT:     unsafe { __slate_intrinsic_x86_sse42_crc32_32_8_f27bf8581dad0801({{arg[0-9]+}}, {{arg[0-9]+}}) }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[target_feature(enable = "sse4.2")]
 // REWRITES-NEXT: unsafe fn _mm_crc32_u16({{arg[0-9]+}}: u32, {{arg[0-9]+}}: u16) -> u32 {
-// REWRITES-NEXT:     return unsafe { __slate_intrinsic_x86_sse42_crc32_32_16_658f6bf45a185a4a({{arg[0-9]+}}, {{arg[0-9]+}}) };
+// REWRITES-NEXT:     unsafe { __slate_intrinsic_x86_sse42_crc32_32_16_658f6bf45a185a4a({{arg[0-9]+}}, {{arg[0-9]+}}) }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[target_feature(enable = "sse4.2")]
 // REWRITES-NEXT: unsafe fn _mm_crc32_u32({{arg[0-9]+}}: u32, {{arg[0-9]+}}: u32) -> u32 {
-// REWRITES-NEXT:     return unsafe { __slate_intrinsic_x86_sse42_crc32_32_32_f5e6b09e791bc818({{arg[0-9]+}}, {{arg[0-9]+}}) };
+// REWRITES-NEXT:     unsafe { __slate_intrinsic_x86_sse42_crc32_32_32_f5e6b09e791bc818({{arg[0-9]+}}, {{arg[0-9]+}}) }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[target_feature(enable = "sse4.2")]
 // REWRITES-NEXT: unsafe fn _mm_crc32_u64({{arg[0-9]+}}: u64, {{arg[0-9]+}}: u64) -> u64 {
-// REWRITES-NEXT:     return unsafe { __slate_intrinsic_x86_sse42_crc32_64_64_a6b1e708219fb1bb({{arg[0-9]+}}, {{arg[0-9]+}}) };
+// REWRITES-NEXT:     unsafe { __slate_intrinsic_x86_sse42_crc32_64_64_a6b1e708219fb1bb({{arg[0-9]+}}, {{arg[0-9]+}}) }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[target_feature(enable = "popcnt,sse3,sse4.1,sse4.2,ssse3")]
@@ -197,7 +197,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { _mm_crc32_u16({{_v[0-9]+}}, 13398) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { _mm_crc32_u32({{_v[0-9]+}}, 2023406814) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 1311768467463790320u64;
-// REWRITES-NEXT:     return unsafe { _mm_crc32_u64({{_v[0-9]+}} as u64, {{_v[0-9]+}}) };
+// REWRITES-NEXT:     unsafe { _mm_crc32_u64({{_v[0-9]+}} as u64, {{_v[0-9]+}}) }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

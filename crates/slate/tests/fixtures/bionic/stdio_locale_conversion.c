@@ -417,19 +417,15 @@ int main(void) { return 0; }
 // REWRITES-BIONIC-AARCH64-NEXT: }
 // REWRITES-BIONIC-AARCH64-EMPTY:
 // REWRITES-BIONIC-AARCH64-NEXT: fn bionic_stream_position(mut stream: *mut libc::FILE, mut pos: *mut i64) -> i32 {
-// REWRITES-BIONIC-AARCH64-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { fgetpos(stream as *mut libc::FILE, pos as *mut i64) };
 // REWRITES-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-BIONIC-AARCH64-NEXT:     if {{_v[0-9]+}} {
-// REWRITES-BIONIC-AARCH64-NEXT:         __retval = -1;
-// REWRITES-BIONIC-AARCH64-NEXT:         return __retval;
+// REWRITES-BIONIC-AARCH64-NEXT:         return -1;
 // REWRITES-BIONIC-AARCH64-NEXT:     }
-// REWRITES-BIONIC-AARCH64-NEXT:     __retval = unsafe { fsetpos(stream as *mut libc::FILE, pos as *const i64) };
-// REWRITES-BIONIC-AARCH64-NEXT:     return __retval;
+// REWRITES-BIONIC-AARCH64-NEXT:     unsafe { fsetpos(stream as *mut libc::FILE, pos as *const i64) }
 // REWRITES-BIONIC-AARCH64-NEXT: }
 // REWRITES-BIONIC-AARCH64-EMPTY:
 // REWRITES-BIONIC-AARCH64-NEXT: fn bionic_multibyte_roundtrip(mut {{_v[0-9]+}}: *mut u8, {{arg[0-9]+}}: *mut u8) -> i32 {
-// REWRITES-BIONIC-AARCH64-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-BIONIC-AARCH64-NEXT:     let mut decode_state: __mbstate_t = __mbstate_t {
 // REWRITES-BIONIC-AARCH64-NEXT:         __seq: [0; 4],
 // REWRITES-BIONIC-AARCH64-NEXT:         __reserved: [0; 4],
@@ -454,8 +450,7 @@ int main(void) { return 0; }
 // REWRITES-BIONIC-AARCH64-NEXT:         )
 // REWRITES-BIONIC-AARCH64-NEXT:     }) as u64;
 // REWRITES-BIONIC-AARCH64-NEXT:     if {{_v[0-9]+}} == 18446744073709551615u64 {
-// REWRITES-BIONIC-AARCH64-NEXT:         __retval = -1;
-// REWRITES-BIONIC-AARCH64-NEXT:         return __retval;
+// REWRITES-BIONIC-AARCH64-NEXT:         return -1;
 // REWRITES-BIONIC-AARCH64-NEXT:     }
 // REWRITES-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe {
 // REWRITES-BIONIC-AARCH64-NEXT:         wcrtomb(
@@ -464,8 +459,7 @@ int main(void) { return 0; }
 // REWRITES-BIONIC-AARCH64-NEXT:             std::ptr::addr_of_mut!(encode_state) as *mut __mbstate_t,
 // REWRITES-BIONIC-AARCH64-NEXT:         )
 // REWRITES-BIONIC-AARCH64-NEXT:     }) as u64;
-// REWRITES-BIONIC-AARCH64-NEXT:     __retval = {{_v[0-9]+}} as i32;
-// REWRITES-BIONIC-AARCH64-NEXT:     return __retval;
+// REWRITES-BIONIC-AARCH64-NEXT:     {{_v[0-9]+}} as i32
 // REWRITES-BIONIC-AARCH64-NEXT: }
 // REWRITES-BIONIC-AARCH64-EMPTY:
 // REWRITES-BIONIC-AARCH64-NEXT: fn bionic_locale_scope() -> i32 {
@@ -481,7 +475,7 @@ int main(void) { return 0; }
 // REWRITES-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { wctype(c"alpha".as_ptr()) };
 // REWRITES-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { iswctype(97 as u32, {{_v[0-9]+}} as i64) };
 // REWRITES-BIONIC-AARCH64-NEXT:     unsafe { freelocale({{_v[0-9]+}} as *mut __locale_struct) };
-// REWRITES-BIONIC-AARCH64-NEXT:     return {{_v[0-9]+}};
+// REWRITES-BIONIC-AARCH64-NEXT:     {{_v[0-9]+}}
 // REWRITES-BIONIC-AARCH64-NEXT: }
 // REWRITES-BIONIC-AARCH64-EMPTY:
 // REWRITES-BIONIC-AARCH64-NEXT: fn main() {
@@ -543,19 +537,15 @@ int main(void) { return 0; }
 // REWRITES-BIONIC-X86_64-NEXT: }
 // REWRITES-BIONIC-X86_64-EMPTY:
 // REWRITES-BIONIC-X86_64-NEXT: fn bionic_stream_position(mut stream: *mut libc::FILE, mut pos: *mut i64) -> i32 {
-// REWRITES-BIONIC-X86_64-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { fgetpos(stream as *mut libc::FILE, pos as *mut i64) };
 // REWRITES-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-BIONIC-X86_64-NEXT:     if {{_v[0-9]+}} {
-// REWRITES-BIONIC-X86_64-NEXT:         __retval = -1;
-// REWRITES-BIONIC-X86_64-NEXT:         return __retval;
+// REWRITES-BIONIC-X86_64-NEXT:         return -1;
 // REWRITES-BIONIC-X86_64-NEXT:     }
-// REWRITES-BIONIC-X86_64-NEXT:     __retval = unsafe { fsetpos(stream as *mut libc::FILE, pos as *const i64) };
-// REWRITES-BIONIC-X86_64-NEXT:     return __retval;
+// REWRITES-BIONIC-X86_64-NEXT:     unsafe { fsetpos(stream as *mut libc::FILE, pos as *const i64) }
 // REWRITES-BIONIC-X86_64-NEXT: }
 // REWRITES-BIONIC-X86_64-EMPTY:
 // REWRITES-BIONIC-X86_64-NEXT: fn bionic_multibyte_roundtrip(mut {{_v[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8) -> i32 {
-// REWRITES-BIONIC-X86_64-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-BIONIC-X86_64-NEXT:     let mut decode_state: __mbstate_t = __mbstate_t {
 // REWRITES-BIONIC-X86_64-NEXT:         __seq: [0; 4],
 // REWRITES-BIONIC-X86_64-NEXT:         __reserved: [0; 4],
@@ -580,8 +570,7 @@ int main(void) { return 0; }
 // REWRITES-BIONIC-X86_64-NEXT:         )
 // REWRITES-BIONIC-X86_64-NEXT:     }) as u64;
 // REWRITES-BIONIC-X86_64-NEXT:     if {{_v[0-9]+}} == 18446744073709551615u64 {
-// REWRITES-BIONIC-X86_64-NEXT:         __retval = -1;
-// REWRITES-BIONIC-X86_64-NEXT:         return __retval;
+// REWRITES-BIONIC-X86_64-NEXT:         return -1;
 // REWRITES-BIONIC-X86_64-NEXT:     }
 // REWRITES-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe {
 // REWRITES-BIONIC-X86_64-NEXT:         wcrtomb(
@@ -590,8 +579,7 @@ int main(void) { return 0; }
 // REWRITES-BIONIC-X86_64-NEXT:             std::ptr::addr_of_mut!(encode_state) as *mut __mbstate_t,
 // REWRITES-BIONIC-X86_64-NEXT:         )
 // REWRITES-BIONIC-X86_64-NEXT:     }) as u64;
-// REWRITES-BIONIC-X86_64-NEXT:     __retval = {{_v[0-9]+}} as i32;
-// REWRITES-BIONIC-X86_64-NEXT:     return __retval;
+// REWRITES-BIONIC-X86_64-NEXT:     {{_v[0-9]+}} as i32
 // REWRITES-BIONIC-X86_64-NEXT: }
 // REWRITES-BIONIC-X86_64-EMPTY:
 // REWRITES-BIONIC-X86_64-NEXT: fn bionic_locale_scope() -> i32 {
@@ -607,7 +595,7 @@ int main(void) { return 0; }
 // REWRITES-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { wctype(c"alpha".as_ptr()) };
 // REWRITES-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { iswctype(97 as u32, {{_v[0-9]+}} as i64) };
 // REWRITES-BIONIC-X86_64-NEXT:     unsafe { freelocale({{_v[0-9]+}} as *mut __locale_struct) };
-// REWRITES-BIONIC-X86_64-NEXT:     return {{_v[0-9]+}};
+// REWRITES-BIONIC-X86_64-NEXT:     {{_v[0-9]+}}
 // REWRITES-BIONIC-X86_64-NEXT: }
 // REWRITES-BIONIC-X86_64-EMPTY:
 // REWRITES-BIONIC-X86_64-NEXT: fn main() {

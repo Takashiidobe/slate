@@ -1,5 +1,5 @@
 use crate::backend::engine::NodeRule;
-use crate::backend::engine::arena::{Arena, NodeId, NodeKind, NodeKindTag};
+use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::{Expr, Ident, Type, UnaryOp};
 
 fn source_var(expr: &Expr) -> Option<Ident> {
@@ -79,7 +79,7 @@ fn kind_only_deref_uses(kind: &NodeKind, name: Ident) -> bool {
     }
 }
 
-fn bare_replacement(arena: &Arena, source: Ident, declared_ty: &Type) -> Option<Expr> {
+fn bare_replacement(arena: &FunctionOptimizer, source: Ident, declared_ty: &Type) -> Option<Expr> {
     let Type::Ptr {
         inner: ptr_inner, ..
     } = declared_ty
@@ -250,7 +250,7 @@ impl NodeRule for RawPtrAliasElide {
         &[NodeKindTag::Let]
     }
 
-    fn matches(&self, arena: &Arena, id: NodeId) -> bool {
+    fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
         matches!(
             arena.get(id),
             Some(NodeKind::Let {
@@ -262,7 +262,7 @@ impl NodeRule for RawPtrAliasElide {
         )
     }
 
-    fn apply(&self, arena: &mut Arena, id: NodeId) -> bool {
+    fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
         let Some(NodeKind::Let {
             name,
             mutable: true,

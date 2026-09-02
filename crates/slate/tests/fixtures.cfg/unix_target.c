@@ -1,10 +1,12 @@
 int printf(const char *, ...);
 
+// @rewrite-fn-begin
 #if defined(__unix__) || defined(__unix)
-static int unix_code(void) { return 1; }
+int unix_code(void) { return 1; }
 #else
-static int unix_code(void) { return 0; }
+int unix_code(void) { return 0; }
 #endif
+// @rewrite-fn-end
 
 int main(void) {
   printf("%d\n", unix_code());
@@ -12,5 +14,9 @@ int main(void) {
 }
 // DIRECTIVES-DAG: #[cfg(unix)]
 // DIRECTIVES-DAG: #[cfg(not(unix))]
-// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}1;
-// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}0;
+
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES-DAG: fn unix_code() -> i32 {
+// REWRITES-DAG:     1
+// REWRITES-DAG: }
+// SLATE-FILECHECK-END rewrites

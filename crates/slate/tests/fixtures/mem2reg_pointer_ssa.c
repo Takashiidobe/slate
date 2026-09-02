@@ -43,12 +43,12 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn return_global() -> *mut i32 {
-// REWRITES-DAG:     return std::ptr::addr_of_mut!(value);
+// REWRITES-DAG:     std::ptr::addr_of_mut!(value)
 // REWRITES-DAG: }
 // REWRITES-DAG: fn return_global_pointer() -> *mut *mut i32 {
-// REWRITES-DAG:     return std::ptr::addr_of_mut!(value_pointer);
+// REWRITES-DAG:     std::ptr::addr_of_mut!(value_pointer)
 // REWRITES-DAG: }
 // REWRITES-DAG: fn return_element() -> *mut i32 {
-// REWRITES-DAG:     return unsafe { std::ptr::addr_of_mut!(values[((1 as i64) as usize)]) };
+// REWRITES-DAG:     unsafe { std::ptr::addr_of_mut!(values[((1 as i64) as usize)]) }
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

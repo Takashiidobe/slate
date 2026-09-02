@@ -508,14 +508,14 @@ int main(void) {
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = bytes.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT:     unsafe { {{_v[0-9]+}}.add(1) };
-// REWRITES-NEXT:     return (bytes[((0 as i64) as usize)] as i32) + 1;
+// REWRITES-NEXT:     (bytes[((0 as i64) as usize)] as i32) + 1
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn frame_probe() -> i32 {
 // REWRITES-NEXT:     let mut {{_v[0-9]+}}: u8 = 0u8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u8 = std::ptr::addr_of_mut!({{_v[0-9]+}}) as *mut u8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = ({{_v[0-9]+}} as *mut core::ffi::c_void) != std::ptr::null_mut();
-// REWRITES-NEXT:     return {{_v[0-9]+}} as i32;
+// REWRITES-NEXT:     {{_v[0-9]+}} as i32
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn clear_padding_probe() -> i32 {
@@ -559,7 +559,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} * ({{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32));
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u8 = std::ptr::addr_of_mut!(bits) as *mut u8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = ((unsafe { *{{_v[0-9]+}} }) as i32) == 231;
-// REWRITES-NEXT:     return {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     {{_v[0-9]+}} + ({{_v[0-9]+}} as i32)
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn frexp_probe() -> i32 {
@@ -578,7 +578,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 10 * ({{_v[0-9]+}} as i32) + {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0.5;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 10 * ({{_v[0-9]+}} as i32);
-// REWRITES-NEXT:     return 100 * {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-NEXT:     100 * {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn hyperbolic_probe() -> i32 {
@@ -645,7 +645,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0.0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 10 * ({{_v[0-9]+}} as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0.0;
-// REWRITES-NEXT:     return 1000 * ({{_v[0-9]+}} as i32) + {{_v[0-9]+}} + {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     1000 * ({{_v[0-9]+}} as i32) + {{_v[0-9]+}} + {{_v[0-9]+}} + ({{_v[0-9]+}} as i32)
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

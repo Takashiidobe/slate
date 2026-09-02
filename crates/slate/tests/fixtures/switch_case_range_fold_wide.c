@@ -161,37 +161,31 @@ int main(void) {
 // REWRITES-DAG:     let mut __retval: i32 = 0;
 // REWRITES-DAG:     match {{_v[0-9]+}} {
 // REWRITES-DAG:         18446744073709551610..=18446744073709551612 => {
-// REWRITES-DAG:             __retval = 1;
-// REWRITES-DAG:             return __retval;
+// REWRITES-DAG:             return 1;
 // REWRITES-DAG:         }
 // REWRITES-DAG:         18446744073709551615 => {
-// REWRITES-DAG:             __retval = 2;
-// REWRITES-DAG:             return __retval;
+// REWRITES-DAG:             return 2;
 // REWRITES-DAG:         }
 // REWRITES-DAG:         _ => {
-// REWRITES-DAG:             __retval = 0;
-// REWRITES-DAG:             return __retval;
+// REWRITES-DAG:             return 0;
 // REWRITES-DAG:         }
 // REWRITES-DAG:     }
-// REWRITES-DAG:     return __retval;
+// REWRITES-DAG:     __retval
 // REWRITES-DAG: }
 // REWRITES-DAG: fn classify_bitint({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-DAG:     let mut __retval: i32 = 0;
 // REWRITES-DAG:     let mut v: i128 = 170141183460469231731687303715884105720i128 + ({{arg[0-9]+}} as i128);
 // REWRITES-DAG:     match v {
 // REWRITES-DAG:         170141183460469231731687303715884105720..=170141183460469231731687303715884105722 => {
-// REWRITES-DAG:             __retval = 1;
-// REWRITES-DAG:             return __retval;
+// REWRITES-DAG:             return 1;
 // REWRITES-DAG:         }
 // REWRITES-DAG:         170141183460469231731687303715884105727 => {
-// REWRITES-DAG:             __retval = 2;
-// REWRITES-DAG:             return __retval;
+// REWRITES-DAG:             return 2;
 // REWRITES-DAG:         }
 // REWRITES-DAG:         _ => {
-// REWRITES-DAG:             __retval = 0;
-// REWRITES-DAG:             return __retval;
+// REWRITES-DAG:             return 0;
 // REWRITES-DAG:         }
 // REWRITES-DAG:     }
-// REWRITES-DAG:     return __retval;
+// REWRITES-DAG:     __retval
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

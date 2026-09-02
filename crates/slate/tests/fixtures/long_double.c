@@ -1503,12 +1503,12 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn truncate_long_double({{arg[0-9]+}}: LongDouble) -> i32 {
-// REWRITES-NEXT:     return __slate_f80_to_i32({{arg[0-9]+}});
+// REWRITES-NEXT:     __slate_f80_to_i32({{arg[0-9]+}})
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn mix_long_double({{arg[0-9]+}}: LongDouble, {{arg[0-9]+}}: LongDouble) -> LongDouble {
-// REWRITES-NEXT:     return ({{arg[0-9]+}} + {{arg[0-9]+}}) / LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64])
-// REWRITES-NEXT:         * LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
+// REWRITES-NEXT:     ({{arg[0-9]+}} + {{arg[0-9]+}}) / LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64])
+// REWRITES-NEXT:         * LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64])
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn check_int_casts() {

@@ -1,5 +1,7 @@
 use crate::backend::engine::NodeRule;
-use crate::backend::engine::arena::{self, Arena, NodeId, NodeKind, NodeKindTag};
+use crate::backend::engine::arena::{
+    self, Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag,
+};
 use crate::backend::rust_ast::{
     BinOp, Expr, Ident, IndentStmt, Label, MatchArm, Pattern, RustValue, Stmt,
 };
@@ -391,12 +393,12 @@ impl NodeRule for StructureDispatch {
         true
     }
 
-    fn matches(&self, arena: &Arena, id: NodeId) -> bool {
+    fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
         scope_body(arena, id)
             .is_some_and(|[value_id, ..]| named_let(arena, value_id, "__switch_value").is_some())
     }
 
-    fn apply(&self, arena: &mut Arena, id: NodeId) -> bool {
+    fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
         let Some(switch) = parse(arena, id) else {
             return false;
         };

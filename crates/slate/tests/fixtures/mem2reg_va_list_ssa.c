@@ -29,6 +29,6 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn consume(mut {{arg[0-9]+}}: __SlateVaArgs) -> i32 {
-// REWRITES-DAG:     return unsafe { {{arg[0-9]+}}.next_arg::<i32>() };
+// REWRITES-DAG:     unsafe { {{arg[0-9]+}}.next_arg::<i32>() }
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

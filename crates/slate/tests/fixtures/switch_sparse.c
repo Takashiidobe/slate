@@ -130,7 +130,7 @@ int main(void) {
 // REWRITES-NEXT:             out = -1;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return out;
+// REWRITES-NEXT:     out
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

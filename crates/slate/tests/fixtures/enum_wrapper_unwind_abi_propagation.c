@@ -353,13 +353,13 @@ int main(void) {
 // REWRITES-NEXT:         };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = Status::STATUS_OK as u32;
-// REWRITES-NEXT:     return {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn content_like({{arg[0-9]+}}: i32) -> u32 {
 // REWRITES-NEXT:     unsafe { unsafe { g_callback }.unwrap()({{arg[0-9]+}}) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = Status::STATUS_OK as u32;
-// REWRITES-NEXT:     return {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

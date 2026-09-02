@@ -481,7 +481,7 @@ int main(void) {
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         j += 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return total;
+// REWRITES-NEXT:     total
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

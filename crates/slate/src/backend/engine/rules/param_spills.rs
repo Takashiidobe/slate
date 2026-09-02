@@ -1,5 +1,5 @@
 use crate::backend::engine::NodeRule;
-use crate::backend::engine::arena::{Arena, NodeId, NodeKind, NodeKindTag};
+use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::Expr;
 
 fn remove_from_parent(arena: &mut Arena, parent: NodeId, id: NodeId) -> bool {
@@ -30,7 +30,7 @@ impl NodeRule for ParamSpillFold {
         &[NodeKindTag::Let]
     }
 
-    fn matches(&self, arena: &Arena, id: NodeId) -> bool {
+    fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
         let Some(NodeKind::Let {
             name,
             ty: Some(ty),
@@ -43,7 +43,7 @@ impl NodeRule for ParamSpillFold {
         name != source && arena.param_type(*source) == Some(ty)
     }
 
-    fn apply(&self, arena: &mut Arena, id: NodeId) -> bool {
+    fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
         let Some(NodeKind::Let {
             name,
             mutable,

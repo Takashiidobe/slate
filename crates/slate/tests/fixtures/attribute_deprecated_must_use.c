@@ -95,17 +95,17 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[deprecated]
 // REWRITES-NEXT: fn old_api({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     return {{arg[0-9]+}} + 1;
+// REWRITES-NEXT:     {{arg[0-9]+}} + 1
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[deprecated(note = "use new_api instead")]
 // REWRITES-NEXT: fn old_api_msg({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     return {{arg[0-9]+}} + 2;
+// REWRITES-NEXT:     {{arg[0-9]+}} + 2
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[must_use]
 // REWRITES-NEXT: fn must_check({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     return {{arg[0-9]+}} + 3;
+// REWRITES-NEXT:     {{arg[0-9]+}} + 3
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

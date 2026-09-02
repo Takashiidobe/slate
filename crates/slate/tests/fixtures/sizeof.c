@@ -131,11 +131,11 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = std::mem::size_of::<Pair>() as u64;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = std::mem::size_of::<Slot>() as u64;
-// REWRITES-NEXT:     return ({{_v[0-9]+}} + {{_v[0-9]+}}) as i32;
+// REWRITES-NEXT:     ({{_v[0-9]+}} + {{_v[0-9]+}}) as i32
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn sizeof_expr() -> i32 {
-// REWRITES-NEXT:     return 4;
+// REWRITES-NEXT:     4
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

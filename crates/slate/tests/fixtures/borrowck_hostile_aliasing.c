@@ -680,15 +680,15 @@ int main(void) {
 // REWRITES-NEXT:     add_in_place(unsafe { &mut (*std::ptr::addr_of_mut!(x)) }, unsafe {
 // REWRITES-NEXT:         &(*std::ptr::addr_of_mut!(x))
 // REWRITES-NEXT:     });
-// REWRITES-NEXT:     return x;
+// REWRITES-NEXT:     x
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn pair_lo({{arg[0-9]+}}: &mut Pair) -> *mut i32 {
-// REWRITES-NEXT:     return unsafe { std::ptr::addr_of_mut!((*({{arg[0-9]+}} as *mut Pair)).lo) };
+// REWRITES-NEXT:     unsafe { std::ptr::addr_of_mut!((*({{arg[0-9]+}} as *mut Pair)).lo) }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn pair_hi({{arg[0-9]+}}: &mut Pair) -> *mut i32 {
-// REWRITES-NEXT:     return unsafe { std::ptr::addr_of_mut!((*({{arg[0-9]+}} as *mut Pair)).hi) };
+// REWRITES-NEXT:     unsafe { std::ptr::addr_of_mut!((*({{arg[0-9]+}} as *mut Pair)).hi) }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn alias_struct_fields() -> i32 {
@@ -701,7 +701,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         *{{_v[0-9]+}} = (unsafe { *{{_v[0-9]+}} }) + unsafe { *{{_v[0-9]+}} };
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return pair.lo + pair.hi;
+// REWRITES-NEXT:     pair.lo + pair.hi
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn circular_list() -> i32 {
@@ -744,7 +744,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         (*{{_v[0-9]+}}).val = (unsafe { (*{{_v[0-9]+}}).val }) + 10;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return sum + a.val + b.val + c.val;
+// REWRITES-NEXT:     sum + a.val + b.val + c.val
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn parent_pointer_tree() -> i32 {
@@ -784,7 +784,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         (*{{_v[0-9]+}}).val = (unsafe { (*{{_v[0-9]+}}).val }) + right.val;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return root.val + left.val + right.val;
+// REWRITES-NEXT:     root.val + left.val + right.val
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn self_referential_struct() -> i32 {
@@ -813,7 +813,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = buf.cursor;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 97;
-// REWRITES-NEXT:     return {{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32) - 2 * {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32) - 2 * {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn reverse_in_place(mut lo: *mut i32, mut hi: *mut i32) {
@@ -846,11 +846,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = values[((1 as i64) as usize)] * 1000;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = values[((2 as i64) as usize)] * 100;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = values[((3 as i64) as usize)] * 10;
-// REWRITES-NEXT:     return values[((0 as i64) as usize)] * 10000
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         + values[((4 as i64) as usize)];
+// REWRITES-NEXT:     values[((0 as i64) as usize)] * 10000 + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + values[((4 as i64) as usize)]
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn capture_global({{arg[0-9]+}}: *mut i32) {
@@ -869,7 +865,7 @@ int main(void) {
 // REWRITES-NEXT:         *{{_v[0-9]+}} = (unsafe { *{{_v[0-9]+}} }) + 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     x += 1;
-// REWRITES-NEXT:     return x + unsafe { *unsafe { g_ptr } };
+// REWRITES-NEXT:     x + unsafe { *unsafe { g_ptr } }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn type_punning() -> i32 {
@@ -888,7 +884,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = (unsafe { u.f }) as i32;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     return {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

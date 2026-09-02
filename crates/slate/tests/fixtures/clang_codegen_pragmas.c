@@ -130,16 +130,16 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn hidden_fn() -> i32 {
-// REWRITES-NEXT:     return 7;
+// REWRITES-NEXT:     7
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn fma_like({{arg[0-9]+}}: f64, {{arg[0-9]+}}: f64, {{arg[0-9]+}}: f64) -> f64 {
-// REWRITES-NEXT:     return {{arg[0-9]+}} * {{arg[0-9]+}} + {{arg[0-9]+}};
+// REWRITES-NEXT:     {{arg[0-9]+}} * {{arg[0-9]+}} + {{arg[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[inline(never)]
 // REWRITES-NEXT: fn add_noopt({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     return {{arg[0-9]+}} + {{arg[0-9]+}};
+// REWRITES-NEXT:     {{arg[0-9]+}} + {{arg[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn loop_sum() -> i32 {
@@ -154,7 +154,7 @@ int main(void) {
 // REWRITES-NEXT:         s += i;
 // REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return s;
+// REWRITES-NEXT:     s
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

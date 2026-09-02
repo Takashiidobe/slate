@@ -334,7 +334,7 @@ int slate_yield(void) { return sched_yield(); }
 // REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-MACOS-DAG:         {{_v[0-9]+}}
 // REWRITES-MACOS-DAG:     };
-// REWRITES-MACOS-DAG:     return {{_v[0-9]+}} as i32;
+// REWRITES-MACOS-DAG:     {{_v[0-9]+}} as i32
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: fn slate_wait_until(mut deadline: *mut libc::timespec) -> i32 {
 // REWRITES-MACOS-DAG:     let mut result: i32 = unsafe {
@@ -361,7 +361,7 @@ int slate_yield(void) { return sched_yield(); }
 // REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: bool = result != 0;
 // REWRITES-MACOS-DAG:         {{_v[0-9]+}}
 // REWRITES-MACOS-DAG:     };
-// REWRITES-MACOS-DAG:     return {{_v[0-9]+}} as i32;
+// REWRITES-MACOS-DAG:     {{_v[0-9]+}} as i32
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: fn slate_read_lock() -> i32 {
 // REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: i32 = unsafe {
@@ -380,7 +380,7 @@ int slate_yield(void) { return sched_yield(); }
 // REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-MACOS-DAG:         {{_v[0-9]+}}
 // REWRITES-MACOS-DAG:     };
-// REWRITES-MACOS-DAG:     return {{_v[0-9]+}} as i32;
+// REWRITES-MACOS-DAG:     {{_v[0-9]+}} as i32
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: unsafe fn slate_tls_once(mut key: *mut u64, mut value: *mut core::ffi::c_void) -> i32 {
 // REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: i32 = unsafe {
@@ -409,7 +409,7 @@ int slate_yield(void) { return sched_yield(); }
 // REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-MACOS-DAG:         {{_v[0-9]+}}
 // REWRITES-MACOS-DAG:     };
-// REWRITES-MACOS-DAG:     return {{_v[0-9]+}} as i32;
+// REWRITES-MACOS-DAG:     {{_v[0-9]+}} as i32
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: fn slate_post_named_semaphore({{arg[0-9]+}}: *mut i8) -> i32 {
 // REWRITES-MACOS-DAG:     let mut semaphore: *mut i32 = std::ptr::null_mut();
@@ -431,9 +431,9 @@ int slate_yield(void) { return sched_yield(); }
 // REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-MACOS-DAG:         {{_v[0-9]+}}
 // REWRITES-MACOS-DAG:     };
-// REWRITES-MACOS-DAG:     return {{_v[0-9]+}} as i32;
+// REWRITES-MACOS-DAG:     {{_v[0-9]+}} as i32
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: fn slate_yield() -> i32 {
-// REWRITES-MACOS-DAG:     return unsafe { sched_yield() };
+// REWRITES-MACOS-DAG:     unsafe { sched_yield() }
 // REWRITES-MACOS-DAG: }
 // SLATE-FILECHECK-END rewrites-macos

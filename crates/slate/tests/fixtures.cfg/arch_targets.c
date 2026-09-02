@@ -1,28 +1,30 @@
 int printf(const char *, ...);
 
+// @rewrite-fn-begin
 #if defined(__x86_64__) || defined(_M_X64)
-static int arch_code(void) { return 64; }
+int arch_code(void) { return 64; }
 #elif defined(__i386__) || defined(_M_IX86)
-static int arch_code(void) { return 86; }
+int arch_code(void) { return 86; }
 #elif defined(__aarch64__) || defined(_M_ARM64)
-static int arch_code(void) { return 128; }
+int arch_code(void) { return 128; }
 #elif defined(__arm__) || defined(_M_ARM)
-static int arch_code(void) { return 32; }
+int arch_code(void) { return 32; }
 #elif defined(__powerpc64__) || defined(__PPC64__)
-static int arch_code(void) { return 640; }
+int arch_code(void) { return 640; }
 #elif defined(__powerpc__) || defined(__POWERPC__) || defined(_M_PPC)
-static int arch_code(void) { return 320; }
+int arch_code(void) { return 320; }
 #elif defined(__wasm64__)
-static int arch_code(void) { return 6400; }
+int arch_code(void) { return 6400; }
 #elif defined(__wasm32__)
-static int arch_code(void) { return 3200; }
+int arch_code(void) { return 3200; }
 #elif defined(_M_RISCV64)
-static int arch_code(void) { return 645; }
+int arch_code(void) { return 645; }
 #elif defined(_M_RISCV32)
-static int arch_code(void) { return 325; }
+int arch_code(void) { return 325; }
 #else
-static int arch_code(void) { return 0; }
+int arch_code(void) { return 0; }
 #endif
+// @rewrite-fn-end
 
 int main(void) {
   printf("%d\n", arch_code());
@@ -38,14 +40,9 @@ int main(void) {
 // DIRECTIVES-DAG: #[cfg(target_arch = "wasm32")]
 // DIRECTIVES-DAG: #[cfg(target_arch = "riscv64")]
 // DIRECTIVES-DAG: #[cfg(target_arch = "riscv32")]
-// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}64;
-// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}86;
-// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}128;
-// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}32;
-// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}640;
-// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}320;
-// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}6400;
-// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}3200;
-// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}645;
-// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}325;
-// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}0;
+
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES-DAG: fn arch_code() -> i32 {
+// REWRITES-DAG:     64
+// REWRITES-DAG: }
+// SLATE-FILECHECK-END rewrites

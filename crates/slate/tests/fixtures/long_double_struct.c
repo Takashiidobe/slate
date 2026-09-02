@@ -373,7 +373,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = b.value;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = b.tag;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i32({{_v[0-9]+}});
-// REWRITES-NEXT:     return __slate_f80_to_i32({{_v[0-9]+}} + {{_v[0-9]+}});
+// REWRITES-NEXT:     __slate_f80_to_i32({{_v[0-9]+}} + {{_v[0-9]+}})
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

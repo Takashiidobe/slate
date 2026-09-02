@@ -145,15 +145,15 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn add_char({{arg[0-9]+}}: i8, {{arg[0-9]+}}: i8) -> i8 {
-// REWRITES-NEXT:     return (({{arg[0-9]+}} as i32) + ({{arg[0-9]+}} as i32)) as i8;
+// REWRITES-NEXT:     (({{arg[0-9]+}} as i32) + ({{arg[0-9]+}} as i32)) as i8
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn scale({{arg[0-9]+}}: f32, {{arg[0-9]+}}: f32) -> f32 {
-// REWRITES-NEXT:     return {{arg[0-9]+}} * {{arg[0-9]+}};
+// REWRITES-NEXT:     {{arg[0-9]+}} * {{arg[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn add_double({{arg[0-9]+}}: f64, {{arg[0-9]+}}: f64) -> f64 {
-// REWRITES-NEXT:     return {{arg[0-9]+}} + {{arg[0-9]+}};
+// REWRITES-NEXT:     {{arg[0-9]+}} + {{arg[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

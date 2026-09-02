@@ -17,6 +17,6 @@ int read_marker(struct Box *box) { return box->marker; }
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: #[unsafe(no_mangle)]
 // REWRITES-DAG: pub unsafe extern "C" fn read_marker({{arg[0-9]+}}: *mut Box) -> i32 {
-// REWRITES-DAG:     return unsafe { (*{{arg[0-9]+}}).marker };
+// REWRITES-DAG:     unsafe { (*{{arg[0-9]+}}).marker }
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

@@ -192,7 +192,7 @@ int main(void) {
 // REWRITES-NEXT:         unsafe { printf(c"%d\n".as_ptr(), unsafe { *q }) };
 // REWRITES-NEXT:         unsafe { free(q as *mut core::ffi::c_void) };
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return 0;
+// REWRITES-NEXT:     0
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

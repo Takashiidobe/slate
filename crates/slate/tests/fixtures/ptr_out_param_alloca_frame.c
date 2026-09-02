@@ -214,7 +214,7 @@ int main(void) {
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     {{__slate_alloca_frame[0-9]+}}.1 = 0;
-// REWRITES-NEXT:     return {{__slate_alloca_frame[0-9]+}}.1;
+// REWRITES-NEXT:     {{__slate_alloca_frame[0-9]+}}.1
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

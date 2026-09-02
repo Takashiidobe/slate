@@ -17,6 +17,6 @@ int read_payload(struct Box *box) { return box->payload.value; }
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: #[unsafe(no_mangle)]
 // REWRITES-DAG: pub unsafe extern "C" fn read_payload({{arg[0-9]+}}: *mut Box) -> i32 {
-// REWRITES-DAG:     return unsafe { (*{{arg[0-9]+}}).payload.value };
+// REWRITES-DAG:     unsafe { (*{{arg[0-9]+}}).payload.value }
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

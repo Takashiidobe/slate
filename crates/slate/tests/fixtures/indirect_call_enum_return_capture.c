@@ -163,12 +163,12 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn handle_ok({{arg[0-9]+}}: i32) -> u32 {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = Status::E_OK as u32;
-// REWRITES-NEXT:     return {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn handle_fail({{arg[0-9]+}}: i32) -> u32 {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = Status::E_FAIL as u32;
-// REWRITES-NEXT:     return {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

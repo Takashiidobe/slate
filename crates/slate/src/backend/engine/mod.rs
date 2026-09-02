@@ -2,7 +2,7 @@ mod arena;
 mod prelude;
 mod rules;
 
-use arena::{Arena, FunctionArena, NodeId, NodeKindTag};
+use arena::{Arena, FunctionOptimizer, NodeId, NodeKindTag};
 use std::collections::{BTreeSet, HashMap};
 
 use crate::backend::rust_ast::{FnParam, Ident, IndentStmt, Item, Program};
@@ -14,8 +14,8 @@ pub(in crate::backend) trait NodeRule {
     fn call_anchor(&self) -> Option<Ident> {
         None
     }
-    fn matches(&self, arena: &Arena, id: NodeId) -> bool;
-    fn apply(&self, arena: &mut Arena, id: NodeId) -> bool;
+    fn matches(&self, function: &FunctionOptimizer, id: NodeId) -> bool;
+    fn apply(&self, function: &mut FunctionOptimizer, id: NodeId) -> bool;
     fn requeues_producers(&self) -> bool {
         false
     }
@@ -86,7 +86,12 @@ pub(in crate::backend) fn apply(program: &mut Program) {
 
 fn apply_item(item: &mut Item, registry: &RuleRegistry) {
     match item {
-        Item::Fn(func) => run_function(&mut func.body, &mut func.params, registry),
+        Item::Fn(func) => run_function(
+            &mut func.body,
+            &mut func.params,
+            func.ret.as_ref(),
+            registry,
+        ),
         Item::InlineMod { items, .. } => {
             for item in items {
                 apply_item(item, registry);
@@ -99,7 +104,7 @@ fn apply_item(item: &mut Item, registry: &RuleRegistry) {
                         continue;
                     };
                     let mut body = std::mem::take(&mut block.stmts);
-                    run_function(&mut body, &mut method.params, registry);
+                    run_function(&mut body, &mut method.params, method.ret.as_ref(), registry);
                     block.stmts = body;
                 }
             }
@@ -108,12 +113,18 @@ fn apply_item(item: &mut Item, registry: &RuleRegistry) {
     }
 }
 
-fn run_function(body: &mut Vec<IndentStmt>, params: &mut Vec<FnParam>, registry: &RuleRegistry) {
+fn run_function(
+    body: &mut Vec<IndentStmt>,
+    params: &mut Vec<FnParam>,
+    return_type: Option<&crate::backend::rust_ast::Type>,
+    registry: &RuleRegistry,
+) {
     let taken = std::mem::take(body);
-    let FunctionArena { mut arena, root } = arena::build(taken, params);
-    run_worklist(&mut arena, registry);
-    *body = arena::reify(&arena, root);
-    *params = arena.params().to_vec();
+    let mut function = arena::build(taken, params, return_type);
+    let root = function.root;
+    run_worklist(&mut function, registry);
+    *body = arena::reify(&function, root);
+    *params = function.params().to_vec();
 }
 
 fn enqueue_subtree(arena: &Arena, id: NodeId, worklist: &mut BTreeSet<u32>) {
@@ -137,7 +148,7 @@ fn enqueue_children(arena: &Arena, id: NodeId, worklist: &mut BTreeSet<u32>) {
     }
 }
 
-fn run_worklist(arena: &mut Arena, registry: &RuleRegistry) {
+fn run_worklist(arena: &mut FunctionOptimizer, registry: &RuleRegistry) {
     let mut worklist: BTreeSet<u32> = arena.live_ids().iter().map(|id| id.index()).collect();
     let mut edits = 0usize;
 

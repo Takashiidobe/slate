@@ -96,11 +96,11 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn add_one({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     return {{arg[0-9]+}} + 1;
+// REWRITES-NEXT:     {{arg[0-9]+}} + 1
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn store_fn({{arg[0-9]+}}: *mut core::ffi::c_void) -> *mut core::ffi::c_void {
-// REWRITES-NEXT:     return {{arg[0-9]+}};
+// REWRITES-NEXT:     {{arg[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

@@ -117,7 +117,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         *({{arg[0-9]+}} as *mut f64) = (unsafe { *({{arg[0-9]+}} as *mut f64) }) + 5.0;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return unsafe { *({{arg[0-9]+}} as *mut f64) };
+// REWRITES-NEXT:     unsafe { *({{arg[0-9]+}} as *mut f64) }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

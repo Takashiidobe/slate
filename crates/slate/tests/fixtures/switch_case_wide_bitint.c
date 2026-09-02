@@ -170,8 +170,7 @@ int main(void) {
 // REWRITES-DAG:                         )
 // REWRITES-DAG:                     } =>
 // REWRITES-DAG:         {
-// REWRITES-DAG:             __retval = 1;
-// REWRITES-DAG:             return __retval;
+// REWRITES-DAG:             return 1;
 // REWRITES-DAG:         }
 // REWRITES-DAG:         __switch_sel
 // REWRITES-DAG:             if __switch_sel
@@ -181,8 +180,7 @@ int main(void) {
 // REWRITES-DAG:                     )
 // REWRITES-DAG:                 } =>
 // REWRITES-DAG:         {
-// REWRITES-DAG:             __retval = 2;
-// REWRITES-DAG:             return __retval;
+// REWRITES-DAG:             return 2;
 // REWRITES-DAG:         }
 // REWRITES-DAG:         __switch_sel
 // REWRITES-DAG:             if __switch_sel
@@ -192,14 +190,12 @@ int main(void) {
 // REWRITES-DAG:                     )
 // REWRITES-DAG:                 } =>
 // REWRITES-DAG:         {
-// REWRITES-DAG:             __retval = 3;
-// REWRITES-DAG:             return __retval;
+// REWRITES-DAG:             return 3;
 // REWRITES-DAG:         }
 // REWRITES-DAG:         _ => {
-// REWRITES-DAG:             __retval = 0;
-// REWRITES-DAG:             return __retval;
+// REWRITES-DAG:             return 0;
 // REWRITES-DAG:         }
 // REWRITES-DAG:     }
-// REWRITES-DAG:     return __retval;
+// REWRITES-DAG:     __retval
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

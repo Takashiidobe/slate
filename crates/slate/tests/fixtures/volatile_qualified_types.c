@@ -152,11 +152,11 @@ int main(void) {
 // REWRITES-NEXT:     let mut value: f64 = 0.0;
 // REWRITES-NEXT:     value = {{arg[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(value)) };
-// REWRITES-NEXT:     return {{_v[0-9]+}} + 0.5;
+// REWRITES-NEXT:     {{_v[0-9]+}} + 0.5
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn bump_return({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     return {{arg[0-9]+}} + 1;
+// REWRITES-NEXT:     {{arg[0-9]+}} + 1
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn use_volatile_fields({{arg[0-9]+}}: f64) -> f64 {
@@ -169,7 +169,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(fields.ratio), {{arg[0-9]+}} + {{_v[0-9]+}}) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(fields.ratio)) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(fields.count)) };
-// REWRITES-NEXT:     return {{_v[0-9]+}} + ({{_v[0-9]+}} as f64);
+// REWRITES-NEXT:     {{_v[0-9]+}} + ({{_v[0-9]+}} as f64)
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

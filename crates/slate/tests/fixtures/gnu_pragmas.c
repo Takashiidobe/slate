@@ -192,20 +192,20 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn gnu_pragma_hidden({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     return {{arg[0-9]+}} + 13;
+// REWRITES-NEXT:     {{arg[0-9]+}} + 13
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[unsafe(no_mangle)]
 // REWRITES-NEXT: pub extern "C" fn gnu_pragma_weak_target() -> i32 {
-// REWRITES-NEXT:     return 17;
+// REWRITES-NEXT:     17
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn gnu_pragma_actual() -> i32 {
-// REWRITES-NEXT:     return 19;
+// REWRITES-NEXT:     19
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn gnu_pragma_diagnostic() -> i32 {
-// REWRITES-NEXT:     return 23;
+// REWRITES-NEXT:     23
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

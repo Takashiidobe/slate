@@ -1584,7 +1584,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { stdc_bit_floor_ui({{_v[0-9]+}} as u32) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { stdc_bit_ceil_ui({{_v[0-9]+}} as u32) };
-// REWRITES-NEXT:     return ({{_v[0-9]+}} + {{_v[0-9]+}}) as i32;
+// REWRITES-NEXT:     ({{_v[0-9]+}} + {{_v[0-9]+}}) as i32
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c23_checked_arithmetic() -> i32 {
@@ -1633,7 +1633,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}} = {{_v[0-9]+}}.overflowing_add(1 as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.1 || ({{_v[0-9]+}}.0 < -2147483648 || {{_v[0-9]+}}.0 > 2147483647);
 // REWRITES-NEXT:     result = {{_v[0-9]+}}.0 as i32;
-// REWRITES-NEXT:     return {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     {{_v[0-9]+}} + ({{_v[0-9]+}} as i32)
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c23_utf8() -> i32 {
@@ -1690,7 +1690,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = ({{_v[0-9]+}} as i32) == 66;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = 2 > {{_v[0-9]+}};
-// REWRITES-NEXT:     return {{_v[0-9]+}} + ({{_v[0-9]+}} as i32) + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     {{_v[0-9]+}} + ({{_v[0-9]+}} as i32) + ({{_v[0-9]+}} as i32)
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c23_memory() -> i32 {
@@ -1802,7 +1802,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 =
 // REWRITES-NEXT:         (unsafe { strstr({{_v[0-9]+}} as *const core::ffi::c_char, c"world".as_ptr()) }) as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
-// REWRITES-NEXT:     return {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     {{_v[0-9]+}} + ({{_v[0-9]+}} as i32)
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c23_time() -> i32 {
@@ -1962,7 +1962,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = std::ptr::addr_of_mut!(_str_11).cast::<i32>();
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { wcsstr({{_v[0-9]+}} as *const i32, {{_v[0-9]+}} as *const i32) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
-// REWRITES-NEXT:     return {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     {{_v[0-9]+}} + ({{_v[0-9]+}} as i32)
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c23_io() -> i32 {
@@ -2054,7 +2054,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = long_double_output.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { strcmp({{_v[0-9]+}} as *const core::ffi::c_char, c"3.5".as_ptr()) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
-// REWRITES-NEXT:     return {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     {{_v[0-9]+}} + ({{_v[0-9]+}} as i32)
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c23_limits() -> i32 {
@@ -2105,8 +2105,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = 202311 == {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 202311;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = 202311 == {{_v[0-9]+}};
-// REWRITES-NEXT:     return 1
-// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:     1 + {{_v[0-9]+}}
 // REWRITES-NEXT:         + {{_v[0-9]+}}
 // REWRITES-NEXT:         + {{_v[0-9]+}}
 // REWRITES-NEXT:         + {{_v[0-9]+}}
@@ -2140,7 +2139,7 @@ int main(void) {
 // REWRITES-NEXT:             + ({{_v[0-9]+}} as i32)
 // REWRITES-NEXT:             + ({{_v[0-9]+}} as i32)
 // REWRITES-NEXT:             + ({{_v[0-9]+}} as i32)
-// REWRITES-NEXT:             + ({{_v[0-9]+}} as i32));
+// REWRITES-NEXT:             + ({{_v[0-9]+}} as i32))
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

@@ -18,6 +18,6 @@ int main(void) { return bmi_probe(41); }
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: #[target_feature(enable = "bmi1")]
 // REWRITES-DAG: unsafe fn bmi_probe({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-DAG:     return {{arg[0-9]+}} + 1;
+// REWRITES-DAG:     {{arg[0-9]+}} + 1
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

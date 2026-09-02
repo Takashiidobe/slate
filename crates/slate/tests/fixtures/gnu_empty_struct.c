@@ -74,7 +74,7 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn empty_size() -> u64 {
-// REWRITES-NEXT:     return 0;
+// REWRITES-NEXT:     0
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

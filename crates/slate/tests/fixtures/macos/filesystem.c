@@ -219,18 +219,18 @@ int open_read_only(const char *path) { return open(path, O_RDONLY); }
 // REWRITES-MACOS-NEXT:     let {{_v[0-9]+}}: bool = ({{arg[0-9]+}} as i32) & 61440 == {{_v[0-9]+}};
 // REWRITES-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-MACOS-NEXT:     return if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// REWRITES-MACOS-NEXT:     if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} }
 // REWRITES-MACOS-NEXT: }
 // REWRITES-MACOS-EMPTY:
 // REWRITES-MACOS-NEXT: fn stat_file({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut stat) -> i32 {
-// REWRITES-MACOS-NEXT:     return unsafe { stat({{arg[0-9]+}} as *const core::ffi::c_char, {{arg[0-9]+}} as *mut stat) };
+// REWRITES-MACOS-NEXT:     unsafe { stat({{arg[0-9]+}} as *const core::ffi::c_char, {{arg[0-9]+}} as *mut stat) }
 // REWRITES-MACOS-NEXT: }
 // REWRITES-MACOS-EMPTY:
 // REWRITES-MACOS-NEXT: fn next_entry({{arg[0-9]+}}: *mut __dirstream) -> *mut dirent {
-// REWRITES-MACOS-NEXT:     return unsafe { readdir({{arg[0-9]+}} as *mut __dirstream) };
+// REWRITES-MACOS-NEXT:     unsafe { readdir({{arg[0-9]+}} as *mut __dirstream) }
 // REWRITES-MACOS-NEXT: }
 // REWRITES-MACOS-EMPTY:
 // REWRITES-MACOS-NEXT: fn open_read_only({{arg[0-9]+}}: *mut i8) -> i32 {
-// REWRITES-MACOS-NEXT:     return unsafe { open({{arg[0-9]+}} as *const core::ffi::c_char, 0 as i32) };
+// REWRITES-MACOS-NEXT:     unsafe { open({{arg[0-9]+}} as *const core::ffi::c_char, 0 as i32) }
 // REWRITES-MACOS-NEXT: }
 // SLATE-FILECHECK-END rewrites-macos

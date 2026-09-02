@@ -218,7 +218,7 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn helper({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     return {{arg[0-9]+}} + {{arg[0-9]+}};
+// REWRITES-NEXT:     {{arg[0-9]+}} + {{arg[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn loop_sum(mut n: i32) -> i32 {
@@ -232,7 +232,7 @@ int main(void) {
 // REWRITES-NEXT:         total += i;
 // REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return total;
+// REWRITES-NEXT:     total
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn array_pick({{arg[0-9]+}}: i32) -> i32 {
@@ -243,7 +243,7 @@ int main(void) {
 // REWRITES-NEXT:     values[({{_v[0-9]+}} as usize)] = 1;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
 // REWRITES-NEXT:     values[({{_v[0-9]+}} as usize)] = values[((0 as i64) as usize)] + values[((1 as i64) as usize)];
-// REWRITES-NEXT:     return values[(({{arg[0-9]+}} as i64) as usize)];
+// REWRITES-NEXT:     values[(({{arg[0-9]+}} as i64) as usize)]
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn union_pick({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
@@ -254,7 +254,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         p.right = {{arg[0-9]+}};
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return unsafe { p.left };
+// REWRITES-NEXT:     unsafe { p.left }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

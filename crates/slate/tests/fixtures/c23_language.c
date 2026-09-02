@@ -754,16 +754,15 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[must_use]
 // REWRITES-NEXT: fn c23_nodiscard_value() -> i32 {
-// REWRITES-NEXT:     return 47;
+// REWRITES-NEXT:     47
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c23_unnamed_parameter({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     return {{arg[0-9]+}};
+// REWRITES-NEXT:     {{arg[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c23_label_declaration({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     let mut value: i32 = 0;
-// REWRITES-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-NEXT:     let mut result: i32 = 0;
 // REWRITES-NEXT:     let mut {{__state[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:     '{{__dispatch[0-9]+}}: loop {
@@ -775,8 +774,7 @@ int main(void) {
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             1 => {
 // REWRITES-NEXT:                 result = value + 1;
-// REWRITES-NEXT:                 __retval = result;
-// REWRITES-NEXT:                 return __retval;
+// REWRITES-NEXT:                 return result;
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             _ => {
 // REWRITES-NEXT:                 unreachable!();
@@ -797,7 +795,7 @@ int main(void) {
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         _ => {}
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return result;
+// REWRITES-NEXT:     result
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe fn c23_relaxed_variadic(mut __slate_va_args: __SlateVaArgs) -> i32 {
@@ -807,7 +805,7 @@ int main(void) {
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { arguments.next_arg::<i32>() };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { arguments.next_arg::<i32>() };
-// REWRITES-NEXT:     return {{_v[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}} + {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c23_never_return() -> ! {

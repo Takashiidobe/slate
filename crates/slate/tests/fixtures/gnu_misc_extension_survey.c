@@ -137,11 +137,11 @@ done:
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn f_oo() -> i32 {
-// REWRITES-NEXT:     return 1;
+// REWRITES-NEXT:     1
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn pretty() -> *mut i8 {
-// REWRITES-NEXT:     return c"const char *pretty(void)".as_ptr() as *mut i8;
+// REWRITES-NEXT:     c"const char *pretty(void)".as_ptr() as *mut i8
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

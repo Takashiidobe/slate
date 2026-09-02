@@ -69,24 +69,21 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn select_type(mut repeatMode: *mut u32, mut count: u32) -> u32 {
-// REWRITES-DAG:     let mut __retval: u32 = 0;
 // REWRITES-DAG:     let {{_v[0-9]+}}: bool = count == 0;
 // REWRITES-DAG:     if {{_v[0-9]+}} {
 // REWRITES-DAG:         let {{_v[0-9]+}}: u32 = FSE_repeat::REPEAT_NONE as u32;
 // REWRITES-DAG:         unsafe {
 // REWRITES-DAG:             *repeatMode = {{_v[0-9]+}};
 // REWRITES-DAG:         }
-// REWRITES-DAG:         __retval = 0;
-// REWRITES-DAG:         return __retval;
+// REWRITES-DAG:         return 0;
 // REWRITES-DAG:     }
-// REWRITES-DAG:     __retval = (unsafe { *repeatMode }) + count;
-// REWRITES-DAG:     return __retval;
+// REWRITES-DAG:     (unsafe { *repeatMode }) + count
 // REWRITES-DAG: }
 // REWRITES-DAG: fn run({{arg[0-9]+}}: &mut Entropy, {{arg[0-9]+}}: u32) -> i32 {
 // REWRITES-DAG:     let {{_v[0-9]+}}: u32 = select_type(
 // REWRITES-DAG:         (unsafe { std::ptr::addr_of_mut!((*({{arg[0-9]+}} as *mut Entropy)).mode) }) as *mut u32,
 // REWRITES-DAG:         {{arg[0-9]+}},
 // REWRITES-DAG:     );
-// REWRITES-DAG:     return {{_v[0-9]+}} as i32;
+// REWRITES-DAG:     {{_v[0-9]+}} as i32
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

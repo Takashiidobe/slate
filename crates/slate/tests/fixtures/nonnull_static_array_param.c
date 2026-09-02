@@ -115,7 +115,7 @@ int main(void) {
 // REWRITES-NEXT:         s += unsafe { *{{_v[0-9]+}} };
 // REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return s;
+// REWRITES-NEXT:     s
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

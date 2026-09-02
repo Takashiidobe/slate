@@ -1,5 +1,5 @@
 use crate::backend::engine::NodeRule;
-use crate::backend::engine::arena::{Arena, NodeId, NodeKind, NodeKindTag};
+use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::{Expr, RustValue};
 
 use super::inline_temps::expr_effects;
@@ -26,7 +26,7 @@ impl NodeRule for DeadStore {
         &[NodeKindTag::Let]
     }
 
-    fn matches(&self, arena: &Arena, id: NodeId) -> bool {
+    fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
         is_dead_let(arena, id)
     }
 
@@ -34,7 +34,7 @@ impl NodeRule for DeadStore {
         true
     }
 
-    fn apply(&self, arena: &mut Arena, id: NodeId) -> bool {
+    fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
         if !is_dead_let(arena, id) {
             return false;
         }

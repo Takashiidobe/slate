@@ -122,7 +122,7 @@ int main(void) {
 // REWRITES-NEXT:         n /= 2;
 // REWRITES-NEXT:         steps += 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return steps;
+// REWRITES-NEXT:     steps
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

@@ -176,7 +176,6 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn jump_probe({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     let mut x: i32 = 0;
-// REWRITES-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-NEXT:     let mut {{_v[0-9]+}}: bool = false;
 // REWRITES-NEXT:     let mut {{__state[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:     '{{__dispatch[0-9]+}}: loop {
@@ -218,8 +217,7 @@ int main(void) {
 // REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             6 => {
-// REWRITES-NEXT:                 __retval = -1;
-// REWRITES-NEXT:                 return __retval;
+// REWRITES-NEXT:                 return -1;
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             7 => {
 // REWRITES-NEXT:                 {{__state[0-9]+}} = 8;
@@ -230,16 +228,13 @@ int main(void) {
 // REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             9 => {
-// REWRITES-NEXT:                 __retval = 10;
-// REWRITES-NEXT:                 return __retval;
+// REWRITES-NEXT:                 return 10;
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             10 => {
-// REWRITES-NEXT:                 __retval = 20;
-// REWRITES-NEXT:                 return __retval;
+// REWRITES-NEXT:                 return 20;
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             11 => {
-// REWRITES-NEXT:                 __retval = 30;
-// REWRITES-NEXT:                 return __retval;
+// REWRITES-NEXT:                 return 30;
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             12 => {
 // REWRITES-NEXT:                 unreachable!();

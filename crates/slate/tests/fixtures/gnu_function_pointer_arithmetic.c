@@ -106,7 +106,7 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn target() -> i32 {
-// REWRITES-NEXT:     return 42;
+// REWRITES-NEXT:     42
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

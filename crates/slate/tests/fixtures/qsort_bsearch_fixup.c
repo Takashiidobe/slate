@@ -236,11 +236,11 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn cmp_int({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
-// REWRITES-NEXT:     return (unsafe { *({{arg[0-9]+}} as *mut i32) }) - unsafe { *({{arg[0-9]+}} as *mut i32) };
+// REWRITES-NEXT:     (unsafe { *({{arg[0-9]+}} as *mut i32) }) - unsafe { *({{arg[0-9]+}} as *mut i32) }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn cmp_item({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
-// REWRITES-NEXT:     return (unsafe { (*({{arg[0-9]+}} as *mut Item)).key }) - unsafe { (*({{arg[0-9]+}} as *mut Item)).key };
+// REWRITES-NEXT:     (unsafe { (*({{arg[0-9]+}} as *mut Item)).key }) - unsafe { (*({{arg[0-9]+}} as *mut Item)).key }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

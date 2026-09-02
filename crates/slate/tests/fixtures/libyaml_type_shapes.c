@@ -202,7 +202,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         *{{arg[0-9]+}} = size;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return 1;
+// REWRITES-NEXT:     1
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

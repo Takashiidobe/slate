@@ -1232,14 +1232,14 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn c89_add({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     return {{arg[0-9]+}} + {{arg[0-9]+}};
+// REWRITES-NEXT:     {{arg[0-9]+}} + {{arg[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c89_static_local() -> i32 {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         c89_static_local_calls = (unsafe { c89_static_local_calls }) + 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return unsafe { c89_static_local_calls };
+// REWRITES-NEXT:     unsafe { c89_static_local_calls }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe fn c89_variadic_sum(mut count: i32, mut __slate_va_args: __SlateVaArgs) -> i32 {
@@ -1258,12 +1258,11 @@ int main(void) {
 // REWRITES-NEXT:         total += {{_v[0-9]+}};
 // REWRITES-NEXT:         index += 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return total;
+// REWRITES-NEXT:     total
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c89_control_flow({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     let mut value: i32 = 0;
-// REWRITES-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-NEXT:     let mut result: i32 = 0;
 // REWRITES-NEXT:     let mut index: i32 = 0;
 // REWRITES-NEXT:     let mut {{_v[0-9]+}}: i32 = 0;
@@ -1449,8 +1448,7 @@ int main(void) {
 // REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             34 => {
-// REWRITES-NEXT:                 __retval = result;
-// REWRITES-NEXT:                 return __retval;
+// REWRITES-NEXT:                 return result;
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             _ => {
 // REWRITES-NEXT:                 unreachable!();

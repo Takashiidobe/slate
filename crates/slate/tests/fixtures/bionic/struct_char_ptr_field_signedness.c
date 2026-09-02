@@ -146,7 +146,7 @@ int main(void) {
 // REWRITES-BIONIC-AARCH64-NEXT: }
 // REWRITES-BIONIC-AARCH64-EMPTY:
 // REWRITES-BIONIC-AARCH64-NEXT: unsafe fn entry_name({{arg[0-9]+}}: *mut pw_entry) -> *mut u8 {
-// REWRITES-BIONIC-AARCH64-NEXT:     return unsafe { (*{{arg[0-9]+}}).pw_name };
+// REWRITES-BIONIC-AARCH64-NEXT:     unsafe { (*{{arg[0-9]+}}).pw_name }
 // REWRITES-BIONIC-AARCH64-NEXT: }
 // REWRITES-BIONIC-AARCH64-EMPTY:
 // REWRITES-BIONIC-AARCH64-NEXT: fn main() {
@@ -189,7 +189,7 @@ int main(void) {
 // REWRITES-BIONIC-X86_64-NEXT: }
 // REWRITES-BIONIC-X86_64-EMPTY:
 // REWRITES-BIONIC-X86_64-NEXT: unsafe fn entry_name({{arg[0-9]+}}: *mut pw_entry) -> *mut i8 {
-// REWRITES-BIONIC-X86_64-NEXT:     return unsafe { (*{{arg[0-9]+}}).pw_name };
+// REWRITES-BIONIC-X86_64-NEXT:     unsafe { (*{{arg[0-9]+}}).pw_name }
 // REWRITES-BIONIC-X86_64-NEXT: }
 // REWRITES-BIONIC-X86_64-EMPTY:
 // REWRITES-BIONIC-X86_64-NEXT: fn main() {

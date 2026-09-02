@@ -182,7 +182,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         core::arch::asm!("addl ${1}, {0:e}", inlateout(reg) {{_v[0-9]+}} => {{_v[0-9]+}}, const 4, options(att_syntax));
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn gnu_numeric_operands({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
@@ -190,7 +190,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         core::arch::asm!("subl {1:e}, {0:e}", inlateout(reg) {{arg[0-9]+}} => {{_v[0-9]+}}, in(reg) {{arg[0-9]+}}, options(att_syntax));
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn gnu_multiple_outputs() -> i32 {
@@ -199,7 +199,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         core::arch::asm!("movl $3, {0:e}\n\tmovl $4, {1:e}", lateout(reg) {{_v[0-9]+}}, lateout(reg) {{_v[0-9]+}}, options(att_syntax));
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return {{_v[0-9]+}} * 10 + {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}} * 10 + {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

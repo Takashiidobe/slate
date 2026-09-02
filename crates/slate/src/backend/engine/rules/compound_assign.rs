@@ -1,5 +1,5 @@
 use crate::backend::engine::NodeRule;
-use crate::backend::engine::arena::{Arena, NodeId, NodeKind, NodeKindTag};
+use crate::backend::engine::arena::{FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::{BinOp, Expr, UnaryOp};
 
 pub(in crate::backend::engine) struct CompoundAssignRecover;
@@ -70,11 +70,11 @@ impl NodeRule for CompoundAssignRecover {
         &[NodeKindTag::Assign]
     }
 
-    fn matches(&self, arena: &Arena, id: NodeId) -> bool {
+    fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
         arena.get(id).and_then(split).is_some()
     }
 
-    fn apply(&self, arena: &mut Arena, id: NodeId) -> bool {
+    fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
         let Some((target, op, value)) = arena.get(id).and_then(split) else {
             return false;
         };
