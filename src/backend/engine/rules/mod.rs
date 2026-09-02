@@ -6,6 +6,7 @@ mod for_range;
 mod inline_temps;
 mod label_elide;
 mod libc_call;
+mod pattern_range;
 mod peel_casts;
 mod raw_ptr_alias;
 mod singleton_scopes;
@@ -32,6 +33,7 @@ pub(super) fn registry() -> Vec<Box<dyn NodeRule>> {
         Box::new(inline_temps::EffectfulTempForward),
         Box::new(inline_temps::InlineConstArgTemps),
         Box::new(peel_casts::PeelCasts),
+        Box::new(pattern_range::MatchRangeFold),
         Box::new(cstr_literal::CStrLiteral),
         Box::new(compound_assign::CompoundAssignRecover),
         Box::new(dead_store::DeadStore),
