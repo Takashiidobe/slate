@@ -135,52 +135,28 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: match x {
 // REWRITES-DAG: 1 => {
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-DAG: out = out + {{_v[0-9]+}};
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = out;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-DAG: out = {{_v[0-9]+}};
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = out;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-DAG: out = {{_v[0-9]+}};
+// REWRITES-DAG: out += 1;
+// REWRITES-DAG: out += 2;
+// REWRITES-DAG: out += 3;
 // REWRITES-DAG: }
 // REWRITES-DAG: 3 => {
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = out;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-DAG: out = {{_v[0-9]+}};
+// REWRITES-DAG: out += 3;
 // REWRITES-DAG: }
 // REWRITES-DAG: 4 => {
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = 4;
-// REWRITES-DAG: out = out + {{_v[0-9]+}};
+// REWRITES-DAG: out += 4;
 // REWRITES-DAG: }
 // REWRITES-DAG: _ => {
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = out;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-DAG: out = {{_v[0-9]+}};
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = out;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-DAG: out = {{_v[0-9]+}};
+// REWRITES-DAG: out += 2;
+// REWRITES-DAG: out += 3;
 // REWRITES-DAG: }
 // REWRITES-DAG: }
 // REWRITES-DAG: match x {
 // REWRITES-DAG: 5 => {
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = 20;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = out;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-DAG: out = {{_v[0-9]+}};
+// REWRITES-DAG: out += 20;
 // REWRITES-DAG: }
 // REWRITES-DAG: _ => {
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = 10;
-// REWRITES-DAG: out = out + {{_v[0-9]+}};
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = 20;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = out;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-DAG: out = {{_v[0-9]+}};
+// REWRITES-DAG: out += 10;
+// REWRITES-DAG: out += 20;
 // REWRITES-DAG: }
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

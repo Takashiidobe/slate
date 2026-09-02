@@ -1,6 +1,6 @@
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, NodeId, NodeKind, NodeKindTag};
-use crate::backend::rust_ast::{Expr, Ident, Prim, RustValue, Stmt, Type, UnaryOp};
+use crate::backend::rust_ast::{BinOp, Expr, Ident, Prim, RustValue, Stmt, Type, UnaryOp};
 use crate::function_identity::CallBinding;
 
 fn is_temp_name(name: &str) -> bool {
@@ -1005,6 +1005,38 @@ fn expr_is_type_anchored(expr: &Expr) -> bool {
     }
 }
 
+fn binary_operand_pinned(expr: &Expr, name: Ident) -> bool {
+    match expr {
+        Expr::Binary { op, lhs, rhs } => {
+            let sibling_pins = !matches!(op, BinOp::Shl | BinOp::Shr)
+                && ((expr_ident(lhs) == Some(name) && expr_is_type_anchored(rhs))
+                    || (expr_ident(rhs) == Some(name) && expr_is_type_anchored(lhs)));
+            sibling_pins || binary_operand_pinned(lhs, name) || binary_operand_pinned(rhs, name)
+        }
+        Expr::Unary { expr, .. } | Expr::Cast { expr, .. } => binary_operand_pinned(expr, name),
+        _ => false,
+    }
+}
+
+fn consumer_pins_type(arena: &Arena, id: NodeId, name: Ident) -> bool {
+    match arena.get(id) {
+        Some(
+            NodeKind::Let {
+                init: Some(expr), ..
+            }
+            | NodeKind::Expr(expr)
+            | NodeKind::Return(Some(expr)),
+        ) => binary_operand_pinned(expr, name),
+        Some(
+            NodeKind::Assign { target, value } | NodeKind::CompoundAssign { target, value, .. },
+        ) => binary_operand_pinned(target, name) || binary_operand_pinned(value, name),
+        Some(NodeKind::If { cond, .. } | NodeKind::While { cond, .. }) => {
+            binary_operand_pinned(cond, name)
+        }
+        _ => false,
+    }
+}
+
 fn is_top_level_use(arena: &Arena, id: NodeId, name: Ident) -> bool {
     match arena.get(id) {
         Some(NodeKind::Let {
@@ -1408,7 +1440,10 @@ impl NodeRule for LateInlineTemps {
             return false;
         }
 
-        if !expr_is_type_anchored(&init) && !is_top_level_use(arena, found.consumer_id, name) {
+        if !expr_is_type_anchored(&init)
+            && !is_top_level_use(arena, found.consumer_id, name)
+            && !(ty.is_some() && consumer_pins_type(arena, found.consumer_id, name))
+        {
             return false;
         }
 

@@ -81,19 +81,13 @@ int main(void) {
 // REWRITES-DAG: match x {
 // REWRITES-DAG: 5 => {
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = 10;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = out;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-DAG: out = {{_v[0-9]+}};
+// REWRITES-DAG: out = out + {{_v[0-9]+}};
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = 20;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = out;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-DAG: out = {{_v[0-9]+}};
+// REWRITES-DAG: out = out + {{_v[0-9]+}};
 // REWRITES-DAG: }
 // REWRITES-DAG: 6 => {
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = 20;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = out;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-DAG: out = {{_v[0-9]+}};
+// REWRITES-DAG: out = out + {{_v[0-9]+}};
 // REWRITES-DAG: }
 // REWRITES-DAG: 7 => {
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = 40;
@@ -103,13 +97,9 @@ int main(void) {
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-DAG: out = out + {{_v[0-9]+}};
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = 10;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = out;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-DAG: out = {{_v[0-9]+}};
+// REWRITES-DAG: out = out + {{_v[0-9]+}};
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = 20;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = out;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-DAG: out = {{_v[0-9]+}};
+// REWRITES-DAG: out = out + {{_v[0-9]+}};
 // REWRITES-DAG: }
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

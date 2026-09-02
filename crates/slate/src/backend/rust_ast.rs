@@ -1380,6 +1380,45 @@ impl Stmt {
         stmt_substitute_var(self, name, replacement)
     }
 
+    pub fn child_bodies_mut(&mut self) -> Vec<&mut Vec<IndentStmt>> {
+        match self {
+            Stmt::LetIf {
+                then_body,
+                else_body,
+                ..
+            }
+            | Stmt::If {
+                then_body,
+                else_body,
+                ..
+            } => vec![then_body, else_body],
+            Stmt::Loop { body, .. }
+            | Stmt::For { body, .. }
+            | Stmt::Scope { body }
+            | Stmt::LabeledBlock { body, .. } => vec![body],
+            Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
+                vec![&mut body.stmts]
+            }
+            Stmt::Match { arms, .. } => arms.iter_mut().map(|arm| &mut arm.body).collect(),
+            Stmt::Let { .. }
+            | Stmt::Assign { .. }
+            | Stmt::CompoundAssign { .. }
+            | Stmt::InlineAsm(_)
+            | Stmt::Expr(_)
+            | Stmt::Return(_)
+            | Stmt::Break(_)
+            | Stmt::Continue(_) => Vec::new(),
+        }
+    }
+
+    pub fn declared_name_mut(&mut self) -> Option<&mut String> {
+        match self {
+            Stmt::Let { name, .. } | Stmt::LetIf { name, .. } => Some(name),
+            Stmt::For { pat, .. } => Some(pat),
+            _ => None,
+        }
+    }
+
     pub fn collect_vars(&self, out: &mut Vec<Ident>) {
         stmt_collect_vars(self, out)
     }

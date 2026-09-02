@@ -1,4 +1,5 @@
 mod array_iter;
+mod compound_assign;
 mod cstr_literal;
 mod dead_store;
 mod for_range;
@@ -28,6 +29,7 @@ pub(super) fn registry() -> Vec<Box<dyn NodeRule>> {
         Box::new(inline_temps::InlineConstArgTemps),
         Box::new(peel_casts::PeelCasts),
         Box::new(cstr_literal::CStrLiteral),
+        Box::new(compound_assign::CompoundAssignRecover),
         Box::new(dead_store::DeadStore),
     ];
     rules.extend(libc_call::rules());

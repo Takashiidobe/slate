@@ -89,15 +89,11 @@ int main(void) {
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = 10;
 // REWRITES-DAG: out = out + {{_v[0-9]+}};
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = 20;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = out;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-DAG: out = {{_v[0-9]+}};
+// REWRITES-DAG: out = out + {{_v[0-9]+}};
 // REWRITES-DAG: }
 // REWRITES-DAG: 2 => {
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = 20;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = out;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-DAG: out = {{_v[0-9]+}};
+// REWRITES-DAG: out = out + {{_v[0-9]+}};
 // REWRITES-DAG: }
 // REWRITES-DAG: 3 | 4 => {
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = 40;

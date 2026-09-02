@@ -213,6 +213,55 @@ fn scan(
     true
 }
 
+fn temp_index(name: &str) -> Option<u32> {
+    name.strip_prefix("_v")?.parse().ok()
+}
+
+fn max_temp(arena: &Arena, id: NodeId) -> u32 {
+    let Some(kind) = arena.get(id) else {
+        return 0;
+    };
+    let mut max = kind
+        .declared_name()
+        .and_then(|name| temp_index(name.as_str()))
+        .unwrap_or(0);
+    for name in arena.reads(id) {
+        max = max.max(temp_index(name.as_str()).unwrap_or(0));
+    }
+    for list in kind.child_lists() {
+        for &child in list {
+            max = max.max(max_temp(arena, child));
+        }
+    }
+    max
+}
+
+fn rename_decls(body: &mut [IndentStmt], next: &mut u32, renames: &mut Vec<(String, String)>) {
+    for stmt in body.iter_mut() {
+        if let Some(name) = stmt.stmt.declared_name_mut()
+            && temp_index(name).is_some()
+        {
+            let fresh = format!("_v{}", *next);
+            *next += 1;
+            renames.push((std::mem::replace(name, fresh.clone()), fresh));
+        }
+        for nested in stmt.stmt.child_bodies_mut() {
+            rename_decls(nested, next, renames);
+        }
+    }
+}
+
+fn freshen(body: &mut [IndentStmt], next: &mut u32) {
+    let mut renames = Vec::new();
+    rename_decls(body, next, &mut renames);
+    for (old, new) in renames {
+        let replacement = Expr::Var(new.as_str().into());
+        for stmt in body.iter_mut() {
+            stmt.stmt.substitute_var(&old, &replacement);
+        }
+    }
+}
+
 fn pattern_of(switch: &Switch, index: usize) -> Option<Pattern> {
     if switch.fallback == index as i64 {
         return Some(Pattern::Wildcard);
@@ -224,7 +273,7 @@ fn pattern_of(switch: &Switch, index: usize) -> Option<Pattern> {
     }
 }
 
-fn rebuild(mut switch: Switch) -> Option<Stmt> {
+fn rebuild(mut switch: Switch, next_temp: &mut u32) -> Option<Stmt> {
     for index in 0..switch.arms.len() {
         if switch.arms[index].body.is_empty()
             && switch.arms[index].term == Term::FallsThrough
@@ -242,17 +291,26 @@ fn rebuild(mut switch: Switch) -> Option<Stmt> {
         let Some(pattern) = pattern_of(&switch, index) else {
             continue;
         };
-        let mut body = switch.arms[index].body.clone();
+        let mut body: Vec<IndentStmt> = switch.arms[index]
+            .body
+            .iter()
+            .cloned()
+            .map(indent)
+            .collect();
         let mut cursor = index;
         while switch.arms[cursor].term == Term::FallsThrough {
             cursor += 1;
             duplicated += switch.arms[cursor].body.len();
-            body.extend(switch.arms[cursor].body.iter().cloned());
+            let mut copy: Vec<IndentStmt> = switch.arms[cursor]
+                .body
+                .iter()
+                .cloned()
+                .map(indent)
+                .collect();
+            freshen(&mut copy, next_temp);
+            body.extend(copy);
         }
-        let arm = MatchArm {
-            pattern,
-            body: body.into_iter().map(indent).collect(),
-        };
+        let arm = MatchArm { pattern, body };
         match arm.pattern {
             Pattern::Wildcard => wildcard = Some(arm),
             _ => arms.push(arm),
@@ -302,7 +360,12 @@ impl NodeRule for StructureDispatch {
         let Some(switch) = parse(arena, id) else {
             return false;
         };
-        let Some(stmt) = rebuild(switch) else {
+        let mut root = id;
+        while let Some(parent) = arena.parent(root) {
+            root = parent;
+        }
+        let mut next_temp = max_temp(arena, root) + 1;
+        let Some(stmt) = rebuild(switch, &mut next_temp) else {
             return false;
         };
         let Some(NodeKind::Scope { body }) = arena.get(id) else {
