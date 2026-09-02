@@ -343,7 +343,6 @@ int slate_yield(void) { return sched_yield(); }
 // REWRITES-MACOS-DAG: result = unsafe {
 // REWRITES-MACOS-DAG: pthread_mutex_lock(std::ptr::addr_of_mut!(slate_mutex) as *mut _opaque_pthread_mutex_t)
 // REWRITES-MACOS-DAG: };
-// REWRITES-MACOS-DAG: {
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: bool = result == {{_v[0-9]+}};
 // REWRITES-MACOS-DAG: if {{_v[0-9]+}} {
@@ -354,7 +353,6 @@ int slate_yield(void) { return sched_yield(); }
 // REWRITES-MACOS-DAG: deadline as *const libc::timespec,
 // REWRITES-MACOS-DAG: )
 // REWRITES-MACOS-DAG: };
-// REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = unsafe {
 // REWRITES-MACOS-DAG: pthread_mutex_unlock(std::ptr::addr_of_mut!(slate_mutex) as *mut _opaque_pthread_mutex_t)

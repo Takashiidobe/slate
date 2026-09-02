@@ -29,8 +29,6 @@ int main(void) {
   return 0;
 }
 
-// REWRITES-NOT: let buf:
-
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
 // LOWERING-NEXT: #![allow(
@@ -130,3 +128,81 @@ int main(void) {
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
+
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES: #![feature(c_variadic)]
+// REWRITES-NEXT: #![allow(
+// REWRITES-NEXT:     dead_code,
+// REWRITES-NEXT:     unused,
+// REWRITES-NEXT:     non_camel_case_types,
+// REWRITES-NEXT:     non_snake_case,
+// REWRITES-NEXT:     non_upper_case_globals,
+// REWRITES-NEXT:     arithmetic_overflow,
+// REWRITES-NEXT:     unconditional_panic,
+// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-NEXT:     unused_comparisons
+// REWRITES-NEXT: )]
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[repr(C)]
+// REWRITES-NEXT: #[derive(Clone, Copy)]
+// REWRITES-NEXT: struct {{anon_[0-9]+}} {
+// REWRITES-NEXT:     x: i32,
+// REWRITES-NEXT:     y: i32,
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[repr(C)]
+// REWRITES-NEXT: #[derive(Clone, Copy)]
+// REWRITES-NEXT: struct buffer_t {
+// REWRITES-NEXT:     start: *mut i32,
+// REWRITES-NEXT:     end: *mut i32,
+// REWRITES-NEXT:     pointer: *mut i32,
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT:     let mut point: {{anon_[0-9]+}} = {{anon_[0-9]+}} { x: 3, y: 4 };
+// REWRITES-NEXT:     let mut storage: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
+// REWRITES-NEXT:     let mut buf: buffer_t = buffer_t {
+// REWRITES-NEXT:         start: std::ptr::null_mut(),
+// REWRITES-NEXT:         end: std::ptr::null_mut(),
+// REWRITES-NEXT:         pointer: std::ptr::null_mut(),
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = storage.as_mut_ptr() as *mut i32;
+// REWRITES-NEXT:     buf.start = {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = storage.as_mut_ptr() as *mut i32;
+// REWRITES-NEXT:     buf.pointer = {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = storage.as_mut_ptr() as *mut i32;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(4) };
+// REWRITES-NEXT:     buf.end = {{_v[0-9]+}};
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         *buf.pointer = point.x + point.y;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = buf.pointer;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
+// REWRITES-NEXT:     buf.pointer = {{_v[0-9]+}};
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         *buf.pointer = point.x * point.y;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = buf.pointer;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
+// REWRITES-NEXT:     buf.pointer = {{_v[0-9]+}};
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         printf(
+// REWRITES-NEXT:             c"%d %d\n".as_ptr(),
+// REWRITES-NEXT:             storage[((0 as i64) as usize)],
+// REWRITES-NEXT:             storage[((1 as i64) as usize)],
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = buf.pointer;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = buf.start;
+// REWRITES-NEXT:     unsafe { printf(c"%ld\n".as_ptr(), unsafe { {{_v[0-9]+}}.offset_from({{_v[0-9]+}}) as i64 }) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = buf.end;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = buf.start;
+// REWRITES-NEXT:     unsafe { printf(c"%ld\n".as_ptr(), unsafe { {{_v[0-9]+}}.offset_from({{_v[0-9]+}}) as i64 }) };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// SLATE-FILECHECK-END rewrites

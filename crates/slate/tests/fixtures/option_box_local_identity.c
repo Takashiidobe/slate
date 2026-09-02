@@ -164,42 +164,34 @@ int main(void) {
 // REWRITES-NEXT:     let mut flag: i32 = {{arg[0-9]+}};
 // REWRITES-NEXT:     let mut p: *mut i32 = std::ptr::null_mut();
 // REWRITES-NEXT:     let mut q: *mut i32 = std::ptr::null_mut();
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = flag != 0;
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc((4 as u64) as usize) };
-// REWRITES-NEXT:             p = {{_v[0-9]+}} as *mut i32;
-// REWRITES-NEXT:             let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc((4 as u64) as usize) };
-// REWRITES-NEXT:             q = {{_v[0-9]+}} as *mut i32;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = flag != 0;
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc((4 as u64) as usize) };
+// REWRITES-NEXT:         p = {{_v[0-9]+}} as *mut i32;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc((4 as u64) as usize) };
+// REWRITES-NEXT:         q = {{_v[0-9]+}} as *mut i32;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = p == q;
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { printf(c"same\n".as_ptr()) };
-// REWRITES-NEXT:         } else {
-// REWRITES-NEXT:             unsafe { printf(c"diff\n".as_ptr()) };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = p == q;
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { printf(c"same\n".as_ptr()) };
+// REWRITES-NEXT:     } else {
+// REWRITES-NEXT:         unsafe { printf(c"diff\n".as_ptr()) };
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = p != std::ptr::null_mut();
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe {
-// REWRITES-NEXT:                 *p = 1;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             unsafe { printf(c"%d\n".as_ptr(), unsafe { *p }) };
-// REWRITES-NEXT:             unsafe { free(p as *mut core::ffi::c_void) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = p != std::ptr::null_mut();
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe {
+// REWRITES-NEXT:             *p = 1;
 // REWRITES-NEXT:         }
+// REWRITES-NEXT:         unsafe { printf(c"%d\n".as_ptr(), unsafe { *p }) };
+// REWRITES-NEXT:         unsafe { free(p as *mut core::ffi::c_void) };
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = q != std::ptr::null_mut();
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe {
-// REWRITES-NEXT:                 *q = 2;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             unsafe { printf(c"%d\n".as_ptr(), unsafe { *q }) };
-// REWRITES-NEXT:             unsafe { free(q as *mut core::ffi::c_void) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = q != std::ptr::null_mut();
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe {
+// REWRITES-NEXT:             *q = 2;
 // REWRITES-NEXT:         }
+// REWRITES-NEXT:         unsafe { printf(c"%d\n".as_ptr(), unsafe { *q }) };
+// REWRITES-NEXT:         unsafe { free(q as *mut core::ffi::c_void) };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return 0;
 // REWRITES-NEXT: }

@@ -40,14 +40,12 @@ int main(void) {
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: {
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = index;
 // REWRITES-DAG: index = {{_v[0-9]+}} + 1;
 // REWRITES-DAG: let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
 // REWRITES-DAG: let {{_v[0-9]+}}: i64 = values[({{_v[0-9]+}} as usize)];
 // REWRITES-DAG: values[({{_v[0-9]+}} as usize)] = 25;
 // REWRITES-DAG: tmp = {{_v[0-9]+}};
-// REWRITES-DAG: }
 // REWRITES-DAG: unsafe {
 // REWRITES-DAG: printf(
 // REWRITES-DAG: c"%ld %ld %d\n".as_ptr(),

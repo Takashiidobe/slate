@@ -236,12 +236,10 @@ int slate_lookup_user_shell(uid_t uid, char *buffer, size_t size) {
 // REWRITES-MACOS-DAG: {{arg[0-9]+}} as *mut *mut core::ffi::c_char,
 // REWRITES-MACOS-DAG: )
 // REWRITES-MACOS-DAG: };
-// REWRITES-MACOS-DAG: {
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-MACOS-DAG: if result != {{_v[0-9]+}} {
 // REWRITES-MACOS-DAG: __retval = result;
 // REWRITES-MACOS-DAG: return __retval;
-// REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = unsafe {
 // REWRITES-MACOS-DAG: waitpid(
@@ -265,13 +263,11 @@ int slate_lookup_user_shell(uid_t uid, char *buffer, size_t size) {
 // REWRITES-MACOS-DAG: let mut fd: i32 = {{arg[0-9]+}};
 // REWRITES-MACOS-DAG: let mut state: *mut termios = {{arg[0-9]+}};
 // REWRITES-MACOS-DAG: let mut __retval: i64 = 0;
-// REWRITES-MACOS-DAG: {
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = unsafe { tcgetattr(fd as i32, state as *mut termios) };
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-MACOS-DAG: if {{_v[0-9]+}} != {{_v[0-9]+}} {
 // REWRITES-MACOS-DAG: __retval = -1;
 // REWRITES-MACOS-DAG: return __retval;
-// REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: __retval = unsafe { sysconf(29 as i32) };
 // REWRITES-MACOS-DAG: return __retval;
@@ -282,12 +278,10 @@ int slate_lookup_user_shell(uid_t uid, char *buffer, size_t size) {
 // REWRITES-MACOS-DAG: let mut entry: *mut passwd = std::ptr::null_mut();
 // REWRITES-MACOS-DAG: let mut length: u64 = 0;
 // REWRITES-MACOS-DAG: entry = unsafe { getpwuid({{arg[0-9]+}} as u32) };
-// REWRITES-MACOS-DAG: {
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: *mut passwd = std::ptr::null_mut();
 // REWRITES-MACOS-DAG: if entry == {{_v[0-9]+}} {
 // REWRITES-MACOS-DAG: __retval = -1;
 // REWRITES-MACOS-DAG: return __retval;
-// REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: length = 0;
 // REWRITES-MACOS-DAG: loop {
@@ -310,7 +304,7 @@ int slate_lookup_user_shell(uid_t uid, char *buffer, size_t size) {
 // REWRITES-MACOS-DAG: unsafe {
 // REWRITES-MACOS-DAG: std::ptr::copy_nonoverlapping(
 // REWRITES-MACOS-DAG: ((unsafe { (*entry).pw_shell }) as *mut core::ffi::c_void) as *const u8,
-// REWRITES-MACOS-DAG: ({{arg[0-9]+}} as *mut core::ffi::c_void) as *mut u8,
+// REWRITES-MACOS-DAG: {{arg[0-9]+}} as *mut u8,
 // REWRITES-MACOS-DAG: (length as u64) as usize,
 // REWRITES-MACOS-DAG: )
 // REWRITES-MACOS-DAG: };

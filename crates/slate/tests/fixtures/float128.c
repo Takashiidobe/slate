@@ -175,64 +175,50 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f128 = 7.88860905221011805411728565282786229E-31f128;
 // REWRITES-NEXT:     tiny = {{_v[0-9]+}};
 // REWRITES-NEXT:     sum = add(one, tiny);
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = sum == one;
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             __retval = 1;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = sum == one;
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         __retval = 1;
+// REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = sum - one != tiny;
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             __retval = 2;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = sum - one != tiny;
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         __retval = 2;
+// REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: f128 = (42 as i32) as f128;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: f128 = 4.200000e+01f128;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             __retval = 3;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f128 = (42 as i32) as f128;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f128 = 4.200000e+01f128;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         __retval = 3;
+// REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: f128 = 4.275000e+01f128;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 42;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ({{_v[0-9]+}} as i32) != {{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             __retval = 4;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f128 = 4.275000e+01f128;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 42;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = ({{_v[0-9]+}} as i32) != {{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         __retval = 4;
+// REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: f128 = 1.500000e+00f128;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: f64 = 1.5;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ({{_v[0-9]+}} as f64) != {{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             __retval = 5;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f128 = 1.500000e+00f128;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = 1.5;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = ({{_v[0-9]+}} as f64) != {{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         __retval = 5;
+// REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = 16;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = 16;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             __retval = 6;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 16;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 16;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         __retval = 6;
+// REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = 16;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = 16;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             __retval = 7;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 16;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 16;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         __retval = 7;
+// REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     __retval = 0;
 // REWRITES-NEXT:     std::process::exit(__retval as i32);

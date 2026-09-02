@@ -92,13 +92,11 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = path.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT:     fd = unsafe { mkstemp({{_v[0-9]+}} as *mut core::ffi::c_char) };
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), (fd >= 0) as i32) };
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = fd >= {{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { close(fd as i32) };
-// REWRITES-NEXT:             unsafe { unlink(path.as_mut_ptr() as *const core::ffi::c_char) };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = fd >= {{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { close(fd as i32) };
+// REWRITES-NEXT:         unsafe { unlink(path.as_mut_ptr() as *const core::ffi::c_char) };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }

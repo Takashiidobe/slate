@@ -185,11 +185,9 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(y)) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // REWRITES-NEXT:     unsafe { fesetround(1024 as i32) };
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
-// REWRITES-NEXT:         let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(y)) };
-// REWRITES-NEXT:         contended = __slate_fenv_div_f64({{_v[0-9]+}}, {{_v[0-9]+}});
-// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(y)) };
+// REWRITES-NEXT:     contended = __slate_fenv_div_f64({{_v[0-9]+}}, {{_v[0-9]+}});
 // REWRITES-NEXT:     unsafe { fesetround(0 as i32) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(y)) };

@@ -1793,31 +1793,27 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { __errno_location() };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (((unsafe { *{{_v[0-9]+}} }) == {{_v[0-9]+}}) as i32);
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { mtx_init(std::ptr::addr_of_mut!(mutex) as *mut mtx_t, 0 as i32) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { mtx_init(std::ptr::addr_of_mut!(mutex) as *mut mtx_t, 0 as i32) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:         concurrency_total = concurrency_total + {{_v[0-9]+}};
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { mtx_lock(std::ptr::addr_of_mut!(mutex) as *mut mtx_t) };
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:             concurrency_total = concurrency_total + {{_v[0-9]+}};
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { mtx_lock(std::ptr::addr_of_mut!(mutex) as *mut mtx_t) };
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:             concurrency_total = concurrency_total + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32);
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { mtx_unlock(std::ptr::addr_of_mut!(mutex) as *mut mtx_t) };
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:             concurrency_total = concurrency_total + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32);
-// REWRITES-NEXT:             unsafe { mtx_destroy(std::ptr::addr_of_mut!(mutex) as *mut mtx_t) };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:         concurrency_total = concurrency_total + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32);
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { mtx_unlock(std::ptr::addr_of_mut!(mutex) as *mut mtx_t) };
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:         concurrency_total = concurrency_total + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32);
+// REWRITES-NEXT:         unsafe { mtx_destroy(std::ptr::addr_of_mut!(mutex) as *mut mtx_t) };
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { cnd_init(std::ptr::addr_of_mut!(condition) as *mut cnd_t) };
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:             concurrency_total = concurrency_total + {{_v[0-9]+}};
-// REWRITES-NEXT:             unsafe { cnd_destroy(std::ptr::addr_of_mut!(condition) as *mut cnd_t) };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { cnd_init(std::ptr::addr_of_mut!(condition) as *mut cnd_t) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:         concurrency_total = concurrency_total + {{_v[0-9]+}};
+// REWRITES-NEXT:         unsafe { cnd_destroy(std::ptr::addr_of_mut!(condition) as *mut cnd_t) };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         c11_once_total = 0;
@@ -1835,27 +1831,24 @@ int main(void) {
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     concurrency_total = concurrency_total + unsafe { c11_once_total };
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C" fn(*mut core::ffi::c_void)> = None;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 =
-// REWRITES-NEXT:             unsafe { tss_create(std::ptr::addr_of_mut!(thread_key) as *mut u32, {{_v[0-9]+}}) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(*mut core::ffi::c_void)> = None;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { tss_create(std::ptr::addr_of_mut!(thread_key) as *mut u32, {{_v[0-9]+}}) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:         concurrency_total = concurrency_total + {{_v[0-9]+}};
+// REWRITES-NEXT:         let {{_v[0-9]+}}: u32 = thread_key;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void =
+// REWRITES-NEXT:             std::ptr::addr_of_mut!(thread_increment) as *mut core::ffi::c_void;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { tss_set({{_v[0-9]+}} as u32, {{_v[0-9]+}} as *mut core::ffi::c_void) };
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:             concurrency_total = concurrency_total + {{_v[0-9]+}};
-// REWRITES-NEXT:             let {{_v[0-9]+}}: u32 = thread_key;
-// REWRITES-NEXT:             let {{_v[0-9]+}}: *mut core::ffi::c_void =
-// REWRITES-NEXT:                 std::ptr::addr_of_mut!(thread_increment) as *mut core::ffi::c_void;
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { tss_set({{_v[0-9]+}} as u32, {{_v[0-9]+}} as *mut core::ffi::c_void) };
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:             concurrency_total = concurrency_total + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32);
-// REWRITES-NEXT:             let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { tss_get(thread_key as u32) };
-// REWRITES-NEXT:             let {{_v[0-9]+}}: *mut core::ffi::c_void =
-// REWRITES-NEXT:                 std::ptr::addr_of_mut!(thread_increment) as *mut core::ffi::c_void;
-// REWRITES-NEXT:             concurrency_total = concurrency_total + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32);
-// REWRITES-NEXT:             unsafe { tss_delete(thread_key as u32) };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:         concurrency_total = concurrency_total + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32);
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { tss_get(thread_key as u32) };
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void =
+// REWRITES-NEXT:             std::ptr::addr_of_mut!(thread_increment) as *mut core::ffi::c_void;
+// REWRITES-NEXT:         concurrency_total = concurrency_total + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32);
+// REWRITES-NEXT:         unsafe { tss_delete(thread_key as u32) };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 4;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
@@ -1930,19 +1923,15 @@ int main(void) {
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut libc::FILE = std::ptr::null_mut();
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = exclusive_first != {{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { fclose(exclusive_first as *mut libc::FILE) };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut libc::FILE = std::ptr::null_mut();
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = exclusive_first != {{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { fclose(exclusive_first as *mut libc::FILE) };
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut libc::FILE = std::ptr::null_mut();
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = exclusive_second != {{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { fclose(exclusive_second as *mut libc::FILE) };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut libc::FILE = std::ptr::null_mut();
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = exclusive_second != {{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { fclose(exclusive_second as *mut libc::FILE) };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { remove(c"slate-c11-exclusive.tmp".as_ptr()) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
@@ -1998,12 +1987,10 @@ int main(void) {
 // REWRITES-NEXT:         + (({{_v[0-9]+}} >= {{_v[0-9]+}}) as i32)
 // REWRITES-NEXT:         + (({{_v[0-9]+}} >= {{_v[0-9]+}}) as i32)
 // REWRITES-NEXT:         + {{_v[0-9]+}};
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c11_never_flag)) };
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             c11_never_return(99);
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c11_never_flag)) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         c11_never_return(99);
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(

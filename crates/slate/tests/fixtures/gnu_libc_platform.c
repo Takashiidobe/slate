@@ -1089,7 +1089,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         memcpy(
 // REWRITES-NEXT:             {{_v[0-9]+}} as *mut core::ffi::c_void,
-// REWRITES-NEXT:             ({{arg[0-9]+}} as *mut core::ffi::c_void) as *const core::ffi::c_void,
+// REWRITES-NEXT:             {{arg[0-9]+}} as *const core::ffi::c_void,
 // REWRITES-NEXT:             {{arg[0-9]+}} as usize,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
@@ -1173,12 +1173,8 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 1;
 // REWRITES-NEXT:     let mut bi_alloca: Vec<u8> = vec![0; ({{_v[0-9]+}} + {{_v[0-9]+}}) as usize];
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = bi_alloca.as_mut_ptr() as *mut core::ffi::c_void;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = (unsafe {
-// REWRITES-NEXT:         strcpy(
-// REWRITES-NEXT:             ({{_v[0-9]+}} as *mut i8) as *mut core::ffi::c_char,
-// REWRITES-NEXT:             c"slate".as_ptr(),
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     }) as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 =
+// REWRITES-NEXT:         (unsafe { strcpy({{_v[0-9]+}} as *mut core::ffi::c_char, c"slate".as_ptr()) }) as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { strcmp({{_v[0-9]+}} as *const core::ffi::c_char, c"slate".as_ptr()) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32);

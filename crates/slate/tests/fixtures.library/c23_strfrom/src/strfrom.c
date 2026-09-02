@@ -42,7 +42,8 @@ int root_to_int(void) { return sqrtl(4.0L) == 2.0L; }
 // REWRITES-DAG: unsafe {
 // REWRITES-DAG: (*{{arg[0-9]+}}).value = {{arg[0-9]+}} + LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
 // REWRITES-DAG: }
-// REWRITES-DAG: fn root_to_int() -> i32 {
+// REWRITES-DAG: #[unsafe(no_mangle)]
+// REWRITES-DAG: pub extern "C" fn root_to_int() -> i32 {
 // REWRITES-DAG: let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]);
 // REWRITES-DAG: let {{_v[0-9]+}}: LongDouble = unsafe { __slate_sqrtl__rf80_f80({{_v[0-9]+}}) };
 // REWRITES-DAG: return ({{_v[0-9]+}} == LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64])) as i32;

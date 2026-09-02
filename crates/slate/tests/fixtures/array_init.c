@@ -1,8 +1,3 @@
-
-// REWRITES-LABEL: {{^}}fn main() {
-// REWRITES-NOT: if !(i < 5)
-// REWRITES: {{^}}}
-
 #include <stdio.h>
 
 int main(void) {
@@ -100,3 +95,55 @@ int main(void) {
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
+
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES: #![feature(c_variadic)]
+// REWRITES-NEXT: #![allow(
+// REWRITES-NEXT:     dead_code,
+// REWRITES-NEXT:     unused,
+// REWRITES-NEXT:     non_camel_case_types,
+// REWRITES-NEXT:     non_snake_case,
+// REWRITES-NEXT:     non_upper_case_globals,
+// REWRITES-NEXT:     arithmetic_overflow,
+// REWRITES-NEXT:     unconditional_panic,
+// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-NEXT:     unused_comparisons
+// REWRITES-NEXT: )]
+// REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT:     let mut a: aligned::Aligned<aligned::A16, [i32; 5]> = aligned::Aligned([0; 5]);
+// REWRITES-NEXT:     let mut partial: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
+// REWRITES-NEXT:     let mut s: [i8; 6] = [0; 6];
+// REWRITES-NEXT:     let mut padded: [i8; 8] = [0; 8];
+// REWRITES-NEXT:     let mut sum: i32 = 0;
+// REWRITES-NEXT:     *a = [1, 2, 3, 4, 5];
+// REWRITES-NEXT:     *partial = [7, 8, 0, 0];
+// REWRITES-NEXT:     s = [104, 101, 108, 108, 111, 0];
+// REWRITES-NEXT:     padded = [104, 105, 0, 0, 0, 0, 0, 0];
+// REWRITES-NEXT:     for i in a.iter().copied() {
+// REWRITES-NEXT:         sum = sum + i;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), sum) };
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         printf(
+// REWRITES-NEXT:             c"%d %d\n".as_ptr(),
+// REWRITES-NEXT:             partial[((1 as i64) as usize)],
+// REWRITES-NEXT:             partial[((3 as i64) as usize)],
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { printf(c"%s\n".as_ptr(), s.as_mut_ptr() as *mut i8) };
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         printf(
+// REWRITES-NEXT:             c"%s %d\n".as_ptr(),
+// REWRITES-NEXT:             padded.as_mut_ptr() as *mut i8,
+// REWRITES-NEXT:             padded[((4 as i64) as usize)] as i32,
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// SLATE-FILECHECK-END rewrites

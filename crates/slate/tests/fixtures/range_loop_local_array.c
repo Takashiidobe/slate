@@ -101,19 +101,8 @@ int main(void) {
 // REWRITES-NEXT:     let mut total: i32 = 0;
 // REWRITES-NEXT:     *a = [1, 2, 3, 4, 5];
 // REWRITES-NEXT:     total = 0;
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let mut i: i32 = 0;
-// REWRITES-NEXT:         i = 0;
-// REWRITES-NEXT:         loop {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 5;
-// REWRITES-NEXT:             if !(i < {{_v[0-9]+}}) {
-// REWRITES-NEXT:                 break;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             {
-// REWRITES-NEXT:                 total = total + a[((i as i64) as usize)];
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             i = i + 1;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     for i in a.iter().copied() {
+// REWRITES-NEXT:         total = total + i;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return total;
 // REWRITES-NEXT: }

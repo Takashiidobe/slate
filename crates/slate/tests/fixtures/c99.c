@@ -1171,19 +1171,15 @@ int main(void) {
 // REWRITES-NEXT:     let mut values: *mut i32 = {{arg[0-9]+}};
 // REWRITES-NEXT:     let mut total: i32 = 0;
 // REWRITES-NEXT:     total = 0;
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let mut index: i32 = 0;
-// REWRITES-NEXT:         loop {
-// REWRITES-NEXT:             if !(index < length) {
-// REWRITES-NEXT:                 break;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             {
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: *mut i32 = values;
-// REWRITES-NEXT:                 unsafe { {{_v[0-9]+}}.offset((index as i64) as isize) };
-// REWRITES-NEXT:                 total = total + unsafe { __arg40_view[(index as usize)] };
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             index = index + 1;
+// REWRITES-NEXT:     let mut index: i32 = 0;
+// REWRITES-NEXT:     loop {
+// REWRITES-NEXT:         if !(index < length) {
+// REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = values;
+// REWRITES-NEXT:         unsafe { {{_v[0-9]+}}.offset((index as i64) as isize) };
+// REWRITES-NEXT:         total = total + unsafe { __arg40_view[(index as usize)] };
+// REWRITES-NEXT:         index = index + 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return total;
 // REWRITES-NEXT: }
@@ -1429,213 +1425,178 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 4;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc(({{_v[0-9]+}} + {{_v[0-9]+}} * {{_v[0-9]+}}) as usize) };
 // REWRITES-NEXT:     flexible = {{_v[0-9]+}} as *mut C99Flexible;
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut C99Flexible = std::ptr::null_mut();
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = flexible == {{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             __retval = 2;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut C99Flexible = std::ptr::null_mut();
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = flexible == {{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         __retval = 2;
+// REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         (*flexible).count = 3;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let mut index: u64 = 0;
-// REWRITES-NEXT:         index = 0;
-// REWRITES-NEXT:         loop {
-// REWRITES-NEXT:             if !(index < unsafe { (*flexible).count }) {
-// REWRITES-NEXT:                 break;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             {
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = (index as i32) + {{_v[0-9]+}};
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: u64 = index;
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: *mut C99Flexible = flexible;
-// REWRITES-NEXT:                 unsafe {
-// REWRITES-NEXT:                     *(*{{_v[0-9]+}}).values.as_mut_ptr().add({{_v[0-9]+}} as usize) = {{_v[0-9]+}};
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: u64 = index;
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: *mut C99Flexible = flexible;
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { *(*{{_v[0-9]+}}).values.as_mut_ptr().add({{_v[0-9]+}} as usize) };
-// REWRITES-NEXT:                 flexible_total = flexible_total + {{_v[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             index = index + 1;
+// REWRITES-NEXT:     for index in 0..unsafe { (*flexible).count } {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = (index as i32) + {{_v[0-9]+}};
+// REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = index;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut C99Flexible = flexible;
+// REWRITES-NEXT:         unsafe {
+// REWRITES-NEXT:             *(*{{_v[0-9]+}}).values.as_mut_ptr().add({{_v[0-9]+}} as usize) = {{_v[0-9]+}};
 // REWRITES-NEXT:         }
+// REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = index;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut C99Flexible = flexible;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { *(*{{_v[0-9]+}}).values.as_mut_ptr().add({{_v[0-9]+}} as usize) };
+// REWRITES-NEXT:         flexible_total = flexible_total + {{_v[0-9]+}};
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { free(flexible as *mut core::ffi::c_void) };
 // REWRITES-NEXT:     length = 3;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = length as u64;
 // REWRITES-NEXT:     saved_stack = 0usize as *mut u8;
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let mut variable_length_array: Vec<i32> = vec![0; {{_v[0-9]+}} as usize];
-// REWRITES-NEXT:         {
-// REWRITES-NEXT:             let mut index2: i32 = 0;
-// REWRITES-NEXT:             index2 = 0;
-// REWRITES-NEXT:             loop {
-// REWRITES-NEXT:                 if !(index2 < length) {
-// REWRITES-NEXT:                     break;
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 {
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = 4;
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = index2 + {{_v[0-9]+}};
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: *mut i32 = unsafe {
-// REWRITES-NEXT:                         variable_length_array
-// REWRITES-NEXT:                             .as_mut_ptr()
-// REWRITES-NEXT:                             .offset((index2 as i64) as isize)
-// REWRITES-NEXT:                     };
-// REWRITES-NEXT:                     unsafe {
-// REWRITES-NEXT:                         *{{_v[0-9]+}} = {{_v[0-9]+}};
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 index2 = index2 + 1;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:         vm_total = c99_vm_sum(length, variable_length_array.as_mut_ptr());
-// REWRITES-NEXT:         initializer_seed = 19;
-// REWRITES-NEXT:         nonconstant_initializer.first = initializer_seed;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:         nonconstant_initializer.second = initializer_seed + {{_v[0-9]+}};
-// REWRITES-NEXT:         designated_initializer = C99Pair {
-// REWRITES-NEXT:             first: 22,
-// REWRITES-NEXT:             second: 23,
-// REWRITES-NEXT:         };
-// REWRITES-NEXT:         *designated_array = [27, 0, 29, 0];
-// REWRITES-NEXT:         const_value = 31;
-// REWRITES-NEXT:         idempotent_const_value = const_value;
-// REWRITES-NEXT:         unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(volatile_value), 37 as i32) };
-// REWRITES-NEXT:         unsafe {
-// REWRITES-NEXT:             std::ptr::write_volatile(std::ptr::addr_of_mut!(idempotent_volatile_value), unsafe {
-// REWRITES-NEXT:                 std::ptr::read_volatile(std::ptr::addr_of!(volatile_value))
-// REWRITES-NEXT:             })
-// REWRITES-NEXT:         };
-// REWRITES-NEXT:         restricted_value = 41;
-// REWRITES-NEXT:         restricted_pointer = std::ptr::addr_of_mut!(restricted_value);
-// REWRITES-NEXT:         hexadecimal_float = 3.0;
-// REWRITES-NEXT:         compound_pair = C99Pair {
-// REWRITES-NEXT:             first: 43,
-// REWRITES-NEXT:             second: 47,
-// REWRITES-NEXT:         };
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = _compoundliteral.as_mut_ptr() as *mut i32;
-// REWRITES-NEXT:         unsafe {
-// REWRITES-NEXT:             *{{_v[0-9]+}} = 51;
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
-// REWRITES-NEXT:         unsafe {
-// REWRITES-NEXT:             *{{_v[0-9]+}} = 53;
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:         compound_array_value = _compoundliteral[((1 as i64) as usize)];
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = -7;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:         signed_quotient = {{_v[0-9]+}} / {{_v[0-9]+}};
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = -7;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:         signed_remainder = {{_v[0-9]+}} % {{_v[0-9]+}};
-// REWRITES-NEXT:         mixed_order = 59;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-NEXT:         mixed_order = mixed_order + {{_v[0-9]+}};
-// REWRITES-NEXT:         declaration_after_statement = 61;
-// REWRITES-NEXT:         for_total = 0;
-// REWRITES-NEXT:         {
-// REWRITES-NEXT:             let mut index3: i32 = 0;
-// REWRITES-NEXT:             index3 = 0;
-// REWRITES-NEXT:             loop {
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:                 if !(index3 < {{_v[0-9]+}}) {
-// REWRITES-NEXT:                     break;
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 {
-// REWRITES-NEXT:                     for_total = for_total + index3;
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 index3 = index3 + 1;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:         qualified_values = [2, 3, 5];
-// REWRITES-NEXT:         macro_total = sum3(7 as i32, 11 as i32, 13 as i32);
-// REWRITES-NEXT:         translation_limit_total = c99_thirty_two_parameters(
-// REWRITES-NEXT:             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-// REWRITES-NEXT:             1, 1, 1,
-// REWRITES-NEXT:         );
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 32;
+// REWRITES-NEXT:     let mut variable_length_array: Vec<i32> = vec![0; {{_v[0-9]+}} as usize];
+// REWRITES-NEXT:     for index2 in 0..length {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 4;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 16;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 8;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:         fenv_clear = unsafe { feclearexcept(({{_v[0-9]+}} | {{_v[0-9]+}} | {{_v[0-9]+}} | {{_v[0-9]+}} | {{_v[0-9]+}}) as i32) };
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 32;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 4;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 16;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 8;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:         fenv_flags = unsafe { fetestexcept(({{_v[0-9]+}} | {{_v[0-9]+}} | {{_v[0-9]+}} | {{_v[0-9]+}} | {{_v[0-9]+}}) as i32) };
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = b"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = b"main\0".as_ptr() as *mut i8;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = α;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 =
-// REWRITES-NEXT:             unsafe { c99_external_identifier_with_more_than_thirty_one_significant_characters };
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { slash_comment_value };
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = enhanced_arithmetic;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = flexible_total;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = vm_total;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = nonconstant_initializer.first + nonconstant_initializer.second;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = designated_initializer.first + designated_initializer.second;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 =
-// REWRITES-NEXT:             designated_array[((0 as i64) as usize)] + designated_array[((2 as i64) as usize)];
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = idempotent_const_value;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 =
-// REWRITES-NEXT:             unsafe { std::ptr::read_volatile(std::ptr::addr_of!(idempotent_volatile_value)) };
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { *restricted_pointer };
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = hexadecimal_float as i32;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = compound_pair.first + compound_pair.second;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = compound_array_value;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = signed_quotient;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = signed_remainder;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = mixed_order;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = declaration_after_statement;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = for_total;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = c99_inline_square(8);
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = qualified_values.as_mut_ptr() as *mut i32;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = macro_total;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = translation_limit_total;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = C99TrailingComma::C99_ENUM_VALUE as i32;
-// REWRITES-NEXT:         unsafe {
-// REWRITES-NEXT:             printf(
-// REWRITES-NEXT:                 {{_v[0-9]+}} as *const core::ffi::c_char,
-// REWRITES-NEXT:                 {{_v[0-9]+}},
-// REWRITES-NEXT:                 {{_v[0-9]+}},
-// REWRITES-NEXT:                 {{_v[0-9]+}},
-// REWRITES-NEXT:                 {{_v[0-9]+}},
-// REWRITES-NEXT:                 {{_v[0-9]+}},
-// REWRITES-NEXT:                 {{_v[0-9]+}},
-// REWRITES-NEXT:                 {{_v[0-9]+}},
-// REWRITES-NEXT:                 {{_v[0-9]+}},
-// REWRITES-NEXT:                 {{_v[0-9]+}},
-// REWRITES-NEXT:                 {{_v[0-9]+}},
-// REWRITES-NEXT:                 {{_v[0-9]+}},
-// REWRITES-NEXT:                 {{_v[0-9]+}},
-// REWRITES-NEXT:                 {{_v[0-9]+}},
-// REWRITES-NEXT:                 {{_v[0-9]+}},
-// REWRITES-NEXT:                 {{_v[0-9]+}},
-// REWRITES-NEXT:                 {{_v[0-9]+}},
-// REWRITES-NEXT:                 {{_v[0-9]+}},
-// REWRITES-NEXT:                 {{_v[0-9]+}},
-// REWRITES-NEXT:                 {{_v[0-9]+}},
-// REWRITES-NEXT:                 {{_v[0-9]+}},
-// REWRITES-NEXT:                 {{_v[0-9]+}},
-// REWRITES-NEXT:                 {{_v[0-9]+}},
-// REWRITES-NEXT:                 c99_qualified_array_sum({{_v[0-9]+}}),
-// REWRITES-NEXT:                 {{_v[0-9]+}},
-// REWRITES-NEXT:                 {{_v[0-9]+}},
-// REWRITES-NEXT:                 {{_v[0-9]+}},
-// REWRITES-NEXT:                 fenv_clear,
-// REWRITES-NEXT:                 fenv_flags,
-// REWRITES-NEXT:                 c99_restrict_sum(
-// REWRITES-NEXT:                     unsafe { &(*std::ptr::addr_of_mut!(qualified_values[((0 as i64) as usize)])) },
-// REWRITES-NEXT:                     unsafe { &(*std::ptr::addr_of_mut!(qualified_values[((1 as i64) as usize)])) },
-// REWRITES-NEXT:                 ),
-// REWRITES-NEXT:             )
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = index2 + {{_v[0-9]+}};
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = unsafe {
+// REWRITES-NEXT:             variable_length_array
+// REWRITES-NEXT:                 .as_mut_ptr()
+// REWRITES-NEXT:                 .offset((index2 as i64) as isize)
 // REWRITES-NEXT:         };
+// REWRITES-NEXT:         unsafe {
+// REWRITES-NEXT:             *{{_v[0-9]+}} = {{_v[0-9]+}};
+// REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
+// REWRITES-NEXT:     vm_total = c99_vm_sum(length, variable_length_array.as_mut_ptr());
+// REWRITES-NEXT:     initializer_seed = 19;
+// REWRITES-NEXT:     nonconstant_initializer.first = initializer_seed;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     nonconstant_initializer.second = initializer_seed + {{_v[0-9]+}};
+// REWRITES-NEXT:     designated_initializer = C99Pair {
+// REWRITES-NEXT:         first: 22,
+// REWRITES-NEXT:         second: 23,
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     *designated_array = [27, 0, 29, 0];
+// REWRITES-NEXT:     const_value = 31;
+// REWRITES-NEXT:     idempotent_const_value = const_value;
+// REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(volatile_value), 37 as i32) };
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         std::ptr::write_volatile(std::ptr::addr_of_mut!(idempotent_volatile_value), unsafe {
+// REWRITES-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(volatile_value))
+// REWRITES-NEXT:         })
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     restricted_value = 41;
+// REWRITES-NEXT:     restricted_pointer = std::ptr::addr_of_mut!(restricted_value);
+// REWRITES-NEXT:     hexadecimal_float = 3.0;
+// REWRITES-NEXT:     compound_pair = C99Pair {
+// REWRITES-NEXT:         first: 43,
+// REWRITES-NEXT:         second: 47,
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = _compoundliteral.as_mut_ptr() as *mut i32;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         *{{_v[0-9]+}} = 51;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         *{{_v[0-9]+}} = 53;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     compound_array_value = _compoundliteral[((1 as i64) as usize)];
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = -7;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 3;
+// REWRITES-NEXT:     signed_quotient = {{_v[0-9]+}} / {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = -7;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 3;
+// REWRITES-NEXT:     signed_remainder = {{_v[0-9]+}} % {{_v[0-9]+}};
+// REWRITES-NEXT:     mixed_order = 59;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 2;
+// REWRITES-NEXT:     mixed_order = mixed_order + {{_v[0-9]+}};
+// REWRITES-NEXT:     declaration_after_statement = 61;
+// REWRITES-NEXT:     for_total = 0;
+// REWRITES-NEXT:     for index3 in 0..3 {
+// REWRITES-NEXT:         for_total = for_total + index3;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     qualified_values = [2, 3, 5];
+// REWRITES-NEXT:     macro_total = sum3(7 as i32, 11 as i32, 13 as i32);
+// REWRITES-NEXT:     translation_limit_total = c99_thirty_two_parameters(
+// REWRITES-NEXT:         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+// REWRITES-NEXT:         1, 1,
+// REWRITES-NEXT:     );
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 32;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 4;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 16;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     fenv_clear = unsafe { feclearexcept(({{_v[0-9]+}} | {{_v[0-9]+}} | {{_v[0-9]+}} | {{_v[0-9]+}} | {{_v[0-9]+}}) as i32) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 32;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 4;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 16;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     fenv_flags = unsafe { fetestexcept(({{_v[0-9]+}} | {{_v[0-9]+}} | {{_v[0-9]+}} | {{_v[0-9]+}} | {{_v[0-9]+}}) as i32) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"main\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = α;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 =
+// REWRITES-NEXT:         unsafe { c99_external_identifier_with_more_than_thirty_one_significant_characters };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { slash_comment_value };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = enhanced_arithmetic;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = flexible_total;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = vm_total;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = nonconstant_initializer.first + nonconstant_initializer.second;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = designated_initializer.first + designated_initializer.second;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 =
+// REWRITES-NEXT:         designated_array[((0 as i64) as usize)] + designated_array[((2 as i64) as usize)];
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = idempotent_const_value;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 =
+// REWRITES-NEXT:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(idempotent_volatile_value)) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *restricted_pointer };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = hexadecimal_float as i32;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = compound_pair.first + compound_pair.second;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = compound_array_value;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = signed_quotient;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = signed_remainder;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = mixed_order;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = declaration_after_statement;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = for_total;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = c99_inline_square(8);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = qualified_values.as_mut_ptr() as *mut i32;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = macro_total;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = translation_limit_total;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = C99TrailingComma::C99_ENUM_VALUE as i32;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         printf(
+// REWRITES-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             c99_qualified_array_sum({{_v[0-9]+}}),
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             fenv_clear,
+// REWRITES-NEXT:             fenv_flags,
+// REWRITES-NEXT:             c99_restrict_sum(
+// REWRITES-NEXT:                 unsafe { &(*std::ptr::addr_of_mut!(qualified_values[((0 as i64) as usize)])) },
+// REWRITES-NEXT:                 unsafe { &(*std::ptr::addr_of_mut!(qualified_values[((1 as i64) as usize)])) },
+// REWRITES-NEXT:             ),
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
 // REWRITES-NEXT:     std::process::exit(__retval as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

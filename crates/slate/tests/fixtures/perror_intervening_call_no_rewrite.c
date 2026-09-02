@@ -88,14 +88,12 @@ int main(void) {
 // REWRITES-NEXT:     __retval = 0;
 // REWRITES-NEXT:     rc = unsafe { remove(c"slate_perror_intervening_missing.tmp".as_ptr()) };
 // REWRITES-NEXT:     unsafe { fflush((unsafe { stdout }) as *mut libc::FILE) };
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = rc < {{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { perror(c"remove failed".as_ptr()) };
-// REWRITES-NEXT:             __retval = 1;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = rc < {{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { perror(c"remove failed".as_ptr()) };
+// REWRITES-NEXT:         __retval = 1;
+// REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     __retval = 0;
 // REWRITES-NEXT:     std::process::exit(__retval as i32);

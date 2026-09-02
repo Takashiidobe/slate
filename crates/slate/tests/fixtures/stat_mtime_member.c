@@ -224,19 +224,17 @@ int main(void) {
 // REWRITES-NEXT:         },
 // REWRITES-NEXT:         __unused: [0; 3],
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe {
-// REWRITES-NEXT:             stat(
-// REWRITES-NEXT:                 c"/dev/null".as_ptr(),
-// REWRITES-NEXT:                 std::ptr::addr_of_mut!(info) as *mut stat,
-// REWRITES-NEXT:             )
-// REWRITES-NEXT:         };
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             __retval = 1;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
+// REWRITES-NEXT:         stat(
+// REWRITES-NEXT:             c"/dev/null".as_ptr(),
+// REWRITES-NEXT:             std::ptr::addr_of_mut!(info) as *mut stat,
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         __retval = 1;
+// REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = info.st_mtim.tv_sec;
 // REWRITES-NEXT:     unsafe { printf(c"%lld\n".as_ptr(), {{_v[0-9]+}}) };

@@ -1252,18 +1252,14 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         arguments = __slate_va_args.clone();
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         index = 0;
-// REWRITES-NEXT:         loop {
-// REWRITES-NEXT:             if !(index < count) {
-// REWRITES-NEXT:                 break;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             {
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { arguments.next_arg::<i32>() };
-// REWRITES-NEXT:                 total = total + {{_v[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             index = index + 1;
+// REWRITES-NEXT:     index = 0;
+// REWRITES-NEXT:     loop {
+// REWRITES-NEXT:         if !(index < count) {
+// REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { arguments.next_arg::<i32>() };
+// REWRITES-NEXT:         total = total + {{_v[0-9]+}};
+// REWRITES-NEXT:         index = index + 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return total;
 // REWRITES-NEXT: }

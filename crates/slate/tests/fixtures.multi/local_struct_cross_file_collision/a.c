@@ -40,20 +40,8 @@ int run_a(void) {
 // REWRITES-DAG: },
 // REWRITES-DAG: ];
 // REWRITES-DAG: total = 0;
-// REWRITES-DAG: {
-// REWRITES-DAG: let mut i: i32 = 0;
-// REWRITES-DAG: i = 0;
-// REWRITES-DAG: loop {
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-DAG: if !(i < {{_v[0-9]+}}) {
-// REWRITES-DAG: break;
-// REWRITES-DAG: }
-// REWRITES-DAG: {
-// REWRITES-DAG: total = total
-// REWRITES-DAG: + items[((i as i64) as usize)].value * items[((i as i64) as usize)].weight;
-// REWRITES-DAG: }
-// REWRITES-DAG: i = i + 1;
-// REWRITES-DAG: }
+// REWRITES-DAG: for i in 0..2 {
+// REWRITES-DAG: total = total + items[((i as i64) as usize)].value * items[((i as i64) as usize)].weight;
 // REWRITES-DAG: }
 // REWRITES-DAG: return total;
 // REWRITES-DAG: }

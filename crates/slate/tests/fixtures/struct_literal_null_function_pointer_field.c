@@ -145,19 +145,15 @@ int main(void) {
 // REWRITES-NEXT:     let mut h: Handlers = {{_v[0-9]+}};
 // REWRITES-NEXT:     let mut total: i32 = 0;
 // REWRITES-NEXT:     total = 0;
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> i32> = None;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = h.onEvent != {{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { h.onEvent.unwrap()(1 as i32) };
-// REWRITES-NEXT:             total = total + {{_v[0-9]+}};
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> i32> = None;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = h.onEvent != {{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { h.onEvent.unwrap()(1 as i32) };
+// REWRITES-NEXT:         total = total + {{_v[0-9]+}};
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = std::ptr::null_mut();
-// REWRITES-NEXT:         if h.counter != {{_v[0-9]+}} {
-// REWRITES-NEXT:             total = total + unsafe { *h.counter };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = std::ptr::null_mut();
+// REWRITES-NEXT:     if h.counter != {{_v[0-9]+}} {
+// REWRITES-NEXT:         total = total + unsafe { *h.counter };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return total;
 // REWRITES-NEXT: }

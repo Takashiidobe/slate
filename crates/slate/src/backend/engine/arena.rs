@@ -500,16 +500,15 @@ impl Arena {
         kind
     }
 
-    pub(in crate::backend) fn reparent_children(
-        &mut self,
-        kind: &mut NodeKind,
-        new_parent: Option<NodeId>,
-    ) {
-        for list in kind.child_lists_mut() {
-            for &child in list.iter() {
-                self.set_parent(child, new_parent);
-            }
+    pub(in crate::backend) fn discard_subtree(&mut self, id: NodeId) {
+        let children: Vec<NodeId> = self
+            .get(id)
+            .map(|kind| kind.child_lists().into_iter().flatten().copied().collect())
+            .unwrap_or_default();
+        for child in children {
+            self.discard_subtree(child);
         }
+        self.take(id);
     }
 
     pub(in crate::backend) fn live_ids(&self) -> Vec<NodeId> {

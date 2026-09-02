@@ -1689,23 +1689,17 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"div_assign\0".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let mut byval9: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval9)) });
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = !(a == a);
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { abort() };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = !(a == a);
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = a == b;
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { abort() };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = a == b;
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = !(a != b);
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { abort() };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = !(a != b);
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"mix\0".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
@@ -1751,22 +1745,18 @@ int main(void) {
 // REWRITES-NEXT:     let mut byval: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval)) });
 // REWRITES-NEXT:     back = {{_v[0-9]+}}.re;
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = back != LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]);
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { abort() };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = back != LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]);
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]),
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     real_part = {{_v[0-9]+}}.re;
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = real_part != LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { abort() };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = real_part != LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;

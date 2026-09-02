@@ -182,17 +182,15 @@ int main(void) {
 // REWRITES-NEXT:         if !{{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         {
-// REWRITES-NEXT:             unsafe {
-// REWRITES-NEXT:                 *unsafe { (*c).p } = n;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             n = n + 1;
-// REWRITES-NEXT:             let {{_v[0-9]+}}: *mut cursor = c;
-// REWRITES-NEXT:             let {{_v[0-9]+}}: *mut u8 = unsafe { (*{{_v[0-9]+}}).p };
-// REWRITES-NEXT:             let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add(1) };
-// REWRITES-NEXT:             unsafe {
-// REWRITES-NEXT:                 (*{{_v[0-9]+}}).p = {{_v[0-9]+}};
-// REWRITES-NEXT:             }
+// REWRITES-NEXT:         unsafe {
+// REWRITES-NEXT:             *unsafe { (*c).p } = n;
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:         n = n + 1;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut cursor = c;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut u8 = unsafe { (*{{_v[0-9]+}}).p };
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add(1) };
+// REWRITES-NEXT:         unsafe {
+// REWRITES-NEXT:             (*{{_v[0-9]+}}).p = {{_v[0-9]+}};
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return;
@@ -205,19 +203,8 @@ int main(void) {
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let mut total: i32 = 0;
 // REWRITES-NEXT:     fill(unsafe { &mut (*std::ptr::addr_of_mut!(c)) }, 1);
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let mut i: i32 = 0;
-// REWRITES-NEXT:         i = 0;
-// REWRITES-NEXT:         loop {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 8;
-// REWRITES-NEXT:             if !(i < {{_v[0-9]+}}) {
-// REWRITES-NEXT:                 break;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             {
-// REWRITES-NEXT:                 total = total + (c.buf[((i as i64) as usize)] as i32);
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             i = i + 1;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     for i in 0..8 {
+// REWRITES-NEXT:         total = total + (c.buf[((i as i64) as usize)] as i32);
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), total) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

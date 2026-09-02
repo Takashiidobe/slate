@@ -122,21 +122,13 @@ int main(void) {
 // REWRITES-NEXT: fn fill_values({{arg[0-9]+}}: &mut [i32]) {
 // REWRITES-NEXT:     let mut values: *mut i32 = {{arg[0-9]+}}.as_mut_ptr() as *mut i32;
 // REWRITES-NEXT:     let mut len: i32 = {{arg[0-9]+}}.len() as i32;
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let mut i: i32 = 0;
-// REWRITES-NEXT:         i = 0;
-// REWRITES-NEXT:         loop {
-// REWRITES-NEXT:             if !(i < len) {
-// REWRITES-NEXT:                 break;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = i * {{_v[0-9]+}};
-// REWRITES-NEXT:             let {{_v[0-9]+}}: *mut i32 = values;
-// REWRITES-NEXT:             let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
-// REWRITES-NEXT:             unsafe {
-// REWRITES-NEXT:                 *{{_v[0-9]+}} = {{_v[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             i = i + 1;
+// REWRITES-NEXT:     for i in 0..len {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 3;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = i * {{_v[0-9]+}};
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = values;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
+// REWRITES-NEXT:         unsafe {
+// REWRITES-NEXT:             *{{_v[0-9]+}} = {{_v[0-9]+}};
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return;

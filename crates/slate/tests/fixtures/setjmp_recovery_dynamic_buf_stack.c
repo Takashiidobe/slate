@@ -191,21 +191,19 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn inner({{arg[0-9]+}}: i32) {
 // REWRITES-NEXT:     let mut fail: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = fail != 0;
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = (unsafe { jb_top }) - 1;
-// REWRITES-NEXT:             unsafe {
-// REWRITES-NEXT:                 jb_top = {{_v[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             let {{_v[0-9]+}}: *mut [__slate_jmp_buf_tag; 1] = unsafe { jb_stack };
-// REWRITES-NEXT:             unsafe {
-// REWRITES-NEXT:                 longjmp(
-// REWRITES-NEXT:                     (unsafe { {{_v[0-9]+}}.offset(({{_v[0-9]+}} as i64) as isize) }) as *mut __slate_jmp_buf_tag,
-// REWRITES-NEXT:                     42 as i32,
-// REWRITES-NEXT:                 )
-// REWRITES-NEXT:             };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = fail != 0;
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = (unsafe { jb_top }) - 1;
+// REWRITES-NEXT:         unsafe {
+// REWRITES-NEXT:             jb_top = {{_v[0-9]+}};
 // REWRITES-NEXT:         }
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut [__slate_jmp_buf_tag; 1] = unsafe { jb_stack };
+// REWRITES-NEXT:         unsafe {
+// REWRITES-NEXT:             longjmp(
+// REWRITES-NEXT:                 (unsafe { {{_v[0-9]+}}.offset(({{_v[0-9]+}} as i64) as isize) }) as *mut __slate_jmp_buf_tag,
+// REWRITES-NEXT:                 42 as i32,
+// REWRITES-NEXT:             )
+// REWRITES-NEXT:         };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
@@ -213,22 +211,20 @@ int main(void) {
 // REWRITES-NEXT: fn run_case({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) {
 // REWRITES-NEXT:     let mut id: i32 = {{arg[0-9]+}};
 // REWRITES-NEXT:     let mut fail: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { jb_top };
-// REWRITES-NEXT:         unsafe {
-// REWRITES-NEXT:             jb_top = {{_v[0-9]+}} + 1;
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut [__slate_jmp_buf_tag; 1] = unsafe { jb_stack };
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut [__slate_jmp_buf_tag; 1] = unsafe { {{_v[0-9]+}}.offset(({{_v[0-9]+}} as i64) as isize) };
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             inner(fail);
-// REWRITES-NEXT:             unsafe { printf(c"case %d: no exception\n".as_ptr(), id) };
-// REWRITES-NEXT:         } else {
-// REWRITES-NEXT:             unsafe { printf(c"case %d: caught\n".as_ptr(), id) };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { jb_top };
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         jb_top = {{_v[0-9]+}} + 1;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut [__slate_jmp_buf_tag; 1] = unsafe { jb_stack };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut [__slate_jmp_buf_tag; 1] = unsafe { {{_v[0-9]+}}.offset(({{_v[0-9]+}} as i64) as isize) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         inner(fail);
+// REWRITES-NEXT:         unsafe { printf(c"case %d: no exception\n".as_ptr(), id) };
+// REWRITES-NEXT:     } else {
+// REWRITES-NEXT:         unsafe { printf(c"case %d: caught\n".as_ptr(), id) };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }

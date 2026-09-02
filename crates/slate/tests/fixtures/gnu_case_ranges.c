@@ -218,41 +218,37 @@ int main(void) {
 // REWRITES-NEXT:     let mut value: i32 = {{arg[0-9]+}};
 // REWRITES-NEXT:     let mut result: i32 = 0;
 // REWRITES-NEXT:     result = 0;
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         {
-// REWRITES-NEXT:             let __switch_value0 = value;
-// REWRITES-NEXT:             let mut __switch_case0: i32 = match __switch_value0 {
-// REWRITES-NEXT:                 1..=4 => 0,
-// REWRITES-NEXT:                 5..=8 => 1,
-// REWRITES-NEXT:                 10..=12 => 2,
-// REWRITES-NEXT:                 _ => 3,
-// REWRITES-NEXT:             };
-// REWRITES-NEXT:             '__switch0: loop {
-// REWRITES-NEXT:                 match __switch_case0 {
-// REWRITES-NEXT:                     0 => {
-// REWRITES-NEXT:                         let {{_v[0-9]+}}: i32 = 10;
-// REWRITES-NEXT:                         result = result + {{_v[0-9]+}};
-// REWRITES-NEXT:                         __switch_case0 = 1;
-// REWRITES-NEXT:                         continue '__switch0;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     1 => {
-// REWRITES-NEXT:                         let {{_v[0-9]+}}: i32 = 20;
-// REWRITES-NEXT:                         result = result + {{_v[0-9]+}};
-// REWRITES-NEXT:                         break '__switch0;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     2 => {
-// REWRITES-NEXT:                         let {{_v[0-9]+}}: i32 = 40;
-// REWRITES-NEXT:                         result = result + {{_v[0-9]+}};
-// REWRITES-NEXT:                         break '__switch0;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     3 => {
-// REWRITES-NEXT:                         result = 90;
-// REWRITES-NEXT:                         break '__switch0;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     _ => {
-// REWRITES-NEXT:                         break '__switch0;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                 }
+// REWRITES-NEXT:     let __switch_value0 = value;
+// REWRITES-NEXT:     let mut __switch_case0: i32 = match __switch_value0 {
+// REWRITES-NEXT:         1..=4 => 0,
+// REWRITES-NEXT:         5..=8 => 1,
+// REWRITES-NEXT:         10..=12 => 2,
+// REWRITES-NEXT:         _ => 3,
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     '__switch0: loop {
+// REWRITES-NEXT:         match __switch_case0 {
+// REWRITES-NEXT:             0 => {
+// REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = 10;
+// REWRITES-NEXT:                 result = result + {{_v[0-9]+}};
+// REWRITES-NEXT:                 __switch_case0 = 1;
+// REWRITES-NEXT:                 continue '__switch0;
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             1 => {
+// REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = 20;
+// REWRITES-NEXT:                 result = result + {{_v[0-9]+}};
+// REWRITES-NEXT:                 break '__switch0;
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             2 => {
+// REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = 40;
+// REWRITES-NEXT:                 result = result + {{_v[0-9]+}};
+// REWRITES-NEXT:                 break '__switch0;
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             3 => {
+// REWRITES-NEXT:                 result = 90;
+// REWRITES-NEXT:                 break '__switch0;
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             _ => {
+// REWRITES-NEXT:                 break '__switch0;
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
@@ -262,27 +258,23 @@ int main(void) {
 // REWRITES-NEXT: fn classify_direct({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     let mut value: i32 = {{arg[0-9]+}};
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         {
-// REWRITES-NEXT:             let __switch_value0 = value;
-// REWRITES-NEXT:             let mut __switch_case0: i32 = match __switch_value0 {
-// REWRITES-NEXT:                 -2..=2 => 0,
-// REWRITES-NEXT:                 _ => 1,
-// REWRITES-NEXT:             };
-// REWRITES-NEXT:             '__switch0: loop {
-// REWRITES-NEXT:                 match __switch_case0 {
-// REWRITES-NEXT:                     0 => {
-// REWRITES-NEXT:                         __retval = 7;
-// REWRITES-NEXT:                         return __retval;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     1 => {
-// REWRITES-NEXT:                         __retval = 9;
-// REWRITES-NEXT:                         return __retval;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     _ => {
-// REWRITES-NEXT:                         break '__switch0;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                 }
+// REWRITES-NEXT:     let __switch_value0 = value;
+// REWRITES-NEXT:     let mut __switch_case0: i32 = match __switch_value0 {
+// REWRITES-NEXT:         -2..=2 => 0,
+// REWRITES-NEXT:         _ => 1,
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     '__switch0: loop {
+// REWRITES-NEXT:         match __switch_case0 {
+// REWRITES-NEXT:             0 => {
+// REWRITES-NEXT:                 __retval = 7;
+// REWRITES-NEXT:                 return __retval;
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             1 => {
+// REWRITES-NEXT:                 __retval = 9;
+// REWRITES-NEXT:                 return __retval;
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             _ => {
+// REWRITES-NEXT:                 break '__switch0;
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }

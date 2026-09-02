@@ -110,14 +110,10 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
 // REWRITES-NEXT:     z = -({{_v[0-9]+}} * {{_v[0-9]+}});
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
-// REWRITES-NEXT:         contracted = {{_v[0-9]+}} * y + z;
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
-// REWRITES-NEXT:         uncontracted = {{_v[0-9]+}} * y + z;
-// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
+// REWRITES-NEXT:     contracted = {{_v[0-9]+}} * y + z;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
+// REWRITES-NEXT:     uncontracted = {{_v[0-9]+}} * y + z;
 // REWRITES-NEXT:     unsafe { printf(c"%.20e %.20e\n".as_ptr(), contracted, uncontracted) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }

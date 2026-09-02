@@ -108,21 +108,18 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag =
-// REWRITES-NEXT:             std::ptr::addr_of_mut!(frame).cast::<__slate_jmp_buf_tag>();
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe {
-// REWRITES-NEXT:                 longjmp(
-// REWRITES-NEXT:                     std::ptr::addr_of_mut!(frame).cast::<__slate_jmp_buf_tag>()
-// REWRITES-NEXT:                         as *mut __slate_jmp_buf_tag,
-// REWRITES-NEXT:                     42 as i32,
-// REWRITES-NEXT:                 )
-// REWRITES-NEXT:             };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag = std::ptr::addr_of_mut!(frame).cast::<__slate_jmp_buf_tag>();
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe {
+// REWRITES-NEXT:             longjmp(
+// REWRITES-NEXT:                 std::ptr::addr_of_mut!(frame).cast::<__slate_jmp_buf_tag>()
+// REWRITES-NEXT:                     as *mut __slate_jmp_buf_tag,
+// REWRITES-NEXT:                 42 as i32,
+// REWRITES-NEXT:             )
+// REWRITES-NEXT:         };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { printf(c"returned\n".as_ptr()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

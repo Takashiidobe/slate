@@ -790,34 +790,30 @@ int main(void) {
 // REWRITES-NEXT:     let mut value: i32 = {{arg[0-9]+}};
 // REWRITES-NEXT:     let mut result: i32 = 0;
 // REWRITES-NEXT:     result = 0;
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         {
-// REWRITES-NEXT:             let __switch_value0 = value;
-// REWRITES-NEXT:             let mut __switch_case0: i32 = match __switch_value0 {
-// REWRITES-NEXT:                 1 => 0,
-// REWRITES-NEXT:                 2 => 1,
-// REWRITES-NEXT:                 _ => 2,
-// REWRITES-NEXT:             };
-// REWRITES-NEXT:             '__switch0: loop {
-// REWRITES-NEXT:                 match __switch_case0 {
-// REWRITES-NEXT:                     0 => {
-// REWRITES-NEXT:                         let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:                         result = result + {{_v[0-9]+}};
-// REWRITES-NEXT:                         __switch_case0 = 1;
-// REWRITES-NEXT:                         continue '__switch0;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     1 => {
-// REWRITES-NEXT:                         let {{_v[0-9]+}}: i32 = 5;
-// REWRITES-NEXT:                         result = result + {{_v[0-9]+}};
-// REWRITES-NEXT:                         break '__switch0;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     2 => {
-// REWRITES-NEXT:                         break '__switch0;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     _ => {
-// REWRITES-NEXT:                         break '__switch0;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                 }
+// REWRITES-NEXT:     let __switch_value0 = value;
+// REWRITES-NEXT:     let mut __switch_case0: i32 = match __switch_value0 {
+// REWRITES-NEXT:         1 => 0,
+// REWRITES-NEXT:         2 => 1,
+// REWRITES-NEXT:         _ => 2,
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     '__switch0: loop {
+// REWRITES-NEXT:         match __switch_case0 {
+// REWRITES-NEXT:             0 => {
+// REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = 3;
+// REWRITES-NEXT:                 result = result + {{_v[0-9]+}};
+// REWRITES-NEXT:                 __switch_case0 = 1;
+// REWRITES-NEXT:                 continue '__switch0;
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             1 => {
+// REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = 5;
+// REWRITES-NEXT:                 result = result + {{_v[0-9]+}};
+// REWRITES-NEXT:                 break '__switch0;
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             2 => {
+// REWRITES-NEXT:                 break '__switch0;
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             _ => {
+// REWRITES-NEXT:                 break '__switch0;
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
@@ -951,12 +947,10 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 202311;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 202311;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}} == {{_v[0-9]+}}) as i32;
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c23_never_flag)) };
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             c23_never_return();
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c23_never_flag)) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         c23_never_return();
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     c23_label_before_brace();
 // REWRITES-NEXT:     unsafe {

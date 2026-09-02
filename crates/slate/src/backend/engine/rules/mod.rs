@@ -1,5 +1,7 @@
+mod array_iter;
 mod cstr_literal;
 mod dead_store;
+mod for_range;
 mod inline_temps;
 mod libc_call;
 mod peel_casts;
@@ -14,9 +16,9 @@ pub(super) fn registry() -> Vec<Box<dyn NodeRule>> {
     let mut rules: Vec<Box<dyn NodeRule>> = vec![
         Box::new(zero_init::ZeroInitFold),
         Box::new(raw_ptr_alias::RawPtrAliasElide),
-        Box::new(singleton_scopes::WhileLoopUnwrap),
-        Box::new(singleton_scopes::DoWhileLoopUnwrap),
-        Box::new(singleton_scopes::SingletonUnwrap),
+        Box::new(singleton_scopes::ScopeFlatten),
+        Box::new(for_range::ForRangeRecover),
+        Box::new(array_iter::ForArrayIterRecover),
         Box::new(inline_temps::LateInlineTemps),
         Box::new(inline_temps::EffectfulTempForward),
         Box::new(inline_temps::InlineConstArgTemps),

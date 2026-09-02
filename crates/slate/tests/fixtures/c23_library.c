@@ -1713,7 +1713,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe {
 // REWRITES-NEXT:         memccpy(
 // REWRITES-NEXT:             {{_v[0-9]+}} as *mut core::ffi::c_void,
-// REWRITES-NEXT:             ({{_v[0-9]+}} as *mut core::ffi::c_void) as *const core::ffi::c_void,
+// REWRITES-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_void,
 // REWRITES-NEXT:             99 as i32,
 // REWRITES-NEXT:             (6 as u64) as usize,
 // REWRITES-NEXT:         )
@@ -1789,7 +1789,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe {
 // REWRITES-NEXT:         memchr(
-// REWRITES-NEXT:             ({{_v[0-9]+}} as *mut core::ffi::c_void) as *const core::ffi::c_void,
+// REWRITES-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_void,
 // REWRITES-NEXT:             111 as i32,
 // REWRITES-NEXT:             (11 as u64) as usize,
 // REWRITES-NEXT:         )
@@ -1799,7 +1799,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = mutable_phrase.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe {
 // REWRITES-NEXT:         memchr(
-// REWRITES-NEXT:             ({{_v[0-9]+}} as *mut core::ffi::c_void) as *const core::ffi::c_void,
+// REWRITES-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_void,
 // REWRITES-NEXT:             111 as i32,
 // REWRITES-NEXT:             (11 as u64) as usize,
 // REWRITES-NEXT:         )

@@ -71,7 +71,6 @@ int main(void) {
 // REWRITES-DAG: fn select_type({{arg[0-9]+}}: *mut u32, {{arg[0-9]+}}: u32) -> u32 {
 // REWRITES-DAG: let mut count: u32 = {{arg[0-9]+}};
 // REWRITES-DAG: let mut __retval: u32 = 0;
-// REWRITES-DAG: {
 // REWRITES-DAG: let {{_v[0-9]+}}: u32 = 0;
 // REWRITES-DAG: if count == {{_v[0-9]+}} {
 // REWRITES-DAG: let {{_v[0-9]+}}: u32 = FSE_repeat::REPEAT_NONE as u32;
@@ -80,7 +79,6 @@ int main(void) {
 // REWRITES-DAG: }
 // REWRITES-DAG: __retval = 0;
 // REWRITES-DAG: return __retval;
-// REWRITES-DAG: }
 // REWRITES-DAG: }
 // REWRITES-DAG: __retval = (unsafe { *{{arg[0-9]+}} }) + count;
 // REWRITES-DAG: return __retval;

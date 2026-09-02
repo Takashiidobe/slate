@@ -201,61 +201,51 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn run_test({{arg[0-9]+}}: i32) {
 // REWRITES-NEXT:     let mut i: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i == {{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe {
-// REWRITES-NEXT:                 longjmp(
-// REWRITES-NEXT:                     std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>()
-// REWRITES-NEXT:                         as *mut __slate_jmp_buf_tag,
-// REWRITES-NEXT:                     1 as i32,
-// REWRITES-NEXT:                 )
-// REWRITES-NEXT:             };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 2;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = i == {{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe {
+// REWRITES-NEXT:             longjmp(
+// REWRITES-NEXT:                 std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>()
+// REWRITES-NEXT:                     as *mut __slate_jmp_buf_tag,
+// REWRITES-NEXT:                 1 as i32,
+// REWRITES-NEXT:             )
+// REWRITES-NEXT:         };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { printf(c"ran %d\n".as_ptr(), i) };
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let mut i: i32 = 0;
-// REWRITES-NEXT:         '__loop0: loop {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 5;
-// REWRITES-NEXT:             if !(i < {{_v[0-9]+}}) {
-// REWRITES-NEXT:                 break;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             '__continue0: {
-// REWRITES-NEXT:                 {
-// REWRITES-NEXT:                     {
-// REWRITES-NEXT:                         let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag =
-// REWRITES-NEXT:                             std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
-// REWRITES-NEXT:                         let {{_v[0-9]+}}: i32 = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };
-// REWRITES-NEXT:                         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// REWRITES-NEXT:                         if {{_v[0-9]+}} {
-// REWRITES-NEXT:                             unsafe {
-// REWRITES-NEXT:                                 failures = (unsafe { failures }) + 1;
-// REWRITES-NEXT:                             }
-// REWRITES-NEXT:                             unsafe { printf(c"recovered %d\n".as_ptr(), i) };
-// REWRITES-NEXT:                             break '__continue0;
-// REWRITES-NEXT:                         }
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     run_test(i);
-// REWRITES-NEXT:                     {
-// REWRITES-NEXT:                         let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:                         if i == {{_v[0-9]+}} {
-// REWRITES-NEXT:                             unsafe {
-// REWRITES-NEXT:                                 teardown_failures = (unsafe { teardown_failures }) + 1;
-// REWRITES-NEXT:                             }
-// REWRITES-NEXT:                             break '__continue0;
-// REWRITES-NEXT:                         }
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     unsafe { printf(c"teardown ok %d\n".as_ptr(), i) };
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             i = i + 1;
+// REWRITES-NEXT:     let mut i: i32 = 0;
+// REWRITES-NEXT:     '__loop0: loop {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 5;
+// REWRITES-NEXT:         if !(i < {{_v[0-9]+}}) {
+// REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
+// REWRITES-NEXT:         '__continue0: {
+// REWRITES-NEXT:             let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag =
+// REWRITES-NEXT:                 std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
+// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };
+// REWRITES-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// REWRITES-NEXT:             if {{_v[0-9]+}} {
+// REWRITES-NEXT:                 unsafe {
+// REWRITES-NEXT:                     failures = (unsafe { failures }) + 1;
+// REWRITES-NEXT:                 }
+// REWRITES-NEXT:                 unsafe { printf(c"recovered %d\n".as_ptr(), i) };
+// REWRITES-NEXT:                 break '__continue0;
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             run_test(i);
+// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 3;
+// REWRITES-NEXT:             if i == {{_v[0-9]+}} {
+// REWRITES-NEXT:                 unsafe {
+// REWRITES-NEXT:                     teardown_failures = (unsafe { teardown_failures }) + 1;
+// REWRITES-NEXT:                 }
+// REWRITES-NEXT:                 break '__continue0;
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             unsafe { printf(c"teardown ok %d\n".as_ptr(), i) };
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:         i = i + 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(

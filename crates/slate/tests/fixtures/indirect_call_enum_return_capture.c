@@ -173,39 +173,25 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut p: Parser = Parser { processor: None };
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let mut i: i32 = 0;
-// REWRITES-NEXT:         i = 0;
-// REWRITES-NEXT:         loop {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-NEXT:             if !(i < {{_v[0-9]+}}) {
-// REWRITES-NEXT:                 break;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             {
-// REWRITES-NEXT:                 let mut result: aligned::Aligned<aligned::A4, Status> =
-// REWRITES-NEXT:                     aligned::Aligned(Status::E_OK);
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: bool = i == {{_v[0-9]+}};
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> u32> = if {{_v[0-9]+}} {
-// REWRITES-NEXT:                     Some(handle_ok)
-// REWRITES-NEXT:                 } else {
-// REWRITES-NEXT:                     Some(handle_fail)
-// REWRITES-NEXT:                 };
-// REWRITES-NEXT:                 p.processor = {{_v[0-9]+}};
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: u32 = unsafe { p.processor.unwrap()(5 as i32) };
-// REWRITES-NEXT:                 *result = unsafe { std::mem::transmute({{_v[0-9]+}}) };
-// REWRITES-NEXT:                 {
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: u32 = *result as u32;
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: u32 = Status::E_OK as u32;
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// REWRITES-NEXT:                     if {{_v[0-9]+}} {
-// REWRITES-NEXT:                         unsafe { printf(c"ok\n".as_ptr()) };
-// REWRITES-NEXT:                     } else {
-// REWRITES-NEXT:                         unsafe { printf(c"fail\n".as_ptr()) };
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             i = i + 1;
+// REWRITES-NEXT:     for i in 0..2 {
+// REWRITES-NEXT:         let mut result: aligned::Aligned<aligned::A4, Status> = aligned::Aligned(Status::E_OK);
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i == {{_v[0-9]+}};
+// REWRITES-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> u32> = if {{_v[0-9]+}} {
+// REWRITES-NEXT:             Some(handle_ok)
+// REWRITES-NEXT:         } else {
+// REWRITES-NEXT:             Some(handle_fail)
+// REWRITES-NEXT:         };
+// REWRITES-NEXT:         p.processor = {{_v[0-9]+}};
+// REWRITES-NEXT:         let {{_v[0-9]+}}: u32 = unsafe { p.processor.unwrap()(5 as i32) };
+// REWRITES-NEXT:         *result = unsafe { std::mem::transmute({{_v[0-9]+}}) };
+// REWRITES-NEXT:         let {{_v[0-9]+}}: u32 = *result as u32;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: u32 = Status::E_OK as u32;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// REWRITES-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-NEXT:             unsafe { printf(c"ok\n".as_ptr()) };
+// REWRITES-NEXT:         } else {
+// REWRITES-NEXT:             unsafe { printf(c"fail\n".as_ptr()) };
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     std::process::exit(0 as i32);

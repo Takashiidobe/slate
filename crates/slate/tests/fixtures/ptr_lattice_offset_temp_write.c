@@ -123,22 +123,12 @@ int main(void) {
 // REWRITES-NEXT:     let mut p: *mut i32 = {{arg[0-9]+}}.as_mut_ptr() as *mut i32;
 // REWRITES-NEXT:     let mut n: i32 = {{arg[0-9]+}}.len() as i32;
 // REWRITES-NEXT:     let mut val: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let mut i: i32 = 0;
-// REWRITES-NEXT:         i = 0;
-// REWRITES-NEXT:         loop {
-// REWRITES-NEXT:             if !(i < n) {
-// REWRITES-NEXT:                 break;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             {
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = val;
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: *mut i32 = p;
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset(i as isize) };
-// REWRITES-NEXT:                 unsafe {
-// REWRITES-NEXT:                     *{{_v[0-9]+}} = {{_v[0-9]+}};
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             i = i + 1;
+// REWRITES-NEXT:     for i in 0..n {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = val;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = p;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset(i as isize) };
+// REWRITES-NEXT:         unsafe {
+// REWRITES-NEXT:             *{{_v[0-9]+}} = {{_v[0-9]+}};
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return;

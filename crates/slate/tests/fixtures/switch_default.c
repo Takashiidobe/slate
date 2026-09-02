@@ -121,32 +121,28 @@ int main(void) {
 // REWRITES-NEXT:     let mut x: i32 = {{arg[0-9]+}};
 // REWRITES-NEXT:     let mut out: i32 = 0;
 // REWRITES-NEXT:     out = 0;
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         {
-// REWRITES-NEXT:             let __switch_value0 = x;
-// REWRITES-NEXT:             let mut __switch_case0: i32 = match __switch_value0 {
-// REWRITES-NEXT:                 1 => 0,
-// REWRITES-NEXT:                 2 => 1,
-// REWRITES-NEXT:                 _ => 2,
-// REWRITES-NEXT:             };
-// REWRITES-NEXT:             '__switch0: loop {
-// REWRITES-NEXT:                 match __switch_case0 {
-// REWRITES-NEXT:                     0 => {
-// REWRITES-NEXT:                         out = 11;
-// REWRITES-NEXT:                         break '__switch0;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     1 => {
-// REWRITES-NEXT:                         out = 22;
-// REWRITES-NEXT:                         break '__switch0;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     2 => {
-// REWRITES-NEXT:                         out = 99;
-// REWRITES-NEXT:                         break '__switch0;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     _ => {
-// REWRITES-NEXT:                         break '__switch0;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                 }
+// REWRITES-NEXT:     let __switch_value0 = x;
+// REWRITES-NEXT:     let mut __switch_case0: i32 = match __switch_value0 {
+// REWRITES-NEXT:         1 => 0,
+// REWRITES-NEXT:         2 => 1,
+// REWRITES-NEXT:         _ => 2,
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     '__switch0: loop {
+// REWRITES-NEXT:         match __switch_case0 {
+// REWRITES-NEXT:             0 => {
+// REWRITES-NEXT:                 out = 11;
+// REWRITES-NEXT:                 break '__switch0;
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             1 => {
+// REWRITES-NEXT:                 out = 22;
+// REWRITES-NEXT:                 break '__switch0;
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             2 => {
+// REWRITES-NEXT:                 out = 99;
+// REWRITES-NEXT:                 break '__switch0;
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             _ => {
+// REWRITES-NEXT:                 break '__switch0;
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }

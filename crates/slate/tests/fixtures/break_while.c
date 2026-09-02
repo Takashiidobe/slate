@@ -117,17 +117,13 @@ int main(void) {
 // REWRITES-NEXT:         if !{{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         {
-// REWRITES-NEXT:             {
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:                 if n <= {{_v[0-9]+}} {
-// REWRITES-NEXT:                     break;
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-NEXT:             n = n / {{_v[0-9]+}};
-// REWRITES-NEXT:             steps = steps + 1;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:         if n <= {{_v[0-9]+}} {
+// REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 2;
+// REWRITES-NEXT:         n = n / {{_v[0-9]+}};
+// REWRITES-NEXT:         steps = steps + 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return steps;
 // REWRITES-NEXT: }

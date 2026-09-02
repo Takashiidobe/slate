@@ -266,7 +266,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe {
 // REWRITES-NEXT:         bsearch(
 // REWRITES-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_void,
-// REWRITES-NEXT:             ({{_v[0-9]+}} as *mut core::ffi::c_void) as *const core::ffi::c_void,
+// REWRITES-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_void,
 // REWRITES-NEXT:             (5 as u64) as usize,
 // REWRITES-NEXT:             (4 as u64) as usize,
 // REWRITES-NEXT:             Some(cmp_int),

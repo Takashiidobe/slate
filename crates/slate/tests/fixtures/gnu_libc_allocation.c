@@ -744,24 +744,13 @@ int main(void) {
 // REWRITES-NEXT:     rounded = unsafe { pvalloc((1 as u64) as usize) };
 // REWRITES-NEXT:     page_size = unsafe { sysconf(30 as i32) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let mut index: i32 = 0;
-// REWRITES-NEXT:         index = 0;
-// REWRITES-NEXT:         loop {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 4;
-// REWRITES-NEXT:             if !(index < {{_v[0-9]+}}) {
-// REWRITES-NEXT:                 break;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             {
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = index + {{_v[0-9]+}};
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: *mut i32 = values;
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset((index as i64) as isize) };
-// REWRITES-NEXT:                 unsafe {
-// REWRITES-NEXT:                     *{{_v[0-9]+}} = {{_v[0-9]+}};
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             index = index + 1;
+// REWRITES-NEXT:     for index in 0..4 {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = index + {{_v[0-9]+}};
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = values;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset((index as i64) as isize) };
+// REWRITES-NEXT:         unsafe {
+// REWRITES-NEXT:             *{{_v[0-9]+}} = {{_v[0-9]+}};
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = values;

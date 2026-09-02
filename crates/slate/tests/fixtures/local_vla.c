@@ -160,55 +160,36 @@ int main(void) {
 // REWRITES-NEXT:     let mut values: *mut i32 = {{arg[0-9]+}};
 // REWRITES-NEXT:     let mut total: i32 = 0;
 // REWRITES-NEXT:     total = 0;
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let mut index: i32 = 0;
-// REWRITES-NEXT:         loop {
-// REWRITES-NEXT:             if !(index < length) {
-// REWRITES-NEXT:                 break;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             {
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: *mut i32 = values;
-// REWRITES-NEXT:                 unsafe { {{_v[0-9]+}}.offset((index as i64) as isize) };
-// REWRITES-NEXT:                 total = total + unsafe { __arg1_view[(index as usize)] };
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             index = index + 1;
+// REWRITES-NEXT:     let mut index: i32 = 0;
+// REWRITES-NEXT:     loop {
+// REWRITES-NEXT:         if !(index < length) {
+// REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = values;
+// REWRITES-NEXT:         unsafe { {{_v[0-9]+}}.offset((index as i64) as isize) };
+// REWRITES-NEXT:         total = total + unsafe { __arg1_view[(index as usize)] };
+// REWRITES-NEXT:         index = index + 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return total;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut result: i32 = 0;
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let mut length: i32 = 0;
-// REWRITES-NEXT:         let mut saved_stack: *mut u8 = std::ptr::null_mut();
-// REWRITES-NEXT:         length = 4;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = length as u64;
-// REWRITES-NEXT:         saved_stack = 0usize as *mut u8;
-// REWRITES-NEXT:         {
-// REWRITES-NEXT:             let mut values: Vec<i32> = vec![0; {{_v[0-9]+}} as usize];
-// REWRITES-NEXT:             {
-// REWRITES-NEXT:                 let mut index: i32 = 0;
-// REWRITES-NEXT:                 index = 0;
-// REWRITES-NEXT:                 loop {
-// REWRITES-NEXT:                     if !(index < length) {
-// REWRITES-NEXT:                         break;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     {
-// REWRITES-NEXT:                         let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:                         let {{_v[0-9]+}}: i32 = index + {{_v[0-9]+}};
-// REWRITES-NEXT:                         let {{_v[0-9]+}}: *mut i32 =
-// REWRITES-NEXT:                             unsafe { values.as_mut_ptr().offset((index as i64) as isize) };
-// REWRITES-NEXT:                         unsafe {
-// REWRITES-NEXT:                             *{{_v[0-9]+}} = {{_v[0-9]+}};
-// REWRITES-NEXT:                         }
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     index = index + 1;
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             result = sum_vla(length, values.as_mut_ptr());
+// REWRITES-NEXT:     let mut length: i32 = 0;
+// REWRITES-NEXT:     let mut saved_stack: *mut u8 = std::ptr::null_mut();
+// REWRITES-NEXT:     length = 4;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = length as u64;
+// REWRITES-NEXT:     saved_stack = 0usize as *mut u8;
+// REWRITES-NEXT:     let mut values: Vec<i32> = vec![0; {{_v[0-9]+}} as usize];
+// REWRITES-NEXT:     for index in 0..length {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 3;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = index + {{_v[0-9]+}};
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = unsafe { values.as_mut_ptr().offset((index as i64) as isize) };
+// REWRITES-NEXT:         unsafe {
+// REWRITES-NEXT:             *{{_v[0-9]+}} = {{_v[0-9]+}};
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
+// REWRITES-NEXT:     result = sum_vla(length, values.as_mut_ptr());
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), result + (1 as i32)) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }

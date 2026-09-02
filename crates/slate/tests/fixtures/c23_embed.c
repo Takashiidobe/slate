@@ -282,16 +282,14 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut framed_ok: i32 = 0;
 // REWRITES-NEXT:     let mut empty_ok: i32 = 0;
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let mut i: u64 = 0;
-// REWRITES-NEXT:         loop {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: u64 = 4;
-// REWRITES-NEXT:             if !(i < {{_v[0-9]+}}) {
-// REWRITES-NEXT:                 break;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             unsafe { putchar((unsafe { main_data[(i as usize)] }) as i32) };
-// REWRITES-NEXT:             i = i + 1;
+// REWRITES-NEXT:     let mut i: u64 = 0;
+// REWRITES-NEXT:     loop {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = 4;
+// REWRITES-NEXT:         if !(i < {{_v[0-9]+}}) {
+// REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
+// REWRITES-NEXT:         unsafe { putchar((unsafe { main_data[(i as usize)] }) as i32) };
+// REWRITES-NEXT:         i = i + 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 8;

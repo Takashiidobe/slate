@@ -420,13 +420,11 @@ int main(void) { return 0; }
 // REWRITES-BIONIC-AARCH64-NEXT:     let mut stream: *mut libc::FILE = {{arg[0-9]+}};
 // REWRITES-BIONIC-AARCH64-NEXT:     let mut pos: *mut i64 = {{arg[0-9]+}};
 // REWRITES-BIONIC-AARCH64-NEXT:     let mut __retval: i32 = 0;
-// REWRITES-BIONIC-AARCH64-NEXT:     {
-// REWRITES-BIONIC-AARCH64-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { fgetpos(stream as *mut libc::FILE, pos as *mut i64) };
-// REWRITES-BIONIC-AARCH64-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-BIONIC-AARCH64-NEXT:         if {{_v[0-9]+}} != {{_v[0-9]+}} {
-// REWRITES-BIONIC-AARCH64-NEXT:             __retval = -1;
-// REWRITES-BIONIC-AARCH64-NEXT:             return __retval;
-// REWRITES-BIONIC-AARCH64-NEXT:         }
+// REWRITES-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { fgetpos(stream as *mut libc::FILE, pos as *mut i64) };
+// REWRITES-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-BIONIC-AARCH64-NEXT:     if {{_v[0-9]+}} != {{_v[0-9]+}} {
+// REWRITES-BIONIC-AARCH64-NEXT:         __retval = -1;
+// REWRITES-BIONIC-AARCH64-NEXT:         return __retval;
 // REWRITES-BIONIC-AARCH64-NEXT:     }
 // REWRITES-BIONIC-AARCH64-NEXT:     __retval = unsafe { fsetpos(stream as *mut libc::FILE, pos as *const i64) };
 // REWRITES-BIONIC-AARCH64-NEXT:     return __retval;
@@ -446,35 +444,21 @@ int main(void) { return 0; }
 // REWRITES-BIONIC-AARCH64-NEXT:     let mut wide: u32 = 0;
 // REWRITES-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void =
 // REWRITES-BIONIC-AARCH64-NEXT:         std::ptr::addr_of_mut!(decode_state) as *mut core::ffi::c_void;
-// REWRITES-BIONIC-AARCH64-NEXT:     unsafe {
-// REWRITES-BIONIC-AARCH64-NEXT:         std::ptr::write_bytes(
-// REWRITES-BIONIC-AARCH64-NEXT:             ({{_v[0-9]+}} as *mut core::ffi::c_void) as *mut u8,
-// REWRITES-BIONIC-AARCH64-NEXT:             (0 as i32) as u8,
-// REWRITES-BIONIC-AARCH64-NEXT:             (8 as u64) as usize,
-// REWRITES-BIONIC-AARCH64-NEXT:         )
-// REWRITES-BIONIC-AARCH64-NEXT:     };
+// REWRITES-BIONIC-AARCH64-NEXT:     unsafe { std::ptr::write_bytes({{_v[0-9]+}} as *mut u8, (0 as i32) as u8, (8 as u64) as usize) };
 // REWRITES-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void =
 // REWRITES-BIONIC-AARCH64-NEXT:         std::ptr::addr_of_mut!(encode_state) as *mut core::ffi::c_void;
-// REWRITES-BIONIC-AARCH64-NEXT:     unsafe {
-// REWRITES-BIONIC-AARCH64-NEXT:         std::ptr::write_bytes(
-// REWRITES-BIONIC-AARCH64-NEXT:             ({{_v[0-9]+}} as *mut core::ffi::c_void) as *mut u8,
-// REWRITES-BIONIC-AARCH64-NEXT:             (0 as i32) as u8,
-// REWRITES-BIONIC-AARCH64-NEXT:             (8 as u64) as usize,
+// REWRITES-BIONIC-AARCH64-NEXT:     unsafe { std::ptr::write_bytes({{_v[0-9]+}} as *mut u8, (0 as i32) as u8, (8 as u64) as usize) };
+// REWRITES-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe {
+// REWRITES-BIONIC-AARCH64-NEXT:         mbrtowc(
+// REWRITES-BIONIC-AARCH64-NEXT:             std::ptr::addr_of_mut!(wide) as *mut u32,
+// REWRITES-BIONIC-AARCH64-NEXT:             input as *const core::ffi::c_char,
+// REWRITES-BIONIC-AARCH64-NEXT:             (1 as u64) as usize,
+// REWRITES-BIONIC-AARCH64-NEXT:             std::ptr::addr_of_mut!(decode_state) as *mut __mbstate_t,
 // REWRITES-BIONIC-AARCH64-NEXT:         )
-// REWRITES-BIONIC-AARCH64-NEXT:     };
-// REWRITES-BIONIC-AARCH64-NEXT:     {
-// REWRITES-BIONIC-AARCH64-NEXT:         let {{_v[0-9]+}}: u64 = (unsafe {
-// REWRITES-BIONIC-AARCH64-NEXT:             mbrtowc(
-// REWRITES-BIONIC-AARCH64-NEXT:                 std::ptr::addr_of_mut!(wide) as *mut u32,
-// REWRITES-BIONIC-AARCH64-NEXT:                 input as *const core::ffi::c_char,
-// REWRITES-BIONIC-AARCH64-NEXT:                 (1 as u64) as usize,
-// REWRITES-BIONIC-AARCH64-NEXT:                 std::ptr::addr_of_mut!(decode_state) as *mut __mbstate_t,
-// REWRITES-BIONIC-AARCH64-NEXT:             )
-// REWRITES-BIONIC-AARCH64-NEXT:         }) as u64;
-// REWRITES-BIONIC-AARCH64-NEXT:         if {{_v[0-9]+}} == 18446744073709551615u64 {
-// REWRITES-BIONIC-AARCH64-NEXT:             __retval = -1;
-// REWRITES-BIONIC-AARCH64-NEXT:             return __retval;
-// REWRITES-BIONIC-AARCH64-NEXT:         }
+// REWRITES-BIONIC-AARCH64-NEXT:     }) as u64;
+// REWRITES-BIONIC-AARCH64-NEXT:     if {{_v[0-9]+}} == 18446744073709551615u64 {
+// REWRITES-BIONIC-AARCH64-NEXT:         __retval = -1;
+// REWRITES-BIONIC-AARCH64-NEXT:         return __retval;
 // REWRITES-BIONIC-AARCH64-NEXT:     }
 // REWRITES-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe {
 // REWRITES-BIONIC-AARCH64-NEXT:         wcrtomb(
@@ -565,13 +549,11 @@ int main(void) { return 0; }
 // REWRITES-BIONIC-X86_64-NEXT:     let mut stream: *mut libc::FILE = {{arg[0-9]+}};
 // REWRITES-BIONIC-X86_64-NEXT:     let mut pos: *mut i64 = {{arg[0-9]+}};
 // REWRITES-BIONIC-X86_64-NEXT:     let mut __retval: i32 = 0;
-// REWRITES-BIONIC-X86_64-NEXT:     {
-// REWRITES-BIONIC-X86_64-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { fgetpos(stream as *mut libc::FILE, pos as *mut i64) };
-// REWRITES-BIONIC-X86_64-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-BIONIC-X86_64-NEXT:         if {{_v[0-9]+}} != {{_v[0-9]+}} {
-// REWRITES-BIONIC-X86_64-NEXT:             __retval = -1;
-// REWRITES-BIONIC-X86_64-NEXT:             return __retval;
-// REWRITES-BIONIC-X86_64-NEXT:         }
+// REWRITES-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { fgetpos(stream as *mut libc::FILE, pos as *mut i64) };
+// REWRITES-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-BIONIC-X86_64-NEXT:     if {{_v[0-9]+}} != {{_v[0-9]+}} {
+// REWRITES-BIONIC-X86_64-NEXT:         __retval = -1;
+// REWRITES-BIONIC-X86_64-NEXT:         return __retval;
 // REWRITES-BIONIC-X86_64-NEXT:     }
 // REWRITES-BIONIC-X86_64-NEXT:     __retval = unsafe { fsetpos(stream as *mut libc::FILE, pos as *const i64) };
 // REWRITES-BIONIC-X86_64-NEXT:     return __retval;
@@ -591,35 +573,21 @@ int main(void) { return 0; }
 // REWRITES-BIONIC-X86_64-NEXT:     let mut wide: i32 = 0;
 // REWRITES-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void =
 // REWRITES-BIONIC-X86_64-NEXT:         std::ptr::addr_of_mut!(decode_state) as *mut core::ffi::c_void;
-// REWRITES-BIONIC-X86_64-NEXT:     unsafe {
-// REWRITES-BIONIC-X86_64-NEXT:         std::ptr::write_bytes(
-// REWRITES-BIONIC-X86_64-NEXT:             ({{_v[0-9]+}} as *mut core::ffi::c_void) as *mut u8,
-// REWRITES-BIONIC-X86_64-NEXT:             (0 as i32) as u8,
-// REWRITES-BIONIC-X86_64-NEXT:             (8 as u64) as usize,
-// REWRITES-BIONIC-X86_64-NEXT:         )
-// REWRITES-BIONIC-X86_64-NEXT:     };
+// REWRITES-BIONIC-X86_64-NEXT:     unsafe { std::ptr::write_bytes({{_v[0-9]+}} as *mut u8, (0 as i32) as u8, (8 as u64) as usize) };
 // REWRITES-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void =
 // REWRITES-BIONIC-X86_64-NEXT:         std::ptr::addr_of_mut!(encode_state) as *mut core::ffi::c_void;
-// REWRITES-BIONIC-X86_64-NEXT:     unsafe {
-// REWRITES-BIONIC-X86_64-NEXT:         std::ptr::write_bytes(
-// REWRITES-BIONIC-X86_64-NEXT:             ({{_v[0-9]+}} as *mut core::ffi::c_void) as *mut u8,
-// REWRITES-BIONIC-X86_64-NEXT:             (0 as i32) as u8,
-// REWRITES-BIONIC-X86_64-NEXT:             (8 as u64) as usize,
+// REWRITES-BIONIC-X86_64-NEXT:     unsafe { std::ptr::write_bytes({{_v[0-9]+}} as *mut u8, (0 as i32) as u8, (8 as u64) as usize) };
+// REWRITES-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe {
+// REWRITES-BIONIC-X86_64-NEXT:         mbrtowc(
+// REWRITES-BIONIC-X86_64-NEXT:             std::ptr::addr_of_mut!(wide) as *mut i32,
+// REWRITES-BIONIC-X86_64-NEXT:             input as *const core::ffi::c_char,
+// REWRITES-BIONIC-X86_64-NEXT:             (1 as u64) as usize,
+// REWRITES-BIONIC-X86_64-NEXT:             std::ptr::addr_of_mut!(decode_state) as *mut __mbstate_t,
 // REWRITES-BIONIC-X86_64-NEXT:         )
-// REWRITES-BIONIC-X86_64-NEXT:     };
-// REWRITES-BIONIC-X86_64-NEXT:     {
-// REWRITES-BIONIC-X86_64-NEXT:         let {{_v[0-9]+}}: u64 = (unsafe {
-// REWRITES-BIONIC-X86_64-NEXT:             mbrtowc(
-// REWRITES-BIONIC-X86_64-NEXT:                 std::ptr::addr_of_mut!(wide) as *mut i32,
-// REWRITES-BIONIC-X86_64-NEXT:                 input as *const core::ffi::c_char,
-// REWRITES-BIONIC-X86_64-NEXT:                 (1 as u64) as usize,
-// REWRITES-BIONIC-X86_64-NEXT:                 std::ptr::addr_of_mut!(decode_state) as *mut __mbstate_t,
-// REWRITES-BIONIC-X86_64-NEXT:             )
-// REWRITES-BIONIC-X86_64-NEXT:         }) as u64;
-// REWRITES-BIONIC-X86_64-NEXT:         if {{_v[0-9]+}} == 18446744073709551615u64 {
-// REWRITES-BIONIC-X86_64-NEXT:             __retval = -1;
-// REWRITES-BIONIC-X86_64-NEXT:             return __retval;
-// REWRITES-BIONIC-X86_64-NEXT:         }
+// REWRITES-BIONIC-X86_64-NEXT:     }) as u64;
+// REWRITES-BIONIC-X86_64-NEXT:     if {{_v[0-9]+}} == 18446744073709551615u64 {
+// REWRITES-BIONIC-X86_64-NEXT:         __retval = -1;
+// REWRITES-BIONIC-X86_64-NEXT:         return __retval;
 // REWRITES-BIONIC-X86_64-NEXT:     }
 // REWRITES-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe {
 // REWRITES-BIONIC-X86_64-NEXT:         wcrtomb(

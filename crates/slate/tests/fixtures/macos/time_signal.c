@@ -309,12 +309,10 @@ void slate_jump(sigjmp_buf environment) {
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: fn slate_jump({{arg[0-9]+}}: *mut i32) {
 // REWRITES-MACOS-DAG: let mut environment: *mut i32 = {{arg[0-9]+}};
-// REWRITES-MACOS-DAG: {
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = unsafe { sigsetjmp(environment as *mut i32, 1 as i32) };
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-MACOS-DAG: if {{_v[0-9]+}} != {{_v[0-9]+}} {
 // REWRITES-MACOS-DAG: return;
-// REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: unsafe { siglongjmp(environment as *mut i32, 1 as i32) };
 // REWRITES-MACOS-DAG: return;

@@ -71,28 +71,17 @@ The engine builds an `Arena` of AST nodes per function and applies `NodeRule`s,
 rescheduling affected nodes until a fixed point. The current registry
 (`engine/rules/mod.rs`, in order):
 
-1. `ZeroInitFold` (`zero_init.rs`) — fuse a zero-init `let` with the assignment
-   that overwrites it.
-2. `RawPtrAliasElide` (`raw_ptr_alias.rs`) — collapse redundant raw-pointer
-   alias locals.
-3. `WhileLoopUnwrap` / `DoWhileLoopUnwrap` / `SingletonUnwrap`
-   (`singleton_scopes.rs`) — unwrap a loop's redundant body scope around its
-   negated-break guard, and one-statement `{ }` scopes.
-4. `LateInlineTemps` (`inline_temps.rs`) — inline single-use temps into their
-   sole use (pure temps generally; effectful/atomic ones into an adjacent use).
-5. `EffectfulTempForward` (`inline_temps.rs`) — sink a single-use effectful
-   temp (chiefly a call result) forward into its one argument position.
-6. `InlineConstArgTemps` (`inline_temps.rs`) — inline a non-type-anchored
-   numeric-constant temp into its sole call/macro argument.
-7. `PeelCasts` (`peel_casts.rs`) — drop a redundant outer cast in an adjacent
-   pair: `(e as T) as T`, and `(e as A) as B` where `A`,`B` are thin raw
-   pointers and `e` provably yields a pointer/integer. Never drops a float or
-   narrowing intermediate; never touches a reference operand.
-8. `DeadStore` (`dead_store.rs`) — delete a `let` with no def-use readers when
-   its initializer is side-effect-free.
-9. `libc_call::rules()` (`libc_call.rs`) — the libc call-rewrite table
-   (`memcpy`/`memmove`/`memset`/`str*`/… → native Rust or `Box`/slice ops),
-   matched by call anchor.
+- `ZeroInitFold` (`zero_init.rs`) — fuses a zero-init `let` with the assignment that overwrites it.
+- `RawPtrAliasElide` (`raw_ptr_alias.rs`) — collapses redundant raw-pointer alias locals.
+- `ScopeFlatten` (`singleton_scopes.rs`) — splices any `{ }` scope's statements into its parent's statement list in place, since `cir.scope` always lowers to a plain `Stmt::Scope` regardless of what it wraps (a for-loop's induction-variable scope included).
+- `ForRangeRecover` (`for_range.rs`) — recognizes the canonical desugared for-loop shape (`let mut i; i = start; loop { if !(i<end){break} body; i=i+1; }`) and rewrites it to `for i in start..end { body }`, requiring the increment to be exactly `i = i + 1`, `body` to never reassign `i`, and `i` to have no reads outside the recognized region.
+- `ForArrayIterRecover` (`array_iter.rs`) — follow-on to `ForRangeRecover`: when a `for i in 0..N { body }`'s only use of `i` is as `arr[cast(i)]` for a single `Prim`-element array `arr` of length `N` not otherwise referenced in `body`, rewrites to `for i in arr.iter().copied() { ...i... }` (`.copied()` rather than `into_iter()` since `arr` is typically wrapped in `aligned::Aligned<_, [T; N]>`, whose `Deref` only ever yields `&[T; N]` under method-call autoderef, never an owned array).
+- `LateInlineTemps` (`inline_temps.rs`) — inlines single-use temps into their sole use (pure temps generally; effectful/atomic ones into an adjacent use).
+- `EffectfulTempForward` (`inline_temps.rs`) — sinks a single-use effectful temp (chiefly a call result) forward into its one argument position.
+- `InlineConstArgTemps` (`inline_temps.rs`) — inlines a non-type-anchored numeric-constant temp into its sole call/macro argument.
+- `PeelCasts` (`peel_casts.rs`) — drops a redundant outer cast in an adjacent pair (`(e as T) as T`, or `(e as A) as B` where `A`,`B` are thin raw pointers and `e` provably yields a pointer/integer), never dropping a float or narrowing intermediate or touching a reference operand.
+- `DeadStore` (`dead_store.rs`) — deletes a `let` with no def-use readers when its initializer is side-effect-free.
+- `libc_call::rules()` (`libc_call.rs`) — the libc call-rewrite table (`memcpy`/`memmove`/`memset`/`str*`/… → native Rust or `Box`/slice ops), matched by call anchor.
 
 This is a much smaller set than the retired straight-line engine (~65 passes at
 `src/backend/query/rules/*`, now under `wiki/historical/`). The v2 worklist

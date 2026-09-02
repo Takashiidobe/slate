@@ -270,22 +270,20 @@ int main(void) {
 // REWRITES-NEXT:         },
 // REWRITES-NEXT:     ];
 // REWRITES-NEXT:     total = 0;
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let mut i: u32 = 0;
-// REWRITES-NEXT:         i = 0;
-// REWRITES-NEXT:         loop {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: u64 = i as u64;
-// REWRITES-NEXT:             let {{_v[0-9]+}}: u64 = 32;
-// REWRITES-NEXT:             let {{_v[0-9]+}}: u64 = std::mem::size_of::<Rec>() as u64;
-// REWRITES-NEXT:             if !({{_v[0-9]+}} < {{_v[0-9]+}} / {{_v[0-9]+}}) {
-// REWRITES-NEXT:                 break;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = items[((i as u64) as usize)].code as i32;
-// REWRITES-NEXT:             let {{_v[0-9]+}}: *mut i8 = items[((i as u64) as usize)].text;
-// REWRITES-NEXT:             let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
-// REWRITES-NEXT:             total = total + ({{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32));
-// REWRITES-NEXT:             i = i + 1;
+// REWRITES-NEXT:     let mut i: u32 = 0;
+// REWRITES-NEXT:     i = 0;
+// REWRITES-NEXT:     loop {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = i as u64;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = 32;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = std::mem::size_of::<Rec>() as u64;
+// REWRITES-NEXT:         if !({{_v[0-9]+}} < {{_v[0-9]+}} / {{_v[0-9]+}}) {
+// REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = items[((i as u64) as usize)].code as i32;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = items[((i as u64) as usize)].text;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
+// REWRITES-NEXT:         total = total + ({{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32));
+// REWRITES-NEXT:         i = i + 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return total;
 // REWRITES-NEXT: }
@@ -312,22 +310,20 @@ int main(void) {
 // REWRITES-NEXT:         },
 // REWRITES-NEXT:     ];
 // REWRITES-NEXT:     total = 0;
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let mut i: u32 = 0;
-// REWRITES-NEXT:         i = 0;
-// REWRITES-NEXT:         loop {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: u64 = 48;
-// REWRITES-NEXT:             let {{_v[0-9]+}}: u64 = 24;
-// REWRITES-NEXT:             if !((i as u64) < {{_v[0-9]+}} / {{_v[0-9]+}}) {
-// REWRITES-NEXT:                 break;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = (items[((i as u64) as usize)].n as i32)
-// REWRITES-NEXT:                 + (items[((i as u64) as usize)].code as i32);
-// REWRITES-NEXT:             let {{_v[0-9]+}}: *mut i8 = items[((i as u64) as usize)].text;
-// REWRITES-NEXT:             let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
-// REWRITES-NEXT:             total = total + ({{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32));
-// REWRITES-NEXT:             i = i + 1;
+// REWRITES-NEXT:     let mut i: u32 = 0;
+// REWRITES-NEXT:     i = 0;
+// REWRITES-NEXT:     loop {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = 48;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = 24;
+// REWRITES-NEXT:         if !((i as u64) < {{_v[0-9]+}} / {{_v[0-9]+}}) {
+// REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 =
+// REWRITES-NEXT:             (items[((i as u64) as usize)].n as i32) + (items[((i as u64) as usize)].code as i32);
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = items[((i as u64) as usize)].text;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
+// REWRITES-NEXT:         total = total + ({{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32));
+// REWRITES-NEXT:         i = i + 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return total;
 // REWRITES-NEXT: }
