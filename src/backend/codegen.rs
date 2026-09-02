@@ -1514,6 +1514,7 @@ impl<W: Write> Codegen<W> {
         match ty {
             Type::Prim(p) => self.out.write_str(p.spelling()),
             Type::Custom(n) => self.ident_path(n),
+            Type::String => self.out.write_str("String"),
             Type::LongDouble => self.out.write_str("LongDouble"),
             Type::TyVar(name) => self.ident(name.as_str()),
             Type::CLib(c) => self.out.write_str(c.path()),
