@@ -1,5 +1,5 @@
 use crate::backend::engine::NodeRule;
-use crate::backend::engine::arena::{Arena, NodeId, NodeKind, NodeKindTag};
+use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::{Expr, Ident, RustValue, Type};
 
 fn int_value(expr: &Expr) -> Option<i128> {
@@ -74,7 +74,7 @@ fn count_var(arena: &Arena, id: NodeId, name: Ident) -> usize {
         .sum::<usize>()
 }
 
-fn array_len(arena: &Arena, name: Ident) -> Option<u64> {
+fn array_len(arena: &FunctionOptimizer, name: Ident) -> Option<u64> {
     let ty = arena.var_type(name)?.peel_aligned();
     match ty {
         Type::Array { elem, len } if matches!(elem.as_ref(), Type::Prim(_)) => Some(*len),
@@ -148,7 +148,7 @@ fn replace_index_use_stmt(arena: &mut Arena, id: NodeId, arr: Ident, ind_var: Id
 }
 
 fn find_target(
-    arena: &Arena,
+    arena: &FunctionOptimizer,
     ind_var: Ident,
     start: &Expr,
     end: &Expr,
@@ -212,7 +212,7 @@ impl NodeRule for ForArrayIterRecover {
         &[NodeKindTag::For]
     }
 
-    fn matches(&self, arena: &Arena, id: NodeId) -> bool {
+    fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
         let Some(NodeKind::For { pat, iter, body }) = arena.get(id) else {
             return false;
         };
@@ -222,7 +222,7 @@ impl NodeRule for ForArrayIterRecover {
         find_target(arena, *pat, start, end, body).is_some()
     }
 
-    fn apply(&self, arena: &mut Arena, id: NodeId) -> bool {
+    fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
         let Some(NodeKind::For { pat, iter, body }) = arena.get(id) else {
             return false;
         };

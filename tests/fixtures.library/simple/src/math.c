@@ -19,6 +19,6 @@ int square(int x) {
 // REWRITES-DAG:     };
 // REWRITES-DAG:     value.value = {{arg[0-9]+}};
 // REWRITES-DAG:     value.mode = shared_mode_t::SHARED_READY;
-// REWRITES-DAG:     return value.value * value.value;
+// REWRITES-DAG:     value.value * value.value
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

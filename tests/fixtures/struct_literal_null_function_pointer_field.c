@@ -152,7 +152,7 @@ int main(void) {
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         total += unsafe { *h.counter };
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return total;
+// REWRITES-NEXT:     total
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

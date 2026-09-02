@@ -1,10 +1,12 @@
 int printf(const char *, ...);
 
+// @rewrite-fn-begin
 #if defined(_WIN64)
-static int win64_code(void) { return 64; }
+int win64_code(void) { return 64; }
 #else
-static int win64_code(void) { return 0; }
+int win64_code(void) { return 0; }
 #endif
+// @rewrite-fn-end
 
 int main(void) {
   printf("%d\n", win64_code());
@@ -12,5 +14,9 @@ int main(void) {
 }
 // DIRECTIVES-DAG: #[cfg(all(windows, target_pointer_width = "64"))]
 // DIRECTIVES-DAG: #[cfg(not(all(windows, target_pointer_width = "64")))]
-// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}64;
-// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}0;
+
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES-DAG: fn win64_code() -> i32 {
+// REWRITES-DAG:     0
+// REWRITES-DAG: }
+// SLATE-FILECHECK-END rewrites

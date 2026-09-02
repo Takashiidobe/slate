@@ -180,26 +180,21 @@ int main(void) {
 // REWRITES-DAG:     let mut __retval: i32 = 0;
 // REWRITES-DAG:     match {{_v[0-9]+}} {
 // REWRITES-DAG:         48..=57 => {
-// REWRITES-DAG:             __retval = 1;
-// REWRITES-DAG:             return __retval;
+// REWRITES-DAG:             return 1;
 // REWRITES-DAG:         }
 // REWRITES-DAG:         97..=99 => {
-// REWRITES-DAG:             __retval = 2;
-// REWRITES-DAG:             return __retval;
+// REWRITES-DAG:             return 2;
 // REWRITES-DAG:         }
 // REWRITES-DAG:         100 | 200 => {
-// REWRITES-DAG:             __retval = 3;
-// REWRITES-DAG:             return __retval;
+// REWRITES-DAG:             return 3;
 // REWRITES-DAG:         }
 // REWRITES-DAG:         -3..=-1 | 7 => {
-// REWRITES-DAG:             __retval = 4;
-// REWRITES-DAG:             return __retval;
+// REWRITES-DAG:             return 4;
 // REWRITES-DAG:         }
 // REWRITES-DAG:         _ => {
-// REWRITES-DAG:             __retval = 0;
-// REWRITES-DAG:             return __retval;
+// REWRITES-DAG:             return 0;
 // REWRITES-DAG:         }
 // REWRITES-DAG:     }
-// REWRITES-DAG:     return __retval;
+// REWRITES-DAG:     __retval
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

@@ -1,12 +1,14 @@
 int printf(const char *, ...);
 
+// @rewrite-fn-begin
 #if defined(__LP64__) || defined(_LP64)
-static int pointer_width_code(void) { return 64; }
+int pointer_width_code(void) { return 64; }
 #elif defined(__ILP32__) || defined(_ILP32)
-static int pointer_width_code(void) { return 32; }
+int pointer_width_code(void) { return 32; }
 #else
-static int pointer_width_code(void) { return 0; }
+int pointer_width_code(void) { return 0; }
 #endif
+// @rewrite-fn-end
 
 int main(void) {
   printf("%d\n", pointer_width_code());
@@ -15,6 +17,9 @@ int main(void) {
 // DIRECTIVES-DAG: #[cfg(target_pointer_width = "64")]
 // DIRECTIVES-DAG: #[cfg(target_pointer_width = "32")]
 // DIRECTIVES-DAG: #[cfg(not(any(target_pointer_width = "64", target_pointer_width = "32")))]
-// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}64;
-// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}32;
-// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}0;
+
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES-DAG: fn pointer_width_code() -> i32 {
+// REWRITES-DAG:     64
+// REWRITES-DAG: }
+// SLATE-FILECHECK-END rewrites

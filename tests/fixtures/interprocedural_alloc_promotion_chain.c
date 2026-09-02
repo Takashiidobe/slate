@@ -101,7 +101,7 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn indirect() -> *mut i32 {
-// REWRITES-NEXT:     return Box::into_raw(alloc()).cast::<i32>();
+// REWRITES-NEXT:     Box::into_raw(alloc()).cast::<i32>()
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

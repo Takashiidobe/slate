@@ -161,7 +161,7 @@ int main(void) {
 // REWRITES-NEXT: )]
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn add({{arg[0-9]+}}: f128, {{arg[0-9]+}}: f128) -> f128 {
-// REWRITES-NEXT:     return {{arg[0-9]+}} + {{arg[0-9]+}};
+// REWRITES-NEXT:     {{arg[0-9]+}} + {{arg[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

@@ -65,7 +65,7 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn get({{arg[0-9]+}}: &i32) -> *mut i32 {
-// REWRITES-NEXT:     return ({{arg[0-9]+}} as *const i32) as *mut i32;
+// REWRITES-NEXT:     ({{arg[0-9]+}} as *const i32) as *mut i32
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

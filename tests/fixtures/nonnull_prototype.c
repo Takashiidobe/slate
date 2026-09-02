@@ -73,7 +73,7 @@ int use_it(int *a, int *b) { return *a / *b; }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe fn use_it({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: *mut i32) -> i32 {
-// REWRITES-NEXT:     return (unsafe { *{{arg[0-9]+}} }) / unsafe { *{{arg[0-9]+}} };
+// REWRITES-NEXT:     (unsafe { *{{arg[0-9]+}} }) / unsafe { *{{arg[0-9]+}} }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

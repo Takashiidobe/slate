@@ -103,7 +103,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         *{{arg[0-9]+}} = (unsafe { *{{arg[0-9]+}} }) + 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return {{arg[0-9]+}};
+// REWRITES-NEXT:     {{arg[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

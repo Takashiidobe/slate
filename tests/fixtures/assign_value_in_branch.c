@@ -110,7 +110,7 @@ int main() {
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     return {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

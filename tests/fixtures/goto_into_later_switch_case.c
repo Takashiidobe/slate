@@ -345,8 +345,7 @@ int main() {
 // REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             9 => {
-// REWRITES-NEXT:                 __retval = -1;
-// REWRITES-NEXT:                 return __retval;
+// REWRITES-NEXT:                 return -1;
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             10 => {
 // REWRITES-NEXT:                 {{__state[0-9]+}} = 11;
@@ -404,20 +403,17 @@ int main() {
 // REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             20 => {
-// REWRITES-NEXT:                 __retval = 100;
-// REWRITES-NEXT:                 return __retval;
+// REWRITES-NEXT:                 return 100;
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             21 => {
 // REWRITES-NEXT:                 {{__state[0-9]+}} = 22;
 // REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             22 => {
-// REWRITES-NEXT:                 __retval = 200;
-// REWRITES-NEXT:                 return __retval;
+// REWRITES-NEXT:                 return 200;
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             23 => {
-// REWRITES-NEXT:                 __retval = -2;
-// REWRITES-NEXT:                 return __retval;
+// REWRITES-NEXT:                 return -2;
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             24 => {
 // REWRITES-NEXT:                 {{__state[0-9]+}} = 25;

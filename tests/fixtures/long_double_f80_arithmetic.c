@@ -460,7 +460,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         std::ptr::copy_nonoverlapping({{arg[0-9]+}} as *const u8, {{_v[0-9]+}} as *mut u8, (10 as u64) as usize)
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     return value;
+// REWRITES-NEXT:     value
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn dump80({{arg[0-9]+}}: *mut i8, mut value: LongDouble) {

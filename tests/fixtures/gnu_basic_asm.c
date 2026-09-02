@@ -48,6 +48,6 @@ int main(void) {
 // REWRITES-DAG:             options(att_syntax, raw)
 // REWRITES-DAG:         );
 // REWRITES-DAG:     }
-// REWRITES-DAG:     return unsafe { gnu_basic_asm_value };
+// REWRITES-DAG:     unsafe { gnu_basic_asm_value }
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

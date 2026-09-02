@@ -1,5 +1,5 @@
 use crate::backend::engine::NodeRule;
-use crate::backend::engine::arena::{Arena, NodeId, NodeKind, NodeKindTag};
+use crate::backend::engine::arena::{FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::Pattern;
 
 const MIN_RUN: usize = 3;
@@ -105,14 +105,14 @@ impl NodeRule for MatchRangeFold {
         &[NodeKindTag::Match]
     }
 
-    fn matches(&self, arena: &Arena, id: NodeId) -> bool {
+    fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
         let Some(NodeKind::Match { arms, .. }) = arena.get(id) else {
             return false;
         };
         arms.iter().any(|arm| rewrite_of(&arm.pattern).is_some())
     }
 
-    fn apply(&self, arena: &mut Arena, id: NodeId) -> bool {
+    fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
         let Some(NodeKind::Match { arms, .. }) = arena.get_mut(id) else {
             return false;
         };

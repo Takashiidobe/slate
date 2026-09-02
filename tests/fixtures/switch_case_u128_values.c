@@ -161,37 +161,31 @@ int main(void) {
 // REWRITES-DAG:     let mut v: u128 = 340282366920938463463374607431768211440u128 + ({{arg[0-9]+}} as u128);
 // REWRITES-DAG:     match v {
 // REWRITES-DAG:         340282366920938463463374607431768211441 | 340282366920938463463374607431768211443 => {
-// REWRITES-DAG:             __retval = 1;
-// REWRITES-DAG:             return __retval;
+// REWRITES-DAG:             return 1;
 // REWRITES-DAG:         }
 // REWRITES-DAG:         340282366920938463463374607431768211450..=340282366920938463463374607431768211453 => {
-// REWRITES-DAG:             __retval = 2;
-// REWRITES-DAG:             return __retval;
+// REWRITES-DAG:             return 2;
 // REWRITES-DAG:         }
 // REWRITES-DAG:         _ => {
-// REWRITES-DAG:             __retval = 0;
-// REWRITES-DAG:             return __retval;
+// REWRITES-DAG:             return 0;
 // REWRITES-DAG:         }
 // REWRITES-DAG:     }
-// REWRITES-DAG:     return __retval;
+// REWRITES-DAG:     __retval
 // REWRITES-DAG: }
 // REWRITES-DAG: fn classify_run({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-DAG:     let mut __retval: i32 = 0;
 // REWRITES-DAG:     let mut v: u128 = 340282366920938463463374607431768211440u128 + ({{arg[0-9]+}} as u128);
 // REWRITES-DAG:     match v {
 // REWRITES-DAG:         340282366920938463463374607431768211441..=340282366920938463463374607431768211443 => {
-// REWRITES-DAG:             __retval = 1;
-// REWRITES-DAG:             return __retval;
+// REWRITES-DAG:             return 1;
 // REWRITES-DAG:         }
 // REWRITES-DAG:         340282366920938463463374607431768211450 => {
-// REWRITES-DAG:             __retval = 2;
-// REWRITES-DAG:             return __retval;
+// REWRITES-DAG:             return 2;
 // REWRITES-DAG:         }
 // REWRITES-DAG:         _ => {
-// REWRITES-DAG:             __retval = 0;
-// REWRITES-DAG:             return __retval;
+// REWRITES-DAG:             return 0;
 // REWRITES-DAG:         }
 // REWRITES-DAG:     }
-// REWRITES-DAG:     return __retval;
+// REWRITES-DAG:     __retval
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

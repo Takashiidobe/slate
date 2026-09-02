@@ -28,6 +28,6 @@ int mode_value(struct Holder *holder) {
 // REWRITES-DAG:     let {{_v[0-9]+}}: u32 = Mode::MODE_READY as u32;
 // REWRITES-DAG:     let {{_v[0-9]+}}: i32 = 42;
 // REWRITES-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:     return if {{_v[0-9]+}} == {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// REWRITES-DAG:     if {{_v[0-9]+}} == {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} }
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

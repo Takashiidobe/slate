@@ -1,6 +1,6 @@
 use super::walk::{child_exprs, child_exprs_mut};
 use crate::backend::engine::NodeRule;
-use crate::backend::engine::arena::{Arena, NodeId, NodeKind, NodeKindTag};
+use crate::backend::engine::arena::{FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::{CLibType, Expr, Prim, Type};
 
 const KINDS: &[NodeKindTag] = &[
@@ -196,11 +196,11 @@ impl NodeRule for CStrLiteral {
         KINDS
     }
 
-    fn matches(&self, arena: &Arena, id: NodeId) -> bool {
+    fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
         arena.get(id).is_some_and(kind_has_rewrite)
     }
 
-    fn apply(&self, arena: &mut Arena, id: NodeId) -> bool {
+    fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
         let Some(kind) = arena.get_mut(id) else {
             return false;
         };

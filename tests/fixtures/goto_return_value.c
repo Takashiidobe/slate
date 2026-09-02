@@ -150,7 +150,6 @@ int main() {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn classify({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     let mut n: i32 = 0;
-// REWRITES-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-NEXT:     let mut {{__state[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:     '{{__dispatch[0-9]+}}: loop {
 // REWRITES-NEXT:         match {{__state[0-9]+}} {
@@ -198,16 +197,13 @@ int main() {
 // REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             8 => {
-// REWRITES-NEXT:                 __retval = 1;
-// REWRITES-NEXT:                 return __retval;
+// REWRITES-NEXT:                 return 1;
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             9 => {
-// REWRITES-NEXT:                 __retval = -1;
-// REWRITES-NEXT:                 return __retval;
+// REWRITES-NEXT:                 return -1;
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             10 => {
-// REWRITES-NEXT:                 __retval = 0;
-// REWRITES-NEXT:                 return __retval;
+// REWRITES-NEXT:                 return 0;
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             _ => {
 // REWRITES-NEXT:                 unreachable!();

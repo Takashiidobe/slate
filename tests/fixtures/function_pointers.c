@@ -87,15 +87,15 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn add_pair({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     return {{arg[0-9]+}} + {{arg[0-9]+}};
+// REWRITES-NEXT:     {{arg[0-9]+}} + {{arg[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn apply_binary({{arg[0-9]+}}: Option<unsafe extern "C" fn(i32, i32) -> i32>, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     return unsafe { {{arg[0-9]+}}.unwrap()({{arg[0-9]+}}, {{arg[0-9]+}}) };
+// REWRITES-NEXT:     unsafe { {{arg[0-9]+}}.unwrap()({{arg[0-9]+}}, {{arg[0-9]+}}) }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn mul_pair({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     return {{arg[0-9]+}} * {{arg[0-9]+}};
+// REWRITES-NEXT:     {{arg[0-9]+}} * {{arg[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

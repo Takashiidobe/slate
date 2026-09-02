@@ -74,7 +74,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { {{arg[0-9]+}}.add(0) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = (unsafe { *{{_v[0-9]+}} }) as i32;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { {{arg[0-9]+}}.add(10) };
-// REWRITES-NEXT:     return {{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32);
+// REWRITES-NEXT:     {{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32)
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

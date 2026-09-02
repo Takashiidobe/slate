@@ -29,6 +29,6 @@ int parse_value(void) {
 // REWRITES-DAG:         let {{_v[0-9]+}}: i32 = -1;
 // REWRITES-DAG:         {{_v[0-9]+}}
 // REWRITES-DAG:     };
-// REWRITES-DAG:     return {{_v[0-9]+}};
+// REWRITES-DAG:     {{_v[0-9]+}}
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

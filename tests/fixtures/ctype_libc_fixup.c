@@ -122,7 +122,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         next_lower_c = {{_v[0-9]+}} + 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

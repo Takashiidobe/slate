@@ -221,7 +221,6 @@ int slate_lookup_user_shell(uid_t uid, char *buffer, size_t size) {
 // REWRITES-MACOS-DAG:     {{arg[0-9]+}}: *mut *mut i8,
 // REWRITES-MACOS-DAG:     {{arg[0-9]+}}: *mut *mut i8,
 // REWRITES-MACOS-DAG: ) -> i32 {
-// REWRITES-MACOS-DAG:     let mut __retval: i32 = 0;
 // REWRITES-MACOS-DAG:     let mut status: i32 = 0;
 // REWRITES-MACOS-DAG:     let mut result: i32 = 0;
 // REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: *mut *mut core::ffi::c_void = std::ptr::null_mut();
@@ -238,8 +237,7 @@ int slate_lookup_user_shell(uid_t uid, char *buffer, size_t size) {
 // REWRITES-MACOS-DAG:     };
 // REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: bool = result != 0;
 // REWRITES-MACOS-DAG:     if {{_v[0-9]+}} {
-// REWRITES-MACOS-DAG:         __retval = result;
-// REWRITES-MACOS-DAG:         return __retval;
+// REWRITES-MACOS-DAG:         return result;
 // REWRITES-MACOS-DAG:     }
 // REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: i32 = unsafe {
 // REWRITES-MACOS-DAG:         waitpid(
@@ -256,28 +254,22 @@ int slate_lookup_user_shell(uid_t uid, char *buffer, size_t size) {
 // REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: i32 = status;
 // REWRITES-MACOS-DAG:         {{_v[0-9]+}}
 // REWRITES-MACOS-DAG:     };
-// REWRITES-MACOS-DAG:     __retval = {{_v[0-9]+}};
-// REWRITES-MACOS-DAG:     return __retval;
+// REWRITES-MACOS-DAG:     {{_v[0-9]+}}
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: fn slate_terminal_page_size(mut {{_v[0-9]+}}: i32, mut {{_v[0-9]+}}: *mut termios) -> i64 {
-// REWRITES-MACOS-DAG:     let mut __retval: i64 = 0;
 // REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: i32 = unsafe { tcgetattr({{_v[0-9]+}} as i32, {{_v[0-9]+}} as *mut termios) };
 // REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-MACOS-DAG:     if {{_v[0-9]+}} {
-// REWRITES-MACOS-DAG:         __retval = -1;
-// REWRITES-MACOS-DAG:         return __retval;
+// REWRITES-MACOS-DAG:         return -1;
 // REWRITES-MACOS-DAG:     }
-// REWRITES-MACOS-DAG:     __retval = unsafe { sysconf(29 as i32) };
-// REWRITES-MACOS-DAG:     return __retval;
+// REWRITES-MACOS-DAG:     unsafe { sysconf(29 as i32) }
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: unsafe fn slate_lookup_user_shell({{arg[0-9]+}}: u32, {{arg[0-9]+}}: *mut i8, mut size: u64) -> i32 {
-// REWRITES-MACOS-DAG:     let mut __retval: i32 = 0;
 // REWRITES-MACOS-DAG:     let mut entry: *mut passwd = unsafe { getpwuid({{arg[0-9]+}} as u32) };
 // REWRITES-MACOS-DAG:     let mut length: u64 = 0;
 // REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: bool = entry == std::ptr::null_mut();
 // REWRITES-MACOS-DAG:     if {{_v[0-9]+}} {
-// REWRITES-MACOS-DAG:         __retval = -1;
-// REWRITES-MACOS-DAG:         return __retval;
+// REWRITES-MACOS-DAG:         return -1;
 // REWRITES-MACOS-DAG:     }
 // REWRITES-MACOS-DAG:     loop {
 // REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: *mut i8 = unsafe { (*entry).pw_shell };
@@ -307,7 +299,6 @@ int slate_lookup_user_shell(uid_t uid, char *buffer, size_t size) {
 // REWRITES-MACOS-DAG:     unsafe {
 // REWRITES-MACOS-DAG:         *{{_v[0-9]+}} = {{_v[0-9]+}};
 // REWRITES-MACOS-DAG:     }
-// REWRITES-MACOS-DAG:     __retval = 0;
-// REWRITES-MACOS-DAG:     return __retval;
+// REWRITES-MACOS-DAG:     0
 // REWRITES-MACOS-DAG: }
 // SLATE-FILECHECK-END rewrites-macos

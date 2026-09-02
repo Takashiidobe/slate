@@ -104,18 +104,18 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn add({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     return {{arg[0-9]+}} + {{arg[0-9]+}};
+// REWRITES-NEXT:     {{arg[0-9]+}} + {{arg[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn sub({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     return {{arg[0-9]+}} - {{arg[0-9]+}};
+// REWRITES-NEXT:     {{arg[0-9]+}} - {{arg[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn apply({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32, i32) -> i32> =
 // REWRITES-NEXT:         if {{_v[0-9]+}} { Some(add) } else { Some(sub) };
-// REWRITES-NEXT:     return unsafe { {{_v[0-9]+}}.unwrap()({{arg[0-9]+}}, {{arg[0-9]+}}) };
+// REWRITES-NEXT:     unsafe { {{_v[0-9]+}}.unwrap()({{arg[0-9]+}}, {{arg[0-9]+}}) }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

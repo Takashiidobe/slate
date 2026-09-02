@@ -273,11 +273,11 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn add16({{arg[0-9]+}}: f16, {{arg[0-9]+}}: f16) -> f16 {
-// REWRITES-NEXT:     return (({{arg[0-9]+}} as f32) + ({{arg[0-9]+}} as f32)) as f16;
+// REWRITES-NEXT:     (({{arg[0-9]+}} as f32) + ({{arg[0-9]+}} as f32)) as f16
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn mul16({{arg[0-9]+}}: f16, {{arg[0-9]+}}: f16) -> f16 {
-// REWRITES-NEXT:     return (({{arg[0-9]+}} as f32) * ({{arg[0-9]+}} as f32)) as f16;
+// REWRITES-NEXT:     (({{arg[0-9]+}} as f32) * ({{arg[0-9]+}} as f32)) as f16
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe fn sum_variadic(mut n: i32, mut __slate_va_args: __SlateVaArgs) -> f16 {
@@ -292,7 +292,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: f16 = unsafe { ap.next_arg::<f16>() };
 // REWRITES-NEXT:         total = ({{_v[0-9]+}} + ({{_v[0-9]+}} as f32)) as f16;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return total;
+// REWRITES-NEXT:     total
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

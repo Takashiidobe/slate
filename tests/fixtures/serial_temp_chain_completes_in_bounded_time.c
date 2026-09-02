@@ -8315,8 +8315,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 750) * {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     return 0 + {{_v[0-9]+}} - {{_v[0-9]+}} + {{_v[0-9]+}} - {{_v[0-9]+}} + {{_v[0-9]+}} - {{_v[0-9]+}} + {{_v[0-9]+}} - {{_v[0-9]+}} + {{_v[0-9]+}} - {{_v[0-9]+}} + {{_v[0-9]+}} - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:     0 + {{_v[0-9]+}} - {{_v[0-9]+}} + {{_v[0-9]+}} - {{_v[0-9]+}} + {{_v[0-9]+}} - {{_v[0-9]+}} + {{_v[0-9]+}} - {{_v[0-9]+}} + {{_v[0-9]+}} - {{_v[0-9]+}} + {{_v[0-9]+}} - {{_v[0-9]+}} + {{_v[0-9]+}}
 // REWRITES-NEXT:         - {{_v[0-9]+}}
 // REWRITES-NEXT:         + {{_v[0-9]+}}
 // REWRITES-NEXT:         - {{_v[0-9]+}}
@@ -9803,7 +9802,7 @@ int main(void) {
 // REWRITES-NEXT:         + {{_v[0-9]+}}
 // REWRITES-NEXT:         - {{_v[0-9]+}}
 // REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}};
+// REWRITES-NEXT:         - {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

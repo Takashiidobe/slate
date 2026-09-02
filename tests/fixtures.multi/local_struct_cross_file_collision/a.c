@@ -49,6 +49,6 @@ int run_a(void) {
 // REWRITES-DAG:         total += items[((i as i64) as usize)].value * items[((i as i64) as usize)].weight;
 // REWRITES-DAG:         i += 1;
 // REWRITES-DAG:     }
-// REWRITES-DAG:     return total;
+// REWRITES-DAG:     total
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

@@ -21,6 +21,6 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn sum3({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-DAG:     return {{arg[0-9]+}} + {{arg[0-9]+}} + {{arg[0-9]+}};
+// REWRITES-DAG:     {{arg[0-9]+}} + {{arg[0-9]+}} + {{arg[0-9]+}}
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

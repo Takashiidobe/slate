@@ -29,6 +29,6 @@ int main(void) {
 // REWRITES-DAG: fn call_alias({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-DAG:     let {{_v[0-9]+}}: i32 = alias_impl({{arg[0-9]+}});
 // REWRITES-DAG:     let {{_v[0-9]+}}: i32 = real_impl({{arg[0-9]+}});
-// REWRITES-DAG:     return {{_v[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-DAG:     {{_v[0-9]+}} + {{_v[0-9]+}}
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

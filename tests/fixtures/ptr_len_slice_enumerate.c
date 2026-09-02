@@ -116,7 +116,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
 // REWRITES-NEXT:         total += (unsafe { *{{_v[0-9]+}} }) * i;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return total;
+// REWRITES-NEXT:     total
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

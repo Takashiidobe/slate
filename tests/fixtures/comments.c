@@ -89,7 +89,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         completed_count = (unsafe { completed_count }) + 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return unsafe { std::ptr::read_volatile(std::ptr::addr_of!(next)) };
+// REWRITES-NEXT:     unsafe { std::ptr::read_volatile(std::ptr::addr_of!(next)) }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

@@ -374,7 +374,7 @@ int main(void) {
 // REWRITES-NEXT:         total += ((unsafe { *{{_v[0-9]+}} }) as i32) * cases[((i as i64) as usize)].expectedStatus;
 // REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return total;
+// REWRITES-NEXT:     total
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn sum_flags() -> i32 {
@@ -410,7 +410,7 @@ int main(void) {
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return total;
+// REWRITES-NEXT:     total
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn sum_movements() -> i32 {
@@ -448,7 +448,7 @@ int main(void) {
 // REWRITES-NEXT:         total += {{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32);
 // REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return total;
+// REWRITES-NEXT:     total
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

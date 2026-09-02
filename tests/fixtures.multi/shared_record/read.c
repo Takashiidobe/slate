@@ -19,6 +19,6 @@ int read_pair(struct Pair *pair) { return pair->left + pair->right; }
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: #[unsafe(no_mangle)]
 // REWRITES-DAG: pub unsafe extern "C" fn read_pair({{arg[0-9]+}}: *mut Pair) -> i32 {
-// REWRITES-DAG:     return (unsafe { (*{{arg[0-9]+}}).left }) + unsafe { (*{{arg[0-9]+}}).right };
+// REWRITES-DAG:     (unsafe { (*{{arg[0-9]+}}).left }) + unsafe { (*{{arg[0-9]+}}).right }
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

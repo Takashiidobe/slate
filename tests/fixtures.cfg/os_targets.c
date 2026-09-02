@@ -1,18 +1,20 @@
 int printf(const char *, ...);
 
+// @rewrite-fn-begin
 #if defined(_WIN32)
-static int os_code(void) { return 10; }
+int os_code(void) { return 10; }
 #elif defined(__ANDROID__)
-static int os_code(void) { return 25; }
+int os_code(void) { return 25; }
 #elif defined(__linux__)
-static int os_code(void) { return 20; }
+int os_code(void) { return 20; }
 #elif defined(__APPLE__)
-static int os_code(void) { return 30; }
+int os_code(void) { return 30; }
 #elif defined(__FreeBSD__)
-static int os_code(void) { return 35; }
+int os_code(void) { return 35; }
 #else
-static int os_code(void) { return 40; }
+int os_code(void) { return 40; }
 #endif
+// @rewrite-fn-end
 
 int main(void) {
   printf("%d\n", os_code());
@@ -23,9 +25,9 @@ int main(void) {
 // DIRECTIVES-DAG: #[cfg(target_os = "linux")]
 // DIRECTIVES-DAG: #[cfg(target_vendor = "apple")]
 // DIRECTIVES-DAG: #[cfg(target_os = "freebsd")]
-// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}10;
-// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}25;
-// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}20;
-// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}30;
-// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}35;
-// DIRECTIVES-DAG: {{__retval = |let _v[0-9]+: i32 = |return }}40;
+
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES-DAG: fn os_code() -> i32 {
+// REWRITES-DAG:     20
+// REWRITES-DAG: }
+// SLATE-FILECHECK-END rewrites

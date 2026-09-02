@@ -49,6 +49,6 @@ int main(void) {
 // REWRITES-DAG:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(value))
 // REWRITES-DAG:             .load(std::sync::atomic::Ordering::SeqCst)
 // REWRITES-DAG:     };
-// REWRITES-DAG:     return {{_v[0-9]+}};
+// REWRITES-DAG:     {{_v[0-9]+}}
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

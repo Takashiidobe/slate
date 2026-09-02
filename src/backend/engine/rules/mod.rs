@@ -10,6 +10,7 @@ mod param_spills;
 mod pattern_range;
 mod peel_casts;
 mod raw_ptr_alias;
+mod return_cleanup;
 mod singleton_scopes;
 mod structure_dispatch;
 mod structure_goto;
@@ -31,6 +32,7 @@ pub(super) fn registry() -> Vec<Box<dyn NodeRule>> {
         Box::new(singleton_scopes::ScopeFlatten),
         Box::new(for_range::ForRangeRecover),
         Box::new(array_iter::ForArrayIterRecover),
+        Box::new(return_cleanup::ReturnSlotFold),
         Box::new(inline_temps::LateInlineTemps),
         Box::new(inline_temps::EffectfulTempForward),
         Box::new(inline_temps::InlineConstArgTemps),
@@ -39,6 +41,7 @@ pub(super) fn registry() -> Vec<Box<dyn NodeRule>> {
         Box::new(cstr_literal::CStrLiteral),
         Box::new(compound_assign::CompoundAssignRecover),
         Box::new(dead_store::DeadStore),
+        Box::new(return_cleanup::FinalReturnTail),
     ];
     rules.extend(libc_call::rules());
     rules

@@ -108,7 +108,7 @@ int main(void) { return 0; }
 // REWRITES-BIONIC-AARCH64-NEXT:     unsafe { store_long_double(std::ptr::addr_of_mut!(value) as *mut f128) };
 // REWRITES-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: *mut f128 =
 // REWRITES-BIONIC-AARCH64-NEXT:         (unsafe { load_long_double(std::ptr::addr_of_mut!(value) as *const f128) }) as *mut f128;
-// REWRITES-BIONIC-AARCH64-NEXT:     return unsafe { *{{_v[0-9]+}} };
+// REWRITES-BIONIC-AARCH64-NEXT:     unsafe { *{{_v[0-9]+}} }
 // REWRITES-BIONIC-AARCH64-NEXT: }
 // REWRITES-BIONIC-AARCH64-EMPTY:
 // REWRITES-BIONIC-AARCH64-NEXT: fn main() {

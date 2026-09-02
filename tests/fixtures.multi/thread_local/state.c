@@ -10,6 +10,6 @@ int read_shared_value(void) { return shared_value; }
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: #[unsafe(no_mangle)]
 // REWRITES-DAG: pub extern "C" fn read_shared_value() -> i32 {
-// REWRITES-DAG:     return unsafe { shared_value };
+// REWRITES-DAG:     unsafe { shared_value }
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

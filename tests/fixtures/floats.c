@@ -83,7 +83,7 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn avg({{arg[0-9]+}}: f64, {{arg[0-9]+}}: f64) -> f64 {
-// REWRITES-NEXT:     return ({{arg[0-9]+}} + {{arg[0-9]+}}) / 2.0;
+// REWRITES-NEXT:     ({{arg[0-9]+}} + {{arg[0-9]+}}) / 2.0
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

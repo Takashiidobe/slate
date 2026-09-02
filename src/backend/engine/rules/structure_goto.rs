@@ -1,5 +1,5 @@
 use crate::backend::engine::NodeRule;
-use crate::backend::engine::arena::{Arena, NodeId, NodeKindTag};
+use crate::backend::engine::arena::{FunctionOptimizer, NodeId, NodeKindTag};
 
 pub(in crate::backend::engine) struct StructureGoto;
 
@@ -16,11 +16,11 @@ impl NodeRule for StructureGoto {
         &[NodeKindTag::Loop]
     }
 
-    fn matches(&self, _arena: &Arena, _id: NodeId) -> bool {
+    fn matches(&self, _arena: &FunctionOptimizer, _id: NodeId) -> bool {
         false
     }
 
-    fn apply(&self, _arena: &mut Arena, _id: NodeId) -> bool {
+    fn apply(&self, _arena: &mut FunctionOptimizer, _id: NodeId) -> bool {
         false
     }
 }

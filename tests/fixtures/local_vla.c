@@ -169,7 +169,7 @@ int main(void) {
 // REWRITES-NEXT:         total += unsafe { __arg1_view[(index as usize)] };
 // REWRITES-NEXT:         index += 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return total;
+// REWRITES-NEXT:     total
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

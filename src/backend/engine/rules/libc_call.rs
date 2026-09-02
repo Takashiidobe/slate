@@ -1,12 +1,12 @@
 use crate::backend::engine::NodeRule;
-use crate::backend::engine::arena::{Arena, NodeId, NodeKind, NodeKindTag};
+use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::{
     BinOp, Block, Expr, Ident, IndentStmt, Path, Prim, RustValue, Stmt, Type, UnaryOp,
 };
 use crate::function_identity::{CallBinding, Known};
 
 pub(super) struct CallCtx<'a> {
-    arena: &'a Arena,
+    arena: &'a FunctionOptimizer,
     args: &'a [Expr],
     result_type: Option<Type>,
     discards_result: bool,
@@ -557,7 +557,7 @@ impl NodeRule for LibcCall {
         Some(Ident::new(self.known.symbol()))
     }
 
-    fn matches(&self, arena: &Arena, id: NodeId) -> bool {
+    fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
         let Some(kind) = arena.get(id) else {
             return false;
         };
@@ -576,7 +576,7 @@ impl NodeRule for LibcCall {
         (self.build)(&ctx).is_some()
     }
 
-    fn apply(&self, arena: &mut Arena, id: NodeId) -> bool {
+    fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
         let Some(kind) = arena.get(id) else {
             return false;
         };

@@ -337,12 +337,10 @@ unsigned int slate_first_interface_flags(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites-macos
 // REWRITES-MACOS-DAG: unsafe fn slate_listen_ipv4({{arg[0-9]+}}: *mut sockaddr_in) -> i32 {
-// REWRITES-MACOS-DAG:     let mut __retval: i32 = 0;
 // REWRITES-MACOS-DAG:     let mut socket_fd: i32 = unsafe { socket(2 as i32, 1 as i32, 6 as i32) };
 // REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: bool = socket_fd < 0;
 // REWRITES-MACOS-DAG:     if {{_v[0-9]+}} {
-// REWRITES-MACOS-DAG:         __retval = socket_fd;
-// REWRITES-MACOS-DAG:         return __retval;
+// REWRITES-MACOS-DAG:         return socket_fd;
 // REWRITES-MACOS-DAG:     }
 // REWRITES-MACOS-DAG:     unsafe {
 // REWRITES-MACOS-DAG:         (*{{arg[0-9]+}}).sin_len = 16;
@@ -364,8 +362,7 @@ unsigned int slate_first_interface_flags(void) {
 // REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-MACOS-DAG:         {{_v[0-9]+}}
 // REWRITES-MACOS-DAG:     };
-// REWRITES-MACOS-DAG:     __retval = {{_v[0-9]+}} as i32;
-// REWRITES-MACOS-DAG:     return __retval;
+// REWRITES-MACOS-DAG:     {{_v[0-9]+}} as i32
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: unsafe fn slate_bind_local({{arg[0-9]+}}: i32, {{arg[0-9]+}}: *mut sockaddr_un, {{arg[0-9]+}}: *mut i8) -> i32 {
 // REWRITES-MACOS-DAG:     unsafe {
@@ -386,7 +383,7 @@ unsigned int slate_first_interface_flags(void) {
 // REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: u64 = 106 - {{_v[0-9]+}};
 // REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: *mut i8 = (unsafe { std::ptr::addr_of_mut!((*{{arg[0-9]+}}).sun_path) }) as *mut i8;
 // REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: u64 = (unsafe { strlen({{_v[0-9]+}} as *const core::ffi::c_char) }) as u64;
-// REWRITES-MACOS-DAG:     return unsafe { bind({{arg[0-9]+}} as i32, {{_v[0-9]+}} as *const sockaddr, ({{_v[0-9]+}} + {{_v[0-9]+}}) as u32) };
+// REWRITES-MACOS-DAG:     unsafe { bind({{arg[0-9]+}} as i32, {{_v[0-9]+}} as *const sockaddr, ({{_v[0-9]+}} + {{_v[0-9]+}}) as u32) }
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: unsafe fn slate_resolve({{arg[0-9]+}}: *mut i8, mut result: *mut *mut addrinfo) -> i32 {
 // REWRITES-MACOS-DAG:     let mut hints: addrinfo = addrinfo {
@@ -416,7 +413,7 @@ unsigned int slate_first_interface_flags(void) {
 // REWRITES-MACOS-DAG:     if {{_v[0-9]+}} {
 // REWRITES-MACOS-DAG:         unsafe { freeaddrinfo((unsafe { *result }) as *mut addrinfo) };
 // REWRITES-MACOS-DAG:     }
-// REWRITES-MACOS-DAG:     return status;
+// REWRITES-MACOS-DAG:     status
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: unsafe fn slate_control_data(mut message: *mut msghdr) -> *mut u8 {
 // REWRITES-MACOS-DAG:     let mut control: *mut cmsghdr = std::ptr::null_mut();
@@ -441,10 +438,9 @@ unsigned int slate_first_interface_flags(void) {
 // REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add({{_v[0-9]+}} as usize) };
 // REWRITES-MACOS-DAG:         {{_v[0-9]+}}
 // REWRITES-MACOS-DAG:     };
-// REWRITES-MACOS-DAG:     return {{_v[0-9]+}};
+// REWRITES-MACOS-DAG:     {{_v[0-9]+}}
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: fn slate_first_interface_flags() -> u32 {
-// REWRITES-MACOS-DAG:     let mut __retval: u32 = 0;
 // REWRITES-MACOS-DAG:     let mut addresses: *mut ifaddrs = std::ptr::null_mut();
 // REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: i32 = unsafe { getifaddrs(std::ptr::addr_of_mut!(addresses) as *mut *mut ifaddrs) };
 // REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
@@ -456,12 +452,10 @@ unsigned int slate_first_interface_flags(void) {
 // REWRITES-MACOS-DAG:         {{_v[0-9]+}}
 // REWRITES-MACOS-DAG:     };
 // REWRITES-MACOS-DAG:     if {{_v[0-9]+}} {
-// REWRITES-MACOS-DAG:         __retval = 0;
-// REWRITES-MACOS-DAG:         return __retval;
+// REWRITES-MACOS-DAG:         return 0;
 // REWRITES-MACOS-DAG:     }
 // REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: u32 = unsafe { (*addresses).ifa_flags };
 // REWRITES-MACOS-DAG:     unsafe { freeifaddrs(addresses as *mut ifaddrs) };
-// REWRITES-MACOS-DAG:     __retval = {{_v[0-9]+}};
-// REWRITES-MACOS-DAG:     return __retval;
+// REWRITES-MACOS-DAG:     {{_v[0-9]+}}
 // REWRITES-MACOS-DAG: }
 // SLATE-FILECHECK-END rewrites-macos

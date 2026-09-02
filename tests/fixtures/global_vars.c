@@ -158,7 +158,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         pair.right = (unsafe { pair.right }) + unsafe { (*numbers)[((1 as i64) as usize)] };
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return (unsafe { pair.left }) + unsafe { pair.right };
+// REWRITES-NEXT:     (unsafe { pair.left }) + unsafe { pair.right }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

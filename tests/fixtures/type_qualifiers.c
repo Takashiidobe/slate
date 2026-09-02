@@ -134,11 +134,11 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn add_const_param({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     return {{arg[0-9]+}} + 5 + unsafe { global_bias };
+// REWRITES-NEXT:     {{arg[0-9]+}} + 5 + unsafe { global_bias }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn add_restrict_pointers({{arg[0-9]+}}: &i32, {{arg[0-9]+}}: &i32) -> i32 {
-// REWRITES-NEXT:     return (unsafe { *({{arg[0-9]+}} as *const i32) }) + unsafe { *({{arg[0-9]+}} as *const i32) };
+// REWRITES-NEXT:     (unsafe { *({{arg[0-9]+}} as *const i32) }) + unsafe { *({{arg[0-9]+}} as *const i32) }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn add_atomic_value(mut value: i32) -> i32 {
@@ -156,7 +156,7 @@ int main(void) {
 // REWRITES-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(local))
 // REWRITES-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     return {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

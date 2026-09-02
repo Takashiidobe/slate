@@ -138,17 +138,17 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn allocate({{arg[0-9]+}}: u64, {{arg[0-9]+}}: u64) -> *mut core::ffi::c_void {
-// REWRITES-NEXT:     return unsafe { malloc({{arg[0-9]+}} as usize) };
+// REWRITES-NEXT:     unsafe { malloc({{arg[0-9]+}} as usize) }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn allocate_array({{arg[0-9]+}}: u64, {{arg[0-9]+}}: u64) -> *mut core::ffi::c_void {
-// REWRITES-NEXT:     return unsafe { calloc({{arg[0-9]+}} as usize, {{arg[0-9]+}} as usize) };
+// REWRITES-NEXT:     unsafe { calloc({{arg[0-9]+}} as usize, {{arg[0-9]+}} as usize) }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn offset_aligned({{arg[0-9]+}}: *mut core::ffi::c_void) -> *mut core::ffi::c_void {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{arg[0-9]+}} as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(4) };
-// REWRITES-NEXT:     return {{_v[0-9]+}} as *mut core::ffi::c_void;
+// REWRITES-NEXT:     {{_v[0-9]+}} as *mut core::ffi::c_void
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

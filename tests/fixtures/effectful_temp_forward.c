@@ -54,7 +54,7 @@ int main(void) {
 // REWRITES-DAG: fn safe_forward({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-DAG:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{arg[0-9]+}};
 // REWRITES-DAG:     unsafe { printf(c"%d\n".as_ptr(), add({{arg[0-9]+}}, {{arg[0-9]+}})) };
-// REWRITES-DAG:     return {{_v[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-DAG:     {{_v[0-9]+}} + {{_v[0-9]+}}
 // REWRITES-DAG: }
 // REWRITES-DAG: fn blocked_forward({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) {
 // REWRITES-DAG:     unsafe { printf(c"%d %d\n".as_ptr(), add({{arg[0-9]+}}, {{arg[0-9]+}}), side_effect()) };

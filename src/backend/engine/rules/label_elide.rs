@@ -1,5 +1,5 @@
 use crate::backend::engine::NodeRule;
-use crate::backend::engine::arena::{Arena, NodeId, NodeKind, NodeKindTag};
+use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::Label;
 
 pub(in crate::backend::engine) struct BreakToElse;
@@ -100,7 +100,7 @@ impl NodeRule for BreakToElse {
         true
     }
 
-    fn matches(&self, arena: &Arena, id: NodeId) -> bool {
+    fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
         let Some(label) = escaping_break(arena, id) else {
             return false;
         };
@@ -110,7 +110,7 @@ impl NodeRule for BreakToElse {
         pos + 1 < len && reaches_label_end(arena, parent, &label)
     }
 
-    fn apply(&self, arena: &mut Arena, id: NodeId) -> bool {
+    fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
         if !self.matches(arena, id) {
             return false;
         }
@@ -158,7 +158,7 @@ impl NodeRule for TailBreakDrop {
         &[NodeKindTag::Break]
     }
 
-    fn matches(&self, arena: &Arena, id: NodeId) -> bool {
+    fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
         let Some(NodeKind::Break(Some(label))) = arena.get(id) else {
             return false;
         };
@@ -168,7 +168,7 @@ impl NodeRule for TailBreakDrop {
         pos + 1 == len && reaches_label_end(arena, parent, label)
     }
 
-    fn apply(&self, arena: &mut Arena, id: NodeId) -> bool {
+    fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
         if !self.matches(arena, id) {
             return false;
         }
@@ -201,7 +201,7 @@ impl NodeRule for LabelElide {
         &[NodeKindTag::LabeledBlock]
     }
 
-    fn matches(&self, arena: &Arena, id: NodeId) -> bool {
+    fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
         let Some(NodeKind::LabeledBlock { label, body }) = arena.get(id) else {
             return false;
         };
@@ -210,7 +210,7 @@ impl NodeRule for LabelElide {
             .any(|&child| subtree_breaks(arena, child, label))
     }
 
-    fn apply(&self, arena: &mut Arena, id: NodeId) -> bool {
+    fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
         if !self.matches(arena, id) {
             return false;
         }

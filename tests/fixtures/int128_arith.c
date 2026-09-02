@@ -111,7 +111,7 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn add128({{arg[0-9]+}}: i128, {{arg[0-9]+}}: i128) -> i128 {
-// REWRITES-NEXT:     return {{arg[0-9]+}} + {{arg[0-9]+}};
+// REWRITES-NEXT:     {{arg[0-9]+}} + {{arg[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn print128({{arg[0-9]+}}: u128) {
@@ -126,7 +126,7 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn mul128({{arg[0-9]+}}: u128, {{arg[0-9]+}}: u128) -> u128 {
-// REWRITES-NEXT:     return {{arg[0-9]+}} * {{arg[0-9]+}};
+// REWRITES-NEXT:     {{arg[0-9]+}} * {{arg[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

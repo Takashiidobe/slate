@@ -186,7 +186,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} << align;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     return {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

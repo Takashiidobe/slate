@@ -67,7 +67,7 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn msvc_arm_guarded_pragma({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     return {{arg[0-9]+}} + 41;
+// REWRITES-NEXT:     {{arg[0-9]+}} + 41
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

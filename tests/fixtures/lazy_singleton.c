@@ -105,7 +105,7 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn compute() -> i32 {
-// REWRITES-NEXT:     return 42;
+// REWRITES-NEXT:     42
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn get_value() -> i32 {
@@ -119,7 +119,7 @@ int main(void) {
 // REWRITES-NEXT:             computed = 1;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return unsafe { cached_value };
+// REWRITES-NEXT:     unsafe { cached_value }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

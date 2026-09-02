@@ -79,11 +79,11 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn neg_int({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     return {{arg[0-9]+}}.wrapping_neg();
+// REWRITES-NEXT:     {{arg[0-9]+}}.wrapping_neg()
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn neg_double({{arg[0-9]+}}: f64) -> f64 {
-// REWRITES-NEXT:     return -{{arg[0-9]+}};
+// REWRITES-NEXT:     -{{arg[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

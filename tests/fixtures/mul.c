@@ -69,7 +69,7 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn imul({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     return {{arg[0-9]+}} * {{arg[0-9]+}};
+// REWRITES-NEXT:     {{arg[0-9]+}} * {{arg[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

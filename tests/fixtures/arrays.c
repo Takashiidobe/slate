@@ -118,7 +118,7 @@ int main(void) {
 // REWRITES-NEXT:     values[({{_v[0-9]+}} as usize)] = 5;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
 // REWRITES-NEXT:     values[({{_v[0-9]+}} as usize)] = values[((0 as i64) as usize)] + values[((1 as i64) as usize)];
-// REWRITES-NEXT:     return values[((2 as i64) as usize)];
+// REWRITES-NEXT:     values[((2 as i64) as usize)]
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn pick_index({{arg[0-9]+}}: i32) -> i32 {
@@ -129,7 +129,7 @@ int main(void) {
 // REWRITES-NEXT:     values[({{_v[0-9]+}} as usize)] = 20;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
 // REWRITES-NEXT:     values[({{_v[0-9]+}} as usize)] = 30;
-// REWRITES-NEXT:     return values[(({{arg[0-9]+}} as i64) as usize)];
+// REWRITES-NEXT:     values[(({{arg[0-9]+}} as i64) as usize)]
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

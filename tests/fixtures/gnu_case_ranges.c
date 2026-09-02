@@ -231,22 +231,20 @@ int main(void) {
 // REWRITES-NEXT:             result = 90;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return result;
+// REWRITES-NEXT:     result
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn classify_direct(mut {{_v[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-NEXT:     match {{_v[0-9]+}} {
 // REWRITES-NEXT:         -2..=2 => {
-// REWRITES-NEXT:             __retval = 7;
-// REWRITES-NEXT:             return __retval;
+// REWRITES-NEXT:             return 7;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         _ => {
-// REWRITES-NEXT:             __retval = 9;
-// REWRITES-NEXT:             return __retval;
+// REWRITES-NEXT:             return 9;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return __retval;
+// REWRITES-NEXT:     __retval
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

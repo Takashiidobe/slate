@@ -14,11 +14,11 @@ int compute(int x) { return local(x) + 1; }
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn local({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-DAG:     return {{arg[0-9]+}} * unsafe { base };
+// REWRITES-DAG:     {{arg[0-9]+}} * unsafe { base }
 // REWRITES-DAG: }
 // REWRITES-DAG: #[unsafe(no_mangle)]
 // REWRITES-DAG: pub extern "C" fn compute({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-DAG:     let {{_v[0-9]+}}: i32 = local({{arg[0-9]+}});
-// REWRITES-DAG:     return {{_v[0-9]+}} + 1;
+// REWRITES-DAG:     {{_v[0-9]+}} + 1
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

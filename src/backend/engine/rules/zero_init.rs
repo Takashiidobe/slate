@@ -1,5 +1,5 @@
 use crate::backend::engine::NodeRule;
-use crate::backend::engine::arena::{Arena, NodeId, NodeKind, NodeKindTag};
+use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::{Expr, Ident, Pattern, RustValue, UnaryOp};
 
 fn expr_is_zero(expr: &Expr) -> bool {
@@ -179,7 +179,7 @@ impl NodeRule for ZeroInitFold {
         &[NodeKindTag::Let]
     }
 
-    fn matches(&self, arena: &Arena, id: NodeId) -> bool {
+    fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
         matches!(
             arena.get(id),
             Some(NodeKind::Let {
@@ -191,7 +191,7 @@ impl NodeRule for ZeroInitFold {
         )
     }
 
-    fn apply(&self, arena: &mut Arena, id: NodeId) -> bool {
+    fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
         let Some(NodeKind::Let {
             name,
             mutable: true,

@@ -19,6 +19,6 @@ int call_handler(struct Callback *callback) { return callback->handler(41); }
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: #[unsafe(no_mangle)]
 // REWRITES-DAG: pub unsafe extern "C" fn call_handler({{arg[0-9]+}}: *mut Callback) -> i32 {
-// REWRITES-DAG:     return unsafe { unsafe { (*{{arg[0-9]+}}).handler }.unwrap()(41 as i32) };
+// REWRITES-DAG:     unsafe { unsafe { (*{{arg[0-9]+}}).handler }.unwrap()(41 as i32) }
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

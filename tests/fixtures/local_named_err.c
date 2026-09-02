@@ -97,7 +97,7 @@ int main(void) {
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         Err_ = c"bad".as_ptr() as *mut i8;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return Err_;
+// REWRITES-NEXT:     Err_
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

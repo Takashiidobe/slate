@@ -1098,7 +1098,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn gnu_environment_extensions() -> i32 {
@@ -1199,7 +1199,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = __slate_strndupa_finish({{_v[0-9]+}} as *mut core::ffi::c_void, {{_v[0-9]+}}, {{_v[0-9]+}});
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { strcmp({{_v[0-9]+}} as *const core::ffi::c_char, c"slate".as_ptr()) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
-// REWRITES-NEXT:     return {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     {{_v[0-9]+}} + ({{_v[0-9]+}} as i32)
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn gnu_time_extensions() -> i32 {
@@ -1241,7 +1241,7 @@ int main(void) {
 // REWRITES-NEXT:     local.tm_mday = 2;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { timelocal(std::ptr::addr_of_mut!(local) as *mut tm) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != -1;
-// REWRITES-NEXT:     return {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     {{_v[0-9]+}} + ({{_v[0-9]+}} as i32)
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn gnu_pattern_extensions() -> i32 {
@@ -1427,7 +1427,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
 // REWRITES-NEXT:     unsafe { globfree(std::ptr::addr_of_mut!(paths) as *mut glob_t) };
-// REWRITES-NEXT:     return {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn gnu_runtime_extensions() -> i32 {
@@ -1483,10 +1483,9 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = ((unsafe { *{{_v[0-9]+}} }) as i32) != 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// REWRITES-NEXT:     return {{_v[0-9]+}}
-// REWRITES-NEXT:         + ({{_v[0-9]+}} as i32)
+// REWRITES-NEXT:     {{_v[0-9]+}} + ({{_v[0-9]+}} as i32)
 // REWRITES-NEXT:         + (((unsafe { program_invocation_name }) != ({{_v[0-9]+}} as *mut i8)) as i32)
-// REWRITES-NEXT:         + (((unsafe { program_invocation_short_name }) != ({{_v[0-9]+}} as *mut i8)) as i32);
+// REWRITES-NEXT:         + (((unsafe { program_invocation_short_name }) != ({{_v[0-9]+}} as *mut i8)) as i32)
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

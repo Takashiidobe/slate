@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 
-use crate::backend::rust_ast::{Expr, Ident, IndentStmt, InlineAsm, Label, Pattern, Stmt};
+use crate::backend::rust_ast::{
+    BinOp, Block, Expr, FnParam, Ident, IndentStmt, InlineAsm, Label, MatchArm, Pattern, Stmt, Type,
+};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub(in crate::backend) struct NodeId {
@@ -49,13 +51,13 @@ pub(in crate::backend) enum NodeKind {
     Let {
         name: Ident,
         mutable: bool,
-        ty: Option<crate::backend::rust_ast::Type>,
+        ty: Option<Type>,
         init: Option<Expr>,
     },
     LetIf {
         name: Ident,
         mutable: bool,
-        ty: Option<crate::backend::rust_ast::Type>,
+        ty: Option<Type>,
         cond: Expr,
         then_body: Vec<NodeId>,
         then_value: Expr,
@@ -68,7 +70,7 @@ pub(in crate::backend) enum NodeKind {
     },
     CompoundAssign {
         target: Expr,
-        op: crate::backend::rust_ast::BinOp,
+        op: BinOp,
         value: Expr,
     },
     InlineAsm(InlineAsm),
@@ -308,84 +310,20 @@ pub(in crate::backend) struct Arena {
     free: Vec<u32>,
     def_uses: HashMap<Ident, Vec<NodeId>>,
     defs: HashMap<Ident, NodeId>,
-    param_types: HashMap<Ident, crate::backend::rust_ast::Type>,
-    params: Vec<crate::backend::rust_ast::FnParam>,
 }
 
 impl Arena {
-    fn new(params: &[crate::backend::rust_ast::FnParam]) -> Self {
+    fn new() -> Self {
         Self {
             slots: Vec::new(),
             free: Vec::new(),
             def_uses: HashMap::new(),
             defs: HashMap::new(),
-            param_types: params
-                .iter()
-                .map(|param| (Ident::new(&param.name), param.ty.clone()))
-                .collect(),
-            params: params.to_vec(),
         }
-    }
-
-    pub(in crate::backend) fn params(&self) -> &[crate::backend::rust_ast::FnParam] {
-        &self.params
-    }
-
-    pub(in crate::backend) fn rename_param(
-        &mut self,
-        source: Ident,
-        target: Ident,
-        mutable: bool,
-    ) -> bool {
-        if self
-            .params
-            .iter()
-            .any(|param| Ident::new(&param.name) == target)
-        {
-            return false;
-        }
-        let Some(param) = self
-            .params
-            .iter_mut()
-            .find(|param| Ident::new(&param.name) == source)
-        else {
-            return false;
-        };
-        param.name = target.as_str().to_string();
-        param.mutable |= mutable;
-        let Some(ty) = self.param_types.remove(&source) else {
-            return false;
-        };
-        self.param_types.insert(target, ty);
-        true
     }
 
     pub(in crate::backend) fn definition(&self, name: Ident) -> Option<NodeId> {
         self.defs.get(&name).copied()
-    }
-
-    pub(in crate::backend) fn param_type(
-        &self,
-        name: Ident,
-    ) -> Option<&crate::backend::rust_ast::Type> {
-        self.param_types.get(&name)
-    }
-
-    pub(in crate::backend) fn var_type(
-        &self,
-        name: Ident,
-    ) -> Option<&crate::backend::rust_ast::Type> {
-        if let Some(ty) = self.param_types.get(&name) {
-            return Some(ty);
-        }
-        match self.get(*self.defs.get(&name)?)? {
-            NodeKind::Let { ty: Some(ty), .. } | NodeKind::LetIf { ty: Some(ty), .. } => Some(ty),
-            NodeKind::Let {
-                init: Some(Expr::Cast { ty, .. }),
-                ..
-            } => Some(ty),
-            _ => None,
-        }
     }
 
     fn reserve(&mut self, parent: Option<NodeId>) -> NodeId {
@@ -570,20 +508,104 @@ impl Arena {
     }
 }
 
-pub(in crate::backend) struct FunctionArena {
-    pub(in crate::backend) arena: Arena,
+pub(in crate::backend) struct FunctionOptimizer {
+    arena: Arena,
     pub(in crate::backend) root: NodeId,
+    params: Vec<FnParam>,
+    param_types: HashMap<Ident, Type>,
+    return_type: Option<Type>,
+}
+
+impl FunctionOptimizer {
+    pub(in crate::backend) fn params(&self) -> &[FnParam] {
+        &self.params
+    }
+
+    pub(in crate::backend) fn return_type(&self) -> Option<&Type> {
+        self.return_type.as_ref()
+    }
+
+    pub(in crate::backend) fn param_type(&self, name: Ident) -> Option<&Type> {
+        self.param_types.get(&name)
+    }
+
+    pub(in crate::backend) fn var_type(&self, name: Ident) -> Option<&Type> {
+        if let Some(ty) = self.param_types.get(&name) {
+            return Some(ty);
+        }
+        match self.get(self.definition(name)?)? {
+            NodeKind::Let { ty: Some(ty), .. } | NodeKind::LetIf { ty: Some(ty), .. } => Some(ty),
+            NodeKind::Let {
+                init: Some(Expr::Cast { ty, .. }),
+                ..
+            } => Some(ty),
+            _ => None,
+        }
+    }
+
+    pub(in crate::backend) fn rename_param(
+        &mut self,
+        source: Ident,
+        target: Ident,
+        mutable: bool,
+    ) -> bool {
+        if self
+            .params
+            .iter()
+            .any(|param| Ident::new(&param.name) == target)
+        {
+            return false;
+        }
+        let Some(param) = self
+            .params
+            .iter_mut()
+            .find(|param| Ident::new(&param.name) == source)
+        else {
+            return false;
+        };
+        let Some(ty) = self.param_types.remove(&source) else {
+            return false;
+        };
+        param.name = target.as_str().to_string();
+        param.mutable |= mutable;
+        self.param_types.insert(target, ty);
+        true
+    }
+}
+
+impl std::ops::Deref for FunctionOptimizer {
+    type Target = Arena;
+
+    fn deref(&self) -> &Self::Target {
+        &self.arena
+    }
+}
+
+impl std::ops::DerefMut for FunctionOptimizer {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.arena
+    }
 }
 
 pub(in crate::backend) fn build(
     body: Vec<IndentStmt>,
-    params: &[crate::backend::rust_ast::FnParam],
-) -> FunctionArena {
-    let mut arena = Arena::new(params);
+    params: &[FnParam],
+    return_type: Option<&Type>,
+) -> FunctionOptimizer {
+    let mut arena = Arena::new();
     let root = arena.reserve(None);
     let stmts = build_stmts(&mut arena, Some(root), body);
     arena.fill(root, NodeKind::Block { stmts, tail: None });
-    FunctionArena { arena, root }
+    FunctionOptimizer {
+        arena,
+        root,
+        params: params.to_vec(),
+        param_types: params
+            .iter()
+            .map(|param| (Ident::new(&param.name), param.ty.clone()))
+            .collect(),
+        return_type: return_type.cloned(),
+    }
 }
 
 fn build_stmts(arena: &mut Arena, parent: Option<NodeId>, stmts: Vec<IndentStmt>) -> Vec<NodeId> {
@@ -774,7 +796,7 @@ fn reify_stmt(arena: &Arena, id: NodeId, depth: usize, out: &mut Vec<IndentStmt>
         NodeKind::Expr(expr) => Stmt::Expr(expr.clone()),
         NodeKind::Return(expr) => Stmt::Return(expr.clone()),
         NodeKind::Unsafe { stmts, tail } => Stmt::Unsafe {
-            body: crate::backend::rust_ast::Block {
+            body: Block {
                 stmts: reify_nested(arena, stmts, depth + 1),
                 tail: tail.clone(),
             },
@@ -808,7 +830,7 @@ fn reify_stmt(arena: &Arena, id: NodeId, depth: usize, out: &mut Vec<IndentStmt>
             expr: expr.clone(),
             arms: arms
                 .iter()
-                .map(|arm| crate::backend::rust_ast::MatchArm {
+                .map(|arm| MatchArm {
                     pattern: arm.pattern.clone(),
                     body: reify_nested(arena, &arm.body, depth + 1),
                 })
@@ -818,12 +840,12 @@ fn reify_stmt(arena: &Arena, id: NodeId, depth: usize, out: &mut Vec<IndentStmt>
         NodeKind::Continue(label) => Stmt::Continue(label.clone()),
         NodeKind::While { cond, stmts, tail } => Stmt::While {
             cond: cond.clone(),
-            body: crate::backend::rust_ast::Block {
+            body: Block {
                 stmts: reify_nested(arena, stmts, depth + 1),
                 tail: tail.clone(),
             },
         },
-        NodeKind::Block { stmts, tail } => Stmt::Block(crate::backend::rust_ast::Block {
+        NodeKind::Block { stmts, tail } => Stmt::Block(Block {
             stmts: reify_nested(arena, stmts, depth + 1),
             tail: tail.clone(),
         }),

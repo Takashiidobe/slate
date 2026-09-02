@@ -165,7 +165,7 @@ int main(void) {
 // REWRITES-NEXT:             result = -2;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return result;
+// REWRITES-NEXT:     result
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

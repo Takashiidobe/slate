@@ -1180,11 +1180,11 @@ int main(void) {
 // REWRITES-NEXT:         total += unsafe { __arg40_view[(index as usize)] };
 // REWRITES-NEXT:         index += 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return total;
+// REWRITES-NEXT:     total
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn sum3({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     return {{arg[0-9]+}} + {{arg[0-9]+}} + {{arg[0-9]+}};
+// REWRITES-NEXT:     {{arg[0-9]+}} + {{arg[0-9]+}} + {{arg[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c99_thirty_two_parameters(
@@ -1221,7 +1221,7 @@ int main(void) {
 // REWRITES-NEXT:     {{arg[0-9]+}}: i32,
 // REWRITES-NEXT:     {{arg[0-9]+}}: i32,
 // REWRITES-NEXT: ) -> i32 {
-// REWRITES-NEXT:     return {{arg[0-9]+}}
+// REWRITES-NEXT:     {{arg[0-9]+}} + {{arg[0-9]+}}
 // REWRITES-NEXT:         + {{arg[0-9]+}}
 // REWRITES-NEXT:         + {{arg[0-9]+}}
 // REWRITES-NEXT:         + {{arg[0-9]+}}
@@ -1252,11 +1252,10 @@ int main(void) {
 // REWRITES-NEXT:         + {{arg[0-9]+}}
 // REWRITES-NEXT:         + {{arg[0-9]+}}
 // REWRITES-NEXT:         + {{arg[0-9]+}}
-// REWRITES-NEXT:         + {{arg[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c99_inline_square({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     return {{arg[0-9]+}} * {{arg[0-9]+}};
+// REWRITES-NEXT:     {{arg[0-9]+}} * {{arg[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c99_qualified_array_sum({{arg[0-9]+}}: *mut i32) -> i32 {
@@ -1265,11 +1264,11 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{arg[0-9]+}}.add(1) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + unsafe { *{{_v[0-9]+}} };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{arg[0-9]+}}.add(2) };
-// REWRITES-NEXT:     return {{_v[0-9]+}} + unsafe { *{{_v[0-9]+}} };
+// REWRITES-NEXT:     {{_v[0-9]+}} + unsafe { *{{_v[0-9]+}} }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c99_restrict_sum({{arg[0-9]+}}: &i32, {{arg[0-9]+}}: &i32) -> i32 {
-// REWRITES-NEXT:     return (unsafe { *({{arg[0-9]+}} as *const i32) }) + unsafe { *({{arg[0-9]+}} as *const i32) };
+// REWRITES-NEXT:     (unsafe { *({{arg[0-9]+}} as *const i32) }) + unsafe { *({{arg[0-9]+}} as *const i32) }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

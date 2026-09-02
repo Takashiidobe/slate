@@ -49,9 +49,9 @@ int main(void) {
 // REWRITES-DAG:     let mut coerce: Byte = Byte { value: 0 };
 // REWRITES-DAG:     coerce = Byte { value: 7 };
 // REWRITES-DAG:     let {{_v[0-9]+}}: *mut i8 = std::ptr::addr_of_mut!(coerce) as *mut i8;
-// REWRITES-DAG:     return unsafe { *{{_v[0-9]+}} };
+// REWRITES-DAG:     unsafe { *{{_v[0-9]+}} }
 // REWRITES-DAG: }
 // REWRITES-DAG: fn initialize_chars() -> i32 {
-// REWRITES-DAG:     return 5;
+// REWRITES-DAG:     5
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

@@ -79,7 +79,7 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn inot({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = !{{arg[0-9]+}};
-// REWRITES-NEXT:     return {{_v[0-9]+}};
+// REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

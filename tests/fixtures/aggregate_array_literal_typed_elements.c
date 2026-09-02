@@ -227,7 +227,7 @@ int main(void) {
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return total;
+// REWRITES-NEXT:     total
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn count_true_flags() -> i32 {
@@ -247,7 +247,7 @@ int main(void) {
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return total;
+// REWRITES-NEXT:     total
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use super::walk::{child_exprs, child_exprs_mut};
 use crate::backend::engine::NodeRule;
-use crate::backend::engine::arena::{Arena, NodeId, NodeKind, NodeKindTag};
+use crate::backend::engine::arena::{FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::{Expr, Ident, Prim, RustValue, Type};
 
 type VarTypes = HashMap<Ident, Type>;
@@ -201,7 +201,7 @@ fn kind_has_collapsible(kind: &NodeKind, vars: &VarTypes) -> bool {
     found
 }
 
-fn read_var_types(arena: &Arena, id: NodeId) -> VarTypes {
+fn read_var_types(arena: &FunctionOptimizer, id: NodeId) -> VarTypes {
     arena
         .reads(id)
         .iter()
@@ -224,14 +224,14 @@ impl NodeRule for PeelCasts {
         KINDS
     }
 
-    fn matches(&self, arena: &Arena, id: NodeId) -> bool {
+    fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
         let vars = read_var_types(arena, id);
         arena
             .get(id)
             .is_some_and(|kind| kind_has_collapsible(kind, &vars))
     }
 
-    fn apply(&self, arena: &mut Arena, id: NodeId) -> bool {
+    fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
         let vars = read_var_types(arena, id);
         let Some(kind) = arena.get_mut(id) else {
             return false;

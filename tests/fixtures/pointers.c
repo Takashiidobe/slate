@@ -131,14 +131,14 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn bump_through_pointer({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     return {{arg[0-9]+}} + 3;
+// REWRITES-NEXT:     {{arg[0-9]+}} + 3
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn add_into_pointer({{arg[0-9]+}}: &mut i32, {{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         *({{arg[0-9]+}} as *mut i32) = (unsafe { *({{arg[0-9]+}} as *mut i32) }) + {{arg[0-9]+}};
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return unsafe { *({{arg[0-9]+}} as *mut i32) };
+// REWRITES-NEXT:     unsafe { *({{arg[0-9]+}} as *mut i32) }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn pick_with_pointer_arithmetic({{arg[0-9]+}}: i32) -> i32 {
@@ -153,7 +153,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
 // REWRITES-NEXT:     values[({{_v[0-9]+}} as usize)] = 16;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset({{arg[0-9]+}} as isize) };
-// REWRITES-NEXT:     return unsafe { *{{_v[0-9]+}} };
+// REWRITES-NEXT:     unsafe { *{{_v[0-9]+}} }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

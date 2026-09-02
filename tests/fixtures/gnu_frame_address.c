@@ -62,7 +62,7 @@ int main(void) { return frame_address_is_plausible() ? 0 : 1; }
 // REWRITES-NEXT:     let mut {{_v[0-9]+}}: u8 = 0u8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u8 = std::ptr::addr_of_mut!({{_v[0-9]+}}) as *mut u8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = (({{_v[0-9]+}} as *mut core::ffi::c_void) as u64) > 4096;
-// REWRITES-NEXT:     return {{_v[0-9]+}} as i32;
+// REWRITES-NEXT:     {{_v[0-9]+}} as i32
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

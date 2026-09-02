@@ -66,7 +66,7 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn stable_function({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:     return {{arg[0-9]+}} * 3 + {{_v[0-9]+}};
+// REWRITES-NEXT:     {{arg[0-9]+}} * 3 + {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

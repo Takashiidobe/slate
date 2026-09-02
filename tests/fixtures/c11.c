@@ -1562,7 +1562,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         c11_evaluation_total = (unsafe { c11_evaluation_total }) + {{arg[0-9]+}};
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     return {{arg[0-9]+}} * 2;
+// REWRITES-NEXT:     {{arg[0-9]+}} * 2
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c11_make_temporary({{arg[0-9]+}}: i32) -> {{anon_struct[0-9A-Za-z_]*}} {
@@ -1608,7 +1608,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { c11_thread_local_value };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { __errno_location() };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = (unsafe { *{{_v[0-9]+}} }) == 34;
-// REWRITES-NEXT:     return {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     {{_v[0-9]+}} + ({{_v[0-9]+}} as i32)
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn c11_once_handler() {
@@ -1628,7 +1628,7 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c11_open_exclusive({{arg[0-9]+}}: *mut i8) -> *mut libc::FILE {
-// REWRITES-NEXT:     return unsafe { fopen({{arg[0-9]+}} as *const core::ffi::c_char, c"wx".as_ptr()) };
+// REWRITES-NEXT:     unsafe { fopen({{arg[0-9]+}} as *const core::ffi::c_char, c"wx".as_ptr()) }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c11_never_return({{arg[0-9]+}}: i32) -> ! {
