@@ -157,10 +157,9 @@ int main(void) {
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn classify_u64({{arg[0-9]+}}: u64) -> i32 {
-// REWRITES-DAG:     let mut v: u64 = {{arg[0-9]+}};
+// REWRITES-DAG: fn classify_u64(mut {{_v[0-9]+}}: u64) -> i32 {
 // REWRITES-DAG:     let mut __retval: i32 = 0;
-// REWRITES-DAG:     match v {
+// REWRITES-DAG:     match {{_v[0-9]+}} {
 // REWRITES-DAG:         18446744073709551610..=18446744073709551612 => {
 // REWRITES-DAG:             __retval = 1;
 // REWRITES-DAG:             return __retval;

@@ -304,8 +304,7 @@ int main(void) {
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C" fn panicky_callback({{arg[0-9]+}}: i32) {
-// REWRITES-NEXT:     let mut x: i32 = {{arg[0-9]+}};
+// REWRITES-NEXT: extern "C" fn panicky_callback(mut x: i32) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = x == 2;
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         unsafe {

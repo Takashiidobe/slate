@@ -187,9 +187,8 @@ int main(void) {
 // REWRITES-NEXT:     fn free(_0: *mut core::ffi::c_void);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn inner({{arg[0-9]+}}: i32) {
-// REWRITES-NEXT:     let mut fail: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = fail != 0;
+// REWRITES-NEXT: fn inner(mut {{_v[0-9]+}}: i32) {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = (unsafe { jb_top }) - 1;
 // REWRITES-NEXT:         unsafe {
@@ -206,9 +205,7 @@ int main(void) {
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn run_case({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) {
-// REWRITES-NEXT:     let mut id: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT:     let mut fail: i32 = {{arg[0-9]+}};
+// REWRITES-NEXT: fn run_case(mut id: i32, mut fail: i32) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { jb_top };
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         jb_top = {{_v[0-9]+}} + 1;

@@ -173,9 +173,8 @@ int main(void) {
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C" fn check({{arg[0-9]+}}: i32) {
-// REWRITES-NEXT:     let mut ok: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = ok != 0;
+// REWRITES-NEXT: extern "C" fn check(mut {{_v[0-9]+}}: i32) {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         fail_now();

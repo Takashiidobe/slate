@@ -155,7 +155,7 @@ int main(void) {
 // REWRITES-NEXT:         '__continue0: {
 // REWRITES-NEXT:             let mut x: i32 = i % 3;
 // REWRITES-NEXT:             match x {
-// REWRITES-NEXT:                 0 | 1 | 2 => {
+// REWRITES-NEXT:                 0..=2 => {
 // REWRITES-NEXT:                     i += 1;
 // REWRITES-NEXT:                     steps += 1;
 // REWRITES-NEXT:                     break '__continue0;

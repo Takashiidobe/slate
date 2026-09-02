@@ -160,11 +160,10 @@ int main(void) {
 // REWRITES-NEXT:     fn free(_0: *mut core::ffi::c_void);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn compute({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let mut flag: i32 = {{arg[0-9]+}};
+// REWRITES-NEXT: fn compute(mut {{_v[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     let mut p: *mut i32 = std::ptr::null_mut();
 // REWRITES-NEXT:     let mut q: *mut i32 = std::ptr::null_mut();
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = flag != 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc((4 as u64) as usize) };
 // REWRITES-NEXT:         p = {{_v[0-9]+}} as *mut i32;

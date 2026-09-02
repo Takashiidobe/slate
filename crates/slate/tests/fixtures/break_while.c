@@ -107,8 +107,7 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn countdown({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let mut n: i32 = {{arg[0-9]+}};
+// REWRITES-NEXT: fn countdown(mut n: i32) -> i32 {
 // REWRITES-NEXT:     let mut steps: i32 = 0;
 // REWRITES-NEXT:     loop {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 1;

@@ -306,10 +306,9 @@ int slate_yield(void) { return sched_yield(); }
 
 // SLATE-FILECHECK-BEGIN rewrites-macos
 // REWRITES-MACOS-DAG: unsafe fn slate_create_and_join(
-// REWRITES-MACOS-DAG:     {{arg[0-9]+}}: *mut *mut _opaque_pthread_t,
+// REWRITES-MACOS-DAG:     mut thread: *mut *mut _opaque_pthread_t,
 // REWRITES-MACOS-DAG:     {{arg[0-9]+}}: *mut core::ffi::c_void,
 // REWRITES-MACOS-DAG: ) -> i32 {
-// REWRITES-MACOS-DAG:     let mut thread: *mut *mut _opaque_pthread_t = {{arg[0-9]+}};
 // REWRITES-MACOS-DAG:     let mut result: *mut core::ffi::c_void = std::ptr::null_mut();
 // REWRITES-MACOS-DAG:     result = std::ptr::null_mut();
 // REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: *mut _opaque_pthread_attr_t = std::ptr::null_mut();
@@ -337,8 +336,7 @@ int slate_yield(void) { return sched_yield(); }
 // REWRITES-MACOS-DAG:     };
 // REWRITES-MACOS-DAG:     return {{_v[0-9]+}} as i32;
 // REWRITES-MACOS-DAG: }
-// REWRITES-MACOS-DAG: fn slate_wait_until({{arg[0-9]+}}: *mut libc::timespec) -> i32 {
-// REWRITES-MACOS-DAG:     let mut deadline: *mut libc::timespec = {{arg[0-9]+}};
+// REWRITES-MACOS-DAG: fn slate_wait_until(mut deadline: *mut libc::timespec) -> i32 {
 // REWRITES-MACOS-DAG:     let mut result: i32 = unsafe {
 // REWRITES-MACOS-DAG:         pthread_mutex_lock(std::ptr::addr_of_mut!(slate_mutex) as *mut _opaque_pthread_mutex_t)
 // REWRITES-MACOS-DAG:     };
@@ -384,9 +382,7 @@ int slate_yield(void) { return sched_yield(); }
 // REWRITES-MACOS-DAG:     };
 // REWRITES-MACOS-DAG:     return {{_v[0-9]+}} as i32;
 // REWRITES-MACOS-DAG: }
-// REWRITES-MACOS-DAG: unsafe fn slate_tls_once({{arg[0-9]+}}: *mut u64, {{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
-// REWRITES-MACOS-DAG:     let mut key: *mut u64 = {{arg[0-9]+}};
-// REWRITES-MACOS-DAG:     let mut value: *mut core::ffi::c_void = {{arg[0-9]+}};
+// REWRITES-MACOS-DAG: unsafe fn slate_tls_once(mut key: *mut u64, mut value: *mut core::ffi::c_void) -> i32 {
 // REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: i32 = unsafe {
 // REWRITES-MACOS-DAG:         pthread_once(
 // REWRITES-MACOS-DAG:             std::ptr::addr_of_mut!(slate_once) as *mut _opaque_pthread_once_t,

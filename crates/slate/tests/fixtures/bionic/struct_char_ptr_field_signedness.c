@@ -153,7 +153,7 @@ int main(void) {
 // REWRITES-BIONIC-AARCH64-NEXT:     let mut entry: pw_entry = pw_entry {
 // REWRITES-BIONIC-AARCH64-NEXT:         pw_name: std::ptr::null_mut(),
 // REWRITES-BIONIC-AARCH64-NEXT:     };
-// REWRITES-BIONIC-AARCH64-NEXT:     entry.pw_name = b"root\0".as_ptr() as *mut u8;
+// REWRITES-BIONIC-AARCH64-NEXT:     entry.pw_name = c"root".as_ptr() as *mut u8;
 // REWRITES-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: *mut u8 = unsafe { entry_name(std::ptr::addr_of_mut!(entry)) };
 // REWRITES-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { strcmp({{_v[0-9]+}} as *const core::ffi::c_char, c"root".as_ptr()) };
 // REWRITES-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
@@ -196,7 +196,7 @@ int main(void) {
 // REWRITES-BIONIC-X86_64-NEXT:     let mut entry: pw_entry = pw_entry {
 // REWRITES-BIONIC-X86_64-NEXT:         pw_name: std::ptr::null_mut(),
 // REWRITES-BIONIC-X86_64-NEXT:     };
-// REWRITES-BIONIC-X86_64-NEXT:     entry.pw_name = b"root\0".as_ptr() as *mut i8;
+// REWRITES-BIONIC-X86_64-NEXT:     entry.pw_name = c"root".as_ptr() as *mut i8;
 // REWRITES-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { entry_name(std::ptr::addr_of_mut!(entry)) };
 // REWRITES-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { strcmp({{_v[0-9]+}} as *const core::ffi::c_char, c"root".as_ptr()) };
 // REWRITES-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;

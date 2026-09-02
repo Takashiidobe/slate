@@ -154,8 +154,7 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn sum_grid({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let mut n: i32 = {{arg[0-9]+}};
+// REWRITES-NEXT: fn sum_grid(mut n: i32) -> i32 {
 // REWRITES-NEXT:     let mut total: i32 = 0;
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     i = 0;

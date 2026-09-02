@@ -184,12 +184,10 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn read_bytes(
 // REWRITES-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
-// REWRITES-NEXT:     {{arg[0-9]+}}: *mut u8,
-// REWRITES-NEXT:     {{arg[0-9]+}}: u64,
+// REWRITES-NEXT:     mut buffer: *mut u8,
+// REWRITES-NEXT:     mut size: u64,
 // REWRITES-NEXT:     {{arg[0-9]+}}: *mut u64,
 // REWRITES-NEXT: ) -> i32 {
-// REWRITES-NEXT:     let mut buffer: *mut u8 = {{arg[0-9]+}};
-// REWRITES-NEXT:     let mut size: u64 = {{arg[0-9]+}};
 // REWRITES-NEXT:     let mut source: *mut u8 = {{arg[0-9]+}} as *mut u8;
 // REWRITES-NEXT:     for i in 0..size {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut u8 = source;

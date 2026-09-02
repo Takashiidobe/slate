@@ -147,11 +147,9 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn classify({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let mut x: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT:     let mut extra: i32 = {{arg[0-9]+}};
+// REWRITES-NEXT: fn classify(mut {{_v[0-9]+}}: i32, mut extra: i32) -> i32 {
 // REWRITES-NEXT:     let mut result: i32 = -1;
-// REWRITES-NEXT:     match x {
+// REWRITES-NEXT:     match {{_v[0-9]+}} {
 // REWRITES-NEXT:         0 => {
 // REWRITES-NEXT:             let {{_v[0-9]+}}: bool = extra != 0;
 // REWRITES-NEXT:             if {{_v[0-9]+}} {

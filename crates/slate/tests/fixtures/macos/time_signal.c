@@ -239,8 +239,10 @@ void slate_jump(sigjmp_buf environment) {
 // REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: *mut itimerval = std::ptr::null_mut();
 // REWRITES-MACOS-DAG:     return unsafe { setitimer(0 as i32, {{arg[0-9]+}} as *const itimerval, {{_v[0-9]+}} as *mut itimerval) };
 // REWRITES-MACOS-DAG: }
-// REWRITES-MACOS-DAG: unsafe fn slate_install_handler({{arg[0-9]+}}: *mut sigaction, {{arg[0-9]+}}: *mut __darwin_sigaltstack) -> i32 {
-// REWRITES-MACOS-DAG:     let mut action: *mut sigaction = {{arg[0-9]+}};
+// REWRITES-MACOS-DAG: unsafe fn slate_install_handler(
+// REWRITES-MACOS-DAG:     mut action: *mut sigaction,
+// REWRITES-MACOS-DAG:     {{arg[0-9]+}}: *mut __darwin_sigaltstack,
+// REWRITES-MACOS-DAG: ) -> i32 {
 // REWRITES-MACOS-DAG:     unsafe {
 // REWRITES-MACOS-DAG:         (*action).__sigaction_u.__sa_sigaction = unsafe {
 // REWRITES-MACOS-DAG:             std::mem::transmute::<
@@ -278,8 +280,7 @@ void slate_jump(sigjmp_buf environment) {
 // REWRITES-MACOS-DAG:     };
 // REWRITES-MACOS-DAG:     return {{_v[0-9]+}} as i32;
 // REWRITES-MACOS-DAG: }
-// REWRITES-MACOS-DAG: fn slate_block_signal({{arg[0-9]+}}: *mut u32) -> i32 {
-// REWRITES-MACOS-DAG:     let mut mask: *mut u32 = {{arg[0-9]+}};
+// REWRITES-MACOS-DAG: fn slate_block_signal(mut mask: *mut u32) -> i32 {
 // REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: i32 = unsafe { sigemptyset(mask as *mut u32) };
 // REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
@@ -301,8 +302,7 @@ void slate_jump(sigjmp_buf environment) {
 // REWRITES-MACOS-DAG:     };
 // REWRITES-MACOS-DAG:     return {{_v[0-9]+}} as i32;
 // REWRITES-MACOS-DAG: }
-// REWRITES-MACOS-DAG: fn slate_jump({{arg[0-9]+}}: *mut i32) {
-// REWRITES-MACOS-DAG:     let mut environment: *mut i32 = {{arg[0-9]+}};
+// REWRITES-MACOS-DAG: fn slate_jump(mut environment: *mut i32) {
 // REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: i32 = unsafe { sigsetjmp(environment as *mut i32, 1 as i32) };
 // REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-MACOS-DAG:     if {{_v[0-9]+}} {

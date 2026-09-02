@@ -78,7 +78,7 @@ int main(void) {
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: match x {
+// REWRITES-DAG: match {{_v[0-9]+}} {
 // REWRITES-DAG:     5 => {
 // REWRITES-DAG:         out += 10;
 // REWRITES-DAG:         out += 20;

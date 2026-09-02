@@ -1242,8 +1242,7 @@ int main(void) {
 // REWRITES-NEXT:     return unsafe { c89_static_local_calls };
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: unsafe fn c89_variadic_sum({{arg[0-9]+}}: i32, mut __slate_va_args: __SlateVaArgs) -> i32 {
-// REWRITES-NEXT:     let mut count: i32 = {{arg[0-9]+}};
+// REWRITES-NEXT: unsafe fn c89_variadic_sum(mut count: i32, mut __slate_va_args: __SlateVaArgs) -> i32 {
 // REWRITES-NEXT:     let mut arguments: __SlateVaArgs = __SlateVaArgs::empty();
 // REWRITES-NEXT:     let mut index: i32 = 0;
 // REWRITES-NEXT:     let mut total: i32 = 0;

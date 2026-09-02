@@ -72,6 +72,7 @@ rescheduling affected nodes until a fixed point. The current registry
 (`engine/rules/mod.rs`, in order):
 
 - `ZeroInitFold` (`zero_init.rs`) — fuses a zero-init `let` with the assignment that overwrites it.
+- `ParamSpillFold` (`param_spills.rs`) — renames a parameter to its same-typed top-level mutable spill and deletes the spill when the parameter's only read is that initialization.
 - `RawPtrAliasElide` (`raw_ptr_alias.rs`) — collapses redundant raw-pointer alias locals.
 - `ScopeFlatten` (`singleton_scopes.rs`) — splices any `{ }` scope's statements into its parent's statement list in place, since `cir.scope` always lowers to a plain `Stmt::Scope` regardless of what it wraps (a for-loop's induction-variable scope included).
 - `ForRangeRecover` (`for_range.rs`) — recognizes the canonical desugared for-loop shape (`let mut i; i = start; loop { if !(i<end){break} body; i=i+1; }`) and rewrites it to `for i in start..end { body }`, requiring the increment to be exactly `i = i + 1`, `body` to never reassign `i`, and `i` to have no reads outside the recognized region.

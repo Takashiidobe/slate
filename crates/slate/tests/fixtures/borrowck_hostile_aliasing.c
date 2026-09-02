@@ -816,9 +816,7 @@ int main(void) {
 // REWRITES-NEXT:     return {{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32) - 2 * {{_v[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn reverse_in_place({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: *mut i32) {
-// REWRITES-NEXT:     let mut lo: *mut i32 = {{arg[0-9]+}};
-// REWRITES-NEXT:     let mut hi: *mut i32 = {{arg[0-9]+}};
+// REWRITES-NEXT: fn reverse_in_place(mut lo: *mut i32, mut hi: *mut i32) {
 // REWRITES-NEXT:     loop {
 // REWRITES-NEXT:         if !(lo < hi) {
 // REWRITES-NEXT:             break;

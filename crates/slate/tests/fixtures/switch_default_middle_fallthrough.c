@@ -133,7 +133,7 @@ int main(void) {
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: match x {
+// REWRITES-DAG: match {{_v[0-9]+}} {
 // REWRITES-DAG:     1 => {
 // REWRITES-DAG:         out += 1;
 // REWRITES-DAG:         out += 2;
@@ -150,7 +150,7 @@ int main(void) {
 // REWRITES-DAG:         out += 3;
 // REWRITES-DAG:     }
 // REWRITES-DAG: }
-// REWRITES-DAG: match x {
+// REWRITES-DAG: match {{_v[0-9]+}} {
 // REWRITES-DAG:     5 => {
 // REWRITES-DAG:         out += 20;
 // REWRITES-DAG:     }

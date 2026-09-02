@@ -113,10 +113,9 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn pick({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let mut x: i32 = {{arg[0-9]+}};
+// REWRITES-NEXT: fn pick(mut {{_v[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     let mut out: i32 = 5;
-// REWRITES-NEXT:     match x {
+// REWRITES-NEXT:     match {{_v[0-9]+}} {
 // REWRITES-NEXT:         4 => {
 // REWRITES-NEXT:             out += 4;
 // REWRITES-NEXT:         }

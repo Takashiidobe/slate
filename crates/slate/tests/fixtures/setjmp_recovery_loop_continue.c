@@ -199,8 +199,7 @@ int main(void) {
 // REWRITES-NEXT:     fn longjmp(_0: *mut __slate_jmp_buf_tag, _1: i32) -> !;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn run_test({{arg[0-9]+}}: i32) {
-// REWRITES-NEXT:     let mut i: i32 = {{arg[0-9]+}};
+// REWRITES-NEXT: fn run_test(mut i: i32) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = i == 2;
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         unsafe {

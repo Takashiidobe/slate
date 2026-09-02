@@ -94,10 +94,9 @@ int main(void) {
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn mutable_pick({{arg[0-9]+}}: i32) -> *mut i8 {
-// REWRITES-DAG:     let mut i: i32 = {{arg[0-9]+}};
+// REWRITES-DAG: fn mutable_pick(mut {{_v[0-9]+}}: i32) -> *mut i8 {
 // REWRITES-DAG:     let mut __retval: *mut i8 = std::ptr::null_mut();
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = i == 0;
+// REWRITES-DAG:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
 // REWRITES-DAG:     if {{_v[0-9]+}} {
 // REWRITES-DAG:         __retval = c"mut".as_ptr() as *mut i8;
 // REWRITES-DAG:         return __retval;
@@ -105,10 +104,9 @@ int main(void) {
 // REWRITES-DAG:     __retval = c"other".as_ptr() as *mut i8;
 // REWRITES-DAG:     return __retval;
 // REWRITES-DAG: }
-// REWRITES-DAG: fn const_pick({{arg[0-9]+}}: i32) -> *mut i8 {
-// REWRITES-DAG:     let mut i: i32 = {{arg[0-9]+}};
+// REWRITES-DAG: fn const_pick(mut {{_v[0-9]+}}: i32) -> *mut i8 {
 // REWRITES-DAG:     let mut __retval: *mut i8 = std::ptr::null_mut();
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = i == 0;
+// REWRITES-DAG:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
 // REWRITES-DAG:     if {{_v[0-9]+}} {
 // REWRITES-DAG:         __retval = c"const".as_ptr() as *mut i8;
 // REWRITES-DAG:         return __retval;

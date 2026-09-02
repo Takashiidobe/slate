@@ -6,6 +6,7 @@ mod for_range;
 mod inline_temps;
 mod label_elide;
 mod libc_call;
+mod param_spills;
 mod pattern_range;
 mod peel_casts;
 mod raw_ptr_alias;
@@ -25,6 +26,7 @@ pub(super) fn registry() -> Vec<Box<dyn NodeRule>> {
         Box::new(label_elide::TailBreakDrop),
         Box::new(label_elide::LabelElide),
         Box::new(zero_init::ZeroInitFold),
+        Box::new(param_spills::ParamSpillFold),
         Box::new(raw_ptr_alias::RawPtrAliasElide),
         Box::new(singleton_scopes::ScopeFlatten),
         Box::new(for_range::ForRangeRecover),
