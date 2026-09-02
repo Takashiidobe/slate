@@ -1967,7 +1967,6 @@ impl __SlateVaArgs {
                         Box::new(crate::frontend::c_ast::CType::Int {
                             signed: false,
                             bits: 8,
-                            is_char: false,
                         }),
                         Some(0),
                     ),
@@ -2956,7 +2955,9 @@ fn c_type_to_type(ty: &crate::frontend::c_ast::CType, va_list_boxed: bool) -> Ty
     match ty {
         CType::Void => Type::Unit,
         CType::Bool => Type::Prim(Prim::Bool),
-        CType::Int { signed, bits, .. } => match (signed, bits) {
+        CType::Char { signed: true } => Type::Prim(Prim::I8),
+        CType::Char { signed: false } => Type::Prim(Prim::U8),
+        CType::Int { signed, bits } => match (signed, bits) {
             (true, 8) => Type::Prim(Prim::I8),
             (false, 8) => Type::Prim(Prim::U8),
             (true, 16) => Type::Prim(Prim::I16),
@@ -3039,6 +3040,7 @@ fn c_layout(
         CType::Void => Some(CLayout { size: 0, align: 1 }),
         CType::Bool => Some(CLayout { size: 1, align: 1 }),
         CType::Int { bits, .. } => scalar_layout(*bits),
+        CType::Char { .. } => scalar_layout(8),
         CType::Float { bits: 80 } => {
             Some(if crate::frontend::toolchain::uses_f64_long_double_abi() {
                 CLayout { size: 8, align: 8 }
