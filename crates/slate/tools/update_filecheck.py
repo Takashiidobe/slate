@@ -218,11 +218,7 @@ def render_annotation_checks(annotations, rewritten, lowered, prefix):
                 f"generated Rust is missing annotation marker {marker_id}"
             )
         directive = f"{prefix}-NOT" if negative else f"{prefix}-DAG"
-        patterns = [
-            render_check_pattern(line.strip())
-            for line in regions[marker_id]
-            if line.strip()
-        ]
+        entries = dedented_patterns(regions[marker_id])
         if negative:
             baseline = regions_by_profile[profile]
             if marker_id not in baseline:
@@ -230,21 +226,35 @@ def render_annotation_checks(annotations, rewritten, lowered, prefix):
                     f"{profile} Rust is missing annotation marker {marker_id}"
                 )
             remaining = Counter(
-                render_check_pattern(line.strip())
-                for line in baseline[marker_id]
-                if line.strip()
+                pattern for _, pattern in dedented_patterns(baseline[marker_id])
             )
             removed = []
-            for pattern in patterns:
+            for indent, pattern in entries:
                 if remaining[pattern]:
                     remaining[pattern] -= 1
                 else:
-                    removed.append(pattern)
-            patterns = removed
-        if not patterns:
+                    removed.append((indent, pattern))
+            entries = removed
+        if not entries:
             raise RuntimeError(f"@{kind} annotation {marker_id} selected no checks")
-        checks.extend(f"// {directive}: {pattern}" for pattern in patterns)
+        checks.extend(
+            f"// {directive}: {indent}{pattern}" for indent, pattern in entries
+        )
     return checks
+
+
+def dedented_patterns(lines):
+    body = [line for line in lines if line.strip()]
+    if not body:
+        return []
+    base = min(len(line) - len(line.lstrip()) for line in body)
+    return [
+        (
+            line[base : len(line) - len(line.lstrip())],
+            render_check_pattern(line.strip()),
+        )
+        for line in body
+    ]
 
 
 def render_checks(rust, prefix):
