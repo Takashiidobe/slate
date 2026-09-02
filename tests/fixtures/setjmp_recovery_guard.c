@@ -239,7 +239,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
-// REWRITES-NEXT:         record_failure(b"case\0".as_ptr() as *mut i8);
+// REWRITES-NEXT:         record_failure(c"case".as_ptr() as *mut i8);
 // REWRITES-NEXT:         return;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0;
@@ -262,7 +262,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             record_failure(b"loop\0".as_ptr() as *mut i8);
+// REWRITES-NEXT:             record_failure(c"loop".as_ptr() as *mut i8);
 // REWRITES-NEXT:         } else {
 // REWRITES-NEXT:             let {{_v[0-9]+}}: bool = i == 2;
 // REWRITES-NEXT:             run_case(i, {{_v[0-9]+}} as i32);

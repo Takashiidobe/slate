@@ -106,9 +106,9 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         print_values(
-// REWRITES-NEXT:             b"%d %s\n\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:             c"%d %s\n".as_ptr() as *mut i8,
 // REWRITES-NEXT:             42 as i32,
-// REWRITES-NEXT:             b"forwarded\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:             c"forwarded".as_ptr() as *mut i8,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

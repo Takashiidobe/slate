@@ -1781,7 +1781,7 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn print_ld({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: LongDouble) {
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         __slate_printf__ri32_pi8_pi8_f80(b"%s=%La\n\0".as_ptr() as *mut i8, {{arg[0-9]+}} as *mut i8, {{arg[0-9]+}})
+// REWRITES-NEXT:         __slate_printf__ri32_pi8_pi8_f80(c"%s=%La\n".as_ptr() as *mut i8, {{arg[0-9]+}} as *mut i8, {{arg[0-9]+}})
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
@@ -1789,129 +1789,129 @@ int main(void) {
 // REWRITES-NEXT: fn check_math_functions() {
 // REWRITES-NEXT:     let mut exp: i32 = 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
-// REWRITES-NEXT:     print_ld(b"sqrt\0".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:     print_ld(c"sqrt".as_ptr() as *mut i8, unsafe {
 // REWRITES-NEXT:         __slate_sqrtl__rf80_f80({{_v[0-9]+}})
 // REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 216, 3, 64]);
-// REWRITES-NEXT:     print_ld(b"cbrt\0".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:     print_ld(c"cbrt".as_ptr() as *mut i8, unsafe {
 // REWRITES-NEXT:         __slate_cbrtl__rf80_f80({{_v[0-9]+}})
 // REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// REWRITES-NEXT:     print_ld(b"sin\0".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:     print_ld(c"sin".as_ptr() as *mut i8, unsafe {
 // REWRITES-NEXT:         __slate_sinl__rf80_f80({{_v[0-9]+}})
 // REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// REWRITES-NEXT:     print_ld(b"cos\0".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:     print_ld(c"cos".as_ptr() as *mut i8, unsafe {
 // REWRITES-NEXT:         __slate_cosl__rf80_f80({{_v[0-9]+}})
 // REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// REWRITES-NEXT:     print_ld(b"tan\0".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:     print_ld(c"tan".as_ptr() as *mut i8, unsafe {
 // REWRITES-NEXT:         __slate_tanl__rf80_f80({{_v[0-9]+}})
 // REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// REWRITES-NEXT:     print_ld(b"asin\0".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:     print_ld(c"asin".as_ptr() as *mut i8, unsafe {
 // REWRITES-NEXT:         __slate_asinl__rf80_f80({{_v[0-9]+}})
 // REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// REWRITES-NEXT:     print_ld(b"acos\0".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:     print_ld(c"acos".as_ptr() as *mut i8, unsafe {
 // REWRITES-NEXT:         __slate_acosl__rf80_f80({{_v[0-9]+}})
 // REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// REWRITES-NEXT:     print_ld(b"atan\0".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:     print_ld(c"atan".as_ptr() as *mut i8, unsafe {
 // REWRITES-NEXT:         __slate_atanl__rf80_f80({{_v[0-9]+}})
 // REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// REWRITES-NEXT:     print_ld(b"atan2\0".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:     print_ld(c"atan2".as_ptr() as *mut i8, unsafe {
 // REWRITES-NEXT:         __slate_atan2l__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}})
 // REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// REWRITES-NEXT:     print_ld(b"sinh\0".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:     print_ld(c"sinh".as_ptr() as *mut i8, unsafe {
 // REWRITES-NEXT:         __slate_sinhl__rf80_f80({{_v[0-9]+}})
 // REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// REWRITES-NEXT:     print_ld(b"cosh\0".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:     print_ld(c"cosh".as_ptr() as *mut i8, unsafe {
 // REWRITES-NEXT:         __slate_coshl__rf80_f80({{_v[0-9]+}})
 // REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// REWRITES-NEXT:     print_ld(b"tanh\0".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:     print_ld(c"tanh".as_ptr() as *mut i8, unsafe {
 // REWRITES-NEXT:         __slate_tanhl__rf80_f80({{_v[0-9]+}})
 // REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// REWRITES-NEXT:     print_ld(b"exp\0".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:     print_ld(c"exp".as_ptr() as *mut i8, unsafe {
 // REWRITES-NEXT:         __slate_expl__rf80_f80({{_v[0-9]+}})
 // REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 2, 64]);
-// REWRITES-NEXT:     print_ld(b"exp2\0".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:     print_ld(c"exp2".as_ptr() as *mut i8, unsafe {
 // REWRITES-NEXT:         __slate_exp2l__rf80_f80({{_v[0-9]+}})
 // REWRITES-NEXT:     });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"log\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"log".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { __slate_expl__rf80_f80({{_v[0-9]+}}) };
 // REWRITES-NEXT:     print_ld({{_v[0-9]+}}, unsafe { __slate_logl__rf80_f80({{_v[0-9]+}}) });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 2, 64]);
-// REWRITES-NEXT:     print_ld(b"log2\0".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:     print_ld(c"log2".as_ptr() as *mut i8, unsafe {
 // REWRITES-NEXT:         __slate_log2l__rf80_f80({{_v[0-9]+}})
 // REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 250, 8, 64]);
-// REWRITES-NEXT:     print_ld(b"log10\0".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:     print_ld(c"log10".as_ptr() as *mut i8, unsafe {
 // REWRITES-NEXT:         __slate_log10l__rf80_f80({{_v[0-9]+}})
 // REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 2, 64]);
-// REWRITES-NEXT:     print_ld(b"pow\0".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:     print_ld(c"pow".as_ptr() as *mut i8, unsafe {
 // REWRITES-NEXT:         __slate_powl__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}})
 // REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([205, 204, 204, 204, 204, 204, 204, 172, 0, 64]);
-// REWRITES-NEXT:     print_ld(b"floor\0".as_ptr() as *mut i8, __slate_f80_floor({{_v[0-9]+}}));
+// REWRITES-NEXT:     print_ld(c"floor".as_ptr() as *mut i8, __slate_f80_floor({{_v[0-9]+}}));
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([102, 102, 102, 102, 102, 102, 102, 134, 0, 64]);
-// REWRITES-NEXT:     print_ld(b"ceil\0".as_ptr() as *mut i8, __slate_f80_ceil({{_v[0-9]+}}));
+// REWRITES-NEXT:     print_ld(c"ceil".as_ptr() as *mut i8, __slate_f80_ceil({{_v[0-9]+}}));
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 0, 64]);
-// REWRITES-NEXT:     print_ld(b"round\0".as_ptr() as *mut i8, __slate_f80_round({{_v[0-9]+}}));
+// REWRITES-NEXT:     print_ld(c"round".as_ptr() as *mut i8, __slate_f80_round({{_v[0-9]+}}));
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([205, 204, 204, 204, 204, 204, 204, 172, 0, 192]);
-// REWRITES-NEXT:     print_ld(b"trunc\0".as_ptr() as *mut i8, __slate_f80_trunc({{_v[0-9]+}}));
+// REWRITES-NEXT:     print_ld(c"trunc".as_ptr() as *mut i8, __slate_f80_trunc({{_v[0-9]+}}));
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 224, 0, 192]);
-// REWRITES-NEXT:     print_ld(b"fabs\0".as_ptr() as *mut i8, __slate_f80_abs({{_v[0-9]+}}));
+// REWRITES-NEXT:     print_ld(c"fabs".as_ptr() as *mut i8, __slate_f80_abs({{_v[0-9]+}}));
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 2, 64]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
-// REWRITES-NEXT:     print_ld(b"fmod\0".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:     print_ld(c"fmod".as_ptr() as *mut i8, unsafe {
 // REWRITES-NEXT:         __slate_fmodl__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}})
 // REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]);
-// REWRITES-NEXT:     print_ld(b"hypot\0".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:     print_ld(c"hypot".as_ptr() as *mut i8, unsafe {
 // REWRITES-NEXT:         __slate_hypotl__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}})
 // REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]);
 // REWRITES-NEXT:     print_ld(
-// REWRITES-NEXT:         b"copysign\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:         c"copysign".as_ptr() as *mut i8,
 // REWRITES-NEXT:         __slate_f80_copysign({{_v[0-9]+}}, {{_v[0-9]+}}),
 // REWRITES-NEXT:     );
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
-// REWRITES-NEXT:     print_ld(b"fmax\0".as_ptr() as *mut i8, __slate_f80_fmax({{_v[0-9]+}}, {{_v[0-9]+}}));
+// REWRITES-NEXT:     print_ld(c"fmax".as_ptr() as *mut i8, __slate_f80_fmax({{_v[0-9]+}}, {{_v[0-9]+}}));
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
-// REWRITES-NEXT:     print_ld(b"fmin\0".as_ptr() as *mut i8, __slate_f80_fmin({{_v[0-9]+}}, {{_v[0-9]+}}));
+// REWRITES-NEXT:     print_ld(c"fmin".as_ptr() as *mut i8, __slate_f80_fmin({{_v[0-9]+}}, {{_v[0-9]+}}));
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]);
 // REWRITES-NEXT:     print_ld(
-// REWRITES-NEXT:         b"fma\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:         c"fma".as_ptr() as *mut i8,
 // REWRITES-NEXT:         __slate_f80_fma({{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}),
 // REWRITES-NEXT:     );
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// REWRITES-NEXT:     print_ld(b"ldexp\0".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:     print_ld(c"ldexp".as_ptr() as *mut i8, unsafe {
 // REWRITES-NEXT:         __slate_ldexpl__rf80_f80_i32({{_v[0-9]+}}, 4 as i32)
 // REWRITES-NEXT:     });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 5, 64]);
-// REWRITES-NEXT:     print_ld(b"frexp\0".as_ptr() as *mut i8, unsafe {
+// REWRITES-NEXT:     print_ld(c"frexp".as_ptr() as *mut i8, unsafe {
 // REWRITES-NEXT:         __slate_frexpl__rf80_f80_pi32({{_v[0-9]+}}, std::ptr::addr_of_mut!(exp) as *mut i32)
 // REWRITES-NEXT:     });
 // REWRITES-NEXT:     unsafe { printf(c"frexp_exp=%d\n".as_ptr(), exp) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 =
-// REWRITES-NEXT:         b"isnan=%d isinf=%d signbit_neg=%d signbit_pos=%d isfinite=%d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:         c"isnan=%d isinf=%d signbit_neg=%d signbit_pos=%d isfinite=%d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { __slate_nanl__rf80_pc(c"".as_ptr()) };
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
@@ -1924,7 +1924,7 @@ int main(void) {
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 192, 63]);
-// REWRITES-NEXT:     print_ld(b"epsilon\0".as_ptr() as *mut i8, {{_v[0-9]+}});
+// REWRITES-NEXT:     print_ld(c"epsilon".as_ptr() as *mut i8, {{_v[0-9]+}});
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -1954,56 +1954,56 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}} / {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_fract({{_v[0-9]+}});
-// REWRITES-NEXT:     print_ld(b"modf_ipart\0".as_ptr() as *mut i8, __slate_f80_trunc({{_v[0-9]+}}));
-// REWRITES-NEXT:     print_ld(b"modf_frac\0".as_ptr() as *mut i8, {{_v[0-9]+}});
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"remainder\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     print_ld(c"modf_ipart".as_ptr() as *mut i8, __slate_f80_trunc({{_v[0-9]+}}));
+// REWRITES-NEXT:     print_ld(c"modf_frac".as_ptr() as *mut i8, {{_v[0-9]+}});
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"remainder".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
 // REWRITES-NEXT:     print_ld({{_v[0-9]+}}, unsafe {
 // REWRITES-NEXT:         __slate_remainderl__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}})
 // REWRITES-NEXT:     });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"remquo\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"remquo".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
 // REWRITES-NEXT:     print_ld({{_v[0-9]+}}, unsafe {
 // REWRITES-NEXT:         __slate_remquol__rf80_f80_f80_pi32({{_v[0-9]+}}, {{_v[0-9]+}}, std::ptr::addr_of_mut!(quo) as *mut i32)
 // REWRITES-NEXT:     });
 // REWRITES-NEXT:     unsafe { printf(c"remquo_quo=%d\n".as_ptr(), quo) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"scalbn\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"scalbn".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
 // REWRITES-NEXT:     print_ld({{_v[0-9]+}}, unsafe {
 // REWRITES-NEXT:         __slate_scalbnl__rf80_f80_i32({{_v[0-9]+}}, 3 as i32)
 // REWRITES-NEXT:     });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"scalbln\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"scalbln".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
 // REWRITES-NEXT:     print_ld({{_v[0-9]+}}, unsafe {
 // REWRITES-NEXT:         __slate_scalblnl__rf80_f80_i64({{_v[0-9]+}}, 3 as i64)
 // REWRITES-NEXT:     });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"nextafter\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"nextafter".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
 // REWRITES-NEXT:     print_ld({{_v[0-9]+}}, unsafe {
 // REWRITES-NEXT:         __slate_nextafterl__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}})
 // REWRITES-NEXT:     });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"nexttoward\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"nexttoward".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
 // REWRITES-NEXT:     print_ld({{_v[0-9]+}}, unsafe {
 // REWRITES-NEXT:         __slate_nexttowardl__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}})
 // REWRITES-NEXT:     });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"fdim\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"fdim".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
 // REWRITES-NEXT:     print_ld({{_v[0-9]+}}, unsafe { __slate_fdiml__rf80_f80_f80({{_v[0-9]+}}, {{_v[0-9]+}}) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"rint\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"rint".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
 // REWRITES-NEXT:     print_ld({{_v[0-9]+}}, __slate_f80_rint({{_v[0-9]+}} / {{_v[0-9]+}}));
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"nearbyint\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"nearbyint".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
 // REWRITES-NEXT:     print_ld({{_v[0-9]+}}, __slate_f80_rint({{_v[0-9]+}} / {{_v[0-9]+}}));
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"lrint=%ld llrint=%lld lround=%ld llround=%lld\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"lrint=%ld llrint=%lld lround=%ld llround=%lld\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { __slate_lrintl__ri64_f80({{_v[0-9]+}} / {{_v[0-9]+}}) };
@@ -2020,28 +2020,28 @@ int main(void) {
 // REWRITES-NEXT:             __slate_llroundl__ri64_f80({{_v[0-9]+}} / {{_v[0-9]+}})
 // REWRITES-NEXT:         })
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"ilogb=%d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"ilogb=%d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf({{_v[0-9]+}} as *const core::ffi::c_char, unsafe {
 // REWRITES-NEXT:             __slate_ilogbl__ri32_f80({{_v[0-9]+}})
 // REWRITES-NEXT:         })
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"logb\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"logb".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
 // REWRITES-NEXT:     print_ld({{_v[0-9]+}}, unsafe { __slate_logbl__rf80_f80({{_v[0-9]+}}) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"erf\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"erf".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
 // REWRITES-NEXT:     print_ld({{_v[0-9]+}}, unsafe { __slate_erfl__rf80_f80({{_v[0-9]+}} / {{_v[0-9]+}}) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"erfc\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"erfc".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
 // REWRITES-NEXT:     print_ld({{_v[0-9]+}}, unsafe { __slate_erfcl__rf80_f80({{_v[0-9]+}} / {{_v[0-9]+}}) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"tgamma\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"tgamma".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(three)) };
 // REWRITES-NEXT:     print_ld({{_v[0-9]+}}, unsafe { __slate_tgammal__rf80_f80({{_v[0-9]+}}) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"lgamma\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"lgamma".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(ten)) };
 // REWRITES-NEXT:     print_ld({{_v[0-9]+}}, unsafe { __slate_lgammal__rf80_f80({{_v[0-9]+}}) });
 // REWRITES-NEXT:     unsafe {
@@ -2058,7 +2058,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(vsub), {{_v[0-9]+}}) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 =
-// REWRITES-NEXT:         b"isnan_v=%d isinf_v=%d isfinite_v=%d isnormal_v=%d isunordered_v=%d isunordered_ok=%d\n\0"
+// REWRITES-NEXT:         c"isnan_v=%d isinf_v=%d isfinite_v=%d isnormal_v=%d isunordered_v=%d isunordered_ok=%d\n"
 // REWRITES-NEXT:             .as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vnan)) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = __slate_f80_is_fp_class({{_v[0-9]+}}, 3);
@@ -2088,7 +2088,7 @@ int main(void) {
 // REWRITES-NEXT:             ({{_v[0-9]+}} != {{_v[0-9]+}} || {{_v[0-9]+}} != {{_v[0-9]+}}) as i32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"subnormal_isnormal=%d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"subnormal_isnormal=%d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vsub)) };
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
@@ -2099,7 +2099,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
 // REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(vtwo), {{_v[0-9]+}}) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 =
-// REWRITES-NEXT:         b"islessgreater_lt=%d islessgreater_eq=%d islessgreater_nan=%d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:         c"islessgreater_lt=%d islessgreater_eq=%d islessgreater_nan=%d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vone)) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(vtwo)) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}} < {{_v[0-9]+}} || {{_v[0-9]+}} > {{_v[0-9]+}}) as i32;
@@ -2124,12 +2124,12 @@ int main(void) {
 // REWRITES-NEXT:             std::ptr::addr_of_mut!(ten_plain),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     print_ld(b"canonicalize\0".as_ptr() as *mut i8, canon);
+// REWRITES-NEXT:     print_ld(c"canonicalize".as_ptr() as *mut i8, canon);
 // REWRITES-NEXT:     unsafe { printf(c"canonicalize_r=%d\n".as_ptr(), {{_v[0-9]+}}) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 0]);
-// REWRITES-NEXT:     print_ld(b"ldbl_min\0".as_ptr() as *mut i8, {{_v[0-9]+}});
+// REWRITES-NEXT:     print_ld(c"ldbl_min".as_ptr() as *mut i8, {{_v[0-9]+}});
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// REWRITES-NEXT:     print_ld(b"ldbl_true_min\0".as_ptr() as *mut i8, {{_v[0-9]+}});
+// REWRITES-NEXT:     print_ld(c"ldbl_true_min".as_ptr() as *mut i8, {{_v[0-9]+}});
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(c"ldbl_mant_dig=%d ldbl_dig=%d ldbl_min_exp=%d ldbl_max_exp=%d ldbl_min_10_exp=%d ldbl_max_10_exp=%d\n".as_ptr(), 64 as i32, 18 as i32, -16381 as i32, 16384 as i32, -4931 as i32, 4932 as i32)
 // REWRITES-NEXT:     };
@@ -2146,12 +2146,12 @@ int main(void) {
 // REWRITES-NEXT:             ),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = mix_long_double({{_v[0-9]+}}, {{_v[0-9]+}});
 // REWRITES-NEXT:     unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, truncate_long_double({{_v[0-9]+}})) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i32(7 as i32);
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(

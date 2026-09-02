@@ -57,7 +57,7 @@ int main(void) {
 // REWRITES-NEXT:     let mut local: aligned::Aligned<aligned::A64, i32> = aligned::Aligned(0);
 // REWRITES-NEXT:     *object = OverAligned { value: 7 };
 // REWRITES-NEXT:     *local = 11;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%zu %zu %zu %d %d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%zu %zu %zu %d %d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = std::ptr::addr_of_mut!(*object) as u64;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} % 32;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = std::ptr::addr_of_mut!(*local) as u64;

@@ -11,10 +11,10 @@ int main(void) {
 // REWRITES-DAG: unsafe {
 // REWRITES-DAG:     printf(
 // REWRITES-DAG:         c"%5s|%-5s|%.1s|%6.1s\n".as_ptr(),
-// REWRITES-DAG:         b"hi\0".as_ptr() as *mut i8,
-// REWRITES-DAG:         b"hi\0".as_ptr() as *mut i8,
-// REWRITES-DAG:         b"hi\0".as_ptr() as *mut i8,
-// REWRITES-DAG:         b"hi\0".as_ptr() as *mut i8,
+// REWRITES-DAG:         c"hi".as_ptr() as *mut i8,
+// REWRITES-DAG:         c"hi".as_ptr() as *mut i8,
+// REWRITES-DAG:         c"hi".as_ptr() as *mut i8,
+// REWRITES-DAG:         c"hi".as_ptr() as *mut i8,
 // REWRITES-DAG:     )
 // REWRITES-DAG: };
 // SLATE-FILECHECK-END rewrites

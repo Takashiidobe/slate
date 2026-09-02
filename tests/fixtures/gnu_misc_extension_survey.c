@@ -141,7 +141,7 @@ done:
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn pretty() -> *mut i8 {
-// REWRITES-NEXT:     return b"const char *pretty(void)\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     return c"const char *pretty(void)".as_ptr() as *mut i8;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

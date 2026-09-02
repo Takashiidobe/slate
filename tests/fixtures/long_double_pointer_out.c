@@ -336,13 +336,13 @@ int main(void) {
 // REWRITES-NEXT:     let mut parsed: LongDouble = LongDouble([0; 10]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
 // REWRITES-NEXT:         __slate_sscanf__ri32_pi8_pi8_pf80(
-// REWRITES-NEXT:             b"0x1.0000000000000002p+0\0".as_ptr() as *mut i8,
-// REWRITES-NEXT:             b"%La\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:             c"0x1.0000000000000002p+0".as_ptr() as *mut i8,
+// REWRITES-NEXT:             c"%La".as_ptr() as *mut i8,
 // REWRITES-NEXT:             std::ptr::addr_of_mut!(parsed),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         __slate_printf__ri32_pi8_i32_f80(b"%d %La\n\0".as_ptr() as *mut i8, {{_v[0-9]+}} as i32, parsed)
+// REWRITES-NEXT:         __slate_printf__ri32_pi8_i32_f80(c"%d %La\n".as_ptr() as *mut i8, {{_v[0-9]+}} as i32, parsed)
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 1;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {

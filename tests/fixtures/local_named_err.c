@@ -94,9 +94,9 @@ int main(void) {
 // REWRITES-NEXT:     let mut Err_: *mut i8 = std::ptr::null_mut();
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = code == 0;
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
-// REWRITES-NEXT:         Err_ = b"ok\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:         Err_ = c"ok".as_ptr() as *mut i8;
 // REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         Err_ = b"bad\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:         Err_ = c"bad".as_ptr() as *mut i8;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return Err_;
 // REWRITES-NEXT: }

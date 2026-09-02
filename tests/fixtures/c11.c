@@ -1891,8 +1891,8 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // REWRITES-NEXT:     unsafe { remove(c"slate-c11-exclusive.tmp".as_ptr()) };
-// REWRITES-NEXT:     exclusive_first = c11_open_exclusive(b"slate-c11-exclusive.tmp\0".as_ptr() as *mut i8);
-// REWRITES-NEXT:     exclusive_second = c11_open_exclusive(b"slate-c11-exclusive.tmp\0".as_ptr() as *mut i8);
+// REWRITES-NEXT:     exclusive_first = c11_open_exclusive(c"slate-c11-exclusive.tmp".as_ptr() as *mut i8);
+// REWRITES-NEXT:     exclusive_second = c11_open_exclusive(c"slate-c11-exclusive.tmp".as_ptr() as *mut i8);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = exclusive_first != std::ptr::null_mut();
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = exclusive_second == std::ptr::null_mut();

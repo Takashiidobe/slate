@@ -1500,8 +1500,10 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 32 | {{_v[0-9]+}} | {{_v[0-9]+}} | {{_v[0-9]+}} | {{_v[0-9]+}};
 // REWRITES-NEXT:     fenv_flags = unsafe { fetestexcept({{_v[0-9]+}} as i32) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"main\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 =
+// REWRITES-NEXT:         c"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n"
+// REWRITES-NEXT:             .as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"main".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = α;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 =
 // REWRITES-NEXT:         unsafe { c99_external_identifier_with_more_than_thirty_one_significant_characters };

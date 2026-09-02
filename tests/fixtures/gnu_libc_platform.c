@@ -1187,7 +1187,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} + 1;
 // REWRITES-NEXT:     let mut bi_alloca2: Vec<u8> = vec![0; {{_v[0-9]+}} as usize];
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = bi_alloca2.as_mut_ptr() as *mut core::ffi::c_void;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"slate-truncated\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"slate-truncated".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe {
 // REWRITES-NEXT:         "slate-truncated"
 // REWRITES-NEXT:             .as_bytes()
@@ -1490,7 +1490,7 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d %d %d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = gnu_environment_extensions();
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = gnu_time_extensions();
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = gnu_pattern_extensions();

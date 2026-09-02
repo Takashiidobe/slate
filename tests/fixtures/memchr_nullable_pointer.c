@@ -116,7 +116,7 @@ int main(void) {
 // REWRITES-NEXT:         (4 as u64) as usize,
 // REWRITES-NEXT:     );
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u8 = {{_v[0-9]+}} as *mut u8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%ld %d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%ld %d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u8 = buf.as_mut_ptr() as *mut u8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == std::ptr::null_mut();
 // REWRITES-NEXT:     unsafe {

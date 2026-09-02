@@ -183,7 +183,7 @@ int main(void) {
 // REWRITES-NEXT:         std::sync::atomic::AtomicI64::from_ptr(std::ptr::addr_of_mut!(i64))
 // REWRITES-NEXT:             .swap(1234567890123i64, std::sync::atomic::Ordering::Acquire)
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%u %d %u %lld %u %d %u %lld\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%u %d %u %lld %u %d %u %lld\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u8 = unsafe {

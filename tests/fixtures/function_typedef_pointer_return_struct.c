@@ -116,7 +116,7 @@ int main(void) {
 // REWRITES-NEXT:             add_one as *const (),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { callback.handler.unwrap()(std::ptr::addr_of_mut!(value)) };
 // REWRITES-NEXT:     unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, unsafe { *{{_v[0-9]+}} }) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

@@ -404,8 +404,8 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([53, 194, 104, 33, 162, 218, 15, 201, 0, 64]);
-// REWRITES-NEXT:     dump80(b"local\0".as_ptr() as *mut i8, {{_v[0-9]+}});
-// REWRITES-NEXT:     dump80(b"global\0".as_ptr() as *mut i8, unsafe { global_pi });
+// REWRITES-NEXT:     dump80(c"local".as_ptr() as *mut i8, {{_v[0-9]+}});
+// REWRITES-NEXT:     dump80(c"global".as_ptr() as *mut i8, unsafe { global_pi });
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

@@ -865,7 +865,7 @@ int main(void) {
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         std::ptr::copy_nonoverlapping(
-// REWRITES-NEXT:             b"gnu\0".as_ptr() as *const u8,
+// REWRITES-NEXT:             c"gnu".as_ptr() as *const u8,
 // REWRITES-NEXT:             (storage.__bitfield_3 as *mut core::ffi::c_void) as *mut u8,
 // REWRITES-NEXT:             ((unsafe { storage.__bitfield_5.tempint }) as u64) as usize,
 // REWRITES-NEXT:         )
@@ -934,7 +934,7 @@ int main(void) {
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         std::ptr::copy_nonoverlapping(
-// REWRITES-NEXT:             b"libc\0".as_ptr() as *const u8,
+// REWRITES-NEXT:             c"libc".as_ptr() as *const u8,
 // REWRITES-NEXT:             (storage.__bitfield_3 as *mut core::ffi::c_void) as *mut u8,
 // REWRITES-NEXT:             ((unsafe { storage.__bitfield_5.tempint }) as u64) as usize,
 // REWRITES-NEXT:         )
