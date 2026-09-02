@@ -22,6 +22,9 @@ pub(in crate::backend) trait NodeRule {
     fn requeues_consumer_producers(&self) -> bool {
         false
     }
+    fn requeues_moved_nodes(&self) -> bool {
+        false
+    }
 }
 
 const EDIT_BUDGET: usize = 200_000;
@@ -112,6 +115,27 @@ fn run_function(body: &mut Vec<IndentStmt>, params: &[FnParam], registry: &RuleR
     *body = arena::reify(&arena, root);
 }
 
+fn enqueue_subtree(arena: &Arena, id: NodeId, worklist: &mut BTreeSet<u32>) {
+    let Some(kind) = arena.get(id) else {
+        return;
+    };
+    let children: Vec<NodeId> = kind.child_lists().into_iter().flatten().copied().collect();
+    for child in children {
+        if worklist.insert(child.index()) {
+            enqueue_subtree(arena, child, worklist);
+        }
+    }
+}
+
+fn enqueue_children(arena: &Arena, id: NodeId, worklist: &mut BTreeSet<u32>) {
+    let Some(kind) = arena.get(id) else {
+        return;
+    };
+    for &child in kind.child_lists().into_iter().flatten() {
+        worklist.insert(child.index());
+    }
+}
+
 fn run_worklist(arena: &mut Arena, registry: &RuleRegistry) {
     let mut worklist: BTreeSet<u32> = arena.live_ids().iter().map(|id| id.index()).collect();
     let mut edits = 0usize;
@@ -146,9 +170,20 @@ fn run_worklist(arena: &mut Arena, registry: &RuleRegistry) {
                 arena.touch(id);
                 if let Some(resolved) = arena.resolve(index) {
                     worklist.insert(resolved.index());
+                    if rule.requeues_moved_nodes() {
+                        enqueue_subtree(arena, resolved, &mut worklist);
+                    }
                 }
                 if let Some(parent) = prior_parent {
                     worklist.insert(parent.index());
+                    if rule.requeues_moved_nodes() {
+                        enqueue_children(arena, parent, &mut worklist);
+                        let mut ancestor = arena.parent(parent);
+                        while let Some(id) = ancestor {
+                            worklist.insert(id.index());
+                            ancestor = arena.parent(id);
+                        }
+                    }
                 }
                 for &neighbor in &def_use_targets {
                     if arena.get(neighbor).is_some() {

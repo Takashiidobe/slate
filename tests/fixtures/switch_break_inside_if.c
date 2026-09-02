@@ -150,31 +150,21 @@ int main(void) {
 // REWRITES-NEXT: fn classify({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     let mut x: i32 = {{arg[0-9]+}};
 // REWRITES-NEXT:     let mut extra: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT:     let mut result: i32 = 0;
-// REWRITES-NEXT:     result = -1;
-// REWRITES-NEXT:     '{{__switch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:         '{{__switch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:             '{{__switch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                 match x {
-// REWRITES-NEXT:                     0 => {
-// REWRITES-NEXT:                         break '{{__switch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     1 => {
-// REWRITES-NEXT:                         break '{{__switch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     _ => {}
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 result = -2;
-// REWRITES-NEXT:                 break '{{__switch[0-9]+_l[0-9]+}};
+// REWRITES-NEXT:     let mut result: i32 = -1;
+// REWRITES-NEXT:     match x {
+// REWRITES-NEXT:         0 => {
+// REWRITES-NEXT:             let {{_v[0-9]+}}: bool = extra != 0;
+// REWRITES-NEXT:             if {{_v[0-9]+}} {
+// REWRITES-NEXT:                 result = 10;
+// REWRITES-NEXT:             } else {
+// REWRITES-NEXT:                 result = 11;
 // REWRITES-NEXT:             }
-// REWRITES-NEXT:             result = 20;
-// REWRITES-NEXT:             break '{{__switch[0-9]+_l[0-9]+}};
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = extra != 0;
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             result = 10;
-// REWRITES-NEXT:         } else {
-// REWRITES-NEXT:             result = 11;
+// REWRITES-NEXT:         1 => {
+// REWRITES-NEXT:             result = 20;
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:         _ => {
+// REWRITES-NEXT:             result = -2;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return result;

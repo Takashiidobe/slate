@@ -16,6 +16,10 @@ impl NodeRule for ScopeFlatten {
         &[NodeKindTag::Scope]
     }
 
+    fn requeues_moved_nodes(&self) -> bool {
+        true
+    }
+
     fn matches(&self, arena: &Arena, id: NodeId) -> bool {
         arena.parent(id).is_some()
     }

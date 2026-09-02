@@ -128,12 +128,12 @@ int main(void) {
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     i = 0;
 // REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 5;
-// REWRITES-NEXT:         if i >= {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i < 5;
+// REWRITES-NEXT:         if !{{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         sum = sum + a[((i as i64) as usize)];
-// REWRITES-NEXT:         i = i + 1;
+// REWRITES-NEXT:         sum += a[((i as i64) as usize)];
+// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), sum) };
 // REWRITES-NEXT:     unsafe {
