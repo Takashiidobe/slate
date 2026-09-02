@@ -120,27 +120,16 @@ int main(void) {
 // REWRITES-NEXT: fn classify({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     let mut x: i32 = {{arg[0-9]+}};
 // REWRITES-NEXT:     let mut out: i32 = 0;
-// REWRITES-NEXT:     out = 0;
-// REWRITES-NEXT:     '{{__switch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:         '{{__switch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:             '{{__switch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                 match x {
-// REWRITES-NEXT:                     1 => {
-// REWRITES-NEXT:                         break '{{__switch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     2 => {
-// REWRITES-NEXT:                         break '{{__switch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     _ => {}
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 out = 99;
-// REWRITES-NEXT:                 break '{{__switch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             out = 22;
-// REWRITES-NEXT:             break '{{__switch[0-9]+_l[0-9]+}};
+// REWRITES-NEXT:     match x {
+// REWRITES-NEXT:         1 => {
+// REWRITES-NEXT:             out = 11;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 11;
-// REWRITES-NEXT:         out = {{_v[0-9]+}};
+// REWRITES-NEXT:         2 => {
+// REWRITES-NEXT:             out = 22;
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:         _ => {
+// REWRITES-NEXT:             out = 99;
+// REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return out;
 // REWRITES-NEXT: }

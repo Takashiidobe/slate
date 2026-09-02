@@ -4,6 +4,7 @@ mod cstr_literal;
 mod dead_store;
 mod for_range;
 mod inline_temps;
+mod label_elide;
 mod libc_call;
 mod peel_casts;
 mod raw_ptr_alias;
@@ -19,6 +20,9 @@ pub(super) fn registry() -> Vec<Box<dyn NodeRule>> {
     let mut rules: Vec<Box<dyn NodeRule>> = vec![
         Box::new(structure_dispatch::StructureDispatch),
         Box::new(structure_goto::StructureGoto),
+        Box::new(label_elide::BreakToElse),
+        Box::new(label_elide::TailBreakDrop),
+        Box::new(label_elide::LabelElide),
         Box::new(zero_init::ZeroInitFold),
         Box::new(raw_ptr_alias::RawPtrAliasElide),
         Box::new(singleton_scopes::ScopeFlatten),

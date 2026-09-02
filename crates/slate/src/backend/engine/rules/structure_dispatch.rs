@@ -351,6 +351,10 @@ impl NodeRule for StructureDispatch {
         &[NodeKindTag::Scope]
     }
 
+    fn requeues_moved_nodes(&self) -> bool {
+        true
+    }
+
     fn matches(&self, arena: &Arena, id: NodeId) -> bool {
         scope_body(arena, id)
             .is_some_and(|[value_id, ..]| named_let(arena, value_id, "__switch_value").is_some())
