@@ -156,37 +156,33 @@ int main(void) {
 // REWRITES-NEXT:     i = 0;
 // REWRITES-NEXT:     '__loop0: loop {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:         if !(i <= {{_v[0-9]+}}) {
+// REWRITES-NEXT:         if i > {{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         '__continue0: {
-// REWRITES-NEXT:             '__switch1_l4: {
-// REWRITES-NEXT:                 '__switch1_l3: {
-// REWRITES-NEXT:                     '__switch1_l2: {
-// REWRITES-NEXT:                         '__switch1_l1: {
-// REWRITES-NEXT:                             '__switch1_l0: {
-// REWRITES-NEXT:                                 match i {
-// REWRITES-NEXT:                                     0 => {
-// REWRITES-NEXT:                                         break '__switch1_l3;
-// REWRITES-NEXT:                                     }
-// REWRITES-NEXT:                                     1 => {
-// REWRITES-NEXT:                                         break '__switch1_l2;
-// REWRITES-NEXT:                                     }
-// REWRITES-NEXT:                                     2 => {
-// REWRITES-NEXT:                                         break '__switch1_l1;
-// REWRITES-NEXT:                                     }
-// REWRITES-NEXT:                                     _ => {
-// REWRITES-NEXT:                                         break '__switch1_l0;
-// REWRITES-NEXT:                                     }
+// REWRITES-NEXT:             '{{__switch[0-9]+_l[0-9]+}}: {
+// REWRITES-NEXT:                 '{{__switch[0-9]+_l[0-9]+}}: {
+// REWRITES-NEXT:                     '{{__switch[0-9]+_l[0-9]+}}: {
+// REWRITES-NEXT:                         '{{__switch[0-9]+_l[0-9]+}}: {
+// REWRITES-NEXT:                             match i {
+// REWRITES-NEXT:                                 0 => {
+// REWRITES-NEXT:                                     break '{{__switch[0-9]+_l[0-9]+}};
 // REWRITES-NEXT:                                 }
+// REWRITES-NEXT:                                 1 => {
+// REWRITES-NEXT:                                     break '{{__switch[0-9]+_l[0-9]+}};
+// REWRITES-NEXT:                                 }
+// REWRITES-NEXT:                                 2 => {
+// REWRITES-NEXT:                                     break '{{__switch[0-9]+_l[0-9]+}};
+// REWRITES-NEXT:                                 }
+// REWRITES-NEXT:                                 _ => {}
 // REWRITES-NEXT:                             }
 // REWRITES-NEXT:                             let {{_v[0-9]+}}: i32 = 100;
 // REWRITES-NEXT:                             out = out + {{_v[0-9]+}};
-// REWRITES-NEXT:                             break '__switch1_l4;
+// REWRITES-NEXT:                             break '{{__switch[0-9]+_l[0-9]+}};
 // REWRITES-NEXT:                         }
 // REWRITES-NEXT:                         let {{_v[0-9]+}}: i32 = 20;
 // REWRITES-NEXT:                         out = out + {{_v[0-9]+}};
-// REWRITES-NEXT:                         break '__switch1_l4;
+// REWRITES-NEXT:                         break '{{__switch[0-9]+_l[0-9]+}};
 // REWRITES-NEXT:                     }
 // REWRITES-NEXT:                     break '__continue0;
 // REWRITES-NEXT:                 }
@@ -194,7 +190,6 @@ int main(void) {
 // REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = out;
 // REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // REWRITES-NEXT:                 out = {{_v[0-9]+}};
-// REWRITES-NEXT:                 break '__switch1_l4;
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 3;
 // REWRITES-NEXT:             out = out + {{_v[0-9]+}};

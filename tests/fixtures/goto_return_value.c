@@ -151,53 +151,19 @@ int main() {
 // REWRITES-NEXT: fn classify({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     let mut n: i32 = 0;
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
-// REWRITES-NEXT:     '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:         '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:             '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                 '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                     '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                         '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                             '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                                 '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                                     '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                                         '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                                             '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                                                 n = {{arg[0-9]+}};
-// REWRITES-NEXT:                                                 break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                                             }
-// REWRITES-NEXT:                                             let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:                                             if n < {{_v[0-9]+}} {
-// REWRITES-NEXT:                                                 break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                                             } else {
-// REWRITES-NEXT:                                                 break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                                             }
-// REWRITES-NEXT:                                         }
-// REWRITES-NEXT:                                         break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                                     }
-// REWRITES-NEXT:                                     break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                                 }
-// REWRITES-NEXT:                                 let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:                                 if n == {{_v[0-9]+}} {
-// REWRITES-NEXT:                                     break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                                 } else {
-// REWRITES-NEXT:                                     break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                                 }
-// REWRITES-NEXT:                             }
-// REWRITES-NEXT:                             break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                         }
-// REWRITES-NEXT:                         __retval = 1;
-// REWRITES-NEXT:                         return __retval;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 __retval = 0;
-// REWRITES-NEXT:                 return __retval;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             break '{{__dispatch[0-9]+_l[0-9]+}};
+// REWRITES-NEXT:     n = {{arg[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     if n >= {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:         if n != {{_v[0-9]+}} {
+// REWRITES-NEXT:             __retval = 1;
+// REWRITES-NEXT:             return __retval;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         __retval = -1;
+// REWRITES-NEXT:         __retval = 0;
 // REWRITES-NEXT:         return __retval;
 // REWRITES-NEXT:     }
+// REWRITES-NEXT:     __retval = -1;
+// REWRITES-NEXT:     return __retval;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

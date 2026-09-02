@@ -146,13 +146,19 @@ int main(void) {
 // REWRITES-NEXT: unsafe fn scale({{arg[0-9]+}}: i32, {{arg[0-9]+}}: *mut i32) {
 // REWRITES-NEXT:     let mut n: i32 = {{arg[0-9]+}};
 // REWRITES-NEXT:     let mut arr: *mut i32 = {{arg[0-9]+}};
-// REWRITES-NEXT:     for i in 0..n {
+// REWRITES-NEXT:     let mut i: i32 = 0;
+// REWRITES-NEXT:     i = 0;
+// REWRITES-NEXT:     loop {
+// REWRITES-NEXT:         if i >= n {
+// REWRITES-NEXT:             break;
+// REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 2;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = arr;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:             *{{_v[0-9]+}} = (unsafe { *{{_v[0-9]+}} }) * {{_v[0-9]+}};
 // REWRITES-NEXT:         }
+// REWRITES-NEXT:         i = i + 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }

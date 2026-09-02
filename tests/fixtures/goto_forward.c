@@ -87,15 +87,10 @@ done:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-NEXT:     let mut x: i32 = 0;
-// REWRITES-NEXT:     '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:         '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:             __retval = 0;
-// REWRITES-NEXT:             x = 1;
-// REWRITES-NEXT:             break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:         unsafe { printf(c"%d\n".as_ptr(), x) };
-// REWRITES-NEXT:         __retval = 0;
-// REWRITES-NEXT:         std::process::exit(__retval as i32);
-// REWRITES-NEXT:     }
+// REWRITES-NEXT:     __retval = 0;
+// REWRITES-NEXT:     x = 1;
+// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), x) };
+// REWRITES-NEXT:     __retval = 0;
+// REWRITES-NEXT:     std::process::exit(__retval as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

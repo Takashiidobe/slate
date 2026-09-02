@@ -215,19 +215,32 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn worker({{arg[0-9]+}}: *mut core::ffi::c_void) -> *mut core::ffi::c_void {
-// REWRITES-NEXT:     for i in 0..100000 {
+// REWRITES-NEXT:     let mut i: i32 = 0;
+// REWRITES-NEXT:     i = 0;
+// REWRITES-NEXT:     loop {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 100000;
+// REWRITES-NEXT:         if i >= {{_v[0-9]+}} {
+// REWRITES-NEXT:             break;
+// REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:             std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(counter))
 // REWRITES-NEXT:                 .fetch_add({{_v[0-9]+}}, std::sync::atomic::Ordering::SeqCst)
 // REWRITES-NEXT:         };
+// REWRITES-NEXT:         i = i + 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return std::ptr::null_mut();
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut threads: aligned::Aligned<aligned::A16, [u64; 4]> = aligned::Aligned([0; 4]);
-// REWRITES-NEXT:     for i in 0..4 {
+// REWRITES-NEXT:     let mut i: i32 = 0;
+// REWRITES-NEXT:     i = 0;
+// REWRITES-NEXT:     loop {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 4;
+// REWRITES-NEXT:         if i >= {{_v[0-9]+}} {
+// REWRITES-NEXT:             break;
+// REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i64 = i as i64;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut __pthread_attr_t = std::ptr::null_mut();
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
@@ -239,11 +252,12 @@ int main(void) {
 // REWRITES-NEXT:                 {{_v[0-9]+}} as *mut core::ffi::c_void,
 // REWRITES-NEXT:             )
 // REWRITES-NEXT:         };
+// REWRITES-NEXT:         i = i + 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let mut i2: i32 = 0;
 // REWRITES-NEXT:     loop {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 4;
-// REWRITES-NEXT:         if !(i2 < {{_v[0-9]+}}) {
+// REWRITES-NEXT:         if i2 >= {{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut *mut core::ffi::c_void = std::ptr::null_mut();

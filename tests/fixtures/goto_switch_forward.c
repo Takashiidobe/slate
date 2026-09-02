@@ -167,51 +167,29 @@ done:
 // REWRITES-NEXT:     '{{__dispatch[0-9]+_l[0-9]+}}: {
 // REWRITES-NEXT:         '{{__dispatch[0-9]+_l[0-9]+}}: {
 // REWRITES-NEXT:             '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                 '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                     '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                         '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                             '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                                 '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                                     '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                                         '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                                             __retval = 0;
-// REWRITES-NEXT:                                             x = 2;
-// REWRITES-NEXT:                                             r = 0;
-// REWRITES-NEXT:                                             break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                                         }
-// REWRITES-NEXT:                                         {{_v[0-9]+}} = x;
-// REWRITES-NEXT:                                         break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                                     }
-// REWRITES-NEXT:                                     match {{_v[0-9]+}} {
-// REWRITES-NEXT:                                         1 => {
-// REWRITES-NEXT:                                             break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                                         }
-// REWRITES-NEXT:                                         2 => {
-// REWRITES-NEXT:                                             break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                                         }
-// REWRITES-NEXT:                                         _ => {
-// REWRITES-NEXT:                                             break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                                         }
-// REWRITES-NEXT:                                     }
-// REWRITES-NEXT:                                 }
-// REWRITES-NEXT:                                 break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                             }
-// REWRITES-NEXT:                             r = 30;
-// REWRITES-NEXT:                             break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                         }
+// REWRITES-NEXT:                 __retval = 0;
+// REWRITES-NEXT:                 x = 2;
+// REWRITES-NEXT:                 r = 0;
+// REWRITES-NEXT:                 {{_v[0-9]+}} = x;
+// REWRITES-NEXT:                 match {{_v[0-9]+}} {
+// REWRITES-NEXT:                     1 => {
 // REWRITES-NEXT:                         break '{{__dispatch[0-9]+_l[0-9]+}};
 // REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     r = 20;
-// REWRITES-NEXT:                     break '{{__dispatch[0-9]+_l[0-9]+}};
+// REWRITES-NEXT:                     2 => {
+// REWRITES-NEXT:                         break '{{__dispatch[0-9]+_l[0-9]+}};
+// REWRITES-NEXT:                     }
+// REWRITES-NEXT:                     _ => {}
 // REWRITES-NEXT:                 }
+// REWRITES-NEXT:                 r = 30;
 // REWRITES-NEXT:                 break '{{__dispatch[0-9]+_l[0-9]+}};
 // REWRITES-NEXT:             }
-// REWRITES-NEXT:             r = 10;
+// REWRITES-NEXT:             r = 20;
 // REWRITES-NEXT:             break '{{__dispatch[0-9]+_l[0-9]+}};
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         unsafe { printf(c"%d\n".as_ptr(), r) };
-// REWRITES-NEXT:         __retval = 0;
-// REWRITES-NEXT:         std::process::exit(__retval as i32);
+// REWRITES-NEXT:         r = 10;
 // REWRITES-NEXT:     }
+// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), r) };
+// REWRITES-NEXT:     __retval = 0;
+// REWRITES-NEXT:     std::process::exit(__retval as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

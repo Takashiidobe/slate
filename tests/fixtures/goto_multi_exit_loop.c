@@ -156,59 +156,28 @@ overflow:
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     let mut sum: i32 = 0;
 // REWRITES-NEXT:     '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:         '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:             '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                 '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                     '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                         '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                             __retval = 0;
-// REWRITES-NEXT:                             i = 0;
-// REWRITES-NEXT:                             sum = 0;
-// REWRITES-NEXT:                             break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                         }
-// REWRITES-NEXT:                         '{{__dispatch[0-9]+_l[0-9]+}}: loop {
-// REWRITES-NEXT:                             '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                                 '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                                     '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                                         '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                                             '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                                                 sum = sum + i;
-// REWRITES-NEXT:                                                 break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                                             }
-// REWRITES-NEXT:                                             let {{_v[0-9]+}}: i32 = 100;
-// REWRITES-NEXT:                                             if sum > {{_v[0-9]+}} {
-// REWRITES-NEXT:                                                 break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                                             } else {
-// REWRITES-NEXT:                                                 break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                                             }
-// REWRITES-NEXT:                                         }
-// REWRITES-NEXT:                                         break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                                     }
-// REWRITES-NEXT:                                     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:                                     i = i + {{_v[0-9]+}};
-// REWRITES-NEXT:                                     break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                                 }
-// REWRITES-NEXT:                                 let {{_v[0-9]+}}: i32 = 5;
-// REWRITES-NEXT:                                 if i < {{_v[0-9]+}} {
-// REWRITES-NEXT:                                     break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                                 } else {
-// REWRITES-NEXT:                                     break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                                 }
-// REWRITES-NEXT:                             }
-// REWRITES-NEXT:                             continue '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                         }
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 unsafe { printf(c"%d\n".as_ptr(), sum) };
-// REWRITES-NEXT:                 __retval = 0;
-// REWRITES-NEXT:                 std::process::exit(__retval as i32);
+// REWRITES-NEXT:         __retval = 0;
+// REWRITES-NEXT:         i = 0;
+// REWRITES-NEXT:         sum = 0;
+// REWRITES-NEXT:         loop {
+// REWRITES-NEXT:             sum = sum + i;
+// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 100;
+// REWRITES-NEXT:             if sum > {{_v[0-9]+}} {
+// REWRITES-NEXT:                 break '{{__dispatch[0-9]+_l[0-9]+}};
 // REWRITES-NEXT:             }
-// REWRITES-NEXT:             break '{{__dispatch[0-9]+_l[0-9]+}};
+// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:             i = i + {{_v[0-9]+}};
+// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 5;
+// REWRITES-NEXT:             if i >= {{_v[0-9]+}} {
+// REWRITES-NEXT:                 break;
+// REWRITES-NEXT:             }
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         unsafe { printf(c"overflow\n".as_ptr()) };
+// REWRITES-NEXT:         unsafe { printf(c"%d\n".as_ptr(), sum) };
 // REWRITES-NEXT:         __retval = 0;
 // REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
+// REWRITES-NEXT:     unsafe { printf(c"overflow\n".as_ptr()) };
+// REWRITES-NEXT:     __retval = 0;
+// REWRITES-NEXT:     std::process::exit(__retval as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

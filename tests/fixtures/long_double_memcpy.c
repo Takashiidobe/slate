@@ -440,7 +440,7 @@ int main(void) {
 // REWRITES-NEXT:     i = 0;
 // REWRITES-NEXT:     loop {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 10;
-// REWRITES-NEXT:         if !(i < {{_v[0-9]+}}) {
+// REWRITES-NEXT:         if i >= {{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 17;
@@ -458,7 +458,7 @@ int main(void) {
 // REWRITES-NEXT:     i = 0;
 // REWRITES-NEXT:     loop {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 10;
-// REWRITES-NEXT:         if !(i < {{_v[0-9]+}}) {
+// REWRITES-NEXT:         if i >= {{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ((unsafe { dst.bytes[((i as i64) as usize)] }) as i32)

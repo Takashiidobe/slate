@@ -338,7 +338,7 @@ int main(void) {
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     '__loop0: loop {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-NEXT:         if !(i < {{_v[0-9]+}}) {
+// REWRITES-NEXT:         if i >= {{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         '__continue0: {
@@ -367,7 +367,7 @@ int main(void) {
 // REWRITES-NEXT:     let mut i2: i32 = 0;
 // REWRITES-NEXT:     '__loop1: loop {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 5;
-// REWRITES-NEXT:         if !(i2 < {{_v[0-9]+}}) {
+// REWRITES-NEXT:         if i2 >= {{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         '__continue1: {

@@ -176,56 +176,22 @@ done:
 // REWRITES-NEXT:     let mut a: i32 = 0;
 // REWRITES-NEXT:     let mut b: i32 = 0;
 // REWRITES-NEXT:     let mut r: i32 = 0;
-// REWRITES-NEXT:     '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:         '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:             '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                 '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                     '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                         '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                             '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                                 '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                                     '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                                         '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                                             '{{__dispatch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                                                 __retval = 0;
-// REWRITES-NEXT:                                                 a = 3;
-// REWRITES-NEXT:                                                 b = -1;
-// REWRITES-NEXT:                                                 break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                                             }
-// REWRITES-NEXT:                                             let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:                                             if a > {{_v[0-9]+}} {
-// REWRITES-NEXT:                                                 break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                                             } else {
-// REWRITES-NEXT:                                                 break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                                             }
-// REWRITES-NEXT:                                         }
-// REWRITES-NEXT:                                         break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                                     }
-// REWRITES-NEXT:                                     r = 3;
-// REWRITES-NEXT:                                     break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                                 }
-// REWRITES-NEXT:                                 break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                             }
-// REWRITES-NEXT:                             let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:                             if b > {{_v[0-9]+}} {
-// REWRITES-NEXT:                                 break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                             } else {
-// REWRITES-NEXT:                                 break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                             }
-// REWRITES-NEXT:                         }
-// REWRITES-NEXT:                         break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     r = 2;
-// REWRITES-NEXT:                     break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 break '{{__dispatch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:             }
+// REWRITES-NEXT:     __retval = 0;
+// REWRITES-NEXT:     a = 3;
+// REWRITES-NEXT:     b = -1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     if a <= {{_v[0-9]+}} {
+// REWRITES-NEXT:         r = 3;
+// REWRITES-NEXT:     } else {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:         if b <= {{_v[0-9]+}} {
+// REWRITES-NEXT:             r = 2;
+// REWRITES-NEXT:         } else {
 // REWRITES-NEXT:             r = 1;
-// REWRITES-NEXT:             break '{{__dispatch[0-9]+_l[0-9]+}};
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         unsafe { printf(c"%d\n".as_ptr(), r) };
-// REWRITES-NEXT:         __retval = 0;
-// REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
+// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), r) };
+// REWRITES-NEXT:     __retval = 0;
+// REWRITES-NEXT:     std::process::exit(__retval as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

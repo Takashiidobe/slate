@@ -126,7 +126,7 @@ int main(void) {
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     i = 0;
 // REWRITES-NEXT:     '__loop0: loop {
-// REWRITES-NEXT:         if !(i <= n) {
+// REWRITES-NEXT:         if i > n {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         '__continue0: {

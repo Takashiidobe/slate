@@ -714,7 +714,7 @@ int main(void) {
 // REWRITES-NEXT:         }) as *mut i8;
 // REWRITES-NEXT:         {{__slate_alloca_frame[0-9]+}}.1 = {{_v[0-9]+}};
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
-// REWRITES-NEXT:         if !({{_v[0-9]+}} != {{_v[0-9]+}}) {
+// REWRITES-NEXT:         if {{_v[0-9]+}} == {{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 10;

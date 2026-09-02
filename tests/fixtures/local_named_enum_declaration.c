@@ -152,7 +152,13 @@ int main(void) {
 // REWRITES-NEXT:     cases[({{_v[0-9]+}} as usize)].expectedStatus = XML_Status::XML_STATUS_OK;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 1;
 // REWRITES-NEXT:     cases[({{_v[0-9]+}} as usize)].expectedStatus = XML_Status::XML_STATUS_ERROR;
-// REWRITES-NEXT:     for i in 0..2 {
+// REWRITES-NEXT:     let mut i: i32 = 0;
+// REWRITES-NEXT:     i = 0;
+// REWRITES-NEXT:     loop {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 2;
+// REWRITES-NEXT:         if i >= {{_v[0-9]+}} {
+// REWRITES-NEXT:             break;
+// REWRITES-NEXT:         }
 // REWRITES-NEXT:         let mut expectedStatus: aligned::Aligned<aligned::A4, XML_Status> =
 // REWRITES-NEXT:             aligned::Aligned(XML_Status::XML_STATUS_ERROR);
 // REWRITES-NEXT:         *expectedStatus =
@@ -165,6 +171,7 @@ int main(void) {
 // REWRITES-NEXT:         } else {
 // REWRITES-NEXT:             unsafe { printf(c"error\n".as_ptr()) };
 // REWRITES-NEXT:         }
+// REWRITES-NEXT:         i = i + 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }

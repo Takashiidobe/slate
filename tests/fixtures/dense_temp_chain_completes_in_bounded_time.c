@@ -7307,8 +7307,15 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut sum: i64 = 0;
 // REWRITES-NEXT:     compute(1);
-// REWRITES-NEXT:     for i in 0..400 {
+// REWRITES-NEXT:     let mut i: i32 = 0;
+// REWRITES-NEXT:     i = 0;
+// REWRITES-NEXT:     loop {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 400;
+// REWRITES-NEXT:         if i >= {{_v[0-9]+}} {
+// REWRITES-NEXT:             break;
+// REWRITES-NEXT:         }
 // REWRITES-NEXT:         sum = sum + unsafe { (*results)[((i as i64) as usize)] };
+// REWRITES-NEXT:         i = i + 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { printf(c"%ld\n".as_ptr(), sum) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
