@@ -1059,6 +1059,7 @@ impl<'a> Lowerer<'a> {
                     .unwrap_or(FunctionIdentity::Unknown),
                 name: shim_name.clone(),
                 declared_type: self.function_types.get(name).cloned(),
+                trusted_headers: std::collections::BTreeSet::new(),
                 params: params
                     .iter()
                     .enumerate()
@@ -2829,6 +2830,7 @@ fn builtin_setjmp_extern_decl() -> ExternFnDecl {
         name: "setjmp".into(),
         identity: FunctionIdentity::Unknown,
         declared_type: None,
+        trusted_headers: std::collections::BTreeSet::new(),
         params: vec![FnParam {
             name: "_0".into(),
             mutable: false,
@@ -2846,6 +2848,7 @@ fn builtin_longjmp_extern_decl() -> ExternFnDecl {
         name: "longjmp".into(),
         identity: FunctionIdentity::Unknown,
         declared_type: None,
+        trusted_headers: std::collections::BTreeSet::new(),
         params: vec![
             FnParam {
                 name: "_0".into(),

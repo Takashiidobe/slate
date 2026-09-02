@@ -44,6 +44,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 self.parent.known_functions.get(callee)
         {
             let trusted_declaration = binding.trusted_declaration().map(str::to_string);
+            let trusted_headers = binding.trusted_headers().map(str::to_string).collect();
             binding = CallBinding::Direct {
                 identity: *identity,
                 canonical_type: match binding {
@@ -51,6 +52,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     CallBinding::Indirect | CallBinding::Generated => None,
                 },
                 trusted_declaration,
+                trusted_headers,
             };
         }
         let (callee_name, callee_expr, indirect_callee_operand) =
@@ -407,6 +409,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 identity,
                 name: shim_name.clone(),
                 declared_type: binding.trusted_declaration().map(str::to_string),
+                trusted_headers: binding.trusted_headers().map(str::to_string).collect(),
                 params: param_types
                     .iter()
                     .enumerate()

@@ -167,7 +167,7 @@ fn render_typed_shim(shim: &ExternFnDecl) -> Option<String> {
             .join(", ");
         format!("{rust_ret} {original}({rust_params});\n")
     } else {
-        if shim.identity != FunctionIdentity::Unknown {
+        if shim.identity != FunctionIdentity::Unknown || !shim.trusted_headers.is_empty() {
             String::new()
         } else if let Some(declared_type) = shim.declared_type.as_deref() {
             render_declared_prototype(&callee, declared_type).unwrap_or_default()
@@ -307,10 +307,16 @@ const FENV_SHIMS: &str = include_str!("./shims/fenv.c");
 fn shim_preamble(shims: &[ExternFnDecl]) -> String {
     let headers = shims
         .iter()
-        .filter_map(|shim| match shim.identity {
-            FunctionIdentity::Known(known) => Some(known.header()),
-            FunctionIdentity::Unknown => None,
+        .flat_map(|shim| {
+            shim.trusted_headers
+                .iter()
+                .map(String::as_str)
+                .chain(match shim.identity {
+                    FunctionIdentity::Known(known) => Some(known.header()),
+                    FunctionIdentity::Unknown => None,
+                })
         })
+        .filter(|header| !header.starts_with("bits/"))
         .collect::<BTreeSet<_>>();
     std::iter::once("#define _GNU_SOURCE".to_string())
         .chain(
@@ -322,7 +328,10 @@ fn shim_preamble(shims: &[ExternFnDecl]) -> String {
         .join("\n")
 }
 
-pub fn render_shim_c_source(shims: &[ExternFnDecl]) -> String {
+fn render_typed_shim_source<'a>(
+    shims: &[ExternFnDecl],
+    records: impl IntoIterator<Item = &'a RecordDef>,
+) -> String {
     let mut blocks = vec![shim_preamble(shims)];
     let has_f80 = shims
         .iter()
@@ -335,6 +344,9 @@ pub fn render_shim_c_source(shims: &[ExternFnDecl]) -> String {
         .any(|shim| shim.name.starts_with("__slate_fenv_"))
     {
         blocks.push(FENV_SHIMS.to_string());
+    }
+    for record in records {
+        blocks.push(render_record_def(record));
     }
     for shim in shims {
         if shim.name.starts_with("__slate_f80_")
@@ -349,8 +361,12 @@ pub fn render_shim_c_source(shims: &[ExternFnDecl]) -> String {
     blocks.join("\n")
 }
 
-pub fn render_shim_c_source_for_program(program: &Program) -> String {
-    let shims: Vec<ExternFnDecl> = program
+pub fn render_shim_c_source(shims: &[ExternFnDecl]) -> String {
+    render_typed_shim_source(shims, [])
+}
+
+pub fn collect_program_shims(program: &Program) -> Vec<ExternFnDecl> {
+    program
         .items
         .iter()
         .filter_map(|item| match item {
@@ -362,34 +378,12 @@ pub fn render_shim_c_source_for_program(program: &Program) -> String {
             ExternDecl::Fn(shim) => Some(shim.clone()),
             ExternDecl::Static { .. } => None,
         })
-        .collect();
-    let mut blocks = vec![shim_preamble(&shims)];
-    let has_f80 = shims
-        .iter()
-        .any(|shim| shim.name.contains("f80") || shim.name.starts_with("__slate_ld_"));
-    if has_f80 {
-        blocks.push(F80_SHIMS.to_string());
-    }
-    if shims
-        .iter()
-        .any(|shim| shim.name.starts_with("__slate_fenv_"))
-    {
-        blocks.push(FENV_SHIMS.to_string());
-    }
-    for record in long_double_records(program) {
-        blocks.push(render_record_def(record));
-    }
-    for shim in &shims {
-        if shim.name.starts_with("__slate_f80_")
-            || shim.name.starts_with("__slate_cf80_")
-            || shim.name.starts_with("__slate_fenv_")
-        {
-            continue;
-        } else if let Some(source) = render_typed_shim(shim) {
-            blocks.push(source);
-        }
-    }
-    blocks.join("\n")
+        .collect()
+}
+
+pub fn render_shim_c_source_for_program(program: &Program) -> String {
+    let shims = collect_program_shims(program);
+    render_typed_shim_source(&shims, long_double_records(program))
 }
 
 fn long_double_records(program: &Program) -> Vec<&RecordDef> {

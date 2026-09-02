@@ -27,7 +27,7 @@ The pipeline has two layers:
   picking a rewrite shape and wiring a new pass into the pipeline end to end.
 
 `src/backend/mod.rs` runs a fixed sequence of passes (`Pass` enum in
-`trace.rs`) over the `Program`, documented in order in [passes.md](passes.md).
+`trace.rs`) over the `Program`, documented in order in [passes.md](../concepts/passes.md).
 Nothing here is discovered at runtime — the sequence, and each pass's
 position in it, is hand-written.
 
@@ -94,7 +94,7 @@ This is the concrete checklist — every file a new pass touches, in order:
    so you know what you're changing. Scaffold the FileCheck blocks with the
    `@rewrite-begin`/`@lowering-begin` region directives plus
    `tools/update_filecheck.py --in-place` rather than by hand — see
-   [differential fixtures](differential-fixtures.md)'s region-scoped section.
+   [differential fixtures](../concepts/differential-fixtures.md)'s region-scoped section.
 2. **Facts, if you need new ones.** If the rewrite needs information not
    already exposed by `QueryContext`, add a collector under
    `src/backend/facts/` (facts.md's "Adding a fact"), then a `QueryContext`
@@ -203,5 +203,5 @@ This is the concrete checklist — every file a new pass touches, in order:
   domain, recipes, `EditSet` scheduling and transactional semantics.
 - [facts.md](facts.md) — the facts layer: what each collector proves, who
   consumes it, and how to add a new one.
-- [passes.md](passes.md) — the concrete, ordered pass catalog and
+- [passes.md](../concepts/passes.md) — the concrete, ordered pass catalog and
   `fixup-debug` usage.

@@ -38,6 +38,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 name: shim.clone(),
                 identity: FunctionIdentity::Unknown,
                 declared_type: None,
+                trusted_headers: std::collections::BTreeSet::new(),
                 params: vec![FnParam {
                     name: "_0".into(),
                     mutable: false,
@@ -75,6 +76,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 name: shim.clone(),
                 identity: FunctionIdentity::Unknown,
                 declared_type: None,
+                trusted_headers: std::collections::BTreeSet::new(),
                 params: vec![
                     FnParam {
                         name: "_0".into(),

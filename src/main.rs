@@ -489,7 +489,7 @@ impl ProjectModules {
         let enums: Vec<_> = shared_enums.into_values().collect();
         let program =
             frontend::lower_shared_types(&records, &enums, &self.aliases, &self.bitfield_storages);
-        for shim in collect_program_shims(&program) {
+        for shim in c_shim::collect_program_shims(&program) {
             shims.entry(shim.name.clone()).or_insert(shim);
         }
         self.push(crate_src.join("types.rs"), program);
@@ -864,22 +864,6 @@ fn write_c_shims(crate_dir: &Path, shims: &[rust_ast::ExternFnDecl]) -> Result<(
         .map_err(|e| format!("write {}: {e}", shim_path.display()))
 }
 
-fn collect_program_shims(program: &rust_ast::Program) -> Vec<rust_ast::ExternFnDecl> {
-    program
-        .items
-        .iter()
-        .filter_map(|item| match item {
-            rust_ast::Item::ExternBlock { decls, .. } => Some(decls),
-            _ => None,
-        })
-        .flatten()
-        .filter_map(|decl| match decl {
-            rust_ast::ExternDecl::Fn(shim) => Some(shim.clone()),
-            rust_ast::ExternDecl::Static { .. } => None,
-        })
-        .collect()
-}
-
 fn project_warning_items(
     pp: &preprocess::Preprocessing,
     context: &str,
@@ -1161,7 +1145,7 @@ fn translate_project_lib_crate_with_manifest(
         if ctx.diagnostics.has_errors() {
             return Err(format!("lowering failed for {}", path.display()));
         }
-        for shim in collect_program_shims(&program) {
+        for shim in c_shim::collect_program_shims(&program) {
             shims
                 .entry(shim.name.clone())
                 .or_insert_with(|| shim.clone());
@@ -1233,7 +1217,7 @@ fn translate_project_lib_crate_with_manifest(
             if ctx.diagnostics.has_errors() {
                 return Err(format!("lowering failed for {}", path.display()));
             }
-            for shim in collect_program_shims(&program) {
+            for shim in c_shim::collect_program_shims(&program) {
                 shims
                     .entry(shim.name.clone())
                     .or_insert_with(|| shim.clone());
@@ -1548,7 +1532,7 @@ fn translate_project_lib_crate_with_compile_commands(
             programs.push((cfg.clone(), backend::apply_with(program, &fixup_skip)));
         }
         let program = merge_target_programs(&programs);
-        for shim in collect_program_shims(&program) {
+        for shim in c_shim::collect_program_shims(&program) {
             shims
                 .entry(shim.name.clone())
                 .or_insert_with(|| shim.clone());
@@ -1920,7 +1904,7 @@ fn translate_project_with_targets(
             ));
         }
         let mut program = merge_target_programs(&variant_programs);
-        for shim in collect_program_shims(&program) {
+        for shim in c_shim::collect_program_shims(&program) {
             shims
                 .entry(shim.name.clone())
                 .or_insert_with(|| shim.clone());
@@ -2295,7 +2279,7 @@ fn translate_project_with_compile_commands(
             variant_programs.push((cfg.clone(), backend::apply_with(program, &fixup_skip)));
         }
         let mut program = merge_target_programs(&variant_programs);
-        for shim in collect_program_shims(&program) {
+        for shim in c_shim::collect_program_shims(&program) {
             shims
                 .entry(shim.name.clone())
                 .or_insert_with(|| shim.clone());

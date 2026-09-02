@@ -254,6 +254,7 @@ impl<'a> Lowerer<'a> {
                     identity: FunctionIdentity::Unknown,
                     name: trampoline.clone(),
                     declared_type: None,
+                    trusted_headers: std::collections::BTreeSet::new(),
                     params: params
                         .iter()
                         .enumerate()
@@ -651,6 +652,7 @@ impl<'a> Lowerer<'a> {
             name: rust_name,
             identity,
             declared_type: self.function_types.get(name).cloned(),
+            trusted_headers: std::collections::BTreeSet::new(),
             params,
             variadic: function.varargs,
             ret: ret_ast,
