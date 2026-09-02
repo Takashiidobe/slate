@@ -19,6 +19,7 @@ _check name:
 transpile-chibicc: (_transpile "chibicc" (corpus / "chibicc"))
 transpile-cjson: (_transpile "cJSON" (corpus / "cJSON"))
 transpile-curl: (_transpile "curl" (corpus / "curl"))
+transpile-giflib: (_transpile "giflib" (corpus / "giflib"))
 transpile-libexpat: (_transpile "libexpat" (corpus / "libexpat/expat"))
 transpile-libpng: (_transpile "libpng" (corpus / "libpng"))
 transpile-libuv: (_transpile "libuv" (corpus / "libuv"))
@@ -41,6 +42,7 @@ transpile-zstd: (_transpile "zstd" (corpus / "zstd"))
 check-chibicc: (_check "chibicc")
 check-cjson: (_check "cJSON")
 check-curl: (_check "curl")
+check-giflib: (_check "giflib")
 check-libexpat: (_check "libexpat")
 check-libpng: (_check "libpng")
 check-libuv: (_check "libuv")
@@ -60,7 +62,7 @@ check-yyjson: (_check "yyjson")
 check-zlib: (_check "zlib")
 check-zstd: (_check "zstd")
 
-corpus_projects := "chibicc cjson curl libexpat libpng libuv libyaml lua lz4 mbedtls musl nginx pcre2 quickjs redis sqlite tinycc utf8proc yyjson zlib zstd"
+corpus_projects := "chibicc cjson curl giflib libexpat libpng libuv libyaml lua lz4 mbedtls musl nginx pcre2 quickjs redis sqlite tinycc utf8proc yyjson zlib zstd"
 
 # transpile every c-corpus project; keeps going past per-project failures and reports them at the end
 transpile-all:
