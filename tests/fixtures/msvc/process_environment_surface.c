@@ -25,9 +25,9 @@ _Static_assert(__builtin_types_compatible_p(_beginthread_proc_type,
 _Static_assert(__builtin_types_compatible_p(_beginthreadex_proc_type,
                                             unsigned int (*)(void *)),
                "_beginthreadex_proc_type");
-_Static_assert(__builtin_types_compatible_p(
-                   _tls_callback_type,
-                   void (*)(void *, unsigned long, void *)),
+_Static_assert(__builtin_types_compatible_p(_tls_callback_type,
+                                            void (*)(void *, unsigned long,
+                                                     void *)),
                "_tls_callback_type");
 
 TYPE_IS(&_beginthread,
@@ -104,8 +104,7 @@ TYPE_IS(&_wgetenv, wchar_t *(*)(const wchar_t *));
 TYPE_IS(&_putenv, int (*)(const char *));
 TYPE_IS(&_wputenv, int (*)(const wchar_t *));
 TYPE_IS(&_searchenv, void (*)(const char *, const char *, char *));
-TYPE_IS(&_wsearchenv,
-        void (*)(const wchar_t *, const wchar_t *, wchar_t *));
+TYPE_IS(&_wsearchenv, void (*)(const wchar_t *, const wchar_t *, wchar_t *));
 TYPE_IS(&_wsystem, int (*)(const wchar_t *));
 
 extern int CreateProcessA;

@@ -765,36 +765,38 @@ int main(void) {
 // REWRITES-NEXT:     let mut value: i32 = 0;
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-NEXT:     let mut result: i32 = 0;
-// REWRITES-NEXT:     value = {{arg[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:     result = value + {{_v[0-9]+}};
-// REWRITES-NEXT:     __retval = result;
-// REWRITES-NEXT:     return __retval;
+// REWRITES-NEXT:     let mut {{__state[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     '{{__dispatch[0-9]+}}: loop {
+// REWRITES-NEXT:         match {{__state[0-9]+}} {
+// REWRITES-NEXT:             0 => {
+// REWRITES-NEXT:                 value = {{arg[0-9]+}};
+// REWRITES-NEXT:                 {{__state[0-9]+}} = 1;
+// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             1 => {
+// REWRITES-NEXT:                 result = value + 1;
+// REWRITES-NEXT:                 __retval = result;
+// REWRITES-NEXT:                 return __retval;
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             _ => {
+// REWRITES-NEXT:                 unreachable!();
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c23_switch_fallthrough({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     let mut value: i32 = {{arg[0-9]+}};
 // REWRITES-NEXT:     let mut result: i32 = 0;
-// REWRITES-NEXT:     result = 0;
-// REWRITES-NEXT:     '{{__switch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:         '{{__switch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:             '{{__switch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                 match value {
-// REWRITES-NEXT:                     1 => {
-// REWRITES-NEXT:                         break '{{__switch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     2 => {
-// REWRITES-NEXT:                         break '{{__switch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     _ => {}
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 break '{{__switch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:             result = result + {{_v[0-9]+}};
+// REWRITES-NEXT:     match value {
+// REWRITES-NEXT:         1 => {
+// REWRITES-NEXT:             result += 3;
+// REWRITES-NEXT:             result += 5;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 5;
-// REWRITES-NEXT:         result = result + {{_v[0-9]+}};
+// REWRITES-NEXT:         2 => {
+// REWRITES-NEXT:             result += 5;
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:         _ => {}
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return result;
 // REWRITES-NEXT: }
@@ -814,7 +816,21 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c23_label_before_brace() {
-// REWRITES-NEXT:     return;
+// REWRITES-NEXT:     let mut {{__state[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     '{{__dispatch[0-9]+}}: loop {
+// REWRITES-NEXT:         match {{__state[0-9]+}} {
+// REWRITES-NEXT:             0 => {
+// REWRITES-NEXT:                 {{__state[0-9]+}} = 1;
+// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             1 => {
+// REWRITES-NEXT:                 return;
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             _ => {
+// REWRITES-NEXT:                 break '{{__dispatch[0-9]+}};
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
@@ -825,13 +841,11 @@ int main(void) {
 // REWRITES-NEXT:     let mut empty_array: [i32; 3] = [0, 0, 0];
 // REWRITES-NEXT:     let mut qualified_array: [i32; 3] = [2, 3, 5];
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 61;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 3;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 67;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 71;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 79;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BInt<17, 1, 4> = bitint::BInt::<17, 1, 4>::from_decimal_str("-12345");
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BUint<17, 1, 4> = bitint::BUint::<17, 1, 4>::from_decimal_str("100000");
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 165;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 8589934591u64;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = std::ptr::null_mut();
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = true;
@@ -840,20 +854,19 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.to_i128() as i32;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.to_u128() as i32;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 4;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = (5 as i32) as u64;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = (90 as u8) as u64;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = (37 as u16) as u64;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = (83 as i32) as u64;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 7;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 11;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 13;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 11 + {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 1;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 2;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 3;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 4;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = ((({{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}}) as u64)
-// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = (({{_v[0-9]+}} + {{_v[0-9]+}} + (165 as i32) + (3 as i32)) as u64)
+// REWRITES-NEXT:         + 4
 // REWRITES-NEXT:         + {{_v[0-9]+}}
 // REWRITES-NEXT:         + {{_v[0-9]+}}
 // REWRITES-NEXT:         + ((unsafe { main_utf8_text[((0 as i64) as usize)] }) as u64)
@@ -866,13 +879,13 @@ int main(void) {
 // REWRITES-NEXT:         + ((({{_v[0-9]+}} == 8589934591u64) as i32) as u64)
 // REWRITES-NEXT:         + {{_v[0-9]+}}
 // REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         + (({{_v[0-9]+}} + {{_v[0-9]+}}) as u64)
+// REWRITES-NEXT:         + ({{_v[0-9]+}} as u64)
 // REWRITES-NEXT:         + {{_v[0-9]+}}
 // REWRITES-NEXT:         + {{_v[0-9]+}}
 // REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}) as i32;
+// REWRITES-NEXT:         + {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = c23_nodiscard_value();
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 23;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 29;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
@@ -880,7 +893,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 23
 // REWRITES-NEXT:         + {{_v[0-9]+}}
 // REWRITES-NEXT:         + {{_v[0-9]+}}
 // REWRITES-NEXT:         + {{_v[0-9]+}}
@@ -892,9 +905,9 @@ int main(void) {
 // REWRITES-NEXT:         + ((unsafe { c23_embedded[((1 as i64) as usize)] }) as i32)
 // REWRITES-NEXT:         + ((unsafe { c23_embedded[((2 as i64) as usize)] }) as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = std::ptr::null_mut();
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = std::ptr::null_mut() == {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == std::ptr::null_mut();
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}} as i32) + ({{_v[0-9]+}} as i32) + ({{_v[0-9]+}} as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32) + unsafe { c23_thread_value };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = c23_unnamed_parameter(89, 97);
@@ -910,8 +923,8 @@ int main(void) {
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 202311;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 202311;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}} == {{_v[0-9]+}}) as i32;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = 202311 == {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c23_never_flag)) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-NEXT:     if {{_v[0-9]+}} {

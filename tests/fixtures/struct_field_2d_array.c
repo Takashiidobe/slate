@@ -379,25 +379,25 @@ int main(void) {
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     i = 0;
 // REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 4;
-// REWRITES-NEXT:         if i >= {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i < 4;
+// REWRITES-NEXT:         if !{{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 97;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 97 + i;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i64 = 0;
 // REWRITES-NEXT:         unsafe {
-// REWRITES-NEXT:             (*{{arg[0-9]+}}).rows[((i as i64) as usize)][({{_v[0-9]+}} as usize)] = ({{_v[0-9]+}} + i) as i8;
+// REWRITES-NEXT:             (*{{arg[0-9]+}}).rows[((i as i64) as usize)][({{_v[0-9]+}} as usize)] = {{_v[0-9]+}} as i8;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 48;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 48 + i;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i64 = 1;
 // REWRITES-NEXT:         unsafe {
-// REWRITES-NEXT:             (*{{arg[0-9]+}}).rows[((i as i64) as usize)][({{_v[0-9]+}} as usize)] = ({{_v[0-9]+}} + i) as i8;
+// REWRITES-NEXT:             (*{{arg[0-9]+}}).rows[((i as i64) as usize)][({{_v[0-9]+}} as usize)] = {{_v[0-9]+}} as i8;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i64 = 2;
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:             (*{{arg[0-9]+}}).rows[((i as i64) as usize)][({{_v[0-9]+}} as usize)] = 0;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         i = i + 1;
+// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
@@ -419,35 +419,34 @@ int main(void) {
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     i = 0;
 // REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-NEXT:         if i >= {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i < 2;
+// REWRITES-NEXT:         if !{{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let mut j: i32 = 0;
 // REWRITES-NEXT:         j = 0;
 // REWRITES-NEXT:         loop {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:             if j >= {{_v[0-9]+}} {
+// REWRITES-NEXT:             let {{_v[0-9]+}}: bool = j < 3;
+// REWRITES-NEXT:             if !{{_v[0-9]+}} {
 // REWRITES-NEXT:                 break;
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             let mut k: i32 = 0;
 // REWRITES-NEXT:             k = 0;
 // REWRITES-NEXT:             loop {
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = 4;
-// REWRITES-NEXT:                 if k >= {{_v[0-9]+}} {
+// REWRITES-NEXT:                 let {{_v[0-9]+}}: bool = k < 4;
+// REWRITES-NEXT:                 if !{{_v[0-9]+}} {
 // REWRITES-NEXT:                     break;
 // REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = 100;
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = 10;
+// REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = j * 10;
 // REWRITES-NEXT:                 unsafe {
 // REWRITES-NEXT:                     (*{{arg[0-9]+}}).v[((i as i64) as usize)][((j as i64) as usize)]
-// REWRITES-NEXT:                         [((k as i64) as usize)] = i * {{_v[0-9]+}} + j * {{_v[0-9]+}} + k;
+// REWRITES-NEXT:                         [((k as i64) as usize)] = i * 100 + {{_v[0-9]+}} + k;
 // REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 k = k + 1;
+// REWRITES-NEXT:                 k += 1;
 // REWRITES-NEXT:             }
-// REWRITES-NEXT:             j = j + 1;
+// REWRITES-NEXT:             j += 1;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         i = i + 1;
+// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
@@ -459,29 +458,28 @@ int main(void) {
 // REWRITES-NEXT:         (unsafe { std::ptr::addr_of_mut!((*({{arg[0-9]+}} as *mut cube)).v[((1 as i64) as usize)]) })
 // REWRITES-NEXT:             as *mut [i32; 4];
 // REWRITES-NEXT:     plane = {{_v[0-9]+}};
-// REWRITES-NEXT:     total = 0;
 // REWRITES-NEXT:     let mut j: i32 = 0;
 // REWRITES-NEXT:     j = 0;
 // REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:         if j >= {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = j < 3;
+// REWRITES-NEXT:         if !{{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let mut k: i32 = 0;
 // REWRITES-NEXT:         k = 0;
 // REWRITES-NEXT:         loop {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 4;
-// REWRITES-NEXT:             if k >= {{_v[0-9]+}} {
+// REWRITES-NEXT:             let {{_v[0-9]+}}: bool = k < 4;
+// REWRITES-NEXT:             if !{{_v[0-9]+}} {
 // REWRITES-NEXT:                 break;
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             let {{_v[0-9]+}}: i64 = k as i64;
 // REWRITES-NEXT:             let {{_v[0-9]+}}: *mut [i32; 4] = plane;
 // REWRITES-NEXT:             let {{_v[0-9]+}}: *mut [i32; 4] = unsafe { {{_v[0-9]+}}.offset(j as isize) };
 // REWRITES-NEXT:             let {{_v[0-9]+}}: *mut [i32; 4] = unsafe { {{_v[0-9]+}}.add(0) };
-// REWRITES-NEXT:             total = total + unsafe { (*{{_v[0-9]+}})[({{_v[0-9]+}} as usize)] };
-// REWRITES-NEXT:             k = k + 1;
+// REWRITES-NEXT:             total += unsafe { (*{{_v[0-9]+}})[({{_v[0-9]+}} as usize)] };
+// REWRITES-NEXT:             k += 1;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         j = j + 1;
+// REWRITES-NEXT:         j += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return total;
 // REWRITES-NEXT: }
@@ -496,14 +494,14 @@ int main(void) {
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     i = 0;
 // REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 4;
-// REWRITES-NEXT:         if i >= {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i < 4;
+// REWRITES-NEXT:         if !{{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = b"%s\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = std::ptr::addr_of_mut!(t.rows[((i as i64) as usize)]) as *mut i8;
 // REWRITES-NEXT:         unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// REWRITES-NEXT:         i = i + 1;
+// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     fill_cube(unsafe { &mut (*std::ptr::addr_of_mut!(c)) });
 // REWRITES-NEXT:     unsafe {

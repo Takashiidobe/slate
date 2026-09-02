@@ -15,7 +15,7 @@ static int forward_text(const unsigned char *bytes, int len) {
 
 int main(void) {
   const unsigned char bytes[] = "abc";
-  int score = forward_text(bytes, 3);
+  int                 score   = forward_text(bytes, 3);
   printf("%d\n", score);
   return 0;
 }

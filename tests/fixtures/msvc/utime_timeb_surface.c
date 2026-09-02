@@ -39,10 +39,8 @@ _Static_assert(sizeof(struct __timeb32) == 12, "__timeb32 size");
 _Static_assert(_Alignof(struct __timeb32) == 4, "__timeb32 alignment");
 _Static_assert(offsetof(struct __timeb32, time) == 0, "__timeb32 time");
 _Static_assert(offsetof(struct __timeb32, millitm) == 4, "__timeb32 millitm");
-_Static_assert(offsetof(struct __timeb32, timezone) == 6,
-               "__timeb32 timezone");
-_Static_assert(offsetof(struct __timeb32, dstflag) == 8,
-               "__timeb32 dstflag");
+_Static_assert(offsetof(struct __timeb32, timezone) == 6, "__timeb32 timezone");
+_Static_assert(offsetof(struct __timeb32, dstflag) == 8, "__timeb32 dstflag");
 TYPE_IS(((struct __timeb32 *)0)->time, __time32_t);
 TYPE_IS(((struct __timeb32 *)0)->millitm, unsigned short);
 TYPE_IS(((struct __timeb32 *)0)->timezone, short);
@@ -54,8 +52,7 @@ _Static_assert(offsetof(struct __timeb64, time) == 0, "__timeb64 time");
 _Static_assert(offsetof(struct __timeb64, millitm) == 8, "__timeb64 millitm");
 _Static_assert(offsetof(struct __timeb64, timezone) == 10,
                "__timeb64 timezone");
-_Static_assert(offsetof(struct __timeb64, dstflag) == 12,
-               "__timeb64 dstflag");
+_Static_assert(offsetof(struct __timeb64, dstflag) == 12, "__timeb64 dstflag");
 TYPE_IS(((struct __timeb64 *)0)->time, __time64_t);
 TYPE_IS(((struct __timeb64 *)0)->millitm, unsigned short);
 TYPE_IS(((struct __timeb64 *)0)->timezone, short);

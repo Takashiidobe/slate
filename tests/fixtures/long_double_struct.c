@@ -392,7 +392,7 @@ int main(void) {
 // REWRITES-NEXT:             sum_box(unsafe { &(*std::ptr::addr_of_mut!(byval)) }),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     b.value = b.value * LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
+// REWRITES-NEXT:     b.value *= LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = b.value;
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), __slate_f80_to_i32({{_v[0-9]+}})) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

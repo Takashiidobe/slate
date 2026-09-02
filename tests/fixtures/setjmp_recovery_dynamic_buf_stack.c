@@ -7,8 +7,8 @@
 static jmp_buf *jb_stack;
 static int      jb_top = 0;
 
-#define TRY if (setjmp(jb_stack[jb_top++]) == 0)
-#define CATCH else
+#define TRY      if (setjmp(jb_stack[jb_top++]) == 0)
+#define CATCH    else
 #define THROW(v) longjmp(jb_stack[--jb_top], (v))
 
 static void inner(int fail) {
@@ -22,9 +22,7 @@ static void run_case(int id, int fail) {
     inner(fail);
     printf("case %d: no exception\n", id);
   }
-  CATCH {
-    printf("case %d: caught\n", id);
-  }
+  CATCH { printf("case %d: caught\n", id); }
 }
 
 int main(void) {
@@ -218,8 +216,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut [__slate_jmp_buf_tag; 1] = unsafe { jb_stack };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut [__slate_jmp_buf_tag; 1] = unsafe { {{_v[0-9]+}}.offset(({{_v[0-9]+}} as i64) as isize) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         inner(fail);
 // REWRITES-NEXT:         unsafe { printf(c"case %d: no exception\n".as_ptr(), id) };
@@ -230,9 +227,9 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 200;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc(({{_v[0-9]+}} * {{_v[0-9]+}}) as usize) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 200 * {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{_v[0-9]+}} as usize) };
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         jb_stack = {{_v[0-9]+}} as *mut [__slate_jmp_buf_tag; 1];
 // REWRITES-NEXT:     }

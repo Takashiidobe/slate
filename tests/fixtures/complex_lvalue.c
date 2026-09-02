@@ -114,9 +114,8 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn pick({{arg[0-9]+}}: &mut f64) -> f64 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = 5.0;
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         *({{arg[0-9]+}} as *mut f64) = (unsafe { *({{arg[0-9]+}} as *mut f64) }) + {{_v[0-9]+}};
+// REWRITES-NEXT:         *({{arg[0-9]+}} as *mut f64) = (unsafe { *({{arg[0-9]+}} as *mut f64) }) + 5.0;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return unsafe { *({{arg[0-9]+}} as *mut f64) };
 // REWRITES-NEXT: }

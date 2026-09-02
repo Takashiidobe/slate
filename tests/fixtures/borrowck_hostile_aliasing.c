@@ -17,11 +17,11 @@ static int *pair_lo(struct Pair *p) { return &p->lo; }
 static int *pair_hi(struct Pair *p) { return &p->hi; }
 
 static int alias_struct_fields(void) {
-  struct Pair pair = {1, 2};
-  int        *lo   = pair_lo(&pair);
-  int        *hi   = pair_hi(&pair);
-  *lo += *hi;
-  *hi += *lo;
+  struct Pair pair  = {1, 2};
+  int        *lo    = pair_lo(&pair);
+  int        *hi    = pair_hi(&pair);
+  *lo              += *hi;
+  *hi              += *lo;
   return pair.lo + pair.hi;
 }
 
@@ -47,7 +47,7 @@ static int circular_list(void) {
   int          sum = 0;
   for (int i = 0; i < 6; i++) {
     sum += cur->val;
-    cur = cur->next;
+    cur  = cur->next;
   }
   cur->prev->val += 10;
   return sum + a.val + b.val + c.val;
@@ -67,7 +67,7 @@ static int parent_pointer_tree(void) {
   root.left         = &left;
   root.right        = &right;
 
-  left.parent->val += left.val;
+  left.parent->val  += left.val;
   right.parent->val += right.val;
   return root.val + left.val + right.val;
 }
@@ -79,8 +79,9 @@ struct Buf {
 
 static int self_referential_struct(void) {
   struct Buf buf;
-  for (int i = 0; i < 8; i++) buf.data[i] = (char)('a' + i);
-  buf.cursor = &buf.data[3];
+  for (int i = 0; i < 8; i++)
+    buf.data[i] = (char)('a' + i);
+  buf.cursor   = &buf.data[3];
   *buf.cursor += 1;
   return buf.data[3] + buf.cursor[0] - 2 * 'a';
 }
@@ -110,7 +111,7 @@ static int global_alias_with_local(void) {
   int x = 7;
   capture_global(&x);
   *g_ptr += 1;
-  x += 1;
+  x      += 1;
   return x + *g_ptr;
 }
 
@@ -121,9 +122,9 @@ union Pun {
 
 static int type_punning(void) {
   union Pun u;
-  u.f = 1.0f;
-  int bits = u.i;
-  u.i += 1;
+  u.f       = 1.0f;
+  int bits  = u.i;
+  u.i      += 1;
   return (bits == u.i) ? -1 : (int)u.f;
 }
 
@@ -728,22 +729,20 @@ int main(void) {
 // REWRITES-NEXT:     b.prev = std::ptr::addr_of_mut!(a);
 // REWRITES-NEXT:     c.prev = std::ptr::addr_of_mut!(b);
 // REWRITES-NEXT:     cur = std::ptr::addr_of_mut!(a);
-// REWRITES-NEXT:     sum = 0;
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     i = 0;
 // REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 6;
-// REWRITES-NEXT:         if i >= {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i < 6;
+// REWRITES-NEXT:         if !{{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         sum = sum + unsafe { (*cur).val };
+// REWRITES-NEXT:         sum += unsafe { (*cur).val };
 // REWRITES-NEXT:         cur = unsafe { (*cur).next };
-// REWRITES-NEXT:         i = i + 1;
+// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 10;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut Node = unsafe { (*cur).prev };
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         (*{{_v[0-9]+}}).val = (unsafe { (*{{_v[0-9]+}}).val }) + {{_v[0-9]+}};
+// REWRITES-NEXT:         (*{{_v[0-9]+}}).val = (unsafe { (*{{_v[0-9]+}}).val }) + 10;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return sum + a.val + b.val + c.val;
 // REWRITES-NEXT: }
@@ -796,33 +795,32 @@ int main(void) {
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     i = 0;
 // REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 8;
-// REWRITES-NEXT:         if i >= {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i < 8;
+// REWRITES-NEXT:         if !{{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 97;
-// REWRITES-NEXT:         buf.data[((i as i64) as usize)] = ({{_v[0-9]+}} + i) as i8;
-// REWRITES-NEXT:         i = i + 1;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 97 + i;
+// REWRITES-NEXT:         buf.data[((i as i64) as usize)] = {{_v[0-9]+}} as i8;
+// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     buf.cursor = std::ptr::addr_of_mut!(buf.data[((3 as i64) as usize)]);
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = buf.cursor;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = ((unsafe { *{{_v[0-9]+}} }) as i32) + 1;
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         *{{_v[0-9]+}} = (((unsafe { *{{_v[0-9]+}} }) as i32) + {{_v[0-9]+}}) as i8;
+// REWRITES-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}} as i8;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = buf.data[((3 as i64) as usize)] as i32;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = buf.cursor;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 2;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 97;
-// REWRITES-NEXT:     return {{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32) - {{_v[0-9]+}} * {{_v[0-9]+}};
+// REWRITES-NEXT:     return {{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32) - 2 * {{_v[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn reverse_in_place({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: *mut i32) {
 // REWRITES-NEXT:     let mut lo: *mut i32 = {{arg[0-9]+}};
 // REWRITES-NEXT:     let mut hi: *mut i32 = {{arg[0-9]+}};
 // REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         if lo >= hi {
+// REWRITES-NEXT:         if !(lo < hi) {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { *lo };
@@ -847,14 +845,13 @@ int main(void) {
 // REWRITES-NEXT:         std::ptr::addr_of_mut!(values[((0 as i64) as usize)]),
 // REWRITES-NEXT:         std::ptr::addr_of_mut!(values[((4 as i64) as usize)]),
 // REWRITES-NEXT:     );
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 10000;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1000;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 100;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 10;
-// REWRITES-NEXT:     return values[((0 as i64) as usize)] * {{_v[0-9]+}}
-// REWRITES-NEXT:         + values[((1 as i64) as usize)] * {{_v[0-9]+}}
-// REWRITES-NEXT:         + values[((2 as i64) as usize)] * {{_v[0-9]+}}
-// REWRITES-NEXT:         + values[((3 as i64) as usize)] * {{_v[0-9]+}}
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = values[((1 as i64) as usize)] * 1000;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = values[((2 as i64) as usize)] * 100;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = values[((3 as i64) as usize)] * 10;
+// REWRITES-NEXT:     return values[((0 as i64) as usize)] * 10000
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
 // REWRITES-NEXT:         + values[((4 as i64) as usize)];
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -869,13 +866,11 @@ int main(void) {
 // REWRITES-NEXT:     let mut x: i32 = 0;
 // REWRITES-NEXT:     x = 7;
 // REWRITES-NEXT:     capture_global(std::ptr::addr_of_mut!(x));
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { g_ptr };
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         *{{_v[0-9]+}} = (unsafe { *{{_v[0-9]+}} }) + {{_v[0-9]+}};
+// REWRITES-NEXT:         *{{_v[0-9]+}} = (unsafe { *{{_v[0-9]+}} }) + 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:     x = x + {{_v[0-9]+}};
+// REWRITES-NEXT:     x += 1;
 // REWRITES-NEXT:     return x + unsafe { *unsafe { g_ptr } };
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -885,9 +880,8 @@ int main(void) {
 // REWRITES-NEXT:         u.f = 1.0;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { u.i };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         u.i = (unsafe { u.i }) + {{_v[0-9]+}};
+// REWRITES-NEXT:         u.i = (unsafe { u.i }) + 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} == unsafe { u.i } {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = -1;

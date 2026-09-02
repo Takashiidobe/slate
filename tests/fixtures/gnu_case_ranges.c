@@ -217,35 +217,20 @@ int main(void) {
 // REWRITES-NEXT: fn classify({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     let mut value: i32 = {{arg[0-9]+}};
 // REWRITES-NEXT:     let mut result: i32 = 0;
-// REWRITES-NEXT:     result = 0;
-// REWRITES-NEXT:     '{{__switch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:         '{{__switch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:             '{{__switch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                 '{{__switch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                     match value {
-// REWRITES-NEXT:                         1..=4 => {
-// REWRITES-NEXT:                             break '{{__switch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                         }
-// REWRITES-NEXT:                         5..=8 => {
-// REWRITES-NEXT:                             break '{{__switch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                         }
-// REWRITES-NEXT:                         10..=12 => {
-// REWRITES-NEXT:                             break '{{__switch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                         }
-// REWRITES-NEXT:                         _ => {}
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     result = 90;
-// REWRITES-NEXT:                     break '{{__switch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = 40;
-// REWRITES-NEXT:                 result = result + {{_v[0-9]+}};
-// REWRITES-NEXT:                 break '{{__switch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 10;
-// REWRITES-NEXT:             result = result + {{_v[0-9]+}};
+// REWRITES-NEXT:     match value {
+// REWRITES-NEXT:         1..=4 => {
+// REWRITES-NEXT:             result += 10;
+// REWRITES-NEXT:             result += 20;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 20;
-// REWRITES-NEXT:         result = result + {{_v[0-9]+}};
+// REWRITES-NEXT:         5..=8 => {
+// REWRITES-NEXT:             result += 20;
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:         10..=12 => {
+// REWRITES-NEXT:             result += 40;
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:         _ => {
+// REWRITES-NEXT:             result = 90;
+// REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return result;
 // REWRITES-NEXT: }
@@ -254,14 +239,15 @@ int main(void) {
 // REWRITES-NEXT:     let mut value: i32 = {{arg[0-9]+}};
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-NEXT:     match value {
-// REWRITES-NEXT:         -2..=2 => {}
+// REWRITES-NEXT:         -2..=2 => {
+// REWRITES-NEXT:             __retval = 7;
+// REWRITES-NEXT:             return __retval;
+// REWRITES-NEXT:         }
 // REWRITES-NEXT:         _ => {
 // REWRITES-NEXT:             __retval = 9;
 // REWRITES-NEXT:             return __retval;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     __retval = 7;
-// REWRITES-NEXT:     return __retval;
 // REWRITES-NEXT:     return __retval;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

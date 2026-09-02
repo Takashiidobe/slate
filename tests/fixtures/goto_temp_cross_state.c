@@ -1,49 +1,49 @@
 #include <stdio.h>
 
 typedef struct {
-    int pad;
-    int x;
-    int y;
+  int pad;
+  int x;
+  int y;
 } inner_t;
 
 typedef struct {
-    int lead;
-    inner_t in;
+  int     lead;
+  inner_t in;
 } outer_t;
 
 typedef struct {
-    outer_t *dict;
+  outer_t *dict;
 } state_t;
 
 int compute(const state_t *const ms, int flag) {
-    const outer_t *const o = ms->dict;
-    const inner_t *const q = &o->in;
-    int acc = q->x;
-    if (flag) {
-        goto second;
-    }
-    acc += 100;
+  const outer_t *const o   = ms->dict;
+  const inner_t *const q   = &o->in;
+  int                  acc = q->x;
+  if (flag) {
+    goto second;
+  }
+  acc += 100;
 second:
-    acc += q->y;
-    return acc;
+  acc += q->y;
+  return acc;
 }
 
 int main(void) {
-    inner_t inr;
-    inr.pad = 0;
-    inr.x = 3;
-    inr.y = 4;
-    outer_t ou;
-    ou.lead = 0;
-    ou.in = inr;
-    state_t s;
-    s.dict = &ou;
-    // @lowering-begin
-    // @rewrite-begin
-    printf("%d %d\n", compute(&s, 0), compute(&s, 1));
-    // @rewrite-end
-    // @lowering-end
-    return 0;
+  inner_t inr;
+  inr.pad = 0;
+  inr.x   = 3;
+  inr.y   = 4;
+  outer_t ou;
+  ou.lead = 0;
+  ou.in   = inr;
+  state_t s;
+  s.dict = &ou;
+  // @lowering-begin
+  // @rewrite-begin
+  printf("%d %d\n", compute(&s, 0), compute(&s, 1));
+  // @rewrite-end
+  // @lowering-end
+  return 0;
 }
 
 // SLATE-FILECHECK-BEGIN lowering
@@ -57,10 +57,10 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: unsafe {
-// REWRITES-DAG: printf(
-// REWRITES-DAG: c"%d %d\n".as_ptr(),
-// REWRITES-DAG: unsafe { compute(std::ptr::addr_of_mut!(s), 0) },
-// REWRITES-DAG: unsafe { compute(std::ptr::addr_of_mut!(s), 1) },
-// REWRITES-DAG: )
+// REWRITES-DAG:     printf(
+// REWRITES-DAG:         c"%d %d\n".as_ptr(),
+// REWRITES-DAG:         unsafe { compute(std::ptr::addr_of_mut!(s), 0) },
+// REWRITES-DAG:         unsafe { compute(std::ptr::addr_of_mut!(s), 1) },
+// REWRITES-DAG:     )
 // REWRITES-DAG: };
 // SLATE-FILECHECK-END rewrites

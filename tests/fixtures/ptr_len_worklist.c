@@ -6,12 +6,10 @@ static void fill_values(int *values, int len) {
     values[i] = i * 3;
 }
 
-static void forward_fill(int *values, int len) {
-  fill_values(values, len);
-}
+static void forward_fill(int *values, int len) { fill_values(values, len); }
 
 int main(void) {
-  int len = 5;
+  int  len    = 5;
   int *values = malloc(len * sizeof(int));
   forward_fill(values, len);
   printf("%d %d\n", values[1], values[4]);
@@ -122,20 +120,13 @@ int main(void) {
 // REWRITES-NEXT: fn fill_values({{arg[0-9]+}}: &mut [i32]) {
 // REWRITES-NEXT:     let mut values: *mut i32 = {{arg[0-9]+}}.as_mut_ptr() as *mut i32;
 // REWRITES-NEXT:     let mut len: i32 = {{arg[0-9]+}}.len() as i32;
-// REWRITES-NEXT:     let mut i: i32 = 0;
-// REWRITES-NEXT:     i = 0;
-// REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         if i >= len {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = i * {{_v[0-9]+}};
+// REWRITES-NEXT:     for i in 0..len {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = i * 3;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = values;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:             *{{_v[0-9]+}} = {{_v[0-9]+}};
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         i = i + 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
@@ -147,8 +138,8 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 5;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 4;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc((({{_v[0-9]+}} as u64) * {{_v[0-9]+}}) as usize) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = ({{_v[0-9]+}} as u64) * 4;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{_v[0-9]+}} as usize) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{_v[0-9]+}} as *mut i32;
 // REWRITES-NEXT:     forward_fill(unsafe { std::slice::from_raw_parts_mut({{_v[0-9]+}} as *mut i32, {{_v[0-9]+}} as usize) });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;

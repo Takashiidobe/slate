@@ -158,16 +158,13 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn memalignment({{arg[0-9]+}}: *mut core::ffi::c_void) -> u64 {
-// REWRITES-NEXT:     let mut v: u64 = 0;
+// REWRITES-NEXT:     let mut v: u64 = {{arg[0-9]+}} as u64;
 // REWRITES-NEXT:     let mut align: u64 = 0;
-// REWRITES-NEXT:     v = {{arg[0-9]+}} as u64;
-// REWRITES-NEXT:     align = 0;
 // REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = 0;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = if v != {{_v[0-9]+}} {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: u64 = 1;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = v != 0;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
 // REWRITES-NEXT:             let {{_v[0-9]+}}: u64 = 0;
-// REWRITES-NEXT:             let {{_v[0-9]+}}: bool = v & {{_v[0-9]+}} == {{_v[0-9]+}};
+// REWRITES-NEXT:             let {{_v[0-9]+}}: bool = v & 1 == {{_v[0-9]+}};
 // REWRITES-NEXT:             {{_v[0-9]+}}
 // REWRITES-NEXT:         } else {
 // REWRITES-NEXT:             let {{_v[0-9]+}}: bool = false;
@@ -177,11 +174,11 @@ int main(void) {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:         v = v >> {{_v[0-9]+}};
-// REWRITES-NEXT:         align = align + 1;
+// REWRITES-NEXT:         v >>= {{_v[0-9]+}};
+// REWRITES-NEXT:         align += 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = if v == {{_v[0-9]+}} {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = v == 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = if {{_v[0-9]+}} {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = 0;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {
@@ -218,12 +215,9 @@ int main(void) {
 // REWRITES-NEXT:         unsafe { aligned_alloc((64 as u64) as usize, (64 as u64) as usize) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = memalignment({{_v[0-9]+}} as *mut core::ffi::c_void);
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
-// REWRITES-NEXT:             ({{_v[0-9]+}} % (64 as u64) == (0 as u64)) as i32,
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} % 64 == {{_v[0-9]+}};
+// REWRITES-NEXT:     unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}} as i32) };
 // REWRITES-NEXT:     unsafe { free({{_v[0-9]+}} as *mut core::ffi::c_void) };
 // REWRITES-NEXT:     unsafe { printf(c"ok\n".as_ptr()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

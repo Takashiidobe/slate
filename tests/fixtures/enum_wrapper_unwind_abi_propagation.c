@@ -328,8 +328,7 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn panicky_callback({{arg[0-9]+}}: i32) {
 // REWRITES-NEXT:     let mut x: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = x == {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = x == 2;
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:             longjmp(
@@ -345,8 +344,7 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn risky({{arg[0-9]+}}: i32) -> u32 {
 // REWRITES-NEXT:     let mut x: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = x == {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = x == 3;
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:             longjmp(
@@ -382,25 +380,23 @@ int main(void) {
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     '__loop0: loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 5;
-// REWRITES-NEXT:         if i >= {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i < 5;
+// REWRITES-NEXT:         if !{{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         '__continue0: {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag =
-// REWRITES-NEXT:                 std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };
-// REWRITES-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// REWRITES-NEXT:             if {{_v[0-9]+}} {
-// REWRITES-NEXT:                 unsafe {
-// REWRITES-NEXT:                     failures = (unsafe { failures }) + 1;
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 unsafe { printf(c"recovered risky %d\n".as_ptr(), i) };
-// REWRITES-NEXT:                 break '__continue0;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag =
+// REWRITES-NEXT:             std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// REWRITES-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-NEXT:             unsafe {
+// REWRITES-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-NEXT:             }
+// REWRITES-NEXT:             unsafe { printf(c"recovered risky %d\n".as_ptr(), i) };
+// REWRITES-NEXT:         } else {
 // REWRITES-NEXT:             unsafe { d.run.unwrap()(i) };
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         i = i + 1;
+// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     d.run = unsafe {
 // REWRITES-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32) -> u32>>(
@@ -409,25 +405,23 @@ int main(void) {
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let mut i2: i32 = 0;
 // REWRITES-NEXT:     '__loop1: loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 5;
-// REWRITES-NEXT:         if i2 >= {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i2 < 5;
+// REWRITES-NEXT:         if !{{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         '__continue1: {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag =
-// REWRITES-NEXT:                 std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };
-// REWRITES-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// REWRITES-NEXT:             if {{_v[0-9]+}} {
-// REWRITES-NEXT:                 unsafe {
-// REWRITES-NEXT:                     failures = (unsafe { failures }) + 1;
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 unsafe { printf(c"recovered content_like %d\n".as_ptr(), i2) };
-// REWRITES-NEXT:                 break '__continue1;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag =
+// REWRITES-NEXT:             std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// REWRITES-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-NEXT:             unsafe {
+// REWRITES-NEXT:                 failures = (unsafe { failures }) + 1;
 // REWRITES-NEXT:             }
+// REWRITES-NEXT:             unsafe { printf(c"recovered content_like %d\n".as_ptr(), i2) };
+// REWRITES-NEXT:         } else {
 // REWRITES-NEXT:             unsafe { d.run.unwrap()(i2) };
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         i2 = i2 + 1;
+// REWRITES-NEXT:         i2 += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { printf(c"failures=%d\n".as_ptr(), unsafe { failures }) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

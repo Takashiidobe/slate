@@ -104,18 +104,17 @@ int main(void) {
 // REWRITES-NEXT: unsafe fn sum4({{arg[0-9]+}}: *mut i32) -> i32 {
 // REWRITES-NEXT:     let mut arr: *mut i32 = {{arg[0-9]+}};
 // REWRITES-NEXT:     let mut s: i32 = 0;
-// REWRITES-NEXT:     s = 0;
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     i = 0;
 // REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 4;
-// REWRITES-NEXT:         if i >= {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i < 4;
+// REWRITES-NEXT:         if !{{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = arr;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
-// REWRITES-NEXT:         s = s + unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT:         i = i + 1;
+// REWRITES-NEXT:         s += unsafe { *{{_v[0-9]+}} };
+// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return s;
 // REWRITES-NEXT: }

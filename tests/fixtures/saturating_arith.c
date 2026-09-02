@@ -19,15 +19,15 @@ int main(void) {
   unsigned sub_u = __builtin_elementwise_sub_sat(5u, 10u);
   printf("%u\n", sub_u);
 
-  U128 u128a = (U128)0 - 1;
+  U128 u128a    = (U128)0 - 1;
   U128 add_u128 = __builtin_elementwise_add_sat(u128a, (U128)5);
   printf("%d\n", add_u128 == (U128)0 - 1);
 
-  S200 s200a = -1;
+  S200 s200a    = -1;
   S200 add_s200 = __builtin_elementwise_add_sat(s200a, (S200)5);
   printf("%d\n", (int)add_s200);
 
-  U200 u200a = 3;
+  U200 u200a    = 3;
   U200 sub_u200 = __builtin_elementwise_sub_sat(u200a, (U200)10);
   printf("%d\n", sub_u200 == 0);
 
@@ -146,11 +146,12 @@ int main(void) {
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), 5 as i32) };
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), (-32768 as i16) as i32) };
 // REWRITES-NEXT:     unsafe { printf(c"%u\n".as_ptr(), 0 as u32) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u128 = 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u128 = 1;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u128 = {{_v[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u128 = 0 - {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u128 = {{_v[0-9]+}}.saturating_add(5 as u128);
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), ({{_v[0-9]+}} == (0 as u128) - (1 as u128)) as i32) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u128 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0 - {{_v[0-9]+}};
+// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{_v[0-9]+}} as i32) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BInt<200, 4, 32> = bitint::BInt::<200, 4, 32>::from_decimal_str("-1");
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BInt<200, 4, 32> = bitint::BInt::<200, 4, 32>::from_decimal_str("5");
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BInt<200, 4, 32> = {{_v[0-9]+}}.saturating_add({{_v[0-9]+}});

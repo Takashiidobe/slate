@@ -164,7 +164,6 @@ int main(void) {
 // REWRITES-NEXT:     let mut f: *mut libc::FILE = std::ptr::null_mut();
 // REWRITES-NEXT:     let mut g: *mut libc::FILE = std::ptr::null_mut();
 // REWRITES-NEXT:     let mut buf: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
-// REWRITES-NEXT:     __retval = 0;
 // REWRITES-NEXT:     unsafe { remove(c"slate_stdio_fread_size_one.tmp".as_ptr()) };
 // REWRITES-NEXT:     f = unsafe { fopen(c"slate_stdio_fread_size_one.tmp".as_ptr(), c"w".as_ptr()) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = f != std::ptr::null_mut();

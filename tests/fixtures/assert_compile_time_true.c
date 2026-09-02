@@ -97,8 +97,7 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     unsafe { printf(c"before\n".as_ptr()) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 5;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 5;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = 5 == {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = true;
 // REWRITES-NEXT:         {{_v[0-9]+}}

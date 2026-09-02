@@ -166,11 +166,11 @@ static void check_math_functions(void) {
  * variants, and the classification family -- with volatile operands so
  * they can't constant-fold away and skip the real runtime path. */
 static void check_remaining_math_functions(void) {
-  volatile long double ten = 10.0L;
+  volatile long double ten   = 10.0L;
   volatile long double three = 3.0L;
 
   long double ipart = 0.0L;
-  long double frac = modfl(ten / three, &ipart);
+  long double frac  = modfl(ten / three, &ipart);
   print_ld("modf_ipart", ipart);
   print_ld("modf_frac", frac);
 
@@ -188,9 +188,8 @@ static void check_remaining_math_functions(void) {
   print_ld("rint", rintl(ten / three));
   print_ld("nearbyint", nearbyintl(ten / three));
 
-  printf("lrint=%ld llrint=%lld lround=%ld llround=%lld\n",
-         lrintl(ten / three), llrintl(ten / three), lroundl(ten / three),
-         llroundl(ten / three));
+  printf("lrint=%ld llrint=%lld lround=%ld llround=%lld\n", lrintl(ten / three),
+         llrintl(ten / three), lroundl(ten / three), llroundl(ten / three));
 
   printf("ilogb=%d\n", ilogbl(ten));
   print_ld("logb", logbl(ten));
@@ -218,7 +217,7 @@ static void check_remaining_math_functions(void) {
 
   long double ten_plain = ten;
   long double canon     = 0.0L;
-  int canon_r           = canonicalizel(&canon, &ten_plain);
+  int         canon_r   = canonicalizel(&canon, &ten_plain);
   print_ld("canonicalize", canon);
   printf("canonicalize_r=%d\n", canon_r);
 
@@ -1753,8 +1752,7 @@ int main(void) {
 // REWRITES-NEXT:     *b129 = {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BInt<129, 3, 24> = *b129;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.to_i128() as i32;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 123;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 123;
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }

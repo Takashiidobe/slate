@@ -83,9 +83,8 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let mut c: i8 = 0;
+// REWRITES-NEXT:     let mut c: i8 = 65;
 // REWRITES-NEXT:     (unsafe { setlocale(6 as i32, c"C".as_ptr()) }) as *mut i8;
-// REWRITES-NEXT:     c = 65;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { isalpha(c as i32) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-NEXT:     if {{_v[0-9]+}} {

@@ -29,5 +29,5 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut i32 = src as *mut i32;
 // REWRITES-DAG: unsafe { {{_v[0-9]+}}.add(i as usize) };
-// REWRITES-DAG: total = total + unsafe { __arg0_view[(i as usize)] };
+// REWRITES-DAG: total += unsafe { __arg0_view[(i as usize)] };
 // SLATE-FILECHECK-END rewrites

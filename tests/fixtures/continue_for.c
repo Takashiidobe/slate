@@ -122,22 +122,19 @@ int main(void) {
 // REWRITES-NEXT: fn sum_odds({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     let mut n: i32 = {{arg[0-9]+}};
 // REWRITES-NEXT:     let mut total: i32 = 0;
-// REWRITES-NEXT:     total = 0;
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     i = 0;
 // REWRITES-NEXT:     '__loop0: loop {
-// REWRITES-NEXT:         if i > n {
+// REWRITES-NEXT:         if !(i <= n) {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         '__continue0: {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:             if i % {{_v[0-9]+}} == {{_v[0-9]+}} {
-// REWRITES-NEXT:                 break '__continue0;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             total = total + i;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i % 2 == {{_v[0-9]+}};
+// REWRITES-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-NEXT:         } else {
+// REWRITES-NEXT:             total += i;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         i = i + 1;
+// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return total;
 // REWRITES-NEXT: }

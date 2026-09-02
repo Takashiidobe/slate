@@ -2,7 +2,9 @@
 
 __attribute__((cold)) static int cold_path(int x) { return x * 2; }
 
-__attribute__((always_inline)) static int always_inlined(int x) { return x + 1; }
+__attribute__((always_inline)) static int always_inlined(int x) {
+  return x + 1;
+}
 
 __attribute__((noinline)) static int never_inlined(int x) { return x - 1; }
 
@@ -88,20 +90,17 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[cold]
 // REWRITES-NEXT: fn cold_path({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-NEXT:     return {{arg[0-9]+}} * {{_v[0-9]+}};
+// REWRITES-NEXT:     return {{arg[0-9]+}} * 2;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[inline(always)]
 // REWRITES-NEXT: fn always_inlined({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:     return {{arg[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-NEXT:     return {{arg[0-9]+}} + 1;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[inline(never)]
 // REWRITES-NEXT: fn never_inlined({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:     return {{arg[0-9]+}} - {{_v[0-9]+}};
+// REWRITES-NEXT:     return {{arg[0-9]+}} - 1;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

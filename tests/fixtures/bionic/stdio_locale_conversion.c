@@ -22,7 +22,7 @@ int bionic_multibyte_roundtrip(const char *input, char *output) {
 }
 
 int bionic_locale_scope(void) {
-  locale_t updated = newlocale(LC_ALL_MASK, "C", (locale_t)0);
+  locale_t updated  = newlocale(LC_ALL_MASK, "C", (locale_t)0);
   locale_t previous = uselocale(updated);
   int      is_alpha = iswctype(L'a', wctype("alpha"));
   freelocale(previous);
@@ -421,8 +421,8 @@ int main(void) { return 0; }
 // REWRITES-BIONIC-AARCH64-NEXT:     let mut pos: *mut i64 = {{arg[0-9]+}};
 // REWRITES-BIONIC-AARCH64-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { fgetpos(stream as *mut libc::FILE, pos as *mut i64) };
-// REWRITES-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-BIONIC-AARCH64-NEXT:     if {{_v[0-9]+}} != {{_v[0-9]+}} {
+// REWRITES-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// REWRITES-BIONIC-AARCH64-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-BIONIC-AARCH64-NEXT:         __retval = -1;
 // REWRITES-BIONIC-AARCH64-NEXT:         return __retval;
 // REWRITES-BIONIC-AARCH64-NEXT:     }
@@ -550,8 +550,8 @@ int main(void) { return 0; }
 // REWRITES-BIONIC-X86_64-NEXT:     let mut pos: *mut i64 = {{arg[0-9]+}};
 // REWRITES-BIONIC-X86_64-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { fgetpos(stream as *mut libc::FILE, pos as *mut i64) };
-// REWRITES-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-BIONIC-X86_64-NEXT:     if {{_v[0-9]+}} != {{_v[0-9]+}} {
+// REWRITES-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// REWRITES-BIONIC-X86_64-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-BIONIC-X86_64-NEXT:         __retval = -1;
 // REWRITES-BIONIC-X86_64-NEXT:         return __retval;
 // REWRITES-BIONIC-X86_64-NEXT:     }

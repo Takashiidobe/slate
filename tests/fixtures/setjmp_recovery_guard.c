@@ -253,23 +253,21 @@ int main(void) {
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     i = 0;
 // REWRITES-NEXT:     '__loop0: loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 4;
-// REWRITES-NEXT:         if i >= {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i < 4;
+// REWRITES-NEXT:         if !{{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         '__continue0: {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag =
-// REWRITES-NEXT:                 std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };
-// REWRITES-NEXT:             let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// REWRITES-NEXT:             if {{_v[0-9]+}} {
-// REWRITES-NEXT:                 record_failure(b"loop\0".as_ptr() as *mut i8);
-// REWRITES-NEXT:                 break '__continue0;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-NEXT:             run_case(i, (i == {{_v[0-9]+}}) as i32);
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag =
+// REWRITES-NEXT:             std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// REWRITES-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-NEXT:             record_failure(b"loop\0".as_ptr() as *mut i8);
+// REWRITES-NEXT:         } else {
+// REWRITES-NEXT:             let {{_v[0-9]+}}: bool = i == 2;
+// REWRITES-NEXT:             run_case(i, {{_v[0-9]+}} as i32);
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         i = i + 1;
+// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { printf(c"failures: %d\n".as_ptr(), unsafe { failures }) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

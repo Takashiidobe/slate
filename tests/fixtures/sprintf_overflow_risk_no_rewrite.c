@@ -11,11 +11,11 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: unsafe {
-// REWRITES-DAG: sprintf(
-// REWRITES-DAG: buf.as_mut_ptr() as *mut core::ffi::c_char,
-// REWRITES-DAG: c"%d".as_ptr(),
-// REWRITES-DAG: 7 as i32,
-// REWRITES-DAG: )
+// REWRITES-DAG:     sprintf(
+// REWRITES-DAG:         buf.as_mut_ptr() as *mut core::ffi::c_char,
+// REWRITES-DAG:         c"%d".as_ptr(),
+// REWRITES-DAG:         7 as i32,
+// REWRITES-DAG:     )
 // REWRITES-DAG: };
 // REWRITES-DAG: unsafe { puts(buf.as_mut_ptr() as *const core::ffi::c_char) };
 // SLATE-FILECHECK-END rewrites

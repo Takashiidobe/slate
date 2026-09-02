@@ -4,9 +4,9 @@
 int main(void) {
   volatile double x = 3.0;
   volatile double y = 7.0;
-  double before;
-  double contended;
-  double after;
+  double          before;
+  double          contended;
+  double          after;
 
   before = x + y;
 

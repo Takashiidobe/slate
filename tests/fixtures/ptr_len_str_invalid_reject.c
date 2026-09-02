@@ -11,7 +11,7 @@ static int first_byte(const unsigned char *bytes, int len) {
 
 int main(void) {
   const unsigned char bytes[] = {0xc3, 0xa9, 0};
-  int value = first_byte(bytes, 1);
+  int                 value   = first_byte(bytes, 1);
   printf("%d\n", value);
   return 0;
 }

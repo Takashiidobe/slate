@@ -434,21 +434,19 @@ int main(void) {
 // REWRITES-NEXT:     let mut src: ld_union = unsafe { std::mem::zeroed::<ld_union>() };
 // REWRITES-NEXT:     let mut dst: ld_union = unsafe { std::mem::zeroed::<ld_union>() };
 // REWRITES-NEXT:     let mut i: i32 = 0;
-// REWRITES-NEXT:     __retval = 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(src) as *mut core::ffi::c_void;
 // REWRITES-NEXT:     unsafe { std::ptr::write_bytes({{_v[0-9]+}} as *mut u8, (0 as i32) as u8, (16 as u64) as usize) };
-// REWRITES-NEXT:     i = 0;
 // REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 10;
-// REWRITES-NEXT:         if i >= {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i < 10;
+// REWRITES-NEXT:         if !{{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 17;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 3;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = i * 17 + {{_v[0-9]+}};
 // REWRITES-NEXT:         unsafe {
-// REWRITES-NEXT:             src.bytes[((i as i64) as usize)] = (i * {{_v[0-9]+}} + {{_v[0-9]+}}) as u8;
+// REWRITES-NEXT:             src.bytes[((i as i64) as usize)] = {{_v[0-9]+}} as u8;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         i = i + 1;
+// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(dst) as *mut core::ffi::c_void;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(src) as *mut core::ffi::c_void;
@@ -457,8 +455,8 @@ int main(void) {
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     i = 0;
 // REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 10;
-// REWRITES-NEXT:         if i >= {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i < 10;
+// REWRITES-NEXT:         if !{{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ((unsafe { dst.bytes[((i as i64) as usize)] }) as i32)
@@ -467,7 +465,7 @@ int main(void) {
 // REWRITES-NEXT:             __retval = 1;
 // REWRITES-NEXT:             std::process::exit(__retval as i32);
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         i = i + 1;
+// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { puts(c"ok".as_ptr()) };
 // REWRITES-NEXT:     __retval = 0;

@@ -4,19 +4,21 @@
 static int add_noopt(int a, int b) { return a + b; }
 #pragma clang optimize on
 
-#pragma clang attribute push(__attribute__((visibility("hidden"))), apply_to = function)
-int hidden_fn(void) { return 7; }
+#pragma clang attribute push(__attribute__((visibility("hidden"))),            \
+                             apply_to = function)
+int                     hidden_fn(void) { return 7; }
 #pragma clang attribute pop
 
 static int loop_sum(void) {
   int s = 0;
 #pragma unroll(4)
 #pragma clang loop vectorize(enable) interleave(enable)
-  for (int i = 0; i < 8; i++) s += i;
+  for (int i = 0; i < 8; i++)
+    s += i;
   return s;
 }
 
-double fma_like(double a, double b, double c) {
+double           fma_like(double a, double b, double c) {
 #pragma clang fp contract(on)
   return a * b + c;
 }
@@ -142,16 +144,15 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn loop_sum() -> i32 {
 // REWRITES-NEXT:     let mut s: i32 = 0;
-// REWRITES-NEXT:     s = 0;
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     i = 0;
 // REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 8;
-// REWRITES-NEXT:         if i >= {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i < 8;
+// REWRITES-NEXT:         if !{{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         s = s + i;
-// REWRITES-NEXT:         i = i + 1;
+// REWRITES-NEXT:         s += i;
+// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return s;
 // REWRITES-NEXT: }

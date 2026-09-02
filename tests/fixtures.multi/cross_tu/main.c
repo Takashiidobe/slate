@@ -18,7 +18,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn main() {
-// REWRITES-DAG: unsafe { printf(c"%d %d\n".as_ptr(), square(6), cube(4)) };
-// REWRITES-DAG: std::process::exit(0 as i32);
+// REWRITES-DAG:     unsafe { printf(c"%d %d\n".as_ptr(), square(6), cube(4)) };
+// REWRITES-DAG:     std::process::exit(0 as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

@@ -29,21 +29,21 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: let {{_v[0-9]+}}: i32;
 // LOWERING-DAG: unsafe {
-// LOWERING-DAG: core::arch::asm!("add {0:e}, 7", inlateout(reg) {{arg[0-9]+}} => {{_v[0-9]+}});
+// LOWERING-DAG:     core::arch::asm!("add {0:e}, 7", inlateout(reg) {{arg[0-9]+}} => {{_v[0-9]+}});
 // LOWERING-DAG: }
 // LOWERING-DAG: let {{_v[0-9]+}}: i32;
 // LOWERING-DAG: unsafe {
-// LOWERING-DAG: core::arch::asm!("subl $2, {0:e}", inlateout(reg) {{arg[0-9]+}} => {{_v[0-9]+}}, options(att_syntax));
+// LOWERING-DAG:     core::arch::asm!("subl $2, {0:e}", inlateout(reg) {{arg[0-9]+}} => {{_v[0-9]+}}, options(att_syntax));
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: let {{_v[0-9]+}}: i32;
 // REWRITES-DAG: unsafe {
-// REWRITES-DAG: core::arch::asm!("add {0:e}, 7", inlateout(reg) {{arg[0-9]+}} => {{_v[0-9]+}});
+// REWRITES-DAG:     core::arch::asm!("add {0:e}, 7", inlateout(reg) {{arg[0-9]+}} => {{_v[0-9]+}});
 // REWRITES-DAG: }
 // REWRITES-DAG: let {{_v[0-9]+}}: i32;
 // REWRITES-DAG: unsafe {
-// REWRITES-DAG: core::arch::asm!("subl $2, {0:e}", inlateout(reg) {{arg[0-9]+}} => {{_v[0-9]+}}, options(att_syntax));
+// REWRITES-DAG:     core::arch::asm!("subl $2, {0:e}", inlateout(reg) {{arg[0-9]+}} => {{_v[0-9]+}}, options(att_syntax));
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

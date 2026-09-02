@@ -2,7 +2,7 @@
 
 static int check_target(const char *ptr, const char *end, int *tokPtr) {
   int upper = 0;
-  *tokPtr = 7;
+  *tokPtr   = 7;
   if (end - ptr != 3)
     return 1;
   switch (ptr[0]) {
@@ -20,9 +20,9 @@ static int check_target(const char *ptr, const char *end, int *tokPtr) {
 }
 
 int main(void) {
-  int tok = 0;
-  const char *s = "xyz";
-  int r = check_target(s, s + 3, &tok);
+  int         tok = 0;
+  const char *s   = "xyz";
+  int         r   = check_target(s, s + 3, &tok);
   printf("%d %d\n", r, tok);
   return 0;
 }
@@ -190,28 +190,22 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{__slate_alloca_frame[0-9]+}}.3;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{__slate_alloca_frame[0-9]+}}.4;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { {{_v[0-9]+}}.offset_from({{_v[0-9]+}}) as i64 };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     if {{_v[0-9]+}} != {{_v[0-9]+}} {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 3;
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         {{__slate_alloca_frame[0-9]+}}.1 = 1;
 // REWRITES-NEXT:         return {{__slate_alloca_frame[0-9]+}}.1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{__slate_alloca_frame[0-9]+}}.4;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
-// REWRITES-NEXT:     '{{__switch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:         '{{__switch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:             match (unsafe { *{{_v[0-9]+}} }) as i32 {
-// REWRITES-NEXT:                 120 => {
-// REWRITES-NEXT:                     break '{{__switch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 88 => {
-// REWRITES-NEXT:                     break '{{__switch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 _ => {}
-// REWRITES-NEXT:             }
+// REWRITES-NEXT:     match (unsafe { *{{_v[0-9]+}} }) as i32 {
+// REWRITES-NEXT:         120 => {}
+// REWRITES-NEXT:         88 => {
+// REWRITES-NEXT:             {{__slate_alloca_frame[0-9]+}}.0 = 1;
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:         _ => {
 // REWRITES-NEXT:             {{__slate_alloca_frame[0-9]+}}.1 = 1;
 // REWRITES-NEXT:             return {{__slate_alloca_frame[0-9]+}}.1;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         {{__slate_alloca_frame[0-9]+}}.0 = 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{__slate_alloca_frame[0-9]+}}.0 != 0;
 // REWRITES-NEXT:     if {{_v[0-9]+}} {

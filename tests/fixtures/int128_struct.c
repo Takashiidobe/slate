@@ -138,10 +138,8 @@ int main(void) {
 // REWRITES-NEXT:     w.tag = 7;
 // REWRITES-NEXT:     w.value = -1234567890123456789i128;
 // REWRITES-NEXT:     w.uvalue = 12345678901234567890u128;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i128 = 1;
-// REWRITES-NEXT:     w.value = w.value + {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u128 = 2;
-// REWRITES-NEXT:     w.uvalue = w.uvalue * {{_v[0-9]+}};
+// REWRITES-NEXT:     w.value += 1;
+// REWRITES-NEXT:     w.uvalue *= 2;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = w.tag;
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{_v[0-9]+}}) };
 // REWRITES-NEXT:     unsafe { printf(c"%llu\n".as_ptr(), (w.value >> (64 as i32)) as u64) };

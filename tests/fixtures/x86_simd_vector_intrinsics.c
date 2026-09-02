@@ -25,9 +25,9 @@ __attribute__((target("avx2"))) static void avx2_probe(int out[8]) {
 }
 
 int main(void) {
-  int sse2_out[4];
+  int         sse2_out[4];
   signed char ssse3_out[16];
-  int avx2_out[8];
+  int         avx2_out[8];
 
   sse2_probe(sse2_out);
   ssse3_probe(ssse3_out);

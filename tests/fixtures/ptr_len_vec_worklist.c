@@ -5,7 +5,7 @@ static int consume_values(int *values, int len) {
   int sum = 0;
   for (int i = 0; i < len; ++i) {
     values[i] += 1;
-    sum += values[i];
+    sum       += values[i];
   }
   free(values);
   return sum;
@@ -16,7 +16,7 @@ static int forward_consume(int *values, int len) {
 }
 
 int main(void) {
-  int len = 4;
+  int  len    = 4;
   int *values = malloc(len * sizeof(int));
   for (int i = 0; i < len; ++i)
     values[i] = i * 2;

@@ -12,7 +12,7 @@ static int use_and_free(int *y) {
 
 int main(void) {
   int *y = malloc(sizeof(int));
-  *y = 41;
+  *y     = 41;
   printf("%d\n", use_and_free(y));
   return 0;
 }
@@ -95,9 +95,8 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe fn touch({{arg[0-9]+}}: *mut i32) {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         *{{arg[0-9]+}} = (unsafe { *{{arg[0-9]+}} }) + {{_v[0-9]+}};
+// REWRITES-NEXT:         *{{arg[0-9]+}} = (unsafe { *{{arg[0-9]+}} }) + 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }

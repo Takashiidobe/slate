@@ -747,18 +747,17 @@ int main(void) {
 // REWRITES-NEXT:     let mut index: i32 = 0;
 // REWRITES-NEXT:     index = 0;
 // REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 4;
-// REWRITES-NEXT:         if index >= {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = index < 4;
+// REWRITES-NEXT:         if !{{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = index + {{_v[0-9]+}};
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = index + 1;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = values;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset((index as i64) as isize) };
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:             *{{_v[0-9]+}} = {{_v[0-9]+}};
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         index = index + 1;
+// REWRITES-NEXT:         index += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = values;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(0) };
@@ -774,33 +773,30 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} + unsafe { *{{_v[0-9]+}} });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe { malloc_usable_size(values as *mut core::ffi::c_void) }) as u64;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 4;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 4;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} >= {{_v[0-9]+}} * {{_v[0-9]+}}) as i32);
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if aligned != {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = 64;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} >= 4 * {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = aligned != std::ptr::null_mut();
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = 0;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = (aligned as u64) % {{_v[0-9]+}} == {{_v[0-9]+}};
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = (aligned as u64) % 64 == {{_v[0-9]+}};
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if page != {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = 0;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = (page as u64) % (page_size as u64) == {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = page != std::ptr::null_mut();
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = (page as u64) % (page_size as u64) == 0;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if rounded != {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = 0;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = (rounded as u64) % (page_size as u64) == {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = rounded != std::ptr::null_mut();
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = (rounded as u64) % (page_size as u64) == 0;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
@@ -810,8 +806,8 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe { malloc_usable_size(rounded as *mut core::ffi::c_void) }) as u64;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} >= (page_size as u64)) as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { mallopt(-5 as i32, 1 as i32) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} != {{_v[0-9]+}}) as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
 // REWRITES-NEXT:     unsafe { free(values as *mut core::ffi::c_void) };
 // REWRITES-NEXT:     unsafe { free(aligned as *mut core::ffi::c_void) };
 // REWRITES-NEXT:     unsafe { free(page as *mut core::ffi::c_void) };
@@ -859,13 +855,8 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(1) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > storage.__bitfield_4;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i64 = 1;
-// REWRITES-NEXT:         unsafe {
-// REWRITES-NEXT:             _obstack_newchunk(
-// REWRITES-NEXT:                 std::ptr::addr_of_mut!(storage) as *mut obstack,
-// REWRITES-NEXT:                 ((unsafe { storage.__bitfield_5.tempint }) + {{_v[0-9]+}}) as i32,
-// REWRITES-NEXT:             )
-// REWRITES-NEXT:         };
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i64 = (unsafe { storage.__bitfield_5.tempint }) + 1;
+// REWRITES-NEXT:         unsafe { _obstack_newchunk(std::ptr::addr_of_mut!(storage) as *mut obstack, {{_v[0-9]+}} as i32) };
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {
@@ -933,13 +924,8 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(1) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > storage.__bitfield_4;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i64 = 1;
-// REWRITES-NEXT:         unsafe {
-// REWRITES-NEXT:             _obstack_newchunk(
-// REWRITES-NEXT:                 std::ptr::addr_of_mut!(storage) as *mut obstack,
-// REWRITES-NEXT:                 ((unsafe { storage.__bitfield_5.tempint }) + {{_v[0-9]+}}) as i32,
-// REWRITES-NEXT:             )
-// REWRITES-NEXT:         };
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i64 = (unsafe { storage.__bitfield_5.tempint }) + 1;
+// REWRITES-NEXT:         unsafe { _obstack_newchunk(std::ptr::addr_of_mut!(storage) as *mut obstack, {{_v[0-9]+}} as i32) };
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {
@@ -999,23 +985,22 @@ int main(void) {
 // REWRITES-NEXT:     storage.__bitfield_2 = storage.__bitfield_3;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = (unsafe { storage.__bitfield_5.tempptr }) as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { strcmp({{_v[0-9]+}} as *const core::ffi::c_char, c"gnu".as_ptr()) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { strcmp({{_v[0-9]+}} as *const core::ffi::c_char, c"libc".as_ptr()) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = storage.__bitfield_3;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = storage.__bitfield_2;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { {{_v[0-9]+}}.offset_from({{_v[0-9]+}}) as i64 };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ((({{_v[0-9]+}} as u32) == {{_v[0-9]+}}) as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = ({{_v[0-9]+}} as u32) == 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { {{_v[0-9]+}}.offset_from(storage.__bitfield_1 as *mut i8) as i64 };
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         storage.__bitfield_5.tempint = {{_v[0-9]+}};
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = (unsafe { storage.__bitfield_5.tempint }) > {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = (unsafe { storage.__bitfield_5.tempint }) > 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i64 = unsafe { storage.__bitfield_5.tempint };
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = storage.__bitfield_4;

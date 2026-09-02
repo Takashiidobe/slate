@@ -1,7 +1,7 @@
 struct operation {
   enum { MODE_NUMBER, MODE_TEXT } mode;
   union {
-    int number;
+    int   number;
     char *text;
   };
 };

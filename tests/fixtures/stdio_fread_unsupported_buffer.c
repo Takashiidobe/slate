@@ -183,7 +183,6 @@ int main(void) {
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-NEXT:     let mut f: *mut libc::FILE = std::ptr::null_mut();
 // REWRITES-NEXT:     let mut g: *mut libc::FILE = std::ptr::null_mut();
-// REWRITES-NEXT:     __retval = 0;
 // REWRITES-NEXT:     unsafe { remove(c"slate_stdio_fread_unsupported_buffer.tmp".as_ptr()) };
 // REWRITES-NEXT:     f = unsafe {
 // REWRITES-NEXT:         fopen(

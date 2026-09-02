@@ -48,21 +48,21 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn main() {
-// REWRITES-DAG: unsafe {
-// REWRITES-DAG: printf(
-// REWRITES-DAG: c"%d %d %d %d %d %d %d %d %d %d\n".as_ptr(),
-// REWRITES-DAG: visible_before(),
-// REWRITES-DAG: unsafe { visible_before_global },
-// REWRITES-DAG: hidden_outer(),
-// REWRITES-DAG: unsafe { hidden_outer_global },
-// REWRITES-DAG: visible_inner(),
-// REWRITES-DAG: unsafe { visible_inner_global },
-// REWRITES-DAG: hidden_again(),
-// REWRITES-DAG: unsafe { hidden_again_global },
-// REWRITES-DAG: visible_after(),
-// REWRITES-DAG: unsafe { visible_after_global },
-// REWRITES-DAG: )
-// REWRITES-DAG: };
-// REWRITES-DAG: std::process::exit(0 as i32);
+// REWRITES-DAG:     unsafe {
+// REWRITES-DAG:         printf(
+// REWRITES-DAG:             c"%d %d %d %d %d %d %d %d %d %d\n".as_ptr(),
+// REWRITES-DAG:             visible_before(),
+// REWRITES-DAG:             unsafe { visible_before_global },
+// REWRITES-DAG:             hidden_outer(),
+// REWRITES-DAG:             unsafe { hidden_outer_global },
+// REWRITES-DAG:             visible_inner(),
+// REWRITES-DAG:             unsafe { visible_inner_global },
+// REWRITES-DAG:             hidden_again(),
+// REWRITES-DAG:             unsafe { hidden_again_global },
+// REWRITES-DAG:             visible_after(),
+// REWRITES-DAG:             unsafe { visible_after_global },
+// REWRITES-DAG:         )
+// REWRITES-DAG:     };
+// REWRITES-DAG:     std::process::exit(0 as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

@@ -82,7 +82,9 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), idiv(-7, 2)) };
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), idiv(7, -2)) };
-// REWRITES-NEXT:     unsafe { printf(c"%u\n".as_ptr(), (100 as u32) / (7 as u32)) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = 7;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = 100 / {{_v[0-9]+}};
+// REWRITES-NEXT:     unsafe { printf(c"%u\n".as_ptr(), {{_v[0-9]+}}) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

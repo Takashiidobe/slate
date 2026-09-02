@@ -7,7 +7,7 @@ static int sum_n(int *p, int n) {
 }
 
 int main(void) {
-  int a[5] = {1,2,3,4,5};
+  int a[5] = {1, 2, 3, 4, 5};
   return sum_n(a, 5);
 }
 
@@ -92,17 +92,10 @@ int main(void) {
 // REWRITES-NEXT:     let mut p: *mut i32 = {{arg[0-9]+}}.as_ptr() as *mut i32;
 // REWRITES-NEXT:     let mut n: i32 = {{arg[0-9]+}}.len() as i32;
 // REWRITES-NEXT:     let mut s: i32 = 0;
-// REWRITES-NEXT:     s = 0;
-// REWRITES-NEXT:     let mut i: i32 = 0;
-// REWRITES-NEXT:     i = 0;
-// REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         if i >= n {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     for i in 0..n {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = p;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
-// REWRITES-NEXT:         s = s + unsafe { *{{_v[0-9]+}} };
-// REWRITES-NEXT:         i = i + 1;
+// REWRITES-NEXT:         s += unsafe { *{{_v[0-9]+}} };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return s;
 // REWRITES-NEXT: }

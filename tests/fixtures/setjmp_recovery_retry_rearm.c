@@ -151,15 +151,14 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn might_fail({{arg[0-9]+}}: i32) {
 // REWRITES-NEXT:     let mut attempt: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = attempt < {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = attempt < 3;
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = attempt + 1;
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:             longjmp(
 // REWRITES-NEXT:                 std::ptr::addr_of_mut!(retry_buf).cast::<__slate_jmp_buf_tag>()
 // REWRITES-NEXT:                     as *mut __slate_jmp_buf_tag,
-// REWRITES-NEXT:                 (attempt + {{_v[0-9]+}}) as i32,
+// REWRITES-NEXT:                 {{_v[0-9]+}} as i32,
 // REWRITES-NEXT:             )
 // REWRITES-NEXT:         };
 // REWRITES-NEXT:     }
@@ -176,8 +175,8 @@ int main(void) {
 // REWRITES-NEXT:             std::ptr::addr_of_mut!(retry_buf).cast::<__slate_jmp_buf_tag>();
 // REWRITES-NEXT:         attempt = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };
 // REWRITES-NEXT:         unsafe { printf(c"attempt %d\n".as_ptr(), attempt) };
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:         if attempt >= {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = attempt >= 3;
+// REWRITES-NEXT:         if {{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         might_fail(attempt);

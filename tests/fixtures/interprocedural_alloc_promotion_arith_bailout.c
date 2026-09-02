@@ -87,9 +87,9 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn alloc() -> Box<[i32]> {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 4;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 10;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc(({{_v[0-9]+}} * {{_v[0-9]+}}) as usize) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 4 * {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{_v[0-9]+}} as usize) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{_v[0-9]+}} as *mut i32;
 // REWRITES-NEXT:     return unsafe { Box::from_raw(std::slice::from_raw_parts_mut({{_v[0-9]+}} as *mut i32, 10 as usize)) };
 // REWRITES-NEXT: }

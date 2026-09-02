@@ -59,16 +59,16 @@ int main(void) {
 // REWRITES-NEXT:     *local = 11;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%zu %zu %zu %d %d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = std::ptr::addr_of_mut!(*object) as u64;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 32;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} % {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} % 32;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = std::ptr::addr_of_mut!(*local) as u64;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} % 64;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = object.value;
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
 // REWRITES-NEXT:             std::mem::align_of::<OverAligned>() as u64,
 // REWRITES-NEXT:             {{_v[0-9]+}},
-// REWRITES-NEXT:             {{_v[0-9]+}} % (64 as u64),
+// REWRITES-NEXT:             {{_v[0-9]+}},
 // REWRITES-NEXT:             {{_v[0-9]+}},
 // REWRITES-NEXT:             *local,
 // REWRITES-NEXT:         )

@@ -152,13 +152,11 @@ int main(void) {
 // REWRITES-NEXT:     let mut value: f64 = 0.0;
 // REWRITES-NEXT:     value = {{arg[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(value)) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = 0.5;
-// REWRITES-NEXT:     return {{_v[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-NEXT:     return {{_v[0-9]+}} + 0.5;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn bump_return({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:     return {{arg[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-NEXT:     return {{arg[0-9]+}} + 1;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn use_volatile_fields({{arg[0-9]+}}: f64) -> f64 {
@@ -176,8 +174,8 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i8 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(marker)) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(marker), (({{_v[0-9]+}} as i32) + {{_v[0-9]+}}) as i8) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}} as i32) + 1;
+// REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(marker), {{_v[0-9]+}} as i8) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(gain)) };
 // REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(gain), read_volatile_param({{_v[0-9]+}})) };
 // REWRITES-NEXT:     unsafe {

@@ -8,7 +8,7 @@ static void print_lc(const char *name, long double complex z) {
 }
 
 static long double complex mix_complex(long double complex a,
-                                        long double complex b) {
+                                       long double complex b) {
   long double complex c = (a + b) / 2.0L;
   return c * 3.0L;
 }
@@ -23,8 +23,8 @@ static void check_arithmetic(void) {
   print_lc("div", a / b);
   print_lc("neg", -a);
 
-  long double complex c = a;
-  c += b;
+  long double complex c  = a;
+  c                     += b;
   print_lc("add_assign", c);
   c -= b;
   print_lc("sub_assign", c);
@@ -49,8 +49,8 @@ static void check_arithmetic(void) {
 }
 
 static void check_casts(void) {
-  long double ld       = 5.0L;
-  long double complex z = ld;
+  long double         ld = 5.0L;
+  long double complex z  = ld;
   print_lc("real_to_complex", z);
 
   long double back = (long double)z;
@@ -58,7 +58,7 @@ static void check_casts(void) {
     abort();
 
   long double complex nonzero_imag = CMPLXL(3.0L, 4.0L);
-  long double real_part            = (long double)nonzero_imag;
+  long double         real_part    = (long double)nonzero_imag;
   if (real_part != 3.0L)
     abort();
 
@@ -68,13 +68,13 @@ static void check_casts(void) {
   float complex zf = (float complex)nonzero_imag;
   print_lc("to_float_complex", (long double complex)zf);
 
-  double dd                       = 6.0;
-  double complex from_double      = dd;
+  double              dd          = 6.0;
+  double complex      from_double = dd;
   long double complex widened     = (long double complex)from_double;
   print_lc("from_double_complex", widened);
 
-  int i32                    = 7;
-  long double complex fromi  = i32;
+  int                 i32   = 7;
+  long double complex fromi = i32;
   print_lc("from_int", fromi);
 }
 
@@ -1563,38 +1563,28 @@ int main(void) {
 // REWRITES-NEXT:         __slate_anon_1: LongDouble([0; 10]),
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let mut a: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-NEXT:         re: LongDouble([0; 10]),
-// REWRITES-NEXT:         im: LongDouble([0; 10]),
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut b: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-NEXT:         re: LongDouble([0; 10]),
-// REWRITES-NEXT:         im: LongDouble([0; 10]),
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     a = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]),
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     b = num_complex::Complex {
+// REWRITES-NEXT:     let mut b: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]),
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"add\0".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = b;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-NEXT:     let mut byval: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: {{_v[0-9]+}}.re + {{_v[0-9]+}}.re,
 // REWRITES-NEXT:         im: {{_v[0-9]+}}.im + {{_v[0-9]+}}.im,
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut byval: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval)) });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"sub\0".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = b;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-NEXT:     let mut byval2: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: {{_v[0-9]+}}.re - {{_v[0-9]+}}.re,
 // REWRITES-NEXT:         im: {{_v[0-9]+}}.im - {{_v[0-9]+}}.im,
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut byval2: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval2)) });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"mul\0".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
@@ -1633,11 +1623,10 @@ int main(void) {
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval4)) });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"neg\0".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-NEXT:     let mut byval5: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: -{{_v[0-9]+}}.re,
 // REWRITES-NEXT:         im: -{{_v[0-9]+}}.im,
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut byval5: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval5)) });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = b;

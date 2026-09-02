@@ -2,28 +2,28 @@
 
 struct __attribute__((packed)) MixedBits {
   unsigned char tag;
-  unsigned int low : 3;
-  signed int delta : 6;
-  unsigned int : 0;
+  unsigned int  low       : 3;
+  signed int    delta     : 6;
+  unsigned int            : 0;
   unsigned long long wide : 35;
-  unsigned int tail : 17;
+  unsigned int       tail : 17;
 };
 
 int main(void) {
   struct MixedBits bits = {0};
-  bits.tag = 0xa5;
+  bits.tag              = 0xa5;
   // @lowering-begin
   // @rewrite-begin
-  bits.low = 7;
-  bits.delta = -17;
-  bits.wide = 0x712345678ULL;
-  bits.tail = 0x1abcd;
+  bits.low              = 7;
+  bits.delta            = -17;
+  bits.wide             = 0x712345678ULL;
+  bits.tail             = 0x1abcd;
   // @rewrite-end
   // @lowering-end
   // @lowering-begin
   // @rewrite-begin
-  printf("%u %u %d %llu %u %zu\n", bits.tag, bits.low, bits.delta,
-         bits.wide, bits.tail, sizeof(bits));
+  printf("%u %u %d %llu %u %zu\n", bits.tag, bits.low, bits.delta, bits.wide,
+         bits.tail, sizeof(bits));
   // @rewrite-end
   // @lowering-end
   return 0;
@@ -35,14 +35,14 @@ int main(void) {
 // LOWERING-DAG: let mut {{_v[0-9]+}} = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(bits.__bitfield_1)) };
 // LOWERING-DAG: {{_v[0-9]+}}.set_low(({{_v[0-9]+}} as u32) << 29 >> 29);
 // LOWERING-DAG: unsafe {
-// LOWERING-DAG: std::ptr::write_unaligned(std::ptr::addr_of_mut!(bits.__bitfield_1), {{_v[0-9]+}});
+// LOWERING-DAG:     std::ptr::write_unaligned(std::ptr::addr_of_mut!(bits.__bitfield_1), {{_v[0-9]+}});
 // LOWERING-DAG: }
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = -17;
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}} as i32) << 26 >> 26;
 // LOWERING-DAG: let mut {{_v[0-9]+}} = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(bits.__bitfield_1)) };
 // LOWERING-DAG: {{_v[0-9]+}}.set_delta(({{_v[0-9]+}} as i32) << 26 >> 26);
 // LOWERING-DAG: unsafe {
-// LOWERING-DAG: std::ptr::write_unaligned(std::ptr::addr_of_mut!(bits.__bitfield_1), {{_v[0-9]+}});
+// LOWERING-DAG:     std::ptr::write_unaligned(std::ptr::addr_of_mut!(bits.__bitfield_1), {{_v[0-9]+}});
 // LOWERING-DAG: }
 // LOWERING-DAG: let {{_v[0-9]+}}: u64 = 30370190968u64;
 // LOWERING-DAG: let {{_v[0-9]+}}: u64 = ({{_v[0-9]+}} as u64) << 29 >> 29;
@@ -54,28 +54,28 @@ int main(void) {
 // LOWERING-DAG: let {{_v[0-9]+}}: u8 = bits.__bitfield_0;
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-DAG: let {{_v[0-9]+}}: u32 = (unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(bits.__bitfield_1)) }
-// LOWERING-DAG: .low() as u32)
-// LOWERING-DAG: << 29
-// LOWERING-DAG: >> 29;
+// LOWERING-DAG:     .low() as u32)
+// LOWERING-DAG:     << 29
+// LOWERING-DAG:     >> 29;
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = (unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(bits.__bitfield_1)) }
-// LOWERING-DAG: .delta() as i32)
-// LOWERING-DAG: << 26
-// LOWERING-DAG: >> 26;
+// LOWERING-DAG:     .delta() as i32)
+// LOWERING-DAG:     << 26
+// LOWERING-DAG:     >> 26;
 // LOWERING-DAG: let {{_v[0-9]+}}: u64 = (bits.__bitfield_3.wide() as u64) << 29 >> 29;
 // LOWERING-DAG: let {{_v[0-9]+}}: u32 = (bits.__bitfield_3.tail() as u32) << 15 >> 15;
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-DAG: let {{_v[0-9]+}}: u64 = 11;
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = unsafe {
-// LOWERING-DAG: printf(
-// LOWERING-DAG: {{_v[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-DAG: {{_v[0-9]+}},
-// LOWERING-DAG: {{_v[0-9]+}},
-// LOWERING-DAG: {{_v[0-9]+}},
-// LOWERING-DAG: {{_v[0-9]+}},
-// LOWERING-DAG: {{_v[0-9]+}},
-// LOWERING-DAG: {{_v[0-9]+}},
-// LOWERING-DAG: )
+// LOWERING-DAG:     printf(
+// LOWERING-DAG:         {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-DAG:         {{_v[0-9]+}},
+// LOWERING-DAG:         {{_v[0-9]+}},
+// LOWERING-DAG:         {{_v[0-9]+}},
+// LOWERING-DAG:         {{_v[0-9]+}},
+// LOWERING-DAG:         {{_v[0-9]+}},
+// LOWERING-DAG:         {{_v[0-9]+}},
+// LOWERING-DAG:     )
 // LOWERING-DAG: };
 // SLATE-FILECHECK-END lowering
 
@@ -83,12 +83,12 @@ int main(void) {
 // REWRITES-DAG: let mut {{_v[0-9]+}} = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(bits.__bitfield_1)) };
 // REWRITES-DAG: {{_v[0-9]+}}.set_low((7 as u32) << 29 >> 29);
 // REWRITES-DAG: unsafe {
-// REWRITES-DAG: std::ptr::write_unaligned(std::ptr::addr_of_mut!(bits.__bitfield_1), {{_v[0-9]+}});
+// REWRITES-DAG:     std::ptr::write_unaligned(std::ptr::addr_of_mut!(bits.__bitfield_1), {{_v[0-9]+}});
 // REWRITES-DAG: }
 // REWRITES-DAG: let mut {{_v[0-9]+}} = unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(bits.__bitfield_1)) };
 // REWRITES-DAG: {{_v[0-9]+}}.set_delta((-17 as i32) << 26 >> 26);
 // REWRITES-DAG: unsafe {
-// REWRITES-DAG: std::ptr::write_unaligned(std::ptr::addr_of_mut!(bits.__bitfield_1), {{_v[0-9]+}});
+// REWRITES-DAG:     std::ptr::write_unaligned(std::ptr::addr_of_mut!(bits.__bitfield_1), {{_v[0-9]+}});
 // REWRITES-DAG: }
 // REWRITES-DAG: let {{_v[0-9]+}}: u64 = 30370190968u64;
 // REWRITES-DAG: bits.__bitfield_3.set_wide(({{_v[0-9]+}} as u64) << 29 >> 29);
@@ -96,21 +96,21 @@ int main(void) {
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = b"%u %u %d %llu %u %zu\n\0".as_ptr() as *mut i8;
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = bits.__bitfield_0 as i32;
 // REWRITES-DAG: let {{_v[0-9]+}}: u32 = (unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(bits.__bitfield_1)) }
-// REWRITES-DAG: .low() as u32)
-// REWRITES-DAG: << 29
-// REWRITES-DAG: >> 29;
+// REWRITES-DAG:     .low() as u32)
+// REWRITES-DAG:     << 29
+// REWRITES-DAG:     >> 29;
 // REWRITES-DAG: unsafe {
-// REWRITES-DAG: printf(
-// REWRITES-DAG: {{_v[0-9]+}} as *const core::ffi::c_char,
-// REWRITES-DAG: {{_v[0-9]+}},
-// REWRITES-DAG: {{_v[0-9]+}} as i32,
-// REWRITES-DAG: (unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(bits.__bitfield_1)) }.delta()
-// REWRITES-DAG: as i32)
-// REWRITES-DAG: << 26
-// REWRITES-DAG: >> 26,
-// REWRITES-DAG: (bits.__bitfield_3.wide() as u64) << 29 >> 29,
-// REWRITES-DAG: ((bits.__bitfield_3.tail() as u32) << 15 >> 15) as i32,
-// REWRITES-DAG: 11 as u64,
-// REWRITES-DAG: )
+// REWRITES-DAG:     printf(
+// REWRITES-DAG:         {{_v[0-9]+}} as *const core::ffi::c_char,
+// REWRITES-DAG:         {{_v[0-9]+}},
+// REWRITES-DAG:         {{_v[0-9]+}} as i32,
+// REWRITES-DAG:         (unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(bits.__bitfield_1)) }.delta()
+// REWRITES-DAG:             as i32)
+// REWRITES-DAG:             << 26
+// REWRITES-DAG:             >> 26,
+// REWRITES-DAG:         (bits.__bitfield_3.wide() as u64) << 29 >> 29,
+// REWRITES-DAG:         ((bits.__bitfield_3.tail() as u32) << 15 >> 15) as i32,
+// REWRITES-DAG:         11 as u64,
+// REWRITES-DAG:     )
 // REWRITES-DAG: };
 // SLATE-FILECHECK-END rewrites

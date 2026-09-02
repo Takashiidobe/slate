@@ -29,7 +29,7 @@ static int read_first(int *p) { return p[0]; }
 
 static int *make_shadow(int n) {
   int *p = malloc(n * sizeof(int));
-  p[0] = 9;
+  p[0]   = 9;
   return p;
 }
 
@@ -50,21 +50,21 @@ static int *allocfree(int n) {
 
 int main(void) {
   // @rewrite-begin
-  int *q = make(4);
+  int *q    = make(4);
   // @rewrite-end
   // @rewrite-begin
-  int *r = make8();
+  int *r    = make8();
   // @rewrite-end
   // @rewrite-begin
-  int *m = maybe(2);
+  int *m    = maybe(2);
   // @rewrite-end
   // @rewrite-begin
-  int *a = allocfree(3);
+  int *a    = allocfree(3);
   // @rewrite-end
-  int *raw = make_raw(2);
+  int *raw  = make_raw(2);
   int *raw2 = make_raw(2);
-  printf("%d %d %d %d %d %d\n", q[3], r[7], (int)(m != NULL),
-         (int)(a != NULL), read_first(raw), raw2[1]);
+  printf("%d %d %d %d %d %d\n", q[3], r[7], (int)(m != NULL), (int)(a != NULL),
+         read_first(raw), raw2[1]);
   free(q);
   free(r);
   if (m) {
@@ -75,7 +75,7 @@ int main(void) {
   free(raw2);
   {
     void (*free)(void *) = custom_free;
-    int *shadow = make_shadow(1);
+    int *shadow          = make_shadow(1);
     free(shadow);
   }
   return 0;

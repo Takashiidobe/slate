@@ -31,10 +31,10 @@ __attribute__((noinline)) static int take_packed(PackedBarrier value) {
 }
 
 int main(void) {
-  AlignedTail aligned = {.value = 7};
-  MidBarrier middle = {.tag = 3, .value = 20};
-  PackedBarrier packed = {.tag = 4, .value = 30};
-  middle = round_trip(middle);
+  AlignedTail   aligned = {.value = 7};
+  MidBarrier    middle  = {.tag = 3, .value = 20};
+  PackedBarrier packed  = {.tag = 4, .value = 30};
+  middle                = round_trip(middle);
   printf("%d %d %d %zu %zu %zu\n", take_aligned(aligned), middle.value,
          take_packed(packed), sizeof(aligned), sizeof(middle), sizeof(packed));
   return 0;

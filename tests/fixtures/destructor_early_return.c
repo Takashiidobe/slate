@@ -115,9 +115,7 @@ int main(int argc, char **argv) {
 // REWRITES-NEXT:     __slate_argv_ptrs.as_mut_ptr();
 // REWRITES-NEXT:     let mut argc: i32 = {{arg[0-9]+}};
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
-// REWRITES-NEXT:     __retval = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = argc == {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = argc == 1;
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         unsafe { printf(c"early exit\n".as_ptr()) };
 // REWRITES-NEXT:         __retval = 7;

@@ -115,25 +115,15 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn pick({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     let mut x: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT:     let mut out: i32 = 0;
-// REWRITES-NEXT:     out = 5;
-// REWRITES-NEXT:     '{{__switch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:         '{{__switch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:             match x {
-// REWRITES-NEXT:                 4 => {
-// REWRITES-NEXT:                     break '{{__switch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 9 => {}
-// REWRITES-NEXT:                 _ => {
-// REWRITES-NEXT:                     break '{{__switch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 9;
-// REWRITES-NEXT:             out = out + {{_v[0-9]+}};
-// REWRITES-NEXT:             break '{{__switch[0-9]+_l[0-9]+}};
+// REWRITES-NEXT:     let mut out: i32 = 5;
+// REWRITES-NEXT:     match x {
+// REWRITES-NEXT:         4 => {
+// REWRITES-NEXT:             out += 4;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 4;
-// REWRITES-NEXT:         out = out + {{_v[0-9]+}};
+// REWRITES-NEXT:         9 => {
+// REWRITES-NEXT:             out += 9;
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:         _ => {}
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return out;
 // REWRITES-NEXT: }

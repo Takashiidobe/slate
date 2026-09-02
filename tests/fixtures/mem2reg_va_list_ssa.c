@@ -22,13 +22,13 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: fn consume(mut {{arg[0-9]+}}: __SlateVaArgs) -> i32 {
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = unsafe { {{arg[0-9]+}}.next_arg::<i32>() };
-// LOWERING-DAG: return {{_v[0-9]+}};
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = unsafe { {{arg[0-9]+}}.next_arg::<i32>() };
+// LOWERING-DAG:     return {{_v[0-9]+}};
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn consume(mut {{arg[0-9]+}}: __SlateVaArgs) -> i32 {
-// REWRITES-DAG: return unsafe { {{arg[0-9]+}}.next_arg::<i32>() };
+// REWRITES-DAG:     return unsafe { {{arg[0-9]+}}.next_arg::<i32>() };
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

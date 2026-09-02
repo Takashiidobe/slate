@@ -20,11 +20,10 @@ int main(void) {
   const char accept[] = "ab";
   const char empty[]  = "";
   const char reject[] = "cd";
-  printf("%d %d %d %zu %zu %zu %zu %zu %zu\n",
-         bounded_cmp(abc, abd, 2) == 0, bounded_cmp(abc, abd, 3) < 0,
-         bounded_cmp(abc, abd, 0) == 0, bounded_len(abc, 99),
-         bounded_len(text, 3), bounded_len(empty, 7), spans(span, accept),
-         spans(span, empty), spans(empty, reject));
+  printf("%d %d %d %zu %zu %zu %zu %zu %zu\n", bounded_cmp(abc, abd, 2) == 0,
+         bounded_cmp(abc, abd, 3) < 0, bounded_cmp(abc, abd, 0) == 0,
+         bounded_len(abc, 99), bounded_len(text, 3), bounded_len(empty, 7),
+         spans(span, accept), spans(span, empty), spans(empty, reject));
   return 0;
 }
 

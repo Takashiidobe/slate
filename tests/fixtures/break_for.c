@@ -131,19 +131,19 @@ int main(void) {
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     i = 1;
 // REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         if i > n {
+// REWRITES-NEXT:         if !(i <= n) {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:         if i % m == {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i % m == 0;
+// REWRITES-NEXT:         if {{_v[0-9]+}} {
 // REWRITES-NEXT:             __retval = i;
 // REWRITES-NEXT:             return __retval;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 100;
-// REWRITES-NEXT:         if i > {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i > 100;
+// REWRITES-NEXT:         if {{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         i = i + 1;
+// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     __retval = -1;
 // REWRITES-NEXT:     return __retval;

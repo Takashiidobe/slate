@@ -187,8 +187,8 @@ int main(void) {
 // REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             1 => {
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:                 if x < {{_v[0-9]+}} {
+// REWRITES-NEXT:                 let {{_v[0-9]+}}: bool = x < 0;
+// REWRITES-NEXT:                 if {{_v[0-9]+}} {
 // REWRITES-NEXT:                     {{__state[0-9]+}} = 2;
 // REWRITES-NEXT:                 } else {
 // REWRITES-NEXT:                     {{__state[0-9]+}} = 3;
@@ -201,8 +201,7 @@ int main(void) {
 // REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             3 => {
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-NEXT:                 {{_v[0-9]+}} = x > {{_v[0-9]+}};
+// REWRITES-NEXT:                 {{_v[0-9]+}} = x > 2;
 // REWRITES-NEXT:                 {{__state[0-9]+}} = 4;
 // REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }

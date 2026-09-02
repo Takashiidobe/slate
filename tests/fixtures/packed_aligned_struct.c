@@ -156,8 +156,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe { printf(c"%zu %zu\n".as_ptr(), 0 as u64, 1 as u64) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = s.b;
 // REWRITES-NEXT:     unsafe { printf(c"%d %x\n".as_ptr(), s.a as i32, {{_v[0-9]+}}) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:     s.b = s.b + {{_v[0-9]+}};
+// REWRITES-NEXT:     s.b += 1;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = s.b;
 // REWRITES-NEXT:     unsafe { printf(c"%x\n".as_ptr(), {{_v[0-9]+}}) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
