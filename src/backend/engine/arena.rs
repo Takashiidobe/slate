@@ -310,6 +310,7 @@ pub(in crate::backend) struct Arena {
     free: Vec<u32>,
     def_uses: HashMap<Ident, Vec<NodeId>>,
     defs: HashMap<Ident, NodeId>,
+    mutations: u64,
 }
 
 impl Arena {
@@ -319,7 +320,12 @@ impl Arena {
             free: Vec::new(),
             def_uses: HashMap::new(),
             defs: HashMap::new(),
+            mutations: 0,
         }
+    }
+
+    pub(in crate::backend) fn mutation_count(&self) -> u64 {
+        self.mutations
     }
 
     pub(in crate::backend) fn definition(&self, name: Ident) -> Option<NodeId> {
@@ -356,6 +362,7 @@ impl Arena {
             self.defs.insert(name, id);
         }
         self.slots[id.index as usize].kind = Some(kind);
+        self.mutations += 1;
         self.touch(id);
     }
 
@@ -372,6 +379,7 @@ impl Arena {
             && slot.generation == id.generation
         {
             slot.kind = Some(kind);
+            self.mutations += 1;
         }
         self.touch(id);
     }
@@ -449,6 +457,7 @@ impl Arena {
             && slot.generation == id.generation
         {
             slot.parent = parent;
+            self.mutations += 1;
         }
     }
 
@@ -468,6 +477,7 @@ impl Arena {
         slot.generation += 1;
         slot.parent = None;
         self.free.push(id.index);
+        self.mutations += 1;
         if let Some(name) = kind.as_ref().and_then(NodeKind::declared_name)
             && self.defs.get(&name) == Some(&id)
         {

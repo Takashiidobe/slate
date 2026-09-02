@@ -217,15 +217,18 @@ impl NodeRule for ZeroInitFold {
         let value = std::mem::replace(value, Expr::Value(RustValue::I64(0)));
 
         let Some(NodeKind::Let { init, .. }) = arena.get_mut(id) else {
-            return false;
+            unreachable!("zero_init: id invalidated by taking an unrelated sibling slot")
         };
         *init = Some(value);
 
-        if let Some(parent_kind) = arena.get_mut(found.parent)
-            && let Some(list) = parent_kind.child_lists_mut().get_mut(found.list_index)
-        {
-            list.remove(found.write_pos);
-        }
+        let Some(parent_kind) = arena.get_mut(found.parent) else {
+            unreachable!("zero_init: found.parent invalidated by taking an unrelated sibling slot")
+        };
+        let mut child_lists = parent_kind.child_lists_mut();
+        let Some(list) = child_lists.get_mut(found.list_index) else {
+            unreachable!("zero_init: list_index no longer valid on found.parent")
+        };
+        list.remove(found.write_pos);
         true
     }
 }
