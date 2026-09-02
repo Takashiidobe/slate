@@ -10,7 +10,6 @@ import sys
 import tempfile
 from pathlib import Path
 
-
 TARGET_FIXTURE_DIRECTORIES = {"bionic", "macos", "msvc"}
 SOURCE_ROOT_PATTERN = "__SLATE_FILECHECK_SOURCE_ROOT__"
 FIXTURE_STD_OVERRIDES = {
@@ -21,6 +20,8 @@ FIXTURE_STD_OVERRIDES = {
 
 def fixture_std(path):
     return FIXTURE_STD_OVERRIDES.get(path.stem, "c23")
+
+
 ANNOTATION_PATTERN = re.compile(
     r"^(?P<indent>\s*)(?:"
     r"//\s*@(?P<line_kind>(?:lowering|rewrite)(?:-not)?)-(?P<line_fn>fn-)?"
@@ -56,6 +57,18 @@ UNSTABLE_IDENTIFIER_PATTERNS = (
         "{{__slate_alloca_frame[0-9]+}}",
     ),
     (re.compile(r"\b__state[0-9]+\b"), "{{__state[0-9]+}}"),
+    (
+        re.compile(r"\b__dispatch[0-9]+_l[0-9]+\b"),
+        "{{__dispatch[0-9]+_l[0-9]+}}",
+    ),
+    (
+        re.compile(r"\b__dispatch[0-9]+_v[0-9]+\b"),
+        "{{__dispatch[0-9]+_v[0-9]+}}",
+    ),
+    (
+        re.compile(r"\b__switch[0-9]+_l[0-9]+\b"),
+        "{{__switch[0-9]+_l[0-9]+}}",
+    ),
     (re.compile(r"\b__dispatch[0-9]+\b"), "{{__dispatch[0-9]+}}"),
 )
 
@@ -201,7 +214,9 @@ def render_annotation_checks(annotations, rewritten, lowered, prefix):
         selected_profile = opposite if negative else profile
         regions = regions_by_profile[selected_profile]
         if marker_id not in regions:
-            raise RuntimeError(f"generated Rust is missing annotation marker {marker_id}")
+            raise RuntimeError(
+                f"generated Rust is missing annotation marker {marker_id}"
+            )
         directive = f"{prefix}-NOT" if negative else f"{prefix}-DAG"
         patterns = [
             render_check_pattern(line.strip())
@@ -256,7 +271,9 @@ def render_check_pattern(line):
     parts = []
     offset = 0
     for string in RUST_STRING_PATTERN.finditer(line):
-        parts.append(genericize_identifiers(escape_check_pattern(line[offset:string.start()])))
+        parts.append(
+            genericize_identifiers(escape_check_pattern(line[offset : string.start()]))
+        )
         parts.append(escape_check_pattern(string.group()))
         offset = string.end()
     parts.append(genericize_identifiers(escape_check_pattern(line[offset:])))
@@ -489,8 +506,7 @@ def run_project_translation(project, crate_dir, slate, raw, library, environment
             f"{project}: project translation failed ({result.returncode})\n{result.stderr}"
         )
     return {
-        path.name: path.read_text()
-        for path in sorted((crate_dir / "src").glob("*.rs"))
+        path.name: path.read_text() for path in sorted((crate_dir / "src").glob("*.rs"))
     }
 
 
@@ -523,16 +539,16 @@ def update_project(project, profiles, in_place, slate, library):
 
     requested = {profile.partition("-")[0] for profile, _, _ in profiles}
     kinds = {
-        kind
-        for _, _, _, annotations in source_entries
-        for kind in annotations.values()
+        kind for _, _, _, annotations in source_entries for kind in annotations.values()
     }
     needs_both = any(kind.endswith("-not") for kind in kinds)
     needs_lowering = needs_both or "LOWERING" in requested
     needs_rewrites = needs_both or "REWRITES" in requested
     environment = profiles[0][2]
 
-    with tempfile.TemporaryDirectory(prefix=f".{project.name}.filecheck-", dir=project.parent) as temporary:
+    with tempfile.TemporaryDirectory(
+        prefix=f".{project.name}.filecheck-", dir=project.parent
+    ) as temporary:
         temporary = Path(temporary)
         instrumented_project = temporary / project.name
         shutil.copytree(project, instrumented_project)
@@ -566,9 +582,13 @@ def update_project(project, profiles, in_place, slate, library):
 
         for path, source, _, annotations in source_entries:
             marker_id = next(iter(annotations))
-            lowered = module_with_marker(lowered_modules, marker_id) if needs_lowering else ""
+            lowered = (
+                module_with_marker(lowered_modules, marker_id) if needs_lowering else ""
+            )
             rewritten = (
-                module_with_marker(rewritten_modules, marker_id) if needs_rewrites else ""
+                module_with_marker(rewritten_modules, marker_id)
+                if needs_rewrites
+                else ""
             )
             lowered = normalize_source_paths(lowered, path)
             rewritten = normalize_source_paths(rewritten, path)
@@ -606,7 +626,11 @@ def make_profiles(slate, targets, profile_name):
     if profile_name in ("lowering", "both"):
         for prefix, environment in targets or [("", {})]:
             profiles.append(
-                (f"LOWERING-{prefix}".rstrip("-"), [*slate, "translate-lowered"], environment)
+                (
+                    f"LOWERING-{prefix}".rstrip("-"),
+                    [*slate, "translate-lowered"],
+                    environment,
+                )
             )
     if profile_name in ("rewrites", "both"):
         for prefix, environment in targets or [("", {})]:
@@ -617,9 +641,13 @@ def make_profiles(slate, targets, profile_name):
 
 
 def main(argv):
-    parser = argparse.ArgumentParser(description="generate stable Slate FileCheck scaffolding")
+    parser = argparse.ArgumentParser(
+        description="generate stable Slate FileCheck scaffolding"
+    )
     parser.add_argument("paths", nargs="+", type=Path)
-    parser.add_argument("--profile", choices=("lowering", "rewrites", "both"), default="both")
+    parser.add_argument(
+        "--profile", choices=("lowering", "rewrites", "both"), default="both"
+    )
     parser.add_argument("--in-place", action="store_true")
     parser.add_argument("--slate", default="cargo run --quiet --")
     mode = parser.add_mutually_exclusive_group()
@@ -680,11 +708,17 @@ def main(argv):
             if not c_files:
                 c_files = sorted(path.rglob("*.c"))
             for c_file in c_files:
-                targets = explicit_targets if explicit_targets else default_targets_for_path(c_file)
+                targets = (
+                    explicit_targets
+                    if explicit_targets
+                    else default_targets_for_path(c_file)
+                )
                 profiles = make_profiles(slate, targets, args.profile)
                 update_path(c_file, profiles, args.in_place, bool(targets))
         else:
-            targets = explicit_targets if explicit_targets else default_targets_for_path(path)
+            targets = (
+                explicit_targets if explicit_targets else default_targets_for_path(path)
+            )
             profiles = make_profiles(slate, targets, args.profile)
             update_path(path, profiles, args.in_place, bool(targets))
     return 0
@@ -696,4 +730,3 @@ if __name__ == "__main__":
     except (RuntimeError, ValueError) as error:
         print(f"error: {error}", file=sys.stderr)
         raise SystemExit(1)
-

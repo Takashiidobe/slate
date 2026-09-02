@@ -7,6 +7,7 @@ mod libc_call;
 mod peel_casts;
 mod raw_ptr_alias;
 mod singleton_scopes;
+mod structure_dispatch;
 mod walk;
 mod zero_init;
 
@@ -14,6 +15,7 @@ use super::NodeRule;
 
 pub(super) fn registry() -> Vec<Box<dyn NodeRule>> {
     let mut rules: Vec<Box<dyn NodeRule>> = vec![
+        Box::new(structure_dispatch::StructureDispatch),
         Box::new(zero_init::ZeroInitFold),
         Box::new(raw_ptr_alias::RawPtrAliasElide),
         Box::new(singleton_scopes::ScopeFlatten),
