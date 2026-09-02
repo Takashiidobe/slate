@@ -560,6 +560,17 @@ fn build_stmts(arena: &mut Arena, parent: Option<NodeId>, stmts: Vec<IndentStmt>
         .collect()
 }
 
+pub(in crate::backend) fn insert_stmts(
+    arena: &mut Arena,
+    parent: Option<NodeId>,
+    stmts: Vec<Stmt>,
+) -> Vec<NodeId> {
+    stmts
+        .into_iter()
+        .map(|stmt| build_stmt(arena, parent, stmt))
+        .collect()
+}
+
 fn build_stmt(arena: &mut Arena, parent: Option<NodeId>, stmt: Stmt) -> NodeId {
     let id = arena.reserve(parent);
     let kind = match stmt {
@@ -662,6 +673,12 @@ pub(in crate::backend) fn reify(arena: &Arena, root: NodeId) -> Vec<IndentStmt> 
     let mut out = Vec::new();
     reify_stmts(arena, stmts, 0, &mut out);
     out
+}
+
+pub(in crate::backend) fn reify_bare(arena: &Arena, id: NodeId) -> Option<Stmt> {
+    let mut out = Vec::new();
+    reify_stmt(arena, id, 0, &mut out);
+    out.pop().map(|stmt| stmt.stmt)
 }
 
 fn reify_stmts(arena: &Arena, ids: &[NodeId], depth: usize, out: &mut Vec<IndentStmt>) {

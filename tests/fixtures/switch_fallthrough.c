@@ -23,10 +23,6 @@ int main(void) {
   return 0;
 }
 
-// REWRITES-DAG: match __switch_case0 {
-// REWRITES-DAG: 0 => {
-// REWRITES-NOT: _ => break '__switch0,
-
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
 // LOWERING-NEXT: #![allow(
@@ -127,3 +123,84 @@ int main(void) {
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
+
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES: #![feature(c_variadic)]
+// REWRITES-NEXT: #![allow(
+// REWRITES-NEXT:     dead_code,
+// REWRITES-NEXT:     unused,
+// REWRITES-NEXT:     non_camel_case_types,
+// REWRITES-NEXT:     non_snake_case,
+// REWRITES-NEXT:     non_upper_case_globals,
+// REWRITES-NEXT:     arithmetic_overflow,
+// REWRITES-NEXT:     unconditional_panic,
+// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-NEXT:     unused_comparisons
+// REWRITES-NEXT: )]
+// REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn score({{arg[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT:     let mut x: i32 = {{arg[0-9]+}};
+// REWRITES-NEXT:     let mut out: i32 = 0;
+// REWRITES-NEXT:     out = 0;
+// REWRITES-NEXT:     '{{__switch[0-9]+_l[0-9]+}}: {
+// REWRITES-NEXT:         '{{__switch[0-9]+_l[0-9]+}}: {
+// REWRITES-NEXT:             '{{__switch[0-9]+_l[0-9]+}}: {
+// REWRITES-NEXT:                 '{{__switch[0-9]+_l[0-9]+}}: {
+// REWRITES-NEXT:                     '{{__switch[0-9]+_l[0-9]+}}: {
+// REWRITES-NEXT:                         match x {
+// REWRITES-NEXT:                             1 => {
+// REWRITES-NEXT:                                 break '{{__switch[0-9]+_l[0-9]+}};
+// REWRITES-NEXT:                             }
+// REWRITES-NEXT:                             2 => {
+// REWRITES-NEXT:                                 break '{{__switch[0-9]+_l[0-9]+}};
+// REWRITES-NEXT:                             }
+// REWRITES-NEXT:                             3 => {
+// REWRITES-NEXT:                                 break '{{__switch[0-9]+_l[0-9]+}};
+// REWRITES-NEXT:                             }
+// REWRITES-NEXT:                             4 => {
+// REWRITES-NEXT:                                 break '{{__switch[0-9]+_l[0-9]+}};
+// REWRITES-NEXT:                             }
+// REWRITES-NEXT:                             _ => {}
+// REWRITES-NEXT:                         }
+// REWRITES-NEXT:                         let {{_v[0-9]+}}: i32 = 90;
+// REWRITES-NEXT:                         out = out + {{_v[0-9]+}};
+// REWRITES-NEXT:                         break '{{__switch[0-9]+_l[0-9]+}};
+// REWRITES-NEXT:                     }
+// REWRITES-NEXT:                     break '{{__switch[0-9]+_l[0-9]+}};
+// REWRITES-NEXT:                 }
+// REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = 40;
+// REWRITES-NEXT:                 out = out + {{_v[0-9]+}};
+// REWRITES-NEXT:                 break '{{__switch[0-9]+_l[0-9]+}};
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 10;
+// REWRITES-NEXT:             out = out + {{_v[0-9]+}};
+// REWRITES-NEXT:             break '{{__switch[0-9]+_l[0-9]+}};
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 20;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = out;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-NEXT:         out = {{_v[0-9]+}};
+// REWRITES-NEXT:         break '{{__switch[0-9]+_l[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     return out;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         printf(
+// REWRITES-NEXT:             c"%d %d %d %d %d\n".as_ptr(),
+// REWRITES-NEXT:             score(1),
+// REWRITES-NEXT:             score(2),
+// REWRITES-NEXT:             score(3),
+// REWRITES-NEXT:             score(4),
+// REWRITES-NEXT:             score(8),
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// SLATE-FILECHECK-END rewrites
