@@ -610,6 +610,9 @@ fn parse_plugin_events(stderr: &str) -> PluginEvents {
                 });
             CallBinding::Direct {
                 identity,
+                trusted_declaration: (provenance == Provenance::TrustedHeader)
+                    .then_some(canonical_type.clone())
+                    .flatten(),
                 canonical_type,
             }
         };

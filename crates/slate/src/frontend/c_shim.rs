@@ -169,6 +169,8 @@ fn render_typed_shim(shim: &ExternFnDecl) -> Option<String> {
     } else {
         if shim.identity != FunctionIdentity::Unknown {
             String::new()
+        } else if let Some(declared_type) = shim.declared_type.as_deref() {
+            render_declared_prototype(&callee, declared_type).unwrap_or_default()
         } else {
             let mut prototype_params = shim
                 .params
@@ -196,6 +198,15 @@ fn render_typed_shim(shim: &ExternFnDecl) -> Option<String> {
     Some(format!(
         "{prototype}{ret_c} {}({params}) {{\n    {body}\n}}\n",
         shim.name
+    ))
+}
+
+fn render_declared_prototype(name: &str, declared_type: &str) -> Option<String> {
+    let open = declared_type.find('(')?;
+    Some(format!(
+        "{} {name}{};\n",
+        declared_type[..open].trim(),
+        &declared_type[open..]
     ))
 }
 

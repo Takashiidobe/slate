@@ -110,6 +110,7 @@ pub enum CallBinding {
     Direct {
         identity: FunctionIdentity,
         canonical_type: Option<String>,
+        trusted_declaration: Option<String>,
     },
     Indirect,
     #[default]
@@ -121,6 +122,7 @@ impl CallBinding {
         Self::Direct {
             identity: FunctionIdentity::Unknown,
             canonical_type: None,
+            trusted_declaration: None,
         }
     }
 
@@ -131,6 +133,16 @@ impl CallBinding {
                 ..
             } => Some(*known),
             Self::Direct { .. } | Self::Indirect | Self::Generated => None,
+        }
+    }
+
+    pub fn trusted_declaration(&self) -> Option<&str> {
+        match self {
+            Self::Direct {
+                trusted_declaration,
+                ..
+            } => trusted_declaration.as_deref(),
+            Self::Indirect | Self::Generated => None,
         }
     }
 }
