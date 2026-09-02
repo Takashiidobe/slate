@@ -114,8 +114,7 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn combine({{arg[0-9]+}}: &i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: &i32, {{arg[0-9]+}}: *mut i32) -> i32 {
-// REWRITES-NEXT:     let mut optional: *mut i32 = {{arg[0-9]+}};
+// REWRITES-NEXT: fn combine({{arg[0-9]+}}: &i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: &i32, mut optional: *mut i32) -> i32 {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = (unsafe { *({{arg[0-9]+}} as *const i32) }) + {{arg[0-9]+}} * unsafe { *({{arg[0-9]+}} as *const i32) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = optional != std::ptr::null_mut();
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} {

@@ -89,10 +89,9 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn describe({{arg[0-9]+}}: i32) -> *mut i8 {
-// REWRITES-NEXT:     let mut code: i32 = {{arg[0-9]+}};
+// REWRITES-NEXT: fn describe(mut {{_v[0-9]+}}: i32) -> *mut i8 {
 // REWRITES-NEXT:     let mut Err_: *mut i8 = std::ptr::null_mut();
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = code == 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         Err_ = c"ok".as_ptr() as *mut i8;
 // REWRITES-NEXT:     } else {

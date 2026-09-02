@@ -221,8 +221,7 @@ int main(void) {
 // REWRITES-NEXT:     return {{arg[0-9]+}} + {{arg[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn loop_sum({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let mut n: i32 = {{arg[0-9]+}};
+// REWRITES-NEXT: fn loop_sum(mut n: i32) -> i32 {
 // REWRITES-NEXT:     let mut total: i32 = 0;
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     i = 1;

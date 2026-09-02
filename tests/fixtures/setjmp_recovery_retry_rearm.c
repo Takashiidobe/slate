@@ -149,8 +149,7 @@ int main(void) {
 // REWRITES-NEXT:     fn longjmp(_0: *mut __slate_jmp_buf_tag, _1: i32) -> !;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn might_fail({{arg[0-9]+}}: i32) {
-// REWRITES-NEXT:     let mut attempt: i32 = {{arg[0-9]+}};
+// REWRITES-NEXT: fn might_fail(mut attempt: i32) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = attempt < 3;
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = attempt + 1;

@@ -86,7 +86,7 @@ pub(in crate::backend) fn apply(program: &mut Program) {
 
 fn apply_item(item: &mut Item, registry: &RuleRegistry) {
     match item {
-        Item::Fn(func) => run_function(&mut func.body, &func.params, registry),
+        Item::Fn(func) => run_function(&mut func.body, &mut func.params, registry),
         Item::InlineMod { items, .. } => {
             for item in items {
                 apply_item(item, registry);
@@ -99,7 +99,7 @@ fn apply_item(item: &mut Item, registry: &RuleRegistry) {
                         continue;
                     };
                     let mut body = std::mem::take(&mut block.stmts);
-                    run_function(&mut body, &method.params, registry);
+                    run_function(&mut body, &mut method.params, registry);
                     block.stmts = body;
                 }
             }
@@ -108,11 +108,12 @@ fn apply_item(item: &mut Item, registry: &RuleRegistry) {
     }
 }
 
-fn run_function(body: &mut Vec<IndentStmt>, params: &[FnParam], registry: &RuleRegistry) {
+fn run_function(body: &mut Vec<IndentStmt>, params: &mut Vec<FnParam>, registry: &RuleRegistry) {
     let taken = std::mem::take(body);
     let FunctionArena { mut arena, root } = arena::build(taken, params);
     run_worklist(&mut arena, registry);
     *body = arena::reify(&arena, root);
+    *params = arena.params().to_vec();
 }
 
 fn enqueue_subtree(arena: &Arena, id: NodeId, worklist: &mut BTreeSet<u32>) {

@@ -101,8 +101,7 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: unsafe fn sum4({{arg[0-9]+}}: *mut i32) -> i32 {
-// REWRITES-NEXT:     let mut arr: *mut i32 = {{arg[0-9]+}};
+// REWRITES-NEXT: unsafe fn sum4(mut arr: *mut i32) -> i32 {
 // REWRITES-NEXT:     let mut s: i32 = 0;
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     i = 0;

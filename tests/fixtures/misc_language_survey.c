@@ -143,9 +143,7 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: unsafe fn scale({{arg[0-9]+}}: i32, {{arg[0-9]+}}: *mut i32) {
-// REWRITES-NEXT:     let mut n: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT:     let mut arr: *mut i32 = {{arg[0-9]+}};
+// REWRITES-NEXT: unsafe fn scale(mut n: i32, mut arr: *mut i32) {
 // REWRITES-NEXT:     for i in 0..n {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 2;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = arr;

@@ -124,9 +124,7 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn first_multiple({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let mut n: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT:     let mut m: i32 = {{arg[0-9]+}};
+// REWRITES-NEXT: fn first_multiple(mut n: i32, mut m: i32) -> i32 {
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     i = 1;

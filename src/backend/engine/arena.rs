@@ -309,17 +309,55 @@ pub(in crate::backend) struct Arena {
     def_uses: HashMap<Ident, Vec<NodeId>>,
     defs: HashMap<Ident, NodeId>,
     param_types: HashMap<Ident, crate::backend::rust_ast::Type>,
+    params: Vec<crate::backend::rust_ast::FnParam>,
 }
 
 impl Arena {
-    fn new() -> Self {
+    fn new(params: &[crate::backend::rust_ast::FnParam]) -> Self {
         Self {
             slots: Vec::new(),
             free: Vec::new(),
             def_uses: HashMap::new(),
             defs: HashMap::new(),
-            param_types: HashMap::new(),
+            param_types: params
+                .iter()
+                .map(|param| (Ident::new(&param.name), param.ty.clone()))
+                .collect(),
+            params: params.to_vec(),
         }
+    }
+
+    pub(in crate::backend) fn params(&self) -> &[crate::backend::rust_ast::FnParam] {
+        &self.params
+    }
+
+    pub(in crate::backend) fn rename_param(
+        &mut self,
+        source: Ident,
+        target: Ident,
+        mutable: bool,
+    ) -> bool {
+        if self
+            .params
+            .iter()
+            .any(|param| Ident::new(&param.name) == target)
+        {
+            return false;
+        }
+        let Some(param) = self
+            .params
+            .iter_mut()
+            .find(|param| Ident::new(&param.name) == source)
+        else {
+            return false;
+        };
+        param.name = target.as_str().to_string();
+        param.mutable |= mutable;
+        let Some(ty) = self.param_types.remove(&source) else {
+            return false;
+        };
+        self.param_types.insert(target, ty);
+        true
     }
 
     pub(in crate::backend) fn definition(&self, name: Ident) -> Option<NodeId> {
@@ -541,12 +579,7 @@ pub(in crate::backend) fn build(
     body: Vec<IndentStmt>,
     params: &[crate::backend::rust_ast::FnParam],
 ) -> FunctionArena {
-    let mut arena = Arena::new();
-    for param in params {
-        arena
-            .param_types
-            .insert(Ident::new(&param.name), param.ty.clone());
-    }
+    let mut arena = Arena::new(params);
     let root = arena.reserve(None);
     let stmts = build_stmts(&mut arena, Some(root), body);
     arena.fill(root, NodeKind::Block { stmts, tail: None });

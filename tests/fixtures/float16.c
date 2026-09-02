@@ -280,8 +280,7 @@ int main(void) {
 // REWRITES-NEXT:     return (({{arg[0-9]+}} as f32) * ({{arg[0-9]+}} as f32)) as f16;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: unsafe fn sum_variadic({{arg[0-9]+}}: i32, mut __slate_va_args: __SlateVaArgs) -> f16 {
-// REWRITES-NEXT:     let mut n: i32 = {{arg[0-9]+}};
+// REWRITES-NEXT: unsafe fn sum_variadic(mut n: i32, mut __slate_va_args: __SlateVaArgs) -> f16 {
 // REWRITES-NEXT:     let mut ap: __SlateVaArgs = __SlateVaArgs::empty();
 // REWRITES-NEXT:     let mut total: f16 = 0.0f16;
 // REWRITES-NEXT:     unsafe {

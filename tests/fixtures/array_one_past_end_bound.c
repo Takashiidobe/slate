@@ -167,9 +167,8 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn fill({{arg[0-9]+}}: &mut cursor, {{arg[0-9]+}}: u8) {
+// REWRITES-NEXT: fn fill({{arg[0-9]+}}: &mut cursor, mut n: u8) {
 // REWRITES-NEXT:     let mut c: *mut cursor = {{arg[0-9]+}} as *mut cursor;
-// REWRITES-NEXT:     let mut n: u8 = {{arg[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u8 = (unsafe { std::ptr::addr_of_mut!((*c).buf) }) as *mut u8;
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         (*c).p = {{_v[0-9]+}};

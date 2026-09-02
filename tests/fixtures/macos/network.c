@@ -388,8 +388,7 @@ unsigned int slate_first_interface_flags(void) {
 // REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: u64 = (unsafe { strlen({{_v[0-9]+}} as *const core::ffi::c_char) }) as u64;
 // REWRITES-MACOS-DAG:     return unsafe { bind({{arg[0-9]+}} as i32, {{_v[0-9]+}} as *const sockaddr, ({{_v[0-9]+}} + {{_v[0-9]+}}) as u32) };
 // REWRITES-MACOS-DAG: }
-// REWRITES-MACOS-DAG: unsafe fn slate_resolve({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut *mut addrinfo) -> i32 {
-// REWRITES-MACOS-DAG:     let mut result: *mut *mut addrinfo = {{arg[0-9]+}};
+// REWRITES-MACOS-DAG: unsafe fn slate_resolve({{arg[0-9]+}}: *mut i8, mut result: *mut *mut addrinfo) -> i32 {
 // REWRITES-MACOS-DAG:     let mut hints: addrinfo = addrinfo {
 // REWRITES-MACOS-DAG:         ai_flags: 0,
 // REWRITES-MACOS-DAG:         ai_family: 0,
@@ -419,12 +418,12 @@ unsigned int slate_first_interface_flags(void) {
 // REWRITES-MACOS-DAG:     }
 // REWRITES-MACOS-DAG:     return status;
 // REWRITES-MACOS-DAG: }
-// REWRITES-MACOS-DAG: unsafe fn slate_control_data({{arg[0-9]+}}: *mut msghdr) -> *mut u8 {
+// REWRITES-MACOS-DAG: unsafe fn slate_control_data(mut message: *mut msghdr) -> *mut u8 {
 // REWRITES-MACOS-DAG:     let mut control: *mut cmsghdr = std::ptr::null_mut();
-// REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: u64 = (unsafe { (*{{arg[0-9]+}}).msg_controllen }) as u64;
+// REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: u64 = (unsafe { (*message).msg_controllen }) as u64;
 // REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: u64 = std::mem::size_of::<cmsghdr>() as u64;
 // REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: *mut cmsghdr = if {{_v[0-9]+}} >= {{_v[0-9]+}} {
-// REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: *mut cmsghdr = (unsafe { (*{{arg[0-9]+}}).msg_control }) as *mut cmsghdr;
+// REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: *mut cmsghdr = (unsafe { (*message).msg_control }) as *mut cmsghdr;
 // REWRITES-MACOS-DAG:         {{_v[0-9]+}}
 // REWRITES-MACOS-DAG:     } else {
 // REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: *mut cmsghdr = std::ptr::null_mut();

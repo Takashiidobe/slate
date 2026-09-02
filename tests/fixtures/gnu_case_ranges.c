@@ -214,10 +214,9 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn classify({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let mut value: i32 = {{arg[0-9]+}};
+// REWRITES-NEXT: fn classify(mut {{_v[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     let mut result: i32 = 0;
-// REWRITES-NEXT:     match value {
+// REWRITES-NEXT:     match {{_v[0-9]+}} {
 // REWRITES-NEXT:         1..=4 => {
 // REWRITES-NEXT:             result += 10;
 // REWRITES-NEXT:             result += 20;
@@ -235,10 +234,9 @@ int main(void) {
 // REWRITES-NEXT:     return result;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn classify_direct({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let mut value: i32 = {{arg[0-9]+}};
+// REWRITES-NEXT: fn classify_direct(mut {{_v[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
-// REWRITES-NEXT:     match value {
+// REWRITES-NEXT:     match {{_v[0-9]+}} {
 // REWRITES-NEXT:         -2..=2 => {
 // REWRITES-NEXT:             __retval = 7;
 // REWRITES-NEXT:             return __retval;

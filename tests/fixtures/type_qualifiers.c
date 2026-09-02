@@ -141,8 +141,7 @@ int main(void) {
 // REWRITES-NEXT:     return (unsafe { *({{arg[0-9]+}} as *const i32) }) + unsafe { *({{arg[0-9]+}} as *const i32) };
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn add_atomic_value({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let mut value: i32 = {{arg[0-9]+}};
+// REWRITES-NEXT: fn add_atomic_value(mut value: i32) -> i32 {
 // REWRITES-NEXT:     let mut local: i32 = 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
 // REWRITES-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(value))

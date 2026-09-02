@@ -785,10 +785,9 @@ int main(void) {
 // REWRITES-NEXT:     }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn c23_switch_fallthrough({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let mut value: i32 = {{arg[0-9]+}};
+// REWRITES-NEXT: fn c23_switch_fallthrough(mut {{_v[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     let mut result: i32 = 0;
-// REWRITES-NEXT:     match value {
+// REWRITES-NEXT:     match {{_v[0-9]+}} {
 // REWRITES-NEXT:         1 => {
 // REWRITES-NEXT:             result += 3;
 // REWRITES-NEXT:             result += 5;

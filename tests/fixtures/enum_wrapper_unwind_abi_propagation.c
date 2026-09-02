@@ -326,8 +326,7 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C" fn panicky_callback({{arg[0-9]+}}: i32) {
-// REWRITES-NEXT:     let mut x: i32 = {{arg[0-9]+}};
+// REWRITES-NEXT: extern "C" fn panicky_callback(mut x: i32) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = x == 2;
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         unsafe {
@@ -342,9 +341,8 @@ int main(void) {
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C" fn risky({{arg[0-9]+}}: i32) -> u32 {
-// REWRITES-NEXT:     let mut x: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = x == 3;
+// REWRITES-NEXT: extern "C" fn risky(mut {{_v[0-9]+}}: i32) -> u32 {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 3;
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:             longjmp(

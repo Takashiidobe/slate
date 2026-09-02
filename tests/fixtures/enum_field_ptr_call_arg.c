@@ -68,19 +68,18 @@ int main(void) {
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn select_type({{arg[0-9]+}}: *mut u32, {{arg[0-9]+}}: u32) -> u32 {
-// REWRITES-DAG:     let mut count: u32 = {{arg[0-9]+}};
+// REWRITES-DAG: fn select_type(mut repeatMode: *mut u32, mut count: u32) -> u32 {
 // REWRITES-DAG:     let mut __retval: u32 = 0;
 // REWRITES-DAG:     let {{_v[0-9]+}}: bool = count == 0;
 // REWRITES-DAG:     if {{_v[0-9]+}} {
 // REWRITES-DAG:         let {{_v[0-9]+}}: u32 = FSE_repeat::REPEAT_NONE as u32;
 // REWRITES-DAG:         unsafe {
-// REWRITES-DAG:             *{{arg[0-9]+}} = {{_v[0-9]+}};
+// REWRITES-DAG:             *repeatMode = {{_v[0-9]+}};
 // REWRITES-DAG:         }
 // REWRITES-DAG:         __retval = 0;
 // REWRITES-DAG:         return __retval;
 // REWRITES-DAG:     }
-// REWRITES-DAG:     __retval = (unsafe { *{{arg[0-9]+}} }) + count;
+// REWRITES-DAG:     __retval = (unsafe { *repeatMode }) + count;
 // REWRITES-DAG:     return __retval;
 // REWRITES-DAG: }
 // REWRITES-DAG: fn run({{arg[0-9]+}}: &mut Entropy, {{arg[0-9]+}}: u32) -> i32 {
