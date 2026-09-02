@@ -3168,7 +3168,7 @@ fn record_field_offset(
 }
 
 fn align_to(value: u64, align: u64) -> u64 {
-    let align = align.min(1);
+    let align = align.max(1);
     value.div_ceil(align) * align
 }
 

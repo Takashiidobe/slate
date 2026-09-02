@@ -43,12 +43,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             && let Some(identity @ FunctionIdentity::Known(_)) =
                 self.parent.known_functions.get(callee)
         {
+            let trusted_declaration = binding.trusted_declaration().map(str::to_string);
             binding = CallBinding::Direct {
                 identity: *identity,
                 canonical_type: match binding {
                     CallBinding::Direct { canonical_type, .. } => canonical_type,
                     CallBinding::Indirect | CallBinding::Generated => None,
                 },
+                trusted_declaration,
             };
         }
         let (callee_name, callee_expr, indirect_callee_operand) =
@@ -91,12 +93,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             &callee_name,
             &args,
             arg_types,
+            &binding,
         ) || self.try_format_call_shims(
             op.result.as_deref(),
             op.result_ty.as_ref(),
             &callee_name,
             &args,
             arg_types,
+            &binding,
         ) {
             return;
         }
@@ -267,8 +271,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         callee_name: &str,
         args: &[Expr],
         arg_types: &[CirType],
+        binding: &CallBinding,
     ) -> bool {
-        self.try_long_double_call_shim(result, result_ty, callee_name, args, arg_types)
+        self.try_long_double_call_shim(result, result_ty, callee_name, args, arg_types, binding)
     }
 
     pub(super) fn try_long_double_call_shim(
@@ -278,6 +283,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         callee_name: &str,
         args: &[Expr],
         arg_types: &[CirType],
+        binding: &CallBinding,
     ) -> bool {
         if crate::frontend::toolchain::uses_f64_long_double_abi() {
             return false;
@@ -400,7 +406,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 attrs: Vec::new(),
                 identity,
                 name: shim_name.clone(),
-                declared_type: self.parent.function_types.get(callee_name).cloned(),
+                declared_type: binding.trusted_declaration().map(str::to_string),
                 params: param_types
                     .iter()
                     .enumerate()
@@ -556,6 +562,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 crate::function_identity::CallBinding::Direct {
                     identity: FunctionIdentity::Unknown,
                     canonical_type: None,
+                    ..
                 }
             )
             || self.parent.known_functions.get(known.symbol())
@@ -900,6 +907,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 crate::function_identity::CallBinding::Direct {
                     identity: FunctionIdentity::Unknown,
                     canonical_type: None,
+                    ..
                 }
             )
             || self.parent.known_functions.get(known.symbol())
@@ -937,6 +945,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 crate::function_identity::CallBinding::Direct {
                     identity: FunctionIdentity::Unknown,
                     canonical_type: None,
+                    ..
                 }
             )
             || self.parent.known_functions.get(known.symbol())

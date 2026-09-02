@@ -8,6 +8,7 @@ use crate::function_identity::{CallBinding, Known};
 pub(super) struct CallCtx<'a> {
     arena: &'a Arena,
     args: &'a [Expr],
+    result_type: Option<Type>,
     discards_result: bool,
 }
 
@@ -18,6 +19,10 @@ impl CallCtx<'_> {
 
     pub(super) fn discards_result(&self) -> bool {
         self.discards_result
+    }
+
+    pub(super) fn result_type(&self) -> Option<&Type> {
+        self.result_type.as_ref()
     }
 
     pub(super) fn lifted_arg(&self, i: usize, want: fn(&Type) -> bool) -> Option<Expr> {
@@ -565,6 +570,7 @@ impl NodeRule for LibcCall {
         let ctx = CallCtx {
             arena,
             args,
+            result_type: call_result_type(kind),
             discards_result: node_discards_result(arena, kind),
         };
         (self.build)(&ctx).is_some()
@@ -581,10 +587,12 @@ impl NodeRule for LibcCall {
             return false;
         };
         let args = args.to_vec();
+        let result_type = call_result_type(kind);
         let discards_result = node_discards_result(arena, kind);
         let ctx = CallCtx {
             arena,
             args: &args,
+            result_type,
             discards_result,
         };
         let Some(replacement) = (self.build)(&ctx) else {
@@ -609,6 +617,13 @@ impl NodeRule for LibcCall {
     }
 }
 
+fn call_result_type(kind: &NodeKind) -> Option<Type> {
+    match kind {
+        NodeKind::Let { ty, .. } => ty.clone(),
+        _ => None,
+    }
+}
+
 fn node_discards_result(arena: &Arena, kind: &NodeKind) -> bool {
     match kind {
         NodeKind::Expr(_) => true,
@@ -626,11 +641,13 @@ pub(super) fn rules() -> Vec<Box<dyn NodeRule>> {
             Some(free_call(&["std", "process", "abort"], ctx.args().to_vec()))
         }),
         libc_call(Known::StrLen, |ctx| {
-            Some(method_call(
-                ctx.lifted_arg(0, is_str_or_slice)?,
-                "len",
-                Vec::new(),
-            ))
+            let length = method_call(ctx.lifted_arg(0, is_str_or_slice)?, "len", Vec::new());
+            match ctx.result_type() {
+                Some(ty) if *ty == Type::Prim(Prim::Usize) => Some(length),
+                Some(ty) => Some(cast(length, ty.clone())),
+                None if ctx.discards_result() => Some(length),
+                None => None,
+            }
         }),
         libc_call(Known::StrCmp, |ctx| {
             let a = ctx.lifted_arg(0, is_byte_str_or_slice)?;
