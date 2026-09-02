@@ -141,6 +141,19 @@ so they are always genericized to `{{arg[0-9]+}}` in check output. See
 `tests/fixtures/fn_signature_filecheck.c`. Body-only assertions still prefer the
 plain in-body markers.
 
+Because the region is everything emitted *between* the two sentinel functions,
+the wrapped function must keep its source position. **Do not declare it
+`static`**: static functions get reordered relative to the sentinels, the target
+falls outside the capture window, and the tool fails with
+
+```
+error: @lowering annotation 0 selected no checks
+```
+
+Drop `static` from any definition you wrap in fn-scope markers; if a fixture
+genuinely needs `static`, assert its body with the plain in-body markers
+instead.
+
 Multiple, disjoint regions in one fixture are fine — each `@lowering`/`@rewrite`
 pair contributes to the single `SLATE-FILECHECK-BEGIN/END` block the tool emits,
 so wrap every statement you care about.

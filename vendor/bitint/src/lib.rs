@@ -4,6 +4,40 @@ use std::ops::{
     Mul, MulAssign, Neg, Not, Rem, RemAssign, Shl, ShlAssign, Shr, ShrAssign, Sub, SubAssign,
 };
 
+pub trait ShiftAmount {
+    fn shift_amount(self) -> usize;
+}
+
+macro_rules! shift_amount_for_int {
+    ($($ty:ty),* $(,)?) => {$(
+        impl ShiftAmount for $ty {
+            fn shift_amount(self) -> usize {
+                usize::try_from(self).unwrap_or(usize::MAX)
+            }
+        }
+    )*};
+}
+
+shift_amount_for_int!(
+    i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize
+);
+
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> ShiftAmount
+    for BUint<BITS, LIMBS, BYTES>
+{
+    fn shift_amount(self) -> usize {
+        usize::try_from(self.to_u128()).unwrap_or(usize::MAX)
+    }
+}
+
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> ShiftAmount
+    for BInt<BITS, LIMBS, BYTES>
+{
+    fn shift_amount(self) -> usize {
+        usize::try_from(self.to_i128()).unwrap_or(usize::MAX)
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct BUint<const BITS: usize, const LIMBS: usize, const BYTES: usize> {
     bytes: [u8; BYTES],
@@ -274,21 +308,21 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BitXor
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> Shl<usize>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, S: ShiftAmount> Shl<S>
     for BUint<BITS, LIMBS, BYTES>
 {
     type Output = Self;
-    fn shl(self, rhs: usize) -> Self::Output {
-        self.shl_bits(rhs)
+    fn shl(self, rhs: S) -> Self::Output {
+        self.shl_bits(rhs.shift_amount())
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> Shr<usize>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, S: ShiftAmount> Shr<S>
     for BUint<BITS, LIMBS, BYTES>
 {
     type Output = Self;
-    fn shr(self, rhs: usize) -> Self::Output {
-        self.shr_bits(rhs)
+    fn shr(self, rhs: S) -> Self::Output {
+        self.shr_bits(rhs.shift_amount())
     }
 }
 
@@ -316,19 +350,19 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BitXorAssign
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> ShlAssign<usize>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, S: ShiftAmount> ShlAssign<S>
     for BUint<BITS, LIMBS, BYTES>
 {
-    fn shl_assign(&mut self, rhs: usize) {
-        *self = (*self).shl_bits(rhs);
+    fn shl_assign(&mut self, rhs: S) {
+        *self = (*self).shl_bits(rhs.shift_amount());
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> ShrAssign<usize>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, S: ShiftAmount> ShrAssign<S>
     for BUint<BITS, LIMBS, BYTES>
 {
-    fn shr_assign(&mut self, rhs: usize) {
-        *self = (*self).shr_bits(rhs);
+    fn shr_assign(&mut self, rhs: S) {
+        *self = (*self).shr_bits(rhs.shift_amount());
     }
 }
 
@@ -433,12 +467,20 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BInt<BITS, LIMBS
 
     pub fn saturating_add(self, rhs: Self) -> Self {
         let (out, overflow) = self.overflowing_add(rhs);
-        if overflow { self.saturated_bound() } else { out }
+        if overflow {
+            self.saturated_bound()
+        } else {
+            out
+        }
     }
 
     pub fn saturating_sub(self, rhs: Self) -> Self {
         let (out, overflow) = self.overflowing_sub(rhs);
-        if overflow { self.saturated_bound() } else { out }
+        if overflow {
+            self.saturated_bound()
+        } else {
+            out
+        }
     }
 
     pub const fn wrapping_neg(self) -> Self {
@@ -635,37 +677,37 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> Not for BInt<BIT
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> Shl<usize>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, S: ShiftAmount> Shl<S>
     for BInt<BITS, LIMBS, BYTES>
 {
     type Output = Self;
-    fn shl(self, rhs: usize) -> Self::Output {
-        self.shl_bits(rhs)
+    fn shl(self, rhs: S) -> Self::Output {
+        self.shl_bits(rhs.shift_amount())
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> Shr<usize>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, S: ShiftAmount> Shr<S>
     for BInt<BITS, LIMBS, BYTES>
 {
     type Output = Self;
-    fn shr(self, rhs: usize) -> Self::Output {
-        self.shr_bits(rhs)
+    fn shr(self, rhs: S) -> Self::Output {
+        self.shr_bits(rhs.shift_amount())
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> ShlAssign<usize>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, S: ShiftAmount> ShlAssign<S>
     for BInt<BITS, LIMBS, BYTES>
 {
-    fn shl_assign(&mut self, rhs: usize) {
-        *self = (*self).shl_bits(rhs);
+    fn shl_assign(&mut self, rhs: S) {
+        *self = (*self).shl_bits(rhs.shift_amount());
     }
 }
 
-impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> ShrAssign<usize>
+impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, S: ShiftAmount> ShrAssign<S>
     for BInt<BITS, LIMBS, BYTES>
 {
-    fn shr_assign(&mut self, rhs: usize) {
-        *self = (*self).shr_bits(rhs);
+    fn shr_assign(&mut self, rhs: S) {
+        *self = (*self).shr_bits(rhs.shift_amount());
     }
 }
 
