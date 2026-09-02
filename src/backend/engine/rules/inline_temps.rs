@@ -656,7 +656,6 @@ fn is_option_like_type(ty: &Type) -> bool {
     match ty {
         Type::FnPtr { .. } => true,
         Type::Generic { name, .. } => name == "Option",
-        Type::Custom(name) => name.starts_with("Option<"),
         _ => false,
     }
 }

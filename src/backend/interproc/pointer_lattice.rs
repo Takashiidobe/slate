@@ -2,8 +2,8 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use crate::backend::interproc::{self, CallGraph};
 use crate::backend::rust_ast::{
-    BinOp, Block, Expr, FnDef, Ident, IndentStmt, Item, Path, Prim, Program, RustValue, Stmt, Type,
-    UnaryOp, Visibility,
+    BinOp, Block, CLibType, Expr, FnDef, Ident, IndentStmt, Item, Path, Prim, Program, RustValue,
+    Stmt, Type, UnaryOp, Visibility,
 };
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 
@@ -434,10 +434,8 @@ fn elem_is_byte(ty: &Type) -> bool {
     };
     match &**inner {
         Type::Prim(Prim::I8 | Prim::U8) => true,
-        Type::Custom(name) => matches!(
-            name.as_str(),
-            "libc::c_char" | "std::ffi::c_char" | "core::ffi::c_char"
-        ),
+        Type::CLib(CLibType::CHAR) => true,
+        Type::Custom(name) => name == "libc::c_char",
         _ => false,
     }
 }
