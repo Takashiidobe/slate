@@ -161,15 +161,13 @@ int main(void) {
 // REWRITES-NEXT: ) {
 // REWRITES-NEXT:     let mut flag: i32 = {{arg[0-9]+}};
 // REWRITES-NEXT:     let mut handler: Option<unsafe extern "C" fn(*mut core::ffi::c_void, i32)> = {{arg[0-9]+}};
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = flag != 0;
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: Option<unsafe extern "C" fn(*mut core::ffi::c_void, i32)> = handler;
-// REWRITES-NEXT:             let {{_v[0-9]+}}: *mut core::ffi::c_void =
-// REWRITES-NEXT:                 std::ptr::addr_of_mut!(process_c) as *mut core::ffi::c_void;
-// REWRITES-NEXT:             unsafe { {{_v[0-9]+}}.unwrap()({{_v[0-9]+}}, 0 as i32) };
-// REWRITES-NEXT:             return;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = flag != 0;
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C" fn(*mut core::ffi::c_void, i32)> = handler;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut core::ffi::c_void =
+// REWRITES-NEXT:             std::ptr::addr_of_mut!(process_c) as *mut core::ffi::c_void;
+// REWRITES-NEXT:         unsafe { {{_v[0-9]+}}.unwrap()({{_v[0-9]+}}, 0 as i32) };
+// REWRITES-NEXT:         return;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { handler.unwrap()({{arg[0-9]+}} as *mut core::ffi::c_void, 42 as i32) };
 // REWRITES-NEXT:     return;
@@ -178,13 +176,11 @@ int main(void) {
 // REWRITES-NEXT: extern "C" fn print_handler({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: i32) {
 // REWRITES-NEXT:     let mut p: *mut core::ffi::c_void = {{arg[0-9]+}};
 // REWRITES-NEXT:     let mut extra: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = extra == {{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { printf(c"zero %d\n".as_ptr(), (unsafe { *(p as *mut i8) }) as i32) };
-// REWRITES-NEXT:             return;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = extra == {{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { printf(c"zero %d\n".as_ptr(), (unsafe { *(p as *mut i8) }) as i32) };
+// REWRITES-NEXT:         return;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { (*(p as *mut Data)).value };
 // REWRITES-NEXT:     unsafe { printf(c"%d %d\n".as_ptr(), {{_v[0-9]+}}, extra) };

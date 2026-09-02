@@ -458,11 +458,7 @@ int main(void) {
 // REWRITES-NEXT:     let mut value: LongDouble = LongDouble([0; 10]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(value) as *mut core::ffi::c_void;
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         std::ptr::copy_nonoverlapping(
-// REWRITES-NEXT:             ({{arg[0-9]+}} as *mut core::ffi::c_void) as *const u8,
-// REWRITES-NEXT:             ({{_v[0-9]+}} as *mut core::ffi::c_void) as *mut u8,
-// REWRITES-NEXT:             (10 as u64) as usize,
-// REWRITES-NEXT:         )
+// REWRITES-NEXT:         std::ptr::copy_nonoverlapping({{arg[0-9]+}} as *const u8, {{_v[0-9]+}} as *mut u8, (10 as u64) as usize)
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     return value;
 // REWRITES-NEXT: }
@@ -474,23 +470,17 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(value) as *mut core::ffi::c_void;
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         std::ptr::copy_nonoverlapping(
-// REWRITES-NEXT:             ({{_v[0-9]+}} as *const core::ffi::c_void) as *const u8,
-// REWRITES-NEXT:             ({{_v[0-9]+}} as *mut core::ffi::c_void) as *mut u8,
-// REWRITES-NEXT:             (10 as u64) as usize,
-// REWRITES-NEXT:         )
+// REWRITES-NEXT:         std::ptr::copy_nonoverlapping({{_v[0-9]+}} as *const u8, {{_v[0-9]+}} as *mut u8, (10 as u64) as usize)
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     unsafe { printf(c"%s".as_ptr(), {{arg[0-9]+}}) };
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let mut i: i32 = 0;
-// REWRITES-NEXT:         loop {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 10;
-// REWRITES-NEXT:             if !(i < {{_v[0-9]+}}) {
-// REWRITES-NEXT:                 break;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             unsafe { printf(c"%02x".as_ptr(), bytes[((i as i64) as usize)] as i32) };
-// REWRITES-NEXT:             i = i + 1;
+// REWRITES-NEXT:     let mut i: i32 = 0;
+// REWRITES-NEXT:     loop {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 10;
+// REWRITES-NEXT:         if !(i < {{_v[0-9]+}}) {
+// REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
+// REWRITES-NEXT:         unsafe { printf(c"%02x".as_ptr(), bytes[((i as i64) as usize)] as i32) };
+// REWRITES-NEXT:         i = i + 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { printf(c"\n".as_ptr()) };
 // REWRITES-NEXT:     return;

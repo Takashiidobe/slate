@@ -302,21 +302,19 @@ int main(void) {
 // REWRITES-NEXT:             {{_v[0-9]+}},
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let mut i: i32 = 0;
-// REWRITES-NEXT:         loop {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 8;
-// REWRITES-NEXT:             if !(i < {{_v[0-9]+}}) {
-// REWRITES-NEXT:                 break;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             unsafe {
-// REWRITES-NEXT:                 printf(
-// REWRITES-NEXT:                     c"%d ".as_ptr(),
-// REWRITES-NEXT:                     (unsafe { g.bytes[((i as i64) as usize)] }) as i32,
-// REWRITES-NEXT:                 )
-// REWRITES-NEXT:             };
-// REWRITES-NEXT:             i = i + 1;
+// REWRITES-NEXT:     let mut i: i32 = 0;
+// REWRITES-NEXT:     loop {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 8;
+// REWRITES-NEXT:         if !(i < {{_v[0-9]+}}) {
+// REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
+// REWRITES-NEXT:         unsafe {
+// REWRITES-NEXT:             printf(
+// REWRITES-NEXT:                 c"%d ".as_ptr(),
+// REWRITES-NEXT:                 (unsafe { g.bytes[((i as i64) as usize)] }) as i32,
+// REWRITES-NEXT:             )
+// REWRITES-NEXT:         };
+// REWRITES-NEXT:         i = i + 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { printf(c"\n".as_ptr()) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { g.trailing3 };

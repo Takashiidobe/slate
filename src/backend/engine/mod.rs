@@ -129,6 +129,7 @@ fn run_worklist(arena: &mut Arena, registry: &RuleRegistry) {
             .map(|name| arena.def_use_neighbors(name).to_vec())
             .unwrap_or_default();
         let prior_reads: Vec<Ident> = arena.reads(id).to_vec();
+        let prior_parent = arena.parent(id);
         let candidates: Vec<&dyn NodeRule> = registry
             .candidates(kind.tag(), kind.call_anchor())
             .into_iter()
@@ -146,7 +147,7 @@ fn run_worklist(arena: &mut Arena, registry: &RuleRegistry) {
                 if let Some(resolved) = arena.resolve(index) {
                     worklist.insert(resolved.index());
                 }
-                if let Some(parent) = arena.parent(id) {
+                if let Some(parent) = prior_parent {
                     worklist.insert(parent.index());
                 }
                 for &neighbor in &def_use_targets {

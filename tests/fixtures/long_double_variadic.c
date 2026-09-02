@@ -133,19 +133,17 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
 // REWRITES-NEXT:     unsafe { __slate_printf__ri32_pi8_f80(b"%La\n\0".as_ptr() as *mut i8, {{_v[0-9]+}}) };
 // REWRITES-NEXT:     unsafe { __slate_printf__ri32_pi8_f80(b"%.21Lf\n\0".as_ptr() as *mut i8, {{_v[0-9]+}}) };
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe {
-// REWRITES-NEXT:             __slate_sscanf__ri32_pi8_pi8_pf80(
-// REWRITES-NEXT:                 b"0x1.0000000000000001p+0\0".as_ptr() as *mut i8,
-// REWRITES-NEXT:                 b"%La\0".as_ptr() as *mut i8,
-// REWRITES-NEXT:                 std::ptr::addr_of_mut!(y),
-// REWRITES-NEXT:             )
-// REWRITES-NEXT:         };
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { __slate_printf__ri32_pi8_f80(b"%La\n\0".as_ptr() as *mut i8, y) };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
+// REWRITES-NEXT:         __slate_sscanf__ri32_pi8_pi8_pf80(
+// REWRITES-NEXT:             b"0x1.0000000000000001p+0\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:             b"%La\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:             std::ptr::addr_of_mut!(y),
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { __slate_printf__ri32_pi8_f80(b"%La\n\0".as_ptr() as *mut i8, y) };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }

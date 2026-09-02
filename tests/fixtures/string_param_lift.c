@@ -123,7 +123,7 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn text_len({{arg[0-9]+}}: &str) -> i32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe { {{arg[0-9]+}}.len() }) as u64;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe { {{arg[0-9]+}}.len() as u64 }) as u64;
 // REWRITES-NEXT:     return {{_v[0-9]+}} as i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

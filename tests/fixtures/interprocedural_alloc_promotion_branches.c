@@ -137,13 +137,11 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn b() -> *mut i32 {
 // REWRITES-NEXT:     let mut __retval: *mut i32 = std::ptr::null_mut();
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             __retval = a();
-// REWRITES-NEXT:             return __retval;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         __retval = a();
+// REWRITES-NEXT:         return __retval;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     __retval = Box::into_raw(alloc()).cast::<i32>();
 // REWRITES-NEXT:     return __retval;

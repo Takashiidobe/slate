@@ -181,21 +181,21 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = a.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf({{_v[0-9]+}} as *const core::ffi::c_char, unsafe {
-// REWRITES-NEXT:             __slate_atoi(({{_v[0-9]+}} as *const core::ffi::c_char) as *const i8)
+// REWRITES-NEXT:             __slate_atoi({{_v[0-9]+}} as *const i8)
 // REWRITES-NEXT:         })
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%ld\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf({{_v[0-9]+}} as *const core::ffi::c_char, unsafe {
-// REWRITES-NEXT:             __slate_atol(({{_v[0-9]+}} as *const core::ffi::c_char) as *const i8)
+// REWRITES-NEXT:             __slate_atol({{_v[0-9]+}} as *const i8)
 // REWRITES-NEXT:         })
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%lld\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf({{_v[0-9]+}} as *const core::ffi::c_char, unsafe {
-// REWRITES-NEXT:             __slate_atol(({{_v[0-9]+}} as *const core::ffi::c_char) as *const i8)
+// REWRITES-NEXT:             __slate_atol({{_v[0-9]+}} as *const i8)
 // REWRITES-NEXT:         })
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

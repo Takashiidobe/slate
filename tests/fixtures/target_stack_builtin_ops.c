@@ -528,21 +528,9 @@ int main(void) {
 // REWRITES-NEXT:         },
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(value) as *mut core::ffi::c_void;
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         std::ptr::write_bytes(
-// REWRITES-NEXT:             ({{_v[0-9]+}} as *mut core::ffi::c_void) as *mut u8,
-// REWRITES-NEXT:             (255 as i32) as u8,
-// REWRITES-NEXT:             (8 as u64) as usize,
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { std::ptr::write_bytes({{_v[0-9]+}} as *mut u8, (255 as i32) as u8, (8 as u64) as usize) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(bits) as *mut core::ffi::c_void;
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         std::ptr::write_bytes(
-// REWRITES-NEXT:             ({{_v[0-9]+}} as *mut core::ffi::c_void) as *mut u8,
-// REWRITES-NEXT:             (255 as i32) as u8,
-// REWRITES-NEXT:             (1 as u64) as usize,
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { std::ptr::write_bytes({{_v[0-9]+}} as *mut u8, (255 as i32) as u8, (1 as u64) as usize) };
 // REWRITES-NEXT:     value.byte = 7;
 // REWRITES-NEXT:     value.word = 11;
 // REWRITES-NEXT:     bits.__bitfield_0.set_low((7 as u8) << 5 >> 5);

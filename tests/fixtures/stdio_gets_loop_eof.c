@@ -277,26 +277,22 @@ int main(void) {
 // REWRITES-NEXT:     __retval = 0;
 // REWRITES-NEXT:     unsafe { remove(c"slate_stdio_gets_loop_eof.tmp".as_ptr()) };
 // REWRITES-NEXT:     f = unsafe { fopen(c"slate_stdio_gets_loop_eof.tmp".as_ptr(), c"w".as_ptr()) };
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = f != std::ptr::null_mut();
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { puts(c"open-fail".as_ptr()) };
-// REWRITES-NEXT:             __retval = 0;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = f != std::ptr::null_mut();
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { puts(c"open-fail".as_ptr()) };
+// REWRITES-NEXT:         __retval = 0;
+// REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { fputs(c"only\n".as_ptr(), f as *mut libc::FILE) };
 // REWRITES-NEXT:     unsafe { fclose(f as *mut libc::FILE) };
 // REWRITES-NEXT:     g = unsafe { fopen(c"slate_stdio_gets_loop_eof.tmp".as_ptr(), c"r".as_ptr()) };
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = g != std::ptr::null_mut();
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { puts(c"reopen-fail".as_ptr()) };
-// REWRITES-NEXT:             __retval = 0;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = g != std::ptr::null_mut();
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { puts(c"reopen-fail".as_ptr()) };
+// REWRITES-NEXT:         __retval = 0;
+// REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     loop {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = line.as_mut_ptr() as *mut i8;
@@ -321,25 +317,21 @@ int main(void) {
 // REWRITES-NEXT:     unsafe { fclose(g as *mut libc::FILE) };
 // REWRITES-NEXT:     unsafe { puts(c"done".as_ptr()) };
 // REWRITES-NEXT:     h = unsafe { fopen(c"slate_stdio_gets_loop_eof.tmp".as_ptr(), c"w".as_ptr()) };
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = h != std::ptr::null_mut();
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { puts(c"open-fail".as_ptr()) };
-// REWRITES-NEXT:             __retval = 0;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = h != std::ptr::null_mut();
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { puts(c"open-fail".as_ptr()) };
+// REWRITES-NEXT:         __retval = 0;
+// REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { fclose(h as *mut libc::FILE) };
 // REWRITES-NEXT:     e = unsafe { fopen(c"slate_stdio_gets_loop_eof.tmp".as_ptr(), c"r".as_ptr()) };
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = e != std::ptr::null_mut();
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { puts(c"reopen-fail".as_ptr()) };
-// REWRITES-NEXT:             __retval = 0;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = e != std::ptr::null_mut();
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { puts(c"reopen-fail".as_ptr()) };
+// REWRITES-NEXT:         __retval = 0;
+// REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     loop {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = empty_line.as_mut_ptr() as *mut i8;

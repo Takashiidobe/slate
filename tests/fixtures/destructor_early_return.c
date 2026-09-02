@@ -116,16 +116,14 @@ int main(int argc, char **argv) {
 // REWRITES-NEXT:     let mut argc: i32 = {{arg[0-9]+}};
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-NEXT:     __retval = 0;
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = argc == {{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { printf(c"early exit\n".as_ptr()) };
-// REWRITES-NEXT:             __retval = 7;
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = __retval;
-// REWRITES-NEXT:             cleanup();
-// REWRITES-NEXT:             std::process::exit({{_v[0-9]+}} as i32);
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = argc == {{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { printf(c"early exit\n".as_ptr()) };
+// REWRITES-NEXT:         __retval = 7;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = __retval;
+// REWRITES-NEXT:         cleanup();
+// REWRITES-NEXT:         std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { printf(c"main ran\n".as_ptr()) };
 // REWRITES-NEXT:     __retval = 0;

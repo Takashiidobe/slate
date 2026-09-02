@@ -175,30 +175,25 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn check({{arg[0-9]+}}: i32) {
 // REWRITES-NEXT:     let mut ok: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ok != 0;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             fail_now();
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = ok != 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         fail_now();
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { printf(c"PASS\n".as_ptr()) };
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn run_case({{arg[0-9]+}}: Option<unsafe extern "C" fn(i32)>, {{arg[0-9]+}}: i32) {
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag =
-// REWRITES-NEXT:             std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe {
-// REWRITES-NEXT:                 failures = (unsafe { failures }) + 1;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             unsafe { printf(c"FAIL\n".as_ptr()) };
-// REWRITES-NEXT:             return;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag = std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe {
+// REWRITES-NEXT:             failures = (unsafe { failures }) + 1;
 // REWRITES-NEXT:         }
+// REWRITES-NEXT:         unsafe { printf(c"FAIL\n".as_ptr()) };
+// REWRITES-NEXT:         return;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { {{arg[0-9]+}}.unwrap()({{arg[0-9]+}}) };
 // REWRITES-NEXT:     return;

@@ -129,14 +129,12 @@ int main(void) {
 // REWRITES-NEXT:     __retval = 0;
 // REWRITES-NEXT:     unsafe { remove(c"slate_stdio_fwrite_return.tmp".as_ptr()) };
 // REWRITES-NEXT:     f = unsafe { fopen(c"slate_stdio_fwrite_return.tmp".as_ptr(), c"w".as_ptr()) };
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = f != std::ptr::null_mut();
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { puts(c"open-fail".as_ptr()) };
-// REWRITES-NEXT:             __retval = 0;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = f != std::ptr::null_mut();
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { puts(c"open-fail".as_ptr()) };
+// REWRITES-NEXT:         __retval = 0;
+// REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     *buf = [
 // REWRITES-NEXT:         48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 0,
@@ -147,7 +145,7 @@ int main(void) {
 // REWRITES-NEXT:             c"%zu\n".as_ptr(),
 // REWRITES-NEXT:             (unsafe {
 // REWRITES-NEXT:                 fwrite(
-// REWRITES-NEXT:                     ({{_v[0-9]+}} as *mut core::ffi::c_void) as *const core::ffi::c_void,
+// REWRITES-NEXT:                     {{_v[0-9]+}} as *const core::ffi::c_void,
 // REWRITES-NEXT:                     (1 as u64) as usize,
 // REWRITES-NEXT:                     (15 as u64) as usize,
 // REWRITES-NEXT:                     f as *mut libc::FILE,

@@ -208,31 +208,18 @@ int main(void) {
 // REWRITES-NEXT:         value: std::ptr::null_mut(),
 // REWRITES-NEXT:     }; 1];
 // REWRITES-NEXT:     total = 0;
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let mut i: i32 = 0;
-// REWRITES-NEXT:         i = 0;
-// REWRITES-NEXT:         loop {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:             if !(i < {{_v[0-9]+}}) {
-// REWRITES-NEXT:                 break;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             {
-// REWRITES-NEXT:                 {
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: bool = if pairs[((i as i64) as usize)].name == {{_v[0-9]+}} {
-// REWRITES-NEXT:                         let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
-// REWRITES-NEXT:                         let {{_v[0-9]+}}: bool = pairs[((i as i64) as usize)].value == {{_v[0-9]+}};
-// REWRITES-NEXT:                         {{_v[0-9]+}}
-// REWRITES-NEXT:                     } else {
-// REWRITES-NEXT:                         let {{_v[0-9]+}}: bool = false;
-// REWRITES-NEXT:                         {{_v[0-9]+}}
-// REWRITES-NEXT:                     };
-// REWRITES-NEXT:                     if {{_v[0-9]+}} {
-// REWRITES-NEXT:                         total = total + 1;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             i = i + 1;
+// REWRITES-NEXT:     for i in 0..1 {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = if pairs[((i as i64) as usize)].name == {{_v[0-9]+}} {
+// REWRITES-NEXT:             let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
+// REWRITES-NEXT:             let {{_v[0-9]+}}: bool = pairs[((i as i64) as usize)].value == {{_v[0-9]+}};
+// REWRITES-NEXT:             {{_v[0-9]+}}
+// REWRITES-NEXT:         } else {
+// REWRITES-NEXT:             let {{_v[0-9]+}}: bool = false;
+// REWRITES-NEXT:             {{_v[0-9]+}}
+// REWRITES-NEXT:         };
+// REWRITES-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-NEXT:             total = total + 1;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return total;
@@ -243,24 +230,18 @@ int main(void) {
 // REWRITES-NEXT:     let mut total: i32 = 0;
 // REWRITES-NEXT:     values = [true, false];
 // REWRITES-NEXT:     total = 0;
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let mut i: u64 = 0;
-// REWRITES-NEXT:         i = 0;
-// REWRITES-NEXT:         loop {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: u64 = 2;
-// REWRITES-NEXT:             let {{_v[0-9]+}}: u64 = 1;
-// REWRITES-NEXT:             if !(i < {{_v[0-9]+}} / {{_v[0-9]+}}) {
-// REWRITES-NEXT:                 break;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             {
-// REWRITES-NEXT:                 {
-// REWRITES-NEXT:                     if values[(i as usize)] {
-// REWRITES-NEXT:                         total = total + 1;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             i = i + 1;
+// REWRITES-NEXT:     let mut i: u64 = 0;
+// REWRITES-NEXT:     i = 0;
+// REWRITES-NEXT:     loop {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = 2;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = 1;
+// REWRITES-NEXT:         if !(i < {{_v[0-9]+}} / {{_v[0-9]+}}) {
+// REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
+// REWRITES-NEXT:         if values[(i as usize)] {
+// REWRITES-NEXT:             total = total + 1;
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:         i = i + 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return total;
 // REWRITES-NEXT: }

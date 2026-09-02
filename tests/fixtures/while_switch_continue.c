@@ -153,48 +153,42 @@ int main(void) {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         '__continue0: {
-// REWRITES-NEXT:             {
-// REWRITES-NEXT:                 let mut x: i32 = 0;
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:                 x = i % {{_v[0-9]+}};
-// REWRITES-NEXT:                 {
-// REWRITES-NEXT:                     {
-// REWRITES-NEXT:                         let __switch_value1 = x;
-// REWRITES-NEXT:                         let mut __switch_case1: i32 = match __switch_value1 {
-// REWRITES-NEXT:                             0 => 0,
-// REWRITES-NEXT:                             1 => 1,
-// REWRITES-NEXT:                             2 => 2,
-// REWRITES-NEXT:                             _ => 3,
-// REWRITES-NEXT:                         };
-// REWRITES-NEXT:                         '__switch1: loop {
-// REWRITES-NEXT:                             match __switch_case1 {
-// REWRITES-NEXT:                                 0 => {
-// REWRITES-NEXT:                                     __switch_case1 = 1;
-// REWRITES-NEXT:                                     continue '__switch1;
-// REWRITES-NEXT:                                 }
-// REWRITES-NEXT:                                 1 => {
-// REWRITES-NEXT:                                     __switch_case1 = 2;
-// REWRITES-NEXT:                                     continue '__switch1;
-// REWRITES-NEXT:                                 }
-// REWRITES-NEXT:                                 2 => {
-// REWRITES-NEXT:                                     i = i + 1;
-// REWRITES-NEXT:                                     steps = steps + 1;
-// REWRITES-NEXT:                                     break '__continue0;
-// REWRITES-NEXT:                                 }
-// REWRITES-NEXT:                                 3 => {
-// REWRITES-NEXT:                                     break '__switch1;
-// REWRITES-NEXT:                                 }
-// REWRITES-NEXT:                                 _ => {
-// REWRITES-NEXT:                                     break '__switch1;
-// REWRITES-NEXT:                                 }
-// REWRITES-NEXT:                             }
-// REWRITES-NEXT:                         }
+// REWRITES-NEXT:             let mut x: i32 = 0;
+// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 3;
+// REWRITES-NEXT:             x = i % {{_v[0-9]+}};
+// REWRITES-NEXT:             let __switch_value1 = x;
+// REWRITES-NEXT:             let mut __switch_case1: i32 = match __switch_value1 {
+// REWRITES-NEXT:                 0 => 0,
+// REWRITES-NEXT:                 1 => 1,
+// REWRITES-NEXT:                 2 => 2,
+// REWRITES-NEXT:                 _ => 3,
+// REWRITES-NEXT:             };
+// REWRITES-NEXT:             '__switch1: loop {
+// REWRITES-NEXT:                 match __switch_case1 {
+// REWRITES-NEXT:                     0 => {
+// REWRITES-NEXT:                         __switch_case1 = 1;
+// REWRITES-NEXT:                         continue '__switch1;
+// REWRITES-NEXT:                     }
+// REWRITES-NEXT:                     1 => {
+// REWRITES-NEXT:                         __switch_case1 = 2;
+// REWRITES-NEXT:                         continue '__switch1;
+// REWRITES-NEXT:                     }
+// REWRITES-NEXT:                     2 => {
+// REWRITES-NEXT:                         i = i + 1;
+// REWRITES-NEXT:                         steps = steps + 1;
+// REWRITES-NEXT:                         break '__continue0;
+// REWRITES-NEXT:                     }
+// REWRITES-NEXT:                     3 => {
+// REWRITES-NEXT:                         break '__switch1;
+// REWRITES-NEXT:                     }
+// REWRITES-NEXT:                     _ => {
+// REWRITES-NEXT:                         break '__switch1;
 // REWRITES-NEXT:                     }
 // REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 unsafe { printf(c"unreachable %d\n".as_ptr(), i) };
-// REWRITES-NEXT:                 i = i + 1;
-// REWRITES-NEXT:                 steps = steps + 1;
 // REWRITES-NEXT:             }
+// REWRITES-NEXT:             unsafe { printf(c"unreachable %d\n".as_ptr(), i) };
+// REWRITES-NEXT:             i = i + 1;
+// REWRITES-NEXT:             steps = steps + 1;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { printf(c"steps=%d\n".as_ptr(), steps) };

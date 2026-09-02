@@ -363,22 +363,10 @@ int main(void) {
 // REWRITES-NEXT:         },
 // REWRITES-NEXT:     ];
 // REWRITES-NEXT:     total = 0;
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let mut i: i32 = 0;
-// REWRITES-NEXT:         i = 0;
-// REWRITES-NEXT:         loop {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:             if !(i < {{_v[0-9]+}}) {
-// REWRITES-NEXT:                 break;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             {
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: *mut i8 = cases[((i as i64) as usize)].doc;
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
-// REWRITES-NEXT:                 total = total
-// REWRITES-NEXT:                     + ((unsafe { *{{_v[0-9]+}} }) as i32) * cases[((i as i64) as usize)].expectedStatus;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             i = i + 1;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     for i in 0..3 {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = cases[((i as i64) as usize)].doc;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
+// REWRITES-NEXT:         total = total + ((unsafe { *{{_v[0-9]+}} }) as i32) * cases[((i as i64) as usize)].expectedStatus;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return total;
 // REWRITES-NEXT: }
@@ -402,25 +390,12 @@ int main(void) {
 // REWRITES-NEXT:         },
 // REWRITES-NEXT:     ];
 // REWRITES-NEXT:     total = 0;
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let mut i: i32 = 0;
-// REWRITES-NEXT:         i = 0;
-// REWRITES-NEXT:         loop {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-NEXT:             if !(i < {{_v[0-9]+}}) {
-// REWRITES-NEXT:                 break;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             {
-// REWRITES-NEXT:                 {
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: bool = cases[((i as i64) as usize)].usesParameterEntities != 0;
-// REWRITES-NEXT:                     if {{_v[0-9]+}} {
-// REWRITES-NEXT:                         total = total + cases[((i as i64) as usize)].weight;
-// REWRITES-NEXT:                     } else {
-// REWRITES-NEXT:                         total = total - cases[((i as i64) as usize)].weight;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             i = i + 1;
+// REWRITES-NEXT:     for i in 0..2 {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = cases[((i as i64) as usize)].usesParameterEntities != 0;
+// REWRITES-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-NEXT:             total = total + cases[((i as i64) as usize)].weight;
+// REWRITES-NEXT:         } else {
+// REWRITES-NEXT:             total = total - cases[((i as i64) as usize)].weight;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return total;
@@ -449,22 +424,11 @@ int main(void) {
 // REWRITES-NEXT:         },
 // REWRITES-NEXT:     ];
 // REWRITES-NEXT:     total = 0;
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let mut i: i32 = 0;
-// REWRITES-NEXT:         i = 0;
-// REWRITES-NEXT:         loop {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:             if !(i < {{_v[0-9]+}}) {
-// REWRITES-NEXT:                 break;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             {
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = cases[((i as i64) as usize)].expectedMovementInChars;
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: *mut i8 = cases[((i as i64) as usize)].input;
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
-// REWRITES-NEXT:                 total = total + ({{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32));
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             i = i + 1;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     for i in 0..3 {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = cases[((i as i64) as usize)].expectedMovementInChars;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = cases[((i as i64) as usize)].input;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
+// REWRITES-NEXT:         total = total + ({{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32));
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return total;
 // REWRITES-NEXT: }

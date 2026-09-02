@@ -1523,73 +1523,57 @@ int main(void) {
 // REWRITES-NEXT:     let mut u64: u64 = 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 5, 192]);
 // REWRITES-NEXT:     i8 = __slate_f80_to_i8({{_v[0-9]+}});
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i8(i8);
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 5, 192]);
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { abort() };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i8(i8);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 5, 192]);
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 6, 64]);
 // REWRITES-NEXT:     u8 = __slate_f80_to_u8({{_v[0-9]+}});
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u8(u8);
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 6, 64]);
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { abort() };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u8(u8);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 6, 64]);
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 228, 192, 12, 192]);
 // REWRITES-NEXT:     i16 = __slate_f80_to_i16({{_v[0-9]+}});
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i16(i16);
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 0, 0, 0, 0, 0, 228, 192, 12, 192]);
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { abort() };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i16(i16);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 0, 0, 0, 0, 0, 228, 192, 12, 192]);
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 49, 212, 14, 64]);
 // REWRITES-NEXT:     u16 = __slate_f80_to_u16({{_v[0-9]+}});
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u16(u16);
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 0, 0, 0, 0, 0, 49, 212, 14, 64]);
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { abort() };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u16(u16);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 0, 0, 0, 0, 0, 49, 212, 14, 64]);
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 164, 5, 44, 147, 29, 192]);
 // REWRITES-NEXT:     i32 = __slate_f80_to_i32({{_v[0-9]+}});
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i32(i32);
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 0, 0, 0, 164, 5, 44, 147, 29, 192]);
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { abort() };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i32(i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 0, 0, 0, 164, 5, 44, 147, 29, 192]);
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 20, 106, 10, 206, 30, 64]);
 // REWRITES-NEXT:     u32 = __slate_f80_to_u32({{_v[0-9]+}});
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u32(u32);
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 0, 0, 0, 20, 106, 10, 206, 30, 64]);
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { abort() };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u32(u32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 0, 0, 0, 20, 106, 10, 206, 30, 64]);
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i64(i64);
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 0, 242, 190, 27, 12, 145, 224, 45, 192]);
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { abort() };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i64(i64);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 0, 242, 190, 27, 12, 145, 224, 45, 192]);
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([210, 10, 31, 235, 140, 169, 84, 171, 62, 64]);
 // REWRITES-NEXT:     u64 = __slate_f80_to_u64({{_v[0-9]+}});
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u64(u64);
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([210, 10, 31, 235, 140, 169, 84, 171, 62, 64]);
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { abort() };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u64(u64);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([210, 10, 31, 235, 140, 169, 84, 171, 62, 64]);
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
@@ -1612,21 +1596,17 @@ int main(void) {
 // REWRITES-NEXT:     let mut u128: u128 = 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([254, 255, 255, 255, 255, 255, 255, 255, 61, 192]);
 // REWRITES-NEXT:     i128 = __slate_f80_to_i128({{_v[0-9]+}});
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i128(i128);
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([254, 255, 255, 255, 255, 255, 255, 255, 61, 192]);
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { abort() };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i128(i128);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([254, 255, 255, 255, 255, 255, 255, 255, 61, 192]);
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 62, 64]);
 // REWRITES-NEXT:     u128 = __slate_f80_to_u128({{_v[0-9]+}});
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u128(u128);
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 62, 64]);
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { abort() };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u128(u128);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 62, 64]);
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
@@ -1662,156 +1642,127 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BInt<9, 1, 2> =
 // REWRITES-NEXT:         bitint::BInt::<9, 1, 2>::from_i128(__slate_f80_to_i128({{_v[0-9]+}}) as i128);
 // REWRITES-NEXT:     *b9 = {{_v[0-9]+}};
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bitint::BInt<9, 1, 2> = *b9;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i128({{_v[0-9]+}}.to_i128());
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 5, 192]);
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { abort() };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BInt<9, 1, 2> = *b9;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i128({{_v[0-9]+}}.to_i128());
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 5, 192]);
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 6, 64]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BUint<9, 1, 2> =
 // REWRITES-NEXT:         bitint::BUint::<9, 1, 2>::from_u128(__slate_f80_to_u128({{_v[0-9]+}}) as u128);
 // REWRITES-NEXT:     *ub9 = {{_v[0-9]+}};
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bitint::BUint<9, 1, 2> = *ub9;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u128({{_v[0-9]+}}.to_u128());
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 6, 64]);
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { abort() };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BUint<9, 1, 2> = *ub9;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u128({{_v[0-9]+}}.to_u128());
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 6, 64]);
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 160, 162, 121, 235, 25, 192]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BInt<40, 1, 8> =
 // REWRITES-NEXT:         bitint::BInt::<40, 1, 8>::from_i128(__slate_f80_to_i128({{_v[0-9]+}}) as i128);
 // REWRITES-NEXT:     *b40 = {{_v[0-9]+}};
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bitint::BInt<40, 1, 8> = *b40;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i128({{_v[0-9]+}}.to_i128());
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 0, 0, 0, 160, 162, 121, 235, 25, 192]);
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { abort() };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BInt<40, 1, 8> = *b40;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i128({{_v[0-9]+}}.to_i128());
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 0, 0, 0, 160, 162, 121, 235, 25, 192]);
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 196, 162, 121, 235, 28, 64]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BUint<40, 1, 8> =
 // REWRITES-NEXT:         bitint::BUint::<40, 1, 8>::from_u128(__slate_f80_to_u128({{_v[0-9]+}}) as u128);
 // REWRITES-NEXT:     *ub40 = {{_v[0-9]+}};
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bitint::BUint<40, 1, 8> = *ub40;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u128({{_v[0-9]+}}.to_u128());
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 0, 0, 0, 196, 162, 121, 235, 28, 64]);
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { abort() };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BUint<40, 1, 8> = *ub40;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u128({{_v[0-9]+}}.to_u128());
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 0, 0, 0, 196, 162, 121, 235, 28, 64]);
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 242, 190, 27, 12, 145, 224, 45, 192]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BInt<101, 2, 16> =
 // REWRITES-NEXT:         bitint::BInt::<101, 2, 16>::from_i128(__slate_f80_to_i128({{_v[0-9]+}}) as i128);
 // REWRITES-NEXT:     *b101 = {{_v[0-9]+}};
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bitint::BInt<101, 2, 16> = *b101;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i128({{_v[0-9]+}}.to_i128());
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 0, 242, 190, 27, 12, 145, 224, 45, 192]);
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { abort() };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BInt<101, 2, 16> = *b101;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i128({{_v[0-9]+}}.to_i128());
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 0, 242, 190, 27, 12, 145, 224, 45, 192]);
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bitint::BInt<101, 2, 16> = *b101;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i128({{_v[0-9]+}}.to_i128());
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bitint::BInt<101, 2, 16> =
-// REWRITES-NEXT:             bitint::BInt::<101, 2, 16>::from_i128(__slate_f80_to_i128({{_v[0-9]+}}) as i128);
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != *b101;
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { abort() };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BInt<101, 2, 16> = *b101;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i128({{_v[0-9]+}}.to_i128());
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BInt<101, 2, 16> =
+// REWRITES-NEXT:         bitint::BInt::<101, 2, 16>::from_i128(__slate_f80_to_i128({{_v[0-9]+}}) as i128);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != *b101;
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 64, 3, 20, 62, 12, 145, 224, 48, 64]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BUint<150, 3, 24> =
 // REWRITES-NEXT:         bitint::BUint::<150, 3, 24>::from_u128(__slate_f80_to_u128({{_v[0-9]+}}) as u128);
 // REWRITES-NEXT:     *ub150 = {{_v[0-9]+}};
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bitint::BUint<150, 3, 24> = *ub150;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u128({{_v[0-9]+}}.to_u128());
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 64, 3, 20, 62, 12, 145, 224, 48, 64]);
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { abort() };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BUint<150, 3, 24> = *ub150;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u128({{_v[0-9]+}}.to_u128());
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 64, 3, 20, 62, 12, 145, 224, 48, 64]);
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bitint::BUint<150, 3, 24> = *ub150;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u128({{_v[0-9]+}}.to_u128());
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bitint::BUint<150, 3, 24> =
-// REWRITES-NEXT:             bitint::BUint::<150, 3, 24>::from_u128(__slate_f80_to_u128({{_v[0-9]+}}) as u128);
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != *ub150;
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { abort() };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BUint<150, 3, 24> = *ub150;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u128({{_v[0-9]+}}.to_u128());
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BUint<150, 3, 24> =
+// REWRITES-NEXT:         bitint::BUint::<150, 3, 24>::from_u128(__slate_f80_to_u128({{_v[0-9]+}}) as u128);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != *ub150;
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 192, 255, 248, 2, 149, 32, 64]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BInt<256, 4, 32> =
 // REWRITES-NEXT:         bitint::BInt::<256, 4, 32>::from_i128(__slate_f80_to_i128({{_v[0-9]+}}) as i128);
 // REWRITES-NEXT:     *b256 = {{_v[0-9]+}};
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bitint::BInt<256, 4, 32> = *b256;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bitint::BInt<256, 4, 32> =
-// REWRITES-NEXT:             bitint::BInt::<256, 4, 32>::from_decimal_str("9999999999");
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { abort() };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BInt<256, 4, 32> = *b256;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BInt<256, 4, 32> = bitint::BInt::<256, 4, 32>::from_decimal_str("9999999999");
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bitint::BInt<256, 4, 32> = *b256;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i128({{_v[0-9]+}}.to_i128());
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 0, 0, 192, 255, 248, 2, 149, 32, 64]);
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { abort() };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BInt<256, 4, 32> = *b256;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i128({{_v[0-9]+}}.to_i128());
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 0, 0, 192, 255, 248, 2, 149, 32, 64]);
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 234, 86, 250, 30, 64]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BUint<300, 5, 40> =
 // REWRITES-NEXT:         bitint::BUint::<300, 5, 40>::from_u128(__slate_f80_to_u128({{_v[0-9]+}}) as u128);
 // REWRITES-NEXT:     *ub300 = {{_v[0-9]+}};
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bitint::BUint<300, 5, 40> = *ub300;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bitint::BUint<300, 5, 40> =
-// REWRITES-NEXT:             bitint::BUint::<300, 5, 40>::from_decimal_str("4200000000");
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { abort() };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BUint<300, 5, 40> = *ub300;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BUint<300, 5, 40> =
+// REWRITES-NEXT:         bitint::BUint::<300, 5, 40>::from_decimal_str("4200000000");
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bitint::BUint<300, 5, 40> = *ub300;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u128({{_v[0-9]+}}.to_u128());
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 0, 0, 0, 0, 234, 86, 250, 30, 64]);
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { abort() };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BUint<300, 5, 40> = *ub300;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_u128({{_v[0-9]+}}.to_u128());
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 0, 0, 0, 0, 234, 86, 250, 30, 64]);
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 246, 5, 64]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BInt<129, 3, 24> =
 // REWRITES-NEXT:         bitint::BInt::<129, 3, 24>::from_i128(__slate_f80_to_i128({{_v[0-9]+}}) as i128);
 // REWRITES-NEXT:     *b129 = {{_v[0-9]+}};
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bitint::BInt<129, 3, 24> = *b129;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.to_i128() as i32;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 123;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { abort() };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BInt<129, 3, 24> = *b129;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.to_i128() as i32;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 123;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bitint::BInt<129, 3, 24> = bitint::BInt::<129, 3, 24>::from_decimal_str("123");
-// REWRITES-NEXT:         let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i128({{_v[0-9]+}}.to_i128());
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 0, 0, 0, 0, 0, 0, 246, 5, 64]);
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe { abort() };
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BInt<129, 3, 24> = bitint::BInt::<129, 3, 24>::from_decimal_str("123");
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i128({{_v[0-9]+}}.to_i128());
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != LongDouble([0, 0, 0, 0, 0, 0, 0, 246, 5, 64]);
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BInt<101, 2, 16> = *b101;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BUint<150, 3, 24> = *ub150;

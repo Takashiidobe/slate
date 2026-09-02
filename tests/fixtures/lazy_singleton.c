@@ -109,16 +109,14 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn get_value() -> i32 {
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = (unsafe { computed }) != 0;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             unsafe {
-// REWRITES-NEXT:                 cached_value = compute();
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             unsafe {
-// REWRITES-NEXT:                 computed = 1;
-// REWRITES-NEXT:             }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = (unsafe { computed }) != 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         unsafe {
+// REWRITES-NEXT:             cached_value = compute();
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:         unsafe {
+// REWRITES-NEXT:             computed = 1;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return unsafe { cached_value };

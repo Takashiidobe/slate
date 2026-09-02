@@ -176,11 +176,9 @@ int main(void) {
 // REWRITES-NEXT:         if !{{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:             v = v >> {{_v[0-9]+}};
-// REWRITES-NEXT:             align = align + 1;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:         v = v >> {{_v[0-9]+}};
+// REWRITES-NEXT:         align = align + 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = if v == {{_v[0-9]+}} {

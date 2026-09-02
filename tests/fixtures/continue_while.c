@@ -127,17 +127,13 @@ int main(void) {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         '__continue0: {
-// REWRITES-NEXT:             {
-// REWRITES-NEXT:                 i = i + 1;
-// REWRITES-NEXT:                 {
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:                     if i % {{_v[0-9]+}} == {{_v[0-9]+}} {
-// REWRITES-NEXT:                         break '__continue0;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 total = total + i;
+// REWRITES-NEXT:             i = i + 1;
+// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 3;
+// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:             if i % {{_v[0-9]+}} == {{_v[0-9]+}} {
+// REWRITES-NEXT:                 break '__continue0;
 // REWRITES-NEXT:             }
+// REWRITES-NEXT:             total = total + i;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return total;

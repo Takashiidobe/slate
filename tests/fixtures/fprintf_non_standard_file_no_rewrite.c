@@ -106,13 +106,11 @@ int main(void) {
 // REWRITES-NEXT:     let mut f: *mut libc::FILE = std::ptr::null_mut();
 // REWRITES-NEXT:     __retval = 0;
 // REWRITES-NEXT:     f = unsafe { fopen(c"slate_fprintf_non_standard.tmp".as_ptr(), c"w".as_ptr()) };
-// REWRITES-NEXT:     {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut libc::FILE = std::ptr::null_mut();
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = f == {{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
-// REWRITES-NEXT:             __retval = 1;
-// REWRITES-NEXT:             std::process::exit(__retval as i32);
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut libc::FILE = std::ptr::null_mut();
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = f == {{_v[0-9]+}};
+// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:         __retval = 1;
+// REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { fprintf(f as *mut libc::FILE, c"value: %d\n".as_ptr(), 7 as i32) };
 // REWRITES-NEXT:     unsafe { fclose(f as *mut libc::FILE) };
