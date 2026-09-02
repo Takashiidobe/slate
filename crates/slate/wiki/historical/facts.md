@@ -5,7 +5,7 @@
 > [rewrite-engine-v2.md](../concepts/rewrite-engine-v2.md).
 
 `src/backend/facts/` is the analysis layer between baseline lowering and the
-fixup passes described in [passes.md](passes.md). It never mutates the AST: it
+fixup passes described in [passes.md](../concepts/passes.md). It never mutates the AST: it
 reads an already-lowered `Program` and produces facts — purity,
 definition/use, provenance, loop shape, string/heap/file ownership, and more —
 that rewrite passes query instead of re-deriving the same information by
@@ -20,7 +20,7 @@ reruns only the tracked functions whose inputs changed and backdates (skips
 invalidating dependents) when a rerun's output is value-equal to before.
 
 This doc is a reference for what each collector proves and which rewrite pass
-(named as in passes.md's [pass sequence](passes.md#the-pass-sequence)) reads
+(named as in passes.md's [pass sequence](../concepts/passes.md#the-pass-sequence)) reads
 it. _"A rewrite should consume facts plus local AST shape; if it needs
 information that is not already available as a fact, add a fact collector
 first."_
@@ -79,7 +79,7 @@ Listed in dependency order (a collector that reads another's output is listed
 after it); unlike the old whole-program `facts::analyze` sweep, salsa has no
 fixed global run order — each `#[salsa::tracked]` fn resolves its own
 dependencies lazily, on first read, and only reruns the ones an edit actually
-invalidated. "Consumed by" names rewrite passes from [passes.md](passes.md); a
+invalidated. "Consumed by" names rewrite passes from [passes.md](../concepts/passes.md); a
 pass can also be a producer for a later collector, noted where relevant.
 
 | #   | Module                              | Fact struct(s)                                                                             | Proves                                                                                                                                                                                                                                   | Consumed by                                                                                                                                                            |

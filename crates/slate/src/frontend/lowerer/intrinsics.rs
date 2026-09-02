@@ -879,6 +879,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 identity: FunctionIdentity::Unknown,
                 name: shim_name.clone(),
                 declared_type: None,
+                trusted_headers: std::collections::BTreeSet::new(),
                 params: shim_param_types
                     .iter()
                     .enumerate()

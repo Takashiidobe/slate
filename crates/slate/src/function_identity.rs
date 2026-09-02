@@ -1,3 +1,5 @@
+use std::collections::BTreeSet;
+
 macro_rules! known_function_catalog {
     ($entry:ident) => {
         $entry! {
@@ -111,6 +113,7 @@ pub enum CallBinding {
         identity: FunctionIdentity,
         canonical_type: Option<String>,
         trusted_declaration: Option<String>,
+        trusted_headers: BTreeSet<String>,
     },
     Indirect,
     #[default]
@@ -123,6 +126,7 @@ impl CallBinding {
             identity: FunctionIdentity::Unknown,
             canonical_type: None,
             trusted_declaration: None,
+            trusted_headers: BTreeSet::new(),
         }
     }
 
@@ -143,6 +147,15 @@ impl CallBinding {
                 ..
             } => trusted_declaration.as_deref(),
             Self::Indirect | Self::Generated => None,
+        }
+    }
+
+    pub fn trusted_headers(&self) -> Box<dyn Iterator<Item = &str> + '_> {
+        match self {
+            Self::Direct {
+                trusted_headers, ..
+            } => Box::new(trusted_headers.iter().map(String::as_str)),
+            Self::Indirect | Self::Generated => Box::new([].into_iter()),
         }
     }
 }

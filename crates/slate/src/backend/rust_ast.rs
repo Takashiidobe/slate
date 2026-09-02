@@ -1,5 +1,6 @@
 use crate::function_identity::{CallBinding, FunctionIdentity};
 use ordered_float::OrderedFloat;
+use std::collections::BTreeSet;
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Program {
@@ -469,6 +470,7 @@ pub struct ExternFnDecl {
     pub name: String,
     pub identity: FunctionIdentity,
     pub declared_type: Option<String>,
+    pub trusted_headers: BTreeSet<String>,
     pub params: Vec<FnParam>,
     pub variadic: bool,
     pub ret: Option<Type>,

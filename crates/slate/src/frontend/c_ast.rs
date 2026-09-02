@@ -602,17 +602,24 @@ fn parse_plugin_events(stderr: &str) -> PluginEvents {
                 .and_then(Value::as_array)
                 .into_iter()
                 .flatten()
-                .filter_map(Value::as_str);
+                .filter_map(Value::as_str)
+                .map(str::to_string)
+                .collect::<BTreeSet<_>>();
             let identity = canonical_type
                 .as_deref()
                 .map_or(FunctionIdentity::Unknown, |ty| {
-                    classify_function(name, headers, ty, provenance)
+                    classify_function(name, headers.iter().map(String::as_str), ty, provenance)
                 });
             CallBinding::Direct {
                 identity,
                 trusted_declaration: (provenance == Provenance::TrustedHeader)
                     .then_some(canonical_type.clone())
                     .flatten(),
+                trusted_headers: if provenance == Provenance::TrustedHeader {
+                    headers
+                } else {
+                    BTreeSet::new()
+                },
                 canonical_type,
             }
         };
