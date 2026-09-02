@@ -1108,6 +1108,7 @@ pub enum Expr {
 pub enum Type {
     Prim(Prim),
     Custom(String),
+    String,
     LongDouble,
     TyVar(Ident),
     CLib(CLibType),

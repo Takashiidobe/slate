@@ -421,6 +421,7 @@ pub(super) fn type_mentions_long_double(ty: &Type) -> bool {
         }
         Type::Prim(_)
         | Type::Custom(_)
+        | Type::String
         | Type::TyVar(_)
         | Type::CLib(_)
         | Type::VaList
@@ -444,6 +445,7 @@ pub(super) fn type_mentions_complex(ty: &Type) -> bool {
         Type::Generic { args, .. } => args.iter().any(type_mentions_complex),
         Type::Prim(_)
         | Type::Custom(_)
+        | Type::String
         | Type::LongDouble
         | Type::TyVar(_)
         | Type::CLib(_)

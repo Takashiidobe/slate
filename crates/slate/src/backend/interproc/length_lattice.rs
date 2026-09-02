@@ -1097,7 +1097,7 @@ fn apply_signature_fn(
                     mutable: false,
                     inner: Box::new(Type::Str),
                 },
-                BufferKind::StringOwned => Type::Custom("String".to_string()),
+                BufferKind::StringOwned => Type::String,
             };
             f.params[candidate.ptr_index].mutable = candidate.kind.owned();
             len_indices.push(candidate.len_index);
