@@ -172,7 +172,14 @@ fn run_worklist(arena: &mut FunctionOptimizer, registry: &RuleRegistry) {
             .filter(|rule| rule.matches(arena, id))
             .collect();
         for rule in candidates {
-            if rule.apply(arena, id) {
+            let mutations_before = arena.mutation_count();
+            let applied = rule.apply(arena, id);
+            assert!(
+                applied || arena.mutation_count() == mutations_before,
+                "rule {} mutated the arena but returned false from apply(); a false return must leave state unchanged",
+                rule.name()
+            );
+            if applied {
                 edits += 1;
                 assert!(
                     edits <= EDIT_BUDGET,

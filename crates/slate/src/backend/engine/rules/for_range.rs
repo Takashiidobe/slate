@@ -333,11 +333,14 @@ impl NodeRule for ForRangeRecover {
             },
         );
 
-        if let Some(parent_kind) = arena.get_mut(parent_id)
-            && let Some(list) = parent_kind.child_lists_mut().get_mut(list_index)
-        {
-            list.retain(|&x| x != plan.assign_start_id);
-        }
+        let Some(parent_kind) = arena.get_mut(parent_id) else {
+            unreachable!("for_range: parent_id invalidated by taking an unrelated sibling slot")
+        };
+        let mut child_lists = parent_kind.child_lists_mut();
+        let Some(list) = child_lists.get_mut(list_index) else {
+            unreachable!("for_range: list_index no longer valid on parent_id")
+        };
+        list.retain(|&x| x != plan.assign_start_id);
         remove_from_list(arena, plan.let_parent, plan.let_list_index, plan.let_id);
         true
     }

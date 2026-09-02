@@ -186,7 +186,11 @@ turns flattened blocks into a `loop { match state }`, with `cross_block_live_
 values` deciding which SSA temps must be hoisted across states), and the
 **diagnostics fallback** — an unhandled op lowers to a marked `todo!()` / `unsafe`
 libc call / comment and records a `Ctx` diagnostic instead of crashing, which is
-what keeps the pipeline runnable as coverage grows.
+what keeps the pipeline runnable as coverage grows. This also functions as
+upstream-churn detection: clang-ir's CIR op set is not stable across pulls (ops
+get renamed or change semantics; e.g. the `IndirectBr`/`IndirectGoto` rename),
+and a grep-able `todo!()` diagnostic on a previously-handled construct is how
+that surfaces, alongside fixture regressions for silent semantic changes.
 
 ## Rewriting (baseline Rust AST → idiomatic Rust AST)
 
