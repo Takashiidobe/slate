@@ -2,7 +2,8 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use crate::backend::interproc::{self, CallGraph};
 use crate::backend::rust_ast::{
-    Block, Expr, FnDef, Ident, Item, Pattern, Prim, Program, RustValue, Stmt, Type, Visibility,
+    Block, CLibType, Expr, FnDef, Ident, Item, Pattern, Prim, Program, RustValue, Stmt, Type,
+    Visibility,
 };
 
 struct CandidateFn {
@@ -165,10 +166,8 @@ fn is_char_ptr(ty: &Type) -> bool {
     };
     match &**inner {
         Type::Prim(Prim::I8 | Prim::U8) => true,
-        Type::Custom(name) => matches!(
-            name.as_str(),
-            "libc::c_char" | "std::ffi::c_char" | "core::ffi::c_char"
-        ),
+        Type::CLib(CLibType::CHAR) => true,
+        Type::Custom(name) => name == "libc::c_char",
         _ => false,
     }
 }
