@@ -524,6 +524,7 @@ pub enum Pattern {
     InclusiveRange { start: i128, end: i128 },
     TupleStruct { name: Ident, fields: Vec<Pattern> },
     Guarded { bind: Ident, cond: Box<Expr> },
+    Or(Vec<Pattern>),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
