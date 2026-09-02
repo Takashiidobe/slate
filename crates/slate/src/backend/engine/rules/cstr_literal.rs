@@ -1,7 +1,7 @@
 use super::walk::{child_exprs, child_exprs_mut};
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, NodeId, NodeKind, NodeKindTag};
-use crate::backend::rust_ast::{CLibType, Expr, Type};
+use crate::backend::rust_ast::{CLibType, Expr, Prim, Type};
 
 const KINDS: &[NodeKindTag] = &[
     NodeKindTag::Let,
@@ -22,38 +22,72 @@ fn is_const_c_char_ptr(ty: &Type) -> bool {
     matches!(ty, Type::Ptr { mutable: false, inner } if **inner == Type::CLib(CLibType::CHAR))
 }
 
+fn is_byte_ptr(ty: &Type) -> bool {
+    let Type::Ptr { inner, .. } = ty else {
+        return false;
+    };
+    matches!(
+        **inner,
+        Type::CLib(CLibType::CHAR) | Type::Prim(Prim::I8) | Type::Prim(Prim::U8)
+    )
+}
+
 fn cstr_content(expr: &Expr) -> Option<Vec<u8>> {
     let Expr::Cast { expr: inner, ty } = expr else {
         return None;
     };
-    if !is_const_c_char_ptr(ty) {
+    if !is_byte_ptr(ty) {
         return None;
     }
-    let Expr::MethodCall { recv, method, args } = inner.as_ref() else {
+    let mut inner = inner.as_ref();
+    while let Expr::Cast { expr: next, ty } = inner {
+        if !is_byte_ptr(ty) {
+            return None;
+        }
+        inner = next.as_ref();
+    }
+    let Expr::MethodCall { recv, method, args } = inner else {
         return None;
     };
     if method.as_str() != "as_ptr" || !args.is_empty() {
         return None;
     }
-    let Expr::ByteStr(bytes) = recv.as_ref() else {
-        return None;
-    };
-    let (last, rest) = bytes.split_last()?;
-    if *last != 0 || rest.contains(&0) {
-        return None;
+    match recv.as_ref() {
+        Expr::CStr(bytes) => Some(bytes.clone()),
+        Expr::ByteStr(bytes) => {
+            let (last, rest) = bytes.split_last()?;
+            (*last == 0 && !rest.contains(&0)).then(|| rest.to_vec())
+        }
+        _ => None,
     }
-    Some(rest.to_vec())
 }
 
-fn rewrite_here(expr: &mut Expr) -> bool {
-    let Some(content) = cstr_content(expr) else {
-        return false;
+fn rewrite_of(expr: &Expr) -> Option<Expr> {
+    let content = cstr_content(expr)?;
+    let Expr::Cast { ty, .. } = expr else {
+        return None;
     };
-    *expr = Expr::MethodCall {
+    let ptr = Expr::MethodCall {
         recv: Box::new(Expr::CStr(content)),
         method: "as_ptr".into(),
         args: Vec::new(),
     };
+    let rewritten = if is_const_c_char_ptr(ty) {
+        ptr
+    } else {
+        Expr::Cast {
+            expr: Box::new(ptr),
+            ty: ty.clone(),
+        }
+    };
+    (rewritten != *expr).then_some(rewritten)
+}
+
+fn rewrite_here(expr: &mut Expr) -> bool {
+    let Some(rewritten) = rewrite_of(expr) else {
+        return false;
+    };
+    *expr = rewritten;
     true
 }
 
@@ -66,7 +100,7 @@ fn rewrite_expr(expr: &mut Expr) -> bool {
 }
 
 fn has_rewrite(expr: &Expr) -> bool {
-    cstr_content(expr).is_some() || child_exprs(expr).iter().any(|child| has_rewrite(child))
+    rewrite_of(expr).is_some() || child_exprs(expr).iter().any(|child| has_rewrite(child))
 }
 
 fn rewrite_kind(kind: &mut NodeKind) -> bool {

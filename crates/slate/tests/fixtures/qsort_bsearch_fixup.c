@@ -303,7 +303,7 @@ int main(void) {
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     found = {{_v[0-9]+}} as *mut Item;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d %d %d %d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = nums[((0 as i64) as usize)];
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = nums[((4 as i64) as usize)];
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = hit != std::ptr::null_mut();

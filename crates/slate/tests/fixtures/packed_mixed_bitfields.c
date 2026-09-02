@@ -93,7 +93,7 @@ int main(void) {
 // REWRITES-DAG: let {{_v[0-9]+}}: u64 = 30370190968u64;
 // REWRITES-DAG: bits.__bitfield_3.set_wide(({{_v[0-9]+}} as u64) << 29 >> 29);
 // REWRITES-DAG: bits.__bitfield_3.set_tail((109517 as u32) << 15 >> 15);
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = b"%u %u %d %llu %u %zu\n\0".as_ptr() as *mut i8;
+// REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = c"%u %u %d %llu %u %zu\n".as_ptr() as *mut i8;
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = bits.__bitfield_0 as i32;
 // REWRITES-DAG: let {{_v[0-9]+}}: u32 = (unsafe { std::ptr::read_unaligned(std::ptr::addr_of!(bits.__bitfield_1)) }
 // REWRITES-DAG:     .low() as u32)

@@ -264,7 +264,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc((16 as u64) as usize) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { mprobe({{_v[0-9]+}} as *mut core::ffi::c_void) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"mcheck:%d %d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"mcheck:%d %d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = mcheck_status::MCHECK_OK as i32;
 // REWRITES-NEXT:     unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, ({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) };
 // REWRITES-NEXT:     unsafe { free({{_v[0-9]+}} as *mut core::ffi::c_void) };

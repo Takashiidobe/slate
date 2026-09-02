@@ -496,11 +496,11 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = load80({{_v[0-9]+}});
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u8 = near_bits.as_mut_ptr() as *mut u8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = load80({{_v[0-9]+}});
-// REWRITES-NEXT:     dump80(b"add\0".as_ptr() as *mut i8, {{_v[0-9]+}} + {{_v[0-9]+}});
-// REWRITES-NEXT:     dump80(b"sub\0".as_ptr() as *mut i8, {{_v[0-9]+}} - {{_v[0-9]+}});
-// REWRITES-NEXT:     dump80(b"mul\0".as_ptr() as *mut i8, {{_v[0-9]+}} * {{_v[0-9]+}});
-// REWRITES-NEXT:     dump80(b"div\0".as_ptr() as *mut i8, {{_v[0-9]+}} / {{_v[0-9]+}});
-// REWRITES-NEXT:     dump80(b"neg\0".as_ptr() as *mut i8, -{{_v[0-9]+}});
+// REWRITES-NEXT:     dump80(c"add".as_ptr() as *mut i8, {{_v[0-9]+}} + {{_v[0-9]+}});
+// REWRITES-NEXT:     dump80(c"sub".as_ptr() as *mut i8, {{_v[0-9]+}} - {{_v[0-9]+}});
+// REWRITES-NEXT:     dump80(c"mul".as_ptr() as *mut i8, {{_v[0-9]+}} * {{_v[0-9]+}});
+// REWRITES-NEXT:     dump80(c"div".as_ptr() as *mut i8, {{_v[0-9]+}} / {{_v[0-9]+}});
+// REWRITES-NEXT:     dump80(c"neg".as_ptr() as *mut i8, -{{_v[0-9]+}});
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%d %d %d %d\n".as_ptr(),
@@ -512,11 +512,8 @@ int main(void) {
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), __slate_f80_to_i32({{_v[0-9]+}} + {{_v[0-9]+}})) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 1234567890123i64;
-// REWRITES-NEXT:     dump80(
-// REWRITES-NEXT:         b"from_i64\0".as_ptr() as *mut i8,
-// REWRITES-NEXT:         __slate_f80_from_i64({{_v[0-9]+}}),
-// REWRITES-NEXT:     );
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     dump80(c"from_i64".as_ptr() as *mut i8, __slate_f80_from_i64({{_v[0-9]+}}));
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i32(123456789 as i32);
 // REWRITES-NEXT:     unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, __slate_f80_to_i32({{_v[0-9]+}})) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

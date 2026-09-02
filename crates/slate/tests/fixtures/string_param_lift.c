@@ -130,7 +130,7 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut digits: [i8; 3] = [52, 50, 0];
 // REWRITES-NEXT:     let mut word: [i8; 6] = [104, 101, 108, 108, 111, 0];
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d %d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     digits.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = forward_num("42");
 // REWRITES-NEXT:     word.as_mut_ptr() as *mut i8;

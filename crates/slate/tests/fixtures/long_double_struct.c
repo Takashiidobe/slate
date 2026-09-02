@@ -383,7 +383,7 @@ int main(void) {
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     b.tag = 3;
 // REWRITES-NEXT:     b.value = LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 1, 64]);
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: r#box = b;
 // REWRITES-NEXT:     let mut byval: r#box = {{_v[0-9]+}};
 // REWRITES-NEXT:     unsafe {

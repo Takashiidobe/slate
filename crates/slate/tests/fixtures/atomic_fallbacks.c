@@ -205,7 +205,7 @@ int main(void) {
 // REWRITES-NEXT:         *std::ptr::addr_of_mut!({{__slate_alloca_frame[0-9]+}}.1) = {{_v[0-9]+}};
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{__slate_alloca_frame[0-9]+}}.1;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%.2f %.2f %td %td %d %td %td\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%.2f %.2f %td %td %d %td %td\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} as f64;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} as f64;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{__slate_alloca_frame[0-9]+}}.2.as_mut_ptr() as *mut i32;

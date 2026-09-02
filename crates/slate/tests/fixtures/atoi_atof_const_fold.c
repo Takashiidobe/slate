@@ -105,7 +105,7 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"-7xyz\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"-7xyz".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { 42i32 };
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{_v[0-9]+}}) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { 13i32 };

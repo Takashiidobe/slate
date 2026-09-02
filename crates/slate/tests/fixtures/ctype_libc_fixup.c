@@ -151,7 +151,7 @@ int main(void) {
 // REWRITES-NEXT:             unsafe { tolower({{_v[0-9]+}} as i32) },
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d %d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = next_lower();
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { toupper({{_v[0-9]+}} as i32) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = next_lower();

@@ -761,7 +761,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { {{_v[0-9]+}}.offset_from({{_v[0-9]+}}) as i64 };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = (unsafe { strchrnul(c"abc".as_ptr(), 122 as i32) }) as *mut i8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { {{_v[0-9]+}}.offset_from(b"abc\0".as_ptr() as *mut i8) as i64 };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { {{_v[0-9]+}}.offset_from(c"abc".as_ptr() as *mut i8) as i64 };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 =
 // REWRITES-NEXT:         (unsafe { strcasestr(c"GNU Library".as_ptr(), c"library".as_ptr()) }) as *mut i8;

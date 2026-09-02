@@ -71,9 +71,8 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%s|%s|%d|%d\n".as_ptr(),
-// REWRITES-NEXT:             b"source_probe\0".as_ptr() as *mut i8,
-// REWRITES-NEXT:             b"{{.*}}tests/fixtures/gnu_builtin_source.c\0".as_ptr()
-// REWRITES-NEXT:                 as *mut i8,
+// REWRITES-NEXT:             c"source_probe".as_ptr() as *mut i8,
+// REWRITES-NEXT:             c"{{.*}}tests/fixtures/gnu_builtin_source.c".as_ptr() as *mut i8,
 // REWRITES-NEXT:             5 as u32,
 // REWRITES-NEXT:             28 as u32,
 // REWRITES-NEXT:         )

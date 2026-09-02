@@ -56,7 +56,7 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d %d %d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { pragma_weak_alias(29 as i32) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = (Some(pragma_weak_alias).unwrap() as *const u8)
 // REWRITES-NEXT:         == (Some(pragma_weak_target).unwrap() as *const u8);

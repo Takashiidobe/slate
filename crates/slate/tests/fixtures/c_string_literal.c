@@ -81,7 +81,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%d\n".as_ptr(),
-// REWRITES-NEXT:             first_plus_last(b"write error\0".as_ptr() as *mut i8),
+// REWRITES-NEXT:             first_plus_last(c"write error".as_ptr() as *mut i8),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

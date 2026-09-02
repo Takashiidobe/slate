@@ -122,7 +122,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u8 = data.as_mut_ptr() as *mut u8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add(3) };
 // REWRITES-NEXT:     b.end = {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%c%c%c\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%c%c%c\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u8 = b.start;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add(0) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = (unsafe { *{{_v[0-9]+}} }) as i32;

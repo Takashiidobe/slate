@@ -404,7 +404,7 @@ int main(void) {
 // REWRITES-NEXT:     let mut x: LongDouble = LongDouble([0; 10]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
 // REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(x), {{_v[0-9]+}}) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"sinl\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"sinl".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
 // REWRITES-NEXT:     dump80({{_v[0-9]+}}, unsafe { __slate_sinl__rf80_f80({{_v[0-9]+}}) });
 // REWRITES-NEXT:     std::process::exit(0 as i32);

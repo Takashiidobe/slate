@@ -179,7 +179,7 @@ int main(void) {
 // REWRITES-NEXT:             (3 as u64) as usize,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     }) as *mut i8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%s %s %s %s %zu\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%s %s %s %s %zu\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = copy.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = append.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = trunc_copy.as_mut_ptr() as *mut i8;

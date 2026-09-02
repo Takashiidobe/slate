@@ -261,11 +261,11 @@ int main(void) {
 // REWRITES-NEXT:     let mut total: i32 = 0;
 // REWRITES-NEXT:     *items = [
 // REWRITES-NEXT:         Rec {
-// REWRITES-NEXT:             text: b"a\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:             text: c"a".as_ptr() as *mut i8,
 // REWRITES-NEXT:             code: 0,
 // REWRITES-NEXT:         },
 // REWRITES-NEXT:         Rec {
-// REWRITES-NEXT:             text: b"bb\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:             text: c"bb".as_ptr() as *mut i8,
 // REWRITES-NEXT:             code: 5,
 // REWRITES-NEXT:         },
 // REWRITES-NEXT:     ];
@@ -299,12 +299,12 @@ int main(void) {
 // REWRITES-NEXT:     *items = [
 // REWRITES-NEXT:         Rec_0 {
 // REWRITES-NEXT:             n: 5,
-// REWRITES-NEXT:             text: b"x\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:             text: c"x".as_ptr() as *mut i8,
 // REWRITES-NEXT:             code: 0,
 // REWRITES-NEXT:         },
 // REWRITES-NEXT:         Rec_0 {
 // REWRITES-NEXT:             n: 6,
-// REWRITES-NEXT:             text: b"y\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:             text: c"y".as_ptr() as *mut i8,
 // REWRITES-NEXT:             code: 5,
 // REWRITES-NEXT:         },
 // REWRITES-NEXT:     ];

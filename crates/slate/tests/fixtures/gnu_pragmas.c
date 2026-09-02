@@ -210,7 +210,7 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut packed: GNUPragmaPacked = GNUPragmaPacked { tag: 29, value: 31 };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d %d %d %d %d %d %d %d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { gnu_pragma_inner_macro };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { gnu_pragma_outer_macro };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = std::mem::offset_of!(GNUPragmaPacked, value) as i32;

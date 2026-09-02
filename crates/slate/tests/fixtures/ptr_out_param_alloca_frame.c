@@ -219,7 +219,7 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut tok: i32 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"xyz\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"xyz".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(3) };
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(

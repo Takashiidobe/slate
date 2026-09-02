@@ -498,7 +498,7 @@ int main(void) {
 // REWRITES-NEXT:         if !{{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = b"%s\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = c"%s\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = std::ptr::addr_of_mut!(t.rows[((i as i64) as usize)]) as *mut i8;
 // REWRITES-NEXT:         unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
 // REWRITES-NEXT:         i += 1;

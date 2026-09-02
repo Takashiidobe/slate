@@ -87,7 +87,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), inot(12)) };
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), inot(-1)) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = 240;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%u\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%u\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = !{{_v[0-9]+}};
 // REWRITES-NEXT:     unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

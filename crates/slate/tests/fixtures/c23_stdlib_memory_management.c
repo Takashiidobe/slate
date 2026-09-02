@@ -213,7 +213,7 @@ int main(void) {
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void =
 // REWRITES-NEXT:         unsafe { aligned_alloc((64 as u64) as usize, (64 as u64) as usize) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = memalignment({{_v[0-9]+}} as *mut core::ffi::c_void);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} % 64 == {{_v[0-9]+}};

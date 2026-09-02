@@ -159,7 +159,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BUint<200, 4, 32> = bitint::BUint::<200, 4, 32>::from_decimal_str("3");
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BUint<200, 4, 32> = bitint::BUint::<200, 4, 32>::from_decimal_str("10");
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BUint<200, 4, 32> = {{_v[0-9]+}}.saturating_sub({{_v[0-9]+}});
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BUint<200, 4, 32> = bitint::BUint::<200, 4, 32>::from_decimal_str("0");
 // REWRITES-NEXT:     unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, ({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: [i32; 4] = [2147483647, 1, -2147483648, 0];

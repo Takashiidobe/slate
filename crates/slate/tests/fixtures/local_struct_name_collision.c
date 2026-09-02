@@ -350,15 +350,15 @@ int main(void) {
 // REWRITES-NEXT:     let mut total: i32 = 0;
 // REWRITES-NEXT:     *cases = [
 // REWRITES-NEXT:         TestCase {
-// REWRITES-NEXT:             doc: b"a\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:             doc: c"a".as_ptr() as *mut i8,
 // REWRITES-NEXT:             expectedStatus: 1,
 // REWRITES-NEXT:         },
 // REWRITES-NEXT:         TestCase {
-// REWRITES-NEXT:             doc: b"bb\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:             doc: c"bb".as_ptr() as *mut i8,
 // REWRITES-NEXT:             expectedStatus: 2,
 // REWRITES-NEXT:         },
 // REWRITES-NEXT:         TestCase {
-// REWRITES-NEXT:             doc: b"ccc\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:             doc: c"ccc".as_ptr() as *mut i8,
 // REWRITES-NEXT:             expectedStatus: 3,
 // REWRITES-NEXT:         },
 // REWRITES-NEXT:     ];
@@ -424,15 +424,15 @@ int main(void) {
 // REWRITES-NEXT:     *cases = [
 // REWRITES-NEXT:         TestCase_1 {
 // REWRITES-NEXT:             expectedMovementInChars: 1,
-// REWRITES-NEXT:             input: b"x\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:             input: c"x".as_ptr() as *mut i8,
 // REWRITES-NEXT:         },
 // REWRITES-NEXT:         TestCase_1 {
 // REWRITES-NEXT:             expectedMovementInChars: 2,
-// REWRITES-NEXT:             input: b"yy\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:             input: c"yy".as_ptr() as *mut i8,
 // REWRITES-NEXT:         },
 // REWRITES-NEXT:         TestCase_1 {
 // REWRITES-NEXT:             expectedMovementInChars: 3,
-// REWRITES-NEXT:             input: b"zzz\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:             input: c"zzz".as_ptr() as *mut i8,
 // REWRITES-NEXT:         },
 // REWRITES-NEXT:     ];
 // REWRITES-NEXT:     let mut i: i32 = 0;

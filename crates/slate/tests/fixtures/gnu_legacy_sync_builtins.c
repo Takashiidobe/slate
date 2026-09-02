@@ -289,7 +289,7 @@ int main(void) {
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), v) };
 // REWRITES-NEXT:     v = 5;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 3;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
 // REWRITES-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v))
@@ -298,7 +298,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}} - {{_v[0-9]+}}) };
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), v) };
 // REWRITES-NEXT:     v = 15;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 240;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
 // REWRITES-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v))
@@ -307,7 +307,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}} | {{_v[0-9]+}}) };
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), v) };
 // REWRITES-NEXT:     v = 255;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 15;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
 // REWRITES-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v))
@@ -316,7 +316,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}} & {{_v[0-9]+}}) };
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), v) };
 // REWRITES-NEXT:     v = 15;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 255;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
 // REWRITES-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v))
@@ -325,7 +325,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}} ^ {{_v[0-9]+}}) };
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), v) };
 // REWRITES-NEXT:     v = 5;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 3;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
 // REWRITES-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(v))

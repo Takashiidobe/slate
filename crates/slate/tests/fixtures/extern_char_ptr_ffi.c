@@ -20,7 +20,7 @@ int main(void) {
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = b"hello\0".as_ptr() as *mut i8;
+// REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = c"hello".as_ptr() as *mut i8;
 // REWRITES-DAG: let {{_v[0-9]+}}: u64 = (unsafe { "hello".len() as u64 }) as u64;
 // REWRITES-DAG: unsafe { puts({{_v[0-9]+}} as *const core::ffi::c_char) };
 // SLATE-FILECHECK-END rewrites

@@ -123,7 +123,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32, i32) -> i32> =
 // REWRITES-NEXT:         if {{_v[0-9]+}} { Some(add) } else { Some(sub) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d %d %d %d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { {{_v[0-9]+}}.unwrap()(10 as i32, 3 as i32) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = apply(0, 10, 3);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = apply(1, 4, 4);

@@ -1518,7 +1518,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         __slate_printf__ri32_pi8_pi8_f80_f80(
-// REWRITES-NEXT:             b"%s=%Lax%Lai\n\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:             c"%s=%Lax%Lai\n".as_ptr() as *mut i8,
 // REWRITES-NEXT:             {{arg[0-9]+}} as *mut i8,
 // REWRITES-NEXT:             {{_v[0-9]+}},
 // REWRITES-NEXT:             {{_v[0-9]+}},
@@ -1570,7 +1570,7 @@ int main(void) {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]),
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"add\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"add".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = b;
 // REWRITES-NEXT:     let mut byval: num_complex::Complex<LongDouble> = num_complex::Complex {
@@ -1578,7 +1578,7 @@ int main(void) {
 // REWRITES-NEXT:         im: {{_v[0-9]+}}.im + {{_v[0-9]+}}.im,
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"sub\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"sub".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = b;
 // REWRITES-NEXT:     let mut byval2: num_complex::Complex<LongDouble> = num_complex::Complex {
@@ -1586,7 +1586,7 @@ int main(void) {
 // REWRITES-NEXT:         im: {{_v[0-9]+}}.im - {{_v[0-9]+}}.im,
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval2)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"mul\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"mul".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = b;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
@@ -1608,7 +1608,7 @@ int main(void) {
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let mut byval3: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval3)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"div\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"div".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = b;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
@@ -1621,7 +1621,7 @@ int main(void) {
 // REWRITES-NEXT:     );
 // REWRITES-NEXT:     let mut byval4: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval4)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"neg\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"neg".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
 // REWRITES-NEXT:     let mut byval5: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: -{{_v[0-9]+}}.re,
@@ -1634,7 +1634,7 @@ int main(void) {
 // REWRITES-NEXT:         re: {{_v[0-9]+}}.re + {{_v[0-9]+}}.re,
 // REWRITES-NEXT:         im: {{_v[0-9]+}}.im + {{_v[0-9]+}}.im,
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"add_assign\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"add_assign".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let mut byval6: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval6)) });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = b;
@@ -1642,7 +1642,7 @@ int main(void) {
 // REWRITES-NEXT:         re: {{_v[0-9]+}}.re - {{_v[0-9]+}}.re,
 // REWRITES-NEXT:         im: {{_v[0-9]+}}.im - {{_v[0-9]+}}.im,
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"sub_assign\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"sub_assign".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let mut byval7: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval7)) });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = b;
@@ -1663,7 +1663,7 @@ int main(void) {
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"mul_assign\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"mul_assign".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let mut byval8: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval8)) });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = b;
@@ -1675,7 +1675,7 @@ int main(void) {
 // REWRITES-NEXT:         num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} },
 // REWRITES-NEXT:         num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} },
 // REWRITES-NEXT:     );
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"div_assign\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"div_assign".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let mut byval9: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval9)) });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = !(a == a);
@@ -1690,7 +1690,7 @@ int main(void) {
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         unsafe { abort() };
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"mix\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"mix".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = b;
 // REWRITES-NEXT:     let mut byval10: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
@@ -1705,7 +1705,7 @@ int main(void) {
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval12)) });
 // REWRITES-NEXT:     a.re = LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 2, 64]);
 // REWRITES-NEXT:     a.im = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 2, 64]);
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"real_imag_assign\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"real_imag_assign".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = a;
 // REWRITES-NEXT:     let mut byval13: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval13)) });
@@ -1715,7 +1715,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         __slate_printf__ri32_pi8_f80_f80(
-// REWRITES-NEXT:             b"real_field=%La imag_field=%La\n\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:             c"real_field=%La imag_field=%La\n".as_ptr() as *mut i8,
 // REWRITES-NEXT:             {{_v[0-9]+}},
 // REWRITES-NEXT:             {{_v[0-9]+}},
 // REWRITES-NEXT:         )
@@ -1730,7 +1730,7 @@ int main(void) {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]),
 // REWRITES-NEXT:         im: LongDouble([0; 10]),
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"real_to_complex\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"real_to_complex".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let mut byval: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval)) });
 // REWRITES-NEXT:     back = {{_v[0-9]+}}.re;
@@ -1752,7 +1752,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = __slate_f80_to_f64({{_v[0-9]+}});
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = __slate_f80_to_f64({{_v[0-9]+}});
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"to_double_complex\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"to_double_complex".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.re;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.im;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{_v[0-9]+}});
@@ -1765,7 +1765,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = __slate_f80_to_f32({{_v[0-9]+}});
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = __slate_f80_to_f32({{_v[0-9]+}});
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"to_float_complex\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"to_float_complex".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}}.re;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}}.im;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}});
@@ -1781,7 +1781,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{_v[0-9]+}});
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f64({{_v[0-9]+}});
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"from_double_complex\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"from_double_complex".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let mut byval4: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval4)) });
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_i32(7 as i32);
@@ -1789,7 +1789,7 @@ int main(void) {
 // REWRITES-NEXT:         re: {{_v[0-9]+}},
 // REWRITES-NEXT:         im: LongDouble([0; 10]),
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"from_int\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"from_int".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let mut byval5: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval5)) });
 // REWRITES-NEXT:     return;
@@ -1868,7 +1868,7 @@ int main(void) {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]),
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"cabs=%La\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"cabs=%La\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let mut byval: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         __slate_printf__ri32_pi8_f80({{_v[0-9]+}} as *mut i8, unsafe {
@@ -1877,7 +1877,7 @@ int main(void) {
 // REWRITES-NEXT:             )
 // REWRITES-NEXT:         })
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"carg=%La\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"carg=%La\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let mut byval2: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         __slate_printf__ri32_pi8_f80({{_v[0-9]+}} as *mut i8, unsafe {
@@ -1886,14 +1886,14 @@ int main(void) {
 // REWRITES-NEXT:             )
 // REWRITES-NEXT:         })
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"conj\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"conj".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: {{_v[0-9]+}}.re,
 // REWRITES-NEXT:         im: -{{_v[0-9]+}}.im,
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let mut byval3: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval3)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"cproj\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"cproj".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let mut byval4: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     coerce17 = unsafe {
 // REWRITES-NEXT:         __slate_cprojl__rcf80_pcf80(
@@ -1905,7 +1905,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
 // REWRITES-NEXT:     let mut byval5: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval5)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"csqrt\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"csqrt".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let mut byval6: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     coerce16 = unsafe {
 // REWRITES-NEXT:         __slate_csqrtl__rcf80_pcf80(
@@ -1917,7 +1917,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
 // REWRITES-NEXT:     let mut byval7: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval7)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"cexp\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"cexp".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
@@ -1933,7 +1933,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
 // REWRITES-NEXT:     let mut byval9: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval9)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"clog\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"clog".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
@@ -1949,7 +1949,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
 // REWRITES-NEXT:     let mut byval11: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval11)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"cpow\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"cpow".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
@@ -1971,7 +1971,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
 // REWRITES-NEXT:     let mut byval14: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval14)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"csin\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"csin".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
@@ -1987,7 +1987,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
 // REWRITES-NEXT:     let mut byval16: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval16)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"ccos\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"ccos".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
@@ -2003,7 +2003,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
 // REWRITES-NEXT:     let mut byval18: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval18)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"ctan\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"ctan".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
@@ -2019,7 +2019,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
 // REWRITES-NEXT:     let mut byval20: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval20)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"casin\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"casin".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
@@ -2035,7 +2035,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
 // REWRITES-NEXT:     let mut byval22: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval22)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"cacos\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"cacos".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
@@ -2051,7 +2051,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
 // REWRITES-NEXT:     let mut byval24: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval24)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"catan\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"catan".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
@@ -2067,7 +2067,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
 // REWRITES-NEXT:     let mut byval26: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval26)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"csinh\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"csinh".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
@@ -2083,7 +2083,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
 // REWRITES-NEXT:     let mut byval28: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval28)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"ccosh\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"ccosh".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
@@ -2099,7 +2099,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
 // REWRITES-NEXT:     let mut byval30: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval30)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"ctanh\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"ctanh".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
@@ -2115,7 +2115,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
 // REWRITES-NEXT:     let mut byval32: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval32)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"casinh\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"casinh".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
@@ -2131,7 +2131,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
 // REWRITES-NEXT:     let mut byval34: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval34)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"cacosh\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"cacosh".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
@@ -2147,7 +2147,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { *{{_v[0-9]+}} };
 // REWRITES-NEXT:     let mut byval36: num_complex::Complex<LongDouble> = {{_v[0-9]+}};
 // REWRITES-NEXT:     print_lc({{_v[0-9]+}}, unsafe { &(*std::ptr::addr_of_mut!(byval36)) });
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"catanh\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"catanh".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
 // REWRITES-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
@@ -2166,7 +2166,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.re;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = {{_v[0-9]+}}.im;
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         __slate_printf__ri32_pi8_f80_f80(b"creal=%La cimag=%La\n\0".as_ptr() as *mut i8, {{_v[0-9]+}}, {{_v[0-9]+}})
+// REWRITES-NEXT:         __slate_printf__ri32_pi8_f80_f80(c"creal=%La cimag=%La\n".as_ptr() as *mut i8, {{_v[0-9]+}}, {{_v[0-9]+}})
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }

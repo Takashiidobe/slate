@@ -70,7 +70,7 @@ int main(void) {
 // REWRITES-DAG: let {{_v[0-9]+}}: u64 = 6 - {{_v[0-9]+}};
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut Slice = make_slice(
 // REWRITES-DAG:     unsafe { &mut (*std::ptr::addr_of_mut!(_compoundliteral)) },
-// REWRITES-DAG:     b"slate\0".as_ptr() as *mut i8,
+// REWRITES-DAG:     c"slate".as_ptr() as *mut i8,
 // REWRITES-DAG:     {{_v[0-9]+}},
 // REWRITES-DAG: );
 // REWRITES-DAG: unsafe { std::ptr::copy({{_v[0-9]+}}, std::ptr::addr_of_mut!(first), 1) };
@@ -80,11 +80,11 @@ int main(void) {
 // REWRITES-DAG: let {{_v[0-9]+}}: u64 = 12 - {{_v[0-9]+}};
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut Slice = make_slice(
 // REWRITES-DAG:     unsafe { &mut (*std::ptr::addr_of_mut!(_compoundliteral2)) },
-// REWRITES-DAG:     b"translation\0".as_ptr() as *mut i8,
+// REWRITES-DAG:     c"translation".as_ptr() as *mut i8,
 // REWRITES-DAG:     {{_v[0-9]+}},
 // REWRITES-DAG: );
 // REWRITES-DAG: unsafe { std::ptr::copy({{_v[0-9]+}}, std::ptr::addr_of_mut!(second), 1) };
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = b"%c %lu %c %lu\n\0".as_ptr() as *mut i8;
+// REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = c"%c %lu %c %lu\n".as_ptr() as *mut i8;
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = first.data;
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = (unsafe { *{{_v[0-9]+}} }) as i32;

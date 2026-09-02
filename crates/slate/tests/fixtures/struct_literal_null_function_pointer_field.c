@@ -157,11 +157,11 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: Handlers = Handlers {
-// REWRITES-NEXT:         label: b"none\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:         label: c"none".as_ptr() as *mut i8,
 // REWRITES-NEXT:         onEvent: None,
 // REWRITES-NEXT:         counter: std::ptr::null_mut(),
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let mut byval: Handlers = {{_v[0-9]+}};
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(

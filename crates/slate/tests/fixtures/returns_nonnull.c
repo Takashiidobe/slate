@@ -71,7 +71,7 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut x: i32 = 0;
 // REWRITES-NEXT:     x = 5;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = get(unsafe { &(*std::ptr::addr_of_mut!(x)) });
 // REWRITES-NEXT:     unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, unsafe { *{{_v[0-9]+}} }) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

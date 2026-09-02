@@ -64,13 +64,13 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%s %c %c %d\n".as_ptr(),
-// REWRITES-NEXT:             b"tag\0".as_ptr() as *mut i8,
+// REWRITES-NEXT:             c"tag".as_ptr() as *mut i8,
 // REWRITES-NEXT:             65 as i32,
 // REWRITES-NEXT:             10 as i32,
 // REWRITES-NEXT:             7 as i32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     unsafe { printf(c"literal=%s".as_ptr(), b"tail\0".as_ptr() as *mut i8) };
+// REWRITES-NEXT:     unsafe { printf(c"literal=%s".as_ptr(), c"tail".as_ptr() as *mut i8) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

@@ -268,7 +268,7 @@ int main(void) {
 // REWRITES-NEXT:         };
 // REWRITES-NEXT:         i2 += 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
 // REWRITES-NEXT:         std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(counter))
 // REWRITES-NEXT:             .load(std::sync::atomic::Ordering::SeqCst)

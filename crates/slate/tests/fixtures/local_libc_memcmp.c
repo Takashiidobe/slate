@@ -214,7 +214,7 @@ int main(void) {
 // REWRITES-NEXT:     let mut x: [u8; 3] = [1, 2, 3];
 // REWRITES-NEXT:     let mut y: [u8; 3] = [1, 2, 4];
 // REWRITES-NEXT:     let mut z: [u8; 3] = [1, 2, 3];
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d %d %d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u8 = x.as_mut_ptr() as *mut u8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u8 = y.as_mut_ptr() as *mut u8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = cmp_bytes(

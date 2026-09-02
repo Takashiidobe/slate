@@ -40,7 +40,7 @@ FILE *darwin_stdin(void) { return stdin; }
 
 // SLATE-FILECHECK-BEGIN rewrites-macos
 // REWRITES-MACOS-DAG: fn open_darwin_stream({{arg[0-9]+}}: *mut i8) -> *mut __sFILE {
-// REWRITES-MACOS-DAG: return unsafe { __fopen_DARWIN_EXTSN({{arg[0-9]+}} as *mut i8, b"r\0".as_ptr() as *mut i8) };
+// REWRITES-MACOS-DAG: return unsafe { __fopen_DARWIN_EXTSN({{arg[0-9]+}} as *mut i8, c"r".as_ptr() as *mut i8) };
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: fn darwin_errno() -> i32 {
 // REWRITES-MACOS-DAG: let {{_v[0-9]+}}: *mut i32 = unsafe { __error() };

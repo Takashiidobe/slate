@@ -52,7 +52,7 @@ int main(void) {
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
+// REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = c"%d %d\n".as_ptr() as *mut i8;
 // REWRITES-DAG: unsafe {
 // REWRITES-DAG:     agg_tmp0.first = std::ptr::addr_of_mut!(first);
 // REWRITES-DAG: }

@@ -100,7 +100,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(0) };
 // REWRITES-NEXT:     unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, unsafe { *{{_v[0-9]+}} }) };
 // REWRITES-NEXT:     unsafe { free({{_v[0-9]+}} as *mut core::ffi::c_void) };

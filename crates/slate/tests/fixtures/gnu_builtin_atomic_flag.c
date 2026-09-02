@@ -94,7 +94,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         std::sync::atomic::AtomicI8::from_ptr({{_v[0-9]+}}).store(0, std::sync::atomic::Ordering::SeqCst)
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d %d %d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = !flag;
 // REWRITES-NEXT:     unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}} as i32) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

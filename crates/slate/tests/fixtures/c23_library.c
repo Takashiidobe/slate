@@ -1701,7 +1701,7 @@ int main(void) {
 // REWRITES-NEXT:     let mut second_copy: *mut i8 = std::ptr::null_mut();
 // REWRITES-NEXT:     let mut mutable_phrase: [i8; 12] = [104, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100, 0];
 // REWRITES-NEXT:     let mut mut_hit: *mut i8 = std::ptr::null_mut();
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"hello world\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"hello world".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = destination.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = source.as_mut_ptr() as *mut i8;
@@ -2144,7 +2144,7 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d %d %d %d %d %d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = c23_stdbit();
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = c23_checked_arithmetic();
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = c23_utf8();
