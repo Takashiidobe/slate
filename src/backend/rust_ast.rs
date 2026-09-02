@@ -522,6 +522,7 @@ pub enum Pattern {
     I128(i128),
     U128(u128),
     InclusiveRange { start: i128, end: i128 },
+    InclusiveRangeU128 { start: u128, end: u128 },
     TupleStruct { name: Ident, fields: Vec<Pattern> },
     Guarded { bind: Ident, cond: Box<Expr> },
     Or(Vec<Pattern>),
@@ -1022,6 +1023,7 @@ pub enum Expr {
     },
     Block(Box<Block>),
     Unsafe(Box<Block>),
+    ConstBlock(Box<Expr>),
     Cast {
         expr: Box<Expr>,
         ty: Type,
@@ -1463,6 +1465,7 @@ impl Expr {
             | Expr::Str(_)
             | Expr::HexFloat(_)
             | Expr::ByteStr(_)
+            | Expr::ConstBlock(_)
             | Expr::CStr(_)
             | Expr::Path(_)
             | Expr::AtomicFence { .. }
@@ -1544,6 +1547,7 @@ impl Expr {
             | Expr::Str(_)
             | Expr::HexFloat(_)
             | Expr::ByteStr(_)
+            | Expr::ConstBlock(_)
             | Expr::CStr(_)
             | Expr::Path(_)
             | Expr::AtomicFence { .. }
@@ -1690,6 +1694,7 @@ impl Expr {
             | Expr::Str(_)
             | Expr::HexFloat(_)
             | Expr::ByteStr(_)
+            | Expr::ConstBlock(_)
             | Expr::CStr(_)
             | Expr::Path(_)
             | Expr::AtomicFence { .. }
@@ -1828,6 +1833,7 @@ impl Expr {
             | Expr::Str(_)
             | Expr::HexFloat(_)
             | Expr::ByteStr(_)
+            | Expr::ConstBlock(_)
             | Expr::CStr(_)
             | Expr::Path(_)
             | Expr::AtomicFence { .. }
@@ -1962,6 +1968,7 @@ impl Expr {
             | Expr::Str(_)
             | Expr::HexFloat(_)
             | Expr::ByteStr(_)
+            | Expr::ConstBlock(_)
             | Expr::CStr(_)
             | Expr::Var(_)
             | Expr::Path(_) => false,
