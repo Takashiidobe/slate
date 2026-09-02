@@ -481,8 +481,30 @@ fn rust_type_has_long_double(ty: &Type) -> bool {
     }
 }
 
+fn header_for_shim_name(name: &str) -> Option<&'static str> {
+    let rest = name.strip_prefix("__slate_")?;
+    let callee = rest.split("__").next()?;
+    let callee = callee.strip_prefix("cb_").unwrap_or(callee);
+    crate::function_identity::Known::from_symbol(callee)
+        .map(crate::function_identity::Known::header)
+}
+
 pub fn render_shim_c_source_for_names(names: &BTreeSet<String>) -> String {
-    let mut blocks = vec!["#define _GNU_SOURCE".to_string()];
+    let headers = names
+        .iter()
+        .filter_map(|name| header_for_shim_name(name))
+        .filter(|header| !header.starts_with("bits/"))
+        .collect::<BTreeSet<_>>();
+    let mut blocks = vec![
+        std::iter::once("#define _GNU_SOURCE".to_string())
+            .chain(
+                headers
+                    .into_iter()
+                    .map(|header| format!("#include <{header}>")),
+            )
+            .collect::<Vec<_>>()
+            .join("\n"),
+    ];
     if names.iter().any(|name| name.contains("f80")) {
         blocks.push(F80_SHIMS.to_string());
     }

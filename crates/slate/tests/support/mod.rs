@@ -485,7 +485,6 @@ pub fn compile_rs_cargo_with_link_and_shims(
     }
     cc::Build::new()
         .file("src/slate_long_double.c")
-        .flag("-Wno-implicit-function-declaration")
         .compile("slate_long_double");
 }
 "#,
@@ -507,7 +506,6 @@ pub fn compile_rs_cargo_with_link_and_shims(
     }
     cc::Build::new()
         .file("src/slate_long_double.c")
-        .flag("-Wno-implicit-function-declaration")
         .compile("slate_long_double");
 }
 "#;
@@ -895,7 +893,6 @@ fn write_long_double_shim(project: &Path) -> Result<(), String> {
     println!("cargo:rerun-if-changed=src/slate_long_double.c");
     cc::Build::new()
         .file("src/slate_long_double.c")
-        .flag("-Wno-implicit-function-declaration")
         .compile("slate_long_double");
 }
 "#
