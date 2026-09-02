@@ -304,11 +304,26 @@ fn render_trampoline(name: &str) -> Option<String> {
 const F80_SHIMS: &str = include_str!("./shims/long_double.c");
 const FENV_SHIMS: &str = include_str!("./shims/fenv.c");
 
+fn shim_preamble(shims: &[ExternFnDecl]) -> String {
+    let headers = shims
+        .iter()
+        .filter_map(|shim| match shim.identity {
+            FunctionIdentity::Known(known) => Some(known.header()),
+            FunctionIdentity::Unknown => None,
+        })
+        .collect::<BTreeSet<_>>();
+    std::iter::once("#define _GNU_SOURCE".to_string())
+        .chain(
+            headers
+                .into_iter()
+                .map(|header| format!("#include <{header}>")),
+        )
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
 pub fn render_shim_c_source(shims: &[ExternFnDecl]) -> String {
-    let mut blocks = vec![
-        "#define _GNU_SOURCE\n#include <stdio.h>\n#include <stdlib.h>\n#include <math.h>"
-            .to_string(),
-    ];
+    let mut blocks = vec![shim_preamble(shims)];
     let has_f80 = shims
         .iter()
         .any(|shim| shim.name.contains("f80") || shim.name.starts_with("__slate_ld_"));
@@ -348,10 +363,7 @@ pub fn render_shim_c_source_for_program(program: &Program) -> String {
             ExternDecl::Static { .. } => None,
         })
         .collect();
-    let mut blocks = vec![
-        "#define _GNU_SOURCE\n#include <stdio.h>\n#include <stdlib.h>\n#include <math.h>"
-            .to_string(),
-    ];
+    let mut blocks = vec![shim_preamble(&shims)];
     let has_f80 = shims
         .iter()
         .any(|shim| shim.name.contains("f80") || shim.name.starts_with("__slate_ld_"));
@@ -476,10 +488,7 @@ fn rust_type_has_long_double(ty: &Type) -> bool {
 }
 
 pub fn render_shim_c_source_for_names(names: &BTreeSet<String>) -> String {
-    let mut blocks = vec![
-        "#define _GNU_SOURCE\n#include <stdio.h>\n#include <stdlib.h>\n#include <math.h>"
-            .to_string(),
-    ];
+    let mut blocks = vec!["#define _GNU_SOURCE".to_string()];
     if names.iter().any(|name| name.contains("f80")) {
         blocks.push(F80_SHIMS.to_string());
     }
