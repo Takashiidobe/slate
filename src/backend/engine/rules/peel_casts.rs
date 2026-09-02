@@ -1,7 +1,11 @@
+use std::collections::HashMap;
+
 use super::walk::{child_exprs, child_exprs_mut};
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, NodeId, NodeKind, NodeKindTag};
-use crate::backend::rust_ast::{Expr, Prim, RustValue, Type};
+use crate::backend::rust_ast::{Expr, Ident, Prim, RustValue, Type};
+
+type VarTypes = HashMap<Ident, Type>;
 
 const KINDS: &[NodeKindTag] = &[
     NodeKindTag::Let,
@@ -37,11 +41,13 @@ fn is_int_prim(prim: Prim) -> bool {
     )
 }
 
-fn yields_ptr_or_int(expr: &Expr) -> bool {
+fn is_ptr_or_int_type(ty: &Type) -> bool {
+    is_thin_raw_ptr(ty) || matches!(ty, Type::Prim(p) if is_int_prim(*p))
+}
+
+fn yields_ptr_or_int(expr: &Expr, vars: &VarTypes) -> bool {
     match expr {
-        Expr::Cast { ty, .. } => {
-            is_thin_raw_ptr(ty) || matches!(ty, Type::Prim(p) if is_int_prim(*p))
-        }
+        Expr::Cast { ty, .. } => is_ptr_or_int_type(ty),
         Expr::MethodCall { method, .. } => matches!(method.as_str(), "as_ptr" | "as_mut_ptr"),
         Expr::ArrayPtr { .. } => true,
         Expr::Value(
@@ -51,11 +57,12 @@ fn yields_ptr_or_int(expr: &Expr) -> bool {
             | RustValue::U128(_)
             | RustValue::Usize(_),
         ) => true,
+        Expr::Var(name) => vars.get(name).is_some_and(is_ptr_or_int_type),
         _ => false,
     }
 }
 
-fn collapsible_pair(expr: &Expr) -> bool {
+fn collapsible_pair(expr: &Expr, vars: &VarTypes) -> bool {
     let Expr::Cast {
         expr: inner,
         ty: outer_ty,
@@ -73,12 +80,12 @@ fn collapsible_pair(expr: &Expr) -> bool {
     if inner_ty == outer_ty {
         return true;
     }
-    is_thin_raw_ptr(inner_ty) && is_thin_raw_ptr(outer_ty) && yields_ptr_or_int(innermost)
+    is_thin_raw_ptr(inner_ty) && is_thin_raw_ptr(outer_ty) && yields_ptr_or_int(innermost, vars)
 }
 
-fn collapse_here(expr: &mut Expr) -> bool {
+fn collapse_here(expr: &mut Expr, vars: &VarTypes) -> bool {
     let mut changed = false;
-    while collapsible_pair(expr) {
+    while collapsible_pair(expr, vars) {
         let Expr::Cast { expr: inner, .. } = expr else {
             break;
         };
@@ -95,21 +102,24 @@ fn collapse_here(expr: &mut Expr) -> bool {
     changed
 }
 
-fn fold_expr(expr: &mut Expr) -> bool {
+fn fold_expr(expr: &mut Expr, vars: &VarTypes) -> bool {
     let mut changed = false;
     for child in child_exprs_mut(expr) {
-        changed |= fold_expr(child);
+        changed |= fold_expr(child, vars);
     }
-    changed | collapse_here(expr)
+    changed | collapse_here(expr, vars)
 }
 
-fn has_collapsible(expr: &Expr) -> bool {
-    collapsible_pair(expr) || child_exprs(expr).iter().any(|child| has_collapsible(child))
+fn has_collapsible(expr: &Expr, vars: &VarTypes) -> bool {
+    collapsible_pair(expr, vars)
+        || child_exprs(expr)
+            .iter()
+            .any(|child| has_collapsible(child, vars))
 }
 
-fn fold_kind(kind: &mut NodeKind) -> bool {
+fn fold_kind(kind: &mut NodeKind, vars: &VarTypes) -> bool {
     let mut changed = false;
-    let mut fold = |expr: &mut Expr| changed |= fold_expr(expr);
+    let mut fold = |expr: &mut Expr| changed |= fold_expr(expr, vars);
     match kind {
         NodeKind::Let { init, .. } => init.as_mut().into_iter().for_each(&mut fold),
         NodeKind::LetIf {
@@ -149,9 +159,9 @@ fn fold_kind(kind: &mut NodeKind) -> bool {
     changed
 }
 
-fn kind_has_collapsible(kind: &NodeKind) -> bool {
+fn kind_has_collapsible(kind: &NodeKind, vars: &VarTypes) -> bool {
     let mut found = false;
-    let mut scan = |expr: &Expr| found |= has_collapsible(expr);
+    let mut scan = |expr: &Expr| found |= has_collapsible(expr, vars);
     match kind {
         NodeKind::Let { init, .. } => init.as_ref().into_iter().for_each(&mut scan),
         NodeKind::LetIf {
@@ -191,6 +201,14 @@ fn kind_has_collapsible(kind: &NodeKind) -> bool {
     found
 }
 
+fn read_var_types(arena: &Arena, id: NodeId) -> VarTypes {
+    arena
+        .reads(id)
+        .iter()
+        .filter_map(|&name| arena.var_type(name).map(|ty| (name, ty.clone())))
+        .collect()
+}
+
 pub(in crate::backend::engine) struct PeelCasts;
 
 impl NodeRule for PeelCasts {
@@ -207,14 +225,18 @@ impl NodeRule for PeelCasts {
     }
 
     fn matches(&self, arena: &Arena, id: NodeId) -> bool {
-        arena.get(id).is_some_and(kind_has_collapsible)
+        let vars = read_var_types(arena, id);
+        arena
+            .get(id)
+            .is_some_and(|kind| kind_has_collapsible(kind, &vars))
     }
 
     fn apply(&self, arena: &mut Arena, id: NodeId) -> bool {
+        let vars = read_var_types(arena, id);
         let Some(kind) = arena.get_mut(id) else {
             return false;
         };
-        if !fold_kind(kind) {
+        if !fold_kind(kind, &vars) {
             return false;
         }
         arena.touch(id);

@@ -2,14 +2,21 @@ mod support;
 
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use std::sync::atomic::{AtomicU64, Ordering};
 
 fn cfg_fixtures_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures.cfg")
 }
 
 fn check_directive_output(name: &str, rust: &str) {
+    static SEQ: AtomicU64 = AtomicU64::new(0);
     let fixture_path = cfg_fixtures_dir().join(name);
     let fixture = std::fs::read_to_string(&fixture_path).expect("read directive fixture");
+    let slot = format!(
+        "{name}.{}.{}",
+        std::process::id(),
+        SEQ.fetch_add(1, Ordering::Relaxed)
+    );
     support::filecheck::check_generated_rust_with_prefixes(
         &fixture,
         rust,
@@ -17,7 +24,7 @@ fn check_directive_output(name: &str, rust: &str) {
         &["DIRECTIVES"],
         &Path::new(env!("CARGO_MANIFEST_DIR"))
             .join("target/directive-filecheck")
-            .join(name),
+            .join(slot),
     )
     .unwrap_or_else(|error| panic!("{}: {error}", fixture_path.display()));
 }

@@ -333,6 +333,23 @@ impl Arena {
         self.param_types.get(&name)
     }
 
+    pub(in crate::backend) fn var_type(
+        &self,
+        name: Ident,
+    ) -> Option<&crate::backend::rust_ast::Type> {
+        if let Some(ty) = self.param_types.get(&name) {
+            return Some(ty);
+        }
+        match self.get(*self.defs.get(&name)?)? {
+            NodeKind::Let { ty: Some(ty), .. } | NodeKind::LetIf { ty: Some(ty), .. } => Some(ty),
+            NodeKind::Let {
+                init: Some(Expr::Cast { ty, .. }),
+                ..
+            } => Some(ty),
+            _ => None,
+        }
+    }
+
     fn reserve(&mut self, parent: Option<NodeId>) -> NodeId {
         if let Some(index) = self.free.pop() {
             let slot = &mut self.slots[index as usize];
