@@ -254,7 +254,7 @@ int main(void) {
 // REWRITES-NEXT:     i = 0;
 // REWRITES-NEXT:     '__loop0: loop {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 4;
-// REWRITES-NEXT:         if !(i < {{_v[0-9]+}}) {
+// REWRITES-NEXT:         if i >= {{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         '__continue0: {

@@ -1,3 +1,5 @@
+mod simplify;
+
 use std::collections::{BTreeSet, HashMap, HashSet};
 
 use crate::backend::engine::NodeRule;
@@ -643,7 +645,13 @@ fn structure(cfg: &Cfg, entry: usize, base: &str) -> Option<Vec<Stmt>> {
     };
     let mut state_label = HashMap::new();
     let mut irreducible_var = HashMap::new();
-    assign_incoming_labels(cfg, &units, &mut ctx, &mut state_label, &mut irreducible_var);
+    assign_incoming_labels(
+        cfg,
+        &units,
+        &mut ctx,
+        &mut state_label,
+        &mut irreducible_var,
+    );
     let exit_label = ctx.fresh_label();
     let mut loop_stack = Vec::new();
     let mut out = declare_irreducible_vars(&irreducible_var);
@@ -661,7 +669,7 @@ fn structure(cfg: &Cfg, entry: usize, base: &str) -> Option<Vec<Stmt>> {
         label: exit_label,
         body: to_indent(body),
     });
-    Some(out)
+    Some(simplify::simplify(out))
 }
 
 fn const_usize(expr: &Expr) -> Option<usize> {

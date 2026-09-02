@@ -149,38 +149,21 @@ int main(void) {
 // REWRITES-NEXT:     let mut steps: i32 = 0;
 // REWRITES-NEXT:     '__loop0: loop {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 6;
-// REWRITES-NEXT:         if !(i < {{_v[0-9]+}}) {
+// REWRITES-NEXT:         if i >= {{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         '__continue0: {
 // REWRITES-NEXT:             let mut x: i32 = 0;
 // REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 3;
 // REWRITES-NEXT:             x = i % {{_v[0-9]+}};
-// REWRITES-NEXT:             '__switch1_l4: {
-// REWRITES-NEXT:                 '__switch1_l3: {
-// REWRITES-NEXT:                     '__switch1_l2: {
-// REWRITES-NEXT:                         '__switch1_l1: {
-// REWRITES-NEXT:                             '__switch1_l0: {
-// REWRITES-NEXT:                                 match x {
-// REWRITES-NEXT:                                     0 => {
-// REWRITES-NEXT:                                         break '__switch1_l1;
-// REWRITES-NEXT:                                     }
-// REWRITES-NEXT:                                     1 => {
-// REWRITES-NEXT:                                         break '__switch1_l2;
-// REWRITES-NEXT:                                     }
-// REWRITES-NEXT:                                     2 => {
-// REWRITES-NEXT:                                         break '__switch1_l3;
-// REWRITES-NEXT:                                     }
-// REWRITES-NEXT:                                     _ => {
-// REWRITES-NEXT:                                         break '__switch1_l0;
-// REWRITES-NEXT:                                     }
-// REWRITES-NEXT:                                 }
-// REWRITES-NEXT:                             }
-// REWRITES-NEXT:                             break '__switch1_l4;
-// REWRITES-NEXT:                         }
-// REWRITES-NEXT:                         break '__switch1_l2;
+// REWRITES-NEXT:             '{{__switch[0-9]+_l[0-9]+}}: {
+// REWRITES-NEXT:                 match x {
+// REWRITES-NEXT:                     0 => {}
+// REWRITES-NEXT:                     1 => {}
+// REWRITES-NEXT:                     2 => {}
+// REWRITES-NEXT:                     _ => {
+// REWRITES-NEXT:                         break '{{__switch[0-9]+_l[0-9]+}};
 // REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     break '__switch1_l3;
 // REWRITES-NEXT:                 }
 // REWRITES-NEXT:                 i = i + 1;
 // REWRITES-NEXT:                 steps = steps + 1;

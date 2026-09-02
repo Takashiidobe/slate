@@ -100,8 +100,15 @@ int main(void) {
 // REWRITES-NEXT:     let mut c: u8 = 0;
 // REWRITES-NEXT:     a = 200;
 // REWRITES-NEXT:     b = 100;
-// REWRITES-NEXT:     for i in 0..1 {
+// REWRITES-NEXT:     let mut i: i32 = 0;
+// REWRITES-NEXT:     i = 0;
+// REWRITES-NEXT:     loop {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:         if i >= {{_v[0-9]+}} {
+// REWRITES-NEXT:             break;
+// REWRITES-NEXT:         }
 // REWRITES-NEXT:         c = ((a as i32) + (b as i32)) as u8;
+// REWRITES-NEXT:         i = i + 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), c as i32) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

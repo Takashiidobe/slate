@@ -1173,7 +1173,7 @@ int main(void) {
 // REWRITES-NEXT:     total = 0;
 // REWRITES-NEXT:     let mut index: i32 = 0;
 // REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         if !(index < length) {
+// REWRITES-NEXT:         if index >= length {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = values;
@@ -1434,7 +1434,12 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         (*flexible).count = 3;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     for index in 0..unsafe { (*flexible).count } {
+// REWRITES-NEXT:     let mut index: u64 = 0;
+// REWRITES-NEXT:     index = 0;
+// REWRITES-NEXT:     loop {
+// REWRITES-NEXT:         if index >= unsafe { (*flexible).count } {
+// REWRITES-NEXT:             break;
+// REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = (index as i32) + {{_v[0-9]+}};
 // REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = index;
@@ -1446,13 +1451,19 @@ int main(void) {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut C99Flexible = flexible;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { *(*{{_v[0-9]+}}).values.as_mut_ptr().add({{_v[0-9]+}} as usize) };
 // REWRITES-NEXT:         flexible_total = flexible_total + {{_v[0-9]+}};
+// REWRITES-NEXT:         index = index + 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { free(flexible as *mut core::ffi::c_void) };
 // REWRITES-NEXT:     length = 3;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = length as u64;
 // REWRITES-NEXT:     saved_stack = 0usize as *mut u8;
 // REWRITES-NEXT:     let mut variable_length_array: Vec<i32> = vec![0; {{_v[0-9]+}} as usize];
-// REWRITES-NEXT:     for index2 in 0..length {
+// REWRITES-NEXT:     let mut index2: i32 = 0;
+// REWRITES-NEXT:     index2 = 0;
+// REWRITES-NEXT:     loop {
+// REWRITES-NEXT:         if index2 >= length {
+// REWRITES-NEXT:             break;
+// REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 4;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = index2 + {{_v[0-9]+}};
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = unsafe {
@@ -1463,6 +1474,7 @@ int main(void) {
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:             *{{_v[0-9]+}} = {{_v[0-9]+}};
 // REWRITES-NEXT:         }
+// REWRITES-NEXT:         index2 = index2 + 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     vm_total = c99_vm_sum(length, variable_length_array.as_mut_ptr());
 // REWRITES-NEXT:     initializer_seed = 19;
@@ -1509,8 +1521,15 @@ int main(void) {
 // REWRITES-NEXT:     mixed_order = mixed_order + {{_v[0-9]+}};
 // REWRITES-NEXT:     declaration_after_statement = 61;
 // REWRITES-NEXT:     for_total = 0;
-// REWRITES-NEXT:     for index3 in 0..3 {
+// REWRITES-NEXT:     let mut index3: i32 = 0;
+// REWRITES-NEXT:     index3 = 0;
+// REWRITES-NEXT:     loop {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 3;
+// REWRITES-NEXT:         if index3 >= {{_v[0-9]+}} {
+// REWRITES-NEXT:             break;
+// REWRITES-NEXT:         }
 // REWRITES-NEXT:         for_total = for_total + index3;
+// REWRITES-NEXT:         index3 = index3 + 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     qualified_values = [2, 3, 5];
 // REWRITES-NEXT:     macro_total = sum3(7 as i32, 11 as i32, 13 as i32);

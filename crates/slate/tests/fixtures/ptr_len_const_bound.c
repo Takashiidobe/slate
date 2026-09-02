@@ -111,10 +111,17 @@ int main(void) {
 // REWRITES-NEXT:     let mut total: i32 = 0;
 // REWRITES-NEXT:     unsafe { printf(c"this is another number: %d %d\n".as_ptr(), {{arg[0-9]+}}, {{arg[0-9]+}}) };
 // REWRITES-NEXT:     total = 0;
-// REWRITES-NEXT:     for i in 0..4 {
+// REWRITES-NEXT:     let mut i: i32 = 0;
+// REWRITES-NEXT:     i = 0;
+// REWRITES-NEXT:     loop {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 4;
+// REWRITES-NEXT:         if i >= {{_v[0-9]+}} {
+// REWRITES-NEXT:             break;
+// REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = items;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
 // REWRITES-NEXT:         total = total + unsafe { *{{_v[0-9]+}} };
+// REWRITES-NEXT:         i = i + 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return total;
 // REWRITES-NEXT: }

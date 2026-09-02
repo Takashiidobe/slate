@@ -143,8 +143,15 @@ int main(void) {
 // REWRITES-NEXT: fn loop_sum() -> i32 {
 // REWRITES-NEXT:     let mut s: i32 = 0;
 // REWRITES-NEXT:     s = 0;
-// REWRITES-NEXT:     for i in 0..8 {
+// REWRITES-NEXT:     let mut i: i32 = 0;
+// REWRITES-NEXT:     i = 0;
+// REWRITES-NEXT:     loop {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 8;
+// REWRITES-NEXT:         if i >= {{_v[0-9]+}} {
+// REWRITES-NEXT:             break;
+// REWRITES-NEXT:         }
 // REWRITES-NEXT:         s = s + i;
+// REWRITES-NEXT:         i = i + 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return s;
 // REWRITES-NEXT: }

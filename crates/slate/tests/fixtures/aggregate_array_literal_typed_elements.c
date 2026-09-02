@@ -208,7 +208,13 @@ int main(void) {
 // REWRITES-NEXT:         value: std::ptr::null_mut(),
 // REWRITES-NEXT:     }; 1];
 // REWRITES-NEXT:     total = 0;
-// REWRITES-NEXT:     for i in 0..1 {
+// REWRITES-NEXT:     let mut i: i32 = 0;
+// REWRITES-NEXT:     i = 0;
+// REWRITES-NEXT:     loop {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:         if i >= {{_v[0-9]+}} {
+// REWRITES-NEXT:             break;
+// REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = if pairs[((i as i64) as usize)].name == {{_v[0-9]+}} {
 // REWRITES-NEXT:             let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
@@ -221,6 +227,7 @@ int main(void) {
 // REWRITES-NEXT:         if {{_v[0-9]+}} {
 // REWRITES-NEXT:             total = total + 1;
 // REWRITES-NEXT:         }
+// REWRITES-NEXT:         i = i + 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return total;
 // REWRITES-NEXT: }
@@ -235,7 +242,7 @@ int main(void) {
 // REWRITES-NEXT:     loop {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = 2;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = 1;
-// REWRITES-NEXT:         if !(i < {{_v[0-9]+}} / {{_v[0-9]+}}) {
+// REWRITES-NEXT:         if i >= {{_v[0-9]+}} / {{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         if values[(i as usize)] {

@@ -276,7 +276,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = i as u64;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = 32;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = std::mem::size_of::<Rec>() as u64;
-// REWRITES-NEXT:         if !({{_v[0-9]+}} < {{_v[0-9]+}} / {{_v[0-9]+}}) {
+// REWRITES-NEXT:         if {{_v[0-9]+}} >= {{_v[0-9]+}} / {{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = items[((i as u64) as usize)].code as i32;

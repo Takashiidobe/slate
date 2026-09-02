@@ -765,57 +765,36 @@ int main(void) {
 // REWRITES-NEXT:     let mut value: i32 = 0;
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-NEXT:     let mut result: i32 = 0;
-// REWRITES-NEXT:     let mut {{__state[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     '{{__dispatch[0-9]+}}: loop {
-// REWRITES-NEXT:         match {{__state[0-9]+}} {
-// REWRITES-NEXT:             0 => {
-// REWRITES-NEXT:                 value = {{arg[0-9]+}};
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 1;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             1 => {
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:                 result = value + {{_v[0-9]+}};
-// REWRITES-NEXT:                 __retval = result;
-// REWRITES-NEXT:                 return __retval;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             _ => {
-// REWRITES-NEXT:                 unreachable!();
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:     }
+// REWRITES-NEXT:     value = {{arg[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     result = value + {{_v[0-9]+}};
+// REWRITES-NEXT:     __retval = result;
+// REWRITES-NEXT:     return __retval;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c23_switch_fallthrough({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     let mut value: i32 = {{arg[0-9]+}};
 // REWRITES-NEXT:     let mut result: i32 = 0;
 // REWRITES-NEXT:     result = 0;
-// REWRITES-NEXT:     let __switch_value0 = value;
-// REWRITES-NEXT:     let mut __switch_case0: i32 = match __switch_value0 {
-// REWRITES-NEXT:         1 => 0,
-// REWRITES-NEXT:         2 => 1,
-// REWRITES-NEXT:         _ => 2,
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     '__switch0: loop {
-// REWRITES-NEXT:         match __switch_case0 {
-// REWRITES-NEXT:             0 => {
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:                 result = result + {{_v[0-9]+}};
-// REWRITES-NEXT:                 __switch_case0 = 1;
-// REWRITES-NEXT:                 continue '__switch0;
+// REWRITES-NEXT:     '{{__switch[0-9]+_l[0-9]+}}: {
+// REWRITES-NEXT:         '{{__switch[0-9]+_l[0-9]+}}: {
+// REWRITES-NEXT:             '{{__switch[0-9]+_l[0-9]+}}: {
+// REWRITES-NEXT:                 match value {
+// REWRITES-NEXT:                     1 => {
+// REWRITES-NEXT:                         break '{{__switch[0-9]+_l[0-9]+}};
+// REWRITES-NEXT:                     }
+// REWRITES-NEXT:                     2 => {
+// REWRITES-NEXT:                         break '{{__switch[0-9]+_l[0-9]+}};
+// REWRITES-NEXT:                     }
+// REWRITES-NEXT:                     _ => {}
+// REWRITES-NEXT:                 }
+// REWRITES-NEXT:                 break '{{__switch[0-9]+_l[0-9]+}};
 // REWRITES-NEXT:             }
-// REWRITES-NEXT:             1 => {
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = 5;
-// REWRITES-NEXT:                 result = result + {{_v[0-9]+}};
-// REWRITES-NEXT:                 break '__switch0;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             2 => {
-// REWRITES-NEXT:                 break '__switch0;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             _ => {
-// REWRITES-NEXT:                 break '__switch0;
-// REWRITES-NEXT:             }
+// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 3;
+// REWRITES-NEXT:             result = result + {{_v[0-9]+}};
 // REWRITES-NEXT:         }
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 5;
+// REWRITES-NEXT:         result = result + {{_v[0-9]+}};
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return result;
 // REWRITES-NEXT: }
@@ -835,21 +814,7 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn c23_label_before_brace() {
-// REWRITES-NEXT:     let mut {{__state[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     '{{__dispatch[0-9]+}}: loop {
-// REWRITES-NEXT:         match {{__state[0-9]+}} {
-// REWRITES-NEXT:             0 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 1;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             1 => {
-// REWRITES-NEXT:                 return;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             _ => {
-// REWRITES-NEXT:                 break '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:     }
+// REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

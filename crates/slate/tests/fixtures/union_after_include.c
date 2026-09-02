@@ -228,7 +228,7 @@ int main(void) {
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     i = 1;
 // REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         if !(i <= n) {
+// REWRITES-NEXT:         if i > n {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         total = total + i;

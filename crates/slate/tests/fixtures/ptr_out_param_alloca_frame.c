@@ -197,29 +197,21 @@ int main(void) {
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{__slate_alloca_frame[0-9]+}}.4;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
-// REWRITES-NEXT:     let __switch_value0 = (unsafe { *{{_v[0-9]+}} }) as i32;
-// REWRITES-NEXT:     let mut __switch_case0: i32 = match __switch_value0 {
-// REWRITES-NEXT:         120 => 0,
-// REWRITES-NEXT:         88 => 1,
-// REWRITES-NEXT:         _ => 2,
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     '__switch0: loop {
-// REWRITES-NEXT:         match __switch_case0 {
-// REWRITES-NEXT:             0 => {
-// REWRITES-NEXT:                 break '__switch0;
+// REWRITES-NEXT:     '{{__switch[0-9]+_l[0-9]+}}: {
+// REWRITES-NEXT:         '{{__switch[0-9]+_l[0-9]+}}: {
+// REWRITES-NEXT:             match (unsafe { *{{_v[0-9]+}} }) as i32 {
+// REWRITES-NEXT:                 120 => {
+// REWRITES-NEXT:                     break '{{__switch[0-9]+_l[0-9]+}};
+// REWRITES-NEXT:                 }
+// REWRITES-NEXT:                 88 => {
+// REWRITES-NEXT:                     break '{{__switch[0-9]+_l[0-9]+}};
+// REWRITES-NEXT:                 }
+// REWRITES-NEXT:                 _ => {}
 // REWRITES-NEXT:             }
-// REWRITES-NEXT:             1 => {
-// REWRITES-NEXT:                 {{__slate_alloca_frame[0-9]+}}.0 = 1;
-// REWRITES-NEXT:                 break '__switch0;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             2 => {
-// REWRITES-NEXT:                 {{__slate_alloca_frame[0-9]+}}.1 = 1;
-// REWRITES-NEXT:                 return {{__slate_alloca_frame[0-9]+}}.1;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             _ => {
-// REWRITES-NEXT:                 break '__switch0;
-// REWRITES-NEXT:             }
+// REWRITES-NEXT:             {{__slate_alloca_frame[0-9]+}}.1 = 1;
+// REWRITES-NEXT:             return {{__slate_alloca_frame[0-9]+}}.1;
 // REWRITES-NEXT:         }
+// REWRITES-NEXT:         {{__slate_alloca_frame[0-9]+}}.0 = 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{__slate_alloca_frame[0-9]+}}.0 != 0;
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
