@@ -1,5 +1,7 @@
 use super::*;
 
+const SELECTOR_BIND: &str = "__switch_sel";
+
 pub(super) fn switch_case<'a>(op: &'a Op, bitint_ty: Option<&Type>) -> Option<SwitchCase<'a>> {
     let Op::Case(case) = op else {
         return None;
@@ -34,13 +36,12 @@ pub(super) fn switch_flat_case_patterns(
 }
 
 fn case_values_to_patterns(raw_values: &[Attr], bitint_ty: Option<&Type>) -> Option<Vec<Pattern>> {
-    if let Some(ty) = bitint_ty {
-        raw_values
+    match bitint_ty {
+        Some(ty) => raw_values
             .iter()
             .map(|value| bitint_case_value_pattern(value, ty))
-            .collect()
-    } else {
-        raw_values.iter().map(case_value_pattern).collect()
+            .collect(),
+        None => raw_values.iter().map(case_value_pattern).collect(),
     }
 }
 
@@ -48,21 +49,26 @@ fn case_value_i128(value: &Attr) -> Option<i128> {
     value.as_int()
 }
 
+fn case_value_u128(value: &Attr) -> Option<u128> {
+    case_value_digits(value)?.parse().ok()
+}
+
 fn case_value_pattern(value: &Attr) -> Option<Pattern> {
-    value.as_int().map(int_pattern).or_else(|| {
-        value
-            .as_int()
-            .and_then(|value| u128::try_from(value).ok())
-            .map(Pattern::U128)
-    })
+    match value.as_int() {
+        Some(value) => Some(int_pattern(value)),
+        None => case_value_u128(value).map(Pattern::U128),
+    }
 }
 
 fn case_range_pattern(start: &Attr, end: &Attr, bitint_ty: Option<&Type>) -> Option<Pattern> {
-    match bitint_ty {
-        Some(ty) => bitint_case_range_pattern(start, end, ty),
-        None => Some(Pattern::InclusiveRange {
-            start: case_value_i128(start)?,
-            end: case_value_i128(end)?,
+    if let Some(ty) = bitint_ty {
+        return bitint_case_range_pattern(start, end, ty);
+    }
+    match (case_value_i128(start), case_value_i128(end)) {
+        (Some(start), Some(end)) => Some(Pattern::InclusiveRange { start, end }),
+        _ => Some(Pattern::InclusiveRangeU128 {
+            start: case_value_u128(start)?,
+            end: case_value_u128(end)?,
         }),
     }
 }
@@ -70,40 +76,43 @@ fn case_range_pattern(start: &Attr, end: &Attr, bitint_ty: Option<&Type>) -> Opt
 fn case_value_digits(value: &Attr) -> Option<String> {
     match value {
         Attr::Int { value, .. } => Some(value.to_string()),
+        Attr::CirInt { value, .. } => Some(value.clone()),
         _ => None,
     }
 }
 
+fn bitint_case_const_expr(value: &Attr, ty: &Type) -> Option<Expr> {
+    let expr = bitint_from_decimal_str_expr(ty, &case_value_digits(value)?)?;
+    Some(Expr::ConstBlock(Box::new(expr)))
+}
+
+fn selector_bound(op: BinOp, bound: Expr) -> Expr {
+    Expr::Binary {
+        op,
+        lhs: Box::new(Expr::Var(SELECTOR_BIND.into())),
+        rhs: Box::new(bound),
+    }
+}
+
 fn bitint_case_value_pattern(value: &Attr, ty: &Type) -> Option<Pattern> {
-    let digits = case_value_digits(value)?;
-    let cond = bitint_from_decimal_str_expr(ty, &digits)?;
     Some(Pattern::Guarded {
-        bind: "v".into(),
-        cond: Box::new(Expr::Binary {
-            op: BinOp::Eq,
-            lhs: Box::new(Expr::Var("v".into())),
-            rhs: Box::new(cond),
-        }),
+        bind: SELECTOR_BIND.into(),
+        cond: Box::new(selector_bound(
+            BinOp::Eq,
+            bitint_case_const_expr(value, ty)?,
+        )),
     })
 }
 
 fn bitint_case_range_pattern(start: &Attr, end: &Attr, ty: &Type) -> Option<Pattern> {
-    let start_expr = bitint_from_decimal_str_expr(ty, &case_value_digits(start)?)?;
-    let end_expr = bitint_from_decimal_str_expr(ty, &case_value_digits(end)?)?;
+    let start = bitint_case_const_expr(start, ty)?;
+    let end = bitint_case_const_expr(end, ty)?;
     Some(Pattern::Guarded {
-        bind: "v".into(),
+        bind: SELECTOR_BIND.into(),
         cond: Box::new(Expr::Binary {
             op: BinOp::And,
-            lhs: Box::new(Expr::Binary {
-                op: BinOp::Ge,
-                lhs: Box::new(Expr::Var("v".into())),
-                rhs: Box::new(start_expr),
-            }),
-            rhs: Box::new(Expr::Binary {
-                op: BinOp::Le,
-                lhs: Box::new(Expr::Var("v".into())),
-                rhs: Box::new(end_expr),
-            }),
+            lhs: Box::new(selector_bound(BinOp::Ge, start)),
+            rhs: Box::new(selector_bound(BinOp::Le, end)),
         }),
     })
 }

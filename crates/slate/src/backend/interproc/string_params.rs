@@ -714,6 +714,7 @@ fn expr_ok(expr: &Expr, tracked: &BTreeSet<String>, ctx: &Ctx) -> bool {
         | Expr::Str(_)
         | Expr::HexFloat(_)
         | Expr::ByteStr(_)
+        | Expr::ConstBlock(_)
         | Expr::CStr(_)
         | Expr::Path(_)
         | Expr::AtomicFence { .. }
@@ -1143,6 +1144,7 @@ fn rewrite_calls_in_expr(expr: &mut Expr, ctx: &RewriteCtx) -> bool {
         | Expr::Str(_)
         | Expr::HexFloat(_)
         | Expr::ByteStr(_)
+        | Expr::ConstBlock(_)
         | Expr::CStr(_)
         | Expr::Path(_)
         | Expr::AtomicFence { .. }

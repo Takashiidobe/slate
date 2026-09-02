@@ -1,7 +1,7 @@
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{self, Arena, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::{
-    Expr, Ident, IndentStmt, Label, MatchArm, Pattern, RustValue, Stmt,
+    BinOp, Expr, Ident, IndentStmt, Label, MatchArm, Pattern, RustValue, Stmt,
 };
 
 fn indent(stmt: Stmt) -> IndentStmt {
@@ -262,6 +262,36 @@ fn freshen(body: &mut [IndentStmt], next: &mut u32) {
     }
 }
 
+fn guard_test(pattern: &Pattern, bind: Ident) -> Option<Expr> {
+    match pattern {
+        Pattern::Guarded { bind: other, cond } if *other == bind => Some((**cond).clone()),
+        _ => None,
+    }
+}
+
+fn merged_guard(patterns: &[Pattern]) -> Option<Pattern> {
+    let bind = patterns.iter().find_map(|pattern| match pattern {
+        Pattern::Guarded { bind, .. } => Some(*bind),
+        _ => None,
+    })?;
+    let mut cond: Option<Expr> = None;
+    for pattern in patterns {
+        let test = guard_test(pattern, bind)?;
+        cond = Some(match cond {
+            None => test,
+            Some(prev) => Expr::Binary {
+                op: BinOp::Or,
+                lhs: Box::new(prev),
+                rhs: Box::new(test),
+            },
+        });
+    }
+    Some(Pattern::Guarded {
+        bind,
+        cond: Box::new(cond?),
+    })
+}
+
 fn pattern_of(switch: &Switch, index: usize) -> Option<Pattern> {
     if switch.fallback == index as i64 {
         return Some(Pattern::Wildcard);
@@ -269,6 +299,12 @@ fn pattern_of(switch: &Switch, index: usize) -> Option<Pattern> {
     match switch.arms[index].patterns.as_slice() {
         [] => None,
         [only] => Some(only.clone()),
+        many if many
+            .iter()
+            .any(|pattern| matches!(pattern, Pattern::Guarded { .. })) =>
+        {
+            merged_guard(many)
+        }
         many => Some(Pattern::Or(many.to_vec())),
     }
 }

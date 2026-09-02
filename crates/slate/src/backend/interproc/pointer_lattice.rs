@@ -1065,6 +1065,7 @@ impl ClassifyCtx<'_> {
             | Expr::Str(_)
             | Expr::HexFloat(_)
             | Expr::ByteStr(_)
+            | Expr::ConstBlock(_)
             | Expr::CStr(_)
             | Expr::AtomicFence { .. }
             | Expr::AtomicRef { .. }
@@ -2134,6 +2135,7 @@ fn rewrite_expr(expr: &mut Expr, ctx: &LiftCtx) {
         | Expr::Str(_)
         | Expr::HexFloat(_)
         | Expr::ByteStr(_)
+        | Expr::ConstBlock(_)
         | Expr::CStr(_)
         | Expr::Path(_)
         | Expr::AtomicFence { .. }

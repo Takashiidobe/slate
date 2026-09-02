@@ -36,7 +36,11 @@ fn expr_prec(expr: &Expr) -> u8 {
 fn starts_with_brace_expr(expr: &Expr) -> bool {
     matches!(
         expr,
-        Expr::Block(_) | Expr::Unsafe(_) | Expr::If { .. } | Expr::Match { .. }
+        Expr::Block(_)
+            | Expr::Unsafe(_)
+            | Expr::ConstBlock(_)
+            | Expr::If { .. }
+            | Expr::Match { .. }
     )
 }
 
@@ -1231,6 +1235,11 @@ impl<W: Write> Codegen<W> {
                 self.out.write_str("unsafe ")?;
                 self.expr_block(block)
             }
+            Expr::ConstBlock(expr) => {
+                self.out.write_str("const { ")?;
+                self.expr(expr)?;
+                self.out.write_str(" }")
+            }
             Expr::Cast { expr, ty } => {
                 if starts_with_brace_expr(expr) {
                     self.parenthesized(expr)?;
@@ -1458,6 +1467,9 @@ impl<W: Write> Codegen<W> {
             crate::backend::rust_ast::Pattern::I128(n) => write!(self.out, "{n}"),
             crate::backend::rust_ast::Pattern::U128(n) => write!(self.out, "{n}"),
             crate::backend::rust_ast::Pattern::InclusiveRange { start, end } => {
+                write!(self.out, "{start}..={end}")
+            }
+            crate::backend::rust_ast::Pattern::InclusiveRangeU128 { start, end } => {
                 write!(self.out, "{start}..={end}")
             }
             crate::backend::rust_ast::Pattern::Guarded { bind, cond } => {
