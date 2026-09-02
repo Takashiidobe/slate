@@ -110,20 +110,18 @@ int main(void) {
 // REWRITES-NEXT: fn countdown({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     let mut n: i32 = {{arg[0-9]+}};
 // REWRITES-NEXT:     let mut steps: i32 = 0;
-// REWRITES-NEXT:     steps = 0;
 // REWRITES-NEXT:     loop {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-NEXT:         if !{{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:         if n <= {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = n <= 0;
+// REWRITES-NEXT:         if {{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-NEXT:         n = n / {{_v[0-9]+}};
-// REWRITES-NEXT:         steps = steps + 1;
+// REWRITES-NEXT:         n /= 2;
+// REWRITES-NEXT:         steps += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return steps;
 // REWRITES-NEXT: }

@@ -11,12 +11,10 @@ static int consume_bin(char *buf, int len) {
   return score;
 }
 
-static int forward_bin(char *buf, int len) {
-  return consume_bin(buf, len);
-}
+static int forward_bin(char *buf, int len) { return consume_bin(buf, len); }
 
 int main(void) {
-  int len = 2;
+  int   len = 2;
   char *buf = malloc(len * sizeof(char));
   memcpy(buf, "\xff", len);
   int score = forward_bin(buf, len);

@@ -1,8 +1,8 @@
 #include <immintrin.h>
 #include <stdio.h>
 
-__attribute__((target("avx512f,avx512vl"))) static void masked_load_probe(
-    int *p, unsigned mask, int *out) {
+__attribute__((target("avx512f,avx512vl"))) static void
+masked_load_probe(int *p, unsigned mask, int *out) {
   __m128i w = _mm_set1_epi32(-1);
   __m128i v = _mm_mask_loadu_epi32(w, (__mmask8)mask, p);
   _mm_storeu_si128((__m128i *)out, v);

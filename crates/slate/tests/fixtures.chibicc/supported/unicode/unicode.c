@@ -62,7 +62,8 @@ int main() {
   ASSERT(20, sizeof(U"\xffzzz"));
   ASSERT(0, memcmp((char *)U"", "\0\0\0\0", 4));
   ASSERT(0, memcmp((char *)U"abc", "a\0\0\0b\0\0\0c\0\0\0\0\0\0\0", 16));
-  ASSERT(0, memcmp((char *)U"日本語", "\345e\0\0,g\0\0\236\212\0\0\0\0\0\0", 16));
+  ASSERT(0,
+         memcmp((char *)U"日本語", "\345e\0\0,g\0\0\236\212\0\0\0\0\0\0", 16));
   ASSERT(0, memcmp((char *)U"🍣", "c\363\001\0\0\0\0\0", 8));
   ASSERT(u'β', U"βb"[0]);
   ASSERT(u'b', U"βb"[1]);
@@ -75,7 +76,8 @@ int main() {
   ASSERT(20, sizeof(L"\xffzzz"));
   ASSERT(0, memcmp((char *)L"", "\0\0\0\0", 4));
   ASSERT(0, memcmp((char *)L"abc", "a\0\0\0b\0\0\0c\0\0\0\0\0\0\0", 16));
-  ASSERT(0, memcmp((char *)L"日本語", "\345e\0\0,g\0\0\236\212\0\0\0\0\0\0", 16));
+  ASSERT(0,
+         memcmp((char *)L"日本語", "\345e\0\0,g\0\0\236\212\0\0\0\0\0\0", 16));
   ASSERT(0, memcmp((char *)L"🍣", "c\363\001\0\0\0\0\0", 8));
   ASSERT(u'β', L"βb"[0]);
   ASSERT(u'b', L"βb"[1]);

@@ -3,8 +3,8 @@
 static int interpret(const unsigned char *code, int length) {
   static const int offsets[] = {&&add - &&dispatch, &&double_it - &&dispatch,
                                 &&subtract - &&dispatch};
-  int index = 0;
-  int value = 1;
+  int              index     = 0;
+  int              value     = 1;
 
 dispatch:
   if (index == length)

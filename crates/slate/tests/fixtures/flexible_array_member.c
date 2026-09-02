@@ -198,21 +198,18 @@ int main(void) {
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-NEXT:     let mut flexible: *mut FlexibleArray = std::ptr::null_mut();
 // REWRITES-NEXT:     let mut total: i32 = 0;
-// REWRITES-NEXT:     __retval = 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = std::mem::size_of::<FlexibleArray>() as u64;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 8;
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         __retval = 1;
 // REWRITES-NEXT:         std::process::exit(__retval as i32);
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 3;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 4;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc(({{_v[0-9]+}} + {{_v[0-9]+}} * {{_v[0-9]+}}) as usize) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 3 * {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 8 + {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{_v[0-9]+}} as usize) };
 // REWRITES-NEXT:     flexible = {{_v[0-9]+}} as *mut FlexibleArray;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut FlexibleArray = std::ptr::null_mut();
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = flexible == {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = flexible == std::ptr::null_mut();
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         __retval = 2;
 // REWRITES-NEXT:         std::process::exit(__retval as i32);
@@ -220,39 +217,25 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         (*flexible).count = 3;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let mut index: u64 = 0;
-// REWRITES-NEXT:     index = 0;
-// REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         if index >= unsafe { (*flexible).count } {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = (index as i32) + {{_v[0-9]+}};
+// REWRITES-NEXT:     for index in 0..unsafe { (*flexible).count } {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = (index as i32) + 1;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = index;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut FlexibleArray = flexible;
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:             *(*{{_v[0-9]+}}).values.as_mut_ptr().add({{_v[0-9]+}} as usize) = {{_v[0-9]+}};
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         index = index + 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     total = 0;
-// REWRITES-NEXT:     let mut index2: u64 = 0;
-// REWRITES-NEXT:     index2 = 0;
-// REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         if index2 >= unsafe { (*flexible).count } {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     for index2 in 0..unsafe { (*flexible).count } {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = index2;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut FlexibleArray = flexible;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { *(*{{_v[0-9]+}}).values.as_mut_ptr().add({{_v[0-9]+}} as usize) };
-// REWRITES-NEXT:         total = total + {{_v[0-9]+}};
-// REWRITES-NEXT:         index2 = index2 + 1;
+// REWRITES-NEXT:         total += {{_v[0-9]+}};
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { free(flexible as *mut core::ffi::c_void) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 6;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = total == 6;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:     __retval = if total == {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// REWRITES-NEXT:     __retval = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
 // REWRITES-NEXT:     std::process::exit(__retval as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

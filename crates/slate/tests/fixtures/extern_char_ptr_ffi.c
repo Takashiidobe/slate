@@ -5,7 +5,7 @@ int main(void) {
   // @rewrite-begin
   // @lowering-begin
   const char *msg = "hello";
-  size_t n = strlen(msg);
+  size_t      n   = strlen(msg);
   puts(msg);
   // @lowering-end
   // @rewrite-end

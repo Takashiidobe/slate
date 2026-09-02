@@ -2,11 +2,14 @@
 
 __attribute__((deprecated)) static int old_api(int x) { return x + 1; }
 
-__attribute__((deprecated("use new_api instead"))) static int old_api_msg(int x) {
+__attribute__((deprecated("use new_api instead"))) static int
+old_api_msg(int x) {
   return x + 2;
 }
 
-__attribute__((warn_unused_result)) static int must_check(int x) { return x + 3; }
+__attribute__((warn_unused_result)) static int must_check(int x) {
+  return x + 3;
+}
 
 int main(void) {
   int a = old_api(1);
@@ -92,20 +95,17 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[deprecated]
 // REWRITES-NEXT: fn old_api({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:     return {{arg[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-NEXT:     return {{arg[0-9]+}} + 1;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[deprecated(note = "use new_api instead")]
 // REWRITES-NEXT: fn old_api_msg({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-NEXT:     return {{arg[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-NEXT:     return {{arg[0-9]+}} + 2;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[must_use]
 // REWRITES-NEXT: fn must_check({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:     return {{arg[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-NEXT:     return {{arg[0-9]+}} + 3;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

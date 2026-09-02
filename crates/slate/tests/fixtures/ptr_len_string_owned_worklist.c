@@ -16,7 +16,7 @@ static int forward_text_owner(char *text, int len) {
 }
 
 int main(void) {
-  int len = 4;
+  int   len  = 4;
   char *text = malloc(len * sizeof(char));
   memcpy(text, "abc", len);
   int score = forward_text_owner(text, len);

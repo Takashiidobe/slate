@@ -176,8 +176,7 @@ int main(void) {
 // REWRITES-NEXT: extern "C" fn print_handler({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: i32) {
 // REWRITES-NEXT:     let mut p: *mut core::ffi::c_void = {{arg[0-9]+}};
 // REWRITES-NEXT:     let mut extra: i32 = {{arg[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = extra == {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = extra == 0;
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         unsafe { printf(c"zero %d\n".as_ptr(), (unsafe { *(p as *mut i8) }) as i32) };
 // REWRITES-NEXT:         return;

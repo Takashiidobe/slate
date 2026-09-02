@@ -21,12 +21,12 @@ _Static_assert((_off_t)-1 < 0, "_off_t signedness");
   TYPE_IS(((struct tag *)0)->st_uid, short);                                   \
   TYPE_IS(((struct tag *)0)->st_gid, short);                                   \
   TYPE_IS(((struct tag *)0)->st_rdev, _dev_t);                                 \
-  _Static_assert(offsetof(struct tag, st_dev) == 0, #tag " dev");             \
-  _Static_assert(offsetof(struct tag, st_ino) == 4, #tag " ino");             \
-  _Static_assert(offsetof(struct tag, st_mode) == 6, #tag " mode");           \
-  _Static_assert(offsetof(struct tag, st_nlink) == 8, #tag " nlink");         \
-  _Static_assert(offsetof(struct tag, st_uid) == 10, #tag " uid");            \
-  _Static_assert(offsetof(struct tag, st_gid) == 12, #tag " gid");            \
+  _Static_assert(offsetof(struct tag, st_dev) == 0, #tag " dev");              \
+  _Static_assert(offsetof(struct tag, st_ino) == 4, #tag " ino");              \
+  _Static_assert(offsetof(struct tag, st_mode) == 6, #tag " mode");            \
+  _Static_assert(offsetof(struct tag, st_nlink) == 8, #tag " nlink");          \
+  _Static_assert(offsetof(struct tag, st_uid) == 10, #tag " uid");             \
+  _Static_assert(offsetof(struct tag, st_gid) == 12, #tag " gid");             \
   _Static_assert(offsetof(struct tag, st_rdev) == 16, #tag " rdev")
 
 CHECK_COMMON(_stat32);
@@ -49,12 +49,9 @@ _Static_assert(sizeof(struct _stat32i64) == 48, "_stat32i64 size");
 _Static_assert(_Alignof(struct _stat32i64) == 8, "_stat32i64 alignment");
 _Static_assert(offsetof(struct _stat32i64, st_size) == 24,
                "_stat32i64 size field");
-_Static_assert(offsetof(struct _stat32i64, st_atime) == 32,
-               "_stat32i64 atime");
-_Static_assert(offsetof(struct _stat32i64, st_mtime) == 36,
-               "_stat32i64 mtime");
-_Static_assert(offsetof(struct _stat32i64, st_ctime) == 40,
-               "_stat32i64 ctime");
+_Static_assert(offsetof(struct _stat32i64, st_atime) == 32, "_stat32i64 atime");
+_Static_assert(offsetof(struct _stat32i64, st_mtime) == 36, "_stat32i64 mtime");
+_Static_assert(offsetof(struct _stat32i64, st_ctime) == 40, "_stat32i64 ctime");
 TYPE_IS(((struct _stat32i64 *)0)->st_size, long long);
 TYPE_IS(((struct _stat32i64 *)0)->st_atime, __time32_t);
 TYPE_IS(((struct _stat32i64 *)0)->st_mtime, __time32_t);
@@ -64,12 +61,9 @@ _Static_assert(sizeof(struct _stat64i32) == 48, "_stat64i32 size");
 _Static_assert(_Alignof(struct _stat64i32) == 8, "_stat64i32 alignment");
 _Static_assert(offsetof(struct _stat64i32, st_size) == 20,
                "_stat64i32 size field");
-_Static_assert(offsetof(struct _stat64i32, st_atime) == 24,
-               "_stat64i32 atime");
-_Static_assert(offsetof(struct _stat64i32, st_mtime) == 32,
-               "_stat64i32 mtime");
-_Static_assert(offsetof(struct _stat64i32, st_ctime) == 40,
-               "_stat64i32 ctime");
+_Static_assert(offsetof(struct _stat64i32, st_atime) == 24, "_stat64i32 atime");
+_Static_assert(offsetof(struct _stat64i32, st_mtime) == 32, "_stat64i32 mtime");
+_Static_assert(offsetof(struct _stat64i32, st_ctime) == 40, "_stat64i32 ctime");
 TYPE_IS(((struct _stat64i32 *)0)->st_size, _off_t);
 TYPE_IS(((struct _stat64i32 *)0)->st_atime, __time64_t);
 TYPE_IS(((struct _stat64i32 *)0)->st_mtime, __time64_t);

@@ -76,7 +76,9 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), isub(10, 25)) };
-// REWRITES-NEXT:     unsafe { printf(c"%u\n".as_ptr(), (3 as u32) - (10 as u32)) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = 10;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = 3 - {{_v[0-9]+}};
+// REWRITES-NEXT:     unsafe { printf(c"%u\n".as_ptr(), {{_v[0-9]+}}) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

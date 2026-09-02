@@ -22,10 +22,10 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: unsafe {
-// REWRITES-DAG: printf(
-// REWRITES-DAG: c"%c %s\n".as_ptr(),
-// REWRITES-DAG: (unsafe { *unsafe { bom_original } }) as i32,
-// REWRITES-DAG: unsafe { bom_original },
-// REWRITES-DAG: )
+// REWRITES-DAG:     printf(
+// REWRITES-DAG:         c"%c %s\n".as_ptr(),
+// REWRITES-DAG:         (unsafe { *unsafe { bom_original } }) as i32,
+// REWRITES-DAG:         unsafe { bom_original },
+// REWRITES-DAG:     )
 // REWRITES-DAG: };
 // SLATE-FILECHECK-END rewrites

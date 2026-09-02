@@ -44,5 +44,5 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: let {{_v[0-9]+}}: *mut i8 = line.as_mut_ptr() as *mut i8;
 // REWRITES-DAG: let {{_v[0-9]+}}: u64 = (unsafe { strlen({{_v[0-9]+}} as *const core::ffi::c_char) }) as u64;
-// REWRITES-DAG: count = count + ({{_v[0-9]+}} as i32);
+// REWRITES-DAG: count += {{_v[0-9]+}} as i32;
 // SLATE-FILECHECK-END rewrites

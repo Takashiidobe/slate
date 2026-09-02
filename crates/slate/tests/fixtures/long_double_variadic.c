@@ -140,8 +140,7 @@ int main(void) {
 // REWRITES-NEXT:             std::ptr::addr_of_mut!(y),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 1;
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         unsafe { __slate_printf__ri32_pi8_f80(b"%La\n\0".as_ptr() as *mut i8, y) };
 // REWRITES-NEXT:     }

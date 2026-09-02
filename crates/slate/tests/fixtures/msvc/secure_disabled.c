@@ -32,18 +32,15 @@ extern int wmemcpy_s;
 extern int wprintf_s;
 
 TYPE_IS(&_strlwr_s, errno_t (*)(char *, size_t));
-TYPE_IS(&_snprintf_s,
-        int (*)(char *, size_t, size_t, const char *, ...));
+TYPE_IS(&_snprintf_s, int (*)(char *, size_t, size_t, const char *, ...));
 TYPE_IS(&_itoa_s, errno_t (*)(int, char *, size_t, int));
 TYPE_IS(&mbstowcs_s,
         errno_t (*)(size_t *, wchar_t *, size_t, const char *, size_t));
 TYPE_IS(&_dupenv_s, errno_t (*)(char **, size_t *, const char *));
-TYPE_IS(&mbsrtowcs_s,
-        errno_t (*)(size_t *, wchar_t *, size_t, const char **, size_t,
-                    mbstate_t *));
+TYPE_IS(&mbsrtowcs_s, errno_t (*)(size_t *, wchar_t *, size_t, const char **,
+                                  size_t, mbstate_t *));
 TYPE_IS(&wcrtomb_s,
         errno_t (*)(size_t *, char *, size_t, wchar_t, mbstate_t *));
-TYPE_IS(&_ctime64_s,
-        errno_t (*)(char *, size_t, const __time64_t *));
+TYPE_IS(&_ctime64_s, errno_t (*)(char *, size_t, const __time64_t *));
 
 int main(void) { return 0; }

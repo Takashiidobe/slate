@@ -131,8 +131,7 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn bump_through_pointer({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:     return {{arg[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-NEXT:     return {{arg[0-9]+}} + 3;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn add_into_pointer({{arg[0-9]+}}: &mut i32, {{arg[0-9]+}}: i32) -> i32 {

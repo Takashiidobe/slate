@@ -267,28 +267,23 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn add1({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:     return {{arg[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-NEXT:     return {{arg[0-9]+}} + 1;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn add2({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-NEXT:     return {{arg[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-NEXT:     return {{arg[0-9]+}} + 2;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn add3({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:     return {{arg[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-NEXT:     return {{arg[0-9]+}} + 3;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn mul5({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 5;
-// REWRITES-NEXT:     return {{arg[0-9]+}} * {{_v[0-9]+}};
+// REWRITES-NEXT:     return {{arg[0-9]+}} * 5;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn mul7({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 7;
-// REWRITES-NEXT:     return {{arg[0-9]+}} * {{_v[0-9]+}};
+// REWRITES-NEXT:     return {{arg[0-9]+}} * 7;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
@@ -304,8 +299,8 @@ int main(void) {
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 8;
-// REWRITES-NEXT:         if i >= {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i < 8;
+// REWRITES-NEXT:         if !{{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         unsafe {
@@ -314,7 +309,7 @@ int main(void) {
 // REWRITES-NEXT:                 (unsafe { g.bytes[((i as i64) as usize)] }) as i32,
 // REWRITES-NEXT:             )
 // REWRITES-NEXT:         };
-// REWRITES-NEXT:         i = i + 1;
+// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { printf(c"\n".as_ptr()) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { g.trailing3 };

@@ -24,8 +24,7 @@ _Static_assert(_CW_DEFAULT == 0x0008001f, "_CW_DEFAULT");
 TYPE_IS(&_clearfp, unsigned int (*)(void));
 TYPE_IS(&_controlfp, unsigned int (*)(unsigned int, unsigned int));
 TYPE_IS(&_set_controlfp, void (*)(unsigned int, unsigned int));
-TYPE_IS(&_controlfp_s,
-        errno_t (*)(unsigned int *, unsigned int, unsigned int));
+TYPE_IS(&_controlfp_s, errno_t (*)(unsigned int *, unsigned int, unsigned int));
 TYPE_IS(&_statusfp, unsigned int (*)(void));
 TYPE_IS(&_fpreset, void (*)(void));
 TYPE_IS(&_control87, unsigned int (*)(unsigned int, unsigned int));

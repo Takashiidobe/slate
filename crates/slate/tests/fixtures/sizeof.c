@@ -126,9 +126,8 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn sizeof_values() -> i32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 4;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 12;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 4 + {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = std::mem::size_of::<Pair>() as u64;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = std::mem::size_of::<Slot>() as u64;

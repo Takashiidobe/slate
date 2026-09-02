@@ -86,8 +86,7 @@ int main(int argc, char **argv) {
 // REWRITES-NEXT:     __slate_argv_ptrs.push(std::ptr::null_mut());
 // REWRITES-NEXT:     let {{arg[0-9]+}}: i32 = __slate_argv_storage.len() as i32;
 // REWRITES-NEXT:     __slate_argv_ptrs.as_mut_ptr();
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} == {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} == 1;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:         {{_v[0-9]+}}

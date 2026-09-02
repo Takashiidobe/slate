@@ -83,14 +83,17 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn avg({{arg[0-9]+}}: f64, {{arg[0-9]+}}: f64) -> f64 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = 2.0;
-// REWRITES-NEXT:     return ({{arg[0-9]+}} + {{arg[0-9]+}}) / {{_v[0-9]+}};
+// REWRITES-NEXT:     return ({{arg[0-9]+}} + {{arg[0-9]+}}) / 2.0;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     unsafe { printf(c"%f\n".as_ptr(), ((1.5 as f32) + (0.5 as f32)) as f64) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = 2.25;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 0.5;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 1.5 + {{_v[0-9]+}};
+// REWRITES-NEXT:     unsafe { printf(c"%f\n".as_ptr(), {{_v[0-9]+}} as f64) };
 // REWRITES-NEXT:     unsafe { printf(c"%f\n".as_ptr(), avg(3.0, 4.0)) };
-// REWRITES-NEXT:     unsafe { printf(c"%.2f\n".as_ptr(), (2.25 as f64) * (2.0 as f64)) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} * 2.0;
+// REWRITES-NEXT:     unsafe { printf(c"%.2f\n".as_ptr(), {{_v[0-9]+}}) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

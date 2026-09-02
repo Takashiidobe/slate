@@ -87,12 +87,8 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         core::arch::asm!("movl $3, {0:e}\n\tmovl $4, {1:e}", lateout(reg) {{_v[0-9]+}}, lateout(reg) {{_v[0-9]+}}, options(att_syntax));
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d _v9 anon_4 anon_struct_i32\n".as_ptr(),
-// REWRITES-NEXT:             {{_v[0-9]+}} * (10 as i32) + {{_v[0-9]+}},
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} * 10 + {{_v[0-9]+}};
+// REWRITES-NEXT:     unsafe { printf(c"%d _v9 anon_4 anon_struct_i32\n".as_ptr(), {{_v[0-9]+}}) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

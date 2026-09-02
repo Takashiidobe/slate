@@ -157,36 +157,30 @@ int main(void) {
 // REWRITES-NEXT: fn sum_grid({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     let mut n: i32 = {{arg[0-9]+}};
 // REWRITES-NEXT:     let mut total: i32 = 0;
-// REWRITES-NEXT:     total = 0;
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     i = 0;
 // REWRITES-NEXT:     '__loop0: loop {
-// REWRITES-NEXT:         if i >= n {
+// REWRITES-NEXT:         if !(i < n) {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         '__continue0: {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-NEXT:             if i == {{_v[0-9]+}} {
-// REWRITES-NEXT:                 break '__continue0;
-// REWRITES-NEXT:             }
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i == 2;
+// REWRITES-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-NEXT:         } else {
 // REWRITES-NEXT:             let mut j: i32 = 0;
 // REWRITES-NEXT:             j = 0;
 // REWRITES-NEXT:             '__loop1: loop {
-// REWRITES-NEXT:                 if j >= n {
+// REWRITES-NEXT:                 if !(j < n) {
 // REWRITES-NEXT:                     break;
 // REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 '__continue1: {
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:                     if j == {{_v[0-9]+}} {
-// REWRITES-NEXT:                         break '__continue1;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     let {{_v[0-9]+}}: i32 = 10;
-// REWRITES-NEXT:                     total = total + (i * {{_v[0-9]+}} + j);
+// REWRITES-NEXT:                 let {{_v[0-9]+}}: bool = j == 3;
+// REWRITES-NEXT:                 if {{_v[0-9]+}} {
+// REWRITES-NEXT:                 } else {
+// REWRITES-NEXT:                     total += i * 10 + j;
 // REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 j = j + 1;
+// REWRITES-NEXT:                 j += 1;
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         i = i + 1;
+// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return total;
 // REWRITES-NEXT: }

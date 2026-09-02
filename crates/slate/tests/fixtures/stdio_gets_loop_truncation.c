@@ -175,7 +175,6 @@ int main(void) {
 // REWRITES-NEXT:     let mut f: *mut libc::FILE = std::ptr::null_mut();
 // REWRITES-NEXT:     let mut g: *mut libc::FILE = std::ptr::null_mut();
 // REWRITES-NEXT:     let mut line: [i8; 8] = [0; 8];
-// REWRITES-NEXT:     __retval = 0;
 // REWRITES-NEXT:     unsafe { remove(c"slate_stdio_gets_loop_truncation.tmp".as_ptr()) };
 // REWRITES-NEXT:     f = unsafe {
 // REWRITES-NEXT:         fopen(
@@ -215,8 +214,8 @@ int main(void) {
 // REWRITES-NEXT:                 g as *mut libc::FILE,
 // REWRITES-NEXT:             )
 // REWRITES-NEXT:         }) as *mut i8;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
-// REWRITES-NEXT:         if {{_v[0-9]+}} == {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
+// REWRITES-NEXT:         if !{{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         unsafe {

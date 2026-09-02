@@ -219,11 +219,10 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.im;
 // REWRITES-NEXT:     unsafe { printf(c"%.4f %.4f %.4f %.4f\n".as_ptr(), {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = product;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = 0.3125;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}}.re == {{_v[0-9]+}} {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.re == 0.3125;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: num_complex::Complex<f64> = product;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: f64 = 0.0;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.im == {{_v[0-9]+}};
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.im == 0.0;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
@@ -231,8 +230,7 @@ int main(void) {
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: num_complex::Complex<f64> = quotient;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: f64 = 0.6;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.re == {{_v[0-9]+}};
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.re == 0.6;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
@@ -240,8 +238,7 @@ int main(void) {
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: num_complex::Complex<f64> = quotient;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: f64 = -0.8;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.im == {{_v[0-9]+}};
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.im == -0.8;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;

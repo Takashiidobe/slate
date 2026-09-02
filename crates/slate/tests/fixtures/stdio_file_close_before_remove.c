@@ -102,9 +102,7 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
-// REWRITES-NEXT:     let mut f: *mut libc::FILE = std::ptr::null_mut();
-// REWRITES-NEXT:     __retval = 0;
-// REWRITES-NEXT:     f = unsafe {
+// REWRITES-NEXT:     let mut f: *mut libc::FILE = unsafe {
 // REWRITES-NEXT:         fopen(
 // REWRITES-NEXT:             c"slate_stdio_close_before_remove.tmp".as_ptr(),
 // REWRITES-NEXT:             c"w".as_ptr(),

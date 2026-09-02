@@ -41,9 +41,9 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: item = BitIntOrArray {
-// LOWERING-DAG: bytes: [
-// LOWERING-DAG: 97, 98, 99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-// LOWERING-DAG: ],
+// LOWERING-DAG:     bytes: [
+// LOWERING-DAG:         97, 98, 99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+// LOWERING-DAG:     ],
 // LOWERING-DAG: };
 // LOWERING-DAG: let {{_v[0-9]+}}: *mut i8 = b"%zu %zu %d %d %lld %d %c%c%c\n\0".as_ptr() as *mut i8;
 // LOWERING-DAG: let {{_v[0-9]+}}: u64 = 24;
@@ -69,41 +69,41 @@ int main(void) {
 // LOWERING-DAG: let {{_v[0-9]+}}: i8 = unsafe { item.bytes[({{_v[0-9]+}} as usize)] };
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = unsafe {
-// LOWERING-DAG: printf(
-// LOWERING-DAG: {{_v[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-DAG: {{_v[0-9]+}},
-// LOWERING-DAG: {{_v[0-9]+}},
-// LOWERING-DAG: {{_v[0-9]+}},
-// LOWERING-DAG: {{_v[0-9]+}},
-// LOWERING-DAG: {{_v[0-9]+}},
-// LOWERING-DAG: {{_v[0-9]+}},
-// LOWERING-DAG: {{_v[0-9]+}},
-// LOWERING-DAG: {{_v[0-9]+}},
-// LOWERING-DAG: {{_v[0-9]+}},
-// LOWERING-DAG: )
+// LOWERING-DAG:     printf(
+// LOWERING-DAG:         {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-DAG:         {{_v[0-9]+}},
+// LOWERING-DAG:         {{_v[0-9]+}},
+// LOWERING-DAG:         {{_v[0-9]+}},
+// LOWERING-DAG:         {{_v[0-9]+}},
+// LOWERING-DAG:         {{_v[0-9]+}},
+// LOWERING-DAG:         {{_v[0-9]+}},
+// LOWERING-DAG:         {{_v[0-9]+}},
+// LOWERING-DAG:         {{_v[0-9]+}},
+// LOWERING-DAG:         {{_v[0-9]+}},
+// LOWERING-DAG:     )
 // LOWERING-DAG: };
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: item = BitIntOrArray {
-// REWRITES-DAG: bytes: [
-// REWRITES-DAG: 97, 98, 99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-// REWRITES-DAG: ],
+// REWRITES-DAG:     bytes: [
+// REWRITES-DAG:         97, 98, 99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+// REWRITES-DAG:     ],
 // REWRITES-DAG: };
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = unsafe { (*values)[((1 as i64) as usize)].inner.prefix };
 // REWRITES-DAG: let {{_v[0-9]+}}: bitint::BInt<65, 2, 16> = unsafe { (*values)[((1 as i64) as usize)].inner.value };
 // REWRITES-DAG: unsafe {
-// REWRITES-DAG: printf(
-// REWRITES-DAG: c"%zu %zu %d %d %lld %d %c%c%c\n".as_ptr(),
-// REWRITES-DAG: 24 as u64,
-// REWRITES-DAG: 40 as u64,
-// REWRITES-DAG: (unsafe { (*values)[((1 as i64) as usize)].tag }) as i32,
-// REWRITES-DAG: {{_v[0-9]+}},
-// REWRITES-DAG: {{_v[0-9]+}}.to_i128() as i64,
-// REWRITES-DAG: (unsafe { (*values)[((1 as i64) as usize)].tail }) as i32,
-// REWRITES-DAG: (unsafe { item.bytes[((0 as i64) as usize)] }) as i32,
-// REWRITES-DAG: (unsafe { item.bytes[((1 as i64) as usize)] }) as i32,
-// REWRITES-DAG: (unsafe { item.bytes[((2 as i64) as usize)] }) as i32,
-// REWRITES-DAG: )
+// REWRITES-DAG:     printf(
+// REWRITES-DAG:         c"%zu %zu %d %d %lld %d %c%c%c\n".as_ptr(),
+// REWRITES-DAG:         24 as u64,
+// REWRITES-DAG:         40 as u64,
+// REWRITES-DAG:         (unsafe { (*values)[((1 as i64) as usize)].tag }) as i32,
+// REWRITES-DAG:         {{_v[0-9]+}},
+// REWRITES-DAG:         {{_v[0-9]+}}.to_i128() as i64,
+// REWRITES-DAG:         (unsafe { (*values)[((1 as i64) as usize)].tail }) as i32,
+// REWRITES-DAG:         (unsafe { item.bytes[((0 as i64) as usize)] }) as i32,
+// REWRITES-DAG:         (unsafe { item.bytes[((1 as i64) as usize)] }) as i32,
+// REWRITES-DAG:         (unsafe { item.bytes[((2 as i64) as usize)] }) as i32,
+// REWRITES-DAG:     )
 // REWRITES-DAG: };
 // SLATE-FILECHECK-END rewrites

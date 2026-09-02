@@ -42,30 +42,30 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: unsafe {
-// LOWERING-DAG: call_once(
-// LOWERING-DAG: std::ptr::addr_of_mut!(control) as *mut i32,
-// LOWERING-DAG: Some(once_handler),
-// LOWERING-DAG: )
+// LOWERING-DAG:     call_once(
+// LOWERING-DAG:         std::ptr::addr_of_mut!(control) as *mut i32,
+// LOWERING-DAG:         Some(once_handler),
+// LOWERING-DAG:     )
 // LOWERING-DAG: };
 // LOWERING-DAG: unsafe {
-// LOWERING-DAG: call_once(
-// LOWERING-DAG: std::ptr::addr_of_mut!(control) as *mut i32,
-// LOWERING-DAG: Some(once_handler),
-// LOWERING-DAG: )
+// LOWERING-DAG:     call_once(
+// LOWERING-DAG:         std::ptr::addr_of_mut!(control) as *mut i32,
+// LOWERING-DAG:         Some(once_handler),
+// LOWERING-DAG:     )
 // LOWERING-DAG: };
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: unsafe {
-// REWRITES-DAG: call_once(
-// REWRITES-DAG: std::ptr::addr_of_mut!(control) as *mut i32,
-// REWRITES-DAG: Some(once_handler),
-// REWRITES-DAG: )
+// REWRITES-DAG:     call_once(
+// REWRITES-DAG:         std::ptr::addr_of_mut!(control) as *mut i32,
+// REWRITES-DAG:         Some(once_handler),
+// REWRITES-DAG:     )
 // REWRITES-DAG: };
 // REWRITES-DAG: unsafe {
-// REWRITES-DAG: call_once(
-// REWRITES-DAG: std::ptr::addr_of_mut!(control) as *mut i32,
-// REWRITES-DAG: Some(once_handler),
-// REWRITES-DAG: )
+// REWRITES-DAG:     call_once(
+// REWRITES-DAG:         std::ptr::addr_of_mut!(control) as *mut i32,
+// REWRITES-DAG:         Some(once_handler),
+// REWRITES-DAG:     )
 // REWRITES-DAG: };
 // SLATE-FILECHECK-END rewrites

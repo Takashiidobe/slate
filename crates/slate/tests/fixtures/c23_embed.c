@@ -4,11 +4,9 @@ int main(void) {
   static const unsigned char data[] = {
 #embed "c23_embed.bin"
   };
-  static const unsigned char framed[] = {
-    0xAA,
-#embed "c23_embed.bin" prefix(0xBB,) suffix(, 0xCC)
-    , 0xDD
-  };
+  static const unsigned char framed[] = {0xAA,
+#embed "c23_embed.bin" prefix(0xBB, ) suffix(, 0xCC)
+                                         , 0xDD};
   static const unsigned char empty[] = {
 #embed "c23_embed_empty.bin" if_empty(0xEE)
   };
@@ -17,9 +15,9 @@ int main(void) {
   }
   int framed_ok = sizeof(framed) == 8 && framed[0] == 0xAA &&
                   framed[1] == 0xBB && framed[2] == 'C' && framed[3] == '2' &&
-                  framed[4] == '3' && framed[5] == '\n' &&
-                  framed[6] == 0xCC && framed[7] == 0xDD;
-  int empty_ok = sizeof(empty) == 1 && empty[0] == 0xEE;
+                  framed[4] == '3' && framed[5] == '\n' && framed[6] == 0xCC &&
+                  framed[7] == 0xDD;
+  int empty_ok  = sizeof(empty) == 1 && empty[0] == 0xEE;
   return sizeof(data) == 4 && data[0] == 'C' && data[1] == '2' &&
                  data[2] == '3' && data[3] == '\n' && framed_ok && empty_ok
              ? 0
@@ -284,74 +282,66 @@ int main(void) {
 // REWRITES-NEXT:     let mut empty_ok: i32 = 0;
 // REWRITES-NEXT:     let mut i: u64 = 0;
 // REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = 4;
-// REWRITES-NEXT:         if i >= {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i < 4;
+// REWRITES-NEXT:         if !{{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         unsafe { putchar((unsafe { main_data[(i as usize)] }) as i32) };
-// REWRITES-NEXT:         i = i + 1;
+// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} == {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 170;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ((unsafe { main_framed[((0 as i64) as usize)] }) as i32) == {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = 8 == {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ((unsafe { main_framed[((0 as i64) as usize)] }) as i32) == 170;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 187;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ((unsafe { main_framed[((1 as i64) as usize)] }) as i32) == {{_v[0-9]+}};
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ((unsafe { main_framed[((1 as i64) as usize)] }) as i32) == 187;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 67;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ((unsafe { main_framed[((2 as i64) as usize)] }) as i32) == {{_v[0-9]+}};
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ((unsafe { main_framed[((2 as i64) as usize)] }) as i32) == 67;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 50;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ((unsafe { main_framed[((3 as i64) as usize)] }) as i32) == {{_v[0-9]+}};
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ((unsafe { main_framed[((3 as i64) as usize)] }) as i32) == 50;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 51;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ((unsafe { main_framed[((4 as i64) as usize)] }) as i32) == {{_v[0-9]+}};
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ((unsafe { main_framed[((4 as i64) as usize)] }) as i32) == 51;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 10;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ((unsafe { main_framed[((5 as i64) as usize)] }) as i32) == {{_v[0-9]+}};
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ((unsafe { main_framed[((5 as i64) as usize)] }) as i32) == 10;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 204;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ((unsafe { main_framed[((6 as i64) as usize)] }) as i32) == {{_v[0-9]+}};
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ((unsafe { main_framed[((6 as i64) as usize)] }) as i32) == 204;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 221;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ((unsafe { main_framed[((7 as i64) as usize)] }) as i32) == {{_v[0-9]+}};
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ((unsafe { main_framed[((7 as i64) as usize)] }) as i32) == 221;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
@@ -359,10 +349,9 @@ int main(void) {
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     framed_ok = {{_v[0-9]+}} as i32;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 1;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 1;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} == {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 238;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ((unsafe { main_empty[((0 as i64) as usize)] }) as i32) == {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = 1 == {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ((unsafe { main_empty[((0 as i64) as usize)] }) as i32) == 238;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
@@ -370,34 +359,30 @@ int main(void) {
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     empty_ok = {{_v[0-9]+}} as i32;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 4;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 4;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} == {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 67;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ((unsafe { main_data[((0 as i64) as usize)] }) as i32) == {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = 4 == {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ((unsafe { main_data[((0 as i64) as usize)] }) as i32) == 67;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 50;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ((unsafe { main_data[((1 as i64) as usize)] }) as i32) == {{_v[0-9]+}};
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ((unsafe { main_data[((1 as i64) as usize)] }) as i32) == 50;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 51;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ((unsafe { main_data[((2 as i64) as usize)] }) as i32) == {{_v[0-9]+}};
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ((unsafe { main_data[((2 as i64) as usize)] }) as i32) == 51;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 10;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ((unsafe { main_data[((3 as i64) as usize)] }) as i32) == {{_v[0-9]+}};
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ((unsafe { main_data[((3 as i64) as usize)] }) as i32) == 10;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;

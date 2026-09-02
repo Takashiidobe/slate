@@ -151,18 +151,16 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn succeed({{arg[0-9]+}}: i32) -> u32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 100;
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         lastCode = {{arg[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-NEXT:         lastCode = {{arg[0-9]+}} + 100;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = Status::STATUS_OK as u32;
 // REWRITES-NEXT:     return {{_v[0-9]+}};
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: extern "C" fn fail({{arg[0-9]+}}: i32) -> u32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 200;
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         lastCode = {{arg[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-NEXT:         lastCode = {{arg[0-9]+}} + 200;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = Status::STATUS_FAIL as u32;
 // REWRITES-NEXT:     return {{_v[0-9]+}};

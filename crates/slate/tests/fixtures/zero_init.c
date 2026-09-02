@@ -69,7 +69,8 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { getchar() };
-// REWRITES-NEXT:     unsafe { printf(c"%d %d %d\n".as_ptr(), 42 as i32, {{_v[0-9]+}} + (1 as i32), {{_v[0-9]+}}) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// REWRITES-NEXT:     unsafe { printf(c"%d %d %d\n".as_ptr(), 42 as i32, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

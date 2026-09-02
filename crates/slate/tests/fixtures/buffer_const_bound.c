@@ -36,7 +36,7 @@ int main(void) {
   int arr[4] = {10, 20, 30, 40};
   // @lowering-begin
   // @rewrite-begin
-  int r = sum_fixed(arr);
+  int r      = sum_fixed(arr);
   // @rewrite-end
   // @lowering-end
 
@@ -46,9 +46,9 @@ int main(void) {
   // @rewrite-end
 
   int *m = malloc(3 * sizeof(int));
-  m[0] = 5;
-  m[1] = 6;
-  m[2] = 7;
+  m[0]   = 5;
+  m[1]   = 6;
+  m[2]   = 7;
   // @rewrite-begin
   int r2 = sum3(m);
   // @rewrite-end
@@ -56,7 +56,7 @@ int main(void) {
 
   int big[6] = {1, 2, 3, 4, 5, 6};
   // @rewrite-begin
-  int r3 = mix(big);
+  int r3     = mix(big);
   // @rewrite-end
 
   printf("%d %d %d %d %d\n", r, a[0], a[2], r2, r3);

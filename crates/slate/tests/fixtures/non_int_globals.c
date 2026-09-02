@@ -160,9 +160,9 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         small = add_char(unsafe { small }, 3);
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = ((unsafe { byte }) as i32) + 1;
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         byte = (((unsafe { byte }) as i32) + {{_v[0-9]+}}) as u8;
+// REWRITES-NEXT:         byte = {{_v[0-9]+}} as u8;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         ratio = scale(unsafe { ratio }, 2.0);

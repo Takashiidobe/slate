@@ -67,14 +67,11 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%f %.2f %.0f\n".as_ptr(),
-// REWRITES-NEXT:             ((1.5 as f32) + (0.5 as f32)) as f64,
-// REWRITES-NEXT:             (2.25 as f64) * (2.0 as f64),
-// REWRITES-NEXT:             3.0 as f64,
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 0.5;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 1.5 + {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = 2.0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = 2.25 * {{_v[0-9]+}};
+// REWRITES-NEXT:     unsafe { printf(c"%f %.2f %.0f\n".as_ptr(), {{_v[0-9]+}} as f64, {{_v[0-9]+}}, 3.0 as f64) };
 // REWRITES-NEXT:     unsafe { printf(c"tail %.3f".as_ptr(), 1.25 as f64) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }

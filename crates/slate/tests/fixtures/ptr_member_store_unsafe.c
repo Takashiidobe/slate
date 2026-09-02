@@ -137,9 +137,8 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn bump({{arg[0-9]+}}: *mut i32) {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 10;
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         *{{arg[0-9]+}} = (unsafe { *{{arg[0-9]+}} }) + {{_v[0-9]+}};
+// REWRITES-NEXT:         *{{arg[0-9]+}} = (unsafe { *{{arg[0-9]+}} }) + 10;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }

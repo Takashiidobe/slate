@@ -218,8 +218,8 @@ int main(void) {
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     i = 0;
 // REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 100000;
-// REWRITES-NEXT:         if i >= {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i < 100000;
+// REWRITES-NEXT:         if !{{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 1;
@@ -227,7 +227,7 @@ int main(void) {
 // REWRITES-NEXT:             std::sync::atomic::AtomicI32::from_ptr(std::ptr::addr_of_mut!(counter))
 // REWRITES-NEXT:                 .fetch_add({{_v[0-9]+}}, std::sync::atomic::Ordering::SeqCst)
 // REWRITES-NEXT:         };
-// REWRITES-NEXT:         i = i + 1;
+// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return std::ptr::null_mut();
 // REWRITES-NEXT: }
@@ -235,10 +235,9 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut threads: aligned::Aligned<aligned::A16, [u64; 4]> = aligned::Aligned([0; 4]);
 // REWRITES-NEXT:     let mut i: i32 = 0;
-// REWRITES-NEXT:     i = 0;
 // REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 4;
-// REWRITES-NEXT:         if i >= {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i < 4;
+// REWRITES-NEXT:         if !{{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i64 = i as i64;
@@ -252,12 +251,12 @@ int main(void) {
 // REWRITES-NEXT:                 {{_v[0-9]+}} as *mut core::ffi::c_void,
 // REWRITES-NEXT:             )
 // REWRITES-NEXT:         };
-// REWRITES-NEXT:         i = i + 1;
+// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let mut i2: i32 = 0;
 // REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 4;
-// REWRITES-NEXT:         if i2 >= {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i2 < 4;
+// REWRITES-NEXT:         if !{{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut *mut core::ffi::c_void = std::ptr::null_mut();
@@ -267,7 +266,7 @@ int main(void) {
 // REWRITES-NEXT:                 {{_v[0-9]+}} as *mut *mut core::ffi::c_void,
 // REWRITES-NEXT:             )
 // REWRITES-NEXT:         };
-// REWRITES-NEXT:         i2 = i2 + 1;
+// REWRITES-NEXT:         i2 += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {

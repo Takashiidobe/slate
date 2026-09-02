@@ -176,22 +176,90 @@ done:
 // REWRITES-NEXT:     let mut a: i32 = 0;
 // REWRITES-NEXT:     let mut b: i32 = 0;
 // REWRITES-NEXT:     let mut r: i32 = 0;
-// REWRITES-NEXT:     __retval = 0;
-// REWRITES-NEXT:     a = 3;
-// REWRITES-NEXT:     b = -1;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     if a <= {{_v[0-9]+}} {
-// REWRITES-NEXT:         r = 3;
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:         if b <= {{_v[0-9]+}} {
-// REWRITES-NEXT:             r = 2;
-// REWRITES-NEXT:         } else {
-// REWRITES-NEXT:             r = 1;
+// REWRITES-NEXT:     let mut {{__state[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     '{{__dispatch[0-9]+}}: loop {
+// REWRITES-NEXT:         match {{__state[0-9]+}} {
+// REWRITES-NEXT:             0 => {
+// REWRITES-NEXT:                 __retval = 0;
+// REWRITES-NEXT:                 a = 3;
+// REWRITES-NEXT:                 b = -1;
+// REWRITES-NEXT:                 {{__state[0-9]+}} = 1;
+// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             1 => {
+// REWRITES-NEXT:                 let {{_v[0-9]+}}: bool = a > 0;
+// REWRITES-NEXT:                 if {{_v[0-9]+}} {
+// REWRITES-NEXT:                     {{__state[0-9]+}} = 2;
+// REWRITES-NEXT:                 } else {
+// REWRITES-NEXT:                     {{__state[0-9]+}} = 8;
+// REWRITES-NEXT:                 }
+// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             2 => {
+// REWRITES-NEXT:                 {{__state[0-9]+}} = 3;
+// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             3 => {
+// REWRITES-NEXT:                 let {{_v[0-9]+}}: bool = b > 0;
+// REWRITES-NEXT:                 if {{_v[0-9]+}} {
+// REWRITES-NEXT:                     {{__state[0-9]+}} = 4;
+// REWRITES-NEXT:                 } else {
+// REWRITES-NEXT:                     {{__state[0-9]+}} = 5;
+// REWRITES-NEXT:                 }
+// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             4 => {
+// REWRITES-NEXT:                 {{__state[0-9]+}} = 11;
+// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             5 => {
+// REWRITES-NEXT:                 {{__state[0-9]+}} = 12;
+// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             6 => {
+// REWRITES-NEXT:                 {{__state[0-9]+}} = 7;
+// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             7 => {
+// REWRITES-NEXT:                 {{__state[0-9]+}} = 9;
+// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             8 => {
+// REWRITES-NEXT:                 {{__state[0-9]+}} = 13;
+// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             9 => {
+// REWRITES-NEXT:                 {{__state[0-9]+}} = 10;
+// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             10 => {
+// REWRITES-NEXT:                 {{__state[0-9]+}} = 11;
+// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             11 => {
+// REWRITES-NEXT:                 r = 1;
+// REWRITES-NEXT:                 {{__state[0-9]+}} = 14;
+// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             12 => {
+// REWRITES-NEXT:                 r = 2;
+// REWRITES-NEXT:                 {{__state[0-9]+}} = 14;
+// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             13 => {
+// REWRITES-NEXT:                 r = 3;
+// REWRITES-NEXT:                 {{__state[0-9]+}} = 14;
+// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             14 => {
+// REWRITES-NEXT:                 unsafe { printf(c"%d\n".as_ptr(), r) };
+// REWRITES-NEXT:                 __retval = 0;
+// REWRITES-NEXT:                 std::process::exit(__retval as i32);
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:             _ => {
+// REWRITES-NEXT:                 break '{{__dispatch[0-9]+}};
+// REWRITES-NEXT:             }
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), r) };
-// REWRITES-NEXT:     __retval = 0;
-// REWRITES-NEXT:     std::process::exit(__retval as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

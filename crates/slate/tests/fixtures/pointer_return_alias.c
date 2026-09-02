@@ -13,12 +13,12 @@ static int *choose_value(int *first, int *second, int choose_first) {
 }
 
 int main(void) {
-  int first = 20;
-  int second = 22;
-  int *alias = forward_mut(&first);
-  *alias += 2;
-  const int *read_alias = identity_const(&second);
-  int *ambiguous = choose_value(&first, &second, 1);
+  int  first             = 20;
+  int  second            = 22;
+  int *alias             = forward_mut(&first);
+  *alias                += 2;
+  const int *read_alias  = identity_const(&second);
+  int       *ambiguous   = choose_value(&first, &second, 1);
   printf("%d %d %d\n", first, *read_alias, *ambiguous);
   return 0;
 }

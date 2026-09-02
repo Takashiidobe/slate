@@ -6,7 +6,7 @@
 
 static void handle_exit(int status, void *arg) {
   int *captured = (int *)arg;
-  *captured = status;
+  *captured     = status;
   printf("on_exit:%d\n", status);
 }
 
@@ -14,9 +14,9 @@ int main(void) {
   int captured = -1;
   on_exit(handle_exit, &captured);
 
-  int   mcheck_enabled = mcheck(NULL) == 0;
-  void *block          = malloc(16);
-  enum mcheck_status probe = mprobe(block);
+  int                mcheck_enabled = mcheck(NULL) == 0;
+  void              *block          = malloc(16);
+  enum mcheck_status probe          = mprobe(block);
   printf("mcheck:%d %d\n", mcheck_enabled, probe == MCHECK_OK);
   free(block);
 
@@ -260,8 +260,8 @@ int main(void) {
 // REWRITES-NEXT:     unsafe { on_exit(Some(handle_exit), {{_v[0-9]+}} as *mut core::ffi::c_void) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32)> = None;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { mcheck({{_v[0-9]+}}) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}} == {{_v[0-9]+}}) as i32;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc((16 as u64) as usize) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { mprobe({{_v[0-9]+}} as *mut core::ffi::c_void) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"mcheck:%d %d\n\0".as_ptr() as *mut i8;

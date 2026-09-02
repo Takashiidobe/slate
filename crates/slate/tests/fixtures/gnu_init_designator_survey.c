@@ -34,12 +34,12 @@ struct NestedOuter {
 };
 
 int main(void) {
-  int range_values[10] = {[2 ... 5] = 9};
-  int old_index[3] = {[1] 11};
-  struct Point p = {x: 1, y: 2};
-  int            five = 5;
-  union Castable c    = (union Castable)five;
-  enum Forward   f = FORWARD_B;
+  int            range_values[10] = {[2 ... 5] = 9};
+  int            old_index[3]     = {[1] 11};
+  struct Point   p                = {x : 1, y : 2};
+  int            five             = 5;
+  union Castable c                = (union Castable)five;
+  enum Forward   f                = FORWARD_B;
 
   printf("%d %d %d %d\n", range_values[3], old_index[1], p.x + p.y, c.i);
   printf("%d\n", (int)f);

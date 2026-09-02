@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 int main(void) {
-  __auto_type x = 5;
+  __auto_type   x = 5;
   __typeof__(x) y = x + 2;
   printf("%d\n", y);
   return y;
@@ -57,9 +57,8 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 5;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 5 + {{_v[0-9]+}};
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{_v[0-9]+}}) };
 // REWRITES-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }

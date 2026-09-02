@@ -1170,16 +1170,15 @@ int main(void) {
 // REWRITES-NEXT:     let mut length: i32 = {{arg[0-9]+}};
 // REWRITES-NEXT:     let mut values: *mut i32 = {{arg[0-9]+}};
 // REWRITES-NEXT:     let mut total: i32 = 0;
-// REWRITES-NEXT:     total = 0;
 // REWRITES-NEXT:     let mut index: i32 = 0;
 // REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         if index >= length {
+// REWRITES-NEXT:         if !(index < length) {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = values;
 // REWRITES-NEXT:         unsafe { {{_v[0-9]+}}.offset((index as i64) as isize) };
-// REWRITES-NEXT:         total = total + unsafe { __arg40_view[(index as usize)] };
-// REWRITES-NEXT:         index = index + 1;
+// REWRITES-NEXT:         total += unsafe { __arg40_view[(index as usize)] };
+// REWRITES-NEXT:         index += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return total;
 // REWRITES-NEXT: }
@@ -1275,14 +1274,13 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
-// REWRITES-NEXT:     let mut α: i32 = 0;
+// REWRITES-NEXT:     let mut α: i32 = 7;
 // REWRITES-NEXT:     let mut enhanced_arithmetic: i32 = 0;
 // REWRITES-NEXT:     let mut flexible_total: i32 = 0;
 // REWRITES-NEXT:     let mut flexible: *mut C99Flexible = std::ptr::null_mut();
-// REWRITES-NEXT:     let mut length: i32 = 0;
-// REWRITES-NEXT:     let mut saved_stack: *mut u8 = std::ptr::null_mut();
+// REWRITES-NEXT:     let mut length: i32 = 3;
 // REWRITES-NEXT:     let mut vm_total: i32 = 0;
-// REWRITES-NEXT:     let mut initializer_seed: i32 = 0;
+// REWRITES-NEXT:     let mut initializer_seed: i32 = 19;
 // REWRITES-NEXT:     let mut nonconstant_initializer: C99Pair = C99Pair {
 // REWRITES-NEXT:         first: 0,
 // REWRITES-NEXT:         second: 0,
@@ -1292,11 +1290,11 @@ int main(void) {
 // REWRITES-NEXT:         second: 0,
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let mut designated_array: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
-// REWRITES-NEXT:     let mut const_value: i32 = 0;
+// REWRITES-NEXT:     let mut const_value: i32 = 31;
 // REWRITES-NEXT:     let mut idempotent_const_value: i32 = 0;
 // REWRITES-NEXT:     let mut volatile_value: i32 = 0;
 // REWRITES-NEXT:     let mut idempotent_volatile_value: i32 = 0;
-// REWRITES-NEXT:     let mut restricted_value: i32 = 0;
+// REWRITES-NEXT:     let mut restricted_value: i32 = 41;
 // REWRITES-NEXT:     let mut restricted_pointer: *mut i32 = std::ptr::null_mut();
 // REWRITES-NEXT:     let mut hexadecimal_float: f64 = 0.0;
 // REWRITES-NEXT:     let mut compound_pair: C99Pair = C99Pair {
@@ -1307,55 +1305,44 @@ int main(void) {
 // REWRITES-NEXT:     let mut _compoundliteral: [i32; 2] = [0; 2];
 // REWRITES-NEXT:     let mut signed_quotient: i32 = 0;
 // REWRITES-NEXT:     let mut signed_remainder: i32 = 0;
-// REWRITES-NEXT:     let mut mixed_order: i32 = 0;
-// REWRITES-NEXT:     let mut declaration_after_statement: i32 = 0;
+// REWRITES-NEXT:     let mut mixed_order: i32 = 59;
+// REWRITES-NEXT:     let mut declaration_after_statement: i32 = 61;
 // REWRITES-NEXT:     let mut for_total: i32 = 0;
 // REWRITES-NEXT:     let mut qualified_values: [i32; 3] = [0; 3];
 // REWRITES-NEXT:     let mut macro_total: i32 = 0;
 // REWRITES-NEXT:     let mut translation_limit_total: i32 = 0;
 // REWRITES-NEXT:     let mut fenv_clear: i32 = 0;
 // REWRITES-NEXT:     let mut fenv_flags: i32 = 0;
-// REWRITES-NEXT:     __retval = 0;
-// REWRITES-NEXT:     α = 7;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 4;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = -9000000000i64;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 18000000000u64;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 1.0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 2.0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 0.0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 0.0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 1.0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex {
-// REWRITES-NEXT:         re: {{_v[0-9]+}} + {{_v[0-9]+}} * ({{_v[0-9]+}} + {{_v[0-9]+}}),
-// REWRITES-NEXT:         im: {{_v[0-9]+}} * {{_v[0-9]+}},
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = 3.0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}} * (0.0 + {{_v[0-9]+}});
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}} * 1.0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 1.0 + {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = 4.0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 0.0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 0.0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 1.0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex {
-// REWRITES-NEXT:         re: {{_v[0-9]+}} + {{_v[0-9]+}},
-// REWRITES-NEXT:         im: {{_v[0-9]+}},
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 0.0 + {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex {
 // REWRITES-NEXT:         re: {{_v[0-9]+}}.re as f64,
 // REWRITES-NEXT:         im: {{_v[0-9]+}}.im as f64,
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = 3.0 + {{_v[0-9]+}} * {{_v[0-9]+}}.re;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex {
-// REWRITES-NEXT:         re: {{_v[0-9]+}} + {{_v[0-9]+}} * {{_v[0-9]+}}.re,
+// REWRITES-NEXT:         re: {{_v[0-9]+}},
 // REWRITES-NEXT:         im: {{_v[0-9]+}} * {{_v[0-9]+}}.im,
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 1, 64]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 0.0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 0.0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 1.0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex {
-// REWRITES-NEXT:         re: {{_v[0-9]+}} + {{_v[0-9]+}},
-// REWRITES-NEXT:         im: {{_v[0-9]+}},
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 0.0 + {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}}.re;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}}.im;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}});
@@ -1365,44 +1352,37 @@ int main(void) {
 // REWRITES-NEXT:         re: {{_v[0-9]+}} + {{_v[0-9]+}} * {{_v[0-9]+}}.re,
 // REWRITES-NEXT:         im: {{_v[0-9]+}} * {{_v[0-9]+}}.im,
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 1.0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 2.0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 0.0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 0.0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 1.0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = 3.0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}} * (0.0 + {{_v[0-9]+}});
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}} * 1.0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 1.0 + {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = 4.0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 0.0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 0.0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 1.0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex {
-// REWRITES-NEXT:         re: {{_v[0-9]+}} + {{_v[0-9]+}},
-// REWRITES-NEXT:         im: {{_v[0-9]+}},
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 0.0 + {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex {
 // REWRITES-NEXT:         re: {{_v[0-9]+}}.re as f64,
 // REWRITES-NEXT:         im: {{_v[0-9]+}}.im as f64,
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = 3.0 + {{_v[0-9]+}} * {{_v[0-9]+}}.re;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}} as i32)
 // REWRITES-NEXT:         + (({{_v[0-9]+}} == -9000000000i64) as i32)
 // REWRITES-NEXT:         + (({{_v[0-9]+}} == 18000000000u64) as i32)
+// REWRITES-NEXT:         + (({{_v[0-9]+}} == num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} }) as i32)
 // REWRITES-NEXT:         + (({{_v[0-9]+}}
 // REWRITES-NEXT:             == num_complex::Complex {
-// REWRITES-NEXT:                 re: {{_v[0-9]+}} + {{_v[0-9]+}} * ({{_v[0-9]+}} + {{_v[0-9]+}}),
-// REWRITES-NEXT:                 im: {{_v[0-9]+}} * {{_v[0-9]+}},
-// REWRITES-NEXT:             }) as i32)
-// REWRITES-NEXT:         + (({{_v[0-9]+}}
-// REWRITES-NEXT:             == num_complex::Complex {
-// REWRITES-NEXT:                 re: {{_v[0-9]+}} + {{_v[0-9]+}} * {{_v[0-9]+}}.re,
+// REWRITES-NEXT:                 re: {{_v[0-9]+}},
 // REWRITES-NEXT:                 im: {{_v[0-9]+}} * {{_v[0-9]+}}.im,
 // REWRITES-NEXT:             }) as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 1, 64]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 0.0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 0.0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 1.0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 0.0 + {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex {
-// REWRITES-NEXT:         re: {{_v[0-9]+}} + {{_v[0-9]+}},
+// REWRITES-NEXT:         re: {{_v[0-9]+}},
 // REWRITES-NEXT:         im: {{_v[0-9]+}},
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}}.re;
@@ -1419,14 +1399,12 @@ int main(void) {
 // REWRITES-NEXT:                 re: {{_v[0-9]+}} + {{_v[0-9]+}} * {{_v[0-9]+}}.re,
 // REWRITES-NEXT:                 im: {{_v[0-9]+}} * {{_v[0-9]+}}.im,
 // REWRITES-NEXT:             }) as i32);
-// REWRITES-NEXT:     flexible_total = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 3;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 4;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc(({{_v[0-9]+}} + {{_v[0-9]+}} * {{_v[0-9]+}}) as usize) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 3 * {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 8 + {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{_v[0-9]+}} as usize) };
 // REWRITES-NEXT:     flexible = {{_v[0-9]+}} as *mut C99Flexible;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut C99Flexible = std::ptr::null_mut();
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = flexible == {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = flexible == std::ptr::null_mut();
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         __retval = 2;
 // REWRITES-NEXT:         std::process::exit(__retval as i32);
@@ -1434,14 +1412,8 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         (*flexible).count = 3;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let mut index: u64 = 0;
-// REWRITES-NEXT:     index = 0;
-// REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         if index >= unsafe { (*flexible).count } {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = (index as i32) + {{_v[0-9]+}};
+// REWRITES-NEXT:     for index in 0..unsafe { (*flexible).count } {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = (index as i32) + 1;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = index;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut C99Flexible = flexible;
 // REWRITES-NEXT:         unsafe {
@@ -1450,22 +1422,12 @@ int main(void) {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = index;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut C99Flexible = flexible;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { *(*{{_v[0-9]+}}).values.as_mut_ptr().add({{_v[0-9]+}} as usize) };
-// REWRITES-NEXT:         flexible_total = flexible_total + {{_v[0-9]+}};
-// REWRITES-NEXT:         index = index + 1;
+// REWRITES-NEXT:         flexible_total += {{_v[0-9]+}};
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { free(flexible as *mut core::ffi::c_void) };
-// REWRITES-NEXT:     length = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = length as u64;
-// REWRITES-NEXT:     saved_stack = 0usize as *mut u8;
-// REWRITES-NEXT:     let mut variable_length_array: Vec<i32> = vec![0; {{_v[0-9]+}} as usize];
-// REWRITES-NEXT:     let mut index2: i32 = 0;
-// REWRITES-NEXT:     index2 = 0;
-// REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         if index2 >= length {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 4;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = index2 + {{_v[0-9]+}};
+// REWRITES-NEXT:     let mut variable_length_array: Vec<i32> = vec![0; (length as u64) as usize];
+// REWRITES-NEXT:     for index2 in 0..length {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = index2 + 4;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = unsafe {
 // REWRITES-NEXT:             variable_length_array
 // REWRITES-NEXT:                 .as_mut_ptr()
@@ -1474,19 +1436,15 @@ int main(void) {
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:             *{{_v[0-9]+}} = {{_v[0-9]+}};
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         index2 = index2 + 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     vm_total = c99_vm_sum(length, variable_length_array.as_mut_ptr());
-// REWRITES-NEXT:     initializer_seed = 19;
 // REWRITES-NEXT:     nonconstant_initializer.first = initializer_seed;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:     nonconstant_initializer.second = initializer_seed + {{_v[0-9]+}};
+// REWRITES-NEXT:     nonconstant_initializer.second = initializer_seed + 1;
 // REWRITES-NEXT:     designated_initializer = C99Pair {
 // REWRITES-NEXT:         first: 22,
 // REWRITES-NEXT:         second: 23,
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     *designated_array = [27, 0, 29, 0];
-// REWRITES-NEXT:     const_value = 31;
 // REWRITES-NEXT:     idempotent_const_value = const_value;
 // REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(volatile_value), 37 as i32) };
 // REWRITES-NEXT:     unsafe {
@@ -1494,7 +1452,6 @@ int main(void) {
 // REWRITES-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(volatile_value))
 // REWRITES-NEXT:         })
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     restricted_value = 41;
 // REWRITES-NEXT:     restricted_pointer = std::ptr::addr_of_mut!(restricted_value);
 // REWRITES-NEXT:     hexadecimal_float = 3.0;
 // REWRITES-NEXT:     compound_pair = C99Pair {
@@ -1510,26 +1467,20 @@ int main(void) {
 // REWRITES-NEXT:         *{{_v[0-9]+}} = 53;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     compound_array_value = _compoundliteral[((1 as i64) as usize)];
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = -7;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:     signed_quotient = {{_v[0-9]+}} / {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = -7;
+// REWRITES-NEXT:     signed_quotient = -7 / {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:     signed_remainder = {{_v[0-9]+}} % {{_v[0-9]+}};
-// REWRITES-NEXT:     mixed_order = 59;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-NEXT:     mixed_order = mixed_order + {{_v[0-9]+}};
-// REWRITES-NEXT:     declaration_after_statement = 61;
-// REWRITES-NEXT:     for_total = 0;
+// REWRITES-NEXT:     signed_remainder = -7 % {{_v[0-9]+}};
+// REWRITES-NEXT:     mixed_order += 2;
 // REWRITES-NEXT:     let mut index3: i32 = 0;
 // REWRITES-NEXT:     index3 = 0;
 // REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:         if index3 >= {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = index3 < 3;
+// REWRITES-NEXT:         if !{{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         for_total = for_total + index3;
-// REWRITES-NEXT:         index3 = index3 + 1;
+// REWRITES-NEXT:         for_total += index3;
+// REWRITES-NEXT:         index3 += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     qualified_values = [2, 3, 5];
 // REWRITES-NEXT:     macro_total = sum3(7 as i32, 11 as i32, 13 as i32);
@@ -1537,18 +1488,18 @@ int main(void) {
 // REWRITES-NEXT:         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 // REWRITES-NEXT:         1, 1,
 // REWRITES-NEXT:     );
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 32;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 4;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 16;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:     fenv_clear = unsafe { feclearexcept(({{_v[0-9]+}} | {{_v[0-9]+}} | {{_v[0-9]+}} | {{_v[0-9]+}} | {{_v[0-9]+}}) as i32) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 32;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 32 | {{_v[0-9]+}} | {{_v[0-9]+}} | {{_v[0-9]+}} | {{_v[0-9]+}};
+// REWRITES-NEXT:     fenv_clear = unsafe { feclearexcept({{_v[0-9]+}} as i32) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 4;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 16;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:     fenv_flags = unsafe { fetestexcept(({{_v[0-9]+}} | {{_v[0-9]+}} | {{_v[0-9]+}} | {{_v[0-9]+}} | {{_v[0-9]+}}) as i32) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 32 | {{_v[0-9]+}} | {{_v[0-9]+}} | {{_v[0-9]+}} | {{_v[0-9]+}};
+// REWRITES-NEXT:     fenv_flags = unsafe { fetestexcept({{_v[0-9]+}} as i32) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"main\0".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = α;

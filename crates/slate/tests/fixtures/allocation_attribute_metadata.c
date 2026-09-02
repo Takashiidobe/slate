@@ -152,7 +152,9 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = allocate(3 * 4, 4);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 4;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 3 * {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = allocate({{_v[0-9]+}}, 4);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{_v[0-9]+}} as *mut i32;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = allocate_array(2, 4);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{_v[0-9]+}} as *mut i32;

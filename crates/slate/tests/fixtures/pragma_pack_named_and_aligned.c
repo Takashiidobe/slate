@@ -4,32 +4,32 @@
 #pragma pack(3)
 struct IgnoredBadAlign {
   char a;
-  int b;
+  int  b;
 };
 #pragma pack()
 
 #pragma pack(push, lbl, 1)
 struct NamedPushed {
   char a;
-  int b;
+  int  b;
 };
 #pragma pack(pop, lbl)
 
 struct AfterNamedPop {
   char a;
-  int b;
+  int  b;
 };
 
 #pragma pack(pop)
 struct AfterExtraPop {
   char a;
-  int b;
+  int  b;
 };
 
 #pragma pack(push, 1)
 struct __attribute__((aligned(16))) PackedButAligned {
   char a;
-  int b;
+  int  b;
   char c;
 };
 #pragma pack(pop)

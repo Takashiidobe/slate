@@ -15,6 +15,6 @@ int __attribute__((weak)) fallback_value(void) { return weak_global; }
 // REWRITES-DAG: #[unsafe(no_mangle)]
 // REWRITES-DAG: #[linkage = "weak"]
 // REWRITES-DAG: pub extern "C" fn fallback_value() -> i32 {
-// REWRITES-DAG: return unsafe { weak_global };
+// REWRITES-DAG:     return unsafe { weak_global };
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

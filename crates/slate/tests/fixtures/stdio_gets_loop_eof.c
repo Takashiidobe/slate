@@ -274,7 +274,6 @@ int main(void) {
 // REWRITES-NEXT:     let mut h: *mut libc::FILE = std::ptr::null_mut();
 // REWRITES-NEXT:     let mut e: *mut libc::FILE = std::ptr::null_mut();
 // REWRITES-NEXT:     let mut empty_line: aligned::Aligned<aligned::A16, [i8; 64]> = aligned::Aligned([0; 64]);
-// REWRITES-NEXT:     __retval = 0;
 // REWRITES-NEXT:     unsafe { remove(c"slate_stdio_gets_loop_eof.tmp".as_ptr()) };
 // REWRITES-NEXT:     f = unsafe { fopen(c"slate_stdio_gets_loop_eof.tmp".as_ptr(), c"w".as_ptr()) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = f != std::ptr::null_mut();
@@ -303,8 +302,8 @@ int main(void) {
 // REWRITES-NEXT:                 g as *mut libc::FILE,
 // REWRITES-NEXT:             )
 // REWRITES-NEXT:         }) as *mut i8;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
-// REWRITES-NEXT:         if {{_v[0-9]+}} == {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
+// REWRITES-NEXT:         if !{{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         unsafe {
@@ -342,8 +341,8 @@ int main(void) {
 // REWRITES-NEXT:                 e as *mut libc::FILE,
 // REWRITES-NEXT:             )
 // REWRITES-NEXT:         }) as *mut i8;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
-// REWRITES-NEXT:         if {{_v[0-9]+}} == {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
+// REWRITES-NEXT:         if !{{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         unsafe {

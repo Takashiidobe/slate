@@ -166,7 +166,6 @@ int main(void) {
 // REWRITES-NEXT:     let mut f: *mut libc::FILE = std::ptr::null_mut();
 // REWRITES-NEXT:     let mut g: *mut libc::FILE = std::ptr::null_mut();
 // REWRITES-NEXT:     let mut buf: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
-// REWRITES-NEXT:     __retval = 0;
 // REWRITES-NEXT:     *name = [
 // REWRITES-NEXT:         115, 108, 97, 116, 101, 95, 115, 116, 100, 105, 111, 95, 102, 105, 108, 101, 95, 111, 119,
 // REWRITES-NEXT:         110, 101, 114, 115, 104, 105, 112, 46, 116, 109, 112, 0,

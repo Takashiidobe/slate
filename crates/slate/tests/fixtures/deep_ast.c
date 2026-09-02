@@ -319,140 +319,264 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d\n".as_ptr(),
-// REWRITES-NEXT:             (0 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32)
-// REWRITES-NEXT:                 + (1 as i32),
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + {{_v[0-9]+}};
+// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{_v[0-9]+}}) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

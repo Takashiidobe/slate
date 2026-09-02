@@ -22,27 +22,33 @@ int run_a(void) {
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: #[unsafe(no_mangle)]
 // REWRITES-DAG: pub extern "C" fn run_a() -> i32 {
-// REWRITES-DAG: let mut items: aligned::Aligned<aligned::A16, [Item; 2]> = aligned::Aligned(
-// REWRITES-DAG: [Item {
-// REWRITES-DAG: value: 0,
-// REWRITES-DAG: weight: 0,
-// REWRITES-DAG: }; 2],
-// REWRITES-DAG: );
-// REWRITES-DAG: let mut total: i32 = 0;
-// REWRITES-DAG: *items = [
-// REWRITES-DAG: Item {
-// REWRITES-DAG: value: 1,
-// REWRITES-DAG: weight: 10,
-// REWRITES-DAG: },
-// REWRITES-DAG: Item {
-// REWRITES-DAG: value: 2,
-// REWRITES-DAG: weight: 20,
-// REWRITES-DAG: },
-// REWRITES-DAG: ];
-// REWRITES-DAG: total = 0;
-// REWRITES-DAG: for i in 0..2 {
-// REWRITES-DAG: total = total + items[((i as i64) as usize)].value * items[((i as i64) as usize)].weight;
-// REWRITES-DAG: }
-// REWRITES-DAG: return total;
+// REWRITES-DAG:     let mut items: aligned::Aligned<aligned::A16, [Item; 2]> = aligned::Aligned(
+// REWRITES-DAG:         [Item {
+// REWRITES-DAG:             value: 0,
+// REWRITES-DAG:             weight: 0,
+// REWRITES-DAG:         }; 2],
+// REWRITES-DAG:     );
+// REWRITES-DAG:     let mut total: i32 = 0;
+// REWRITES-DAG:     *items = [
+// REWRITES-DAG:         Item {
+// REWRITES-DAG:             value: 1,
+// REWRITES-DAG:             weight: 10,
+// REWRITES-DAG:         },
+// REWRITES-DAG:         Item {
+// REWRITES-DAG:             value: 2,
+// REWRITES-DAG:             weight: 20,
+// REWRITES-DAG:         },
+// REWRITES-DAG:     ];
+// REWRITES-DAG:     let mut i: i32 = 0;
+// REWRITES-DAG:     i = 0;
+// REWRITES-DAG:     loop {
+// REWRITES-DAG:         let {{_v[0-9]+}}: bool = i < 2;
+// REWRITES-DAG:         if !{{_v[0-9]+}} {
+// REWRITES-DAG:             break;
+// REWRITES-DAG:         }
+// REWRITES-DAG:         total += items[((i as i64) as usize)].value * items[((i as i64) as usize)].weight;
+// REWRITES-DAG:         i += 1;
+// REWRITES-DAG:     }
+// REWRITES-DAG:     return total;
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

@@ -190,14 +190,8 @@ int main(void) {
 // REWRITES-NEXT: ) -> i32 {
 // REWRITES-NEXT:     let mut buffer: *mut u8 = {{arg[0-9]+}};
 // REWRITES-NEXT:     let mut size: u64 = {{arg[0-9]+}};
-// REWRITES-NEXT:     let mut source: *mut u8 = std::ptr::null_mut();
-// REWRITES-NEXT:     source = {{arg[0-9]+}} as *mut u8;
-// REWRITES-NEXT:     let mut i: u64 = 0;
-// REWRITES-NEXT:     i = 0;
-// REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         if i >= size {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     let mut source: *mut u8 = {{arg[0-9]+}} as *mut u8;
+// REWRITES-NEXT:     for i in 0..size {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut u8 = source;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add(i as usize) };
 // REWRITES-NEXT:         let {{_v[0-9]+}}: u8 = unsafe { *{{_v[0-9]+}} };
@@ -206,7 +200,6 @@ int main(void) {
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:             *{{_v[0-9]+}} = {{_v[0-9]+}};
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         i = i + 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         *{{arg[0-9]+}} = size;

@@ -3,11 +3,13 @@
 
 static int cmp_texts(const char *a, int alen, const char *b, int blen) {
   int sa = 0, sb = 0;
-  for (int i = 0; i < alen; i++) sa += a[i];
-  for (int i = 0; i < blen; i++) sb += b[i];
+  for (int i = 0; i < alen; i++)
+    sa += a[i];
+  for (int i = 0; i < blen; i++)
+    sb += b[i];
   int order = strcmp(a, b);
-  int sign = (order > 0) - (order < 0);
-  int eq = strcmp(a, b) == 0;
+  int sign  = (order > 0) - (order < 0);
+  int eq    = strcmp(a, b) == 0;
   return sign * 1000 + eq * 100 + (sa - sb);
 }
 
@@ -197,39 +199,24 @@ int main(void) {
 // REWRITES-NEXT:     let mut blen: i32 = {{arg[0-9]+}}.len() as i32;
 // REWRITES-NEXT:     let mut sa: i32 = 0;
 // REWRITES-NEXT:     let mut sb: i32 = 0;
-// REWRITES-NEXT:     sa = 0;
-// REWRITES-NEXT:     sb = 0;
-// REWRITES-NEXT:     let mut i: i32 = 0;
-// REWRITES-NEXT:     i = 0;
-// REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         if i >= alen {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     for i in 0..alen {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = a;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
-// REWRITES-NEXT:         sa = sa + ((unsafe { *{{_v[0-9]+}} }) as i32);
-// REWRITES-NEXT:         i = i + 1;
+// REWRITES-NEXT:         sa += (unsafe { *{{_v[0-9]+}} }) as i32;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let mut i2: i32 = 0;
-// REWRITES-NEXT:     i2 = 0;
-// REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         if i2 >= blen {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     for i2 in 0..blen {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = b;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.offset((i2 as i64) as isize) };
-// REWRITES-NEXT:         sb = sb + ((unsafe { *{{_v[0-9]+}} }) as i32);
-// REWRITES-NEXT:         i2 = i2 + 1;
+// REWRITES-NEXT:         sb += (unsafe { *{{_v[0-9]+}} }) as i32;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { {{arg[0-9]+}}.cmp({{arg[0-9]+}}) as i32 };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = (({{_v[0-9]+}} > {{_v[0-9]+}}) as i32) - (({{_v[0-9]+}} < {{_v[0-9]+}}) as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}} as i32) - ({{_v[0-9]+}} as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { {{arg[0-9]+}}.cmp({{arg[0-9]+}}) as i32 };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1000;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 100;
-// REWRITES-NEXT:     return {{_v[0-9]+}} * {{_v[0-9]+}} + (({{_v[0-9]+}} == {{_v[0-9]+}}) as i32) * {{_v[0-9]+}} + (sa - sb);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}} as i32) * 100;
+// REWRITES-NEXT:     return {{_v[0-9]+}} * 1000 + {{_v[0-9]+}} + (sa - sb);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

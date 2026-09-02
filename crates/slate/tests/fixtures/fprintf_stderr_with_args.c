@@ -9,10 +9,10 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: unsafe {
-// REWRITES-DAG: fprintf(
-// REWRITES-DAG: (unsafe { stderr }) as *mut libc::FILE,
-// REWRITES-DAG: c"error: %d\n".as_ptr(),
-// REWRITES-DAG: 42 as i32,
-// REWRITES-DAG: )
+// REWRITES-DAG:     fprintf(
+// REWRITES-DAG:         (unsafe { stderr }) as *mut libc::FILE,
+// REWRITES-DAG:         c"error: %d\n".as_ptr(),
+// REWRITES-DAG:         42 as i32,
+// REWRITES-DAG:     )
 // REWRITES-DAG: };
 // SLATE-FILECHECK-END rewrites

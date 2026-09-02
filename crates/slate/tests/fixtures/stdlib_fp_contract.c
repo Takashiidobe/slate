@@ -2,10 +2,10 @@
 
 int main(void) {
   volatile double x = 0x1.fffffffffffffp+0;
-  double y = x;
-  double z = -(x * x);
-  double contracted;
-  double uncontracted;
+  double          y = x;
+  double          z = -(x * x);
+  double          contracted;
+  double          uncontracted;
 
   {
 #pragma STDC FP_CONTRACT ON

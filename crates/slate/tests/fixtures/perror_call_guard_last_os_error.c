@@ -77,11 +77,8 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
-// REWRITES-NEXT:     let mut rc: i32 = 0;
-// REWRITES-NEXT:     __retval = 0;
-// REWRITES-NEXT:     rc = unsafe { remove(c"slate_perror_call_guard_missing.tmp".as_ptr()) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = rc < {{_v[0-9]+}};
+// REWRITES-NEXT:     let mut rc: i32 = unsafe { remove(c"slate_perror_call_guard_missing.tmp".as_ptr()) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = rc < 0;
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         unsafe { perror(c"remove failed".as_ptr()) };
 // REWRITES-NEXT:         __retval = 1;

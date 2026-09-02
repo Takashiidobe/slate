@@ -185,9 +185,8 @@ int main(void) {
 // REWRITES-NEXT:     *{{__slate_alloca_frame[0-9]+}}.2 = [10, 20, 30, 40];
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{__slate_alloca_frame[0-9]+}}.2.as_mut_ptr() as *mut i32;
 // REWRITES-NEXT:     {{__slate_alloca_frame[0-9]+}}.1 = {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 4;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} * {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2 * {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i64 = std::ptr::addr_of_mut!({{__slate_alloca_frame[0-9]+}}.1) as *mut i64;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = unsafe {
 // REWRITES-NEXT:         std::sync::atomic::AtomicI64::from_ptr({{_v[0-9]+}})

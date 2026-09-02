@@ -88,11 +88,9 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
-// REWRITES-NEXT:     let mut fp: *mut libc::FILE = std::ptr::null_mut();
-// REWRITES-NEXT:     __retval = 0;
-// REWRITES-NEXT:     fp = unsafe { fopen(c"slate_perror_fopen_missing.tmp".as_ptr(), c"r".as_ptr()) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut libc::FILE = std::ptr::null_mut();
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = fp == {{_v[0-9]+}};
+// REWRITES-NEXT:     let mut fp: *mut libc::FILE =
+// REWRITES-NEXT:         unsafe { fopen(c"slate_perror_fopen_missing.tmp".as_ptr(), c"r".as_ptr()) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = fp == std::ptr::null_mut();
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         unsafe { perror(c"open failed".as_ptr()) };
 // REWRITES-NEXT:         __retval = 1;

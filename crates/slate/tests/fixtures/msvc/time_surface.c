@@ -97,8 +97,7 @@ TYPE_IS(&difftime, double (*)(time_t, time_t));
 TYPE_IS(&gmtime, struct tm *(*)(const time_t *));
 TYPE_IS(&localtime, struct tm *(*)(const time_t *));
 TYPE_IS(&mktime, time_t (*)(struct tm *));
-TYPE_IS(&strftime,
-        size_t (*)(char *, size_t, const char *, const struct tm *));
+TYPE_IS(&strftime, size_t (*)(char *, size_t, const char *, const struct tm *));
 TYPE_IS(&time, time_t (*)(time_t *));
 TYPE_IS(&timespec_get, int (*)(struct timespec *, int));
 

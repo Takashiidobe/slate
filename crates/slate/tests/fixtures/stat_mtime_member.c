@@ -197,41 +197,13 @@ int main(void) {
 // REWRITES-NEXT:         },
 // REWRITES-NEXT:         __unused: [0; 3],
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     __retval = 0;
-// REWRITES-NEXT:     info = stat {
-// REWRITES-NEXT:         st_dev: 0,
-// REWRITES-NEXT:         st_ino: 0,
-// REWRITES-NEXT:         st_nlink: 0,
-// REWRITES-NEXT:         st_mode: 0,
-// REWRITES-NEXT:         st_uid: 0,
-// REWRITES-NEXT:         st_gid: 0,
-// REWRITES-NEXT:         __pad0: 0,
-// REWRITES-NEXT:         st_rdev: 0,
-// REWRITES-NEXT:         st_size: 0,
-// REWRITES-NEXT:         st_blksize: 0,
-// REWRITES-NEXT:         st_blocks: 0,
-// REWRITES-NEXT:         st_atim: libc::timespec {
-// REWRITES-NEXT:             tv_sec: 0,
-// REWRITES-NEXT:             tv_nsec: 0,
-// REWRITES-NEXT:         },
-// REWRITES-NEXT:         st_mtim: libc::timespec {
-// REWRITES-NEXT:             tv_sec: 0,
-// REWRITES-NEXT:             tv_nsec: 0,
-// REWRITES-NEXT:         },
-// REWRITES-NEXT:         st_ctim: libc::timespec {
-// REWRITES-NEXT:             tv_sec: 0,
-// REWRITES-NEXT:             tv_nsec: 0,
-// REWRITES-NEXT:         },
-// REWRITES-NEXT:         __unused: [0; 3],
-// REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
 // REWRITES-NEXT:         stat(
 // REWRITES-NEXT:             c"/dev/null".as_ptr(),
 // REWRITES-NEXT:             std::ptr::addr_of_mut!(info) as *mut stat,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         __retval = 1;
 // REWRITES-NEXT:         std::process::exit(__retval as i32);

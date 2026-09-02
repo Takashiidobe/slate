@@ -216,11 +216,11 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         unsafe { __slate_intrinsic_x86_sse_sfence_f8b270d178b3d220() };
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%d %d %llu\n".as_ptr(),
-// REWRITES-NEXT:             ({{_v[0-9]+}} != {{_v[0-9]+}}) as i32,
+// REWRITES-NEXT:             {{_v[0-9]+}} as i32,
 // REWRITES-NEXT:             ({{_v[0-9]+}} >= {{_v[0-9]+}}) as i32,
 // REWRITES-NEXT:             unsafe { crc32_probe() },
 // REWRITES-NEXT:         )

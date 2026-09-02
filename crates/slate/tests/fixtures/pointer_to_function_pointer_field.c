@@ -187,9 +187,9 @@ int main(void) {
 // REWRITES-NEXT:         tests: std::ptr::null_mut(),
 // REWRITES-NEXT:         ntests: 0,
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 2;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc(({{_v[0-9]+}} * {{_v[0-9]+}}) as usize) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 2 * {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{_v[0-9]+}} as usize) };
 // REWRITES-NEXT:     suite.tests = {{_v[0-9]+}} as *mut Option<unsafe extern "C" fn()>;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut Option<unsafe extern "C" fn()> = suite.tests;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut Option<unsafe extern "C" fn()> = unsafe { {{_v[0-9]+}}.add(0) };
@@ -202,17 +202,11 @@ int main(void) {
 // REWRITES-NEXT:         *{{_v[0-9]+}} = Some(test_b);
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     suite.ntests = 2;
-// REWRITES-NEXT:     let mut i: i32 = 0;
-// REWRITES-NEXT:     i = 0;
-// REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         if i >= suite.ntests {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     for i in 0..suite.ntests {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut Option<unsafe extern "C" fn()> = suite.tests;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut Option<unsafe extern "C" fn()> = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
 // REWRITES-NEXT:         unsafe { unsafe { *{{_v[0-9]+}} }.unwrap()() };
 // REWRITES-NEXT:         unsafe { printf(c"%d\n".as_ptr(), unsafe { last_ran }) };
-// REWRITES-NEXT:         i = i + 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { free(suite.tests as *mut core::ffi::c_void) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

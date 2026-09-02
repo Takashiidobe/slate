@@ -215,11 +215,11 @@ int open_read_only(const char *path) { return open(path, O_RDONLY); }
 // REWRITES-MACOS-NEXT: }
 // REWRITES-MACOS-EMPTY:
 // REWRITES-MACOS-NEXT: fn is_directory({{arg[0-9]+}}: u16) -> i32 {
-// REWRITES-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = 61440;
 // REWRITES-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = 16384;
+// REWRITES-MACOS-NEXT:     let {{_v[0-9]+}}: bool = ({{arg[0-9]+}} as i32) & 61440 == {{_v[0-9]+}};
 // REWRITES-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-MACOS-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-MACOS-NEXT:     return if ({{arg[0-9]+}} as i32) & {{_v[0-9]+}} == {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// REWRITES-MACOS-NEXT:     return if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
 // REWRITES-MACOS-NEXT: }
 // REWRITES-MACOS-EMPTY:
 // REWRITES-MACOS-NEXT: fn stat_file({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut stat) -> i32 {

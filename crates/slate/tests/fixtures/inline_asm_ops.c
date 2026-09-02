@@ -78,8 +78,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         core::arch::asm!("\n/* {0:e} */", inlateout(reg) {{arg[0-9]+}} => {{_v[0-9]+}}, options(att_syntax));
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:     return {{_v[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-NEXT:     return {{_v[0-9]+}} + 1;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

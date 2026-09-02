@@ -84,8 +84,8 @@ int main(void) {
 // REWRITES-NEXT: /// stores the intermediate result
 // REWRITES-NEXT: fn increment({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     let mut next: i32 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(next), {{arg[0-9]+}} + {{_v[0-9]+}}) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + 1;
+// REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(next), {{_v[0-9]+}}) };
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         completed_count = (unsafe { completed_count }) + 1;
 // REWRITES-NEXT:     }
@@ -99,20 +99,17 @@ int main(void) {
 // REWRITES-NEXT:     holder = Holder {
 // REWRITES-NEXT:         mode: Mode::MODE_ON,
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = 1;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = (holder.mode as u32) == {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = (holder.mode as u32) == 1;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = increment(1);
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 2;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = (unsafe { completed_count }) == {{_v[0-9]+}};
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = (unsafe { completed_count }) == 2;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;

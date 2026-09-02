@@ -1,20 +1,16 @@
 #include <stdio.h>
 
-#define CLASSIFY_ZERO(value)                                                  \
-  ({                                                                          \
+#define CLASSIFY_ZERO(value)                                                   \
+  ({                                                                           \
     __label__ zero, done;                                                      \
-    int result = 0;                                                           \
-    __asm__ goto("testl %0, %0\n\tjz %l[zero]"                                \
-                 :                                                            \
-                 : "r"(value)                                                 \
-                 : "cc"                                                       \
-                 : zero);                                                      \
-    result = 11;                                                              \
-    goto done;                                                                \
-  zero:                                                                       \
-    result = 13;                                                              \
-  done:                                                                       \
-    result;                                                                   \
+    int result = 0;                                                            \
+    __asm__ goto("testl %0, %0\n\tjz %l[zero]" : : "r"(value) : "cc" : zero);  \
+    result = 11;                                                               \
+    goto done;                                                                 \
+  zero:                                                                        \
+    result = 13;                                                               \
+  done:                                                                        \
+    result;                                                                    \
   })
 
 int main(void) {

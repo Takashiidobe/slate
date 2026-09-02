@@ -98,7 +98,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         state.value.wide = 7;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 7;
-// REWRITES-NEXT:     std::process::exit((state.count + (((unsafe { state.value.wide }) != {{_v[0-9]+}}) as i32)) as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = (unsafe { state.value.wide }) != 7;
+// REWRITES-NEXT:     std::process::exit((state.count + ({{_v[0-9]+}} as i32)) as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

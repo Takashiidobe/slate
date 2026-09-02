@@ -39,12 +39,12 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: unsafe {
-// REWRITES-DAG: printf(
-// REWRITES-DAG: c"%d %d %d %d\n".as_ptr(),
-// REWRITES-DAG: add(5, 10),
-// REWRITES-DAG: get_used(1, 2),
-// REWRITES-DAG: remove_two(3, 4, 5),
-// REWRITES-DAG: unsafe { Some(address_taken).unwrap()(8 as i32, 9 as i32) },
-// REWRITES-DAG: )
+// REWRITES-DAG:     printf(
+// REWRITES-DAG:         c"%d %d %d %d\n".as_ptr(),
+// REWRITES-DAG:         add(5, 10),
+// REWRITES-DAG:         get_used(1, 2),
+// REWRITES-DAG:         remove_two(3, 4, 5),
+// REWRITES-DAG:         unsafe { Some(address_taken).unwrap()(8 as i32, 9 as i32) },
+// REWRITES-DAG:     )
 // REWRITES-DAG: };
 // SLATE-FILECHECK-END rewrites

@@ -29,25 +29,25 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: fn gnu_function_basic_asm() -> i32 {
-// LOWERING-DAG: unsafe {
-// LOWERING-DAG: core::arch::asm!(
-// LOWERING-DAG: "movl $23, gnu_basic_asm_value(%rip)",
-// LOWERING-DAG: options(att_syntax, raw)
-// LOWERING-DAG: );
-// LOWERING-DAG: }
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = unsafe { gnu_basic_asm_value };
-// LOWERING-DAG: return {{_v[0-9]+}};
+// LOWERING-DAG:     unsafe {
+// LOWERING-DAG:         core::arch::asm!(
+// LOWERING-DAG:             "movl $23, gnu_basic_asm_value(%rip)",
+// LOWERING-DAG:             options(att_syntax, raw)
+// LOWERING-DAG:         );
+// LOWERING-DAG:     }
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = unsafe { gnu_basic_asm_value };
+// LOWERING-DAG:     return {{_v[0-9]+}};
 // LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn gnu_function_basic_asm() -> i32 {
-// REWRITES-DAG: unsafe {
-// REWRITES-DAG: core::arch::asm!(
-// REWRITES-DAG: "movl $23, gnu_basic_asm_value(%rip)",
-// REWRITES-DAG: options(att_syntax, raw)
-// REWRITES-DAG: );
-// REWRITES-DAG: }
-// REWRITES-DAG: return unsafe { gnu_basic_asm_value };
+// REWRITES-DAG:     unsafe {
+// REWRITES-DAG:         core::arch::asm!(
+// REWRITES-DAG:             "movl $23, gnu_basic_asm_value(%rip)",
+// REWRITES-DAG:             options(att_syntax, raw)
+// REWRITES-DAG:         );
+// REWRITES-DAG:     }
+// REWRITES-DAG:     return unsafe { gnu_basic_asm_value };
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

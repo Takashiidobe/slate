@@ -148,30 +148,23 @@ int main(void) {
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     let mut steps: i32 = 0;
 // REWRITES-NEXT:     '__loop0: loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 6;
-// REWRITES-NEXT:         if i >= {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i < 6;
+// REWRITES-NEXT:         if !{{_v[0-9]+}} {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         '__continue0: {
-// REWRITES-NEXT:             let mut x: i32 = 0;
-// REWRITES-NEXT:             let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:             x = i % {{_v[0-9]+}};
-// REWRITES-NEXT:             '{{__switch[0-9]+_l[0-9]+}}: {
-// REWRITES-NEXT:                 match x {
-// REWRITES-NEXT:                     0 => {}
-// REWRITES-NEXT:                     1 => {}
-// REWRITES-NEXT:                     2 => {}
-// REWRITES-NEXT:                     _ => {
-// REWRITES-NEXT:                         break '{{__switch[0-9]+_l[0-9]+}};
-// REWRITES-NEXT:                     }
+// REWRITES-NEXT:             let mut x: i32 = i % 3;
+// REWRITES-NEXT:             match x {
+// REWRITES-NEXT:                 0 | 1 | 2 => {
+// REWRITES-NEXT:                     i += 1;
+// REWRITES-NEXT:                     steps += 1;
+// REWRITES-NEXT:                     break '__continue0;
 // REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 i = i + 1;
-// REWRITES-NEXT:                 steps = steps + 1;
-// REWRITES-NEXT:                 break '__continue0;
+// REWRITES-NEXT:                 _ => {}
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             unsafe { printf(c"unreachable %d\n".as_ptr(), i) };
-// REWRITES-NEXT:             i = i + 1;
-// REWRITES-NEXT:             steps = steps + 1;
+// REWRITES-NEXT:             i += 1;
+// REWRITES-NEXT:             steps += 1;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { printf(c"steps=%d\n".as_ptr(), steps) };

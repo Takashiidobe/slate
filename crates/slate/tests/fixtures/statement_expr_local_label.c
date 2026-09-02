@@ -1,22 +1,22 @@
 #include <stdio.h>
 
-#define CHECK_VALUE(expression)                                               \
-  ({                                                                          \
+#define CHECK_VALUE(expression)                                                \
+  ({                                                                           \
     __label__ failed, done;                                                    \
-    int result;                                                               \
-    if (!(expression))                                                        \
-      goto failed;                                                            \
-    result = 17;                                                              \
-    goto done;                                                                \
-  failed:                                                                     \
-    result = -5;                                                              \
-  done:                                                                       \
-    result;                                                                   \
+    int result;                                                                \
+    if (!(expression))                                                         \
+      goto failed;                                                             \
+    result = 17;                                                               \
+    goto done;                                                                 \
+  failed:                                                                      \
+    result = -5;                                                               \
+  done:                                                                        \
+    result;                                                                    \
   })
 
 int main(void) {
-  int value = 0;
-  int first = CHECK_VALUE(++value == 1);
+  int value  = 0;
+  int first  = CHECK_VALUE(++value == 1);
   int second = CHECK_VALUE(++value == 9);
   // @lowering-begin
   // @rewrite-begin
@@ -35,7 +35,7 @@ int main(void) {
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = second;
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 = value;
 // LOWERING-DAG: let {{_v[0-9]+}}: i32 =
-// LOWERING-DAG: unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-DAG:     unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites

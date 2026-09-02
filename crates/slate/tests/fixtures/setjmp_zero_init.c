@@ -4,11 +4,11 @@
 static jmp_buf frame;
 
 int main(void) {
-    if (setjmp(frame) == 0) {
-        longjmp(frame, 42);
-    }
-    printf("returned\n");
-    return 0;
+  if (setjmp(frame) == 0) {
+    longjmp(frame, 42);
+  }
+  printf("returned\n");
+  return 0;
 }
 
 // SLATE-FILECHECK-BEGIN lowering
@@ -110,8 +110,7 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag = std::ptr::addr_of_mut!(frame).cast::<__slate_jmp_buf_tag>();
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:             longjmp(
