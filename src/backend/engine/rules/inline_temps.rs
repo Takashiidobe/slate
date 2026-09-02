@@ -1048,6 +1048,8 @@ fn is_top_level_use(arena: &Arena, id: NodeId, name: Ident) -> bool {
             expr_ident(value) == Some(name)
         }
         Some(NodeKind::Return(Some(expr))) => expr_ident(expr) == Some(name),
+        Some(NodeKind::If { cond, .. }) => expr_ident(cond) == Some(name),
+        Some(NodeKind::Match { expr, .. }) => expr_ident(expr) == Some(name),
         Some(NodeKind::Unsafe { stmts, tail }) if tail.is_none() && stmts.len() == 1 => {
             is_top_level_use(arena, stmts[0], name)
         }

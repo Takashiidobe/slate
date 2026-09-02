@@ -1,3 +1,4 @@
+use super::inline_temps;
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::{BinOp, Expr, Ident, RustValue, UnaryOp};
@@ -8,10 +9,30 @@ struct RecoveredFor {
     end: Expr,
     mid_body: Vec<NodeId>,
     let_id: NodeId,
+    let_parent: NodeId,
+    let_list_index: usize,
     assign_start_id: NodeId,
     bound_let_id: Option<NodeId>,
     guard_if_id: NodeId,
     increment_id: NodeId,
+}
+
+fn owning_list(arena: &Arena, id: NodeId) -> Option<(NodeId, usize)> {
+    let parent_id = arena.parent(id)?;
+    let list_index = arena
+        .get(parent_id)?
+        .child_lists()
+        .iter()
+        .position(|list| list.contains(&id))?;
+    Some((parent_id, list_index))
+}
+
+fn remove_from_list(arena: &mut Arena, parent: NodeId, list_index: usize, id: NodeId) {
+    if let Some(parent_kind) = arena.get_mut(parent)
+        && let Some(list) = parent_kind.child_lists_mut().get_mut(list_index)
+    {
+        list.retain(|&x| x != id);
+    }
 }
 
 fn int_value(expr: &Expr) -> Option<i128> {
@@ -27,7 +48,7 @@ fn is_var(expr: &Expr, name: Ident) -> bool {
     matches!(expr, Expr::Var(v) if *v == name)
 }
 
-fn negated_lt_guard(arena: &Arena, id: NodeId, ind_var: Ident) -> Option<Expr> {
+fn break_guard_cond(arena: &Arena, id: NodeId) -> Option<&Expr> {
     let Some(NodeKind::If {
         cond,
         then_body,
@@ -42,6 +63,10 @@ fn negated_lt_guard(arena: &Arena, id: NodeId, ind_var: Ident) -> Option<Expr> {
     if !matches!(arena.get(then_body[0]), Some(NodeKind::Break(None))) {
         return None;
     }
+    Some(cond)
+}
+
+fn extract_negated_lt(cond: &Expr, ind_var: Ident) -> Option<Expr> {
     let Expr::Unary {
         op: UnaryOp::Not,
         expr: inner,
@@ -61,6 +86,38 @@ fn negated_lt_guard(arena: &Arena, id: NodeId, ind_var: Ident) -> Option<Expr> {
         return None;
     }
     Some(rhs.as_ref().clone())
+}
+
+fn negated_lt_guard(arena: &Arena, id: NodeId, ind_var: Ident) -> Option<Expr> {
+    extract_negated_lt(break_guard_cond(arena, id)?, ind_var)
+}
+
+fn negated_lt_guard_through_temp(
+    arena: &Arena,
+    guard_if_id: NodeId,
+    temp_let_id: NodeId,
+    ind_var: Ident,
+) -> Option<Expr> {
+    let Some(NodeKind::Let {
+        name: tmp,
+        mutable: false,
+        init: Some(init),
+        ..
+    }) = arena.get(temp_let_id)
+    else {
+        return None;
+    };
+    let tmp = *tmp;
+    if inline_temps::expr_effects(init).is_side_effect() {
+        return None;
+    }
+    if arena.def_use_neighbors(tmp) != [guard_if_id] {
+        return None;
+    }
+    let cond = break_guard_cond(arena, guard_if_id)?;
+    let mut substituted = cond.clone();
+    substituted.substitute_var(tmp.as_str(), init);
+    extract_negated_lt(&substituted, ind_var)
 }
 
 fn is_unit_increment(arena: &Arena, id: NodeId, ind_var: Ident) -> bool {
@@ -141,15 +198,16 @@ fn plan(arena: &Arena, loop_id: NodeId) -> Option<RecoveredFor> {
             }) = arena.get(body[0])
         {
             let tmp = *tmp;
-            let end = negated_lt_guard(arena, body[1], ind_var)?;
-            if !is_var(&end, tmp) {
-                return None;
+            let bound_init = bound_init.clone();
+            if let Some(end) = negated_lt_guard(arena, body[1], ind_var)
+                && is_var(&end, tmp)
+                && arena.def_use_neighbors(tmp) == [body[1]]
+            {
+                (Some(body[0]), body[1], bound_init, 1usize)
+            } else {
+                let end = negated_lt_guard_through_temp(arena, body[1], body[0], ind_var)?;
+                (Some(body[0]), body[1], end, 1usize)
             }
-            let neighbors = arena.def_use_neighbors(tmp);
-            if neighbors != [body[1]] {
-                return None;
-            }
-            (Some(body[0]), body[1], bound_init.clone(), 1usize)
         } else {
             return None;
         };
@@ -168,17 +226,10 @@ fn plan(arena: &Arena, loop_id: NodeId) -> Option<RecoveredFor> {
         .child_lists()
         .into_iter()
         .find_map(|list| list.iter().position(|&x| x == loop_id).map(|i| (i, list)))?;
-    if index < 2 {
+    if index < 1 {
         return None;
     }
-    let let_id = list[index - 2];
     let assign_start_id = list[index - 1];
-    let Some(NodeKind::Let { name: decl, .. }) = arena.get(let_id) else {
-        return None;
-    };
-    if *decl != ind_var {
-        return None;
-    }
     let Some(NodeKind::Assign {
         target: Expr::Var(assign_name),
         value: start,
@@ -190,6 +241,15 @@ fn plan(arena: &Arena, loop_id: NodeId) -> Option<RecoveredFor> {
         return None;
     }
     let start = start.clone();
+
+    let let_id = arena.definition(ind_var)?;
+    let Some(NodeKind::Let { name: decl, .. }) = arena.get(let_id) else {
+        return None;
+    };
+    if *decl != ind_var || let_id == assign_start_id {
+        return None;
+    }
+    let (let_parent, let_list_index) = owning_list(arena, let_id)?;
 
     let mut allowed = vec![let_id, assign_start_id];
     subtree_ids(arena, loop_id, &mut allowed);
@@ -207,6 +267,8 @@ fn plan(arena: &Arena, loop_id: NodeId) -> Option<RecoveredFor> {
         end,
         mid_body,
         let_id,
+        let_parent,
+        let_list_index,
         assign_start_id,
         bound_let_id,
         guard_if_id,
@@ -274,8 +336,9 @@ impl NodeRule for ForRangeRecover {
         if let Some(parent_kind) = arena.get_mut(parent_id)
             && let Some(list) = parent_kind.child_lists_mut().get_mut(list_index)
         {
-            list.retain(|&x| x != plan.let_id && x != plan.assign_start_id);
+            list.retain(|&x| x != plan.assign_start_id);
         }
+        remove_from_list(arena, plan.let_parent, plan.let_list_index, plan.let_id);
         true
     }
 }

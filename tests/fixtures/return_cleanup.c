@@ -42,8 +42,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn choose(mut value: i32) -> i32 {
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = value < 0;
-// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:     if value < 0 {
 // REWRITES-DAG:         return -1;
 // REWRITES-DAG:     }
 // REWRITES-DAG:     value + 2
