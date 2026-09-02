@@ -4,8 +4,6 @@ mod dead_store;
 mod for_range;
 mod inline_temps;
 mod libc_call;
-mod negate;
-mod not_fold;
 mod peel_casts;
 mod raw_ptr_alias;
 mod singleton_scopes;
@@ -29,7 +27,6 @@ pub(super) fn registry() -> Vec<Box<dyn NodeRule>> {
         Box::new(peel_casts::PeelCasts),
         Box::new(cstr_literal::CStrLiteral),
         Box::new(dead_store::DeadStore),
-        Box::new(not_fold::NotFold),
     ];
     rules.extend(libc_call::rules());
     rules
