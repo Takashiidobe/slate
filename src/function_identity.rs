@@ -21,6 +21,7 @@ macro_rules! known_function_catalog {
             StrTold, "strtold", "stdlib.h"; StrFromL, "strfroml", "stdlib.h";
             Printf, "printf", "stdio.h"; FPrintf, "fprintf", "stdio.h";
             SPrintf, "sprintf", "stdio.h"; SNPrintf, "snprintf", "stdio.h";
+            Sscanf, "sscanf", "stdio.h";
             Exit, "exit", "stdlib.h"; Abort, "abort", "stdlib.h";
             Puts, "puts", "stdio.h"; FOpen, "fopen", "stdio.h";
             FPuts, "fputs", "stdio.h"; FGets, "fgets", "stdio.h";
@@ -38,7 +39,9 @@ macro_rules! known_function_catalog {
             Log10, "log10", "math.h"; Log2, "log2", "math.h"; Pow, "pow", "math.h";
             Sqrt, "sqrt", "math.h"; Exp, "exp", "math.h"; Exp2, "exp2", "math.h";
             Fmod, "fmod", "math.h"; Lround, "lround", "math.h";
-            Llround, "llround", "math.h"; PthreadCreate, "pthread_create", "pthread.h";
+            Llround, "llround", "math.h"; Nan, "nan", "math.h";
+            Nanf, "nanf", "math.h"; Nanl, "nanl", "math.h";
+            PthreadCreate, "pthread_create", "pthread.h";
             PthreadJoin, "pthread_join", "pthread.h"; Qsort, "qsort", "stdlib.h";
             Bsearch, "bsearch", "stdlib.h";
         }
