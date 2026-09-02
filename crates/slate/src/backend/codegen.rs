@@ -1465,6 +1465,15 @@ impl<W: Write> Codegen<W> {
                 self.out.write_str(" if ")?;
                 self.expr(cond)
             }
+            crate::backend::rust_ast::Pattern::Or(alts) => {
+                for (i, alt) in alts.iter().enumerate() {
+                    if i > 0 {
+                        self.out.write_str(" | ")?;
+                    }
+                    self.pattern(alt)?;
+                }
+                Ok(())
+            }
             crate::backend::rust_ast::Pattern::TupleStruct { name, fields } => {
                 self.ident_path(name.as_str())?;
                 self.out.write_char('(')?;
