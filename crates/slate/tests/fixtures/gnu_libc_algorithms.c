@@ -180,11 +180,12 @@ int main(void) {
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: struct argp {
 // LOWERING-NEXT:     options: *mut argp_option,
-// LOWERING-NEXT:     parser: Option<unsafe extern "C" fn(i32, *mut i8, *mut argp_state) -> i32>,
+// LOWERING-NEXT:     parser: Option<unsafe extern "C-unwind" fn(i32, *mut i8, *mut argp_state) -> i32>,
 // LOWERING-NEXT:     args_doc: *mut i8,
 // LOWERING-NEXT:     doc: *mut i8,
 // LOWERING-NEXT:     children: *mut argp_child,
-// LOWERING-NEXT:     help_filter: Option<unsafe extern "C" fn(i32, *mut i8, *mut core::ffi::c_void) -> *mut i8>,
+// LOWERING-NEXT:     help_filter:
+// LOWERING-NEXT:         Option<unsafe extern "C-unwind" fn(i32, *mut i8, *mut core::ffi::c_void) -> *mut i8>,
 // LOWERING-NEXT:     argp_domain: *mut i8,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
@@ -261,7 +262,7 @@ int main(void) {
 // LOWERING-NEXT:         _1: usize,
 // LOWERING-NEXT:         _2: usize,
 // LOWERING-NEXT:         _3: Option<
-// LOWERING-NEXT:             unsafe extern "C" fn(
+// LOWERING-NEXT:             unsafe extern "C-unwind" fn(
 // LOWERING-NEXT:                 *mut core::ffi::c_void,
 // LOWERING-NEXT:                 *mut core::ffi::c_void,
 // LOWERING-NEXT:                 *mut core::ffi::c_void,
@@ -299,21 +300,25 @@ int main(void) {
 // LOWERING-NEXT:     fn tsearch(
 // LOWERING-NEXT:         _0: *const core::ffi::c_void,
 // LOWERING-NEXT:         _1: *mut *mut core::ffi::c_void,
-// LOWERING-NEXT:         _2: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32>,
+// LOWERING-NEXT:         _2: Option<
+// LOWERING-NEXT:             unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
+// LOWERING-NEXT:         >,
 // LOWERING-NEXT:     ) -> *mut core::ffi::c_void;
 // LOWERING-NEXT:     fn tfind(
 // LOWERING-NEXT:         _0: *const core::ffi::c_void,
 // LOWERING-NEXT:         _1: *mut *mut core::ffi::c_void,
-// LOWERING-NEXT:         _2: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32>,
+// LOWERING-NEXT:         _2: Option<
+// LOWERING-NEXT:             unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
+// LOWERING-NEXT:         >,
 // LOWERING-NEXT:     ) -> *mut core::ffi::c_void;
 // LOWERING-NEXT:     fn tdestroy(
 // LOWERING-NEXT:         _0: *mut core::ffi::c_void,
-// LOWERING-NEXT:         _1: Option<unsafe extern "C" fn(*mut core::ffi::c_void)>,
+// LOWERING-NEXT:         _1: Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void)>,
 // LOWERING-NEXT:     );
 // LOWERING-NEXT:     fn free(_0: *mut core::ffi::c_void);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C" fn gnu_compare_with_direction(
+// LOWERING-NEXT: extern "C-unwind" fn gnu_compare_with_direction(
 // LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
 // LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
 // LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
@@ -502,7 +507,7 @@ int main(void) {
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C" fn gnu_parse_option({{arg[0-9]+}}: i32, {{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut argp_state) -> i32 {
+// LOWERING-NEXT: extern "C-unwind" fn gnu_parse_option({{arg[0-9]+}}: i32, {{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut argp_state) -> i32 {
 // LOWERING-NEXT:     let mut key: i32 = 0;
 // LOWERING-NEXT:     let mut argument: *mut i8 = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
@@ -662,7 +667,7 @@ int main(void) {
 // LOWERING-NEXT:     parser.parser = unsafe {
 // LOWERING-NEXT:         std::mem::transmute::<
 // LOWERING-NEXT:             *const (),
-// LOWERING-NEXT:             Option<unsafe extern "C" fn(i32, *mut i8, *mut argp_state) -> i32>,
+// LOWERING-NEXT:             Option<unsafe extern "C-unwind" fn(i32, *mut i8, *mut argp_state) -> i32>,
 // LOWERING-NEXT:         >(gnu_parse_option as *const ())
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"ITEM\0".as_ptr() as *mut i8;
@@ -671,7 +676,8 @@ int main(void) {
 // LOWERING-NEXT:     parser.doc = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut argp_child = std::ptr::null_mut();
 // LOWERING-NEXT:     parser.children = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32, *mut i8, *mut core::ffi::c_void) -> *mut i8> = None;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32, *mut i8, *mut core::ffi::c_void) -> *mut i8> =
+// LOWERING-NEXT:         None;
 // LOWERING-NEXT:     parser.help_filter = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
 // LOWERING-NEXT:     parser.argp_domain = {{_v[0-9]+}};
@@ -735,7 +741,7 @@ int main(void) {
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C" fn gnu_compare_entries(
+// LOWERING-NEXT: extern "C-unwind" fn gnu_compare_entries(
 // LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
 // LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
 // LOWERING-NEXT: ) -> i32 {
@@ -751,7 +757,7 @@ int main(void) {
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C" fn gnu_free_entry({{arg[0-9]+}}: *mut core::ffi::c_void) {
+// LOWERING-NEXT: extern "C-unwind" fn gnu_free_entry({{arg[0-9]+}}: *mut core::ffi::c_void) {
 // LOWERING-NEXT:     unsafe { free({{arg[0-9]+}} as *mut core::ffi::c_void) };
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }

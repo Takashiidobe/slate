@@ -219,8 +219,7 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn inner_check(mut {{_v[0-9]+}}: i32) {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = !({{_v[0-9]+}} != 0);
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:             longjmp(
@@ -241,8 +240,7 @@ int main(void) {
 // REWRITES-NEXT:         record_failure(c"case".as_ptr() as *mut i8);
 // REWRITES-NEXT:         return;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = !({{arg[0-9]+}} != 0);
 // REWRITES-NEXT:     inner_check({{_v[0-9]+}} as i32);
 // REWRITES-NEXT:     unsafe { printf(c"PASS: case %d\n".as_ptr(), {{arg[0-9]+}}) };
 // REWRITES-NEXT:     return;
@@ -252,8 +250,7 @@ int main(void) {
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     i = 0;
 // REWRITES-NEXT:     '__loop0: loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i < 4;
-// REWRITES-NEXT:         if !{{_v[0-9]+}} {
+// REWRITES-NEXT:         if !(i < 4) {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag =
@@ -263,8 +260,7 @@ int main(void) {
 // REWRITES-NEXT:         if {{_v[0-9]+}} {
 // REWRITES-NEXT:             record_failure(c"loop".as_ptr() as *mut i8);
 // REWRITES-NEXT:         } else {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: bool = i == 2;
-// REWRITES-NEXT:             run_case(i, {{_v[0-9]+}} as i32);
+// REWRITES-NEXT:             run_case(i, (i == 2) as i32);
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }

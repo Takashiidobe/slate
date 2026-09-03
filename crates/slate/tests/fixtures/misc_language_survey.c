@@ -162,14 +162,7 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut values: [i32; 3] = [1, 2, 3];
 // REWRITES-NEXT:     unsafe { scale(3, values.as_mut_ptr() as *mut i32) };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             values[((0 as i64) as usize)],
-// REWRITES-NEXT:             values[((1 as i64) as usize)],
-// REWRITES-NEXT:             values[((2 as i64) as usize)],
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { printf(c"%d %d %d\n".as_ptr(), values[0], values[1], values[2]) };
 // REWRITES-NEXT:     unsafe { printf(c"%f\n".as_ptr(), 1000.5 as f64) };
 // REWRITES-NEXT:     unsafe { printf(c"%d %d\n".as_ptr(), (27 as i8) as i32, (37 as i8) as i32) };
 // REWRITES-NEXT:     unsafe { printf(c"%zu\n".as_ptr(), 1 as u64) };

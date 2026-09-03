@@ -6065,3744 +6065,1499 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn chain({{arg[0-9]+}}: i64) -> i64 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 1) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 2) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 3) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 4) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 5) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 6) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 7) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 8) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 9) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 10) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 11) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 12) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 13) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 14) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 15) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 16) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 17) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 18) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 19) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 20) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 21) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 22) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 23) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 24) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 25) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 26) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 27) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 28) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 29) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 30) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 31) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 32) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 33) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 34) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 35) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 36) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 37) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 38) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 39) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 40) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 41) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 42) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 43) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 44) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 45) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 46) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 47) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 48) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 49) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 50) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 51) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 52) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 53) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 54) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 55) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 56) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 57) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 58) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 59) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 60) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 61) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 62) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 63) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 64) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 65) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 66) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 67) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 68) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 69) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 70) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 71) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 72) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 73) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 74) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 75) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 76) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 77) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 78) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 79) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 80) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 81) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 82) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 83) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 84) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 85) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 86) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 87) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 88) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 89) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 90) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 91) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 92) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 93) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 94) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 95) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 96) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 97) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 98) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 99) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 100) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 101) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 102) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 103) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 104) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 105) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 106) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 107) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 108) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 109) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 110) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 111) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 112) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 113) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 114) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 115) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 116) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 117) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 118) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 119) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 120) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 121) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 122) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 123) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 124) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 125) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 126) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 127) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 128) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 129) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 130) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 131) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 132) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 133) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 134) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 135) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 136) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 137) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 138) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 139) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 140) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 141) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 142) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 143) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 144) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 145) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 146) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 147) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 148) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 149) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 150) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 151) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 152) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 153) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 154) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 155) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 156) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 157) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 158) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 159) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 160) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 161) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 162) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 163) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 164) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 165) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 166) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 167) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 168) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 169) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 170) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 171) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 172) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 173) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 174) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 175) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 176) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 177) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 178) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 179) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 180) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 181) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 182) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 183) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 184) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 185) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 186) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 187) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 188) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 189) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 190) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 191) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 192) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 193) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 194) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 195) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 196) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 197) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 198) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 199) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 200) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 201) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 202) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 203) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 204) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 205) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 206) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 207) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 208) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 209) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 210) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 211) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 212) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 213) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 214) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 215) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 216) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 217) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 218) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 219) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 220) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 221) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 222) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 223) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 224) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 225) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 226) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 227) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 228) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 229) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 230) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 231) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 232) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 233) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 234) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 235) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 236) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 237) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 238) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 239) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 240) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 241) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 242) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 243) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 244) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 245) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 246) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 247) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 248) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 249) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 250) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 251) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 252) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 253) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 254) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 255) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 256) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 257) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 258) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 259) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 260) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 261) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 262) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 263) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 264) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 265) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 266) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 267) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 268) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 269) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 270) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 271) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 272) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 273) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 274) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 275) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 276) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 277) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 278) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 279) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 280) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 281) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 282) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 283) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 284) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 285) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 286) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 287) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 288) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 289) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 290) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 291) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 292) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 293) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 294) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 295) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 296) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 297) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 298) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 299) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 300) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 301) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 302) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 303) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 304) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 305) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 306) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 307) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 308) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 309) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 310) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 311) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 312) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 313) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 314) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 315) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 316) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 317) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 318) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 319) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 320) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 321) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 322) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 323) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 324) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 325) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 326) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 327) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 328) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 329) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 330) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 331) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 332) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 333) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 334) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 335) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 336) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 337) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 338) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 339) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 340) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 341) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 342) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 343) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 344) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 345) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 346) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 347) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 348) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 349) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 350) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 351) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 352) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 353) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 354) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 355) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 356) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 357) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 358) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 359) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 360) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 361) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 362) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 363) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 364) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 365) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 366) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 367) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 368) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 369) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 370) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 371) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 372) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 373) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 374) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 375) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 376) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 377) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 378) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 379) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 380) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 381) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 382) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 383) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 384) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 385) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 386) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 387) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 388) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 389) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 390) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 391) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 392) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 393) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 394) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 395) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 396) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 397) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 398) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 399) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 400) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 401) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 402) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 403) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 404) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 405) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 406) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 407) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 408) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 409) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 410) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 411) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 412) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 413) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 414) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 415) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 416) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 417) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 418) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 419) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 420) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 421) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 422) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 423) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 424) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 425) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 426) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 427) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 428) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 429) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 430) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 431) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 432) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 433) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 434) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 435) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 436) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 437) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 438) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 439) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 440) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 441) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 442) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 443) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 444) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 445) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 446) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 447) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 448) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 449) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 450) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 451) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 452) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 453) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 454) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 455) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 456) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 457) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 458) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 459) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 460) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 461) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 462) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 463) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 464) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 465) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 466) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 467) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 468) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 469) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 470) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 471) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 472) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 473) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 474) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 475) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 476) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 477) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 478) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 479) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 480) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 481) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 482) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 483) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 484) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 485) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 486) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 487) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 488) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 489) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 490) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 491) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 492) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 493) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 494) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 495) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 496) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 497) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 498) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 499) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 500) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 501) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 502) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 503) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 504) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 505) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 506) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 507) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 508) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 509) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 510) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 511) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 512) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 513) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 514) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 515) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 516) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 517) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 518) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 519) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 520) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 521) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 522) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 523) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 524) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 525) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 526) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 527) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 528) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 529) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 530) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 531) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 532) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 533) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 534) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 535) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 536) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 537) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 538) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 539) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 540) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 541) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 542) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 543) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 544) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 545) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 546) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 547) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 548) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 549) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 550) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 551) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 552) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 553) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 554) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 555) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 556) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 557) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 558) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 559) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 560) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 561) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 562) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 563) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 564) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 565) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 566) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 567) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 568) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 569) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 570) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 571) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 572) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 573) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 574) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 575) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 576) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 577) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 578) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 579) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 580) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 581) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 582) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 583) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 584) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 585) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 586) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 587) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 588) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 589) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 590) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 591) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 592) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 593) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 594) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 595) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 596) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 597) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 598) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 599) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 600) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 601) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 602) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 603) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 604) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 605) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 606) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 607) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 608) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 609) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 610) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 611) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 612) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 613) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 614) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 615) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 616) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 617) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 618) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 619) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 620) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 621) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 622) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 623) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 624) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 625) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 626) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 627) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 628) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 629) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 630) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 631) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 632) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 633) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 634) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 635) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 636) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 637) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 638) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 639) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 640) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 641) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 642) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 643) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 644) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 645) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 646) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 647) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 648) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 649) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 650) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 651) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 652) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 653) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 654) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 655) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 656) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 657) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 658) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 659) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 660) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 661) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 662) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 663) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 664) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 665) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 666) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 667) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 668) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 669) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 670) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 671) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 672) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 673) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 674) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 675) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 676) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 677) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 678) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 679) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 680) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 681) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 682) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 683) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 684) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 685) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 686) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 687) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 688) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 689) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 690) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 691) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 692) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 693) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 694) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 695) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 696) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 697) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 698) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 699) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 700) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 701) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 702) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 703) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 704) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 705) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 706) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 707) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 708) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 709) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 710) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 711) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 712) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 713) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 714) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 715) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 716) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 717) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 718) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 719) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 720) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 721) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 722) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 723) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 724) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 725) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 726) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 727) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 728) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 729) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 730) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 731) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 732) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 733) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 734) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 735) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 736) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 737) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 738) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 739) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 740) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 741) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 742) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 743) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 744) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 745) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 746) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 747) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 748) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 749) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{arg[0-9]+}} + 750) * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     0 + {{_v[0-9]+}} - {{_v[0-9]+}} + {{_v[0-9]+}} - {{_v[0-9]+}} + {{_v[0-9]+}} - {{_v[0-9]+}} + {{_v[0-9]+}} - {{_v[0-9]+}} + {{_v[0-9]+}} - {{_v[0-9]+}} + {{_v[0-9]+}} - {{_v[0-9]+}} + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         - {{_v[0-9]+}}
+// REWRITES-NEXT:     0 + ({{arg[0-9]+}} + 1) * 3 - 2 + ({{arg[0-9]+}} + 2) * 3 - 2 + ({{arg[0-9]+}} + 3) * 3 - 2 + ({{arg[0-9]+}} + 4) * 3 - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 5) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 6) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 7) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 8) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 9) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 10) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 11) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 12) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 13) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 14) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 15) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 16) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 17) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 18) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 19) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 20) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 21) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 22) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 23) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 24) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 25) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 26) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 27) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 28) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 29) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 30) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 31) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 32) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 33) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 34) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 35) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 36) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 37) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 38) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 39) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 40) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 41) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 42) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 43) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 44) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 45) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 46) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 47) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 48) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 49) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 50) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 51) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 52) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 53) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 54) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 55) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 56) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 57) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 58) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 59) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 60) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 61) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 62) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 63) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 64) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 65) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 66) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 67) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 68) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 69) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 70) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 71) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 72) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 73) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 74) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 75) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 76) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 77) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 78) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 79) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 80) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 81) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 82) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 83) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 84) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 85) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 86) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 87) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 88) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 89) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 90) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 91) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 92) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 93) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 94) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 95) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 96) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 97) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 98) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 99) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 100) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 101) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 102) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 103) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 104) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 105) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 106) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 107) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 108) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 109) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 110) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 111) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 112) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 113) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 114) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 115) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 116) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 117) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 118) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 119) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 120) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 121) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 122) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 123) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 124) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 125) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 126) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 127) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 128) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 129) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 130) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 131) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 132) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 133) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 134) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 135) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 136) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 137) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 138) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 139) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 140) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 141) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 142) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 143) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 144) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 145) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 146) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 147) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 148) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 149) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 150) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 151) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 152) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 153) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 154) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 155) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 156) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 157) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 158) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 159) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 160) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 161) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 162) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 163) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 164) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 165) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 166) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 167) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 168) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 169) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 170) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 171) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 172) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 173) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 174) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 175) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 176) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 177) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 178) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 179) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 180) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 181) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 182) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 183) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 184) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 185) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 186) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 187) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 188) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 189) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 190) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 191) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 192) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 193) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 194) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 195) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 196) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 197) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 198) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 199) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 200) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 201) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 202) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 203) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 204) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 205) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 206) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 207) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 208) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 209) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 210) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 211) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 212) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 213) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 214) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 215) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 216) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 217) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 218) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 219) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 220) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 221) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 222) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 223) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 224) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 225) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 226) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 227) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 228) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 229) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 230) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 231) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 232) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 233) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 234) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 235) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 236) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 237) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 238) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 239) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 240) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 241) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 242) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 243) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 244) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 245) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 246) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 247) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 248) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 249) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 250) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 251) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 252) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 253) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 254) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 255) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 256) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 257) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 258) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 259) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 260) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 261) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 262) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 263) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 264) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 265) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 266) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 267) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 268) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 269) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 270) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 271) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 272) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 273) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 274) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 275) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 276) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 277) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 278) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 279) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 280) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 281) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 282) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 283) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 284) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 285) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 286) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 287) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 288) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 289) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 290) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 291) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 292) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 293) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 294) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 295) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 296) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 297) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 298) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 299) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 300) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 301) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 302) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 303) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 304) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 305) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 306) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 307) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 308) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 309) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 310) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 311) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 312) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 313) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 314) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 315) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 316) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 317) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 318) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 319) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 320) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 321) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 322) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 323) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 324) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 325) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 326) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 327) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 328) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 329) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 330) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 331) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 332) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 333) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 334) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 335) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 336) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 337) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 338) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 339) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 340) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 341) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 342) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 343) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 344) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 345) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 346) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 347) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 348) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 349) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 350) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 351) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 352) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 353) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 354) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 355) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 356) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 357) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 358) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 359) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 360) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 361) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 362) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 363) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 364) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 365) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 366) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 367) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 368) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 369) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 370) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 371) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 372) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 373) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 374) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 375) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 376) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 377) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 378) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 379) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 380) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 381) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 382) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 383) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 384) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 385) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 386) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 387) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 388) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 389) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 390) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 391) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 392) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 393) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 394) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 395) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 396) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 397) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 398) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 399) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 400) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 401) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 402) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 403) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 404) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 405) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 406) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 407) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 408) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 409) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 410) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 411) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 412) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 413) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 414) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 415) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 416) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 417) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 418) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 419) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 420) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 421) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 422) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 423) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 424) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 425) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 426) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 427) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 428) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 429) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 430) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 431) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 432) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 433) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 434) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 435) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 436) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 437) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 438) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 439) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 440) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 441) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 442) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 443) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 444) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 445) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 446) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 447) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 448) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 449) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 450) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 451) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 452) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 453) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 454) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 455) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 456) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 457) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 458) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 459) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 460) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 461) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 462) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 463) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 464) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 465) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 466) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 467) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 468) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 469) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 470) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 471) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 472) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 473) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 474) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 475) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 476) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 477) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 478) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 479) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 480) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 481) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 482) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 483) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 484) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 485) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 486) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 487) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 488) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 489) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 490) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 491) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 492) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 493) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 494) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 495) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 496) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 497) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 498) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 499) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 500) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 501) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 502) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 503) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 504) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 505) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 506) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 507) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 508) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 509) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 510) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 511) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 512) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 513) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 514) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 515) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 516) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 517) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 518) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 519) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 520) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 521) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 522) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 523) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 524) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 525) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 526) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 527) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 528) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 529) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 530) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 531) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 532) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 533) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 534) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 535) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 536) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 537) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 538) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 539) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 540) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 541) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 542) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 543) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 544) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 545) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 546) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 547) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 548) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 549) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 550) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 551) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 552) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 553) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 554) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 555) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 556) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 557) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 558) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 559) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 560) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 561) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 562) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 563) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 564) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 565) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 566) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 567) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 568) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 569) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 570) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 571) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 572) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 573) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 574) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 575) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 576) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 577) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 578) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 579) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 580) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 581) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 582) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 583) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 584) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 585) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 586) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 587) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 588) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 589) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 590) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 591) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 592) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 593) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 594) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 595) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 596) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 597) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 598) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 599) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 600) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 601) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 602) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 603) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 604) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 605) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 606) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 607) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 608) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 609) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 610) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 611) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 612) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 613) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 614) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 615) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 616) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 617) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 618) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 619) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 620) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 621) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 622) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 623) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 624) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 625) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 626) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 627) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 628) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 629) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 630) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 631) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 632) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 633) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 634) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 635) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 636) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 637) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 638) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 639) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 640) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 641) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 642) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 643) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 644) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 645) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 646) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 647) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 648) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 649) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 650) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 651) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 652) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 653) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 654) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 655) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 656) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 657) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 658) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 659) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 660) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 661) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 662) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 663) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 664) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 665) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 666) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 667) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 668) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 669) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 670) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 671) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 672) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 673) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 674) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 675) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 676) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 677) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 678) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 679) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 680) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 681) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 682) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 683) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 684) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 685) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 686) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 687) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 688) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 689) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 690) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 691) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 692) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 693) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 694) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 695) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 696) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 697) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 698) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 699) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 700) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 701) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 702) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 703) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 704) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 705) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 706) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 707) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 708) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 709) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 710) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 711) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 712) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 713) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 714) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 715) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 716) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 717) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 718) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 719) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 720) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 721) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 722) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 723) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 724) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 725) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 726) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 727) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 728) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 729) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 730) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 731) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 732) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 733) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 734) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 735) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 736) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 737) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 738) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 739) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 740) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 741) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 742) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 743) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 744) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 745) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 746) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 747) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 748) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 749) * 3
+// REWRITES-NEXT:         - 2
+// REWRITES-NEXT:         + ({{arg[0-9]+}} + 750) * 3
+// REWRITES-NEXT:         - 2
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

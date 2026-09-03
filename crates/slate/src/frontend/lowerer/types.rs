@@ -391,10 +391,6 @@ pub(super) fn cir_fn_type_to_type(
         .as_deref()
         .map(|output| rust_type_with_aliases(output, aliases, va_list_boxed))
         .unwrap_or(Type::CLib(CLibType::VOID));
-    // a `void`-returning function is `Type::Unit`, not `Type::CLib(VOID)` -
-    // the latter is only for `void*` pointee positions, and a mismatch here
-    // means function items (which return `()`) don't unify with this fn
-    // pointer type (e.g. `Option<unsafe extern "C" fn() -> c_void>`).
     let ret = if matches!(ret, Type::CLib(CLibType::VOID)) {
         Type::Unit
     } else {

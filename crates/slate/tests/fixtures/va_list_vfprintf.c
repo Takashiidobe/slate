@@ -37,7 +37,7 @@ int main(void) {
 // LOWERING-NEXT:     ) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: unsafe extern "C" fn print_values({{arg[0-9]+}}: *mut i8, mut __slate_va_args: ...) {
+// LOWERING-NEXT: unsafe extern "C-unwind" fn print_values({{arg[0-9]+}}: *mut i8, mut __slate_va_args: ...) {
 // LOWERING-NEXT:     let mut args: core::ffi::VaList<'_>;
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         args = __slate_va_args.clone();
@@ -88,7 +88,7 @@ int main(void) {
 // REWRITES-NEXT:     ) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: unsafe extern "C" fn print_values({{arg[0-9]+}}: *mut i8, mut __slate_va_args: ...) {
+// REWRITES-NEXT: unsafe extern "C-unwind" fn print_values({{arg[0-9]+}}: *mut i8, mut __slate_va_args: ...) {
 // REWRITES-NEXT:     let mut args: core::ffi::VaList<'_>;
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         args = __slate_va_args.clone();

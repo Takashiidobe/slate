@@ -118,12 +118,11 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u8 = {{_v[0-9]+}} as *mut u8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%ld %d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u8 = buf.as_mut_ptr() as *mut u8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == std::ptr::null_mut();
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
 // REWRITES-NEXT:             unsafe { {{_v[0-9]+}}.offset_from({{_v[0-9]+}}) as i64 },
-// REWRITES-NEXT:             {{_v[0-9]+}} as i32,
+// REWRITES-NEXT:             ({{_v[0-9]+}} == std::ptr::null_mut()) as i32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

@@ -713,8 +713,7 @@ int main(void) {
 // REWRITES-NEXT:             )
 // REWRITES-NEXT:         }) as *mut i8;
 // REWRITES-NEXT:         {{__slate_alloca_frame[0-9]+}}.1 = {{_v[0-9]+}};
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
-// REWRITES-NEXT:         if !{{_v[0-9]+}} {
+// REWRITES-NEXT:         if !({{_v[0-9]+}} != std::ptr::null_mut()) {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = {{__slate_alloca_frame[0-9]+}}.0 * 10;
@@ -739,8 +738,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{__slate_alloca_frame[0-9]+}}.6.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { strcmp({{_v[0-9]+}} as *const core::ffi::c_char, c"slate".as_ptr()) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{_v[0-9]+}} + ({{_v[0-9]+}} as i32)) as i64;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = ({{_v[0-9]+}} + (({{_v[0-9]+}} == 0) as i32)) as i64;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{__slate_alloca_frame[0-9]+}}.5.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe {
 // REWRITES-NEXT:         memrchr(
@@ -765,22 +763,17 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 =
 // REWRITES-NEXT:         (unsafe { strcasestr(c"GNU Library".as_ptr(), c"library".as_ptr()) }) as *mut i8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} + (({{_v[0-9]+}} as i32) as i64);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} + ((({{_v[0-9]+}} != std::ptr::null_mut()) as i32) as i64);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { strverscmp(c"release-2".as_ptr(), c"release-10".as_ptr()) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} + (({{_v[0-9]+}} as i32) as i64);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} + ((({{_v[0-9]+}} < 0) as i32) as i64);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{__slate_alloca_frame[0-9]+}}.4.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { strcmp({{_v[0-9]+}} as *const core::ffi::c_char, c"gnu".as_ptr()) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} + (({{_v[0-9]+}} as i32) as i64) + ({{__slate_alloca_frame[0-9]+}}.0 as i64);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} + ((({{_v[0-9]+}} == 0) as i32) as i64) + ({{__slate_alloca_frame[0-9]+}}.0 as i64);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = (unsafe { strerrorname_np(22 as i32) }) as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { strcmp({{_v[0-9]+}} as *const core::ffi::c_char, c"EINVAL".as_ptr()) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} + (({{_v[0-9]+}} as i32) as i64);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} + ((({{_v[0-9]+}} == 0) as i32) as i64);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = (unsafe { strerrordesc_np(22 as i32) }) as *mut i8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
-// REWRITES-NEXT:     ({{_v[0-9]+}} + (({{_v[0-9]+}} as i32) as i64)) as i32
+// REWRITES-NEXT:     ({{_v[0-9]+}} + ((({{_v[0-9]+}} != std::ptr::null_mut()) as i32) as i64)) as i32
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn gnu_argz_extensions() -> i32 {
@@ -799,12 +792,10 @@ int main(void) {
 // REWRITES-NEXT:             std::ptr::addr_of_mut!(length) as *mut usize,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == 0) as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 =
 // REWRITES-NEXT:         (unsafe { argz_count(argz as *const core::ffi::c_char, length as usize) }) as u64;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == 3) as i32);
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         argz_extract(
 // REWRITES-NEXT:             argz as *const core::ffi::c_char,
@@ -812,14 +803,8 @@ int main(void) {
 // REWRITES-NEXT:             arguments.as_mut_ptr() as *mut *mut core::ffi::c_char,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
-// REWRITES-NEXT:         strcmp(
-// REWRITES-NEXT:             arguments[((1 as i64) as usize)] as *const core::ffi::c_char,
-// REWRITES-NEXT:             c"two".as_ptr(),
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { strcmp(arguments[1] as *const core::ffi::c_char, c"two".as_ptr()) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == 0) as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
 // REWRITES-NEXT:         argz_add(
 // REWRITES-NEXT:             std::ptr::addr_of_mut!(argz) as *mut *mut core::ffi::c_char,
@@ -827,8 +812,7 @@ int main(void) {
 // REWRITES-NEXT:             c"four".as_ptr(),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == 0) as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
 // REWRITES-NEXT:         argz_replace(
 // REWRITES-NEXT:             std::ptr::addr_of_mut!(argz) as *mut *mut core::ffi::c_char,
@@ -838,13 +822,10 @@ int main(void) {
 // REWRITES-NEXT:             std::ptr::addr_of_mut!(replacements) as *mut u32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = replacements == 1;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32) + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == 0) as i32) + ((replacements == 1) as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 =
 // REWRITES-NEXT:         (unsafe { argz_count(argz as *const core::ffi::c_char, length as usize) }) as u64;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 4;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == 4) as i32);
 // REWRITES-NEXT:     unsafe { argz_stringify(argz as *mut core::ffi::c_char, length as usize, 44 as i32) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
 // REWRITES-NEXT:         strcmp(
@@ -852,8 +833,7 @@ int main(void) {
 // REWRITES-NEXT:             c"one,two,THREE,four".as_ptr(),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == 0) as i32);
 // REWRITES-NEXT:     unsafe { free(argz as *mut core::ffi::c_void) };
 // REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
@@ -872,8 +852,7 @@ int main(void) {
 // REWRITES-NEXT:             c"one".as_ptr(),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == 0) as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
 // REWRITES-NEXT:         envz_add(
@@ -883,8 +862,7 @@ int main(void) {
 // REWRITES-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == 0) as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = (unsafe {
 // REWRITES-NEXT:         envz_get(
 // REWRITES-NEXT:             envz as *const core::ffi::c_char,
@@ -893,8 +871,7 @@ int main(void) {
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     }) as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { strcmp({{_v[0-9]+}} as *const core::ffi::c_char, c"one".as_ptr()) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == 0) as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = (unsafe {
 // REWRITES-NEXT:         envz_entry(
 // REWRITES-NEXT:             envz as *const core::ffi::c_char,
@@ -902,8 +879,7 @@ int main(void) {
 // REWRITES-NEXT:             c"BETA".as_ptr(),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     }) as *mut i8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} != std::ptr::null_mut()) as i32);
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         envz_remove(
 // REWRITES-NEXT:             std::ptr::addr_of_mut!(envz) as *mut *mut core::ffi::c_char,
@@ -918,16 +894,14 @@ int main(void) {
 // REWRITES-NEXT:             c"ALPHA".as_ptr(),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     }) as *mut i8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == std::ptr::null_mut();
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == std::ptr::null_mut()) as i32);
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         envz_strip(
 // REWRITES-NEXT:             std::ptr::addr_of_mut!(envz) as *mut *mut core::ffi::c_char,
 // REWRITES-NEXT:             std::ptr::addr_of_mut!(length) as *mut usize,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = length == 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ((length == 0) as i32);
 // REWRITES-NEXT:     unsafe { free(envz as *mut core::ffi::c_void) };
 // REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }

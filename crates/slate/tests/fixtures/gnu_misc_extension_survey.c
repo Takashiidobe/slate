@@ -156,8 +156,7 @@ done:
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             1 => {
 // REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// REWRITES-NEXT:                 if {{_v[0-9]+}} {
+// REWRITES-NEXT:                 if {{_v[0-9]+}} != 0 {
 // REWRITES-NEXT:                     {{__state[0-9]+}} = 2;
 // REWRITES-NEXT:                 } else {
 // REWRITES-NEXT:                     {{__state[0-9]+}} = 3;

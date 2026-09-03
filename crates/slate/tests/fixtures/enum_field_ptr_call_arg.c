@@ -69,8 +69,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn select_type(mut repeatMode: *mut u32, mut count: u32) -> u32 {
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = count == 0;
-// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:     if count == 0 {
 // REWRITES-DAG:         let {{_v[0-9]+}}: u32 = FSE_repeat::REPEAT_NONE as u32;
 // REWRITES-DAG:         unsafe {
 // REWRITES-DAG:             *repeatMode = {{_v[0-9]+}};

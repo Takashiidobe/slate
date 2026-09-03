@@ -29,16 +29,16 @@ int main(void) {
 }
 // @rewrite-fn-end
 
-// LOWERING-DAG: pub extern "C" fn visible_before
+// LOWERING-DAG: pub extern "C-unwind" fn visible_before
 // LOWERING-DAG: pub static mut visible_before_global
-// LOWERING-DAG: pub extern "C" fn visible_inner
+// LOWERING-DAG: pub extern "C-unwind" fn visible_inner
 // LOWERING-DAG: pub static mut visible_inner_global
-// LOWERING-DAG: pub extern "C" fn visible_after
+// LOWERING-DAG: pub extern "C-unwind" fn visible_after
 // LOWERING-DAG: pub static mut visible_after_global
 // LOWERING-DAG: {{^}}static mut hidden_outer_global
 // LOWERING-DAG: {{^}}static mut hidden_again_global
-// LOWERING-NOT: pub extern "C" fn hidden_outer
-// LOWERING-NOT: pub extern "C" fn hidden_again
+// LOWERING-NOT: pub extern "C-unwind" fn hidden_outer
+// LOWERING-NOT: pub extern "C-unwind" fn hidden_again
 // LOWERING-NOT: pub static mut hidden_outer_global
 // LOWERING-NOT: pub static mut hidden_again_global
 // LOWERING-LABEL: {{^}}fn hidden_outer(

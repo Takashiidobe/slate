@@ -222,8 +222,7 @@ int main(void) {
 // REWRITES-NEXT:             std::mem::offset_of!(NaturalAfter, value) as i32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = (packed.tag as i32) == 29;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if (packed.tag as i32) == 29 {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = packed.value == 31;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {

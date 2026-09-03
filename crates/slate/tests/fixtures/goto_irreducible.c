@@ -191,8 +191,7 @@ done:
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             1 => {
 // REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(choose_b)) };
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// REWRITES-NEXT:                 if {{_v[0-9]+}} {
+// REWRITES-NEXT:                 if {{_v[0-9]+}} != 0 {
 // REWRITES-NEXT:                     {{__state[0-9]+}} = 2;
 // REWRITES-NEXT:                 } else {
 // REWRITES-NEXT:                     {{__state[0-9]+}} = 3;
@@ -217,8 +216,7 @@ done:
 // REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             6 => {
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: bool = x < 3;
-// REWRITES-NEXT:                 if {{_v[0-9]+}} {
+// REWRITES-NEXT:                 if x < 3 {
 // REWRITES-NEXT:                     {{__state[0-9]+}} = 7;
 // REWRITES-NEXT:                 } else {
 // REWRITES-NEXT:                     {{__state[0-9]+}} = 8;
@@ -243,8 +241,7 @@ done:
 // REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             11 => {
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: bool = x < 4;
-// REWRITES-NEXT:                 if {{_v[0-9]+}} {
+// REWRITES-NEXT:                 if x < 4 {
 // REWRITES-NEXT:                     {{__state[0-9]+}} = 12;
 // REWRITES-NEXT:                 } else {
 // REWRITES-NEXT:                     {{__state[0-9]+}} = 13;

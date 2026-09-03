@@ -206,7 +206,7 @@ int main(void) {
 // LOWERING-NEXT:     fn glob(
 // LOWERING-NEXT:         _0: *const core::ffi::c_char,
 // LOWERING-NEXT:         _1: i32,
-// LOWERING-NEXT:         _2: Option<unsafe extern "C" fn(*mut i8, i32) -> i32>,
+// LOWERING-NEXT:         _2: Option<unsafe extern "C-unwind" fn(*mut i8, i32) -> i32>,
 // LOWERING-NEXT:         _3: *mut glob_t,
 // LOWERING-NEXT:     ) -> i32;
 // LOWERING-NEXT:     fn globfree(_0: *mut glob_t);
@@ -794,7 +794,7 @@ int main(void) {
 // LOWERING-NEXT:     unsafe { regfree(std::ptr::addr_of_mut!(expression) as *mut re_pattern_buffer) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"/dev/{null,zero}\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1024;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(*mut i8, i32) -> i32> = None;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(*mut i8, i32) -> i32> = None;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
 // LOWERING-NEXT:         glob(
 // LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
@@ -846,7 +846,7 @@ int main(void) {
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C" fn gnu_runtime_extensions() -> i32 {
+// LOWERING-NEXT: extern "C-unwind" fn gnu_runtime_extensions() -> i32 {
 // LOWERING-NEXT:     let mut random_bytes: [u8; 8] = [0; 8];
 // LOWERING-NEXT:     let mut frames: aligned::Aligned<aligned::A16, [*mut core::ffi::c_void; 8]> =
 // LOWERING-NEXT:         aligned::Aligned([std::ptr::null_mut(); 8]);
@@ -910,9 +910,9 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe {
-// LOWERING-NEXT:         std::mem::transmute::<Option<unsafe extern "C" fn() -> i32>, *mut core::ffi::c_void>(Some(
-// LOWERING-NEXT:             gnu_runtime_extensions,
-// LOWERING-NEXT:         ))
+// LOWERING-NEXT:         std::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *mut core::ffi::c_void>(
+// LOWERING-NEXT:             Some(gnu_runtime_extensions),
+// LOWERING-NEXT:         )
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
 // LOWERING-NEXT:         dladdr(
@@ -1067,7 +1067,7 @@ int main(void) {
 // REWRITES-NEXT:     fn glob(
 // REWRITES-NEXT:         _0: *const core::ffi::c_char,
 // REWRITES-NEXT:         _1: i32,
-// REWRITES-NEXT:         _2: Option<unsafe extern "C" fn(*mut i8, i32) -> i32>,
+// REWRITES-NEXT:         _2: Option<unsafe extern "C-unwind" fn(*mut i8, i32) -> i32>,
 // REWRITES-NEXT:         _3: *mut glob_t,
 // REWRITES-NEXT:     ) -> i32;
 // REWRITES-NEXT:     fn globfree(_0: *mut glob_t);
@@ -1113,15 +1113,12 @@ int main(void) {
 // REWRITES-NEXT:             1 as i32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == 0) as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = (unsafe { secure_getenv(c"SLATE_GNU_LIBC_VALUE".as_ptr()) }) as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { strcmp({{_v[0-9]+}} as *const core::ffi::c_char, c"ready".as_ptr()) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == 0) as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { unsetenv(c"SLATE_GNU_LIBC_VALUE".as_ptr()) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == 0) as i32);
 // REWRITES-NEXT:     directory = (unsafe { get_current_dir_name() }) as *mut i8;
 // REWRITES-NEXT:     canonical = (unsafe { canonicalize_file_name(c".".as_ptr()) }) as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = current.as_mut_ptr() as *mut i8;
@@ -1168,14 +1165,12 @@ int main(void) {
 // REWRITES-NEXT:     unsafe { free(directory as *mut core::ffi::c_void) };
 // REWRITES-NEXT:     unsafe { free(canonical as *mut core::ffi::c_void) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 1;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 5 + {{_v[0-9]+}};
-// REWRITES-NEXT:     let mut bi_alloca: Vec<u8> = vec![0; {{_v[0-9]+}} as usize];
+// REWRITES-NEXT:     let mut bi_alloca: Vec<u8> = vec![0; (5 + {{_v[0-9]+}}) as usize];
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = bi_alloca.as_mut_ptr() as *mut core::ffi::c_void;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 =
 // REWRITES-NEXT:         (unsafe { strcpy({{_v[0-9]+}} as *mut core::ffi::c_char, c"slate".as_ptr()) }) as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { strcmp({{_v[0-9]+}} as *const core::ffi::c_char, c"slate".as_ptr()) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == 0) as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe {
 // REWRITES-NEXT:         "slate-truncated"
 // REWRITES-NEXT:             .as_bytes()
@@ -1184,8 +1179,7 @@ int main(void) {
 // REWRITES-NEXT:             .unwrap_or("slate-truncated".as_bytes().len())
 // REWRITES-NEXT:             .min((5 as u64) as usize)
 // REWRITES-NEXT:     }) as u64;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} + 1;
-// REWRITES-NEXT:     let mut bi_alloca2: Vec<u8> = vec![0; {{_v[0-9]+}} as usize];
+// REWRITES-NEXT:     let mut bi_alloca2: Vec<u8> = vec![0; ({{_v[0-9]+}} + 1) as usize];
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = bi_alloca2.as_mut_ptr() as *mut core::ffi::c_void;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"slate-truncated".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe {
@@ -1198,8 +1192,7 @@ int main(void) {
 // REWRITES-NEXT:     }) as u64;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = __slate_strndupa_finish({{_v[0-9]+}} as *mut core::ffi::c_void, {{_v[0-9]+}}, {{_v[0-9]+}});
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { strcmp({{_v[0-9]+}} as *const core::ffi::c_char, c"slate".as_ptr()) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
-// REWRITES-NEXT:     {{_v[0-9]+}} + ({{_v[0-9]+}} as i32)
+// REWRITES-NEXT:     {{_v[0-9]+}} + (({{_v[0-9]+}} == 0) as i32)
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn gnu_time_extensions() -> i32 {
@@ -1234,14 +1227,12 @@ int main(void) {
 // REWRITES-NEXT:     epoch.tm_mon = 0;
 // REWRITES-NEXT:     epoch.tm_mday = 1;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { timegm(std::ptr::addr_of_mut!(epoch) as *mut tm) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == 0) as i32);
 // REWRITES-NEXT:     local.tm_year = 70;
 // REWRITES-NEXT:     local.tm_mon = 0;
 // REWRITES-NEXT:     local.tm_mday = 2;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { timelocal(std::ptr::addr_of_mut!(local) as *mut tm) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != -1;
-// REWRITES-NEXT:     {{_v[0-9]+}} + ({{_v[0-9]+}} as i32)
+// REWRITES-NEXT:     {{_v[0-9]+}} + (({{_v[0-9]+}} != -1) as i32)
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn gnu_pattern_extensions() -> i32 {
@@ -1267,8 +1258,7 @@ int main(void) {
 // REWRITES-NEXT:             32 as i32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == 0) as i32);
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         re_set_syntax(
 // REWRITES-NEXT:             (1 << (1 as i32) << (1 as i32)
@@ -1391,10 +1381,9 @@ int main(void) {
 // REWRITES-NEXT:             {{_v[0-9]+}} as *mut core::ffi::c_void,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 5;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == 5) as i32);
 // REWRITES-NEXT:     unsafe { regfree(std::ptr::addr_of_mut!(expression) as *mut re_pattern_buffer) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(*mut i8, i32) -> i32> = None;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(*mut i8, i32) -> i32> = None;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
 // REWRITES-NEXT:         glob(
 // REWRITES-NEXT:             c"/dev/{null,zero}".as_ptr(),
@@ -1403,9 +1392,7 @@ int main(void) {
 // REWRITES-NEXT:             std::ptr::addr_of_mut!(paths) as *mut glob_t,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = paths.gl_pathc == 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32) + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == 0) as i32) + ((paths.gl_pathc == 2) as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut *mut i8 = paths.gl_pathv;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
@@ -1414,8 +1401,7 @@ int main(void) {
 // REWRITES-NEXT:             c"/dev/null".as_ptr(),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == 0) as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut *mut i8 = paths.gl_pathv;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut *mut i8 = unsafe { {{_v[0-9]+}}.add(1) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
@@ -1424,13 +1410,12 @@ int main(void) {
 // REWRITES-NEXT:             c"/dev/zero".as_ptr(),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == 0) as i32);
 // REWRITES-NEXT:     unsafe { globfree(std::ptr::addr_of_mut!(paths) as *mut glob_t) };
 // REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C" fn gnu_runtime_extensions() -> i32 {
+// REWRITES-NEXT: extern "C-unwind" fn gnu_runtime_extensions() -> i32 {
 // REWRITES-NEXT:     let mut random_bytes: [u8; 8] = [0; 8];
 // REWRITES-NEXT:     let mut frames: aligned::Aligned<aligned::A16, [*mut core::ffi::c_void; 8]> =
 // REWRITES-NEXT:         aligned::Aligned([std::ptr::null_mut(); 8]);
@@ -1449,25 +1434,20 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == ({{_v[0-9]+}} as i32)) as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u8 = random_bytes.as_mut_ptr() as *mut u8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { getentropy({{_v[0-9]+}} as *mut core::ffi::c_void, (8 as u64) as usize) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == 0) as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = unsafe { arc4random_uniform(1 as u32) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} == 0) as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { get_nprocs() };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} > 0) as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { get_phys_pages() };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} > 0) as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut *mut core::ffi::c_void = frames.as_mut_ptr() as *mut *mut core::ffi::c_void;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { backtrace({{_v[0-9]+}} as *mut *mut core::ffi::c_void, 8 as i32) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} > 0) as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe {
-// REWRITES-NEXT:         std::mem::transmute::<Option<unsafe extern "C" fn() -> i32>, *mut core::ffi::c_void>(Some(
-// REWRITES-NEXT:             gnu_runtime_extensions,
-// REWRITES-NEXT:         ))
+// REWRITES-NEXT:         std::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *mut core::ffi::c_void>(
+// REWRITES-NEXT:             Some(gnu_runtime_extensions),
+// REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
 // REWRITES-NEXT:         dladdr(
@@ -1475,15 +1455,14 @@ int main(void) {
 // REWRITES-NEXT:             std::ptr::addr_of_mut!(information) as *mut Dl_info,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32) + ((information.dli_fname != ({{_v[0-9]+}} as *mut i8)) as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 =
+// REWRITES-NEXT:         {{_v[0-9]+}} + (({{_v[0-9]+}} != 0) as i32) + ((information.dli_fname != ({{_v[0-9]+}} as *mut i8)) as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = (unsafe { gnu_get_libc_version() }) as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(0) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = ((unsafe { *{{_v[0-9]+}} }) as i32) != 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// REWRITES-NEXT:     {{_v[0-9]+}} + ({{_v[0-9]+}} as i32)
+// REWRITES-NEXT:     {{_v[0-9]+}} + ((((unsafe { *{{_v[0-9]+}} }) as i32) != 0) as i32)
 // REWRITES-NEXT:         + (((unsafe { program_invocation_name }) != ({{_v[0-9]+}} as *mut i8)) as i32)
 // REWRITES-NEXT:         + (((unsafe { program_invocation_short_name }) != ({{_v[0-9]+}} as *mut i8)) as i32)
 // REWRITES-NEXT: }

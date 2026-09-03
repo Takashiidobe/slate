@@ -142,7 +142,7 @@ void slate_jump(sigjmp_buf environment) {
 // LOWERING-MACOS-DAG:         (*{{_v[0-9]+}}).__sigaction_u.__sa_sigaction = unsafe {
 // LOWERING-MACOS-DAG:             std::mem::transmute::<
 // LOWERING-MACOS-DAG:                 *const (),
-// LOWERING-MACOS-DAG:                 Option<unsafe extern "C" fn(i32, *mut __siginfo, *mut core::ffi::c_void)>,
+// LOWERING-MACOS-DAG:                 Option<unsafe extern "C-unwind" fn(i32, *mut __siginfo, *mut core::ffi::c_void)>,
 // LOWERING-MACOS-DAG:             >(slate_signal_handler as *const ())
 // LOWERING-MACOS-DAG:         };
 // LOWERING-MACOS-DAG:     }
@@ -247,7 +247,7 @@ void slate_jump(sigjmp_buf environment) {
 // REWRITES-MACOS-DAG:         (*action).__sigaction_u.__sa_sigaction = unsafe {
 // REWRITES-MACOS-DAG:             std::mem::transmute::<
 // REWRITES-MACOS-DAG:                 *const (),
-// REWRITES-MACOS-DAG:                 Option<unsafe extern "C" fn(i32, *mut __siginfo, *mut core::ffi::c_void)>,
+// REWRITES-MACOS-DAG:                 Option<unsafe extern "C-unwind" fn(i32, *mut __siginfo, *mut core::ffi::c_void)>,
 // REWRITES-MACOS-DAG:             >(slate_signal_handler as *const ())
 // REWRITES-MACOS-DAG:         };
 // REWRITES-MACOS-DAG:     }
@@ -304,8 +304,7 @@ void slate_jump(sigjmp_buf environment) {
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: fn slate_jump(mut environment: *mut i32) {
 // REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: i32 = unsafe { sigsetjmp(environment as *mut i32, 1 as i32) };
-// REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// REWRITES-MACOS-DAG:     if {{_v[0-9]+}} {
+// REWRITES-MACOS-DAG:     if {{_v[0-9]+}} != 0 {
 // REWRITES-MACOS-DAG:         return;
 // REWRITES-MACOS-DAG:     }
 // REWRITES-MACOS-DAG:     unsafe { siglongjmp(environment as *mut i32, 1 as i32) };

@@ -10,7 +10,7 @@ int mode_value(struct Holder *holder) {
 
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: #[unsafe(no_mangle)]
-// LOWERING-DAG: pub unsafe extern "C" fn mode_value({{arg[0-9]+}}: *mut Holder) -> i32 {
+// LOWERING-DAG: pub unsafe extern "C-unwind" fn mode_value({{arg[0-9]+}}: *mut Holder) -> i32 {
 // LOWERING-DAG:     let {{_v[0-9]+}}: u32 = (unsafe { (*{{arg[0-9]+}}).mode }) as u32;
 // LOWERING-DAG:     let {{_v[0-9]+}}: u32 = Mode::MODE_READY as u32;
 // LOWERING-DAG:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
@@ -23,7 +23,7 @@ int mode_value(struct Holder *holder) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: #[unsafe(no_mangle)]
-// REWRITES-DAG: pub unsafe extern "C" fn mode_value({{arg[0-9]+}}: *mut Holder) -> i32 {
+// REWRITES-DAG: pub unsafe extern "C-unwind" fn mode_value({{arg[0-9]+}}: *mut Holder) -> i32 {
 // REWRITES-DAG:     let {{_v[0-9]+}}: u32 = (unsafe { (*{{arg[0-9]+}}).mode }) as u32;
 // REWRITES-DAG:     let {{_v[0-9]+}}: u32 = Mode::MODE_READY as u32;
 // REWRITES-DAG:     let {{_v[0-9]+}}: i32 = 42;

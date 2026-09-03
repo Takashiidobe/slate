@@ -231,7 +231,7 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: static mut project_state: i32 = 0;
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C" fn strlen({{arg[0-9]+}}: *mut i8) -> u64 {
+// LOWERING-NEXT: extern "C-unwind" fn strlen({{arg[0-9]+}}: *mut i8) -> u64 {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != std::ptr::null_mut();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
@@ -1103,12 +1103,13 @@ int main(void) {
 // LOWERING-NEXT: fn pthread_create(
 // LOWERING-NEXT:     {{arg[0-9]+}}: *mut u64,
 // LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
-// LOWERING-NEXT:     {{arg[0-9]+}}: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> *mut core::ffi::c_void>,
+// LOWERING-NEXT:     {{arg[0-9]+}}: Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void) -> *mut core::ffi::c_void>,
 // LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
 // LOWERING-NEXT: ) -> i32 {
 // LOWERING-NEXT:     let mut attr: *mut core::ffi::c_void = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut start: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> *mut core::ffi::c_void> =
-// LOWERING-NEXT:         None;
+// LOWERING-NEXT:     let mut start: Option<
+// LOWERING-NEXT:         unsafe extern "C-unwind" fn(*mut core::ffi::c_void) -> *mut core::ffi::c_void,
+// LOWERING-NEXT:     > = None;
 // LOWERING-NEXT:     let mut arg: *mut core::ffi::c_void = std::ptr::null_mut();
 // LOWERING-NEXT:     attr = {{arg[0-9]+}};
 // LOWERING-NEXT:     start = {{arg[0-9]+}};
@@ -1124,8 +1125,9 @@ int main(void) {
 // LOWERING-NEXT:         {{_v[0-9]+}}
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> *mut core::ffi::c_void> =
-// LOWERING-NEXT:             start;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<
+// LOWERING-NEXT:             unsafe extern "C-unwind" fn(*mut core::ffi::c_void) -> *mut core::ffi::c_void,
+// LOWERING-NEXT:         > = start;
 // LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.is_some();
 // LOWERING-NEXT:         {{_v[0-9]+}}
 // LOWERING-NEXT:     } else {
@@ -1146,7 +1148,7 @@ int main(void) {
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C" fn start({{arg[0-9]+}}: *mut core::ffi::c_void) -> *mut core::ffi::c_void {
+// LOWERING-NEXT: extern "C-unwind" fn start({{arg[0-9]+}}: *mut core::ffi::c_void) -> *mut core::ffi::c_void {
 // LOWERING-NEXT:     return {{arg[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
@@ -1172,12 +1174,14 @@ int main(void) {
 // LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
 // LOWERING-NEXT:     {{arg[0-9]+}}: u64,
 // LOWERING-NEXT:     {{arg[0-9]+}}: u64,
-// LOWERING-NEXT:     {{arg[0-9]+}}: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32>,
+// LOWERING-NEXT:     {{arg[0-9]+}}: Option<
+// LOWERING-NEXT:         unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
+// LOWERING-NEXT:     >,
 // LOWERING-NEXT: ) {
 // LOWERING-NEXT:     let mut count: u64 = 0;
 // LOWERING-NEXT:     let mut size: u64 = 0;
 // LOWERING-NEXT:     let mut callback: Option<
-// LOWERING-NEXT:         unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
+// LOWERING-NEXT:         unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
 // LOWERING-NEXT:     > = None;
 // LOWERING-NEXT:     count = {{arg[0-9]+}};
 // LOWERING-NEXT:     size = {{arg[0-9]+}};
@@ -1201,7 +1205,7 @@ int main(void) {
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
 // LOWERING-NEXT:         let {{_v[0-9]+}}: Option<
-// LOWERING-NEXT:             unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
+// LOWERING-NEXT:             unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
 // LOWERING-NEXT:         > = callback;
 // LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.is_some();
 // LOWERING-NEXT:         {{_v[0-9]+}}
@@ -1218,7 +1222,7 @@ int main(void) {
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C" fn compare({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
+// LOWERING-NEXT: extern "C-unwind" fn compare({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} == {{arg[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
@@ -1231,13 +1235,15 @@ int main(void) {
 // LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
 // LOWERING-NEXT:     {{arg[0-9]+}}: u64,
 // LOWERING-NEXT:     {{arg[0-9]+}}: u64,
-// LOWERING-NEXT:     {{arg[0-9]+}}: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32>,
+// LOWERING-NEXT:     {{arg[0-9]+}}: Option<
+// LOWERING-NEXT:         unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
+// LOWERING-NEXT:     >,
 // LOWERING-NEXT: ) -> *mut core::ffi::c_void {
 // LOWERING-NEXT:     let mut base: *mut core::ffi::c_void = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut count: u64 = 0;
 // LOWERING-NEXT:     let mut size: u64 = 0;
 // LOWERING-NEXT:     let mut callback: Option<
-// LOWERING-NEXT:         unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
+// LOWERING-NEXT:         unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
 // LOWERING-NEXT:     > = None;
 // LOWERING-NEXT:     base = {{arg[0-9]+}};
 // LOWERING-NEXT:     count = {{arg[0-9]+}};
@@ -1270,7 +1276,7 @@ int main(void) {
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
 // LOWERING-NEXT:         let {{_v[0-9]+}}: Option<
-// LOWERING-NEXT:             unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
+// LOWERING-NEXT:             unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
 // LOWERING-NEXT:         > = callback;
 // LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.is_some();
 // LOWERING-NEXT:         {{_v[0-9]+}}
@@ -1305,7 +1311,7 @@ int main(void) {
 // LOWERING-NEXT:     let mut stream: *mut core::ffi::c_void = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut ptr: *mut core::ffi::c_void = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut thread: u64 = 0;
-// LOWERING-NEXT:     let mut strlen_call: Option<unsafe extern "C" fn(*mut i8) -> u64> = None;
+// LOWERING-NEXT:     let mut strlen_call: Option<unsafe extern "C-unwind" fn(*mut i8) -> u64> = None;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     __retval = {{_v[0-9]+}};
 // LOWERING-NEXT:     a = [97, 0, 0, 0, 0, 0, 0, 0];
@@ -1321,7 +1327,7 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 1;
 // LOWERING-NEXT:     thread = {{_v[0-9]+}};
 // LOWERING-NEXT:     strlen_call = unsafe {
-// LOWERING-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C" fn(*mut i8) -> u64>>(
+// LOWERING-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(*mut i8) -> u64>>(
 // LOWERING-NEXT:             strlen as *const (),
 // LOWERING-NEXT:         )
 // LOWERING-NEXT:     };
@@ -1573,7 +1579,7 @@ int main(void) {
 // LOWERING-NEXT:         loop {
 // LOWERING-NEXT:             {
 // LOWERING-NEXT:                 {
-// LOWERING-NEXT:                     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(*mut i8) -> u64> = strlen_call;
+// LOWERING-NEXT:                     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(*mut i8) -> u64> = strlen_call;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: *mut i8 = a.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: u64 = unsafe { {{_v[0-9]+}}.unwrap()({{_v[0-9]+}}) };
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: u64 = 5;

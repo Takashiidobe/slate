@@ -444,7 +444,7 @@ int main(void) {
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C" fn c89_add({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
+// LOWERING-NEXT: extern "C-unwind" fn c89_add({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{arg[0-9]+}};
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
@@ -1231,7 +1231,7 @@ int main(void) {
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C" fn c89_add({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT: extern "C-unwind" fn c89_add({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     {{arg[0-9]+}} + {{arg[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -1244,19 +1244,13 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe fn c89_variadic_sum(mut count: i32, mut __slate_va_args: __SlateVaArgs) -> i32 {
 // REWRITES-NEXT:     let mut arguments: __SlateVaArgs = __SlateVaArgs::empty();
-// REWRITES-NEXT:     let mut index: i32 = 0;
 // REWRITES-NEXT:     let mut total: i32 = 0;
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         arguments = __slate_va_args.clone();
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     index = 0;
-// REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         if !(index < count) {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     for index in 0..count {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { arguments.next_arg::<i32>() };
 // REWRITES-NEXT:         total += {{_v[0-9]+}};
-// REWRITES-NEXT:         index += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     total
 // REWRITES-NEXT: }
@@ -1297,8 +1291,7 @@ int main(void) {
 // REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             5 => {
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: bool = index == 1;
-// REWRITES-NEXT:                 if {{_v[0-9]+}} {
+// REWRITES-NEXT:                 if index == 1 {
 // REWRITES-NEXT:                     {{__state[0-9]+}} = 6;
 // REWRITES-NEXT:                 } else {
 // REWRITES-NEXT:                     {{__state[0-9]+}} = 7;
@@ -1320,8 +1313,7 @@ int main(void) {
 // REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             9 => {
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: bool = result > 20;
-// REWRITES-NEXT:                 if {{_v[0-9]+}} {
+// REWRITES-NEXT:                 if result > 20 {
 // REWRITES-NEXT:                     {{__state[0-9]+}} = 10;
 // REWRITES-NEXT:                 } else {
 // REWRITES-NEXT:                     {{__state[0-9]+}} = 11;
@@ -1358,8 +1350,7 @@ int main(void) {
 // REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             17 => {
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: bool = result > 6;
-// REWRITES-NEXT:                 if {{_v[0-9]+}} {
+// REWRITES-NEXT:                 if result > 6 {
 // REWRITES-NEXT:                     {{__state[0-9]+}} = 18;
 // REWRITES-NEXT:                 } else {
 // REWRITES-NEXT:                     {{__state[0-9]+}} = 21;
@@ -1426,8 +1417,7 @@ int main(void) {
 // REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             30 => {
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: bool = result == 16;
-// REWRITES-NEXT:                 if {{_v[0-9]+}} {
+// REWRITES-NEXT:                 if result == 16 {
 // REWRITES-NEXT:                     {{__state[0-9]+}} = 31;
 // REWRITES-NEXT:                 } else {
 // REWRITES-NEXT:                     {{__state[0-9]+}} = 32;
@@ -1502,17 +1492,11 @@ int main(void) {
 // REWRITES-NEXT:         {{_v[0-9]+}} as *mut core::ffi::c_void,
 // REWRITES-NEXT:         {{_v[0-9]+}} as *mut core::ffi::c_void,
 // REWRITES-NEXT:     );
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 17;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = (({{_v[0-9]+}} + {{_v[0-9]+}}) * 4 - {{_v[0-9]+}}) / {{_v[0-9]+}} % {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = (({{_v[0-9]+}} + {{_v[0-9]+}}) * 4 - 3) / 17 % 3;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 5;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 31;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = (({{_v[0-9]+}} << {{_v[0-9]+}} | 3) ^ {{_v[0-9]+}}) & {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = (({{_v[0-9]+}} << {{_v[0-9]+}} | 3) ^ 2) & 31;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} < 0 {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = unsigned_value > 0;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {
@@ -1528,12 +1512,10 @@ int main(void) {
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 47;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 49;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1 + {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} != 0 { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1 + 49;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 3 - {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = c89_static_local();

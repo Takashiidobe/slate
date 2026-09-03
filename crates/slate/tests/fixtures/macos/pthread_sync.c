@@ -248,7 +248,7 @@ int slate_yield(void) { return sched_yield(); }
 // LOWERING-MACOS-DAG:         {{_v[0-9]+}}
 // LOWERING-MACOS-DAG:     } else {
 // LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: *mut u64 = key;
-// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: Option<unsafe extern "C" fn(*mut core::ffi::c_void)> = None;
+// LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void)> = None;
 // LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: i32 = unsafe { pthread_key_create({{_v[0-9]+}} as *mut u64, {{_v[0-9]+}}) };
 // LOWERING-MACOS-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // LOWERING-MACOS-DAG:         {{_v[0-9]+}}
@@ -353,8 +353,7 @@ int slate_yield(void) { return sched_yield(); }
 // REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: i32 = unsafe {
 // REWRITES-MACOS-DAG:         pthread_mutex_unlock(std::ptr::addr_of_mut!(slate_mutex) as *mut _opaque_pthread_mutex_t)
 // REWRITES-MACOS-DAG:     };
-// REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} != 0 {
 // REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: bool = true;
 // REWRITES-MACOS-DAG:         {{_v[0-9]+}}
 // REWRITES-MACOS-DAG:     } else {
@@ -394,7 +393,7 @@ int slate_yield(void) { return sched_yield(); }
 // REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: bool = true;
 // REWRITES-MACOS-DAG:         {{_v[0-9]+}}
 // REWRITES-MACOS-DAG:     } else {
-// REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: Option<unsafe extern "C" fn(*mut core::ffi::c_void)> = None;
+// REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void)> = None;
 // REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: i32 = unsafe { pthread_key_create(key as *mut u64, {{_v[0-9]+}}) };
 // REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-MACOS-DAG:         {{_v[0-9]+}}

@@ -72,7 +72,7 @@ int main(void) {
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: struct Ctx {
-// LOWERING-NEXT:     run: Option<unsafe extern "C" fn(i32, i32)>,
+// LOWERING-NEXT:     run: Option<unsafe extern "C-unwind" fn(i32, i32)>,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
@@ -93,7 +93,7 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: static mut failures: i32 = 0;
 // LOWERING-EMPTY:
-// LOWERING-NEXT: static mut g_callback: Option<unsafe extern "C" fn(i32)> = None;
+// LOWERING-NEXT: static mut g_callback: Option<unsafe extern "C-unwind" fn(i32)> = None;
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
 // LOWERING-NEXT:     fn setjmp(_0: *mut __slate_jmp_buf_tag) -> i32;
@@ -101,19 +101,19 @@ int main(void) {
 // LOWERING-NEXT:     fn longjmp(_0: *mut __slate_jmp_buf_tag, _1: i32) -> !;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C" fn dispatcher({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32)> = unsafe { g_callback };
+// LOWERING-NEXT: extern "C-unwind" fn dispatcher({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32)> = unsafe { g_callback };
 // LOWERING-NEXT:     unsafe { {{_v[0-9]+}}.unwrap()({{arg[0-9]+}}) };
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C" fn quiet_callback({{arg[0-9]+}}: i32) {
+// LOWERING-NEXT: extern "C-unwind" fn quiet_callback({{arg[0-9]+}}: i32) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"quiet %d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{arg[0-9]+}}) };
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C" fn panicky_callback({{arg[0-9]+}}: i32) {
+// LOWERING-NEXT: extern "C-unwind" fn panicky_callback({{arg[0-9]+}}: i32) {
 // LOWERING-NEXT:     let mut x: i32 = 0;
 // LOWERING-NEXT:     x = {{arg[0-9]+}};
 // LOWERING-NEXT:     {
@@ -137,13 +137,13 @@ int main(void) {
 // LOWERING-NEXT:     let mut c: Ctx = Ctx { run: None };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     c.run = unsafe {
-// LOWERING-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32, i32)>>(
+// LOWERING-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32, i32)>>(
 // LOWERING-NEXT:             dispatcher as *const (),
 // LOWERING-NEXT:         )
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         g_callback = unsafe {
-// LOWERING-NEXT:             std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32)>>(
+// LOWERING-NEXT:             std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32)>>(
 // LOWERING-NEXT:                 quiet_callback as *const (),
 // LOWERING-NEXT:             )
 // LOWERING-NEXT:         };
@@ -179,7 +179,7 @@ int main(void) {
 // LOWERING-NEXT:                             break '__continue0;
 // LOWERING-NEXT:                         }
 // LOWERING-NEXT:                     }
-// LOWERING-NEXT:                     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32, i32)> = c.run;
+// LOWERING-NEXT:                     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32, i32)> = c.run;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: i32 = i;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:                     unsafe { {{_v[0-9]+}}.unwrap()({{_v[0-9]+}}, {{_v[0-9]+}}) };
@@ -192,7 +192,7 @@ int main(void) {
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         g_callback = unsafe {
-// LOWERING-NEXT:             std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32)>>(
+// LOWERING-NEXT:             std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32)>>(
 // LOWERING-NEXT:                 panicky_callback as *const (),
 // LOWERING-NEXT:             )
 // LOWERING-NEXT:         };
@@ -228,7 +228,7 @@ int main(void) {
 // LOWERING-NEXT:                             break '__continue1;
 // LOWERING-NEXT:                         }
 // LOWERING-NEXT:                     }
-// LOWERING-NEXT:                     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32, i32)> = c.run;
+// LOWERING-NEXT:                     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32, i32)> = c.run;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: i32 = i2;
 // LOWERING-NEXT:                     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:                     unsafe { {{_v[0-9]+}}.unwrap()({{_v[0-9]+}}, {{_v[0-9]+}}) };
@@ -265,7 +265,7 @@ int main(void) {
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: struct Ctx {
-// REWRITES-NEXT:     run: Option<unsafe extern "C" fn(i32, i32)>,
+// REWRITES-NEXT:     run: Option<unsafe extern "C-unwind" fn(i32, i32)>,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
@@ -286,7 +286,7 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: static mut failures: i32 = 0;
 // REWRITES-EMPTY:
-// REWRITES-NEXT: static mut g_callback: Option<unsafe extern "C" fn(i32)> = None;
+// REWRITES-NEXT: static mut g_callback: Option<unsafe extern "C-unwind" fn(i32)> = None;
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
 // REWRITES-NEXT:     fn setjmp(_0: *mut __slate_jmp_buf_tag) -> i32;
@@ -294,17 +294,17 @@ int main(void) {
 // REWRITES-NEXT:     fn longjmp(_0: *mut __slate_jmp_buf_tag, _1: i32) -> !;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C" fn dispatcher({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) {
+// REWRITES-NEXT: extern "C-unwind" fn dispatcher({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) {
 // REWRITES-NEXT:     unsafe { unsafe { g_callback }.unwrap()({{arg[0-9]+}}) };
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C" fn quiet_callback({{arg[0-9]+}}: i32) {
+// REWRITES-NEXT: extern "C-unwind" fn quiet_callback({{arg[0-9]+}}: i32) {
 // REWRITES-NEXT:     unsafe { printf(c"quiet %d\n".as_ptr(), {{arg[0-9]+}}) };
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C" fn panicky_callback(mut x: i32) {
+// REWRITES-NEXT: extern "C-unwind" fn panicky_callback(mut x: i32) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = x == 2;
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         unsafe {
@@ -322,21 +322,20 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut c: Ctx = Ctx { run: None };
 // REWRITES-NEXT:     c.run = unsafe {
-// REWRITES-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32, i32)>>(
+// REWRITES-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32, i32)>>(
 // REWRITES-NEXT:             dispatcher as *const (),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         g_callback = unsafe {
-// REWRITES-NEXT:             std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32)>>(
+// REWRITES-NEXT:             std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32)>>(
 // REWRITES-NEXT:                 quiet_callback as *const (),
 // REWRITES-NEXT:             )
 // REWRITES-NEXT:         };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     '__loop0: loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i < 2;
-// REWRITES-NEXT:         if !{{_v[0-9]+}} {
+// REWRITES-NEXT:         if !(i < 2) {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag =
@@ -355,15 +354,14 @@ int main(void) {
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         g_callback = unsafe {
-// REWRITES-NEXT:             std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32)>>(
+// REWRITES-NEXT:             std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32)>>(
 // REWRITES-NEXT:                 panicky_callback as *const (),
 // REWRITES-NEXT:             )
 // REWRITES-NEXT:         };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let mut i2: i32 = 0;
 // REWRITES-NEXT:     '__loop1: loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i2 < 5;
-// REWRITES-NEXT:         if !{{_v[0-9]+}} {
+// REWRITES-NEXT:         if !(i2 < 5) {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag =

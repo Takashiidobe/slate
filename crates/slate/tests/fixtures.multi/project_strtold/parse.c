@@ -12,7 +12,7 @@ int parse_value(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: #[unsafe(no_mangle)]
-// REWRITES-DAG: pub extern "C" fn parse_value() -> i32 {
+// REWRITES-DAG: pub extern "C-unwind" fn parse_value() -> i32 {
 // REWRITES-DAG:     let mut end: *mut i8 = std::ptr::null_mut();
 // REWRITES-DAG:     let mut value: LongDouble = LongDouble([0; 10]);
 // REWRITES-DAG:     value = unsafe {

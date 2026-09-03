@@ -94,8 +94,7 @@ int main() {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe fn bump(mut p: *mut u64, {{arg[0-9]+}}: i32) -> u64 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = if {{_v[0-9]+}} {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = if {{arg[0-9]+}} != 0 {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut u64 = p;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = (unsafe { *{{_v[0-9]+}} }) + 2;
 // REWRITES-NEXT:         unsafe {

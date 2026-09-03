@@ -205,9 +205,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
 // REWRITES-NEXT:         {{arg[0-9]+}}[(0usize..(3 as u64) as usize)].cmp(&{{arg[0-9]+}}[(0usize..(3 as u64) as usize)]) as i32
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < 0;
-// REWRITES-NEXT:     (({{_v[0-9]+}} as i32) - ({{_v[0-9]+}} as i32)) * 1000 + (sa - sb)
+// REWRITES-NEXT:     ((({{_v[0-9]+}} > 0) as i32) - (({{_v[0-9]+}} < 0) as i32)) * 1000 + (sa - sb)
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

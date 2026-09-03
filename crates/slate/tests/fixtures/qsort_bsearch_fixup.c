@@ -60,19 +60,23 @@ int main(void) {
 // LOWERING-NEXT:         _0: *mut core::ffi::c_void,
 // LOWERING-NEXT:         _1: usize,
 // LOWERING-NEXT:         _2: usize,
-// LOWERING-NEXT:         _3: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32>,
+// LOWERING-NEXT:         _3: Option<
+// LOWERING-NEXT:             unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
+// LOWERING-NEXT:         >,
 // LOWERING-NEXT:     );
 // LOWERING-NEXT:     fn bsearch(
 // LOWERING-NEXT:         _0: *const core::ffi::c_void,
 // LOWERING-NEXT:         _1: *const core::ffi::c_void,
 // LOWERING-NEXT:         _2: usize,
 // LOWERING-NEXT:         _3: usize,
-// LOWERING-NEXT:         _4: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32>,
+// LOWERING-NEXT:         _4: Option<
+// LOWERING-NEXT:             unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
+// LOWERING-NEXT:         >,
 // LOWERING-NEXT:     ) -> *mut core::ffi::c_void;
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C" fn cmp_int({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
+// LOWERING-NEXT: extern "C-unwind" fn cmp_int({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{arg[0-9]+}} as *mut i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{arg[0-9]+}} as *mut i32;
@@ -81,7 +85,7 @@ int main(void) {
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C" fn cmp_item({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
+// LOWERING-NEXT: extern "C-unwind" fn cmp_item({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut Item = {{arg[0-9]+}} as *mut Item;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut Item = {{arg[0-9]+}} as *mut Item;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { (*{{_v[0-9]+}}).key };
@@ -223,23 +227,27 @@ int main(void) {
 // REWRITES-NEXT:         _0: *mut core::ffi::c_void,
 // REWRITES-NEXT:         _1: usize,
 // REWRITES-NEXT:         _2: usize,
-// REWRITES-NEXT:         _3: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32>,
+// REWRITES-NEXT:         _3: Option<
+// REWRITES-NEXT:             unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
+// REWRITES-NEXT:         >,
 // REWRITES-NEXT:     );
 // REWRITES-NEXT:     fn bsearch(
 // REWRITES-NEXT:         _0: *const core::ffi::c_void,
 // REWRITES-NEXT:         _1: *const core::ffi::c_void,
 // REWRITES-NEXT:         _2: usize,
 // REWRITES-NEXT:         _3: usize,
-// REWRITES-NEXT:         _4: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32>,
+// REWRITES-NEXT:         _4: Option<
+// REWRITES-NEXT:             unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut core::ffi::c_void) -> i32,
+// REWRITES-NEXT:         >,
 // REWRITES-NEXT:     ) -> *mut core::ffi::c_void;
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C" fn cmp_int({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
+// REWRITES-NEXT: extern "C-unwind" fn cmp_int({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
 // REWRITES-NEXT:     (unsafe { *({{arg[0-9]+}} as *mut i32) }) - unsafe { *({{arg[0-9]+}} as *mut i32) }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C" fn cmp_item({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
+// REWRITES-NEXT: extern "C-unwind" fn cmp_item({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
 // REWRITES-NEXT:     (unsafe { (*({{arg[0-9]+}} as *mut Item)).key }) - unsafe { (*({{arg[0-9]+}} as *mut Item)).key }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -304,18 +312,16 @@ int main(void) {
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     found = {{_v[0-9]+}} as *mut Item;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d %d %d %d\n".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = nums[((0 as i64) as usize)];
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = nums[((4 as i64) as usize)];
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = hit != std::ptr::null_mut();
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = nums[0];
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = nums[4];
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = if hit != std::ptr::null_mut() {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { *hit };
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = -1;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = found != std::ptr::null_mut();
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = if found != std::ptr::null_mut() {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { (*found).value };
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {

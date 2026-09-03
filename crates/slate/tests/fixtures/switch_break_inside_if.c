@@ -151,8 +151,7 @@ int main(void) {
 // REWRITES-NEXT:     let mut result: i32 = -1;
 // REWRITES-NEXT:     match {{_v[0-9]+}} {
 // REWRITES-NEXT:         0 => {
-// REWRITES-NEXT:             let {{_v[0-9]+}}: bool = extra != 0;
-// REWRITES-NEXT:             if {{_v[0-9]+}} {
+// REWRITES-NEXT:             if extra != 0 {
 // REWRITES-NEXT:                 result = 10;
 // REWRITES-NEXT:             } else {
 // REWRITES-NEXT:                 result = 11;

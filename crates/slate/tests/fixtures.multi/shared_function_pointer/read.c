@@ -8,8 +8,8 @@ int call_handler(struct Callback *callback) { return callback->handler(41); }
 
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: #[unsafe(no_mangle)]
-// LOWERING-DAG: pub unsafe extern "C" fn call_handler({{arg[0-9]+}}: *mut Callback) -> i32 {
-// LOWERING-DAG:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> i32> = unsafe { (*{{arg[0-9]+}}).handler };
+// LOWERING-DAG: pub unsafe extern "C-unwind" fn call_handler({{arg[0-9]+}}: *mut Callback) -> i32 {
+// LOWERING-DAG:     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = unsafe { (*{{arg[0-9]+}}).handler };
 // LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 41;
 // LOWERING-DAG:     let {{_v[0-9]+}}: i32 = unsafe { {{_v[0-9]+}}.unwrap()({{_v[0-9]+}}) };
 // LOWERING-DAG:     return {{_v[0-9]+}};
@@ -18,7 +18,7 @@ int call_handler(struct Callback *callback) { return callback->handler(41); }
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: #[unsafe(no_mangle)]
-// REWRITES-DAG: pub unsafe extern "C" fn call_handler({{arg[0-9]+}}: *mut Callback) -> i32 {
+// REWRITES-DAG: pub unsafe extern "C-unwind" fn call_handler({{arg[0-9]+}}: *mut Callback) -> i32 {
 // REWRITES-DAG:     unsafe { unsafe { (*{{arg[0-9]+}}).handler }.unwrap()(41 as i32) }
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

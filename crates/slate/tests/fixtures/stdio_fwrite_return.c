@@ -128,8 +128,7 @@ int main(void) {
 // REWRITES-NEXT:     let mut buf: aligned::Aligned<aligned::A16, [i8; 16]> = aligned::Aligned([0; 16]);
 // REWRITES-NEXT:     unsafe { remove(c"slate_stdio_fwrite_return.tmp".as_ptr()) };
 // REWRITES-NEXT:     f = unsafe { fopen(c"slate_stdio_fwrite_return.tmp".as_ptr(), c"w".as_ptr()) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = f != std::ptr::null_mut();
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = !(f != std::ptr::null_mut());
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         unsafe { puts(c"open-fail".as_ptr()) };
 // REWRITES-NEXT:         __retval = 0;

@@ -8,7 +8,7 @@ int read_pair(struct Pair *pair) { return pair->left + pair->right; }
 
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: #[unsafe(no_mangle)]
-// LOWERING-DAG: pub unsafe extern "C" fn read_pair({{arg[0-9]+}}: *mut Pair) -> i32 {
+// LOWERING-DAG: pub unsafe extern "C-unwind" fn read_pair({{arg[0-9]+}}: *mut Pair) -> i32 {
 // LOWERING-DAG:     let {{_v[0-9]+}}: i32 = unsafe { (*{{arg[0-9]+}}).left };
 // LOWERING-DAG:     let {{_v[0-9]+}}: i32 = unsafe { (*{{arg[0-9]+}}).right };
 // LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
@@ -18,7 +18,7 @@ int read_pair(struct Pair *pair) { return pair->left + pair->right; }
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: #[unsafe(no_mangle)]
-// REWRITES-DAG: pub unsafe extern "C" fn read_pair({{arg[0-9]+}}: *mut Pair) -> i32 {
+// REWRITES-DAG: pub unsafe extern "C-unwind" fn read_pair({{arg[0-9]+}}: *mut Pair) -> i32 {
 // REWRITES-DAG:     (unsafe { (*{{arg[0-9]+}}).left }) + unsafe { (*{{arg[0-9]+}}).right }
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

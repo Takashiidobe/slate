@@ -31,8 +31,9 @@ int main(void) {
 // LOWERING-NEXT:     unused_comparisons
 // LOWERING-NEXT: )]
 // LOWERING-EMPTY:
-// LOWERING-NEXT: static mut unused_spin: Option<unsafe extern "C" fn()> =
-// LOWERING-NEXT:     unsafe { std::mem::transmute::<*const (), Option<unsafe extern "C" fn()>>(spin as *const ()) };
+// LOWERING-NEXT: static mut unused_spin: Option<unsafe extern "C-unwind" fn()> = unsafe {
+// LOWERING-NEXT:     std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn()>>(spin as *const ())
+// LOWERING-NEXT: };
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
@@ -42,7 +43,7 @@ int main(void) {
 // LOWERING-NEXT: /// prove this diverges (the generated Rust loop keeps a conditional break
 // LOWERING-NEXT: /// guard), so it must fall back to a conservative, non-`!` return type
 // LOWERING-NEXT: /// instead of emitting Rust that rustc would reject.
-// LOWERING-NEXT: extern "C" fn spin() {
+// LOWERING-NEXT: extern "C-unwind" fn spin() {
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         loop {
 // LOWERING-NEXT:             let {{_v[0-9]+}}: bool = true;
@@ -78,8 +79,9 @@ int main(void) {
 // REWRITES-NEXT:     unused_comparisons
 // REWRITES-NEXT: )]
 // REWRITES-EMPTY:
-// REWRITES-NEXT: static mut unused_spin: Option<unsafe extern "C" fn()> =
-// REWRITES-NEXT:     unsafe { std::mem::transmute::<*const (), Option<unsafe extern "C" fn()>>(spin as *const ()) };
+// REWRITES-NEXT: static mut unused_spin: Option<unsafe extern "C-unwind" fn()> = unsafe {
+// REWRITES-NEXT:     std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn()>>(spin as *const ())
+// REWRITES-NEXT: };
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
@@ -89,7 +91,7 @@ int main(void) {
 // REWRITES-NEXT: /// prove this diverges (the generated Rust loop keeps a conditional break
 // REWRITES-NEXT: /// guard), so it must fall back to a conservative, non-`!` return type
 // REWRITES-NEXT: /// instead of emitting Rust that rustc would reject.
-// REWRITES-NEXT: extern "C" fn spin() {
+// REWRITES-NEXT: extern "C-unwind" fn spin() {
 // REWRITES-NEXT:     loop {
 // REWRITES-NEXT:         if !true {
 // REWRITES-NEXT:             break;

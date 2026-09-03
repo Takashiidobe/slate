@@ -97,8 +97,7 @@ int main(void) {
 // REWRITES-DAG: }
 // REWRITES-DAG: 2 => {
 // REWRITES-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:     if {{_v[0-9]+}} != 0 {
 // REWRITES-DAG:         {{__state[0-9]+}} = 3;
 // REWRITES-DAG:     } else {
 // REWRITES-DAG:         {{__state[0-9]+}} = 5;

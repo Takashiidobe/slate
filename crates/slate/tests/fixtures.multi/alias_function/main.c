@@ -8,6 +8,6 @@ int main(void) {
   printf("%d %d\n", alias_impl(5), real_impl(2));
   return 0;
 }
-// REWRITES-LABEL: {{^}}pub extern "C" fn alias_impl(
+// REWRITES-LABEL: {{^}}pub extern "C-unwind" fn alias_impl(
 // REWRITES-DAG: real_impl(_0)
 // REWRITES: {{^}}}

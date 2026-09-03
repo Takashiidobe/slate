@@ -210,13 +210,9 @@ int main(void) {
 // REWRITES-NEXT:         sb += (unsafe { *{{_v[0-9]+}} }) as i32;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { {{arg[0-9]+}}.cmp({{arg[0-9]+}}) as i32 };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}} as i32) - ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = (({{_v[0-9]+}} > 0) as i32) - (({{_v[0-9]+}} < 0) as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { {{arg[0-9]+}}.cmp({{arg[0-9]+}}) as i32 };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}} as i32) * 100;
-// REWRITES-NEXT:     {{_v[0-9]+}} * 1000 + {{_v[0-9]+}} + (sa - sb)
+// REWRITES-NEXT:     {{_v[0-9]+}} * 1000 + (({{_v[0-9]+}} == 0) as i32) * 100 + (sa - sb)
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

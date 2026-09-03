@@ -68,10 +68,10 @@ int main(void) {
 // LOWERING-NEXT:     static mut error_message_count: u32;
 // LOWERING-NEXT:     static mut error_one_per_line: i32;
 // LOWERING-NEXT:     fn on_exit(
-// LOWERING-NEXT:         _0: Option<unsafe extern "C" fn(i32, *mut core::ffi::c_void)>,
+// LOWERING-NEXT:         _0: Option<unsafe extern "C-unwind" fn(i32, *mut core::ffi::c_void)>,
 // LOWERING-NEXT:         _1: *mut core::ffi::c_void,
 // LOWERING-NEXT:     ) -> i32;
-// LOWERING-NEXT:     fn mcheck(_0: Option<unsafe extern "C" fn(i32)>) -> i32;
+// LOWERING-NEXT:     fn mcheck(_0: Option<unsafe extern "C-unwind" fn(i32)>) -> i32;
 // LOWERING-NEXT:     fn malloc(_0: usize) -> *mut core::ffi::c_void;
 // LOWERING-NEXT:     fn mprobe(_0: *mut core::ffi::c_void) -> i32;
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
@@ -87,7 +87,7 @@ int main(void) {
 // LOWERING-NEXT:     );
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C" fn handle_exit({{arg[0-9]+}}: i32, {{arg[0-9]+}}: *mut core::ffi::c_void) {
+// LOWERING-NEXT: extern "C-unwind" fn handle_exit({{arg[0-9]+}}: i32, {{arg[0-9]+}}: *mut core::ffi::c_void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{arg[0-9]+}} as *mut i32;
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         *{{_v[0-9]+}} = {{arg[0-9]+}};
@@ -104,7 +104,7 @@ int main(void) {
 // LOWERING-NEXT:     captured = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(captured) as *mut core::ffi::c_void;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { on_exit(Some(handle_exit), {{_v[0-9]+}} as *mut core::ffi::c_void) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32)> = None;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32)> = None;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { mcheck({{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
@@ -226,10 +226,10 @@ int main(void) {
 // REWRITES-NEXT:     static mut error_message_count: u32;
 // REWRITES-NEXT:     static mut error_one_per_line: i32;
 // REWRITES-NEXT:     fn on_exit(
-// REWRITES-NEXT:         _0: Option<unsafe extern "C" fn(i32, *mut core::ffi::c_void)>,
+// REWRITES-NEXT:         _0: Option<unsafe extern "C-unwind" fn(i32, *mut core::ffi::c_void)>,
 // REWRITES-NEXT:         _1: *mut core::ffi::c_void,
 // REWRITES-NEXT:     ) -> i32;
-// REWRITES-NEXT:     fn mcheck(_0: Option<unsafe extern "C" fn(i32)>) -> i32;
+// REWRITES-NEXT:     fn mcheck(_0: Option<unsafe extern "C-unwind" fn(i32)>) -> i32;
 // REWRITES-NEXT:     fn malloc(_0: usize) -> *mut core::ffi::c_void;
 // REWRITES-NEXT:     fn mprobe(_0: *mut core::ffi::c_void) -> i32;
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
@@ -245,7 +245,7 @@ int main(void) {
 // REWRITES-NEXT:     );
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C" fn handle_exit({{arg[0-9]+}}: i32, {{arg[0-9]+}}: *mut core::ffi::c_void) {
+// REWRITES-NEXT: extern "C-unwind" fn handle_exit({{arg[0-9]+}}: i32, {{arg[0-9]+}}: *mut core::ffi::c_void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         *({{arg[0-9]+}} as *mut i32) = {{arg[0-9]+}};
 // REWRITES-NEXT:     }
@@ -258,10 +258,9 @@ int main(void) {
 // REWRITES-NEXT:     captured = -1;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(captured) as *mut core::ffi::c_void;
 // REWRITES-NEXT:     unsafe { on_exit(Some(handle_exit), {{_v[0-9]+}} as *mut core::ffi::c_void) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32)> = None;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32)> = None;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { mcheck({{_v[0-9]+}}) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}} == 0) as i32;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc((16 as u64) as usize) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { mprobe({{_v[0-9]+}} as *mut core::ffi::c_void) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"mcheck:%d %d\n".as_ptr() as *mut i8;

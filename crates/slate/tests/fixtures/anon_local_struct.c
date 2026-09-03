@@ -190,13 +190,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = buf.pointer;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
 // REWRITES-NEXT:     buf.pointer = {{_v[0-9]+}};
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d\n".as_ptr(),
-// REWRITES-NEXT:             storage[((0 as i64) as usize)],
-// REWRITES-NEXT:             storage[((1 as i64) as usize)],
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { printf(c"%d %d\n".as_ptr(), storage[0], storage[1]) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = buf.pointer;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = buf.start;
 // REWRITES-NEXT:     unsafe { printf(c"%ld\n".as_ptr(), unsafe { {{_v[0-9]+}}.offset_from({{_v[0-9]+}}) as i64 }) };

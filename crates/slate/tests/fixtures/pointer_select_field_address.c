@@ -120,8 +120,7 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn add({{arg[0-9]+}}: i32, {{arg[0-9]+}}: u64) {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{arg[0-9]+}} != 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u64 = if {{_v[0-9]+}} {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u64 = if {{arg[0-9]+}} != 0 {
 // REWRITES-NEXT:         unsafe { std::ptr::addr_of_mut!(acc.direct) }
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         unsafe { std::ptr::addr_of_mut!(acc.indirect) }

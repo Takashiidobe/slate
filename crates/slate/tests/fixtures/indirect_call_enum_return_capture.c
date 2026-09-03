@@ -58,19 +58,19 @@ int main(void) {
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: struct Parser {
-// LOWERING-NEXT:     processor: Option<unsafe extern "C" fn(i32) -> u32>,
+// LOWERING-NEXT:     processor: Option<unsafe extern "C-unwind" fn(i32) -> u32>,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C" fn handle_ok({{arg[0-9]+}}: i32) -> u32 {
+// LOWERING-NEXT: extern "C-unwind" fn handle_ok({{arg[0-9]+}}: i32) -> u32 {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = Status::E_OK as u32;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C" fn handle_fail({{arg[0-9]+}}: i32) -> u32 {
+// LOWERING-NEXT: extern "C-unwind" fn handle_fail({{arg[0-9]+}}: i32) -> u32 {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = Status::E_FAIL as u32;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
@@ -95,13 +95,13 @@ int main(void) {
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = i;
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> u32> = if {{_v[0-9]+}} {
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> u32> = if {{_v[0-9]+}} {
 // LOWERING-NEXT:                     Some(handle_ok)
 // LOWERING-NEXT:                 } else {
 // LOWERING-NEXT:                     Some(handle_fail)
 // LOWERING-NEXT:                 };
 // LOWERING-NEXT:                 p.processor = {{_v[0-9]+}};
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> u32> = p.processor;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> u32> = p.processor;
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = 5;
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: u32 = unsafe { {{_v[0-9]+}}.unwrap()({{_v[0-9]+}}) };
 // LOWERING-NEXT:                 *result = unsafe { std::mem::transmute({{_v[0-9]+}}) };
@@ -154,35 +154,29 @@ int main(void) {
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: struct Parser {
-// REWRITES-NEXT:     processor: Option<unsafe extern "C" fn(i32) -> u32>,
+// REWRITES-NEXT:     processor: Option<unsafe extern "C-unwind" fn(i32) -> u32>,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C" fn handle_ok({{arg[0-9]+}}: i32) -> u32 {
+// REWRITES-NEXT: extern "C-unwind" fn handle_ok({{arg[0-9]+}}: i32) -> u32 {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = Status::E_OK as u32;
 // REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C" fn handle_fail({{arg[0-9]+}}: i32) -> u32 {
+// REWRITES-NEXT: extern "C-unwind" fn handle_fail({{arg[0-9]+}}: i32) -> u32 {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = Status::E_FAIL as u32;
 // REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut p: Parser = Parser { processor: None };
-// REWRITES-NEXT:     let mut i: i32 = 0;
-// REWRITES-NEXT:     i = 0;
-// REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i < 2;
-// REWRITES-NEXT:         if !{{_v[0-9]+}} {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     for i in 0..2 {
 // REWRITES-NEXT:         let mut result: aligned::Aligned<aligned::A4, Status> = aligned::Aligned(Status::E_OK);
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i == 0;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> u32> = if {{_v[0-9]+}} {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> u32> = if {{_v[0-9]+}} {
 // REWRITES-NEXT:             Some(handle_ok)
 // REWRITES-NEXT:         } else {
 // REWRITES-NEXT:             Some(handle_fail)
@@ -198,7 +192,6 @@ int main(void) {
 // REWRITES-NEXT:         } else {
 // REWRITES-NEXT:             unsafe { printf(c"fail\n".as_ptr()) };
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }

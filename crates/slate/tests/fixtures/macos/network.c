@@ -338,8 +338,7 @@ unsigned int slate_first_interface_flags(void) {
 // SLATE-FILECHECK-BEGIN rewrites-macos
 // REWRITES-MACOS-DAG: unsafe fn slate_listen_ipv4({{arg[0-9]+}}: *mut sockaddr_in) -> i32 {
 // REWRITES-MACOS-DAG:     let mut socket_fd: i32 = unsafe { socket(2 as i32, 1 as i32, 6 as i32) };
-// REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: bool = socket_fd < 0;
-// REWRITES-MACOS-DAG:     if {{_v[0-9]+}} {
+// REWRITES-MACOS-DAG:     if socket_fd < 0 {
 // REWRITES-MACOS-DAG:         return socket_fd;
 // REWRITES-MACOS-DAG:     }
 // REWRITES-MACOS-DAG:     unsafe {
@@ -443,8 +442,7 @@ unsigned int slate_first_interface_flags(void) {
 // REWRITES-MACOS-DAG: fn slate_first_interface_flags() -> u32 {
 // REWRITES-MACOS-DAG:     let mut addresses: *mut ifaddrs = std::ptr::null_mut();
 // REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: i32 = unsafe { getifaddrs(std::ptr::addr_of_mut!(addresses) as *mut *mut ifaddrs) };
-// REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// REWRITES-MACOS-DAG:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} != 0 {
 // REWRITES-MACOS-DAG:         let {{_v[0-9]+}}: bool = true;
 // REWRITES-MACOS-DAG:         {{_v[0-9]+}}
 // REWRITES-MACOS-DAG:     } else {

@@ -37,7 +37,7 @@ int main(void) {
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: union FnBox {
-// LOWERING-NEXT:     r#fn: Option<unsafe extern "C" fn(i32) -> i32>,
+// LOWERING-NEXT:     r#fn: Option<unsafe extern "C-unwind" fn(i32) -> i32>,
 // LOWERING-NEXT:     ptr: *mut core::ffi::c_void,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
@@ -45,7 +45,7 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C" fn add_one({{arg[0-9]+}}: i32) -> i32 {
+// LOWERING-NEXT: extern "C-unwind" fn add_one({{arg[0-9]+}}: i32) -> i32 {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     return {{_v[0-9]+}};
@@ -56,20 +56,20 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         r#box.r#fn = unsafe {
-// LOWERING-NEXT:             std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32) -> i32>>(
+// LOWERING-NEXT:             std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
 // LOWERING-NEXT:                 add_one as *const (),
 // LOWERING-NEXT:             )
 // LOWERING-NEXT:         };
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { r#box.ptr };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> i32> = unsafe {
-// LOWERING-NEXT:         std::mem::transmute::<usize, Option<unsafe extern "C" fn(i32) -> i32>>({{_v[0-9]+}} as usize)
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = unsafe {
+// LOWERING-NEXT:         std::mem::transmute::<usize, Option<unsafe extern "C-unwind" fn(i32) -> i32>>({{_v[0-9]+}} as usize)
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> i32> = None;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = None;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 41;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { {{_v[0-9]+}}.unwrap()({{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> i32> = None;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = None;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}) };
@@ -96,7 +96,7 @@ int main(void) {
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: union FnBox {
-// REWRITES-NEXT:     r#fn: Option<unsafe extern "C" fn(i32) -> i32>,
+// REWRITES-NEXT:     r#fn: Option<unsafe extern "C-unwind" fn(i32) -> i32>,
 // REWRITES-NEXT:     ptr: *mut core::ffi::c_void,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -104,7 +104,7 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C" fn add_one({{arg[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT: extern "C-unwind" fn add_one({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     {{arg[0-9]+}} + 1
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -112,23 +112,22 @@ int main(void) {
 // REWRITES-NEXT:     let mut r#box: FnBox = unsafe { std::mem::zeroed::<FnBox>() };
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         r#box.r#fn = unsafe {
-// REWRITES-NEXT:             std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32) -> i32>>(
+// REWRITES-NEXT:             std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
 // REWRITES-NEXT:                 add_one as *const (),
 // REWRITES-NEXT:             )
 // REWRITES-NEXT:         };
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> i32> = unsafe {
-// REWRITES-NEXT:         std::mem::transmute::<usize, Option<unsafe extern "C" fn(i32) -> i32>>(
+// REWRITES-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = unsafe {
+// REWRITES-NEXT:         std::mem::transmute::<usize, Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
 // REWRITES-NEXT:             (unsafe { r#box.ptr }) as usize,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> i32> = None;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != None;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = None;
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%d %d\n".as_ptr(),
 // REWRITES-NEXT:             unsafe { {{_v[0-9]+}}.unwrap()(41 as i32) },
-// REWRITES-NEXT:             {{_v[0-9]+}} as i32,
+// REWRITES-NEXT:             ({{_v[0-9]+}} != None) as i32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

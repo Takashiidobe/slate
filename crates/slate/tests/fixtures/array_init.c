@@ -125,30 +125,17 @@ int main(void) {
 // REWRITES-NEXT:     *partial = [7, 8, 0, 0];
 // REWRITES-NEXT:     s = [104, 101, 108, 108, 111, 0];
 // REWRITES-NEXT:     padded = [104, 105, 0, 0, 0, 0, 0, 0];
-// REWRITES-NEXT:     let mut i: i32 = 0;
-// REWRITES-NEXT:     i = 0;
-// REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i < 5;
-// REWRITES-NEXT:         if !{{_v[0-9]+}} {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:         sum += a[((i as i64) as usize)];
-// REWRITES-NEXT:         i += 1;
+// REWRITES-NEXT:     for i in a.iter().copied() {
+// REWRITES-NEXT:         sum += i;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), sum) };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d\n".as_ptr(),
-// REWRITES-NEXT:             partial[((1 as i64) as usize)],
-// REWRITES-NEXT:             partial[((3 as i64) as usize)],
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { printf(c"%d %d\n".as_ptr(), partial[1], partial[3]) };
 // REWRITES-NEXT:     unsafe { printf(c"%s\n".as_ptr(), s.as_mut_ptr() as *mut i8) };
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%s %d\n".as_ptr(),
 // REWRITES-NEXT:             padded.as_mut_ptr() as *mut i8,
-// REWRITES-NEXT:             padded[((4 as i64) as usize)] as i32,
+// REWRITES-NEXT:             padded[4] as i32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

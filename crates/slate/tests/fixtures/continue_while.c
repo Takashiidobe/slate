@@ -124,9 +124,7 @@ int main(void) {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         i += 1;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i % 3 == {{_v[0-9]+}};
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-NEXT:         if i % 3 == 0 {
 // REWRITES-NEXT:         } else {
 // REWRITES-NEXT:             total += i;
 // REWRITES-NEXT:         }

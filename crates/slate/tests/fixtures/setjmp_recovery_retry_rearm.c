@@ -174,8 +174,7 @@ int main(void) {
 // REWRITES-NEXT:             std::ptr::addr_of_mut!(retry_buf).cast::<__slate_jmp_buf_tag>();
 // REWRITES-NEXT:         attempt = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };
 // REWRITES-NEXT:         unsafe { printf(c"attempt %d\n".as_ptr(), attempt) };
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = attempt >= 3;
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-NEXT:         if attempt >= 3 {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         might_fail(attempt);

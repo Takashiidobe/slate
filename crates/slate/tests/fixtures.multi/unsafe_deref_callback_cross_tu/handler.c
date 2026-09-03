@@ -10,7 +10,7 @@ int call_handler(struct Callback *cb, int *p) { return cb->handler(p); }
 
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: #[unsafe(no_mangle)]
-// LOWERING-DAG: pub unsafe extern "C" fn deref_and_add({{arg[0-9]+}}: *mut i32) -> i32 {
+// LOWERING-DAG: pub unsafe extern "C-unwind" fn deref_and_add({{arg[0-9]+}}: *mut i32) -> i32 {
 // LOWERING-DAG:     let {{_v[0-9]+}}: i32 = unsafe { *{{arg[0-9]+}} };
 // LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 1;
 // LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
@@ -20,7 +20,7 @@ int call_handler(struct Callback *cb, int *p) { return cb->handler(p); }
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: #[unsafe(no_mangle)]
-// REWRITES-DAG: pub unsafe extern "C" fn deref_and_add({{arg[0-9]+}}: *mut i32) -> i32 {
+// REWRITES-DAG: pub unsafe extern "C-unwind" fn deref_and_add({{arg[0-9]+}}: *mut i32) -> i32 {
 // REWRITES-DAG:     (unsafe { *{{arg[0-9]+}} }) + 1
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

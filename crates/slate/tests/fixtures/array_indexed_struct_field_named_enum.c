@@ -168,8 +168,7 @@ int main(void) {
 // REWRITES-NEXT:     *actual = Status::E_OK;
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i < 2;
-// REWRITES-NEXT:         if !{{_v[0-9]+}} {
+// REWRITES-NEXT:         if !(i < 2) {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = (*actual as u32) != (cases[((i as i64) as usize)].expected as u32);

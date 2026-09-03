@@ -156,10 +156,9 @@ int main(void) {
 // REWRITES-BIONIC-AARCH64-NEXT:     entry.pw_name = c"root".as_ptr() as *mut u8;
 // REWRITES-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: *mut u8 = unsafe { entry_name(std::ptr::addr_of_mut!(entry)) };
 // REWRITES-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { strcmp({{_v[0-9]+}} as *const core::ffi::c_char, c"root".as_ptr()) };
-// REWRITES-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
 // REWRITES-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// REWRITES-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} == 0 { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
 // REWRITES-BIONIC-AARCH64-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-BIONIC-AARCH64-NEXT: }
 // SLATE-FILECHECK-END rewrites-bionic-aarch64
@@ -199,10 +198,9 @@ int main(void) {
 // REWRITES-BIONIC-X86_64-NEXT:     entry.pw_name = c"root".as_ptr() as *mut i8;
 // REWRITES-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { entry_name(std::ptr::addr_of_mut!(entry)) };
 // REWRITES-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { strcmp({{_v[0-9]+}} as *const core::ffi::c_char, c"root".as_ptr()) };
-// REWRITES-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
 // REWRITES-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// REWRITES-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} == 0 { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
 // REWRITES-BIONIC-X86_64-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-BIONIC-X86_64-NEXT: }
 // SLATE-FILECHECK-END rewrites-bionic-x86_64

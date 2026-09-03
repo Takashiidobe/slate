@@ -114,7 +114,7 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn middle({{arg[0-9]+}}: &[u32; 3]) -> u32 {
-// REWRITES-NEXT:     unsafe { (*({{arg[0-9]+}} as *const [u32; 3]))[((1 as i64) as usize)] }
+// REWRITES-NEXT:     unsafe { (*({{arg[0-9]+}} as *const [u32; 3]))[1] }
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

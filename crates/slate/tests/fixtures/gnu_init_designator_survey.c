@@ -271,8 +271,8 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%d %d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             range_values[((3 as i64) as usize)],
-// REWRITES-NEXT:             old_index[((1 as i64) as usize)],
+// REWRITES-NEXT:             range_values[3],
+// REWRITES-NEXT:             old_index[1],
 // REWRITES-NEXT:             p.x + p.y,
 // REWRITES-NEXT:             {{_v[0-9]+}},
 // REWRITES-NEXT:         )

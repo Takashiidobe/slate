@@ -337,6 +337,31 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     .get(name)
                     .map(String::as_str)
                     .unwrap_or(name);
+                let extern_fn_ptr_ty = self
+                    .parent
+                    .extern_fn_ptr_types
+                    .get(target)
+                    .cloned()
+                    .or_else(|| {
+                        self.parent
+                            .long_double_shims
+                            .get(target)
+                            .map(extern_fn_ptr_type)
+                    });
+                if let Some(target_ty) = extern_fn_ptr_ty {
+                    let raw_ptr = Type::Ptr {
+                        mutable: false,
+                        inner: Box::new(Type::Unit),
+                    };
+                    return Expr::Transmute {
+                        from: raw_ptr.clone(),
+                        to: target_ty,
+                        expr: Box::new(Expr::Cast {
+                            expr: Box::new(Expr::Var(sanitize_ident(target))),
+                            ty: raw_ptr,
+                        }),
+                    };
+                }
                 Expr::Call {
                     binding: crate::function_identity::CallBinding::Generated,
                     func: Box::new(Expr::Var("Some".into())),

@@ -8,4 +8,4 @@ void __attribute__((section(".slate_fn"))) bump(int by) { counter += by; }
 // LOWERING-NEXT: pub static mut counter: i32 = 0;
 // LOWERING-DAG: pub static mut unreferenced_global: i32 = 7;
 // LOWERING: #[unsafe(link_section = ".slate_fn")]
-// LOWERING-NEXT: pub extern "C" fn bump(
+// LOWERING-NEXT: pub extern "C-unwind" fn bump(

@@ -54,7 +54,7 @@ int main(void) {
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: struct Inner {
-// LOWERING-NEXT:     scanners: [Option<unsafe extern "C" fn(i32) -> i32>; 3],
+// LOWERING-NEXT:     scanners: [Option<unsafe extern "C-unwind" fn(i32) -> i32>; 3],
 // LOWERING-NEXT:     tag: i32,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
@@ -63,8 +63,8 @@ int main(void) {
 // LOWERING-NEXT: struct Outer {
 // LOWERING-NEXT:     inner: Inner,
 // LOWERING-NEXT:     bytes: [u8; 8],
-// LOWERING-NEXT:     trailing1: Option<unsafe extern "C" fn(i32) -> i32>,
-// LOWERING-NEXT:     trailing2: Option<unsafe extern "C" fn(i32) -> i32>,
+// LOWERING-NEXT:     trailing1: Option<unsafe extern "C-unwind" fn(i32) -> i32>,
+// LOWERING-NEXT:     trailing2: Option<unsafe extern "C-unwind" fn(i32) -> i32>,
 // LOWERING-NEXT:     trailing3: i32,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
@@ -72,17 +72,17 @@ int main(void) {
 // LOWERING-NEXT:     inner: Inner {
 // LOWERING-NEXT:         scanners: [
 // LOWERING-NEXT:             unsafe {
-// LOWERING-NEXT:                 std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32) -> i32>>(
+// LOWERING-NEXT:                 std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
 // LOWERING-NEXT:                     add1 as *const (),
 // LOWERING-NEXT:                 )
 // LOWERING-NEXT:             },
 // LOWERING-NEXT:             unsafe {
-// LOWERING-NEXT:                 std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32) -> i32>>(
+// LOWERING-NEXT:                 std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
 // LOWERING-NEXT:                     add2 as *const (),
 // LOWERING-NEXT:                 )
 // LOWERING-NEXT:             },
 // LOWERING-NEXT:             unsafe {
-// LOWERING-NEXT:                 std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32) -> i32>>(
+// LOWERING-NEXT:                 std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
 // LOWERING-NEXT:                     add3 as *const (),
 // LOWERING-NEXT:                 )
 // LOWERING-NEXT:             },
@@ -91,12 +91,12 @@ int main(void) {
 // LOWERING-NEXT:     },
 // LOWERING-NEXT:     bytes: [1, 2, 3, 4, 5, 6, 7, 8],
 // LOWERING-NEXT:     trailing1: unsafe {
-// LOWERING-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32) -> i32>>(
+// LOWERING-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
 // LOWERING-NEXT:             mul5 as *const (),
 // LOWERING-NEXT:         )
 // LOWERING-NEXT:     },
 // LOWERING-NEXT:     trailing2: unsafe {
-// LOWERING-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32) -> i32>>(
+// LOWERING-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
 // LOWERING-NEXT:             mul7 as *const (),
 // LOWERING-NEXT:         )
 // LOWERING-NEXT:     },
@@ -107,31 +107,31 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C" fn add1({{arg[0-9]+}}: i32) -> i32 {
+// LOWERING-NEXT: extern "C-unwind" fn add1({{arg[0-9]+}}: i32) -> i32 {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C" fn add2({{arg[0-9]+}}: i32) -> i32 {
+// LOWERING-NEXT: extern "C-unwind" fn add2({{arg[0-9]+}}: i32) -> i32 {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C" fn add3({{arg[0-9]+}}: i32) -> i32 {
+// LOWERING-NEXT: extern "C-unwind" fn add3({{arg[0-9]+}}: i32) -> i32 {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C" fn mul5({{arg[0-9]+}}: i32) -> i32 {
+// LOWERING-NEXT: extern "C-unwind" fn mul5({{arg[0-9]+}}: i32) -> i32 {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} * {{_v[0-9]+}};
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C" fn mul7({{arg[0-9]+}}: i32) -> i32 {
+// LOWERING-NEXT: extern "C-unwind" fn mul7({{arg[0-9]+}}: i32) -> i32 {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} * {{_v[0-9]+}};
 // LOWERING-NEXT:     return {{_v[0-9]+}};
@@ -141,15 +141,17 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> i32> = unsafe { g.inner.scanners[({{_v[0-9]+}} as usize)] };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> =
+// LOWERING-NEXT:         unsafe { g.inner.scanners[({{_v[0-9]+}} as usize)] };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 10;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { {{_v[0-9]+}}.unwrap()({{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> i32> = unsafe { g.inner.scanners[({{_v[0-9]+}} as usize)] };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> =
+// LOWERING-NEXT:         unsafe { g.inner.scanners[({{_v[0-9]+}} as usize)] };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 10;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { {{_v[0-9]+}}.unwrap()({{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> i32> =
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> =
 // LOWERING-NEXT:         unsafe { g.inner.scanners[({{_v[0-9]+}} as usize)] };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 10;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { {{_v[0-9]+}}.unwrap()({{_v[0-9]+}}) };
@@ -182,10 +184,10 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> i32> = unsafe { g.trailing1 };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = unsafe { g.trailing1 };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 10;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { {{_v[0-9]+}}.unwrap()({{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> i32> = unsafe { g.trailing2 };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = unsafe { g.trailing2 };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 10;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { {{_v[0-9]+}}.unwrap()({{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { g.trailing3 };
@@ -213,7 +215,7 @@ int main(void) {
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: struct Inner {
-// REWRITES-NEXT:     scanners: [Option<unsafe extern "C" fn(i32) -> i32>; 3],
+// REWRITES-NEXT:     scanners: [Option<unsafe extern "C-unwind" fn(i32) -> i32>; 3],
 // REWRITES-NEXT:     tag: i32,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -222,8 +224,8 @@ int main(void) {
 // REWRITES-NEXT: struct Outer {
 // REWRITES-NEXT:     inner: Inner,
 // REWRITES-NEXT:     bytes: [u8; 8],
-// REWRITES-NEXT:     trailing1: Option<unsafe extern "C" fn(i32) -> i32>,
-// REWRITES-NEXT:     trailing2: Option<unsafe extern "C" fn(i32) -> i32>,
+// REWRITES-NEXT:     trailing1: Option<unsafe extern "C-unwind" fn(i32) -> i32>,
+// REWRITES-NEXT:     trailing2: Option<unsafe extern "C-unwind" fn(i32) -> i32>,
 // REWRITES-NEXT:     trailing3: i32,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -231,17 +233,17 @@ int main(void) {
 // REWRITES-NEXT:     inner: Inner {
 // REWRITES-NEXT:         scanners: [
 // REWRITES-NEXT:             unsafe {
-// REWRITES-NEXT:                 std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32) -> i32>>(
+// REWRITES-NEXT:                 std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
 // REWRITES-NEXT:                     add1 as *const (),
 // REWRITES-NEXT:                 )
 // REWRITES-NEXT:             },
 // REWRITES-NEXT:             unsafe {
-// REWRITES-NEXT:                 std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32) -> i32>>(
+// REWRITES-NEXT:                 std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
 // REWRITES-NEXT:                     add2 as *const (),
 // REWRITES-NEXT:                 )
 // REWRITES-NEXT:             },
 // REWRITES-NEXT:             unsafe {
-// REWRITES-NEXT:                 std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32) -> i32>>(
+// REWRITES-NEXT:                 std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
 // REWRITES-NEXT:                     add3 as *const (),
 // REWRITES-NEXT:                 )
 // REWRITES-NEXT:             },
@@ -250,12 +252,12 @@ int main(void) {
 // REWRITES-NEXT:     },
 // REWRITES-NEXT:     bytes: [1, 2, 3, 4, 5, 6, 7, 8],
 // REWRITES-NEXT:     trailing1: unsafe {
-// REWRITES-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32) -> i32>>(
+// REWRITES-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
 // REWRITES-NEXT:             mul5 as *const (),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     },
 // REWRITES-NEXT:     trailing2: unsafe {
-// REWRITES-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32) -> i32>>(
+// REWRITES-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
 // REWRITES-NEXT:             mul7 as *const (),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     },
@@ -266,23 +268,23 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C" fn add1({{arg[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT: extern "C-unwind" fn add1({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     {{arg[0-9]+}} + 1
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C" fn add2({{arg[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT: extern "C-unwind" fn add2({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     {{arg[0-9]+}} + 2
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C" fn add3({{arg[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT: extern "C-unwind" fn add3({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     {{arg[0-9]+}} + 3
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C" fn mul5({{arg[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT: extern "C-unwind" fn mul5({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     {{arg[0-9]+}} * 5
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C" fn mul7({{arg[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT: extern "C-unwind" fn mul7({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     {{arg[0-9]+}} * 7
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -291,16 +293,15 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%d %d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             unsafe { unsafe { g.inner.scanners[((0 as i64) as usize)] }.unwrap()(10 as i32) },
-// REWRITES-NEXT:             unsafe { unsafe { g.inner.scanners[((1 as i64) as usize)] }.unwrap()(10 as i32) },
-// REWRITES-NEXT:             unsafe { unsafe { g.inner.scanners[((2 as i64) as usize)] }.unwrap()(10 as i32) },
+// REWRITES-NEXT:             unsafe { unsafe { g.inner.scanners[0] }.unwrap()(10 as i32) },
+// REWRITES-NEXT:             unsafe { unsafe { g.inner.scanners[1] }.unwrap()(10 as i32) },
+// REWRITES-NEXT:             unsafe { unsafe { g.inner.scanners[2] }.unwrap()(10 as i32) },
 // REWRITES-NEXT:             {{_v[0-9]+}},
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i < 8;
-// REWRITES-NEXT:         if !{{_v[0-9]+}} {
+// REWRITES-NEXT:         if !(i < 8) {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         unsafe {

@@ -9,7 +9,7 @@ void send_byte(uint8_t byte) {
 
   UART_DATA = byte;
 }
-// LOWERING-LABEL: {{^}}pub extern "C" fn send_byte(
+// LOWERING-LABEL: {{^}}pub extern "C-unwind" fn send_byte(
 // LOWERING-DAG: std::ptr::read_volatile
 // LOWERING-DAG: std::ptr::write_volatile
 // LOWERING: {{^}}}

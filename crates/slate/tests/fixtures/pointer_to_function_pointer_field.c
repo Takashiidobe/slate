@@ -48,7 +48,7 @@ int main(void) {
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: struct suite_t {
-// LOWERING-NEXT:     tests: *mut Option<unsafe extern "C" fn()>,
+// LOWERING-NEXT:     tests: *mut Option<unsafe extern "C-unwind" fn()>,
 // LOWERING-NEXT:     ntests: i32,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
@@ -60,7 +60,7 @@ int main(void) {
 // LOWERING-NEXT:     fn free(_0: *mut core::ffi::c_void);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C" fn test_a() {
+// LOWERING-NEXT: extern "C-unwind" fn test_a() {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         last_ran = {{_v[0-9]+}};
@@ -68,7 +68,7 @@ int main(void) {
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C" fn test_b() {
+// LOWERING-NEXT: extern "C-unwind" fn test_b() {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         last_ran = {{_v[0-9]+}};
@@ -86,17 +86,18 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} * {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{_v[0-9]+}} as usize) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut Option<unsafe extern "C" fn()> = {{_v[0-9]+}} as *mut Option<unsafe extern "C" fn()>;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> =
+// LOWERING-NEXT:         {{_v[0-9]+}} as *mut Option<unsafe extern "C-unwind" fn()>;
 // LOWERING-NEXT:     suite.tests = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut Option<unsafe extern "C" fn()> = suite.tests;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut Option<unsafe extern "C" fn()> = unsafe { {{_v[0-9]+}}.add(0) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = suite.tests;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = unsafe { {{_v[0-9]+}}.add(0) };
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         *{{_v[0-9]+}} = Some(test_a);
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut Option<unsafe extern "C" fn()> = suite.tests;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut Option<unsafe extern "C" fn()> = unsafe { {{_v[0-9]+}}.add(1) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = suite.tests;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = unsafe { {{_v[0-9]+}}.add(1) };
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         *{{_v[0-9]+}} = Some(test_b);
 // LOWERING-NEXT:     }
@@ -116,10 +117,10 @@ int main(void) {
 // LOWERING-NEXT:             {
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = i;
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut Option<unsafe extern "C" fn()> = suite.tests;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut Option<unsafe extern "C" fn()> =
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = suite.tests;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> =
 // LOWERING-NEXT:                     unsafe { {{_v[0-9]+}}.offset({{_v[0-9]+}} as isize) };
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: Option<unsafe extern "C" fn()> = unsafe { *{{_v[0-9]+}} };
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn()> = unsafe { *{{_v[0-9]+}} };
 // LOWERING-NEXT:                 unsafe { {{_v[0-9]+}}.unwrap()() };
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { last_ran };
@@ -130,7 +131,7 @@ int main(void) {
 // LOWERING-NEXT:             i = {{_v[0-9]+}};
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut Option<unsafe extern "C" fn()> = suite.tests;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = suite.tests;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:     unsafe { free({{_v[0-9]+}} as *mut core::ffi::c_void) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
@@ -156,7 +157,7 @@ int main(void) {
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: struct suite_t {
-// REWRITES-NEXT:     tests: *mut Option<unsafe extern "C" fn()>,
+// REWRITES-NEXT:     tests: *mut Option<unsafe extern "C-unwind" fn()>,
 // REWRITES-NEXT:     ntests: i32,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -168,14 +169,14 @@ int main(void) {
 // REWRITES-NEXT:     fn free(_0: *mut core::ffi::c_void);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C" fn test_a() {
+// REWRITES-NEXT: extern "C-unwind" fn test_a() {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         last_ran = 0;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C" fn test_b() {
+// REWRITES-NEXT: extern "C-unwind" fn test_b() {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         last_ran = 1;
 // REWRITES-NEXT:     }
@@ -190,21 +191,22 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 2 * {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{_v[0-9]+}} as usize) };
-// REWRITES-NEXT:     suite.tests = {{_v[0-9]+}} as *mut Option<unsafe extern "C" fn()>;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut Option<unsafe extern "C" fn()> = suite.tests;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut Option<unsafe extern "C" fn()> = unsafe { {{_v[0-9]+}}.add(0) };
+// REWRITES-NEXT:     suite.tests = {{_v[0-9]+}} as *mut Option<unsafe extern "C-unwind" fn()>;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = suite.tests;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = unsafe { {{_v[0-9]+}}.add(0) };
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         *{{_v[0-9]+}} = Some(test_a);
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut Option<unsafe extern "C" fn()> = suite.tests;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut Option<unsafe extern "C" fn()> = unsafe { {{_v[0-9]+}}.add(1) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = suite.tests;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = unsafe { {{_v[0-9]+}}.add(1) };
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         *{{_v[0-9]+}} = Some(test_b);
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     suite.ntests = 2;
 // REWRITES-NEXT:     for i in 0..suite.ntests {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut Option<unsafe extern "C" fn()> = suite.tests;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut Option<unsafe extern "C" fn()> = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = suite.tests;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> =
+// REWRITES-NEXT:             unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
 // REWRITES-NEXT:         unsafe { unsafe { *{{_v[0-9]+}} }.unwrap()() };
 // REWRITES-NEXT:         unsafe { printf(c"%d\n".as_ptr(), unsafe { last_ran }) };
 // REWRITES-NEXT:     }

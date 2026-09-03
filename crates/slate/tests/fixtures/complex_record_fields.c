@@ -190,18 +190,21 @@ int main(void) {
 // REWRITES-DAG: };
 // REWRITES-DAG: let {{_v[0-9]+}}: f32 = 0.0;
 // REWRITES-DAG: let {{_v[0-9]+}}: f32 = 6.0;
-// REWRITES-DAG: let {{_v[0-9]+}}: f32 = 5.0 + {{_v[0-9]+}};
-// REWRITES-DAG: fields.f32 = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
+// REWRITES-DAG: fields.f32 = num_complex::Complex {
+// REWRITES-DAG:     re: 5.0 + {{_v[0-9]+}},
+// REWRITES-DAG:     im: {{_v[0-9]+}},
+// REWRITES-DAG: };
 // REWRITES-DAG: let {{_v[0-9]+}}: f64 = 0.0;
 // REWRITES-DAG: let {{_v[0-9]+}}: f64 = 8.0;
-// REWRITES-DAG: let {{_v[0-9]+}}: f64 = 7.0 + {{_v[0-9]+}};
-// REWRITES-DAG: fields.f64 = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
+// REWRITES-DAG: fields.f64 = num_complex::Complex {
+// REWRITES-DAG:     re: 7.0 + {{_v[0-9]+}},
+// REWRITES-DAG:     im: {{_v[0-9]+}},
+// REWRITES-DAG: };
 // REWRITES-DAG: unsafe {
 // REWRITES-DAG:     overlay.value = fields.f64;
 // REWRITES-DAG: }
 // REWRITES-DAG: let {{_v[0-9]+}}: num_complex::Complex<i8> = fields.c8;
-// REWRITES-DAG: let {{_v[0-9]+}}: bool = ({{_v[0-9]+}}.re as i32) != 1;
-// REWRITES-DAG: let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// REWRITES-DAG: let {{_v[0-9]+}}: bool = if ({{_v[0-9]+}}.re as i32) != 1 {
 // REWRITES-DAG:     let {{_v[0-9]+}}: bool = true;
 // REWRITES-DAG:     {{_v[0-9]+}}
 // REWRITES-DAG: } else {

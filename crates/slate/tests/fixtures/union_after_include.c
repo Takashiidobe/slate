@@ -242,7 +242,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 1;
 // REWRITES-NEXT:     values[({{_v[0-9]+}} as usize)] = 1;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// REWRITES-NEXT:     values[({{_v[0-9]+}} as usize)] = values[((0 as i64) as usize)] + values[((1 as i64) as usize)];
+// REWRITES-NEXT:     values[({{_v[0-9]+}} as usize)] = values[0] + values[1];
 // REWRITES-NEXT:     values[(({{arg[0-9]+}} as i64) as usize)]
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

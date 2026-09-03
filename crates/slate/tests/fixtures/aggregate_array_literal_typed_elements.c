@@ -207,15 +207,8 @@ int main(void) {
 // REWRITES-NEXT:         name: std::ptr::null_mut(),
 // REWRITES-NEXT:         value: std::ptr::null_mut(),
 // REWRITES-NEXT:     }; 1];
-// REWRITES-NEXT:     let mut i: i32 = 0;
-// REWRITES-NEXT:     i = 0;
-// REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i < 1;
-// REWRITES-NEXT:         if !{{_v[0-9]+}} {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = pairs[((i as i64) as usize)].name == std::ptr::null_mut();
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// REWRITES-NEXT:     for i in 0..1 {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = if pairs[((i as i64) as usize)].name == std::ptr::null_mut() {
 // REWRITES-NEXT:             let {{_v[0-9]+}}: bool = pairs[((i as i64) as usize)].value == std::ptr::null_mut();
 // REWRITES-NEXT:             {{_v[0-9]+}}
 // REWRITES-NEXT:         } else {
@@ -225,7 +218,6 @@ int main(void) {
 // REWRITES-NEXT:         if {{_v[0-9]+}} {
 // REWRITES-NEXT:             total += 1;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     total
 // REWRITES-NEXT: }
@@ -234,18 +226,10 @@ int main(void) {
 // REWRITES-NEXT:     let mut values: [bool; 2] = [false; 2];
 // REWRITES-NEXT:     let mut total: i32 = 0;
 // REWRITES-NEXT:     values = [true, false];
-// REWRITES-NEXT:     let mut i: u64 = 0;
-// REWRITES-NEXT:     i = 0;
-// REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = 1;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i < 2 / {{_v[0-9]+}};
-// REWRITES-NEXT:         if !{{_v[0-9]+}} {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     for i in 0..(2 / 1) {
 // REWRITES-NEXT:         if values[(i as usize)] {
 // REWRITES-NEXT:             total += 1;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     total
 // REWRITES-NEXT: }
