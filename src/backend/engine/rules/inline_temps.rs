@@ -1002,7 +1002,12 @@ fn expr_is_type_anchored(expr: &Expr) -> bool {
         ),
         Expr::Var(_) => true,
         Expr::Cast { expr, .. } | Expr::Unary { expr, .. } => expr_is_type_anchored(expr),
-        Expr::Binary { lhs, rhs, .. } => expr_is_type_anchored(lhs) && expr_is_type_anchored(rhs),
+        Expr::Binary {
+            op: BinOp::Shl | BinOp::Shr,
+            lhs,
+            ..
+        } => expr_is_type_anchored(lhs),
+        Expr::Binary { lhs, rhs, .. } => expr_is_type_anchored(lhs) || expr_is_type_anchored(rhs),
         _ => true,
     }
 }
