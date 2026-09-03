@@ -207,8 +207,7 @@ int main(void) {
 // REWRITES-DAG:         } else {
 // REWRITES-DAG:             out += 3;
 // REWRITES-DAG:             out += 4;
-// REWRITES-DAG:             let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:             if x % 2 == {{_v[0-9]+}} {
+// REWRITES-DAG:             if x % 2 == 0 {
 // REWRITES-DAG:             } else {
 // REWRITES-DAG:                 out += 5;
 // REWRITES-DAG:                 out += 6;
@@ -217,8 +216,7 @@ int main(void) {
 // REWRITES-DAG:     }
 // REWRITES-DAG:     101 => {
 // REWRITES-DAG:         out += 4;
-// REWRITES-DAG:         let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:         if x % 2 == {{_v[0-9]+}} {
+// REWRITES-DAG:         if x % 2 == 0 {
 // REWRITES-DAG:         } else {
 // REWRITES-DAG:             out += 5;
 // REWRITES-DAG:             out += 6;
