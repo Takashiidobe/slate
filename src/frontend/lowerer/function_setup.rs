@@ -72,7 +72,7 @@ impl<'a> Lowerer<'a> {
             },
             unsafe_,
             abi: if external_def || self.c_abi_functions.contains(name) {
-                Some(Abi::C)
+                Some(Abi::CUnwind)
             } else {
                 None
             },
@@ -215,7 +215,7 @@ impl<'a> Lowerer<'a> {
             let abi = if !boxed_variadic
                 && (external_def || is_variadic || self.c_abi_functions.contains(name))
             {
-                Some(Abi::C)
+                Some(Abi::CUnwind)
             } else {
                 None
             };
@@ -501,7 +501,7 @@ impl<'a> Lowerer<'a> {
             attrs,
             vis,
             unsafe_: false,
-            abi: Some(Abi::C),
+            abi: Some(Abi::CUnwind),
             name: name.to_string(),
             params,
             ret,

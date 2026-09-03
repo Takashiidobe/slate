@@ -1332,7 +1332,7 @@ impl<'a> Lowerer<'a> {
                             mutable: false,
                             name: target,
                             ty: Type::FnPtr {
-                                abi: Abi::C,
+                                abi: Abi::CUnwind,
                                 params: decl.params.into_iter().map(|param| param.ty).collect(),
                                 ret: Box::new(decl.ret.unwrap_or(Type::Unit)),
                             },
@@ -2183,7 +2183,7 @@ impl __SlateVaArgs {
                 attrs: Vec::new(),
                 vis: Visibility::Private,
                 unsafe_: false,
-                abi: Some(Abi::C),
+                abi: Some(Abi::CUnwind),
                 name: wrapper_name.clone(),
                 params: fn_params,
                 ret: Some(Type::Custom(enum_name.to_string())),
@@ -2984,7 +2984,7 @@ fn c_type_to_type(ty: &crate::frontend::c_ast::CType, va_list_boxed: bool) -> Ty
         },
         CType::Ptr(inner) => ptr(inner),
         CType::FuncPtr { ret, params } => Type::FnPtr {
-            abi: Abi::C,
+            abi: Abi::CUnwind,
             params: params
                 .iter()
                 .map(|ty| c_type_to_type(ty, va_list_boxed))

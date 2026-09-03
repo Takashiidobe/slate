@@ -28,9 +28,16 @@
 
 #define SEM_FAILED ((sem_t *)0)
 
+#if defined(__SLATE_LIBC_GLIBC)
+typedef union {
+  char    __size[4 * sizeof(long)];
+  long int __align;
+} sem_t;
+#else
 typedef struct {
   volatile int __val[4 * sizeof(long) / sizeof(int)];
 } sem_t;
+#endif
 
 int    sem_close(sem_t *);
 int    sem_destroy(sem_t *);
