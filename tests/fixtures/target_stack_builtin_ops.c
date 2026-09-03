@@ -508,14 +508,13 @@ int main(void) {
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = bytes.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT:     unsafe { {{_v[0-9]+}}.add(1) };
-// REWRITES-NEXT:     (bytes[((0 as i64) as usize)] as i32) + 1
+// REWRITES-NEXT:     (bytes[0] as i32) + 1
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn frame_probe() -> i32 {
 // REWRITES-NEXT:     let mut {{_v[0-9]+}}: u8 = 0u8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u8 = std::ptr::addr_of_mut!({{_v[0-9]+}}) as *mut u8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = ({{_v[0-9]+}} as *mut core::ffi::c_void) != std::ptr::null_mut();
-// REWRITES-NEXT:     {{_v[0-9]+}} as i32
+// REWRITES-NEXT:     (({{_v[0-9]+}} as *mut core::ffi::c_void) != std::ptr::null_mut()) as i32
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn clear_padding_probe() -> i32 {
@@ -558,8 +557,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.add(3) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} * ({{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32));
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u8 = std::ptr::addr_of_mut!(bits) as *mut u8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = ((unsafe { *{{_v[0-9]+}} }) as i32) == 231;
-// REWRITES-NEXT:     {{_v[0-9]+}} + ({{_v[0-9]+}} as i32)
+// REWRITES-NEXT:     {{_v[0-9]+}} + ((((unsafe { *{{_v[0-9]+}} }) as i32) == 231) as i32)
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn frexp_probe() -> i32 {
@@ -574,11 +572,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(input_f)) };
 // REWRITES-NEXT:     let mut {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = unsafe { __slate_builtin_frexpf({{_v[0-9]+}}, std::ptr::addr_of_mut!({{_v[0-9]+}})) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0.75;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 10 * ({{_v[0-9]+}} as i32) + {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0.5;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 10 * ({{_v[0-9]+}} as i32);
-// REWRITES-NEXT:     100 * {{_v[0-9]+}} + {{_v[0-9]+}} + {{_v[0-9]+}}
+// REWRITES-NEXT:     100 * (10 * (({{_v[0-9]+}} == 0.75) as i32) + {{_v[0-9]+}}) + 10 * (({{_v[0-9]+}} == 0.5) as i32) + {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn hyperbolic_probe() -> i32 {
@@ -604,48 +598,45 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: [f64; 2] = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(*vector_input)) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: [f64; 2] = [{{_v[0-9]+}}[0usize].tanh(), {{_v[0-9]+}}[1usize].tanh()];
 // REWRITES-NEXT:     *vt = {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = (*vc)[((0 as i32) as usize)] == 1.0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = (*vc)[((1 as i32) as usize)] == 1.0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if (*vc)[0] == 1.0 {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = (*vc)[1] == 1.0;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = (*vs)[((0 as i32) as usize)] == 0.0;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = (*vs)[0] == 0.0;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = (*vs)[((1 as i32) as usize)] == 0.0;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = (*vs)[1] == 0.0;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = (*vt)[((0 as i32) as usize)] == 0.0;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = (*vt)[0] == 0.0;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = (*vt)[((1 as i32) as usize)] == 0.0;
+// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = (*vt)[1] == 0.0;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = false;
 // REWRITES-NEXT:         {{_v[0-9]+}}
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 1.0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 100 * ({{_v[0-9]+}} as i32);
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0.0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 10 * ({{_v[0-9]+}} as i32);
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0.0;
-// REWRITES-NEXT:     1000 * ({{_v[0-9]+}} as i32) + {{_v[0-9]+}} + {{_v[0-9]+}} + ({{_v[0-9]+}} as i32)
+// REWRITES-NEXT:     1000 * ({{_v[0-9]+}} as i32)
+// REWRITES-NEXT:         + 100 * (({{_v[0-9]+}} == 1.0) as i32)
+// REWRITES-NEXT:         + 10 * (({{_v[0-9]+}} == 0.0) as i32)
+// REWRITES-NEXT:         + (({{_v[0-9]+}} == 0.0) as i32)
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

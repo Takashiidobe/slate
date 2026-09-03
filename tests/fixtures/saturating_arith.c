@@ -149,9 +149,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u128 = 1;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u128 = 0 - {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u128 = {{_v[0-9]+}}.saturating_add(5 as u128);
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u128 = 1;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0 - {{_v[0-9]+}};
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{_v[0-9]+}} as i32) };
+// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), ({{_v[0-9]+}} == 0 - (1 as u128)) as i32) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BInt<200, 4, 32> = bitint::BInt::<200, 4, 32>::from_decimal_str("-1");
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BInt<200, 4, 32> = bitint::BInt::<200, 4, 32>::from_decimal_str("5");
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bitint::BInt<200, 4, 32> = {{_v[0-9]+}}.saturating_add({{_v[0-9]+}});
@@ -173,10 +171,10 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%d %d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             {{_v[0-9]+}}[((0 as i32) as usize)],
-// REWRITES-NEXT:             {{_v[0-9]+}}[((1 as i32) as usize)],
-// REWRITES-NEXT:             {{_v[0-9]+}}[((2 as i32) as usize)],
-// REWRITES-NEXT:             {{_v[0-9]+}}[((3 as i32) as usize)],
+// REWRITES-NEXT:             {{_v[0-9]+}}[0],
+// REWRITES-NEXT:             {{_v[0-9]+}}[1],
+// REWRITES-NEXT:             {{_v[0-9]+}}[2],
+// REWRITES-NEXT:             {{_v[0-9]+}}[3],
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

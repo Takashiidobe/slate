@@ -51,7 +51,7 @@ int main(void) {
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: struct parser_t {
 // LOWERING-NEXT:     read_handler:
-// LOWERING-NEXT:         Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut u8, u64, *mut u64) -> i32>,
+// LOWERING-NEXT:         Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut u8, u64, *mut u64) -> i32>,
 // LOWERING-NEXT:     read_handler_data: *mut core::ffi::c_void,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
@@ -59,7 +59,7 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C" fn read_bytes(
+// LOWERING-NEXT: extern "C-unwind" fn read_bytes(
 // LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
 // LOWERING-NEXT:     {{arg[0-9]+}}: *mut u8,
 // LOWERING-NEXT:     {{arg[0-9]+}}: u64,
@@ -129,14 +129,17 @@ int main(void) {
 // LOWERING-NEXT:     parser.read_handler = unsafe {
 // LOWERING-NEXT:         std::mem::transmute::<
 // LOWERING-NEXT:             *const (),
-// LOWERING-NEXT:             Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut u8, u64, *mut u64) -> i32>,
+// LOWERING-NEXT:             Option<
+// LOWERING-NEXT:                 unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut u8, u64, *mut u64) -> i32,
+// LOWERING-NEXT:             >,
 // LOWERING-NEXT:         >(read_bytes as *const ())
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = input.as_mut_ptr() as *mut u8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // LOWERING-NEXT:     parser.read_handler_data = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut u8, u64, *mut u64) -> i32> =
-// LOWERING-NEXT:         parser.read_handler;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<
+// LOWERING-NEXT:         unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut u8, u64, *mut u64) -> i32,
+// LOWERING-NEXT:     > = parser.read_handler;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = parser.read_handler_data;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = buffer.as_mut_ptr() as *mut u8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 3;
@@ -174,7 +177,7 @@ int main(void) {
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: struct parser_t {
 // REWRITES-NEXT:     read_handler:
-// REWRITES-NEXT:         Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut u8, u64, *mut u64) -> i32>,
+// REWRITES-NEXT:         Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut u8, u64, *mut u64) -> i32>,
 // REWRITES-NEXT:     read_handler_data: *mut core::ffi::c_void,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -182,7 +185,7 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C" fn read_bytes(
+// REWRITES-NEXT: extern "C-unwind" fn read_bytes(
 // REWRITES-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
 // REWRITES-NEXT:     mut buffer: *mut u8,
 // REWRITES-NEXT:     mut size: u64,
@@ -222,13 +225,16 @@ int main(void) {
 // REWRITES-NEXT:     parser.read_handler = unsafe {
 // REWRITES-NEXT:         std::mem::transmute::<
 // REWRITES-NEXT:             *const (),
-// REWRITES-NEXT:             Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut u8, u64, *mut u64) -> i32>,
+// REWRITES-NEXT:             Option<
+// REWRITES-NEXT:                 unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut u8, u64, *mut u64) -> i32,
+// REWRITES-NEXT:             >,
 // REWRITES-NEXT:         >(read_bytes as *const ())
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u8 = input.as_mut_ptr() as *mut u8;
 // REWRITES-NEXT:     parser.read_handler_data = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(*mut core::ffi::c_void, *mut u8, u64, *mut u64) -> i32> =
-// REWRITES-NEXT:         parser.read_handler;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: Option<
+// REWRITES-NEXT:         unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *mut u8, u64, *mut u64) -> i32,
+// REWRITES-NEXT:     > = parser.read_handler;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = parser.read_handler_data;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u8 = buffer.as_mut_ptr() as *mut u8;
 // REWRITES-NEXT:     unsafe {
@@ -236,8 +242,8 @@ int main(void) {
 // REWRITES-NEXT:             c"%d %lu %c %c\n".as_ptr(),
 // REWRITES-NEXT:             unsafe { {{_v[0-9]+}}.unwrap()({{_v[0-9]+}}, {{_v[0-9]+}}, 3 as u64, std::ptr::addr_of_mut!(size_read)) },
 // REWRITES-NEXT:             size_read,
-// REWRITES-NEXT:             buffer[((1 as i64) as usize)] as i32,
-// REWRITES-NEXT:             tag[((4 as i64) as usize)] as i32,
+// REWRITES-NEXT:             buffer[1] as i32,
+// REWRITES-NEXT:             tag[4] as i32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

@@ -98,7 +98,7 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[unsafe(no_mangle)]
-// LOWERING-NEXT: pub extern "C" fn gnu_pragma_weak_target() -> i32 {
+// LOWERING-NEXT: pub extern "C-unwind" fn gnu_pragma_weak_target() -> i32 {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 17;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
@@ -196,7 +196,7 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[unsafe(no_mangle)]
-// REWRITES-NEXT: pub extern "C" fn gnu_pragma_weak_target() -> i32 {
+// REWRITES-NEXT: pub extern "C-unwind" fn gnu_pragma_weak_target() -> i32 {
 // REWRITES-NEXT:     17
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

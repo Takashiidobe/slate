@@ -91,8 +91,7 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn describe(mut {{_v[0-9]+}}: i32) -> *mut i8 {
 // REWRITES-NEXT:     let mut Err_: *mut i8 = std::ptr::null_mut();
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
-// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:     if {{_v[0-9]+}} == 0 {
 // REWRITES-NEXT:         Err_ = c"ok".as_ptr() as *mut i8;
 // REWRITES-NEXT:     } else {
 // REWRITES-NEXT:         Err_ = c"bad".as_ptr() as *mut i8;

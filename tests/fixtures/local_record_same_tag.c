@@ -312,8 +312,7 @@ int main(void) {
 // REWRITES-NEXT:     i = 0;
 // REWRITES-NEXT:     loop {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = 24;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = (i as u64) < 48 / {{_v[0-9]+}};
-// REWRITES-NEXT:         if !{{_v[0-9]+}} {
+// REWRITES-NEXT:         if !((i as u64) < 48 / {{_v[0-9]+}}) {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 =

@@ -171,8 +171,7 @@ overflow:
 // REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             2 => {
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: bool = sum > 100;
-// REWRITES-NEXT:                 if {{_v[0-9]+}} {
+// REWRITES-NEXT:                 if sum > 100 {
 // REWRITES-NEXT:                     {{__state[0-9]+}} = 3;
 // REWRITES-NEXT:                 } else {
 // REWRITES-NEXT:                     {{__state[0-9]+}} = 4;
@@ -193,8 +192,7 @@ overflow:
 // REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             6 => {
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: bool = i < 5;
-// REWRITES-NEXT:                 if {{_v[0-9]+}} {
+// REWRITES-NEXT:                 if i < 5 {
 // REWRITES-NEXT:                     {{__state[0-9]+}} = 7;
 // REWRITES-NEXT:                 } else {
 // REWRITES-NEXT:                     {{__state[0-9]+}} = 8;

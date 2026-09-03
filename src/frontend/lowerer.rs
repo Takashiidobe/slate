@@ -234,6 +234,7 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
         used_symbols: BTreeMap::new(),
         externs: BTreeMap::new(),
         extern_returns: BTreeMap::new(),
+        extern_fn_ptr_types: BTreeMap::new(),
         long_double_shims: BTreeMap::new(),
         llvm_intrinsic_shims: BTreeMap::new(),
         uses_long_double: std::cell::Cell::new(false),
@@ -735,6 +736,7 @@ struct Lowerer<'a> {
     used_symbols: BTreeMap<String, Vec<UsedKind>>,
     externs: BTreeMap<String, Vec<Type>>,
     extern_returns: BTreeMap<String, Option<String>>,
+    extern_fn_ptr_types: BTreeMap<String, Type>,
     long_double_shims: BTreeMap<String, ExternFnDecl>,
     llvm_intrinsic_shims: BTreeMap<String, ExternFnDecl>,
     uses_long_double: std::cell::Cell<bool>,
@@ -1310,6 +1312,8 @@ impl<'a> Lowerer<'a> {
                     }
                     self.externs.insert(name.clone(), params);
                     self.extern_returns.insert(name.clone(), ret);
+                    self.extern_fn_ptr_types
+                        .insert(name.clone(), extern_fn_ptr_type(&decl));
                     extern_decls.push(ExternDecl::Fn(decl));
                 }
                 continue;
@@ -1357,6 +1361,8 @@ impl<'a> Lowerer<'a> {
             }
             self.externs.insert(name.clone(), params);
             self.extern_returns.insert(name.clone(), ret.clone());
+            self.extern_fn_ptr_types
+                .insert(name.clone(), extern_fn_ptr_type(&decl));
             extern_decls.push(ExternDecl::Fn(decl));
         }
         if !extern_decls.is_empty() {
@@ -1462,7 +1468,9 @@ impl __SlateVaArgs {
                 decl.params.iter().map(|param| param.ty.clone()).collect(),
             );
             self.extern_returns
-                .insert(name, decl.ret.as_ref().map(Type::render));
+                .insert(name.clone(), decl.ret.as_ref().map(Type::render));
+            self.extern_fn_ptr_types
+                .insert(name, extern_fn_ptr_type(&decl));
             synthetic_externs.push(ExternDecl::Fn(decl));
         }
         if !synthetic_externs.is_empty() {
@@ -2940,6 +2948,14 @@ impl<'a> Lowerer<'a> {
 
     fn c_record_field_type(&self, ty: &crate::frontend::c_ast::CType) -> Type {
         c_record_field_type(ty, self.va_list_boxed)
+    }
+}
+
+fn extern_fn_ptr_type(decl: &ExternFnDecl) -> Type {
+    Type::FnPtr {
+        abi: Abi::CUnwind,
+        params: decl.params.iter().map(|param| param.ty.clone()).collect(),
+        ret: Box::new(decl.ret.clone().unwrap_or(Type::Unit)),
     }
 }
 

@@ -58,7 +58,7 @@ int main(void) {
 // LOWERING-NEXT: unsafe extern "C" {
 // LOWERING-NEXT:     fn thrd_create(
 // LOWERING-NEXT:         _0: *mut u64,
-// LOWERING-NEXT:         _1: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> i32>,
+// LOWERING-NEXT:         _1: Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void) -> i32>,
 // LOWERING-NEXT:         _2: *mut core::ffi::c_void,
 // LOWERING-NEXT:     ) -> i32;
 // LOWERING-NEXT:     fn thrd_join(_0: u64, _1: *mut i32) -> i32;
@@ -80,7 +80,7 @@ int main(void) {
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C" fn worker({{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
+// LOWERING-NEXT: extern "C-unwind" fn worker({{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{arg[0-9]+}} as *mut i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(0) };

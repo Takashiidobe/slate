@@ -106,8 +106,8 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%d %d\n".as_ptr(),
-// REWRITES-NEXT:             (unsafe { word.bytes[((0 as i64) as usize)] }) as i32,
-// REWRITES-NEXT:             (unsafe { word.bytes[((1 as i64) as usize)] }) as i32,
+// REWRITES-NEXT:             (unsafe { word.bytes[0] }) as i32,
+// REWRITES-NEXT:             (unsafe { word.bytes[1] }) as i32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

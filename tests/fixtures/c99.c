@@ -1318,30 +1318,33 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 18000000000u64;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 2.0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 0.0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}} * (0.0 + {{_v[0-9]+}});
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}} * 1.0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 1.0 + {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex {
+// REWRITES-NEXT:         re: 1.0 + {{_v[0-9]+}} * (0.0 + {{_v[0-9]+}}),
+// REWRITES-NEXT:         im: {{_v[0-9]+}} * 1.0,
+// REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = 4.0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 0.0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 1.0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 0.0 + {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex {
+// REWRITES-NEXT:         re: 0.0 + {{_v[0-9]+}},
+// REWRITES-NEXT:         im: {{_v[0-9]+}},
+// REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex {
 // REWRITES-NEXT:         re: {{_v[0-9]+}}.re as f64,
 // REWRITES-NEXT:         im: {{_v[0-9]+}}.im as f64,
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = 3.0 + {{_v[0-9]+}} * {{_v[0-9]+}}.re;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex {
-// REWRITES-NEXT:         re: {{_v[0-9]+}},
+// REWRITES-NEXT:         re: 3.0 + {{_v[0-9]+}} * {{_v[0-9]+}}.re,
 // REWRITES-NEXT:         im: {{_v[0-9]+}} * {{_v[0-9]+}}.im,
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 1, 64]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 0.0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 1.0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 0.0 + {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex {
+// REWRITES-NEXT:         re: 0.0 + {{_v[0-9]+}},
+// REWRITES-NEXT:         im: {{_v[0-9]+}},
+// REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}}.re;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}}.im;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = __slate_f80_from_f32({{_v[0-9]+}});
@@ -1352,36 +1355,36 @@ int main(void) {
 // REWRITES-NEXT:         im: {{_v[0-9]+}} * {{_v[0-9]+}}.im,
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 2.0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 0.0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}} * (0.0 + {{_v[0-9]+}});
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}} * 1.0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 1.0 + {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = 4.0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 0.0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 1.0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 0.0 + {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex {
+// REWRITES-NEXT:         re: 0.0 + {{_v[0-9]+}},
+// REWRITES-NEXT:         im: {{_v[0-9]+}},
+// REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex {
 // REWRITES-NEXT:         re: {{_v[0-9]+}}.re as f64,
 // REWRITES-NEXT:         im: {{_v[0-9]+}}.im as f64,
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = 3.0 + {{_v[0-9]+}} * {{_v[0-9]+}}.re;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}} as i32)
 // REWRITES-NEXT:         + (({{_v[0-9]+}} == -9000000000i64) as i32)
 // REWRITES-NEXT:         + (({{_v[0-9]+}} == 18000000000u64) as i32)
-// REWRITES-NEXT:         + (({{_v[0-9]+}} == num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} }) as i32)
 // REWRITES-NEXT:         + (({{_v[0-9]+}}
 // REWRITES-NEXT:             == num_complex::Complex {
-// REWRITES-NEXT:                 re: {{_v[0-9]+}},
+// REWRITES-NEXT:                 re: 1.0 + {{_v[0-9]+}} * (0.0 + (0.0 as f32)),
+// REWRITES-NEXT:                 im: {{_v[0-9]+}} * 1.0,
+// REWRITES-NEXT:             }) as i32)
+// REWRITES-NEXT:         + (({{_v[0-9]+}}
+// REWRITES-NEXT:             == num_complex::Complex {
+// REWRITES-NEXT:                 re: 3.0 + {{_v[0-9]+}} * {{_v[0-9]+}}.re,
 // REWRITES-NEXT:                 im: {{_v[0-9]+}} * {{_v[0-9]+}}.im,
 // REWRITES-NEXT:             }) as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 1, 64]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 0.0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 1.0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = 0.0 + {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex {
-// REWRITES-NEXT:         re: {{_v[0-9]+}},
+// REWRITES-NEXT:         re: 0.0 + {{_v[0-9]+}},
 // REWRITES-NEXT:         im: {{_v[0-9]+}},
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f32 = {{_v[0-9]+}}.re;
@@ -1399,8 +1402,7 @@ int main(void) {
 // REWRITES-NEXT:                 im: {{_v[0-9]+}} * {{_v[0-9]+}}.im,
 // REWRITES-NEXT:             }) as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 4;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 3 * {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 8 + {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 8 + 3 * {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{_v[0-9]+}} as usize) };
 // REWRITES-NEXT:     flexible = {{_v[0-9]+}} as *mut C99Flexible;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = flexible == std::ptr::null_mut();
@@ -1465,21 +1467,14 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         *{{_v[0-9]+}} = 53;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     compound_array_value = _compoundliteral[((1 as i64) as usize)];
+// REWRITES-NEXT:     compound_array_value = _compoundliteral[1];
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 3;
 // REWRITES-NEXT:     signed_quotient = -7 / {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 3;
 // REWRITES-NEXT:     signed_remainder = -7 % {{_v[0-9]+}};
 // REWRITES-NEXT:     mixed_order += 2;
-// REWRITES-NEXT:     let mut index3: i32 = 0;
-// REWRITES-NEXT:     index3 = 0;
-// REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = index3 < 3;
-// REWRITES-NEXT:         if !{{_v[0-9]+}} {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     for index3 in 0..3 {
 // REWRITES-NEXT:         for_total += index3;
-// REWRITES-NEXT:         index3 += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     qualified_values = [2, 3, 5];
 // REWRITES-NEXT:     macro_total = sum3(7 as i32, 11 as i32, 13 as i32);
@@ -1488,16 +1483,10 @@ int main(void) {
 // REWRITES-NEXT:         1, 1,
 // REWRITES-NEXT:     );
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 4;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 16;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 32 | {{_v[0-9]+}} | {{_v[0-9]+}} | {{_v[0-9]+}} | {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 32 | {{_v[0-9]+}} | 16 | 8 | 1;
 // REWRITES-NEXT:     fenv_clear = unsafe { feclearexcept({{_v[0-9]+}} as i32) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 4;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 16;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 32 | {{_v[0-9]+}} | {{_v[0-9]+}} | {{_v[0-9]+}} | {{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 32 | {{_v[0-9]+}} | 16 | 8 | 1;
 // REWRITES-NEXT:     fenv_flags = unsafe { fetestexcept({{_v[0-9]+}} as i32) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 =
 // REWRITES-NEXT:         c"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n"
@@ -1512,8 +1501,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = vm_total;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = nonconstant_initializer.first + nonconstant_initializer.second;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = designated_initializer.first + designated_initializer.second;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 =
-// REWRITES-NEXT:         designated_array[((0 as i64) as usize)] + designated_array[((2 as i64) as usize)];
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = designated_array[0] + designated_array[2];
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = idempotent_const_value;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 =
 // REWRITES-NEXT:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(idempotent_volatile_value)) };
@@ -1563,8 +1551,8 @@ int main(void) {
 // REWRITES-NEXT:             fenv_clear,
 // REWRITES-NEXT:             fenv_flags,
 // REWRITES-NEXT:             c99_restrict_sum(
-// REWRITES-NEXT:                 unsafe { &(*std::ptr::addr_of_mut!(qualified_values[((0 as i64) as usize)])) },
-// REWRITES-NEXT:                 unsafe { &(*std::ptr::addr_of_mut!(qualified_values[((1 as i64) as usize)])) },
+// REWRITES-NEXT:                 unsafe { &(*std::ptr::addr_of_mut!(qualified_values[0])) },
+// REWRITES-NEXT:                 unsafe { &(*std::ptr::addr_of_mut!(qualified_values[1])) },
 // REWRITES-NEXT:             ),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };

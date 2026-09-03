@@ -131,12 +131,10 @@ int main(void) {
 // REWRITES-NEXT:         if !(i <= n) {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i % m == 0;
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-NEXT:         if i % m == 0 {
 // REWRITES-NEXT:             return i;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i > 100;
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-NEXT:         if i > 100 {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         i += 1;

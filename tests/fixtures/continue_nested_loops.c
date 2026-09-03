@@ -162,8 +162,7 @@ int main(void) {
 // REWRITES-NEXT:         if !(i < n) {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i == 2;
-// REWRITES-NEXT:         if {{_v[0-9]+}} {
+// REWRITES-NEXT:         if i == 2 {
 // REWRITES-NEXT:         } else {
 // REWRITES-NEXT:             let mut j: i32 = 0;
 // REWRITES-NEXT:             j = 0;
@@ -171,8 +170,7 @@ int main(void) {
 // REWRITES-NEXT:                 if !(j < n) {
 // REWRITES-NEXT:                     break;
 // REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: bool = j == 3;
-// REWRITES-NEXT:                 if {{_v[0-9]+}} {
+// REWRITES-NEXT:                 if j == 3 {
 // REWRITES-NEXT:                 } else {
 // REWRITES-NEXT:                     total += i * 10 + j;
 // REWRITES-NEXT:                 }

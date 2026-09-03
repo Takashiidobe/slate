@@ -1,6 +1,6 @@
 
 // REWRITES-DAG: #[linkage = "extern_weak"]
-// REWRITES-DAG: static abs: Option<unsafe extern "C" fn(i32) -> i32>;
+// REWRITES-DAG: static abs: Option<unsafe extern "C-unwind" fn(i32) -> i32>;
 // REWRITES-NOT: fn weakref_alias
 
 #include <stdio.h>
@@ -37,7 +37,7 @@ int main(void) {
 // LOWERING-NEXT: unsafe extern "C" {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT:     #[linkage = "extern_weak"]
-// LOWERING-NEXT:     static abs: Option<unsafe extern "C" fn(i32) -> i32>;
+// LOWERING-NEXT:     static abs: Option<unsafe extern "C-unwind" fn(i32) -> i32>;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn weakref_target({{arg[0-9]+}}: i32) -> i32 {

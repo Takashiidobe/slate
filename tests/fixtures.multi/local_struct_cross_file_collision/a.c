@@ -21,7 +21,7 @@ int run_a(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: #[unsafe(no_mangle)]
-// REWRITES-DAG: pub extern "C" fn run_a() -> i32 {
+// REWRITES-DAG: pub extern "C-unwind" fn run_a() -> i32 {
 // REWRITES-DAG:     let mut items: aligned::Aligned<aligned::A16, [Item; 2]> = aligned::Aligned(
 // REWRITES-DAG:         [Item {
 // REWRITES-DAG:             value: 0,

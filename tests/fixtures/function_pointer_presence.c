@@ -40,17 +40,17 @@ int main(void) {
 // LOWERING-NEXT:     unused_comparisons
 // LOWERING-NEXT: )]
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn maybe_apply({{arg[0-9]+}}: Option<unsafe extern "C" fn(i32) -> i32>, {{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-NEXT:     let mut op: Option<unsafe extern "C" fn(i32) -> i32> = None;
+// LOWERING-NEXT: fn maybe_apply({{arg[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32>, {{arg[0-9]+}}: i32) -> i32 {
+// LOWERING-NEXT:     let mut op: Option<unsafe extern "C-unwind" fn(i32) -> i32> = None;
 // LOWERING-NEXT:     let mut value: i32 = 0;
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     op = {{arg[0-9]+}};
 // LOWERING-NEXT:     value = {{arg[0-9]+}};
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> i32> = op;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = op;
 // LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.is_some();
 // LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> i32> = op;
+// LOWERING-NEXT:             let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = op;
 // LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = value;
 // LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { {{_v[0-9]+}}.unwrap()({{_v[0-9]+}}) };
 // LOWERING-NEXT:             __retval = {{_v[0-9]+}};
@@ -64,7 +64,7 @@ int main(void) {
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C" fn bump({{arg[0-9]+}}: i32) -> i32 {
+// LOWERING-NEXT: extern "C-unwind" fn bump({{arg[0-9]+}}: i32) -> i32 {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     return {{_v[0-9]+}};
@@ -72,28 +72,28 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut op: Option<unsafe extern "C" fn(i32) -> i32> = None;
+// LOWERING-NEXT:     let mut op: Option<unsafe extern "C-unwind" fn(i32) -> i32> = None;
 // LOWERING-NEXT:     let mut total: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> i32> = None;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = None;
 // LOWERING-NEXT:     op = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> i32> = op;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = op;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 4;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = maybe_apply({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     op = unsafe {
-// LOWERING-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C" fn(i32) -> i32>>(
+// LOWERING-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
 // LOWERING-NEXT:             bump as *const (),
 // LOWERING-NEXT:         )
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> i32> = op;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> i32> = None;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = op;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = None;
 // LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
 // LOWERING-NEXT:         if {{_v[0-9]+}} {
 // LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = total;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> i32> = op;
+// LOWERING-NEXT:             let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = op;
 // LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 5;
 // LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = maybe_apply({{_v[0-9]+}}, {{_v[0-9]+}});
 // LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
@@ -101,8 +101,8 @@ int main(void) {
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> i32> = op;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> i32> = None;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = op;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = None;
 // LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
 // LOWERING-NEXT:         if {{_v[0-9]+}} {
 // LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 2;

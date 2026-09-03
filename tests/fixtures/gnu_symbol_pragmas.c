@@ -47,7 +47,7 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[unsafe(no_mangle)]
-// REWRITES-NEXT: pub extern "C" fn pragma_weak_target({{arg[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT: pub extern "C-unwind" fn pragma_weak_target({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     {{arg[0-9]+}} + 7
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -58,7 +58,12 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d %d %d\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { pragma_weak_alias(29 as i32) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = (Some(pragma_weak_alias).unwrap() as *const u8)
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = (unsafe {
+// REWRITES-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
+// REWRITES-NEXT:             pragma_weak_alias as *const (),
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     .unwrap() as *const u8)
 // REWRITES-NEXT:         == (Some(pragma_weak_target).unwrap() as *const u8);
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(

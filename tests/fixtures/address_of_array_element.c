@@ -50,7 +50,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn read_array_element_through_call() -> i32 {
 // REWRITES-DAG:     let mut values: [i32; 1] = [10];
-// REWRITES-DAG:     unsafe { read_pointer(std::ptr::addr_of_mut!(values[((0 as i64) as usize)])) }
+// REWRITES-DAG:     unsafe { read_pointer(std::ptr::addr_of_mut!(values[0])) }
 // REWRITES-DAG: }
 // REWRITES-DAG: *values = [2, 4, 6, 8];
 // REWRITES-DAG: let {{_v[0-9]+}}: i64 = 1;

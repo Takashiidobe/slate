@@ -909,7 +909,7 @@ int main(void) {
 // LOWERING-X86_64-GNU-NEXT:         _9: LongDouble,
 // LOWERING-X86_64-GNU-NEXT:     ) -> LongDouble;
 // LOWERING-X86_64-GNU-NEXT:     fn ext_call_cb(
-// LOWERING-X86_64-GNU-NEXT:         _0: Option<unsafe extern "C" fn(LongDouble, LongDouble) -> LongDouble>,
+// LOWERING-X86_64-GNU-NEXT:         _0: Option<unsafe extern "C-unwind" fn(LongDouble, LongDouble) -> LongDouble>,
 // LOWERING-X86_64-GNU-NEXT:         _1: LongDouble,
 // LOWERING-X86_64-GNU-NEXT:         _2: LongDouble,
 // LOWERING-X86_64-GNU-NEXT:     ) -> LongDouble;
@@ -6261,7 +6261,7 @@ int main(void) {
 // LOWERING-X86_64-GNU-EMPTY:
 // LOWERING-X86_64-GNU-NEXT: #[unsafe(no_mangle)]
 // LOWERING-X86_64-GNU-NEXT: #[inline(never)]
-// LOWERING-X86_64-GNU-NEXT: extern "C" fn local_cb({{arg[0-9]+}}: LongDouble, {{arg[0-9]+}}: LongDouble) -> LongDouble {
+// LOWERING-X86_64-GNU-NEXT: extern "C-unwind" fn local_cb({{arg[0-9]+}}: LongDouble, {{arg[0-9]+}}: LongDouble) -> LongDouble {
 // LOWERING-X86_64-GNU-NEXT:     let mut x: LongDouble = LongDouble([0; 10]);
 // LOWERING-X86_64-GNU-NEXT:     let mut y: LongDouble = LongDouble([0; 10]);
 // LOWERING-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(x), {{arg[0-9]+}}) };
@@ -6615,12 +6615,13 @@ int main(void) {
 // LOWERING-X86_64-GNU-NEXT:         }
 // LOWERING-X86_64-GNU-NEXT:     }
 // LOWERING-X86_64-GNU-NEXT:     {
-// LOWERING-X86_64-GNU-NEXT:         let mut fp: Option<unsafe extern "C" fn(LongDouble, LongDouble) -> LongDouble> = None;
+// LOWERING-X86_64-GNU-NEXT:         let mut fp: Option<unsafe extern "C-unwind" fn(LongDouble, LongDouble) -> LongDouble> =
+// LOWERING-X86_64-GNU-NEXT:             None;
 // LOWERING-X86_64-GNU-NEXT:         unsafe {
 // LOWERING-X86_64-GNU-NEXT:             std::ptr::write_volatile(std::ptr::addr_of_mut!(fp), unsafe {
 // LOWERING-X86_64-GNU-NEXT:                 std::mem::transmute::<
 // LOWERING-X86_64-GNU-NEXT:                     *const (),
-// LOWERING-X86_64-GNU-NEXT:                     Option<unsafe extern "C" fn(LongDouble, LongDouble) -> LongDouble>,
+// LOWERING-X86_64-GNU-NEXT:                     Option<unsafe extern "C-unwind" fn(LongDouble, LongDouble) -> LongDouble>,
 // LOWERING-X86_64-GNU-NEXT:                 >(__slate_ext_add__rf80_f80_f80 as *const ())
 // LOWERING-X86_64-GNU-NEXT:             })
 // LOWERING-X86_64-GNU-NEXT:         };
@@ -6629,8 +6630,9 @@ int main(void) {
 // LOWERING-X86_64-GNU-NEXT:                 {
 // LOWERING-X86_64-GNU-NEXT:                     let mut check_got_4: LongDouble = LongDouble([0; 10]);
 // LOWERING-X86_64-GNU-NEXT:                     let mut check_expected_4: LongDouble = LongDouble([0; 10]);
-// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(LongDouble, LongDouble) -> LongDouble> =
-// LOWERING-X86_64-GNU-NEXT:                         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(fp)) };
+// LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: Option<
+// LOWERING-X86_64-GNU-NEXT:                         unsafe extern "C-unwind" fn(LongDouble, LongDouble) -> LongDouble,
+// LOWERING-X86_64-GNU-NEXT:                     > = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(fp)) };
 // LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 128, 145, 3, 64]);
 // LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 248, 191]);
 // LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = unsafe { {{_v[0-9]+}}.unwrap()({{_v[0-9]+}}, {{_v[0-9]+}}) };
@@ -6702,7 +6704,22 @@ int main(void) {
 // LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = a10;
 // LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = b2;
 // LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = unsafe {
-// LOWERING-X86_64-GNU-NEXT:                         __slate_ext_call_cb__rf80_x_f80_f80(Some(__slate_ld_local_cb), {{_v[0-9]+}}, {{_v[0-9]+}})
+// LOWERING-X86_64-GNU-NEXT:                         __slate_ext_call_cb__rf80_x_f80_f80(
+// LOWERING-X86_64-GNU-NEXT:                             unsafe {
+// LOWERING-X86_64-GNU-NEXT:                                 std::mem::transmute::<
+// LOWERING-X86_64-GNU-NEXT:                                     *const (),
+// LOWERING-X86_64-GNU-NEXT:                                     Option<
+// LOWERING-X86_64-GNU-NEXT:                                         unsafe extern "C-unwind" fn(
+// LOWERING-X86_64-GNU-NEXT:                                             LongDouble,
+// LOWERING-X86_64-GNU-NEXT:                                             LongDouble,
+// LOWERING-X86_64-GNU-NEXT:                                         )
+// LOWERING-X86_64-GNU-NEXT:                                             -> LongDouble,
+// LOWERING-X86_64-GNU-NEXT:                                     >,
+// LOWERING-X86_64-GNU-NEXT:                                 >(__slate_ld_local_cb as *const ())
+// LOWERING-X86_64-GNU-NEXT:                             },
+// LOWERING-X86_64-GNU-NEXT:                             {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                             {{_v[0-9]+}},
+// LOWERING-X86_64-GNU-NEXT:                         )
 // LOWERING-X86_64-GNU-NEXT:                     };
 // LOWERING-X86_64-GNU-NEXT:                     check_got_5 = {{_v[0-9]+}};
 // LOWERING-X86_64-GNU-NEXT:                     let {{_v[0-9]+}}: LongDouble = a10;
@@ -8751,7 +8768,7 @@ int main(void) {
 // LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_array_sum__rf80_pf80_usize(_0: *const LongDouble, _1: usize) -> LongDouble;
 // LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_box_roundtrip__rv_px_px(_0: *mut ld_box, _1: *mut ld_box);
 // LOWERING-X86_64-GNU-NEXT:     fn __slate_ext_call_cb__rf80_x_f80_f80(
-// LOWERING-X86_64-GNU-NEXT:         _0: Option<unsafe extern "C" fn(LongDouble, LongDouble) -> LongDouble>,
+// LOWERING-X86_64-GNU-NEXT:         _0: Option<unsafe extern "C-unwind" fn(LongDouble, LongDouble) -> LongDouble>,
 // LOWERING-X86_64-GNU-NEXT:         _1: LongDouble,
 // LOWERING-X86_64-GNU-NEXT:         _2: LongDouble,
 // LOWERING-X86_64-GNU-NEXT:     ) -> LongDouble;

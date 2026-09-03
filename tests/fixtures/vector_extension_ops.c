@@ -91,9 +91,9 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             {{_v[0-9]+}}[((0 as i32) as usize)],
-// REWRITES-NEXT:             {{_v[0-9]+}}[((1 as i32) as usize)],
-// REWRITES-NEXT:             [{{_v[0-9]+}}[3usize], {{_v[0-9]+}}[2usize], {{_v[0-9]+}}[1usize], {{_v[0-9]+}}[0usize]][((0 as i32) as usize)],
+// REWRITES-NEXT:             {{_v[0-9]+}}[0],
+// REWRITES-NEXT:             {{_v[0-9]+}}[1],
+// REWRITES-NEXT:             [{{_v[0-9]+}}[3usize], {{_v[0-9]+}}[2usize], {{_v[0-9]+}}[1usize], {{_v[0-9]+}}[0usize]][0],
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

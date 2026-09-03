@@ -95,15 +95,13 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn mutable_pick(mut {{_v[0-9]+}}: i32) -> *mut i8 {
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
-// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:     if {{_v[0-9]+}} == 0 {
 // REWRITES-DAG:         return c"mut".as_ptr() as *mut i8;
 // REWRITES-DAG:     }
 // REWRITES-DAG:     c"other".as_ptr() as *mut i8
 // REWRITES-DAG: }
 // REWRITES-DAG: fn const_pick(mut {{_v[0-9]+}}: i32) -> *mut i8 {
-// REWRITES-DAG:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == 0;
-// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:     if {{_v[0-9]+}} == 0 {
 // REWRITES-DAG:         return c"const".as_ptr() as *mut i8;
 // REWRITES-DAG:     }
 // REWRITES-DAG:     c"other".as_ptr() as *mut i8

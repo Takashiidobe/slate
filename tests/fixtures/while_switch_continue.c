@@ -148,8 +148,7 @@ int main(void) {
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     let mut steps: i32 = 0;
 // REWRITES-NEXT:     '__loop0: loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i < 6;
-// REWRITES-NEXT:         if !{{_v[0-9]+}} {
+// REWRITES-NEXT:         if !(i < 6) {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         '__continue0: {

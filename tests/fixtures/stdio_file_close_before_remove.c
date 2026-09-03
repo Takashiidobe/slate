@@ -108,8 +108,7 @@ int main(void) {
 // REWRITES-NEXT:             c"w".as_ptr(),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = f != std::ptr::null_mut();
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = !(f != std::ptr::null_mut());
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         unsafe { puts(c"open-fail".as_ptr()) };
 // REWRITES-NEXT:         __retval = 0;

@@ -44,7 +44,7 @@ int main(void) {
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: struct Handlers {
 // LOWERING-NEXT:     label: *mut i8,
-// LOWERING-NEXT:     onEvent: Option<unsafe extern "C" fn(i32) -> i32>,
+// LOWERING-NEXT:     onEvent: Option<unsafe extern "C-unwind" fn(i32) -> i32>,
 // LOWERING-NEXT:     counter: *mut i32,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
@@ -64,11 +64,11 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> i32> = h.onEvent;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> i32> = None;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = h.onEvent;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = None;
 // LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != {{_v[0-9]+}};
 // LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: Option<unsafe extern "C" fn(i32) -> i32> = h.onEvent;
+// LOWERING-NEXT:             let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> i32> = h.onEvent;
 // LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = unsafe { {{_v[0-9]+}}.unwrap()({{_v[0-9]+}}) };
 // LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = total;
@@ -132,7 +132,7 @@ int main(void) {
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: struct Handlers {
 // REWRITES-NEXT:     label: *mut i8,
-// REWRITES-NEXT:     onEvent: Option<unsafe extern "C" fn(i32) -> i32>,
+// REWRITES-NEXT:     onEvent: Option<unsafe extern "C-unwind" fn(i32) -> i32>,
 // REWRITES-NEXT:     counter: *mut i32,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
@@ -148,8 +148,7 @@ int main(void) {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { h.onEvent.unwrap()(1 as i32) };
 // REWRITES-NEXT:         total += {{_v[0-9]+}};
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = h.counter != std::ptr::null_mut();
-// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:     if h.counter != std::ptr::null_mut() {
 // REWRITES-NEXT:         total += unsafe { *h.counter };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     total

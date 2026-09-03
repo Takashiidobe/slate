@@ -152,11 +152,10 @@ int main(void) {
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 2;
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         (*numbers)[({{_v[0-9]+}} as usize)] =
-// REWRITES-NEXT:             (unsafe { zeroed }) - unsafe { (*numbers)[((0 as i64) as usize)] };
+// REWRITES-NEXT:         (*numbers)[({{_v[0-9]+}} as usize)] = (unsafe { zeroed }) - unsafe { (*numbers)[0] };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         pair.right = (unsafe { pair.right }) + unsafe { (*numbers)[((1 as i64) as usize)] };
+// REWRITES-NEXT:         pair.right = (unsafe { pair.right }) + unsafe { (*numbers)[1] };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     (unsafe { pair.left }) + unsafe { pair.right }
 // REWRITES-NEXT: }
@@ -168,7 +167,7 @@ int main(void) {
 // REWRITES-NEXT:             c"%d %d %d\n".as_ptr(),
 // REWRITES-NEXT:             unsafe { counter },
 // REWRITES-NEXT:             unsafe { zeroed },
-// REWRITES-NEXT:             unsafe { (*numbers)[((2 as i64) as usize)] },
+// REWRITES-NEXT:             unsafe { (*numbers)[2] },
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

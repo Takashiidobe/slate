@@ -254,15 +254,7 @@ int main(void) {
 // REWRITES-NEXT:             out.as_mut_ptr() as *mut i32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             out[((0 as i64) as usize)],
-// REWRITES-NEXT:             out[((1 as i64) as usize)],
-// REWRITES-NEXT:             out[((2 as i64) as usize)],
-// REWRITES-NEXT:             out[((3 as i64) as usize)],
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { printf(c"%d %d %d %d\n".as_ptr(), out[0], out[1], out[2], out[3]) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

@@ -141,20 +141,7 @@ int main(void) {
 // REWRITES-NEXT:         unsafe { std::slice::from_raw_parts_mut({{_v[0-9]+}} as *mut i32, (4 as i32) as usize) },
 // REWRITES-NEXT:         7,
 // REWRITES-NEXT:     );
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             buf[((0 as i64) as usize)],
-// REWRITES-NEXT:             buf[((1 as i64) as usize)],
-// REWRITES-NEXT:             buf[((2 as i64) as usize)],
-// REWRITES-NEXT:             buf[((3 as i64) as usize)],
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     std::process::exit(
-// REWRITES-NEXT:         (buf[((0 as i64) as usize)]
-// REWRITES-NEXT:             + buf[((1 as i64) as usize)]
-// REWRITES-NEXT:             + buf[((2 as i64) as usize)]
-// REWRITES-NEXT:             + buf[((3 as i64) as usize)]) as i32,
-// REWRITES-NEXT:     );
+// REWRITES-NEXT:     unsafe { printf(c"%d %d %d %d\n".as_ptr(), buf[0], buf[1], buf[2], buf[3]) };
+// REWRITES-NEXT:     std::process::exit((buf[0] + buf[1] + buf[2] + buf[3]) as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

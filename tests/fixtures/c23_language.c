@@ -851,60 +851,42 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.to_i128() as i32;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.to_u128() as i32;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = (5 as i32) as u64;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = (90 as u8) as u64;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = (37 as u16) as u64;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = (83 as i32) as u64;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 7;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 13;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 11 + {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 1;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 2;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 3;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 4;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = (({{_v[0-9]+}} + {{_v[0-9]+}} + (165 as i32) + (3 as i32)) as u64)
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = ((({{_v[0-9]+}} + {{_v[0-9]+}} + (165 as i32) + (3 as i32)) as u64)
 // REWRITES-NEXT:         + 4
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         + ((unsafe { main_utf8_text[((0 as i64) as usize)] }) as u64)
-// REWRITES-NEXT:         + ((unsafe { main_utf8_text[((1 as i64) as usize)] }) as u64)
+// REWRITES-NEXT:         + ((5 as i32) as u64)
+// REWRITES-NEXT:         + ((90 as u8) as u64)
+// REWRITES-NEXT:         + ((unsafe { main_utf8_text[0] }) as u64)
+// REWRITES-NEXT:         + ((unsafe { main_utf8_text[1] }) as u64)
 // REWRITES-NEXT:         + (empty_struct.first as u64)
-// REWRITES-NEXT:         + (empty_array[((0 as i64) as usize)] as u64)
-// REWRITES-NEXT:         + (qualified_array[((0 as i64) as usize)] as u64)
-// REWRITES-NEXT:         + (qualified_array[((2 as i64) as usize)] as u64)
-// REWRITES-NEXT:         + {{_v[0-9]+}}
+// REWRITES-NEXT:         + (empty_array[0] as u64)
+// REWRITES-NEXT:         + (qualified_array[0] as u64)
+// REWRITES-NEXT:         + (qualified_array[2] as u64)
+// REWRITES-NEXT:         + ((37 as u16) as u64)
 // REWRITES-NEXT:         + ((({{_v[0-9]+}} == 8589934591u64) as i32) as u64)
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         + ({{_v[0-9]+}} as u64)
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// REWRITES-NEXT:         + ((83 as i32) as u64)
+// REWRITES-NEXT:         + 7
+// REWRITES-NEXT:         + ((11 + (13 as i32)) as u64)
+// REWRITES-NEXT:         + 1
+// REWRITES-NEXT:         + 2
+// REWRITES-NEXT:         + 3
+// REWRITES-NEXT:         + 4) as i32;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = c23_nodiscard_value();
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 29;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 23
 // REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         + {{_v[0-9]+}}
-// REWRITES-NEXT:         + ((unsafe { c23_embedded[((0 as i64) as usize)] }) as i32)
-// REWRITES-NEXT:         + ((unsafe { c23_embedded[((1 as i64) as usize)] }) as i32)
-// REWRITES-NEXT:         + ((unsafe { c23_embedded[((2 as i64) as usize)] }) as i32);
+// REWRITES-NEXT:         + 1
+// REWRITES-NEXT:         + 1
+// REWRITES-NEXT:         + 0
+// REWRITES-NEXT:         + 0
+// REWRITES-NEXT:         + 0
+// REWRITES-NEXT:         + 0
+// REWRITES-NEXT:         + ((unsafe { c23_embedded[0] }) as i32)
+// REWRITES-NEXT:         + ((unsafe { c23_embedded[1] }) as i32)
+// REWRITES-NEXT:         + ((unsafe { c23_embedded[2] }) as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = std::ptr::null_mut() == {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == std::ptr::null_mut();
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}} as i32) + ({{_v[0-9]+}} as i32) + ({{_v[0-9]+}} as i32);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = ((std::ptr::null_mut() == {{_v[0-9]+}}) as i32)
+// REWRITES-NEXT:         + (({{_v[0-9]+}} == std::ptr::null_mut()) as i32)
+// REWRITES-NEXT:         + ({{_v[0-9]+}} as i32);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ({{_v[0-9]+}} as i32) + unsafe { c23_thread_value };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = c23_unnamed_parameter(89, 97);
@@ -919,9 +901,6 @@ int main(void) {
 // REWRITES-NEXT:         ]))
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = 202311;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = 202311 == {{_v[0-9]+}};
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c23_never_flag)) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
@@ -936,7 +915,7 @@ int main(void) {
 // REWRITES-NEXT:             {{_v[0-9]+}},
 // REWRITES-NEXT:             {{_v[0-9]+}},
 // REWRITES-NEXT:             {{_v[0-9]+}},
-// REWRITES-NEXT:             {{_v[0-9]+}},
+// REWRITES-NEXT:             (202311 == (202311 as i64)) as i32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

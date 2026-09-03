@@ -217,8 +217,7 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     '__loop0: loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i < 5;
-// REWRITES-NEXT:         if !{{_v[0-9]+}} {
+// REWRITES-NEXT:         if !(i < 5) {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag =
@@ -232,8 +231,7 @@ int main(void) {
 // REWRITES-NEXT:             unsafe { printf(c"recovered %d\n".as_ptr(), i) };
 // REWRITES-NEXT:         } else {
 // REWRITES-NEXT:             run_test(i);
-// REWRITES-NEXT:             let {{_v[0-9]+}}: bool = i == 3;
-// REWRITES-NEXT:             if {{_v[0-9]+}} {
+// REWRITES-NEXT:             if i == 3 {
 // REWRITES-NEXT:                 unsafe {
 // REWRITES-NEXT:                     teardown_failures = (unsafe { teardown_failures }) + 1;
 // REWRITES-NEXT:                 }

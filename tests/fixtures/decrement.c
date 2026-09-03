@@ -73,14 +73,11 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 5;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} - 1;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} - 1;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} - 1 - 1;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} - 1;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} - 1;
 // REWRITES-NEXT:     unsafe { printf(c"%d %d %d %d\n".as_ptr(), {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}} + {{_v[0-9]+}}) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u8 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u8 = {{_v[0-9]+}} - 1;
-// REWRITES-NEXT:     unsafe { printf(c"%u\n".as_ptr(), {{_v[0-9]+}} as u32) };
+// REWRITES-NEXT:     unsafe { printf(c"%u\n".as_ptr(), ((0 as u8) - 1) as u32) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

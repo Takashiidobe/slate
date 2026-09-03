@@ -137,10 +137,9 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u128 = 1000000000000u128;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u128 = 1000000000000u128;
 // REWRITES-NEXT:     print128(mul128({{_v[0-9]+}}, {{_v[0-9]+}}));
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} > 0 { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{_v[0-9]+}}) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }

@@ -185,10 +185,8 @@ int main(void) {
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{_v[0-9]+}}.im as i32) };
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{_v[0-9]+}}.re as i32) };
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{_v[0-9]+}}.im as i32) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = 100.0 * {{_v[0-9]+}}.re;
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{_v[0-9]+}} as i32) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = 100.0 * {{_v[0-9]+}}.im;
-// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), {{_v[0-9]+}} as i32) };
+// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), (100.0 * {{_v[0-9]+}}.re) as i32) };
+// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), (100.0 * {{_v[0-9]+}}.im) as i32) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

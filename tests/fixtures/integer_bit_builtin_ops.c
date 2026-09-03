@@ -73,8 +73,7 @@ int main(void) {
 // REWRITES-DAG:     ({{_v[0-9]+}}.trailing_zeros() as i32) + 1
 // REWRITES-DAG: };
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}}.count_ones() as u32) as i32;
-// REWRITES-DAG: let {{_v[0-9]+}}: u32 = ({{_v[0-9]+}}.count_ones() as u32) & 1;
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// REWRITES-DAG: let {{_v[0-9]+}}: i32 = (({{_v[0-9]+}}.count_ones() as u32) & 1) as i32;
 // REWRITES-DAG: let {{_v[0-9]+}}: i32 = (if {{_v[0-9]+}} < 0 { !{{_v[0-9]+}} } else { {{_v[0-9]+}} }.leading_zeros() as i32) - 1;
 // REWRITES-DAG: let {{_v[0-9]+}}: u32 = {{_v[0-9]+}}.rotate_left({{_v[0-9]+}} as u32);
 // REWRITES-DAG: let {{_v[0-9]+}}: u32 = {{_v[0-9]+}}.rotate_right({{_v[0-9]+}} as u32);

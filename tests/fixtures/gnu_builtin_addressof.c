@@ -77,8 +77,7 @@ int main(void) {
 // REWRITES-NEXT:     let mut value: i32 = 0;
 // REWRITES-NEXT:     value = 37;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = std::ptr::addr_of_mut!(value) == std::ptr::addr_of_mut!(value);
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = value == 37;
-// REWRITES-NEXT:     ({{_v[0-9]+}} as i32) + ({{_v[0-9]+}} as i32)
+// REWRITES-NEXT:     ({{_v[0-9]+}} as i32) + ((value == 37) as i32)
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

@@ -81,9 +81,8 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = 1usize as *mut core::ffi::c_void;
 // REWRITES-NEXT:     let mut {{_v[0-9]+}}: u8 = 0u8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u8 = std::ptr::addr_of_mut!({{_v[0-9]+}}) as *mut u8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = ({{_v[0-9]+}} as *mut core::ffi::c_void) != std::ptr::null_mut();
-// REWRITES-NEXT:     ({{_v[0-9]+}} as i32) + ({{_v[0-9]+}} as i32)
+// REWRITES-NEXT:     (({{_v[0-9]+}} != std::ptr::null_mut()) as i32)
+// REWRITES-NEXT:         + ((({{_v[0-9]+}} as *mut core::ffi::c_void) != std::ptr::null_mut()) as i32)
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

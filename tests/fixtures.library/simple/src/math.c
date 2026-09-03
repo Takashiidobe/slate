@@ -12,7 +12,7 @@ int square(int x) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: #[unsafe(no_mangle)]
-// REWRITES-DAG: pub extern "C" fn square({{arg[0-9]+}}: i32) -> i32 {
+// REWRITES-DAG: pub extern "C-unwind" fn square({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-DAG:     let mut value: shared_value = shared_value {
 // REWRITES-DAG:         value: 0,
 // REWRITES-DAG:         mode: shared_mode_t::SHARED_IDLE,

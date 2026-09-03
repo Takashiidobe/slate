@@ -90,20 +90,20 @@ int main(void) {
 // REWRITES-DAG:         97, 98, 99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 // REWRITES-DAG:     ],
 // REWRITES-DAG: };
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = unsafe { (*values)[((1 as i64) as usize)].inner.prefix };
-// REWRITES-DAG: let {{_v[0-9]+}}: bitint::BInt<65, 2, 16> = unsafe { (*values)[((1 as i64) as usize)].inner.value };
+// REWRITES-DAG: let {{_v[0-9]+}}: i32 = unsafe { (*values)[1].inner.prefix };
+// REWRITES-DAG: let {{_v[0-9]+}}: bitint::BInt<65, 2, 16> = unsafe { (*values)[1].inner.value };
 // REWRITES-DAG: unsafe {
 // REWRITES-DAG:     printf(
 // REWRITES-DAG:         c"%zu %zu %d %d %lld %d %c%c%c\n".as_ptr(),
 // REWRITES-DAG:         24 as u64,
 // REWRITES-DAG:         40 as u64,
-// REWRITES-DAG:         (unsafe { (*values)[((1 as i64) as usize)].tag }) as i32,
+// REWRITES-DAG:         (unsafe { (*values)[1].tag }) as i32,
 // REWRITES-DAG:         {{_v[0-9]+}},
 // REWRITES-DAG:         {{_v[0-9]+}}.to_i128() as i64,
-// REWRITES-DAG:         (unsafe { (*values)[((1 as i64) as usize)].tail }) as i32,
-// REWRITES-DAG:         (unsafe { item.bytes[((0 as i64) as usize)] }) as i32,
-// REWRITES-DAG:         (unsafe { item.bytes[((1 as i64) as usize)] }) as i32,
-// REWRITES-DAG:         (unsafe { item.bytes[((2 as i64) as usize)] }) as i32,
+// REWRITES-DAG:         (unsafe { (*values)[1].tail }) as i32,
+// REWRITES-DAG:         (unsafe { item.bytes[0] }) as i32,
+// REWRITES-DAG:         (unsafe { item.bytes[1] }) as i32,
+// REWRITES-DAG:         (unsafe { item.bytes[2] }) as i32,
 // REWRITES-DAG:     )
 // REWRITES-DAG: };
 // SLATE-FILECHECK-END rewrites

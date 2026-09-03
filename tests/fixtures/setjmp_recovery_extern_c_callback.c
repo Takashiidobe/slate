@@ -75,7 +75,7 @@ int main(void) {
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C" fn check({{arg[0-9]+}}: i32) {
+// LOWERING-NEXT: extern "C-unwind" fn check({{arg[0-9]+}}: i32) {
 // LOWERING-NEXT:     let mut ok: i32 = 0;
 // LOWERING-NEXT:     ok = {{arg[0-9]+}};
 // LOWERING-NEXT:     {
@@ -91,7 +91,7 @@ int main(void) {
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn run_case({{arg[0-9]+}}: Option<unsafe extern "C" fn(i32)>, {{arg[0-9]+}}: i32) {
+// LOWERING-NEXT: fn run_case({{arg[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32)>, {{arg[0-9]+}}: i32) {
 // LOWERING-NEXT:     {
 // LOWERING-NEXT:         let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag =
 // LOWERING-NEXT:             std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
@@ -173,9 +173,8 @@ int main(void) {
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C" fn check(mut {{_v[0-9]+}}: i32) {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-NEXT: extern "C-unwind" fn check(mut {{_v[0-9]+}}: i32) {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = !({{_v[0-9]+}} != 0);
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         fail_now();
 // REWRITES-NEXT:     }
@@ -183,7 +182,7 @@ int main(void) {
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn run_case({{arg[0-9]+}}: Option<unsafe extern "C" fn(i32)>, {{arg[0-9]+}}: i32) {
+// REWRITES-NEXT: fn run_case({{arg[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32)>, {{arg[0-9]+}}: i32) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag = std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;

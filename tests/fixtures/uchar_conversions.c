@@ -262,7 +262,7 @@ int main(void) {
 // REWRITES-NEXT:             {{_v[0-9]+}},
 // REWRITES-NEXT:             {{_v[0-9]+}},
 // REWRITES-NEXT:             converted16 as u32,
-// REWRITES-NEXT:             multibyte16[((0 as i64) as usize)] as i32,
+// REWRITES-NEXT:             multibyte16[0] as i32,
 // REWRITES-NEXT:             {{_v[0-9]+}},
 // REWRITES-NEXT:             (unsafe {
 // REWRITES-NEXT:                 c32rtomb(
@@ -272,7 +272,7 @@ int main(void) {
 // REWRITES-NEXT:                 )
 // REWRITES-NEXT:             }) as u64,
 // REWRITES-NEXT:             converted32,
-// REWRITES-NEXT:             multibyte32[((0 as i64) as usize)] as i32,
+// REWRITES-NEXT:             multibyte32[0] as i32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

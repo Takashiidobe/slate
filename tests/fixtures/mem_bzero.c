@@ -98,15 +98,8 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = 20;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u8 = 0;
 // REWRITES-NEXT:     unsafe { std::ptr::write_bytes({{_v[0-9]+}} as *mut u8, {{_v[0-9]+}} as u8, {{_v[0-9]+}} as usize) };
-// REWRITES-NEXT:     let mut i: i32 = 0;
-// REWRITES-NEXT:     i = 0;
-// REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i < 5;
-// REWRITES-NEXT:         if !{{_v[0-9]+}} {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:         sum += a[((i as i64) as usize)];
-// REWRITES-NEXT:         i += 1;
+// REWRITES-NEXT:     for i in a.iter().copied() {
+// REWRITES-NEXT:         sum += i;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), sum) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

@@ -36,19 +36,22 @@ int main(void) {
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: struct Allocator {
-// LOWERING-NEXT:     realloc_fn: Option<unsafe extern "C" fn(*mut core::ffi::c_void, u64) -> *mut core::ffi::c_void>,
-// LOWERING-NEXT:     free_fn: Option<unsafe extern "C" fn(*mut core::ffi::c_void)>,
+// LOWERING-NEXT:     realloc_fn:
+// LOWERING-NEXT:         Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, u64) -> *mut core::ffi::c_void>,
+// LOWERING-NEXT:     free_fn: Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void)>,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: static mut alloc: Allocator = Allocator {
 // LOWERING-NEXT:     realloc_fn: unsafe {
 // LOWERING-NEXT:         std::mem::transmute::<
 // LOWERING-NEXT:             *const (),
-// LOWERING-NEXT:             Option<unsafe extern "C" fn(*mut core::ffi::c_void, u64) -> *mut core::ffi::c_void>,
+// LOWERING-NEXT:             Option<
+// LOWERING-NEXT:                 unsafe extern "C-unwind" fn(*mut core::ffi::c_void, u64) -> *mut core::ffi::c_void,
+// LOWERING-NEXT:             >,
 // LOWERING-NEXT:         >(realloc as *const ())
 // LOWERING-NEXT:     },
 // LOWERING-NEXT:     free_fn: unsafe {
-// LOWERING-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C" fn(*mut core::ffi::c_void)>>(
+// LOWERING-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void)>>(
 // LOWERING-NEXT:             free as *const (),
 // LOWERING-NEXT:         )
 // LOWERING-NEXT:     },
@@ -62,12 +65,13 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(*mut core::ffi::c_void, u64) -> *mut core::ffi::c_void> =
-// LOWERING-NEXT:         unsafe { alloc.realloc_fn };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<
+// LOWERING-NEXT:         unsafe extern "C-unwind" fn(*mut core::ffi::c_void, u64) -> *mut core::ffi::c_void,
+// LOWERING-NEXT:     > = unsafe { alloc.realloc_fn };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { {{_v[0-9]+}}.unwrap()({{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(*mut core::ffi::c_void)> = unsafe { alloc.free_fn };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void)> = unsafe { alloc.free_fn };
 // LOWERING-NEXT:     unsafe { {{_v[0-9]+}}.unwrap()({{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"ok\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
@@ -94,19 +98,22 @@ int main(void) {
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: struct Allocator {
-// REWRITES-NEXT:     realloc_fn: Option<unsafe extern "C" fn(*mut core::ffi::c_void, u64) -> *mut core::ffi::c_void>,
-// REWRITES-NEXT:     free_fn: Option<unsafe extern "C" fn(*mut core::ffi::c_void)>,
+// REWRITES-NEXT:     realloc_fn:
+// REWRITES-NEXT:         Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, u64) -> *mut core::ffi::c_void>,
+// REWRITES-NEXT:     free_fn: Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void)>,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: static mut alloc: Allocator = Allocator {
 // REWRITES-NEXT:     realloc_fn: unsafe {
 // REWRITES-NEXT:         std::mem::transmute::<
 // REWRITES-NEXT:             *const (),
-// REWRITES-NEXT:             Option<unsafe extern "C" fn(*mut core::ffi::c_void, u64) -> *mut core::ffi::c_void>,
+// REWRITES-NEXT:             Option<
+// REWRITES-NEXT:                 unsafe extern "C-unwind" fn(*mut core::ffi::c_void, u64) -> *mut core::ffi::c_void,
+// REWRITES-NEXT:             >,
 // REWRITES-NEXT:         >(realloc as *const ())
 // REWRITES-NEXT:     },
 // REWRITES-NEXT:     free_fn: unsafe {
-// REWRITES-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C" fn(*mut core::ffi::c_void)>>(
+// REWRITES-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void)>>(
 // REWRITES-NEXT:             free as *const (),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     },

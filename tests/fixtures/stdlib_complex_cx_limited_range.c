@@ -219,8 +219,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}}.im;
 // REWRITES-NEXT:     unsafe { printf(c"%.4f %.4f %.4f %.4f\n".as_ptr(), {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: num_complex::Complex<f64> = product;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.re == 0.3125;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}}.re == 0.3125 {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: num_complex::Complex<f64> = product;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.im == 0.0;
 // REWRITES-NEXT:         {{_v[0-9]+}}

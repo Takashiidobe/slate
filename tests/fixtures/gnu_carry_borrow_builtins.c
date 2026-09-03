@@ -139,9 +139,8 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.1 || {{_v[0-9]+}}.0 > 4294967295;
 // REWRITES-NEXT:     let {{_v[0-9]+}} = {{_v[0-9]+}}.overflowing_add({{arg[0-9]+}});
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}}.0 as u32;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} | ({{_v[0-9]+}}.1 || {{_v[0-9]+}}.0 > 4294967295);
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         *{{arg[0-9]+}} = {{_v[0-9]+}} as u32;
+// REWRITES-NEXT:         *{{arg[0-9]+}} = ({{_v[0-9]+}} | ({{_v[0-9]+}}.1 || {{_v[0-9]+}}.0 > 4294967295)) as u32;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
@@ -152,9 +151,8 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}}.1 || {{_v[0-9]+}}.0 > 4294967295;
 // REWRITES-NEXT:     let {{_v[0-9]+}} = {{_v[0-9]+}}.overflowing_sub({{arg[0-9]+}});
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}}.0 as u32;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} | ({{_v[0-9]+}}.1 || {{_v[0-9]+}}.0 > 4294967295);
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         *{{arg[0-9]+}} = {{_v[0-9]+}} as u32;
+// REWRITES-NEXT:         *{{arg[0-9]+}} = ({{_v[0-9]+}} | ({{_v[0-9]+}}.1 || {{_v[0-9]+}}.0 > 4294967295)) as u32;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }

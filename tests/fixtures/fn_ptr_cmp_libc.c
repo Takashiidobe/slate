@@ -30,7 +30,7 @@ int main(void) {
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: struct hooks {
-// LOWERING-NEXT:     malloc_fn: Option<unsafe extern "C" fn(u64) -> *mut core::ffi::c_void>,
+// LOWERING-NEXT:     malloc_fn: Option<unsafe extern "C-unwind" fn(u64) -> *mut core::ffi::c_void>,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
@@ -41,16 +41,17 @@ int main(void) {
 // LOWERING-NEXT:     let mut h: hooks = hooks { malloc_fn: None };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     h.malloc_fn = unsafe {
-// LOWERING-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C" fn(u64) -> *mut core::ffi::c_void>>(
-// LOWERING-NEXT:             malloc as *const (),
-// LOWERING-NEXT:         )
+// LOWERING-NEXT:         std::mem::transmute::<
+// LOWERING-NEXT:             *const (),
+// LOWERING-NEXT:             Option<unsafe extern "C-unwind" fn(u64) -> *mut core::ffi::c_void>,
+// LOWERING-NEXT:         >(malloc as *const ())
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(u64) -> *mut core::ffi::c_void> = h.malloc_fn;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(u64) -> *mut core::ffi::c_void> = h.malloc_fn;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}}
 // LOWERING-NEXT:         == unsafe {
 // LOWERING-NEXT:             std::mem::transmute::<
 // LOWERING-NEXT:                 *const (),
-// LOWERING-NEXT:                 Option<unsafe extern "C" fn(u64) -> *mut core::ffi::c_void>,
+// LOWERING-NEXT:                 Option<unsafe extern "C-unwind" fn(u64) -> *mut core::ffi::c_void>,
 // LOWERING-NEXT:             >(malloc as *const ())
 // LOWERING-NEXT:         };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
@@ -79,7 +80,7 @@ int main(void) {
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: struct hooks {
-// REWRITES-NEXT:     malloc_fn: Option<unsafe extern "C" fn(u64) -> *mut core::ffi::c_void>,
+// REWRITES-NEXT:     malloc_fn: Option<unsafe extern "C-unwind" fn(u64) -> *mut core::ffi::c_void>,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
@@ -89,21 +90,21 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut h: hooks = hooks { malloc_fn: None };
 // REWRITES-NEXT:     h.malloc_fn = unsafe {
-// REWRITES-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C" fn(u64) -> *mut core::ffi::c_void>>(
-// REWRITES-NEXT:             malloc as *const (),
-// REWRITES-NEXT:         )
+// REWRITES-NEXT:         std::mem::transmute::<
+// REWRITES-NEXT:             *const (),
+// REWRITES-NEXT:             Option<unsafe extern "C-unwind" fn(u64) -> *mut core::ffi::c_void>,
+// REWRITES-NEXT:         >(malloc as *const ())
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = h.malloc_fn
 // REWRITES-NEXT:         == unsafe {
 // REWRITES-NEXT:             std::mem::transmute::<
 // REWRITES-NEXT:                 *const (),
-// REWRITES-NEXT:                 Option<unsafe extern "C" fn(u64) -> *mut core::ffi::c_void>,
+// REWRITES-NEXT:                 Option<unsafe extern "C-unwind" fn(u64) -> *mut core::ffi::c_void>,
 // REWRITES-NEXT:             >(malloc as *const ())
 // REWRITES-NEXT:         };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = ({{_v[0-9]+}} as i32) != 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = if ({{_v[0-9]+}} as i32) != 0 { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
 // REWRITES-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

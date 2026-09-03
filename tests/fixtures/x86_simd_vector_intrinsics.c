@@ -587,30 +587,30 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%d %d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             sse2_out[((0 as i64) as usize)],
-// REWRITES-NEXT:             sse2_out[((1 as i64) as usize)],
-// REWRITES-NEXT:             sse2_out[((2 as i64) as usize)],
-// REWRITES-NEXT:             sse2_out[((3 as i64) as usize)],
+// REWRITES-NEXT:             sse2_out[0],
+// REWRITES-NEXT:             sse2_out[1],
+// REWRITES-NEXT:             sse2_out[2],
+// REWRITES-NEXT:             sse2_out[3],
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%d %d\n".as_ptr(),
-// REWRITES-NEXT:             ssse3_out[((0 as i64) as usize)] as i32,
-// REWRITES-NEXT:             ssse3_out[((15 as i64) as usize)] as i32,
+// REWRITES-NEXT:             ssse3_out[0] as i32,
+// REWRITES-NEXT:             ssse3_out[15] as i32,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%d %d %d %d %d %d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             avx2_out[((0 as i64) as usize)],
-// REWRITES-NEXT:             avx2_out[((1 as i64) as usize)],
-// REWRITES-NEXT:             avx2_out[((2 as i64) as usize)],
-// REWRITES-NEXT:             avx2_out[((3 as i64) as usize)],
-// REWRITES-NEXT:             avx2_out[((4 as i64) as usize)],
-// REWRITES-NEXT:             avx2_out[((5 as i64) as usize)],
-// REWRITES-NEXT:             avx2_out[((6 as i64) as usize)],
-// REWRITES-NEXT:             avx2_out[((7 as i64) as usize)],
+// REWRITES-NEXT:             avx2_out[0],
+// REWRITES-NEXT:             avx2_out[1],
+// REWRITES-NEXT:             avx2_out[2],
+// REWRITES-NEXT:             avx2_out[3],
+// REWRITES-NEXT:             avx2_out[4],
+// REWRITES-NEXT:             avx2_out[5],
+// REWRITES-NEXT:             avx2_out[6],
+// REWRITES-NEXT:             avx2_out[7],
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

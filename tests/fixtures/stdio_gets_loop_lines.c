@@ -181,8 +181,7 @@ int main(void) {
 // REWRITES-NEXT:     let mut line: aligned::Aligned<aligned::A16, [i8; 64]> = aligned::Aligned([0; 64]);
 // REWRITES-NEXT:     unsafe { remove(c"slate_stdio_gets_loop_lines.tmp".as_ptr()) };
 // REWRITES-NEXT:     f = unsafe { fopen(c"slate_stdio_gets_loop_lines.tmp".as_ptr(), c"w".as_ptr()) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = f != std::ptr::null_mut();
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = !(f != std::ptr::null_mut());
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         unsafe { puts(c"open-fail".as_ptr()) };
 // REWRITES-NEXT:         __retval = 0;
@@ -193,8 +192,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe { fputs(c"third".as_ptr(), f as *mut libc::FILE) };
 // REWRITES-NEXT:     unsafe { fclose(f as *mut libc::FILE) };
 // REWRITES-NEXT:     g = unsafe { fopen(c"slate_stdio_gets_loop_lines.tmp".as_ptr(), c"r".as_ptr()) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = g != std::ptr::null_mut();
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = !{{_v[0-9]+}};
+// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = !(g != std::ptr::null_mut());
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
 // REWRITES-NEXT:         unsafe { puts(c"reopen-fail".as_ptr()) };
 // REWRITES-NEXT:         __retval = 0;
@@ -209,8 +207,7 @@ int main(void) {
 // REWRITES-NEXT:                 g as *mut libc::FILE,
 // REWRITES-NEXT:             )
 // REWRITES-NEXT:         }) as *mut i8;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != std::ptr::null_mut();
-// REWRITES-NEXT:         if !{{_v[0-9]+}} {
+// REWRITES-NEXT:         if !({{_v[0-9]+}} != std::ptr::null_mut()) {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         unsafe {

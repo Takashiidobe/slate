@@ -46,12 +46,5 @@ int main(void) {
 // REWRITES-DAG: let {{_v[0-9]+}}: i64 = values[({{_v[0-9]+}} as usize)];
 // REWRITES-DAG: values[({{_v[0-9]+}} as usize)] = 25;
 // REWRITES-DAG: tmp = {{_v[0-9]+}};
-// REWRITES-DAG: unsafe {
-// REWRITES-DAG:     printf(
-// REWRITES-DAG:         c"%ld %ld %d\n".as_ptr(),
-// REWRITES-DAG:         tmp,
-// REWRITES-DAG:         values[((0 as i64) as usize)],
-// REWRITES-DAG:         index,
-// REWRITES-DAG:     )
-// REWRITES-DAG: };
+// REWRITES-DAG: unsafe { printf(c"%ld %ld %d\n".as_ptr(), tmp, values[0], index) };
 // SLATE-FILECHECK-END rewrites

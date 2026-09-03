@@ -437,14 +437,11 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(src) as *mut core::ffi::c_void;
 // REWRITES-NEXT:     unsafe { std::ptr::write_bytes({{_v[0-9]+}} as *mut u8, (0 as i32) as u8, (16 as u64) as usize) };
 // REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i < 10;
-// REWRITES-NEXT:         if !{{_v[0-9]+}} {
+// REWRITES-NEXT:         if !(i < 10) {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 3;
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = i * 17 + {{_v[0-9]+}};
 // REWRITES-NEXT:         unsafe {
-// REWRITES-NEXT:             src.bytes[((i as i64) as usize)] = {{_v[0-9]+}} as u8;
+// REWRITES-NEXT:             src.bytes[((i as i64) as usize)] = (i * 17 + 3) as u8;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
@@ -455,8 +452,7 @@ int main(void) {
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     i = 0;
 // REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i < 10;
-// REWRITES-NEXT:         if !{{_v[0-9]+}} {
+// REWRITES-NEXT:         if !(i < 10) {
 // REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ((unsafe { dst.bytes[((i as i64) as usize)] }) as i32)

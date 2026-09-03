@@ -36,14 +36,14 @@ int main(void) {
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
 // LOWERING-NEXT: struct Callback {
-// LOWERING-NEXT:     handler: Option<unsafe extern "C" fn(*mut i32) -> *mut i32>,
+// LOWERING-NEXT:     handler: Option<unsafe extern "C-unwind" fn(*mut i32) -> *mut i32>,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C" fn add_one({{arg[0-9]+}}: *mut i32) -> *mut i32 {
+// LOWERING-NEXT: extern "C-unwind" fn add_one({{arg[0-9]+}}: *mut i32) -> *mut i32 {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{arg[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
@@ -61,12 +61,12 @@ int main(void) {
 // LOWERING-NEXT:     value = {{_v[0-9]+}};
 // LOWERING-NEXT:     callback = Callback { handler: None };
 // LOWERING-NEXT:     callback.handler = unsafe {
-// LOWERING-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C" fn(*mut i32) -> *mut i32>>(
+// LOWERING-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(*mut i32) -> *mut i32>>(
 // LOWERING-NEXT:             add_one as *const (),
 // LOWERING-NEXT:         )
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C" fn(*mut i32) -> *mut i32> = callback.handler;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(*mut i32) -> *mut i32> = callback.handler;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.unwrap()(std::ptr::addr_of_mut!(value)) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
@@ -92,14 +92,14 @@ int main(void) {
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
 // REWRITES-NEXT: struct Callback {
-// REWRITES-NEXT:     handler: Option<unsafe extern "C" fn(*mut i32) -> *mut i32>,
+// REWRITES-NEXT:     handler: Option<unsafe extern "C-unwind" fn(*mut i32) -> *mut i32>,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C" fn add_one({{arg[0-9]+}}: *mut i32) -> *mut i32 {
+// REWRITES-NEXT: extern "C-unwind" fn add_one({{arg[0-9]+}}: *mut i32) -> *mut i32 {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         *{{arg[0-9]+}} = (unsafe { *{{arg[0-9]+}} }) + 1;
 // REWRITES-NEXT:     }
@@ -112,7 +112,7 @@ int main(void) {
 // REWRITES-NEXT:     value = 41;
 // REWRITES-NEXT:     callback = Callback { handler: None };
 // REWRITES-NEXT:     callback.handler = unsafe {
-// REWRITES-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C" fn(*mut i32) -> *mut i32>>(
+// REWRITES-NEXT:         std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(*mut i32) -> *mut i32>>(
 // REWRITES-NEXT:             add_one as *const (),
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };

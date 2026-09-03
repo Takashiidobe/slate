@@ -418,8 +418,7 @@ int main(void) { return 0; }
 // REWRITES-BIONIC-AARCH64-EMPTY:
 // REWRITES-BIONIC-AARCH64-NEXT: fn bionic_stream_position(mut stream: *mut libc::FILE, mut pos: *mut i64) -> i32 {
 // REWRITES-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { fgetpos(stream as *mut libc::FILE, pos as *mut i64) };
-// REWRITES-BIONIC-AARCH64-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// REWRITES-BIONIC-AARCH64-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-BIONIC-AARCH64-NEXT:     if {{_v[0-9]+}} != 0 {
 // REWRITES-BIONIC-AARCH64-NEXT:         return -1;
 // REWRITES-BIONIC-AARCH64-NEXT:     }
 // REWRITES-BIONIC-AARCH64-NEXT:     unsafe { fsetpos(stream as *mut libc::FILE, pos as *const i64) }
@@ -538,8 +537,7 @@ int main(void) { return 0; }
 // REWRITES-BIONIC-X86_64-EMPTY:
 // REWRITES-BIONIC-X86_64-NEXT: fn bionic_stream_position(mut stream: *mut libc::FILE, mut pos: *mut i64) -> i32 {
 // REWRITES-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { fgetpos(stream as *mut libc::FILE, pos as *mut i64) };
-// REWRITES-BIONIC-X86_64-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// REWRITES-BIONIC-X86_64-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-BIONIC-X86_64-NEXT:     if {{_v[0-9]+}} != 0 {
 // REWRITES-BIONIC-X86_64-NEXT:         return -1;
 // REWRITES-BIONIC-X86_64-NEXT:     }
 // REWRITES-BIONIC-X86_64-NEXT:     unsafe { fsetpos(stream as *mut libc::FILE, pos as *const i64) }

@@ -190,8 +190,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{__slate_alloca_frame[0-9]+}}.3;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{__slate_alloca_frame[0-9]+}}.4;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { {{_v[0-9]+}}.offset_from({{_v[0-9]+}}) as i64 };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 3;
-// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:     if {{_v[0-9]+}} != 3 {
 // REWRITES-NEXT:         {{__slate_alloca_frame[0-9]+}}.1 = 1;
 // REWRITES-NEXT:         return {{__slate_alloca_frame[0-9]+}}.1;
 // REWRITES-NEXT:     }
@@ -207,8 +206,7 @@ int main(void) {
 // REWRITES-NEXT:             return {{__slate_alloca_frame[0-9]+}}.1;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: bool = {{__slate_alloca_frame[0-9]+}}.0 != 0;
-// REWRITES-NEXT:     if {{_v[0-9]+}} {
+// REWRITES-NEXT:     if {{__slate_alloca_frame[0-9]+}}.0 != 0 {
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:             *{{__slate_alloca_frame[0-9]+}}.2 = 9;
 // REWRITES-NEXT:         }

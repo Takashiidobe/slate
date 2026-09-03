@@ -10,10 +10,8 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: unsafe {
-// REWRITES-DAG:     printf(
-// REWRITES-DAG:         c"%s %s\n".as_ptr(),
-// REWRITES-DAG:         unsafe { (*names)[((0 as i64) as usize)] },
-// REWRITES-DAG:         unsafe { (*names)[((1 as i64) as usize)] },
-// REWRITES-DAG:     )
+// REWRITES-DAG:     printf(c"%s %s\n".as_ptr(), unsafe { (*names)[0] }, unsafe {
+// REWRITES-DAG:         (*names)[1]
+// REWRITES-DAG:     })
 // REWRITES-DAG: };
 // SLATE-FILECHECK-END rewrites
