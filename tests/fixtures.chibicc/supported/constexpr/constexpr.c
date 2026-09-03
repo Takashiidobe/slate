@@ -129,11 +129,11 @@ int main() {
            sizeof(x);
          }));
   ASSERT(8, ({
-           char x[(int *)0 + 2];
+           char x[(long)((int *)0 + 2)];
            sizeof(x);
          }));
   ASSERT(12, ({
-           char x[(int *)16 - 1];
+           char x[(long)((int *)16 - 1)];
            sizeof(x);
          }));
   ASSERT(3, ({

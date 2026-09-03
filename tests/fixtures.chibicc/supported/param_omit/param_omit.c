@@ -3,7 +3,7 @@
 // Function declarations with omitted parameter names
 int   add(int, int);
 int   mul(int, int);
-void *memcpy(void *, const void *, unsigned long);
+void *memcpy(void *, void *, long);
 
 // Function definitions (parameter names are required)
 int add(int x, int y) { return x + y; }

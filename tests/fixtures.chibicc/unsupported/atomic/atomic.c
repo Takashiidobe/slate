@@ -11,25 +11,25 @@ static int incr(_Atomic int *p) {
   return newval;
 }
 
-static int add1(void *arg) {
+static void *add1(void *arg) {
   _Atomic int *x = arg;
   for (int i = 0; i < 1000 * 1000; i++)
     incr(x);
-  return 0;
+  return NULL;
 }
 
-static int add2(void *arg) {
+static void *add2(void *arg) {
   _Atomic int *x = arg;
   for (int i = 0; i < 1000 * 1000; i++)
     (*x)++;
-  return 0;
+  return NULL;
 }
 
-static int add3(void *arg) {
+static void *add3(void *arg) {
   _Atomic int *x = arg;
   for (int i = 0; i < 1000 * 1000; i++)
     *x += 5;
-  return 0;
+  return NULL;
 }
 
 static int add_millions(void) {
@@ -56,11 +56,11 @@ int main() {
   ASSERT(6 * 1000 * 1000, add_millions());
 
   ASSERT(3, ({
-           int x = 3;
+           _Atomic int x = 3;
            atomic_exchange(&x, 5);
          }));
   ASSERT(5, ({
-           int x = 3;
+           _Atomic int x = 3;
            atomic_exchange(&x, 5);
            x;
          }));
