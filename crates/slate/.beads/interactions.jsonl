@@ -1498,3 +1498,5 @@
 {"id":"int-f926efd22b972923eb3a40373b5e5f89","kind":"field_change","created_at":"2026-09-03T18:43:26.093893941Z","actor":"Takashiidobe","issue_id":"slate-6v25.21","extra":{"field":"status","new_value":"blocked","old_value":"open"}}
 {"id":"int-767ad90e668836709ca99f1456c593b5","kind":"field_change","created_at":"2026-09-03T18:43:26.798663102Z","actor":"Takashiidobe","issue_id":"slate-6v25.24","extra":{"field":"status","new_value":"blocked","old_value":"open"}}
 {"id":"int-fc702ebe242974ec23d98bf0d0c3b959","kind":"field_change","created_at":"2026-09-03T18:43:27.502668026Z","actor":"Takashiidobe","issue_id":"slate-6v25.27","extra":{"field":"status","new_value":"blocked","old_value":"open"}}
+{"id":"int-3f3986abbef6c46be0430a224b00b124","kind":"field_change","created_at":"2026-09-03T18:46:27.688074271Z","actor":"Takashiidobe","issue_id":"slate-2o6o.7","extra":{"field":"status","new_value":"blocked","old_value":"open"}}
+{"id":"int-a0d47cf4b1dd5c3a945071134bdf42ff","kind":"field_change","created_at":"2026-09-03T19:55:46.669701447Z","actor":"Takashiidobe","issue_id":"slate-cu47","extra":{"field":"status","new_value":"in_progress","old_value":"open"}}

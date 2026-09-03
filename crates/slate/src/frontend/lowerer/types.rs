@@ -401,7 +401,7 @@ pub(super) fn cir_fn_type_to_type(
         ret
     };
     Some(Type::FnPtr {
-        abi: Abi::C,
+        abi: Abi::CUnwind,
         params,
         ret: Box::new(ret),
     })
