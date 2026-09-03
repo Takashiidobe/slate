@@ -219,6 +219,10 @@ fn temp_index(name: &str) -> Option<u32> {
     name.strip_prefix("_v")?.parse().ok()
 }
 
+fn is_compiler_temp_let(stmt: &Stmt) -> bool {
+    matches!(stmt, Stmt::Let { name, .. } if temp_index(name.as_str()).is_some())
+}
+
 fn max_temp(arena: &Arena, id: NodeId) -> u32 {
     let Some(kind) = arena.get(id) else {
         return 0;
@@ -338,7 +342,11 @@ fn rebuild(mut switch: Switch, next_temp: &mut u32) -> Option<Stmt> {
         let mut cursor = index;
         while switch.arms[cursor].term == Term::FallsThrough {
             cursor += 1;
-            duplicated += switch.arms[cursor].body.len();
+            duplicated += switch.arms[cursor]
+                .body
+                .iter()
+                .filter(|stmt| !is_compiler_temp_let(stmt))
+                .count();
             let mut copy: Vec<IndentStmt> = switch.arms[cursor]
                 .body
                 .iter()
