@@ -47,7 +47,7 @@ fn syslink_fixture_runs_match_c() {
 
         let c_bin = work.join("c_bin");
         support::compile_c_multi_with_std_include_and_args(
-            &[main_c.clone()],
+            std::slice::from_ref(&main_c),
             &c_bin,
             "c23",
             None,
