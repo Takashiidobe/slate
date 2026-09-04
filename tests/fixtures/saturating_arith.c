@@ -31,7 +31,7 @@ int main(void) {
   U200 sub_u200 = __builtin_elementwise_sub_sat(u200a, (U200)10);
   printf("%d\n", sub_u200 == 0);
 
-  v4si va = {2147483647, 1, -2147483647 - 1, 0};
+  v4si va = {INT_MAX, 1, INT_MIN, 0};
   v4si vb = {10, 1, -10, 0};
   v4si vr = __builtin_elementwise_add_sat(va, vb);
   printf("%d %d %d %d\n", vr[0], vr[1], vr[2], vr[3]);

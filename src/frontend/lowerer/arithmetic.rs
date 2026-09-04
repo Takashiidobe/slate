@@ -889,12 +889,53 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_assume(&mut self, op: &inst::Assume) {
+        let cond = self
+            .assume_align_cond(&op.bundle_kind, &op.bundle_args)
+            .unwrap_or_else(|| self.operand_expr(&op.predicate));
         self.push_stmt(Stmt::Expr(Self::unsafe_expr(Expr::Call {
             binding: function_identity::CallBinding::Generated,
             func: Box::new(Expr::Path(Path::new(
                 ["core", "hint", "assert_unchecked"].map(Ident::from),
             ))),
-            args: vec![self.operand_expr(&op.predicate)],
+            args: vec![cond],
         })));
+    }
+
+    fn assume_align_cond(&self, bundle_kind: &Attr, bundle_args: &[String]) -> Option<Expr> {
+        if AssumeBundleKind::try_from(bundle_kind) != Ok(AssumeBundleKind::Align) {
+            return None;
+        }
+        let [ptr, align, rest @ ..] = bundle_args else {
+            return None;
+        };
+        let usize_ty = Type::Prim(Prim::Usize);
+        let addr = Expr::Cast {
+            expr: Box::new(self.operand_expr(ptr)),
+            ty: usize_ty.clone(),
+        };
+        let addr = match rest.first() {
+            Some(offset) => Expr::MethodCall {
+                recv: Box::new(addr),
+                method: "wrapping_sub".into(),
+                args: vec![Expr::Cast {
+                    expr: Box::new(self.operand_expr(offset)),
+                    ty: usize_ty.clone(),
+                }],
+            },
+            None => addr,
+        };
+        let align = Expr::Cast {
+            expr: Box::new(self.operand_expr(align)),
+            ty: usize_ty,
+        };
+        Some(Expr::Binary {
+            op: BinOp::Eq,
+            lhs: Box::new(Expr::Binary {
+                op: BinOp::Rem,
+                lhs: Box::new(addr),
+                rhs: Box::new(align),
+            }),
+            rhs: Box::new(Expr::Value(RustValue::Usize(0))),
+        })
     }
 }

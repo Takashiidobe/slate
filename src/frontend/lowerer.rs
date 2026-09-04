@@ -18,7 +18,7 @@ use crate::frontend::function_abi::repair_function_signature;
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 use clang_ir::ast::SourceLocation;
 use clang_ir::ast::{Attribute as Attr, Type as CirType};
-use clang_ir::enums::CmpOpKind;
+use clang_ir::enums::{AssumeBundleKind, CmpOpKind};
 use clang_ir::model::Module;
 use clang_ir::model::{
     Function as CirFunction, Global as CirGlobal, GlobalLinkageKind, MemOrder, Op, VisibilityKind,
