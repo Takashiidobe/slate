@@ -23,6 +23,15 @@
 #define O_TMPFILE   020040000
 #define O_NDELAY    O_NONBLOCK
 
+#define O_SEARCH   O_PATH
+#define O_EXEC     O_PATH
+#define O_TTY_INIT 0
+
+#define O_ACCMODE (03 | O_SEARCH)
+#define O_RDONLY  00
+#define O_WRONLY  01
+#define O_RDWR    02
+
 #define F_DUPFD  0
 #define F_GETFD  1
 #define F_SETFD  2

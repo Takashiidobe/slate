@@ -35,7 +35,11 @@ _Static_assert(sizeof(blkcnt_t) == 8, "public blkcnt_t width");
 _Static_assert((blksize_t)-1 > 0, "public blksize_t is unsigned");
 _Static_assert(AT_FDCWD == -100, "AT_FDCWD");
 _Static_assert(O_CREAT == 0100, "O_CREAT");
+#if defined(__SLATE_ARCH_X86_64)
 _Static_assert(O_DIRECTORY == 0200000, "O_DIRECTORY");
+#else
+_Static_assert(O_DIRECTORY == 040000, "O_DIRECTORY");
+#endif
 _Static_assert(F_DUPFD_CLOEXEC == 1030, "F_DUPFD_CLOEXEC");
 
 int main(void) {

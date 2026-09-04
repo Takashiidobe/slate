@@ -36,8 +36,12 @@ Verified via NDK-sysroot `clang -fsyntax-only` for both 64-bit targets, plus
 `cargo check` against real `aarch64`/`x86_64-linux-android` rustc targets.
 Structural fixture: `tests/fixtures/bionic/stdio_locale_conversion.c`
 exercises `FILE`/`fpos_t`/`mbstate_t`/`locale_t`/`wctype_t`/`nl_langinfo`
-together (translate-only — `tests/differential.rs` is disabled repo-wide
-right now, unrelated to Android).
+together, with full `@lowering`/`@rewrite` FileCheck coverage now that
+`tests/differential.rs` is back online.
+
+`struct lconv` (glibc-shaped, shared by every non-Darwin/FreeBSD libc) was
+cross-checked field-by-field against the NDK r27d sysroot's `locale.h`:
+order and types match exactly, no Bionic-specific branch needed.
 
 ## The Rust `libc` crate has no Android `mbstate_t` binding
 
@@ -100,6 +104,35 @@ API-level gating (`lockf`/`lockf64` need API ≥24, `statx` needs API ≥30,
 `seekdir`/`telldir` need API ≥23) is explicitly left to slate-sfzn.7.9 — this
 ticket only fixes feature-test-macro visibility and struct/typedef shape at
 the API 21 baseline, matching 7.3's carve-out.
+
+### `O_*` flag bits: arm/aarch64 swap several values relative to x86
+
+The Linux kernel UAPI (and so Bionic, which ships generated kernel headers
+verbatim) assigns different bit patterns to `O_DIRECTORY`/`O_NOFOLLOW`/
+`O_DIRECT`/`O_LARGEFILE`/`O_TMPFILE` on arm/aarch64 than on x86 — this is a
+kernel-arch divergence, not a libc one, so it applies identically to any
+libc built for those architectures:
+
+| macro         | x86 (generic) | arm/aarch64 |
+| ------------- | -------------:| -----------:|
+| `O_DIRECTORY` |      `0200000`|    `040000` |
+| `O_NOFOLLOW`  |      `0400000`|   `0100000` |
+| `O_DIRECT`    |       `040000`|   `0200000` |
+| `O_LARGEFILE` |      `0100000`|   `0400000` |
+| `O_TMPFILE`   |    `020200000`| `020040000` |
+
+`bits/aarch64/fcntl.h`/`bits/arm/fcntl.h` already had the correct values,
+but they were dead: the top-level `libc-shim/include/fcntl.h` unconditionally
+redefined the same macro names with the x86 values right after including
+`bits/fcntl.h`, silently overwriting them on every architecture (invisible
+on x86_64 because the values happened to coincide there). Fixed by giving
+the generic values their own `bits/generic/fcntl.h` (dispatched from
+`bits/fcntl.h`'s `#else`, following the same convention as `bits/stat.h`)
+and deleting the clobbering block from the top-level header — each arch's
+open-flag section now lives entirely in its own `bits/<arch>/fcntl.h`.
+Caught by `filesystem_layout`'s Bionic NDK-oracle cross-compile in
+`tests/differential.rs`, which failed on the real aarch64 sysroot's
+`O_DIRECTORY` static-assert once `tests/differential.rs` came back online.
 
 ### Pre-existing, out-of-scope bug found along the way
 

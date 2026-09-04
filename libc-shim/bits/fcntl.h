@@ -11,6 +11,7 @@
 #elif defined(__SLATE_ARCH_ARM)
 #include <bits/arm/fcntl.h>
 #else
+#include <bits/generic/fcntl.h>
 #endif
 
 #endif /* _SLATE_BITS_FCNTL_H */
