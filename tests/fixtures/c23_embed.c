@@ -281,10 +281,7 @@ int main(void) {
 // REWRITES-NEXT:     let mut framed_ok: i32 = 0;
 // REWRITES-NEXT:     let mut empty_ok: i32 = 0;
 // REWRITES-NEXT:     let mut i: u64 = 0;
-// REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         if !(i < 4) {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     while i < 4 {
 // REWRITES-NEXT:         unsafe { putchar((unsafe { main_data[(i as usize)] }) as i32) };
 // REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }

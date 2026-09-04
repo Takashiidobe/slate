@@ -473,10 +473,7 @@ int main(void) {
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     unsafe { printf(c"%s".as_ptr(), {{arg[0-9]+}}) };
 // REWRITES-NEXT:     let mut i: i32 = 0;
-// REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         if !(i < 10) {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     while i < 10 {
 // REWRITES-NEXT:         unsafe { printf(c"%02x".as_ptr(), bytes[((i as i64) as usize)] as i32) };
 // REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }

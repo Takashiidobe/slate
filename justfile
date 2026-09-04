@@ -101,20 +101,25 @@ regen-rewrites *paths=filecheck_fixtures:
 regen-filecheck *paths=filecheck_fixtures:
     just --jobs {{filecheck_jobs}} _regen-filechecks both {{quote(paths)}}
 
+# regenerate the lowering FileCheck blocks for fixtures matching PATTERN (glob or bare fixture name, e.g. `mem*` or `long_double_layout`)
+regen-lowering-match *pattern:
+    python3 tools/update_filecheck.py --in-place --profile lowering {{pattern}}
+
+# regenerate the rewrites FileCheck blocks for fixtures matching PATTERN, leaving lowering blocks frozen
+regen-rewrites-match *pattern:
+    python3 tools/update_filecheck.py --in-place --profile rewrites {{pattern}}
+
+# regenerate both FileCheck profiles for fixtures matching PATTERN
+regen-filecheck-match *pattern:
+    python3 tools/update_filecheck.py --in-place --profile both {{pattern}}
+
 [private]
 [parallel]
 _regen-filechecks profile *paths: *(_regen-filecheck profile *paths)
 
 [private]
 _regen-filecheck profile path:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    case {{quote(path)}} in
-        tests/fixtures.multi*) mode=--project ;;
-        tests/fixtures.library*) mode=--library-project ;;
-        *) mode= ;;
-    esac
-    python3 tools/update_filecheck.py $mode --in-place --profile {{quote(profile)}} {{quote(path)}}
+    python3 tools/update_filecheck.py --in-place --profile {{quote(profile)}} {{quote(path)}}
 
 # cargo check every already-transpiled crate; keeps going past per-project failures and reports them at the end
 check-all:

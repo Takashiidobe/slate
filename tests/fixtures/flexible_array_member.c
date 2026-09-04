@@ -216,19 +216,24 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         (*flexible).count = 3;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     for index in 0..unsafe { (*flexible).count } {
+// REWRITES-NEXT:     let mut index: u64 = 0;
+// REWRITES-NEXT:     while index < unsafe { (*flexible).count } {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = (index as i32) + 1;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = index;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut FlexibleArray = flexible;
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:             *(*{{_v[0-9]+}}).values.as_mut_ptr().add({{_v[0-9]+}} as usize) = {{_v[0-9]+}};
 // REWRITES-NEXT:         }
+// REWRITES-NEXT:         index += 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     for index2 in 0..unsafe { (*flexible).count } {
+// REWRITES-NEXT:     let mut index2: u64 = 0;
+// REWRITES-NEXT:     index2 = 0;
+// REWRITES-NEXT:     while index2 < unsafe { (*flexible).count } {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = index2;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut FlexibleArray = flexible;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { *(*{{_v[0-9]+}}).values.as_mut_ptr().add({{_v[0-9]+}} as usize) };
 // REWRITES-NEXT:         total += {{_v[0-9]+}};
+// REWRITES-NEXT:         index2 += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { free(flexible as *mut core::ffi::c_void) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;

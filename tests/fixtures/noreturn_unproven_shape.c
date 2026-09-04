@@ -92,11 +92,7 @@ int main(void) {
 // REWRITES-NEXT: /// guard), so it must fall back to a conservative, non-`!` return type
 // REWRITES-NEXT: /// instead of emitting Rust that rustc would reject.
 // REWRITES-NEXT: extern "C-unwind" fn spin() {
-// REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         if !true {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:     }
+// REWRITES-NEXT:     while true {}
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:

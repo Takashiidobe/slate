@@ -1,16 +1,24 @@
 #include <stdio.h>
 
+// @rewrite-fn-begin
 static int *identity_mut(int *value) { return value; }
+// @rewrite-fn-end
 
+// @rewrite-fn-begin
 static int *forward_mut(int *value) { return identity_mut(value); }
+// @rewrite-fn-end
 
+// @rewrite-fn-begin
 static const int *identity_const(const int *value) { return value; }
+// @rewrite-fn-end
 
+// @rewrite-fn-begin
 static int *choose_value(int *first, int *second, int choose_first) {
   if (choose_first)
     return first;
   return second;
 }
+// @rewrite-fn-end
 
 int main(void) {
   int  first             = 20;
@@ -22,11 +30,6 @@ int main(void) {
   printf("%d %d %d\n", first, *read_alias, *ambiguous);
   return 0;
 }
-
-// REWRITES-DAG: fn identity_mut(arg{{[0-9]+}}: &mut i32) -> *mut i32
-// REWRITES-DAG: fn forward_mut(arg{{[0-9]+}}: &mut i32) -> *mut i32
-// REWRITES-DAG: fn identity_const(arg{{[0-9]+}}: &i32) -> *mut i32
-// REWRITES-DAG: fn choose_value(arg{{[0-9]+}}: *mut i32, arg{{[0-9]+}}: *mut i32, arg{{[0-9]+}}: i32) -> *mut i32
 
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
@@ -112,3 +115,21 @@ int main(void) {
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
+
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES-DAG: fn identity_mut({{arg[0-9]+}}: &mut i32) -> *mut i32 {
+// REWRITES-DAG:     {{arg[0-9]+}} as *mut i32
+// REWRITES-DAG: }
+// REWRITES-DAG: fn forward_mut({{arg[0-9]+}}: &mut i32) -> *mut i32 {
+// REWRITES-DAG:     identity_mut({{arg[0-9]+}})
+// REWRITES-DAG: }
+// REWRITES-DAG: fn identity_const({{arg[0-9]+}}: &i32) -> *mut i32 {
+// REWRITES-DAG:     ({{arg[0-9]+}} as *const i32) as *mut i32
+// REWRITES-DAG: }
+// REWRITES-DAG: fn choose_value(mut first: *mut i32, {{arg[0-9]+}}: *mut i32, mut {{_v[0-9]+}}: i32) -> *mut i32 {
+// REWRITES-DAG:     if {{_v[0-9]+}} != 0 {
+// REWRITES-DAG:         return first;
+// REWRITES-DAG:     }
+// REWRITES-DAG:     {{arg[0-9]+}}
+// REWRITES-DAG: }
+// SLATE-FILECHECK-END rewrites

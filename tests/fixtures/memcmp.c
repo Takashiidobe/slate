@@ -3,6 +3,7 @@
 
 static int get_count(void) { return 4; }
 
+// @rewrite-fn-begin
 int main(void) {
   unsigned char equal_a[4]   = {1, 2, 3, 4};
   unsigned char equal_b[4]   = {1, 2, 3, 4};
@@ -25,13 +26,7 @@ int main(void) {
          dyn_result);
   return 0;
 }
-
-// REWRITES-DAG: fn memcmp(_0: *const core::ffi::c_void, _1: *const core::ffi::c_void, _2: usize) -> i32;
-// REWRITES-NOT: safe fn memcmp(
-// REWRITES-LABEL: {{^}}fn main() {
-// REWRITES-DAG: unsafe { memcmp(
-// REWRITES-DAG: dyn_a.as_mut_ptr()
-// REWRITES: {{^}}}
+// @rewrite-fn-end
 
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
@@ -143,3 +138,70 @@ int main(void) {
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
+
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES-DAG: fn main() {
+// REWRITES-DAG:     let mut equal_a: [u8; 4] = [1, 2, 3, 4];
+// REWRITES-DAG:     let mut equal_b: [u8; 4] = [1, 2, 3, 4];
+// REWRITES-DAG:     let mut unequal_a: [u8; 4] = [1, 2, 3, 4];
+// REWRITES-DAG:     let mut unequal_b: [u8; 4] = [1, 2, 3, 9];
+// REWRITES-DAG:     let mut partial_a: [u8; 8] = [1, 2, 3, 4, 9, 9, 9, 9];
+// REWRITES-DAG:     let mut partial_b: [u8; 8] = [1, 2, 3, 4, 0, 0, 0, 0];
+// REWRITES-DAG:     let mut dyn_a: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
+// REWRITES-DAG:     let mut dyn_b: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
+// REWRITES-DAG:     let {{_v[0-9]+}}: *mut u8 = equal_a.as_mut_ptr() as *mut u8;
+// REWRITES-DAG:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// REWRITES-DAG:     let {{_v[0-9]+}}: *mut u8 = equal_b.as_mut_ptr() as *mut u8;
+// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = unsafe {
+// REWRITES-DAG:         memcmp(
+// REWRITES-DAG:             {{_v[0-9]+}} as *const core::ffi::c_void,
+// REWRITES-DAG:             {{_v[0-9]+}} as *const core::ffi::c_void,
+// REWRITES-DAG:             (4 as u64) as usize,
+// REWRITES-DAG:         )
+// REWRITES-DAG:     };
+// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}} == 0) as i32;
+// REWRITES-DAG:     let {{_v[0-9]+}}: *mut u8 = unequal_a.as_mut_ptr() as *mut u8;
+// REWRITES-DAG:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// REWRITES-DAG:     let {{_v[0-9]+}}: *mut u8 = unequal_b.as_mut_ptr() as *mut u8;
+// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = unsafe {
+// REWRITES-DAG:         memcmp(
+// REWRITES-DAG:             {{_v[0-9]+}} as *const core::ffi::c_void,
+// REWRITES-DAG:             {{_v[0-9]+}} as *const core::ffi::c_void,
+// REWRITES-DAG:             (4 as u64) as usize,
+// REWRITES-DAG:         )
+// REWRITES-DAG:     };
+// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}} == 0) as i32;
+// REWRITES-DAG:     let {{_v[0-9]+}}: *mut u8 = partial_a.as_mut_ptr() as *mut u8;
+// REWRITES-DAG:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// REWRITES-DAG:     let {{_v[0-9]+}}: *mut u8 = partial_b.as_mut_ptr() as *mut u8;
+// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = unsafe {
+// REWRITES-DAG:         memcmp(
+// REWRITES-DAG:             {{_v[0-9]+}} as *const core::ffi::c_void,
+// REWRITES-DAG:             {{_v[0-9]+}} as *const core::ffi::c_void,
+// REWRITES-DAG:             (4 as u64) as usize,
+// REWRITES-DAG:         )
+// REWRITES-DAG:     };
+// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}} == 0) as i32;
+// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = get_count();
+// REWRITES-DAG:     let {{_v[0-9]+}}: *mut u8 = dyn_a.as_mut_ptr() as *mut u8;
+// REWRITES-DAG:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// REWRITES-DAG:     let {{_v[0-9]+}}: *mut u8 = dyn_b.as_mut_ptr() as *mut u8;
+// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = unsafe {
+// REWRITES-DAG:         memcmp(
+// REWRITES-DAG:             {{_v[0-9]+}} as *const core::ffi::c_void,
+// REWRITES-DAG:             {{_v[0-9]+}} as *const core::ffi::c_void,
+// REWRITES-DAG:             ({{_v[0-9]+}} as u64) as usize,
+// REWRITES-DAG:         )
+// REWRITES-DAG:     };
+// REWRITES-DAG:     unsafe {
+// REWRITES-DAG:         printf(
+// REWRITES-DAG:             c"%d %d %d %d\n".as_ptr(),
+// REWRITES-DAG:             {{_v[0-9]+}},
+// REWRITES-DAG:             {{_v[0-9]+}},
+// REWRITES-DAG:             {{_v[0-9]+}},
+// REWRITES-DAG:             ({{_v[0-9]+}} == 0) as i32,
+// REWRITES-DAG:         )
+// REWRITES-DAG:     };
+// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG: }
+// SLATE-FILECHECK-END rewrites

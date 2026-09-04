@@ -436,10 +436,7 @@ int main(void) {
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(src) as *mut core::ffi::c_void;
 // REWRITES-NEXT:     unsafe { std::ptr::write_bytes({{_v[0-9]+}} as *mut u8, (0 as i32) as u8, (16 as u64) as usize) };
-// REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         if !(i < 10) {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     while i < 10 {
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:             src.bytes[((i as i64) as usize)] = (i * 17 + 3) as u8;
 // REWRITES-NEXT:         }
@@ -451,10 +448,7 @@ int main(void) {
 // REWRITES-NEXT:         std::ptr::copy_nonoverlapping({{_v[0-9]+}} as *const u8, {{_v[0-9]+}} as *mut u8, (16 as u64) as usize)
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     i = 0;
-// REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         if !(i < 10) {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     while i < 10 {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = ((unsafe { dst.bytes[((i as i64) as usize)] }) as i32)
 // REWRITES-NEXT:             != ((unsafe { src.bytes[((i as i64) as usize)] }) as i32);
 // REWRITES-NEXT:         if {{_v[0-9]+}} {

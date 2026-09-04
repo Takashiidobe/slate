@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+// @rewrite-fn-begin
 static int sum_while(int n) {
   int total = 0;
   int i     = 1;
@@ -9,6 +10,7 @@ static int sum_while(int n) {
   }
   return total;
 }
+// @rewrite-fn-end
 
 int main(void) {
   printf("%d\n", sum_while(5));
@@ -16,11 +18,6 @@ int main(void) {
   printf("%d\n", sum_while(0));
   return 0;
 }
-
-// REWRITES-LABEL: {{^}}fn sum_while(
-// REWRITES-DAG: loop {
-// REWRITES-DAG: if !(i <= n) {
-// REWRITES: {{^}}}
 
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
@@ -91,3 +88,15 @@ int main(void) {
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
+
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES-DAG: fn sum_while(mut n: i32) -> i32 {
+// REWRITES-DAG:     let mut total: i32 = 0;
+// REWRITES-DAG:     let mut i: i32 = 1;
+// REWRITES-DAG:     while i <= n {
+// REWRITES-DAG:         total += i;
+// REWRITES-DAG:         i += 1;
+// REWRITES-DAG:     }
+// REWRITES-DAG:     total
+// REWRITES-DAG: }
+// SLATE-FILECHECK-END rewrites

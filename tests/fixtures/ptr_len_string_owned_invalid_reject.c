@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+// @rewrite-fn-begin
 static int consume_bin(char *buf, int len) {
   (void)strlen(buf);
   int score = 0;
@@ -10,6 +11,7 @@ static int consume_bin(char *buf, int len) {
   free(buf);
   return score;
 }
+// @rewrite-fn-end
 
 static int forward_bin(char *buf, int len) { return consume_bin(buf, len); }
 
@@ -21,10 +23,6 @@ int main(void) {
   printf("%d\n", score);
   return 0;
 }
-
-// REWRITES: fn consume_bin(arg{{[0-9]+}}: *mut i8, arg{{[0-9]+}}: i32) -> i32
-// REWRITES-NOT: String::from_raw_parts(
-// REWRITES-NOT: mut arg{{[0-9]+}}: String
 
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
@@ -127,3 +125,20 @@ int main(void) {
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
+
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES-DAG: fn consume_bin(mut buf: *mut i8, mut len: i32) -> i32 {
+// REWRITES-DAG:     let mut score: i32 = 0;
+// REWRITES-DAG:     (unsafe { strlen(buf as *const core::ffi::c_char) }) as u64;
+// REWRITES-DAG:     let mut i: i32 = 0;
+// REWRITES-DAG:     i = 0;
+// REWRITES-DAG:     while i < len {
+// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i8 = buf;
+// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
+// REWRITES-DAG:         score += ((unsafe { *{{_v[0-9]+}} }) as u8) as i32;
+// REWRITES-DAG:         i += 1;
+// REWRITES-DAG:     }
+// REWRITES-DAG:     unsafe { free(buf as *mut core::ffi::c_void) };
+// REWRITES-DAG:     score
+// REWRITES-DAG: }
+// SLATE-FILECHECK-END rewrites

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// @rewrite-fn-begin
 static int touch_and_maybe_free(int *q, int do_free) {
   *q    = *q + 1;
   int v = *q;
@@ -9,6 +10,7 @@ static int touch_and_maybe_free(int *q, int do_free) {
   }
   return v;
 }
+// @rewrite-fn-end
 
 int main(void) {
   int  stack_val  = 10;
@@ -22,11 +24,6 @@ int main(void) {
   printf("%d %d %d\n", stack_val, from_stack, from_heap);
   return stack_val + from_stack + from_heap;
 }
-
-// REWRITES-DAG: fn touch_and_maybe_free(arg0: *mut i32, arg1: i32) -> i32
-// REWRITES-DAG: free(
-// REWRITES-NOT: fn touch_and_maybe_free({{.*}}Box
-// REWRITES-NOT: Box::from_raw
 
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
@@ -101,3 +98,17 @@ int main(void) {
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
+
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES-DAG: fn touch_and_maybe_free(mut q: *mut i32, mut {{_v[0-9]+}}: i32) -> i32 {
+// REWRITES-DAG:     unsafe {
+// REWRITES-DAG:         *q = (unsafe { *q }) + 1;
+// REWRITES-DAG:     }
+// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = unsafe { *q };
+// REWRITES-DAG:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:         unsafe { free(q as *mut core::ffi::c_void) };
+// REWRITES-DAG:     }
+// REWRITES-DAG:     {{_v[0-9]+}}
+// REWRITES-DAG: }
+// SLATE-FILECHECK-END rewrites

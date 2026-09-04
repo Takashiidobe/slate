@@ -100,8 +100,11 @@ int main(void) {
 // REWRITES-NEXT:     let mut a: aligned::Aligned<aligned::A16, [i32; 5]> = aligned::Aligned([0; 5]);
 // REWRITES-NEXT:     let mut total: i32 = 0;
 // REWRITES-NEXT:     *a = [1, 2, 3, 4, 5];
-// REWRITES-NEXT:     for i in a.iter().copied() {
-// REWRITES-NEXT:         total += i;
+// REWRITES-NEXT:     let mut i: i32 = 0;
+// REWRITES-NEXT:     i = 0;
+// REWRITES-NEXT:     while i < 5 {
+// REWRITES-NEXT:         total += a[((i as i64) as usize)];
+// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     total
 // REWRITES-NEXT: }

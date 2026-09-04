@@ -20,5 +20,5 @@ int main(void) {
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: unsafe { std::ptr::write_bytes({{_v[0-9]+}} as *mut u8, (0 as i32) as u8, (8 as u64) as usize) };
+// REWRITES-DAG: unsafe { buf[(0usize..8usize)].fill((0 as i32) as i8) };
 // SLATE-FILECHECK-END rewrites

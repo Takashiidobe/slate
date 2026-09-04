@@ -12,6 +12,7 @@ union ld_union {
   char        bytes[sizeof(long double)];
 };
 
+// @rewrite-fn-begin
 int main(void) {
   printf("%zu %zu\n", sizeof(long double), _Alignof(long double));
   printf("%zu %zu %zu %zu\n", sizeof(struct ld_box), _Alignof(struct ld_box),
@@ -19,12 +20,7 @@ int main(void) {
   printf("%zu %zu\n", sizeof(union ld_union), _Alignof(union ld_union));
   return 0;
 }
-// REWRITES-MACOS-DAG: value: f64
-// REWRITES-MACOS-DAG: ld: f64
-// REWRITES-MACOS: let _v{{[0-9]+}}: u64 = 8;
-// REWRITES-MACOS-NEXT: let _v{{[0-9]+}}: u64 = 8;
-// REWRITES-MACOS-DAG: std::mem::offset_of!(ld_box, value) as u64
-// REWRITES-MACOS-NOT: LongDouble
+// @rewrite-fn-end
 
 // SLATE-FILECHECK-BEGIN lowering-macos
 // LOWERING-MACOS: #![feature(c_variadic)]
@@ -80,3 +76,26 @@ int main(void) {
 // LOWERING-MACOS-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-MACOS-NEXT: }
 // SLATE-FILECHECK-END lowering-macos
+
+// SLATE-FILECHECK-BEGIN rewrites-macos
+// REWRITES-MACOS-DAG: fn main() {
+// REWRITES-MACOS-DAG:     unsafe { printf(c"%zu %zu\n".as_ptr(), 8 as u64, 8 as u64) };
+// REWRITES-MACOS-DAG:     unsafe {
+// REWRITES-MACOS-DAG:         printf(
+// REWRITES-MACOS-DAG:             c"%zu %zu %zu %zu\n".as_ptr(),
+// REWRITES-MACOS-DAG:             std::mem::size_of::<ld_box>() as u64,
+// REWRITES-MACOS-DAG:             std::mem::align_of::<ld_box>() as u64,
+// REWRITES-MACOS-DAG:             std::mem::offset_of!(ld_box, value) as u64,
+// REWRITES-MACOS-DAG:             std::mem::offset_of!(ld_box, tail) as u64,
+// REWRITES-MACOS-DAG:         )
+// REWRITES-MACOS-DAG:     };
+// REWRITES-MACOS-DAG:     unsafe {
+// REWRITES-MACOS-DAG:         printf(
+// REWRITES-MACOS-DAG:             c"%zu %zu\n".as_ptr(),
+// REWRITES-MACOS-DAG:             std::mem::size_of::<ld_union>() as u64,
+// REWRITES-MACOS-DAG:             std::mem::align_of::<ld_union>() as u64,
+// REWRITES-MACOS-DAG:         )
+// REWRITES-MACOS-DAG:     };
+// REWRITES-MACOS-DAG:     std::process::exit(0 as i32);
+// REWRITES-MACOS-DAG: }
+// SLATE-FILECHECK-END rewrites-macos

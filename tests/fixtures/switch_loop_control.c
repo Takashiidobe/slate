@@ -153,10 +153,7 @@ int main(void) {
 // REWRITES-NEXT:     let mut out: i32 = 0;
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     i = 0;
-// REWRITES-NEXT:     '__loop0: loop {
-// REWRITES-NEXT:         if !(i <= 3) {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     '__loop0: while i <= 3 {
 // REWRITES-NEXT:         '__continue0: {
 // REWRITES-NEXT:             match i {
 // REWRITES-NEXT:                 0 => {
