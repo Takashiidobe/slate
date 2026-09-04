@@ -729,12 +729,9 @@ int main(void) {
 // REWRITES-NEXT:     b.prev = std::ptr::addr_of_mut!(a);
 // REWRITES-NEXT:     c.prev = std::ptr::addr_of_mut!(b);
 // REWRITES-NEXT:     cur = std::ptr::addr_of_mut!(a);
-// REWRITES-NEXT:     let mut i: i32 = 0;
-// REWRITES-NEXT:     i = 0;
-// REWRITES-NEXT:     while i < 6 {
+// REWRITES-NEXT:     for i in 0..6 {
 // REWRITES-NEXT:         sum += unsafe { (*cur).val };
 // REWRITES-NEXT:         cur = unsafe { (*cur).next };
-// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut Node = unsafe { (*cur).prev };
 // REWRITES-NEXT:     unsafe {
@@ -788,11 +785,8 @@ int main(void) {
 // REWRITES-NEXT:         data: [0; 8],
 // REWRITES-NEXT:         cursor: std::ptr::null_mut(),
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut i: i32 = 0;
-// REWRITES-NEXT:     i = 0;
-// REWRITES-NEXT:     while i < 8 {
+// REWRITES-NEXT:     for i in 0..8 {
 // REWRITES-NEXT:         buf.data[((i as i64) as usize)] = (97 + i) as i8;
-// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     buf.cursor = std::ptr::addr_of_mut!(buf.data[3]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = buf.cursor;

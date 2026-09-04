@@ -314,29 +314,23 @@ int main(void) {
 // REWRITES-DAG:     let mut values: *mut i32 = {{arg[0-9]+}}.as_ptr() as *mut i32;
 // REWRITES-DAG:     let mut len: i32 = {{arg[0-9]+}}.len() as i32;
 // REWRITES-DAG:     let mut sum: i32 = 0;
-// REWRITES-DAG:     let mut i: i32 = 0;
-// REWRITES-DAG:     i = 0;
-// REWRITES-DAG:     while i < len {
+// REWRITES-DAG:     for i in 0..len {
 // REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = values;
 // REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
 // REWRITES-DAG:         sum += unsafe { *{{_v[0-9]+}} };
-// REWRITES-DAG:         i += 1;
 // REWRITES-DAG:     }
 // REWRITES-DAG:     sum
 // REWRITES-DAG: }
 // REWRITES-DAG: fn bump_values({{arg[0-9]+}}: &mut [i32]) {
 // REWRITES-DAG:     let mut values: *mut i32 = {{arg[0-9]+}}.as_mut_ptr() as *mut i32;
 // REWRITES-DAG:     let mut len: i32 = {{arg[0-9]+}}.len() as i32;
-// REWRITES-DAG:     let mut i: i32 = 0;
-// REWRITES-DAG:     i = 0;
-// REWRITES-DAG:     while i < len {
+// REWRITES-DAG:     for i in 0..len {
 // REWRITES-DAG:         let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = values;
 // REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
 // REWRITES-DAG:         unsafe {
 // REWRITES-DAG:             *{{_v[0-9]+}} = (unsafe { *{{_v[0-9]+}} }) + {{_v[0-9]+}};
 // REWRITES-DAG:         }
-// REWRITES-DAG:         i += 1;
 // REWRITES-DAG:     }
 // REWRITES-DAG:     return;
 // REWRITES-DAG: }
@@ -359,24 +353,19 @@ int main(void) {
 // REWRITES-DAG:     let mut len: i32 = {{arg[0-9]+}}.len() as i32;
 // REWRITES-DAG:     let mut score: i32 = 0;
 // REWRITES-DAG:     (unsafe { {{arg[0-9]+}}.len() as u64 }) as u64;
-// REWRITES-DAG:     let mut i: i32 = 0;
-// REWRITES-DAG:     i = 0;
-// REWRITES-DAG:     while i < len {
+// REWRITES-DAG:     for i in 0..len {
 // REWRITES-DAG:         let {{_v[0-9]+}}: *mut u8 = text;
 // REWRITES-DAG:         let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
 // REWRITES-DAG:         score += (unsafe { *{{_v[0-9]+}} }) as i32;
-// REWRITES-DAG:         i += 1;
 // REWRITES-DAG:     }
 // REWRITES-DAG:     score
 // REWRITES-DAG: }
 // REWRITES-DAG: fn maybe_consume(mut values: *mut i32, mut len: i32, mut {{_v[0-9]+}}: i32) -> i32 {
 // REWRITES-DAG:     let mut sum: i32 = 0;
-// REWRITES-DAG:     let mut i: i32 = 0;
-// REWRITES-DAG:     while i < len {
+// REWRITES-DAG:     for i in 0..len {
 // REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = values;
 // REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
 // REWRITES-DAG:         sum += unsafe { *{{_v[0-9]+}} };
-// REWRITES-DAG:         i += 1;
 // REWRITES-DAG:     }
 // REWRITES-DAG:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // REWRITES-DAG:     if {{_v[0-9]+}} {

@@ -1410,8 +1410,7 @@ int main(void) {
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         (*flexible).count = 3;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let mut index: u64 = 0;
-// REWRITES-NEXT:     while index < unsafe { (*flexible).count } {
+// REWRITES-NEXT:     for index in 0..unsafe { (*flexible).count } {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = (index as i32) + 1;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: u64 = index;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut C99Flexible = flexible;
@@ -1422,12 +1421,10 @@ int main(void) {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut C99Flexible = flexible;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { *(*{{_v[0-9]+}}).values.as_mut_ptr().add({{_v[0-9]+}} as usize) };
 // REWRITES-NEXT:         flexible_total += {{_v[0-9]+}};
-// REWRITES-NEXT:         index += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { free(flexible as *mut core::ffi::c_void) };
 // REWRITES-NEXT:     let mut variable_length_array: Vec<i32> = vec![0; (length as u64) as usize];
-// REWRITES-NEXT:     let mut index2: i32 = 0;
-// REWRITES-NEXT:     while index2 < length {
+// REWRITES-NEXT:     for index2 in 0..length {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = index2 + 4;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = unsafe {
 // REWRITES-NEXT:             variable_length_array
@@ -1437,7 +1434,6 @@ int main(void) {
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:             *{{_v[0-9]+}} = {{_v[0-9]+}};
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         index2 += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     vm_total = c99_vm_sum(length, variable_length_array.as_mut_ptr());
 // REWRITES-NEXT:     nonconstant_initializer.first = initializer_seed;
@@ -1474,11 +1470,8 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 3;
 // REWRITES-NEXT:     signed_remainder = -7 % {{_v[0-9]+}};
 // REWRITES-NEXT:     mixed_order += 2;
-// REWRITES-NEXT:     let mut index3: i32 = 0;
-// REWRITES-NEXT:     index3 = 0;
-// REWRITES-NEXT:     while index3 < 3 {
+// REWRITES-NEXT:     for index3 in 0..3 {
 // REWRITES-NEXT:         for_total += index3;
-// REWRITES-NEXT:         index3 += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     qualified_values = [2, 3, 5];
 // REWRITES-NEXT:     macro_total = sum3(7 as i32, 11 as i32, 13 as i32);

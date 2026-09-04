@@ -1244,16 +1244,13 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe fn c89_variadic_sum(mut count: i32, mut __slate_va_args: __SlateVaArgs) -> i32 {
 // REWRITES-NEXT:     let mut arguments: __SlateVaArgs = __SlateVaArgs::empty();
-// REWRITES-NEXT:     let mut index: i32 = 0;
 // REWRITES-NEXT:     let mut total: i32 = 0;
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         arguments = __slate_va_args.clone();
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     index = 0;
-// REWRITES-NEXT:     while index < count {
+// REWRITES-NEXT:     for index in 0..count {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { arguments.next_arg::<i32>() };
 // REWRITES-NEXT:         total += {{_v[0-9]+}};
-// REWRITES-NEXT:         index += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     total
 // REWRITES-NEXT: }

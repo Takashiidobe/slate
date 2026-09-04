@@ -130,13 +130,10 @@ int main(void) {
 // REWRITES-DAG: fn consume_bin(mut buf: *mut i8, mut len: i32) -> i32 {
 // REWRITES-DAG:     let mut score: i32 = 0;
 // REWRITES-DAG:     (unsafe { strlen(buf as *const core::ffi::c_char) }) as u64;
-// REWRITES-DAG:     let mut i: i32 = 0;
-// REWRITES-DAG:     i = 0;
-// REWRITES-DAG:     while i < len {
+// REWRITES-DAG:     for i in 0..len {
 // REWRITES-DAG:         let {{_v[0-9]+}}: *mut i8 = buf;
 // REWRITES-DAG:         let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
 // REWRITES-DAG:         score += ((unsafe { *{{_v[0-9]+}} }) as u8) as i32;
-// REWRITES-DAG:         i += 1;
 // REWRITES-DAG:     }
 // REWRITES-DAG:     unsafe { free(buf as *mut core::ffi::c_void) };
 // REWRITES-DAG:     score

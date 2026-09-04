@@ -126,16 +126,13 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = (n as u64) * 4;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{_v[0-9]+}} as usize) };
 // REWRITES-NEXT:     p = {{_v[0-9]+}} as *mut i32;
-// REWRITES-NEXT:     let mut i: i32 = 0;
-// REWRITES-NEXT:     i = 0;
-// REWRITES-NEXT:     while i < n {
+// REWRITES-NEXT:     for i in 0..n {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = i * i;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = p;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:             *{{_v[0-9]+}} = {{_v[0-9]+}};
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = p;
 // REWRITES-NEXT:     return unsafe {

@@ -203,15 +203,12 @@ int main(void) {
 // REWRITES-NEXT:         *{{_v[0-9]+}} = Some(test_b);
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     suite.ntests = 2;
-// REWRITES-NEXT:     let mut i: i32 = 0;
-// REWRITES-NEXT:     i = 0;
-// REWRITES-NEXT:     while i < suite.ntests {
+// REWRITES-NEXT:     for i in 0..suite.ntests {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> = suite.tests;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut Option<unsafe extern "C-unwind" fn()> =
 // REWRITES-NEXT:             unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
 // REWRITES-NEXT:         unsafe { unsafe { *{{_v[0-9]+}} }.unwrap()() };
 // REWRITES-NEXT:         unsafe { printf(c"%d\n".as_ptr(), unsafe { last_ran }) };
-// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { free(suite.tests as *mut core::ffi::c_void) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);

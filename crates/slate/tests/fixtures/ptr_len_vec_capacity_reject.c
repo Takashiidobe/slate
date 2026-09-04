@@ -114,9 +114,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn consume_extra_capacity(mut values: *mut i32, mut len: i32) -> i32 {
 // REWRITES-DAG:     let mut sum: i32 = 0;
-// REWRITES-DAG:     let mut i: i32 = 0;
-// REWRITES-DAG:     i = 0;
-// REWRITES-DAG:     while i < len {
+// REWRITES-DAG:     for i in 0..len {
 // REWRITES-DAG:         let {{_v[0-9]+}}: i32 = i + 1;
 // REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = values;
 // REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
@@ -126,7 +124,6 @@ int main(void) {
 // REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = values;
 // REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
 // REWRITES-DAG:         sum += unsafe { *{{_v[0-9]+}} };
-// REWRITES-DAG:         i += 1;
 // REWRITES-DAG:     }
 // REWRITES-DAG:     unsafe { free(values as *mut core::ffi::c_void) };
 // REWRITES-DAG:     sum
