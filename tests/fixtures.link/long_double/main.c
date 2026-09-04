@@ -913,10 +913,10 @@ int main(void) {
 // LOWERING-X86_64-GNU-NEXT:         _1: LongDouble,
 // LOWERING-X86_64-GNU-NEXT:         _2: LongDouble,
 // LOWERING-X86_64-GNU-NEXT:     ) -> LongDouble;
-// LOWERING-X86_64-GNU-NEXT:     fn ext_box_roundtrip(_0: *mut ld_box, _1: *mut ld_box);
+// LOWERING-X86_64-GNU-NEXT:     fn ext_box_roundtrip(_0: *mut ld_box, _1: ld_box);
 // LOWERING-X86_64-GNU-NEXT:     fn ext_pair_make(_0: *mut ld_pair, _1: LongDouble, _2: LongDouble);
 // LOWERING-X86_64-GNU-NEXT:     fn memset(_0: *mut core::ffi::c_void, _1: i32, _2: usize) -> *mut core::ffi::c_void;
-// LOWERING-X86_64-GNU-NEXT:     fn ext_nested_roundtrip(_0: *mut ld_nested, _1: *mut ld_nested);
+// LOWERING-X86_64-GNU-NEXT:     fn ext_nested_roundtrip(_0: *mut ld_nested, _1: ld_nested);
 // LOWERING-X86_64-GNU-NEXT:     fn ext_array_sum(_0: *const LongDouble, _1: usize) -> LongDouble;
 // LOWERING-X86_64-GNU-NEXT:     fn ext_store(_0: *mut LongDouble, _1: LongDouble);
 // LOWERING-X86_64-GNU-NEXT:     fn ext_load(_0: *const LongDouble) -> LongDouble;
