@@ -92,7 +92,9 @@ int main(void) { return 0; }
 // LOWERING-BIONIC-AARCH64-EMPTY:
 // LOWERING-BIONIC-AARCH64-NEXT: #[repr(C)]
 // LOWERING-BIONIC-AARCH64-NEXT: #[derive(Clone, Copy)]
-// LOWERING-BIONIC-AARCH64-NEXT: struct __va_list {}
+// LOWERING-BIONIC-AARCH64-NEXT: struct __va_list {
+// LOWERING-BIONIC-AARCH64-NEXT:     __slate_empty: [u8; 0],
+// LOWERING-BIONIC-AARCH64-NEXT: }
 // LOWERING-BIONIC-AARCH64-EMPTY:
 // LOWERING-BIONIC-AARCH64-NEXT: unsafe extern "C" {
 // LOWERING-BIONIC-AARCH64-NEXT:     fn bionic_import(_0: usize, _1: isize, _2: isize, _3: usize, _4: u32, _5: u32, _6: f128)

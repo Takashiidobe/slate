@@ -47,7 +47,9 @@ int main(void) { return 0; }
 // LOWERING-BIONIC-AARCH64-EMPTY:
 // LOWERING-BIONIC-AARCH64-NEXT: #[repr(C)]
 // LOWERING-BIONIC-AARCH64-NEXT: #[derive(Clone, Copy)]
-// LOWERING-BIONIC-AARCH64-NEXT: struct __locale_map {}
+// LOWERING-BIONIC-AARCH64-NEXT: struct __locale_map {
+// LOWERING-BIONIC-AARCH64-NEXT:     __slate_empty: [u8; 0],
+// LOWERING-BIONIC-AARCH64-NEXT: }
 // LOWERING-BIONIC-AARCH64-EMPTY:
 // LOWERING-BIONIC-AARCH64-NEXT: #[repr(C)]
 // LOWERING-BIONIC-AARCH64-NEXT: #[derive(Clone, Copy)]
@@ -213,7 +215,9 @@ int main(void) { return 0; }
 // LOWERING-BIONIC-X86_64-EMPTY:
 // LOWERING-BIONIC-X86_64-NEXT: #[repr(C)]
 // LOWERING-BIONIC-X86_64-NEXT: #[derive(Clone, Copy)]
-// LOWERING-BIONIC-X86_64-NEXT: struct __locale_map {}
+// LOWERING-BIONIC-X86_64-NEXT: struct __locale_map {
+// LOWERING-BIONIC-X86_64-NEXT:     __slate_empty: [u8; 0],
+// LOWERING-BIONIC-X86_64-NEXT: }
 // LOWERING-BIONIC-X86_64-EMPTY:
 // LOWERING-BIONIC-X86_64-NEXT: #[repr(C)]
 // LOWERING-BIONIC-X86_64-NEXT: #[derive(Clone, Copy)]
@@ -379,7 +383,9 @@ int main(void) { return 0; }
 // REWRITES-BIONIC-AARCH64-EMPTY:
 // REWRITES-BIONIC-AARCH64-NEXT: #[repr(C)]
 // REWRITES-BIONIC-AARCH64-NEXT: #[derive(Clone, Copy)]
-// REWRITES-BIONIC-AARCH64-NEXT: struct __locale_map {}
+// REWRITES-BIONIC-AARCH64-NEXT: struct __locale_map {
+// REWRITES-BIONIC-AARCH64-NEXT:     __slate_empty: [u8; 0],
+// REWRITES-BIONIC-AARCH64-NEXT: }
 // REWRITES-BIONIC-AARCH64-EMPTY:
 // REWRITES-BIONIC-AARCH64-NEXT: #[repr(C)]
 // REWRITES-BIONIC-AARCH64-NEXT: #[derive(Clone, Copy)]
@@ -498,7 +504,9 @@ int main(void) { return 0; }
 // REWRITES-BIONIC-X86_64-EMPTY:
 // REWRITES-BIONIC-X86_64-NEXT: #[repr(C)]
 // REWRITES-BIONIC-X86_64-NEXT: #[derive(Clone, Copy)]
-// REWRITES-BIONIC-X86_64-NEXT: struct __locale_map {}
+// REWRITES-BIONIC-X86_64-NEXT: struct __locale_map {
+// REWRITES-BIONIC-X86_64-NEXT:     __slate_empty: [u8; 0],
+// REWRITES-BIONIC-X86_64-NEXT: }
 // REWRITES-BIONIC-X86_64-EMPTY:
 // REWRITES-BIONIC-X86_64-NEXT: #[repr(C)]
 // REWRITES-BIONIC-X86_64-NEXT: #[derive(Clone, Copy)]

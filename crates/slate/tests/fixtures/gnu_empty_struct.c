@@ -27,14 +27,16 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: #[repr(C)]
 // LOWERING-NEXT: #[derive(Clone, Copy)]
-// LOWERING-NEXT: struct GNUEmpty {}
+// LOWERING-NEXT: struct GNUEmpty {
+// LOWERING-NEXT:     __slate_empty: [u8; 0],
+// LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn empty_size() -> u64 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: GNUEmpty = GNUEmpty {};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: GNUEmpty = GNUEmpty { __slate_empty: [] };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 0;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
@@ -67,7 +69,9 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: #[repr(C)]
 // REWRITES-NEXT: #[derive(Clone, Copy)]
-// REWRITES-NEXT: struct GNUEmpty {}
+// REWRITES-NEXT: struct GNUEmpty {
+// REWRITES-NEXT:     __slate_empty: [u8; 0],
+// REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;

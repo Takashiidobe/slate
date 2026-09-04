@@ -84,7 +84,9 @@ int open_read_only(const char *path) { return open(path, O_RDONLY); }
 // LOWERING-MACOS-EMPTY:
 // LOWERING-MACOS-NEXT: #[repr(C)]
 // LOWERING-MACOS-NEXT: #[derive(Clone, Copy)]
-// LOWERING-MACOS-NEXT: struct __dirstream {}
+// LOWERING-MACOS-NEXT: struct __dirstream {
+// LOWERING-MACOS-NEXT:     __slate_empty: [u8; 0],
+// LOWERING-MACOS-NEXT: }
 // LOWERING-MACOS-EMPTY:
 // LOWERING-MACOS-NEXT: #[repr(C)]
 // LOWERING-MACOS-NEXT: #[derive(Clone, Copy)]
@@ -172,7 +174,9 @@ int open_read_only(const char *path) { return open(path, O_RDONLY); }
 // REWRITES-MACOS-EMPTY:
 // REWRITES-MACOS-NEXT: #[repr(C)]
 // REWRITES-MACOS-NEXT: #[derive(Clone, Copy)]
-// REWRITES-MACOS-NEXT: struct __dirstream {}
+// REWRITES-MACOS-NEXT: struct __dirstream {
+// REWRITES-MACOS-NEXT:     __slate_empty: [u8; 0],
+// REWRITES-MACOS-NEXT: }
 // REWRITES-MACOS-EMPTY:
 // REWRITES-MACOS-NEXT: #[repr(C)]
 // REWRITES-MACOS-NEXT: #[derive(Clone, Copy)]
