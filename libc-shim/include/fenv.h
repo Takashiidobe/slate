@@ -32,6 +32,12 @@ int feupdateenv(const fenv_t *envp);
 int fegetmode(femode_t *modep);
 int fesetmode(const femode_t *modep);
 
+#ifdef _GNU_SOURCE
+int feenableexcept(int excepts);
+int fedisableexcept(int excepts);
+int fegetexcept(void);
+#endif
+
 #endif
 
 #endif
