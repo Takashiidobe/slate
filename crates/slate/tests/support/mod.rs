@@ -556,7 +556,67 @@ pub fn compile_rs_cargo_with_link_and_shims(
     Ok(target_dir.join("debug").join(package))
 }
 
-/// One differential case: a name plus its C source and translated Rust source.
+pub fn compile_rs_cargo_with_syslibs(
+    src: &Path,
+    work_dir: &Path,
+    package: &str,
+    libs: &[String],
+    shim_source: Option<&str>,
+) -> Result<PathBuf, String> {
+    let project = work_dir.join(format!("{package}_cargo"));
+    if project.exists() {
+        std::fs::remove_dir_all(&project)
+            .map_err(|e| format!("remove {}: {e}", project.display()))?;
+    }
+    std::fs::create_dir_all(project.join("src"))
+        .map_err(|e| format!("create {}: {e}", project.display()))?;
+    std::fs::write(
+        project.join("Cargo.toml"),
+        generated_crate_manifest(package),
+    )
+    .map_err(|e| format!("write Cargo.toml: {e}"))?;
+    std::fs::copy(src, project.join("src/main.rs"))
+        .map_err(|e| format!("copy {} to cargo project: {e}", src.display()))?;
+
+    let link_lib_lines: String = libs
+        .iter()
+        .map(|lib| format!("    println!(\"cargo:rustc-link-lib={lib}\");\n"))
+        .collect();
+    let shim_source = shim_source.unwrap_or("");
+    std::fs::write(
+        project.join("build.rs"),
+        format!(
+            r#"fn main() {{
+{link_lib_lines}    cc::Build::new()
+        .file("src/slate_long_double.c")
+        .compile("slate_long_double");
+}}
+"#
+        ),
+    )
+    .map_err(|e| format!("write build.rs: {e}"))?;
+    std::fs::write(project.join("src/slate_long_double.c"), shim_source)
+        .map_err(|e| format!("write slate_long_double.c: {e}"))?;
+
+    let target_dir = test_target_dir_for_project(&project);
+    std::fs::create_dir_all(&target_dir)
+        .map_err(|e| format!("create {}: {e}", target_dir.display()))?;
+    let o = Command::new(cargo())
+        .args(["build", "--quiet", "--manifest-path"])
+        .arg(project.join("Cargo.toml"))
+        .arg("--target-dir")
+        .arg(&target_dir)
+        .output()
+        .map_err(|e| format!("spawn {}: {e}", cargo()))?;
+    if !o.status.success() {
+        return Err(format!(
+            "Rust cargo build failed:\n{}",
+            String::from_utf8_lossy(&o.stderr)
+        ));
+    }
+    Ok(target_dir.join("debug").join(package))
+}
+
 pub struct Case {
     pub name: String,
     pub c_src: PathBuf,
