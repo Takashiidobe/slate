@@ -48,7 +48,7 @@ enum {
 #define __NEED_mode_t
 #define __NEED_size_t
 
-#ifdef _GNU_SOURCE
+#if defined(_GNU_SOURCE) || defined(__SLATE_LIBC_BIONIC)
 #define __NEED_ssize_t
 #define __NEED_struct_iovec
 #endif
@@ -199,8 +199,9 @@ int openat2(int, const char *, struct open_how *, size_t);
 int lockf(int, int, off_t);
 #endif
 
-#if (defined(_GNU_SOURCE) || defined(_BSD_SOURCE)) &&                          \
-    !defined(__SLATE_LIBC_DARWIN) && !defined(__SLATE_LIBC_FREEBSD)
+#if ((defined(_GNU_SOURCE) || defined(_BSD_SOURCE)) &&                         \
+     !defined(__SLATE_LIBC_DARWIN) && !defined(__SLATE_LIBC_FREEBSD)) ||       \
+    defined(__SLATE_LIBC_BIONIC)
 #define AT_NO_AUTOMOUNT       0x800
 #define AT_EMPTY_PATH         0x1000
 #define AT_STATX_SYNC_TYPE    0x6000
@@ -257,7 +258,7 @@ int lockf(int, int, off_t);
 #endif
 
 #if defined(_GNU_SOURCE) && !defined(__SLATE_LIBC_DARWIN) &&                   \
-    !defined(__SLATE_LIBC_FREEBSD)
+    !defined(__SLATE_LIBC_FREEBSD) && !defined(__SLATE_LIBC_BIONIC)
 #define F_OWNER_TID  0
 #define F_OWNER_PID  1
 #define F_OWNER_PGRP 2
@@ -271,9 +272,16 @@ struct f_owner_ex {
   int   type;
   pid_t pid;
 };
+#define MAX_HANDLE_SZ 128
+int name_to_handle_at(int, const char *, struct file_handle *, int *, int);
+int open_by_handle_at(int, struct file_handle *, int);
+#endif
+
+#if (defined(_GNU_SOURCE) && !defined(__SLATE_LIBC_DARWIN) &&                  \
+     !defined(__SLATE_LIBC_FREEBSD)) ||                                        \
+    defined(__SLATE_LIBC_BIONIC)
 #define FALLOC_FL_KEEP_SIZE         1
 #define FALLOC_FL_PUNCH_HOLE        2
-#define MAX_HANDLE_SZ               128
 #define SYNC_FILE_RANGE_WAIT_BEFORE 1
 #define SYNC_FILE_RANGE_WRITE       2
 #define SYNC_FILE_RANGE_WAIT_AFTER  4
@@ -282,17 +290,15 @@ struct f_owner_ex {
 #define SPLICE_F_MORE               4
 #define SPLICE_F_GIFT               8
 int     fallocate(int, int, off_t, off_t);
-int     name_to_handle_at(int, const char *, struct file_handle *, int *, int);
-int     open_by_handle_at(int, struct file_handle *, int);
 ssize_t readahead(int, off_t, size_t);
 int     sync_file_range(int, off_t, off_t, unsigned);
 ssize_t vmsplice(int, const struct iovec *, size_t, unsigned);
 ssize_t splice(int, off_t *, int, off_t *, size_t, unsigned);
 ssize_t tee(int, int, size_t, unsigned);
-#define loff_t off_t
+typedef off_t loff_t;
 #endif
 
-#if defined(_LARGEFILE64_SOURCE)
+#if defined(_LARGEFILE64_SOURCE) || defined(__SLATE_LIBC_BIONIC)
 #define F_GETLK64         F_GETLK
 #define F_SETLK64         F_SETLK
 #define F_SETLKW64        F_SETLKW
@@ -304,7 +310,7 @@ ssize_t tee(int, int, size_t, unsigned);
 #define posix_fadvise64   posix_fadvise
 #define posix_fallocate64 posix_fallocate
 #define off64_t           off_t
-#if defined(_GNU_SOURCE)
+#if defined(_GNU_SOURCE) || defined(__SLATE_LIBC_BIONIC)
 #define fallocate64 fallocate
 #endif
 #endif

@@ -110,7 +110,8 @@ int    mkdirat(int, const char *, mode_t);
 int    mkfifoat(int, const char *, mode_t);
 
 #if defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||   \
-    defined(__SLATE_LIBC_DARWIN) || defined(__SLATE_LIBC_FREEBSD)
+    defined(__SLATE_LIBC_DARWIN) || defined(__SLATE_LIBC_FREEBSD) ||            \
+    defined(__SLATE_LIBC_BIONIC)
 int mknod(const char *, mode_t, dev_t);
 int mknodat(int, const char *, mode_t, dev_t);
 #endif
@@ -121,6 +122,10 @@ int utimensat(int, const char *, const struct timespec[2], int);
 #if defined(_GNU_SOURCE) || defined(_BSD_SOURCE) || defined(__SLATE_LIBC_DARWIN) ||  \
     defined(__SLATE_LIBC_FREEBSD)
 int lchmod(const char *, mode_t);
+#endif
+
+#if defined(_GNU_SOURCE) || defined(_BSD_SOURCE) || defined(__SLATE_LIBC_DARWIN) ||  \
+    defined(__SLATE_LIBC_FREEBSD) || defined(__SLATE_LIBC_BIONIC)
 #define S_IREAD  S_IRUSR
 #define S_IWRITE S_IWUSR
 #define S_IEXEC  S_IXUSR
@@ -148,7 +153,7 @@ int lchmod(const char *, mode_t);
 #define STATX_WRITE_ATOMIC  0x10000U
 #endif
 
-#if defined(_LARGEFILE64_SOURCE)
+#if defined(_LARGEFILE64_SOURCE) || defined(__SLATE_LIBC_BIONIC)
 #define stat64       stat
 #define fstat64      fstat
 #define lstat64      lstat
