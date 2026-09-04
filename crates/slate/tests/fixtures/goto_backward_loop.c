@@ -119,47 +119,18 @@ loop:
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     let mut sum: i32 = 0;
-// REWRITES-NEXT:     let mut {{__state[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     '{{__dispatch[0-9]+}}: loop {
-// REWRITES-NEXT:         match {{__state[0-9]+}} {
-// REWRITES-NEXT:             0 => {
-// REWRITES-NEXT:                 __retval = 0;
-// REWRITES-NEXT:                 i = 0;
-// REWRITES-NEXT:                 sum = 0;
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 1;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             1 => {
-// REWRITES-NEXT:                 sum += i;
-// REWRITES-NEXT:                 i += 1;
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 2;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             2 => {
-// REWRITES-NEXT:                 if i < 5 {
-// REWRITES-NEXT:                     {{__state[0-9]+}} = 3;
-// REWRITES-NEXT:                 } else {
-// REWRITES-NEXT:                     {{__state[0-9]+}} = 4;
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             3 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 1;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             4 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 5;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             5 => {
-// REWRITES-NEXT:                 unsafe { printf(c"%d\n".as_ptr(), sum) };
-// REWRITES-NEXT:                 __retval = 0;
-// REWRITES-NEXT:                 std::process::exit(__retval as i32);
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             _ => {
-// REWRITES-NEXT:                 break '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
+// REWRITES-NEXT:     __retval = 0;
+// REWRITES-NEXT:     i = 0;
+// REWRITES-NEXT:     sum = 0;
+// REWRITES-NEXT:     loop {
+// REWRITES-NEXT:         sum += i;
+// REWRITES-NEXT:         i += 1;
+// REWRITES-NEXT:         if !(i < 5) {
+// REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
+// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), sum) };
+// REWRITES-NEXT:     __retval = 0;
+// REWRITES-NEXT:     std::process::exit(__retval as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

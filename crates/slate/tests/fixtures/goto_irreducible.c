@@ -192,75 +192,39 @@ done:
 // REWRITES-NEXT:             1 => {
 // REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(choose_b)) };
 // REWRITES-NEXT:                 if {{_v[0-9]+}} != 0 {
-// REWRITES-NEXT:                     {{__state[0-9]+}} = 2;
+// REWRITES-NEXT:                     {{__state[0-9]+}} = 4;
 // REWRITES-NEXT:                 } else {
-// REWRITES-NEXT:                     {{__state[0-9]+}} = 3;
+// REWRITES-NEXT:                     {{__state[0-9]+}} = 2;
 // REWRITES-NEXT:                 }
 // REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             2 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 10;
+// REWRITES-NEXT:                 x += 1;
+// REWRITES-NEXT:                 {{__state[0-9]+}} = 3;
 // REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             3 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 4;
+// REWRITES-NEXT:                 if x < 3 {
+// REWRITES-NEXT:                     {{__state[0-9]+}} = 4;
+// REWRITES-NEXT:                 } else {
+// REWRITES-NEXT:                     {{__state[0-9]+}} = 6;
+// REWRITES-NEXT:                 }
 // REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             4 => {
+// REWRITES-NEXT:                 x += 2;
 // REWRITES-NEXT:                 {{__state[0-9]+}} = 5;
 // REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             5 => {
-// REWRITES-NEXT:                 x += 1;
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 6;
+// REWRITES-NEXT:                 if x < 4 {
+// REWRITES-NEXT:                     {{__state[0-9]+}} = 2;
+// REWRITES-NEXT:                 } else {
+// REWRITES-NEXT:                     {{__state[0-9]+}} = 6;
+// REWRITES-NEXT:                 }
 // REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:             6 => {
-// REWRITES-NEXT:                 if x < 3 {
-// REWRITES-NEXT:                     {{__state[0-9]+}} = 7;
-// REWRITES-NEXT:                 } else {
-// REWRITES-NEXT:                     {{__state[0-9]+}} = 8;
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             7 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 10;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             8 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 9;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             9 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 15;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             10 => {
-// REWRITES-NEXT:                 x += 2;
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 11;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             11 => {
-// REWRITES-NEXT:                 if x < 4 {
-// REWRITES-NEXT:                     {{__state[0-9]+}} = 12;
-// REWRITES-NEXT:                 } else {
-// REWRITES-NEXT:                     {{__state[0-9]+}} = 13;
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             12 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 5;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             13 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 14;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             14 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 15;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             15 => {
 // REWRITES-NEXT:                 unsafe { printf(c"%d\n".as_ptr(), x) };
 // REWRITES-NEXT:                 __retval = 0;
 // REWRITES-NEXT:                 std::process::exit(__retval as i32);
