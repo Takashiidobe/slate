@@ -737,6 +737,7 @@ pub enum Stmt {
     Break(Option<Label>),
     Continue(Option<Label>),
     While {
+        label: Option<Label>,
         cond: Expr,
         body: Block,
     },
@@ -2210,7 +2211,7 @@ fn stmt_reads_var(stmt: &Stmt, name: &str) -> bool {
                         || arm.body.iter().any(|stmt| stmt_reads_var(&stmt.stmt, name))
                 })
         }
-        Stmt::While { cond, body } => {
+        Stmt::While { cond, body, .. } => {
             cond.reads_var(name)
                 || body
                     .stmts
@@ -2298,7 +2299,7 @@ fn stmt_collect_offset_calls<'a>(stmt: &'a Stmt, out: &mut Vec<(&'a Ident, &'a s
                 }
             }
         }
-        Stmt::While { cond, body } => {
+        Stmt::While { cond, body, .. } => {
             cond.collect_offset_calls(out);
             for stmt in &body.stmts {
                 stmt_collect_offset_calls(&stmt.stmt, out);
@@ -2389,7 +2390,7 @@ fn stmt_collect_calls<'a>(stmt: &'a Stmt, out: &mut Vec<(&'a Ident, &'a [Expr])>
                 }
             }
         }
-        Stmt::While { cond, body } => {
+        Stmt::While { cond, body, .. } => {
             cond.collect_calls(out);
             for stmt in &body.stmts {
                 stmt_collect_calls(&stmt.stmt, out);
@@ -2486,7 +2487,7 @@ fn stmt_collect_vars(stmt: &Stmt, out: &mut Vec<Ident>) {
                 }
             }
         }
-        Stmt::While { cond, body } => {
+        Stmt::While { cond, body, .. } => {
             cond.collect_vars(out);
             for stmt in &body.stmts {
                 stmt_collect_vars(&stmt.stmt, out);
@@ -2601,7 +2602,7 @@ fn stmt_substitute_var(stmt: &mut Stmt, name: &str, replacement: &Expr) -> bool 
             }
             changed
         }
-        Stmt::While { cond, body } => {
+        Stmt::While { cond, body, .. } => {
             let mut changed = cond.substitute_var(name, replacement);
             for stmt in &mut body.stmts {
                 changed |= stmt_substitute_var(&mut stmt.stmt, name, replacement);

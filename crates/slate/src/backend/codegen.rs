@@ -1003,8 +1003,11 @@ impl<W: Write> Codegen<W> {
                 Some(label) => writeln!(self.out, "{pad}continue '{};", label.as_str()),
                 None => writeln!(self.out, "{pad}continue;"),
             },
-            Stmt::While { cond, body } => {
-                write!(self.out, "{pad}while ")?;
+            Stmt::While { label, cond, body } => {
+                match label {
+                    Some(label) => write!(self.out, "{pad}'{}: while ", label.as_str())?,
+                    None => write!(self.out, "{pad}while ")?,
+                }
                 self.cond_expr(cond)?;
                 self.out.write_str(" {\n")?;
                 self.block(body, depth + 1)?;

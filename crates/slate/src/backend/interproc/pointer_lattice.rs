@@ -895,7 +895,7 @@ impl ClassifyCtx<'_> {
                     self.body(&arm.body);
                 }
             }
-            Stmt::While { cond, body } => {
+            Stmt::While { cond, body, .. } => {
                 self.expr(cond);
                 self.block(body);
             }
@@ -2015,7 +2015,7 @@ fn rewrite_stmt(stmt: &mut Stmt, ctx: &LiftCtx) {
                 rewrite_stmts(&mut arm.body, ctx);
             }
         }
-        Stmt::While { cond, body } => {
+        Stmt::While { cond, body, .. } => {
             rewrite_expr(cond, ctx);
             rewrite_block(body, ctx);
         }

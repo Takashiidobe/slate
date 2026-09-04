@@ -460,7 +460,7 @@ fn stmt_visit_exprs(stmt: &Stmt, f: &mut impl FnMut(&Expr)) {
                 }
             }
         }
-        Stmt::While { cond, body } => {
+        Stmt::While { cond, body, .. } => {
             visit_expr_deep(cond, f);
             if let Some(tail) = &body.tail {
                 visit_expr_deep(tail, f);
@@ -696,7 +696,9 @@ fn stmt_ok(stmt: &Stmt, tracked: &BTreeSet<String>, ctx: &Ctx) -> bool {
                     guard_ok && arm.body.iter().all(|s| stmt_ok(&s.stmt, tracked, ctx))
                 })
         }
-        Stmt::While { cond, body } => expr_ok(cond, tracked, ctx) && block_ok(body, tracked, ctx),
+        Stmt::While { cond, body, .. } => {
+            expr_ok(cond, tracked, ctx) && block_ok(body, tracked, ctx)
+        }
         Stmt::Block(body) => block_ok(body, tracked, ctx),
     }
 }
@@ -1084,7 +1086,7 @@ fn rewrite_calls_in_stmt(stmt: &mut Stmt, ctx: &RewriteCtx) -> bool {
             }
             changed
         }
-        Stmt::While { cond, body } => {
+        Stmt::While { cond, body, .. } => {
             let mut changed = rewrite_calls_in_expr(cond, ctx);
             changed |= rewrite_calls_in_block(body, ctx);
             changed

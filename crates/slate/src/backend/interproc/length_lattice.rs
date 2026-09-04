@@ -1761,7 +1761,7 @@ fn rewrite_stmt(stmt: &mut Stmt, temp_names: &[String], view_name: &str, idx_nam
                 rewrite_stmt(&mut indent.stmt, temp_names, view_name, idx_name);
             }
         }
-        Stmt::While { cond, body } => {
+        Stmt::While { cond, body, .. } => {
             rewrite_expr(cond, temp_names, view_name, idx_name);
             for indent in &mut body.stmts {
                 rewrite_stmt(&mut indent.stmt, temp_names, view_name, idx_name);
@@ -1870,7 +1870,7 @@ fn collect_loop_bounds_stmt(
             }
             collect_loop_bounds(body, let_exprs, out);
         }
-        Stmt::While { cond, body } => {
+        Stmt::While { cond, body, .. } => {
             if let Some(pair) = lt_pair(cond, let_exprs) {
                 out.push(pair);
             }
@@ -2023,7 +2023,7 @@ fn stmt_read_count(stmt: &Stmt, name: &str) -> usize {
                     .map(|arm| count_var_reads(&arm.body, name))
                     .sum::<usize>()
         }
-        Stmt::While { cond, body } => {
+        Stmt::While { cond, body, .. } => {
             expr_read_count(cond, name)
                 + count_var_reads(&body.stmts, name)
                 + body
@@ -3253,7 +3253,7 @@ fn retained_stmt_safe(
                 .as_deref()
                 .is_none_or(|expr| retained_value_safe(expr, aliases))
         }
-        Stmt::While { cond, body } => {
+        Stmt::While { cond, body, .. } => {
             retained_value_safe(cond, aliases)
                 && retained_stmts_safe(
                     &body.stmts,

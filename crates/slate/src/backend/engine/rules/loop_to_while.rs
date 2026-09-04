@@ -49,19 +49,20 @@ impl NodeRule for LoopToWhile {
     }
 
     fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
-        let Some(NodeKind::Loop { label: None, body }) = arena.get(id) else {
+        let Some(NodeKind::Loop { body, .. }) = arena.get(id) else {
             return false;
         };
         head_test(arena, body).is_some()
     }
 
     fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
-        let Some(NodeKind::Loop { label: None, body }) = arena.get(id) else {
+        let Some(NodeKind::Loop { label, body }) = arena.get(id) else {
             return false;
         };
         let Some(cond) = head_test(arena, body) else {
             return false;
         };
+        let label = label.clone();
         let cond = negate(&cond);
         let guard_id = body[0];
         let stmts = body[1..].to_vec();
@@ -69,6 +70,7 @@ impl NodeRule for LoopToWhile {
         arena.set_kind(
             id,
             NodeKind::While {
+                label,
                 cond,
                 stmts,
                 tail: None,
