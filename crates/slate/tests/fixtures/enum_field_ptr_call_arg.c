@@ -4,6 +4,8 @@ typedef struct {
   FSE_repeat mode;
 } Entropy;
 
+// @lowering-fn-begin
+// @rewrite-fn-begin
 static unsigned select_type(FSE_repeat *repeatMode, unsigned count) {
   if (count == 0) {
     *repeatMode = REPEAT_NONE;
@@ -11,6 +13,8 @@ static unsigned select_type(FSE_repeat *repeatMode, unsigned count) {
   }
   return (unsigned)*repeatMode + count;
 }
+// @rewrite-fn-end
+// @lowering-fn-end
 
 // @lowering-fn-begin
 // @rewrite-fn-begin

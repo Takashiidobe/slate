@@ -610,6 +610,17 @@ impl<'a> Lowerer<'a> {
         stmts
     }
 
+    fn byval_param_type(&self, function: &CirFunction, index: usize, ty: &CirType) -> Type {
+        let rust_ty = self.rust_type(ty);
+        if call_arg_byval_type_attr(function.arg_attrs.as_ref(), index).is_none() {
+            return rust_ty;
+        }
+        match rust_ty {
+            Type::Ptr { inner, .. } => *inner,
+            other => other,
+        }
+    }
+
     pub(super) fn extern_fn_signature(
         &self,
         function: &CirFunction,
@@ -629,7 +640,7 @@ impl<'a> Lowerer<'a> {
             .map(|(i, (_, ty))| FnParam {
                 name: format!("_{i}"),
                 mutable: false,
-                ty: self.rust_type(ty),
+                ty: self.byval_param_type(function, i, ty),
             })
             .collect::<Vec<_>>();
         let ret_ast = Some(self.rust_type(&function.return_ty))

@@ -212,6 +212,27 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                             method: "clone".into(),
                             args: vec![],
                         },
+                        Some(ty)
+                            if call_arg_byval_type_attr(
+                                op.arg_attrs.as_ref(),
+                                arg_attrs_offset + i,
+                            )
+                            .is_some() =>
+                        {
+                            Self::unsafe_expr(Expr::Call {
+                                binding: CallBinding::Generated,
+                                func: Box::new(Expr::Path(Path::new(
+                                    ["std", "ptr", "read_unaligned"].map(Ident::from),
+                                ))),
+                                args: vec![Expr::Cast {
+                                    expr: Box::new(arg),
+                                    ty: Type::Ptr {
+                                        mutable: false,
+                                        inner: Box::new(ty.clone()),
+                                    },
+                                }],
+                            })
+                        }
                         Some(ty) => Expr::Cast {
                             expr: Box::new(arg),
                             ty: ty.clone(),

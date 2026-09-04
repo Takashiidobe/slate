@@ -132,27 +132,30 @@ int sum3(int a, int b, int c) {
 // @lowering-fn-end
 ```
 
-The tool instruments these by emitting sentinel *marker functions* around the
-target (globals and unreferenced structs get DCE'd and cannot serve as
-sentinels; functions survive and preserve source order), then captures the whole
-function — signature line and body — as one region. Generated parameter indices
-(`arg0`, `arg1`, …) come from a global counter that shifts under instrumentation,
-so they are always genericized to `{{arg[0-9]+}}` in check output. See
+The tool reads the wrapped definition's name out of the C source and then
+captures that named item — signature line and body — from the generated Rust,
+wherever it landed. Nothing is injected into the source for fn-scope markers, so
+the instrumented translation is byte-identical to the real one. Generated
+parameter indices (`arg0`, `arg1`, …) come from a global counter, so they are
+still genericized to `{{arg[0-9]+}}` in check output. See
 `tests/fixtures/fn_signature_filecheck.c`. Body-only assertions still prefer the
 plain in-body markers.
 
-Because the region is everything emitted *between* the two sentinel functions,
-the wrapped function must keep its source position. **Do not declare it
-`static`**: static functions get reordered relative to the sentinels, the target
-falls outside the capture window, and the tool fails with
+`static` is fine, and so is anything else that moves a definition away from its
+source position. Clang defers emission of internal-linkage functions, so a
+`static` lands after every external definition that follows it in the source;
+matching by name rather than by position makes that irrelevant. Attributes on
+the definition (`__attribute__((target(...)))`, `[[...]]`) are stripped before
+the name is read.
+
+If the tool cannot find the wrapped definition it fails loudly:
 
 ```
-error: @lowering annotation 0 selected no checks
+error: generated Rust has no definition of fn <name>
 ```
 
-Drop `static` from any definition you wrap in fn-scope markers; if a fixture
-genuinely needs `static`, assert its body with the plain in-body markers
-instead.
+That means the name scan misread the declarator, or the function was DCE'd —
+not that the region is empty.
 
 Multiple, disjoint regions in one fixture are fine — each `@lowering`/`@rewrite`
 pair contributes to the single `SLATE-FILECHECK-BEGIN/END` block the tool emits,

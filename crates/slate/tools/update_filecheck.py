@@ -33,9 +33,29 @@ ANNOTATION_PATTERN = re.compile(
 GENERATED_MARKER_PATTERN = re.compile(
     r'(?:core|std)::arch::asm!\("# SLATE_FILECHECK_(BEGIN|END)_(\d+)"'
 )
-FN_MARKER_PATTERN = re.compile(
-    r'^\s*(?:pub(?:\(crate\))?\s+)?(?:unsafe\s+)?(?:extern\s+"C"\s+)?'
-    r"fn __slate_filecheck_(begin|end)_(\d+)\(\)"
+C_DECLARATOR_KEYWORDS = frozenset(
+    (
+        "if",
+        "while",
+        "for",
+        "switch",
+        "return",
+        "sizeof",
+        "typeof",
+        "__typeof__",
+        "__extension__",
+        "_Alignas",
+        "alignof",
+        "_Alignof",
+        "static_assert",
+        "_Static_assert",
+    )
+)
+C_ATTRIBUTE_PATTERN = re.compile(
+    r"\b(?:__attribute__|__declspec|__asm__|asm)\s*\("
+)
+RUST_FN_PATTERN = (
+    r'^(?:pub(?:\([^)]*\))?\s+)?(?:unsafe\s+)?(?:extern\s+"[^"]+"\s+)?fn\s+'
 )
 RUST_STRING_PATTERN = re.compile(
     r'(?:(?:b|c)?r(?P<hash>#{0,16})".*?"(?P=hash)|(?:b|c)?"(?:\\.|[^"\\])*")'
@@ -73,12 +93,41 @@ UNSTABLE_IDENTIFIER_PATTERNS = (
 )
 
 
+def strip_attribute_groups(text):
+    text = re.sub(r"\[\[.*?\]\]", " ", text, flags=re.DOTALL)
+    while True:
+        match = C_ATTRIBUTE_PATTERN.search(text)
+        if not match:
+            return text
+        depth = 0
+        for index in range(match.end() - 1, len(text)):
+            if text[index] == "(":
+                depth += 1
+            elif text[index] == ")":
+                depth -= 1
+                if depth == 0:
+                    text = text[: match.start()] + " " + text[index + 1 :]
+                    break
+        else:
+            return text
+
+
+def c_function_definition_name(lines):
+    head = strip_attribute_groups("\n".join(lines).split("{", 1)[0])
+    for match in re.finditer(r"\b([A-Za-z_]\w*)\s*\(", head):
+        if match.group(1) not in C_DECLARATOR_KEYWORDS:
+            return match.group(1)
+    return None
+
+
 def instrument_annotations(source, first_id=0):
     annotations = {}
+    fn_targets = {}
     active = []
     next_id = first_id
     output = []
-    for line_number, line in enumerate(source.splitlines(), 1):
+    lines = source.splitlines()
+    for line_number, line in enumerate(lines, 1):
         match = ANNOTATION_PATTERN.match(line)
         if not match:
             output.append(line)
@@ -110,6 +159,14 @@ def instrument_annotations(source, first_id=0):
                 )
             active.pop()
             boundary = "END"
+            if is_fn:
+                name = c_function_definition_name(lines[start_line : line_number - 1])
+                if name is None:
+                    raise ValueError(
+                        f"line {start_line}: @{kind}-fn-begin does not wrap a "
+                        "function definition"
+                    )
+                fn_targets[marker_id] = name
         else:
             if any(open_kind == kind for open_kind, _, _, _ in active):
                 raise ValueError(f"line {line_number}: @{kind}-begin is already open")
@@ -119,9 +176,7 @@ def instrument_annotations(source, first_id=0):
             active.append((kind, marker_id, line_number, is_fn))
             boundary = "BEGIN"
         if is_fn:
-            output.append(
-                f"void __slate_filecheck_{boundary.lower()}_{marker_id}(void) {{}}"
-            )
+            output.append("")
         else:
             output.append(
                 f'{indent}__asm__ __volatile__("# SLATE_FILECHECK_{boundary}_{marker_id}");'
@@ -130,40 +185,35 @@ def instrument_annotations(source, first_id=0):
         kind, _, line_number, _ = active[-1]
         raise ValueError(f"line {line_number}: unclosed @{kind}-begin annotation")
     suffix = "\n" if source.endswith("\n") else ""
-    return "\n".join(output) + suffix, annotations
+    return "\n".join(output) + suffix, annotations, fn_targets
 
 
-def extract_generated_regions(rust):
+def extract_fn_item(lines, name):
+    pattern = re.compile(RUST_FN_PATTERN + re.escape(name) + r"\s*[(<]")
+    for index, line in enumerate(lines):
+        if not pattern.match(line):
+            continue
+        start = index
+        while start > 0 and lines[start - 1].lstrip().startswith(("#[", "///")):
+            start -= 1
+        for end in range(index, len(lines)):
+            if lines[end] == "}":
+                return lines[start : end + 1]
+        break
+    return None
+
+
+def extract_generated_regions(rust, fn_targets=None):
+    lines = rust.splitlines()
     regions = {}
+    for marker_id, name in (fn_targets or {}).items():
+        item = extract_fn_item(lines, name)
+        if item is None:
+            raise RuntimeError(f"generated Rust has no definition of fn {name}")
+        regions[marker_id] = item
     active = []
     skip_wrapper_close = False
-    skip_fn_body = False
-    for line_number, line in enumerate(rust.splitlines(), 1):
-        fn_marker = FN_MARKER_PATTERN.match(line)
-        if fn_marker:
-            boundary, raw_id = fn_marker.groups()
-            marker_id = int(raw_id)
-            for _, captured in active:
-                while captured and (
-                    not captured[-1].strip()
-                    or captured[-1].lstrip().startswith(("#[", "///"))
-                ):
-                    captured.pop()
-            if boundary == "begin":
-                active.append((marker_id, []))
-            else:
-                if not active or active[-1][0] != marker_id:
-                    raise RuntimeError(
-                        f"generated marker {marker_id} ends without its begin marker"
-                    )
-                _, captured = active.pop()
-                regions[marker_id] = captured
-            skip_fn_body = True
-            continue
-        if skip_fn_body:
-            if line.strip() == "}":
-                skip_fn_body = False
-            continue
+    for line_number, line in enumerate(lines, 1):
         marker = GENERATED_MARKER_PATTERN.search(line)
         if marker:
             boundary, raw_id = marker.groups()
@@ -197,9 +247,9 @@ def extract_generated_regions(rust):
     return regions
 
 
-def render_annotation_checks(annotations, rewritten, lowered, prefix):
-    rewritten_regions = extract_generated_regions(rewritten)
-    lowered_regions = extract_generated_regions(lowered)
+def render_annotation_checks(annotations, fn_targets, rewritten, lowered, prefix):
+    rewritten_regions = extract_generated_regions(rewritten, fn_targets)
+    lowered_regions = extract_generated_regions(lowered, fn_targets)
     regions_by_profile = {
         "lowering": lowered_regions,
         "rewrite": rewritten_regions,
@@ -416,7 +466,7 @@ def update_path(path, profiles, in_place, target_mode):
     if not path.is_file():
         raise ValueError(f"path is not a file: {path}")
     source = path.read_text()
-    instrumented, annotations = instrument_annotations(source)
+    instrumented, annotations, fn_targets = instrument_annotations(source)
     if target_mode:
         source = remove_generated_block(
             remove_generated_block(source, "LOWERING"), "REWRITES"
@@ -462,7 +512,7 @@ def update_path(path, profiles, in_place, target_mode):
                     )
                 rewritten, lowered = annotation_outputs[cache_key]
                 checks = render_annotation_checks(
-                    annotations, rewritten, lowered, profile
+                    annotations, fn_targets, rewritten, lowered, profile
                 )
             else:
                 rust = normalize_source_paths(
@@ -520,14 +570,17 @@ def run_project_translation(project, crate_dir, slate, raw, library, environment
     }
 
 
-def module_with_marker(modules, marker_id):
-    needles = (
-        f"SLATE_FILECHECK_BEGIN_{marker_id}",
-        f"__slate_filecheck_begin_{marker_id}",
-    )
-    matches = [
-        rust for rust in modules.values() if any(needle in rust for needle in needles)
-    ]
+def module_with_marker(modules, marker_id, fn_targets):
+    name = fn_targets.get(marker_id)
+    if name is None:
+        needle = f"SLATE_FILECHECK_BEGIN_{marker_id}"
+        matches = [rust for rust in modules.values() if needle in rust]
+    else:
+        matches = [
+            rust
+            for rust in modules.values()
+            if extract_fn_item(rust.splitlines(), name) is not None
+        ]
     if len(matches) != 1:
         raise RuntimeError(
             f"generated project has {len(matches)} modules containing marker {marker_id}"
@@ -540,16 +593,20 @@ def update_project(project, profiles, in_place, slate, library):
     next_id = 0
     for path in project_sources(project, library):
         source = path.read_text()
-        instrumented, annotations = instrument_annotations(source, next_id)
+        instrumented, annotations, fn_targets = instrument_annotations(source, next_id)
         next_id += len(annotations)
         if annotations:
-            source_entries.append((path, source, instrumented, annotations))
+            source_entries.append(
+                (path, source, instrumented, annotations, fn_targets)
+            )
     if not source_entries:
         raise RuntimeError(f"{project}: project contains no FileCheck annotations")
 
     requested = {profile.partition("-")[0] for profile, _, _ in profiles}
     kinds = {
-        kind for _, _, _, annotations in source_entries for kind in annotations.values()
+        kind
+        for _, _, _, annotations, _ in source_entries
+        for kind in annotations.values()
     }
     needs_both = any(kind.endswith("-not") for kind in kinds)
     needs_lowering = needs_both or "LOWERING" in requested
@@ -562,7 +619,7 @@ def update_project(project, profiles, in_place, slate, library):
         temporary = Path(temporary)
         instrumented_project = temporary / project.name
         shutil.copytree(project, instrumented_project)
-        for path, _, instrumented, _ in source_entries:
+        for path, _, instrumented, _, _ in source_entries:
             relative = path.relative_to(project)
             (instrumented_project / relative).write_text(instrumented)
         lowered_modules = (
@@ -590,13 +647,15 @@ def update_project(project, profiles, in_place, slate, library):
             else {}
         )
 
-        for path, source, _, annotations in source_entries:
+        for path, source, _, annotations, fn_targets in source_entries:
             marker_id = next(iter(annotations))
             lowered = (
-                module_with_marker(lowered_modules, marker_id) if needs_lowering else ""
+                module_with_marker(lowered_modules, marker_id, fn_targets)
+                if needs_lowering
+                else ""
             )
             rewritten = (
-                module_with_marker(rewritten_modules, marker_id)
+                module_with_marker(rewritten_modules, marker_id, fn_targets)
                 if needs_rewrites
                 else ""
             )
@@ -620,7 +679,7 @@ def update_project(project, profiles, in_place, slate, library):
                     continue
                 updated = remove_generated_block(updated, profile)
                 checks = render_annotation_checks(
-                    annotations, rewritten, lowered, profile
+                    annotations, fn_targets, rewritten, lowered, profile
                 )
                 blocks.append(generated_block(checks, profile))
             if blocks:
