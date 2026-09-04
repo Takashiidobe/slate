@@ -141,6 +141,7 @@ fn is_sign() -> Expr {
 
 fn while_stmt(cond: Expr) -> Stmt {
     Stmt::While {
+        label: None,
         cond,
         body: Block {
             stmts: vec![stmt(step_i())],

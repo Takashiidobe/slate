@@ -108,6 +108,7 @@ pub(in crate::backend) enum NodeKind {
     Break(Option<Label>),
     Continue(Option<Label>),
     While {
+        label: Option<Label>,
         cond: Expr,
         stmts: Vec<NodeId>,
         tail: Option<Box<Expr>>,
@@ -717,7 +718,8 @@ fn build_stmt(arena: &mut Arena, parent: Option<NodeId>, stmt: Stmt) -> NodeId {
         },
         Stmt::Break(label) => NodeKind::Break(label),
         Stmt::Continue(label) => NodeKind::Continue(label),
-        Stmt::While { cond, body } => NodeKind::While {
+        Stmt::While { label, cond, body } => NodeKind::While {
+            label,
             cond,
             stmts: build_stmts(arena, Some(id), body.stmts),
             tail: body.tail,
@@ -848,7 +850,13 @@ fn reify_stmt(arena: &Arena, id: NodeId, depth: usize, out: &mut Vec<IndentStmt>
         },
         NodeKind::Break(label) => Stmt::Break(label.clone()),
         NodeKind::Continue(label) => Stmt::Continue(label.clone()),
-        NodeKind::While { cond, stmts, tail } => Stmt::While {
+        NodeKind::While {
+            label,
+            cond,
+            stmts,
+            tail,
+        } => Stmt::While {
+            label: label.clone(),
             cond: cond.clone(),
             body: Block {
                 stmts: reify_nested(arena, stmts, depth + 1),

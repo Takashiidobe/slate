@@ -696,6 +696,7 @@ pub(super) fn memchr_prelude() -> Item {
         value: Expr::Value(RustValue::I64(1)),
     };
     let scan = Stmt::While {
+        label: None,
         cond: Expr::Binary {
             op: BinOp::Lt,
             lhs: Box::new(var("i")),

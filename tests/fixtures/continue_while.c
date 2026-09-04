@@ -119,10 +119,7 @@ int main(void) {
 // REWRITES-NEXT: fn sum_skipping_threes(mut n: i32) -> i32 {
 // REWRITES-NEXT:     let mut total: i32 = 0;
 // REWRITES-NEXT:     let mut i: i32 = 0;
-// REWRITES-NEXT:     '__loop0: loop {
-// REWRITES-NEXT:         if !(i < n) {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     '__loop0: while i < n {
 // REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:         if i % 3 == 0 {
 // REWRITES-NEXT:         } else {

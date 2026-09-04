@@ -501,7 +501,7 @@ fn stmt_any_expr(stmt: &Stmt, pred: &mut dyn FnMut(&Expr) -> bool) -> bool {
                     .iter()
                     .any(|arm| arm.body.iter().any(|s| stmt_any_expr(&s.stmt, pred)))
         }
-        Stmt::While { cond, body } => {
+        Stmt::While { cond, body, .. } => {
             expr_any(cond, pred)
                 || body.stmts.iter().any(|s| stmt_any_expr(&s.stmt, pred))
                 || body.tail.as_deref().is_some_and(|t| expr_any(t, pred))
@@ -575,7 +575,7 @@ fn stmt_e_ident_count(stmt: &Stmt, name: Ident) -> usize {
                     })
                     .sum::<usize>()
         }
-        Stmt::While { cond, body } => {
+        Stmt::While { cond, body, .. } => {
             e_ident_count(cond, name)
                 + body
                     .stmts
