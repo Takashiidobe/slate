@@ -58,7 +58,7 @@ fn main() -> ExitCode {
             None => usage(),
         },
         Some("translate-directives") => match args.get(2) {
-            Some(path) => run(cli_result(directive_translate::translate_directives(
+            Some(path) => run(cli_report(directive_translate::translate_directives(
                 Path::new(path),
             ))),
             None => usage(),
@@ -86,7 +86,10 @@ fn run(result: Result<String, String>) -> ExitCode {
             ExitCode::SUCCESS
         }
         Err(e) => {
-            eprintln!("error: {e}");
+            match e.strip_prefix("error ") {
+                Some(_) => eprintln!("{e}"),
+                None => eprintln!("error: {e}"),
+            }
             ExitCode::FAILURE
         }
     }
@@ -96,28 +99,89 @@ fn cli_result<T, E: std::fmt::Display>(result: Result<T, E>) -> Result<T, String
     result.map_err(|error| error.to_string())
 }
 
+const SLATE_ISSUES_URL: &str = "https://github.com/takashiidobe/slate/issues";
+
+trait Diagnosable {
+    fn nyi_diagnostic(&self) -> Option<Vec<&str>>;
+}
+
+impl Diagnosable for frontend::toolchain::EmitError {
+    fn nyi_diagnostic(&self) -> Option<Vec<&str>> {
+        match self {
+            Self::ToolFailed { stderr, .. } => {
+                let diagnostics: Vec<&str> = stderr
+                    .lines()
+                    .filter(|line| {
+                        line.contains("error:")
+                            && line.to_lowercase().contains("not yet implemented")
+                    })
+                    .collect();
+                (!diagnostics.is_empty()).then_some(diagnostics)
+            }
+            _ => None,
+        }
+    }
+}
+
+impl Diagnosable for frontend::cir_input::ModuleError {
+    fn nyi_diagnostic(&self) -> Option<Vec<&str>> {
+        match self {
+            Self::Emit(e) => e.nyi_diagnostic(),
+            _ => None,
+        }
+    }
+}
+
+impl Diagnosable for api::Error {
+    fn nyi_diagnostic(&self) -> Option<Vec<&str>> {
+        match self {
+            Self::Cir { source, .. } => source.nyi_diagnostic(),
+            _ => None,
+        }
+    }
+}
+
+impl Diagnosable for directive_translate::DirectiveError {
+    fn nyi_diagnostic(&self) -> Option<Vec<&str>> {
+        match self {
+            Self::Cir { source, .. } => source.nyi_diagnostic(),
+            _ => None,
+        }
+    }
+}
+
+fn cli_report<T, E: std::fmt::Display + Diagnosable>(result: Result<T, E>) -> Result<T, String> {
+    result.map_err(|error| match error.nyi_diagnostic() {
+        Some(diagnostics) => format!(
+            "error emitting Clang IR:\n{}\n\nReport this at {SLATE_ISSUES_URL}",
+            diagnostics.join("\n")
+        ),
+        None => error.to_string(),
+    })
+}
+
 fn emit_cir(path: &Path) -> Result<String, String> {
-    cli_result(frontend::toolchain::emit_generic(path))
+    cli_report(frontend::toolchain::emit_generic(path))
 }
 
 fn translate(path: &Path) -> Result<String, String> {
-    cli_result(api::translate(path))
+    cli_report(api::translate(path))
 }
 
 fn translate_with_clang_args(path: &Path, clang_args: &[String]) -> Result<String, String> {
-    cli_result(api::translate_with_args(path, clang_args))
+    cli_report(api::translate_with_args(path, clang_args))
 }
 
 fn lowered_program(path: &Path) -> Result<(Module, rust_ast::Program), String> {
-    cli_result(api::lowered_program(path))
+    cli_report(api::lowered_program(path))
 }
 
 fn reject_active_unsupported(pp: &preprocess::Preprocessing, context: &str) -> Result<(), String> {
-    cli_result(api::reject_active_unsupported(pp, context))
+    cli_report(api::reject_active_unsupported(pp, context))
 }
 
 fn reject_active_unsupported_file(path: &Path, context: &str) -> Result<(), String> {
-    cli_result(api::reject_active_unsupported_file(path, context))
+    cli_report(api::reject_active_unsupported_file(path, context))
 }
 
 fn fixup_debug(args: &[String]) -> Result<String, String> {
@@ -978,7 +1042,7 @@ fn load_project_module(
         context,
         directive_translate::WarningBackend::SupportMacro,
     )?;
-    let module = cli_result(frontend::cir_input::emit_module(path, &[]))?;
+    let module = cli_report(frontend::cir_input::emit_module(path, &[]))?;
     let unit = cli_result(c_ast::parse_file_with_project_records(path, project_dir))?;
     Ok(ProjectModule {
         stem: stem.to_string(),
@@ -1102,7 +1166,7 @@ fn translate_project_lib_crate_with_manifest(
     let translate_tests = source_manifest.is_none() && tests_dir.is_dir();
     if translate_tests {
         for (_, path) in collect_c_modules(&tests_dir)? {
-            let module = cli_result(frontend::cir_input::emit_module(&path, &[]))?;
+            let module = cli_report(frontend::cir_input::emit_module(&path, &[]))?;
             has_setlocale |= frontend::declared_functions(&module)
                 .iter()
                 .any(|name| name == "setlocale");
@@ -1192,7 +1256,7 @@ fn translate_project_lib_crate_with_manifest(
                 directive_translate::WarningBackend::SupportMacro,
             )?;
             uses_slate_support |= !warning_items.is_empty();
-            let module = cli_result(frontend::cir_input::emit_module(&path, &[]))?;
+            let module = cli_report(frontend::cir_input::emit_module(&path, &[]))?;
             let unit = cli_result(c_ast::parse_file_with_project_records(&path, project_dir))?;
             let test_project = frontend::ProjectInfo {
                 cross_module: project.cross_module.clone(),
@@ -1300,7 +1364,7 @@ fn load_library_variant(
         context,
         directive_translate::WarningBackend::SupportMacro,
     )?;
-    let module = cli_result(frontend::cir_input::emit_module(path, &args))?;
+    let module = cli_report(frontend::cir_input::emit_module(path, &args))?;
     let unit = cli_result(c_ast::parse_file_with_project_records_and_args(
         path,
         project_dir,
@@ -1660,7 +1724,7 @@ fn load_project_fact_module(
     stem: &str,
 ) -> Result<ProjectFactModule, String> {
     reject_active_unsupported_file(path, "translate-project")?;
-    let module = cli_result(frontend::cir_input::emit_module(path, &[]))?;
+    let module = cli_report(frontend::cir_input::emit_module(path, &[]))?;
     let unit = cli_result(c_ast::parse_file_with_project_records(path, dir))?;
     let anon_records = frontend::anon_local_records(&module);
     Ok(ProjectFactModule {
@@ -1975,7 +2039,7 @@ fn load_command_fact_module(
         preprocess::read_source(path).map_err(|e| format!("read {}: {e}", path.display()))?;
     let pp = cli_result(preprocess::record_translation_unit(path, &source, &args))?;
     reject_active_unsupported(&pp, context)?;
-    let module = cli_result(frontend::cir_input::emit_module(path, &args))?;
+    let module = cli_report(frontend::cir_input::emit_module(path, &args))?;
     let unit = cli_result(c_ast::parse_file_with_project_records_and_args(
         path,
         project_dir,
@@ -2438,7 +2502,7 @@ fn emit_fixtures() -> Result<String, String> {
         &manifest.join("tests/fixtures.cfg.generated"),
         false,
         |_| true,
-        |path| cli_result(directive_translate::translate_directives(path)),
+        |path| cli_report(directive_translate::translate_directives(path)),
     )?);
     report.push_str(&emit_project_fixture_tree(
         &manifest.join("tests/fixtures.multi"),
