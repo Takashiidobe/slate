@@ -36,7 +36,7 @@ fn expr_only_deref(expr: &Expr, name: Ident) -> bool {
         Expr::Index { base, index } => expr_only_deref(base, name) && expr_only_deref(index, name),
         Expr::Field { base, .. } | Expr::TupleField { base, .. } => expr_only_deref(base, name),
         Expr::Block(block) | Expr::Unsafe(block) => {
-            block.stmts.iter().all(|s| !s.stmt.reads_var(name.as_str()))
+            block.stmts.iter().all(|s| !s.reads_var(name.as_str()))
                 && block
                     .tail
                     .as_deref()

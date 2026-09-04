@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use crate::backend::rust_ast::{
-    BinOp, Block, Expr, FnParam, Ident, IndentStmt, InlineAsm, Label, MatchArm, Pattern, Stmt, Type,
+    BinOp, Block, Expr, FnParam, Ident, InlineAsm, Label, MatchArm, Pattern, Stmt, Type,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -599,7 +599,7 @@ impl std::ops::DerefMut for FunctionOptimizer {
 }
 
 pub(in crate::backend) fn build(
-    body: Vec<IndentStmt>,
+    body: Vec<Stmt>,
     params: &[FnParam],
     return_type: Option<&Type>,
 ) -> FunctionOptimizer {
@@ -619,10 +619,10 @@ pub(in crate::backend) fn build(
     }
 }
 
-fn build_stmts(arena: &mut Arena, parent: Option<NodeId>, stmts: Vec<IndentStmt>) -> Vec<NodeId> {
+fn build_stmts(arena: &mut Arena, parent: Option<NodeId>, stmts: Vec<Stmt>) -> Vec<NodeId> {
     stmts
         .into_iter()
-        .map(|stmt| build_stmt(arena, parent, stmt.stmt))
+        .map(|stmt| build_stmt(arena, parent, stmt))
         .collect()
 }
 
@@ -733,34 +733,34 @@ fn build_stmt(arena: &mut Arena, parent: Option<NodeId>, stmt: Stmt) -> NodeId {
     id
 }
 
-pub(in crate::backend) fn reify(arena: &Arena, root: NodeId) -> Vec<IndentStmt> {
+pub(in crate::backend) fn reify(arena: &Arena, root: NodeId) -> Vec<Stmt> {
     let Some(NodeKind::Block { stmts, .. }) = arena.get(root) else {
         return Vec::new();
     };
     let mut out = Vec::new();
-    reify_stmts(arena, stmts, 0, &mut out);
+    reify_stmts(arena, stmts, &mut out);
     out
 }
 
 pub(in crate::backend) fn reify_bodies(arena: &Arena, ids: &[NodeId]) -> Vec<Stmt> {
     let mut out = Vec::new();
-    reify_stmts(arena, ids, 0, &mut out);
-    out.into_iter().map(|stmt| stmt.stmt).collect()
-}
-
-fn reify_stmts(arena: &Arena, ids: &[NodeId], depth: usize, out: &mut Vec<IndentStmt>) {
-    for &id in ids {
-        reify_stmt(arena, id, depth, out);
-    }
-}
-
-fn reify_nested(arena: &Arena, ids: &[NodeId], depth: usize) -> Vec<IndentStmt> {
-    let mut out = Vec::new();
-    reify_stmts(arena, ids, depth, &mut out);
+    reify_stmts(arena, ids, &mut out);
     out
 }
 
-fn reify_stmt(arena: &Arena, id: NodeId, depth: usize, out: &mut Vec<IndentStmt>) {
+fn reify_stmts(arena: &Arena, ids: &[NodeId], out: &mut Vec<Stmt>) {
+    for &id in ids {
+        reify_stmt(arena, id, out);
+    }
+}
+
+fn reify_nested(arena: &Arena, ids: &[NodeId]) -> Vec<Stmt> {
+    let mut out = Vec::new();
+    reify_stmts(arena, ids, &mut out);
+    out
+}
+
+fn reify_stmt(arena: &Arena, id: NodeId, out: &mut Vec<Stmt>) {
     let Some(kind) = arena.get(id) else {
         return;
     };
@@ -790,9 +790,9 @@ fn reify_stmt(arena: &Arena, id: NodeId, depth: usize, out: &mut Vec<IndentStmt>
             mutable: *mutable,
             ty: ty.clone(),
             cond: cond.clone(),
-            then_body: reify_nested(arena, then_body, depth + 1),
+            then_body: reify_nested(arena, then_body),
             then_value: then_value.clone(),
-            else_body: reify_nested(arena, else_body, depth + 1),
+            else_body: reify_nested(arena, else_body),
             else_value: else_value.clone(),
         },
         NodeKind::Assign { target, value } => Stmt::Assign {
@@ -809,7 +809,7 @@ fn reify_stmt(arena: &Arena, id: NodeId, depth: usize, out: &mut Vec<IndentStmt>
         NodeKind::Return(expr) => Stmt::Return(expr.clone()),
         NodeKind::Unsafe { stmts, tail } => Stmt::Unsafe {
             body: Block {
-                stmts: reify_nested(arena, stmts, depth + 1),
+                stmts: reify_nested(arena, stmts),
                 tail: tail.clone(),
             },
         },
@@ -819,24 +819,24 @@ fn reify_stmt(arena: &Arena, id: NodeId, depth: usize, out: &mut Vec<IndentStmt>
             else_body,
         } => Stmt::If {
             cond: cond.clone(),
-            then_body: reify_nested(arena, then_body, depth + 1),
-            else_body: reify_nested(arena, else_body, depth + 1),
+            then_body: reify_nested(arena, then_body),
+            else_body: reify_nested(arena, else_body),
         },
         NodeKind::Loop { label, body } => Stmt::Loop {
             label: label.clone(),
-            body: reify_nested(arena, body, depth + 1),
+            body: reify_nested(arena, body),
         },
         NodeKind::For { pat, iter, body } => Stmt::For {
             pat: pat.as_str().to_string(),
             iter: iter.clone(),
-            body: reify_nested(arena, body, depth + 1),
+            body: reify_nested(arena, body),
         },
         NodeKind::Scope { body } => Stmt::Scope {
-            body: reify_nested(arena, body, depth + 1),
+            body: reify_nested(arena, body),
         },
         NodeKind::LabeledBlock { label, body } => Stmt::LabeledBlock {
             label: label.clone(),
-            body: reify_nested(arena, body, depth + 1),
+            body: reify_nested(arena, body),
         },
         NodeKind::Match { expr, arms } => Stmt::Match {
             expr: expr.clone(),
@@ -844,7 +844,7 @@ fn reify_stmt(arena: &Arena, id: NodeId, depth: usize, out: &mut Vec<IndentStmt>
                 .iter()
                 .map(|arm| MatchArm {
                     pattern: arm.pattern.clone(),
-                    body: reify_nested(arena, &arm.body, depth + 1),
+                    body: reify_nested(arena, &arm.body),
                 })
                 .collect(),
         },
@@ -859,14 +859,14 @@ fn reify_stmt(arena: &Arena, id: NodeId, depth: usize, out: &mut Vec<IndentStmt>
             label: label.clone(),
             cond: cond.clone(),
             body: Block {
-                stmts: reify_nested(arena, stmts, depth + 1),
+                stmts: reify_nested(arena, stmts),
                 tail: tail.clone(),
             },
         },
         NodeKind::Block { stmts, tail } => Stmt::Block(Block {
-            stmts: reify_nested(arena, stmts, depth + 1),
+            stmts: reify_nested(arena, stmts),
             tail: tail.clone(),
         }),
     };
-    out.push(IndentStmt { depth, stmt });
+    out.push(stmt);
 }

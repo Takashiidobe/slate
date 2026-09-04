@@ -92,15 +92,8 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    pub(super) fn break_stmt(label: Option<Label>) -> IndentStmt {
-        IndentStmt {
-            depth: 0,
-            stmt: Stmt::Break(label),
-        }
-    }
-
-    pub(super) fn indent_stmt(stmt: Stmt) -> IndentStmt {
-        IndentStmt { depth: 0, stmt }
+    pub(super) fn break_stmt(label: Option<Label>) -> Stmt {
+        Stmt::Break(label)
     }
 
     pub(super) fn guard_break(cond: Expr, label: Option<Label>) -> Stmt {
@@ -111,18 +104,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         }
     }
 
-    pub(super) fn capture_body<F>(&mut self, f: F) -> Vec<IndentStmt>
+    pub(super) fn capture_body<F>(&mut self, f: F) -> Vec<Stmt>
     where
         F: FnOnce(&mut Self),
     {
         let outer_body = std::mem::take(&mut self.body);
-        let outer_indent = self.indent;
-        self.indent = 0;
         f(self);
-        let body = std::mem::take(&mut self.body);
-        self.body = outer_body;
-        self.indent = outer_indent;
-        body
+        std::mem::replace(&mut self.body, outer_body)
     }
 
     pub(super) fn lower_switch(&mut self, op: &inst::Switch) {
@@ -182,13 +170,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             let mut body = self.capture_body(|this| this.lower_region_ops(case.region));
             if !region_ends_control_flow(case.region) {
                 if index + 1 < cases.len() {
-                    body.push(Self::indent_stmt(Self::assign_stmt(
+                    body.push(Self::assign_stmt(
                         Expr::Var(case_name.clone().into()),
                         Expr::Value(RustValue::I64((index + 1) as i64)),
-                    )));
-                    body.push(Self::indent_stmt(Stmt::Continue(Some(label.clone()))));
+                    ));
+                    body.push(Stmt::Continue(Some(label.clone())));
                 } else {
-                    body.push(Self::indent_stmt(Stmt::Break(Some(label.clone()))));
+                    body.push(Stmt::Break(Some(label.clone())));
                 }
             }
             case_arms.push(MatchArm {
@@ -199,17 +187,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         self.loop_stack.pop();
         case_arms.push(MatchArm {
             pattern: Pattern::Wildcard,
-            body: vec![Self::indent_stmt(Stmt::Break(Some(label.clone())))],
+            body: vec![Stmt::Break(Some(label.clone()))],
         });
 
         let body = vec![
-            Self::indent_stmt(Stmt::Let {
+            Stmt::Let {
                 name: selector_name.clone(),
                 mutable: false,
                 ty: None,
                 init: Some(selector),
-            }),
-            Self::indent_stmt(Stmt::Let {
+            },
+            Stmt::Let {
                 name: case_name.clone(),
                 mutable: true,
                 ty: Some(Type::Prim(Prim::I32)),
@@ -217,14 +205,14 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     expr: Box::new(Expr::Var(selector_name.into())),
                     arms: selector_arms,
                 }),
-            }),
-            Self::indent_stmt(Stmt::Loop {
+            },
+            Stmt::Loop {
                 label: Some(label),
-                body: vec![Self::indent_stmt(Stmt::Match {
+                body: vec![Stmt::Match {
                     expr: Expr::Var(case_name.into()),
                     arms: case_arms,
-                })],
-            }),
+                }],
+            },
         ];
         self.push_stmt(Stmt::Scope { body });
     }
@@ -291,7 +279,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         });
         self.push_stmt(Stmt::Scope {
             body: vec![
-                Self::indent_stmt(Stmt::Let {
+                Stmt::Let {
                     name: case_name.clone(),
                     mutable: true,
                     ty: Some(Type::Prim(Prim::I32)),
@@ -299,19 +287,19 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                         expr: Box::new(self.operand_expr(selector)),
                         arms: selector_arms,
                     }),
-                }),
-                Self::indent_stmt(Stmt::If {
+                },
+                Stmt::If {
                     cond: Expr::Binary {
                         op: BinOp::Ge,
                         lhs: Box::new(Expr::Var(case_name.into())),
                         rhs: Box::new(Expr::Value(RustValue::I64(0))),
                     },
-                    then_body: vec![Self::indent_stmt(Stmt::Loop {
+                    then_body: vec![Stmt::Loop {
                         label: None,
                         body: loop_body,
-                    })],
+                    }],
                     else_body: Vec::new(),
-                }),
+                },
             ],
         });
         true
@@ -561,12 +549,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     .as_mut()
                     .unwrap()
                     .pending_hoists
-                    .push(Self::indent_stmt(Stmt::Let {
+                    .push(Stmt::Let {
                         name: name.clone(),
                         mutable: true,
                         ty: Some(ty),
                         init: Some(default),
-                    }));
+                    });
                 names.push(name);
             }
             self.dispatch.as_mut().unwrap().block_args.insert(i, names);
@@ -577,11 +565,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             let diverges = block_diverges(block);
             let mut body = self.capture_body(|this| this.lower_block(block));
             if !diverges {
-                body.push(Self::indent_stmt(Self::assign_stmt(
+                body.push(Self::assign_stmt(
                     Expr::Var(state_var.clone().into()),
                     Expr::Value(RustValue::I64((i + 1) as i64)),
-                )));
-                body.push(Self::indent_stmt(Stmt::Continue(Some(loop_label.clone()))));
+                ));
+                body.push(Stmt::Continue(Some(loop_label.clone())));
             }
             arms.push(MatchArm {
                 pattern: int_pattern(i as i128),
@@ -598,7 +586,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         };
         arms.push(MatchArm {
             pattern: Pattern::Wildcard,
-            body: vec![Self::indent_stmt(fallthrough)],
+            body: vec![fallthrough],
         });
         let pending_hoists = std::mem::take(&mut self.dispatch.as_mut().unwrap().pending_hoists);
         for hoist in pending_hoists {
@@ -612,10 +600,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         });
         self.push_stmt(Stmt::Loop {
             label: Some(loop_label),
-            body: vec![Self::indent_stmt(Stmt::Match {
+            body: vec![Stmt::Match {
                 expr: Expr::Var(state_var.into()),
                 arms,
-            })],
+            }],
         });
         self.dispatch = None;
     }
@@ -738,29 +726,29 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let mut then_body = Vec::new();
         if let Some(names) = &true_args {
             for (name, operand) in names.iter().zip(op.dest_operands_true.iter()) {
-                then_body.push(Self::indent_stmt(Self::assign_stmt(
+                then_body.push(Self::assign_stmt(
                     Expr::Var(name.clone().into()),
                     self.operand_expr(operand),
-                )));
+                ));
             }
         }
-        then_body.push(Self::indent_stmt(Self::assign_stmt(
+        then_body.push(Self::assign_stmt(
             Expr::Var(state_var.clone().into()),
             Expr::Value(RustValue::I64(true_state as i64)),
-        )));
+        ));
         let mut else_body = Vec::new();
         if let Some(names) = &false_args {
             for (name, operand) in names.iter().zip(op.dest_operands_false.iter()) {
-                else_body.push(Self::indent_stmt(Self::assign_stmt(
+                else_body.push(Self::assign_stmt(
                     Expr::Var(name.clone().into()),
                     self.operand_expr(operand),
-                )));
+                ));
             }
         }
-        else_body.push(Self::indent_stmt(Self::assign_stmt(
+        else_body.push(Self::assign_stmt(
             Expr::Var(state_var.into()),
             Expr::Value(RustValue::I64(false_state as i64)),
-        )));
+        ));
         self.push_stmt(Stmt::If {
             cond: self.operand_expr(&op.cond),
             then_body,
@@ -817,16 +805,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             if let Some(names) = names {
                 for (name, operand) in names.iter().zip(operands) {
                     let value_expr = self.operand_expr(operand);
-                    body.push(Self::indent_stmt(Self::assign_stmt(
+                    body.push(Self::assign_stmt(
                         Expr::Var(name.clone().into()),
                         value_expr,
-                    )));
+                    ));
                 }
             }
-            body.push(Self::indent_stmt(Self::assign_stmt(
+            body.push(Self::assign_stmt(
                 Expr::Var(state_var.clone().into()),
                 Expr::Value(RustValue::I64(*state as i64)),
-            )));
+            ));
             arms.push(MatchArm {
                 pattern: pattern.clone(),
                 body,
@@ -836,16 +824,16 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         if let Some(names) = &default_args {
             for (name, operand) in names.iter().zip(&op.default_operands) {
                 let value_expr = self.operand_expr(operand);
-                default_body.push(Self::indent_stmt(Self::assign_stmt(
+                default_body.push(Self::assign_stmt(
                     Expr::Var(name.clone().into()),
                     value_expr,
-                )));
+                ));
             }
         }
-        default_body.push(Self::indent_stmt(Self::assign_stmt(
+        default_body.push(Self::assign_stmt(
             Expr::Var(state_var.into()),
             Expr::Value(RustValue::I64(default_state as i64)),
-        )));
+        ));
         arms.push(MatchArm {
             pattern: Pattern::Wildcard,
             body: default_body,

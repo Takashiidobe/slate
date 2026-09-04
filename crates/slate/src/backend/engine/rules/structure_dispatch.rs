@@ -2,13 +2,7 @@ use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{
     self, Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag,
 };
-use crate::backend::rust_ast::{
-    BinOp, Expr, Ident, IndentStmt, Label, MatchArm, Pattern, RustValue, Stmt,
-};
-
-fn indent(stmt: Stmt) -> IndentStmt {
-    IndentStmt { depth: 0, stmt }
-}
+use crate::backend::rust_ast::{BinOp, Expr, Ident, Label, MatchArm, Pattern, RustValue, Stmt};
 
 const MAX_DUPLICATED_STMTS: usize = 24;
 
@@ -242,28 +236,28 @@ fn max_temp(arena: &Arena, id: NodeId) -> u32 {
     max
 }
 
-fn rename_decls(body: &mut [IndentStmt], next: &mut u32, renames: &mut Vec<(String, String)>) {
+fn rename_decls(body: &mut [Stmt], next: &mut u32, renames: &mut Vec<(String, String)>) {
     for stmt in body.iter_mut() {
-        if let Some(name) = stmt.stmt.declared_name_mut()
+        if let Some(name) = stmt.declared_name_mut()
             && temp_index(name).is_some()
         {
             let fresh = format!("_v{}", *next);
             *next += 1;
             renames.push((std::mem::replace(name, fresh.clone()), fresh));
         }
-        for nested in stmt.stmt.child_bodies_mut() {
+        for nested in stmt.child_bodies_mut() {
             rename_decls(nested, next, renames);
         }
     }
 }
 
-fn freshen(body: &mut [IndentStmt], next: &mut u32) {
+fn freshen(body: &mut [Stmt], next: &mut u32) {
     let mut renames = Vec::new();
     rename_decls(body, next, &mut renames);
     for (old, new) in renames {
         let replacement = Expr::Var(new.as_str().into());
         for stmt in body.iter_mut() {
-            stmt.stmt.substitute_var(&old, &replacement);
+            stmt.substitute_var(&old, &replacement);
         }
     }
 }
@@ -333,12 +327,7 @@ fn rebuild(mut switch: Switch, next_temp: &mut u32) -> Option<Stmt> {
         let Some(pattern) = pattern_of(&switch, index) else {
             continue;
         };
-        let mut body: Vec<IndentStmt> = switch.arms[index]
-            .body
-            .iter()
-            .cloned()
-            .map(indent)
-            .collect();
+        let mut body: Vec<Stmt> = switch.arms[index].body.clone();
         let mut cursor = index;
         while switch.arms[cursor].term == Term::FallsThrough {
             cursor += 1;
@@ -347,12 +336,7 @@ fn rebuild(mut switch: Switch, next_temp: &mut u32) -> Option<Stmt> {
                 .iter()
                 .filter(|stmt| !is_compiler_temp_let(stmt))
                 .count();
-            let mut copy: Vec<IndentStmt> = switch.arms[cursor]
-                .body
-                .iter()
-                .cloned()
-                .map(indent)
-                .collect();
+            let mut copy: Vec<Stmt> = switch.arms[cursor].body.clone();
             freshen(&mut copy, next_temp);
             body.extend(copy);
         }
@@ -377,7 +361,7 @@ fn rebuild(mut switch: Switch, next_temp: &mut u32) -> Option<Stmt> {
     Some(if switch.needs_label {
         Stmt::LabeledBlock {
             label: switch.label,
-            body: vec![indent(dispatch)],
+            body: vec![dispatch],
         }
     } else {
         dispatch

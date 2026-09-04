@@ -2,8 +2,8 @@ use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 use crate::backend::interproc::pointer_lattice::{PointerBinding, PointerFact, ResolvedPtrType};
 use crate::backend::rust_ast::{
-    BinOp, Block, CLibType, Expr, FnDef, Ident, IndentStmt, Item, Path, Prim, Program, Stmt, Type,
-    UnaryOp, Visibility,
+    BinOp, Block, CLibType, Expr, FnDef, Ident, Item, Path, Prim, Program, Stmt, Type, UnaryOp,
+    Visibility,
 };
 use crate::function_identity::{CallBinding, Known};
 
@@ -380,7 +380,7 @@ fn signature_call_sites(
         collect_local_arrays(&f.body, &mut arrays);
         let mut calls = Vec::new();
         for indent in &f.body {
-            indent.stmt.collect_calls(&mut calls);
+            indent.collect_calls(&mut calls);
         }
         for (callee, args) in calls {
             let Some(targets) = by_callee.get(callee.as_str()) else {
@@ -579,7 +579,7 @@ fn exact_utf8_array_pair(ptr_arg: &Expr, len_arg: &Expr, defs: &BTreeMap<String,
 }
 
 fn utf8_owned_fill_proof(
-    body: &[IndentStmt],
+    body: &[Stmt],
     ptr_arg: &Expr,
     len_arg: &Expr,
     defs: &BTreeMap<String, Expr>,
@@ -595,7 +595,7 @@ fn utf8_owned_fill_proof(
 
     let mut calls = Vec::new();
     for indent in body {
-        indent.stmt.collect_calls(&mut calls);
+        indent.collect_calls(&mut calls);
     }
     let mut valid_fills = 0usize;
     let mut transfers = 0usize;
@@ -638,7 +638,7 @@ fn utf8_owned_fill_proof(
     valid_fills == 1 && transfers == 1 && !body_writes_ptr(body, &ptr_canon, defs)
 }
 
-fn body_writes_ptr(body: &[IndentStmt], ptr_canon: &str, defs: &BTreeMap<String, Expr>) -> bool {
+fn body_writes_ptr(body: &[Stmt], ptr_canon: &str, defs: &BTreeMap<String, Expr>) -> bool {
     let mut offset_lets = Vec::new();
     collect_offset_lets(body, &mut offset_lets);
     let offset_recv: BTreeMap<&str, &str> = offset_lets
@@ -671,9 +671,9 @@ fn write_root(
     cur
 }
 
-fn collect_write_bases<'a>(body: &'a [IndentStmt], out: &mut Vec<&'a str>) {
+fn collect_write_bases<'a>(body: &'a [Stmt], out: &mut Vec<&'a str>) {
     for indent in body {
-        collect_write_bases_stmt(&indent.stmt, out);
+        collect_write_bases_stmt(indent, out);
     }
 }
 
@@ -851,15 +851,15 @@ fn peel_value(expr: &Expr) -> &Expr {
     }
 }
 
-fn collect_value_defs(body: &[IndentStmt]) -> BTreeMap<String, Expr> {
+fn collect_value_defs(body: &[Stmt]) -> BTreeMap<String, Expr> {
     let mut out = BTreeMap::new();
     collect_value_defs_into(body, &mut out);
     out
 }
 
-fn collect_local_arrays(body: &[IndentStmt], out: &mut ArrayCatalog) {
+fn collect_local_arrays(body: &[Stmt], out: &mut ArrayCatalog) {
     for indent in body {
-        match &indent.stmt {
+        match indent {
             Stmt::Let {
                 name, ty: Some(ty), ..
             }
@@ -872,7 +872,7 @@ fn collect_local_arrays(body: &[IndentStmt], out: &mut ArrayCatalog) {
             }
             _ => {}
         }
-        match &indent.stmt {
+        match indent {
             Stmt::LetIf {
                 then_body,
                 else_body,
@@ -903,9 +903,9 @@ fn collect_local_arrays(body: &[IndentStmt], out: &mut ArrayCatalog) {
     }
 }
 
-fn collect_value_defs_into(body: &[IndentStmt], out: &mut BTreeMap<String, Expr>) {
+fn collect_value_defs_into(body: &[Stmt], out: &mut BTreeMap<String, Expr>) {
     for indent in body {
-        match &indent.stmt {
+        match indent {
             Stmt::Let {
                 name,
                 init: Some(init),
@@ -921,7 +921,7 @@ fn collect_value_defs_into(body: &[IndentStmt], out: &mut BTreeMap<String, Expr>
             }
             _ => {}
         }
-        match &indent.stmt {
+        match indent {
             Stmt::LetIf {
                 then_body,
                 else_body,
@@ -953,19 +953,19 @@ fn collect_value_defs_into(body: &[IndentStmt], out: &mut BTreeMap<String, Expr>
 }
 
 fn remove_owned_frees(
-    body: &mut Vec<IndentStmt>,
+    body: &mut Vec<Stmt>,
     candidate: &SignatureCandidate,
     defs: &BTreeMap<String, Expr>,
 ) {
     body.retain_mut(|indent| {
-        if owned_free_arg(&indent.stmt)
+        if owned_free_arg(indent)
             .and_then(|arg| canonical_var(arg, defs))
             .as_deref()
             == Some(candidate.ptr_param.as_str())
         {
             return false;
         }
-        remove_owned_frees_stmt(&mut indent.stmt, candidate, defs);
+        remove_owned_frees_stmt(indent, candidate, defs);
         true
     });
 }
@@ -1081,8 +1081,8 @@ fn apply_signature_fn(
                 ty: f.params[candidate.len_index].ty.clone(),
             };
             for indent in &mut f.body {
-                indent.stmt.substitute_var(&candidate.ptr_param, &raw);
-                indent.stmt.substitute_var(&candidate.len_param, &len);
+                indent.substitute_var(&candidate.ptr_param, &raw);
+                indent.substitute_var(&candidate.len_param, &len);
             }
             f.params[candidate.ptr_index].ty = match candidate.kind {
                 BufferKind::Shared | BufferKind::Mutable => Type::Ref {
@@ -1108,7 +1108,7 @@ fn apply_signature_fn(
         }
     }
     for indent in &mut f.body {
-        rewrite_signature_stmt(&mut indent.stmt, &f.name, accepted, candidates, proofs);
+        rewrite_signature_stmt(indent, &f.name, accepted, candidates, proofs);
     }
 }
 
@@ -1134,7 +1134,7 @@ fn rewrite_signature_stmt(
         } => {
             rewrite_signature_expr(cond, caller, accepted, candidates, proofs);
             for indent in then_body.iter_mut().chain(else_body.iter_mut()) {
-                rewrite_signature_stmt(&mut indent.stmt, caller, accepted, candidates, proofs);
+                rewrite_signature_stmt(indent, caller, accepted, candidates, proofs);
             }
             rewrite_signature_expr(then_value, caller, accepted, candidates, proofs);
             rewrite_signature_expr(else_value, caller, accepted, candidates, proofs);
@@ -1154,7 +1154,7 @@ fn rewrite_signature_stmt(
         } => {
             rewrite_signature_expr(cond, caller, accepted, candidates, proofs);
             for indent in then_body.iter_mut().chain(else_body.iter_mut()) {
-                rewrite_signature_stmt(&mut indent.stmt, caller, accepted, candidates, proofs);
+                rewrite_signature_stmt(indent, caller, accepted, candidates, proofs);
             }
         }
         Stmt::Loop { body, .. }
@@ -1162,12 +1162,12 @@ fn rewrite_signature_stmt(
         | Stmt::Scope { body }
         | Stmt::LabeledBlock { body, .. } => {
             for indent in body {
-                rewrite_signature_stmt(&mut indent.stmt, caller, accepted, candidates, proofs);
+                rewrite_signature_stmt(indent, caller, accepted, candidates, proofs);
             }
         }
         Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
             for indent in &mut body.stmts {
-                rewrite_signature_stmt(&mut indent.stmt, caller, accepted, candidates, proofs);
+                rewrite_signature_stmt(indent, caller, accepted, candidates, proofs);
             }
             if let Some(tail) = &mut body.tail {
                 rewrite_signature_expr(tail, caller, accepted, candidates, proofs);
@@ -1177,7 +1177,7 @@ fn rewrite_signature_stmt(
             rewrite_signature_expr(expr, caller, accepted, candidates, proofs);
             for arm in arms {
                 for indent in &mut arm.body {
-                    rewrite_signature_stmt(&mut indent.stmt, caller, accepted, candidates, proofs);
+                    rewrite_signature_stmt(indent, caller, accepted, candidates, proofs);
                 }
             }
         }
@@ -1245,7 +1245,7 @@ fn rewrite_signature_expr(
         }
         Expr::Block(block) | Expr::Unsafe(block) => {
             for indent in &mut block.stmts {
-                rewrite_signature_stmt(&mut indent.stmt, caller, accepted, candidates, proofs);
+                rewrite_signature_stmt(indent, caller, accepted, candidates, proofs);
             }
             if let Some(tail) = &mut block.tail {
                 rewrite_signature_expr(tail, caller, accepted, candidates, proofs);
@@ -1471,7 +1471,7 @@ fn collect_fn(
 
     let mut offsets = Vec::new();
     for indent in &f.body {
-        indent.stmt.collect_offset_calls(&mut offsets);
+        indent.collect_offset_calls(&mut offsets);
     }
 
     if bound_pairs.is_empty() {
@@ -1527,16 +1527,16 @@ fn collect_fn(
     }
 }
 
-fn body_calls_free(body: &[IndentStmt]) -> bool {
+fn body_calls_free(body: &[Stmt]) -> bool {
     let mut calls = Vec::new();
     for indent in body {
-        indent.stmt.collect_calls(&mut calls);
+        indent.collect_calls(&mut calls);
     }
     calls.iter().any(|(callee, _)| callee.as_str() == "free")
 }
 
-fn shadow_local_name(body: &[IndentStmt], param: &str) -> Option<String> {
-    body.iter().find_map(|indent| match &indent.stmt {
+fn shadow_local_name(body: &[Stmt], param: &str) -> Option<String> {
+    body.iter().find_map(|indent| match indent {
         Stmt::Assign {
             target: Expr::Var(t),
             value: Expr::Var(v),
@@ -1567,7 +1567,7 @@ fn apply_fn(f: &mut FnDef, pairings: &BTreeMap<PointerBinding, Pairing>) {
 }
 
 fn matched_offset_temps(
-    body: &[IndentStmt],
+    body: &[Stmt],
     let_exprs: &BTreeMap<String, Expr>,
     ptr_local: &str,
     idx_name: &str,
@@ -1579,7 +1579,7 @@ fn matched_offset_temps(
 }
 
 fn matched_offset_temps_with_types(
-    body: &[IndentStmt],
+    body: &[Stmt],
     let_exprs: &BTreeMap<String, Expr>,
     ptr_local: &str,
     idx_name: &str,
@@ -1603,9 +1603,9 @@ fn matched_offset_temps_with_types(
         .collect()
 }
 
-fn is_written_through(body: &[IndentStmt], temp_names: &[String]) -> bool {
+fn is_written_through(body: &[Stmt], temp_names: &[String]) -> bool {
     body.iter()
-        .any(|indent| stmt_writes_temp(&indent.stmt, temp_names))
+        .any(|indent| stmt_writes_temp(indent, temp_names))
 }
 
 fn stmt_writes_temp(stmt: &Stmt, temp_names: &[String]) -> bool {
@@ -1656,7 +1656,6 @@ fn apply_view(f: &mut FnDef, ptr_name: &str, elem_ty: &Type, pairing: &Pairing) 
 
     let view_name = format!("__{ptr_name}_view");
     let insert_at = 0;
-    let depth = f.body.first().map(|indent| indent.depth).unwrap_or(0);
 
     let view_elem_ty = if matches!(elem_ty, Type::CLib(clib) if *clib == CLibType::VOID) {
         matched
@@ -1667,49 +1666,46 @@ fn apply_view(f: &mut FnDef, ptr_name: &str, elem_ty: &Type, pairing: &Pairing) 
         elem_ty.clone()
     };
 
-    let view_let = IndentStmt {
-        depth,
-        stmt: Stmt::Let {
-            name: view_name.clone(),
-            mutable: false,
-            ty: None,
-            init: Some(Expr::Unsafe(Box::new(Block {
-                stmts: Vec::new(),
-                tail: Some(Box::new(Expr::Call {
-                    binding: CallBinding::Generated,
-                    func: Box::new(Expr::Path(Path::new(
-                        [
-                            "std",
-                            "slice",
-                            if pairing.kind.mutable() {
-                                "from_raw_parts_mut"
-                            } else {
-                                "from_raw_parts"
-                            },
-                        ]
-                        .map(Ident::from),
-                    ))),
-                    args: vec![
-                        Expr::Cast {
-                            expr: Box::new(Expr::Var(Ident::new(ptr_name))),
-                            ty: Type::Ptr {
-                                mutable: pairing.kind.mutable(),
-                                inner: Box::new(view_elem_ty),
-                            },
+    let view_let = Stmt::Let {
+        name: view_name.clone(),
+        mutable: false,
+        ty: None,
+        init: Some(Expr::Unsafe(Box::new(Block {
+            stmts: Vec::new(),
+            tail: Some(Box::new(Expr::Call {
+                binding: CallBinding::Generated,
+                func: Box::new(Expr::Path(Path::new(
+                    [
+                        "std",
+                        "slice",
+                        if pairing.kind.mutable() {
+                            "from_raw_parts_mut"
+                        } else {
+                            "from_raw_parts"
                         },
-                        Expr::Cast {
-                            expr: Box::new(Expr::Var(Ident::new(pairing.len_param.as_str()))),
-                            ty: Type::Prim(Prim::Usize),
+                    ]
+                    .map(Ident::from),
+                ))),
+                args: vec![
+                    Expr::Cast {
+                        expr: Box::new(Expr::Var(Ident::new(ptr_name))),
+                        ty: Type::Ptr {
+                            mutable: pairing.kind.mutable(),
+                            inner: Box::new(view_elem_ty),
                         },
-                    ],
-                })),
-            }))),
-        },
+                    },
+                    Expr::Cast {
+                        expr: Box::new(Expr::Var(Ident::new(pairing.len_param.as_str()))),
+                        ty: Type::Prim(Prim::Usize),
+                    },
+                ],
+            })),
+        }))),
     };
     f.body.insert(insert_at, view_let);
 
     for indent in &mut f.body {
-        rewrite_stmt(&mut indent.stmt, &temp_names, &view_name, &pairing.idx_name);
+        rewrite_stmt(indent, &temp_names, &view_name, &pairing.idx_name);
     }
 }
 
@@ -1732,7 +1728,7 @@ fn rewrite_stmt(stmt: &mut Stmt, temp_names: &[String], view_name: &str, idx_nam
         } => {
             rewrite_expr(cond, temp_names, view_name, idx_name);
             for indent in then_body.iter_mut().chain(else_body.iter_mut()) {
-                rewrite_stmt(&mut indent.stmt, temp_names, view_name, idx_name);
+                rewrite_stmt(indent, temp_names, view_name, idx_name);
             }
         }
         Stmt::LetIf {
@@ -1745,11 +1741,11 @@ fn rewrite_stmt(stmt: &mut Stmt, temp_names: &[String], view_name: &str, idx_nam
         } => {
             rewrite_expr(cond, temp_names, view_name, idx_name);
             for indent in then_body.iter_mut() {
-                rewrite_stmt(&mut indent.stmt, temp_names, view_name, idx_name);
+                rewrite_stmt(indent, temp_names, view_name, idx_name);
             }
             rewrite_expr(then_value, temp_names, view_name, idx_name);
             for indent in else_body.iter_mut() {
-                rewrite_stmt(&mut indent.stmt, temp_names, view_name, idx_name);
+                rewrite_stmt(indent, temp_names, view_name, idx_name);
             }
             rewrite_expr(else_value, temp_names, view_name, idx_name);
         }
@@ -1758,13 +1754,13 @@ fn rewrite_stmt(stmt: &mut Stmt, temp_names: &[String], view_name: &str, idx_nam
         | Stmt::LabeledBlock { body, .. }
         | Stmt::For { body, .. } => {
             for indent in body {
-                rewrite_stmt(&mut indent.stmt, temp_names, view_name, idx_name);
+                rewrite_stmt(indent, temp_names, view_name, idx_name);
             }
         }
         Stmt::While { cond, body, .. } => {
             rewrite_expr(cond, temp_names, view_name, idx_name);
             for indent in &mut body.stmts {
-                rewrite_stmt(&mut indent.stmt, temp_names, view_name, idx_name);
+                rewrite_stmt(indent, temp_names, view_name, idx_name);
             }
             if let Some(tail) = &mut body.tail {
                 rewrite_expr(tail, temp_names, view_name, idx_name);
@@ -1773,7 +1769,7 @@ fn rewrite_stmt(stmt: &mut Stmt, temp_names: &[String], view_name: &str, idx_nam
         Stmt::Unsafe { body } | Stmt::Block(body) => {
             let body: &mut Block = body;
             for indent in &mut body.stmts {
-                rewrite_stmt(&mut indent.stmt, temp_names, view_name, idx_name);
+                rewrite_stmt(indent, temp_names, view_name, idx_name);
             }
             if let Some(tail) = &mut body.tail {
                 rewrite_expr(tail, temp_names, view_name, idx_name);
@@ -1783,7 +1779,7 @@ fn rewrite_stmt(stmt: &mut Stmt, temp_names: &[String], view_name: &str, idx_nam
             rewrite_expr(expr, temp_names, view_name, idx_name);
             for arm in arms {
                 for indent in &mut arm.body {
-                    rewrite_stmt(&mut indent.stmt, temp_names, view_name, idx_name);
+                    rewrite_stmt(indent, temp_names, view_name, idx_name);
                 }
             }
         }
@@ -1815,7 +1811,7 @@ fn rewrite_expr(expr: &mut Expr, temp_names: &[String], view_name: &str, idx_nam
         | Expr::AddrOf { expr, .. } => rewrite_expr(expr, temp_names, view_name, idx_name),
         Expr::Block(block) | Expr::Unsafe(block) => {
             for stmt in &mut block.stmts {
-                rewrite_stmt(&mut stmt.stmt, temp_names, view_name, idx_name);
+                rewrite_stmt(stmt, temp_names, view_name, idx_name);
             }
             if let Some(tail) = &mut block.tail {
                 rewrite_expr(tail, temp_names, view_name, idx_name);
@@ -1849,12 +1845,12 @@ fn rewrite_expr(expr: &mut Expr, temp_names: &[String], view_name: &str, idx_nam
 }
 
 fn collect_loop_bounds(
-    body: &[IndentStmt],
+    body: &[Stmt],
     let_exprs: &BTreeMap<String, Expr>,
     out: &mut Vec<(String, String)>,
 ) {
     for indent in body {
-        collect_loop_bounds_stmt(&indent.stmt, let_exprs, out);
+        collect_loop_bounds_stmt(indent, let_exprs, out);
     }
 }
 
@@ -1906,16 +1902,13 @@ fn collect_loop_bounds_stmt(
     }
 }
 
-fn loop_break_guard(
-    body: &[IndentStmt],
-    let_exprs: &BTreeMap<String, Expr>,
-) -> Option<(String, String)> {
+fn loop_break_guard(body: &[Stmt], let_exprs: &BTreeMap<String, Expr>) -> Option<(String, String)> {
     body.iter().find_map(|indent| {
         let Stmt::If {
             cond,
             then_body,
             else_body,
-        } = &indent.stmt
+        } = indent
         else {
             return None;
         };
@@ -1925,7 +1918,7 @@ fn loop_break_guard(
         let [only] = then_body.as_slice() else {
             return None;
         };
-        if !matches!(only.stmt, Stmt::Break(None)) {
+        if !matches!(only, Stmt::Break(None)) {
             return None;
         }
         let Expr::Unary {
@@ -1965,9 +1958,9 @@ fn peeled_var(expr: &Expr) -> Option<&str> {
     }
 }
 
-fn count_var_reads(body: &[IndentStmt], name: &str) -> usize {
+fn count_var_reads(body: &[Stmt], name: &str) -> usize {
     body.iter()
-        .map(|indent| stmt_read_count(&indent.stmt, name))
+        .map(|indent| stmt_read_count(indent, name))
         .sum()
 }
 
@@ -2051,13 +2044,13 @@ fn stmt_read_count(stmt: &Stmt, name: &str) -> usize {
     }
 }
 
-fn assigned_more_than_once(body: &[IndentStmt], name: &str) -> bool {
+fn assigned_more_than_once(body: &[Stmt], name: &str) -> bool {
     count_assigns(body, name) > 1
 }
 
-fn count_assigns(body: &[IndentStmt], name: &str) -> usize {
+fn count_assigns(body: &[Stmt], name: &str) -> usize {
     body.iter()
-        .map(|indent| stmt_assign_count(&indent.stmt, name))
+        .map(|indent| stmt_assign_count(indent, name))
         .sum()
 }
 
@@ -2087,21 +2080,21 @@ fn stmt_assign_count(stmt: &Stmt, name: &str) -> usize {
     }
 }
 
-fn collect_let_exprs(body: &[IndentStmt]) -> BTreeMap<String, Expr> {
+fn collect_let_exprs(body: &[Stmt]) -> BTreeMap<String, Expr> {
     let mut out = BTreeMap::new();
     collect_let_exprs_stmts(body, &mut out);
     out
 }
 
-fn collect_let_types(body: &[IndentStmt]) -> BTreeMap<String, Type> {
+fn collect_let_types(body: &[Stmt]) -> BTreeMap<String, Type> {
     let mut out = BTreeMap::new();
     collect_let_types_stmts(body, &mut out);
     out
 }
 
-fn collect_let_types_stmts(body: &[IndentStmt], out: &mut BTreeMap<String, Type>) {
+fn collect_let_types_stmts(body: &[Stmt], out: &mut BTreeMap<String, Type>) {
     for indent in body {
-        collect_let_types_stmt(&indent.stmt, out);
+        collect_let_types_stmt(indent, out);
     }
 }
 
@@ -2142,9 +2135,9 @@ fn collect_let_types_stmt(stmt: &Stmt, out: &mut BTreeMap<String, Type>) {
     }
 }
 
-fn collect_let_exprs_stmts(body: &[IndentStmt], out: &mut BTreeMap<String, Expr>) {
+fn collect_let_exprs_stmts(body: &[Stmt], out: &mut BTreeMap<String, Expr>) {
     for indent in body {
-        collect_let_exprs_stmt(&indent.stmt, out);
+        collect_let_exprs_stmt(indent, out);
     }
 }
 
@@ -2211,9 +2204,9 @@ fn resolve_full(expr: &Expr, let_exprs: &BTreeMap<String, Expr>, depth: u32) -> 
     expr.clone()
 }
 
-fn collect_offset_lets(body: &[IndentStmt], out: &mut Vec<(String, String, Expr)>) {
+fn collect_offset_lets(body: &[Stmt], out: &mut Vec<(String, String, Expr)>) {
     for indent in body {
-        collect_offset_lets_stmt(&indent.stmt, out);
+        collect_offset_lets_stmt(indent, out);
     }
 }
 
@@ -2331,7 +2324,7 @@ fn const_candidates(
         }
         let mut offsets = Vec::new();
         for indent in &f.body {
-            indent.stmt.collect_offset_calls(&mut offsets);
+            indent.collect_offset_calls(&mut offsets);
         }
         for (ptr_index, param) in f.params.iter().enumerate() {
             let Type::Ptr {
@@ -2420,7 +2413,7 @@ fn const_accepted(
         collect_local_arrays(&f.body, &mut arrays);
         let mut calls = Vec::new();
         for indent in &f.body {
-            indent.stmt.collect_calls(&mut calls);
+            indent.collect_calls(&mut calls);
         }
         for (callee, args) in calls {
             let Some(ids) = by_callee.get(callee.as_str()) else {
@@ -2553,7 +2546,7 @@ fn retype_const_fn(f: &mut FnDef, cands: &[ConstCandidate]) {
             },
         };
         for indent in &mut f.body {
-            indent.stmt.substitute_var(&candidate.ptr_param, &raw);
+            indent.substitute_var(&candidate.ptr_param, &raw);
         }
         f.params[candidate.ptr_index].ty = Type::Ref {
             mutable: candidate.kind.mutable(),
@@ -2568,7 +2561,7 @@ fn rewrite_const_call_items(items: &mut [Item], accepted: &BTreeMap<String, Vec<
         match item {
             Item::Fn(f) => {
                 for indent in &mut f.body {
-                    rewrite_const_call_stmt(&mut indent.stmt, accepted);
+                    rewrite_const_call_stmt(indent, accepted);
                 }
             }
             Item::InlineMod { items, .. } => rewrite_const_call_items(items, accepted),
@@ -2597,7 +2590,7 @@ fn rewrite_const_call_stmt(stmt: &mut Stmt, accepted: &BTreeMap<String, Vec<Cons
         } => {
             rewrite_const_call_expr(cond, accepted);
             for indent in then_body.iter_mut().chain(else_body.iter_mut()) {
-                rewrite_const_call_stmt(&mut indent.stmt, accepted);
+                rewrite_const_call_stmt(indent, accepted);
             }
             rewrite_const_call_expr(then_value, accepted);
             rewrite_const_call_expr(else_value, accepted);
@@ -2614,7 +2607,7 @@ fn rewrite_const_call_stmt(stmt: &mut Stmt, accepted: &BTreeMap<String, Vec<Cons
         } => {
             rewrite_const_call_expr(cond, accepted);
             for indent in then_body.iter_mut().chain(else_body.iter_mut()) {
-                rewrite_const_call_stmt(&mut indent.stmt, accepted);
+                rewrite_const_call_stmt(indent, accepted);
             }
         }
         Stmt::Loop { body, .. }
@@ -2622,12 +2615,12 @@ fn rewrite_const_call_stmt(stmt: &mut Stmt, accepted: &BTreeMap<String, Vec<Cons
         | Stmt::Scope { body }
         | Stmt::LabeledBlock { body, .. } => {
             for indent in body {
-                rewrite_const_call_stmt(&mut indent.stmt, accepted);
+                rewrite_const_call_stmt(indent, accepted);
             }
         }
         Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
             for indent in &mut body.stmts {
-                rewrite_const_call_stmt(&mut indent.stmt, accepted);
+                rewrite_const_call_stmt(indent, accepted);
             }
             if let Some(tail) = &mut body.tail {
                 rewrite_const_call_expr(tail, accepted);
@@ -2637,7 +2630,7 @@ fn rewrite_const_call_stmt(stmt: &mut Stmt, accepted: &BTreeMap<String, Vec<Cons
             rewrite_const_call_expr(expr, accepted);
             for arm in arms {
                 for indent in &mut arm.body {
-                    rewrite_const_call_stmt(&mut indent.stmt, accepted);
+                    rewrite_const_call_stmt(indent, accepted);
                 }
             }
         }
@@ -2670,7 +2663,7 @@ fn rewrite_const_call_expr(expr: &mut Expr, accepted: &BTreeMap<String, Vec<Cons
         | Expr::Transmute { expr, .. } => rewrite_const_call_expr(expr, accepted),
         Expr::Block(block) | Expr::Unsafe(block) => {
             for indent in &mut block.stmts {
-                rewrite_const_call_stmt(&mut indent.stmt, accepted);
+                rewrite_const_call_stmt(indent, accepted);
             }
             if let Some(tail) = &mut block.tail {
                 rewrite_const_call_expr(tail, accepted);
@@ -2809,7 +2802,7 @@ fn collect_return_retention_items(
             Item::Fn(f) => {
                 let mut calls = Vec::new();
                 for indent in &f.body {
-                    indent.stmt.collect_calls(&mut calls);
+                    indent.collect_calls(&mut calls);
                 }
                 for (callee, _) in calls {
                     if elems.contains_key(callee.as_str()) {
@@ -2827,9 +2820,9 @@ fn collect_return_retention_items(
 }
 
 fn collect_return_retention_body(
-    body: &[IndentStmt],
+    body: &[Stmt],
     caller: &str,
-    function_body: &[IndentStmt],
+    function_body: &[Stmt],
     elems: &BTreeMap<String, Type>,
     plans: &mut Vec<ReturnRetentionPlan>,
 ) {
@@ -2839,7 +2832,7 @@ fn collect_return_retention_body(
             ty: Some(Type::Ptr { inner, .. }),
             init: Some(init),
             ..
-        } = &indent.stmt
+        } = indent
         else {
             continue;
         };
@@ -2850,7 +2843,7 @@ fn collect_return_retention_body(
             body[decl_pos + 1..]
                 .iter()
                 .enumerate()
-                .find_map(|(offset, indent)| match &indent.stmt {
+                .find_map(|(offset, indent)| match indent {
                     Stmt::Assign {
                         target: Expr::Var(target),
                         value,
@@ -2892,7 +2885,7 @@ fn collect_return_retention_body(
         });
     }
     for indent in body {
-        match &indent.stmt {
+        match indent {
             Stmt::LetIf {
                 then_body,
                 else_body,
@@ -2934,8 +2927,8 @@ fn is_zero_pointer(expr: &Expr) -> bool {
 
 fn resolve_retained_call(
     expr: &Expr,
-    prior: &[IndentStmt],
-    function_body: &[IndentStmt],
+    prior: &[Stmt],
+    function_body: &[Stmt],
     elems: &BTreeMap<String, Type>,
     temps: &mut BTreeSet<String>,
     depth: usize,
@@ -2956,7 +2949,7 @@ fn resolve_retained_call(
             if count_var_reads(function_body, name.as_str()) == 1
                 && count_assigns(function_body, name.as_str()) == 0 =>
         {
-            let init = prior.iter().rev().find_map(|indent| match &indent.stmt {
+            let init = prior.iter().rev().find_map(|indent| match indent {
                 Stmt::Let {
                     name: candidate,
                     init: Some(init),
@@ -2978,7 +2971,7 @@ enum RetainedAliasKind {
 }
 
 fn retained_use_domain(
-    body: &[IndentStmt],
+    body: &[Stmt],
     binding: &str,
     callee: &str,
     call_temps: &BTreeSet<String>,
@@ -3016,22 +3009,19 @@ fn retained_use_domain(
     Some(base_aliases)
 }
 
-fn collect_retained_aliases(
-    body: &[IndentStmt],
-    aliases: &mut BTreeMap<String, RetainedAliasKind>,
-) {
+fn collect_retained_aliases(body: &[Stmt], aliases: &mut BTreeMap<String, RetainedAliasKind>) {
     for indent in body {
         if let Stmt::Let {
             name,
             ty: Some(Type::Ptr { .. }),
             init: Some(init),
             ..
-        } = &indent.stmt
+        } = indent
             && let Some(kind) = retained_pointer_origin(init, aliases)
         {
             aliases.insert(name.clone(), kind);
         }
-        match &indent.stmt {
+        match indent {
             Stmt::LetIf {
                 then_body,
                 else_body,
@@ -3086,7 +3076,7 @@ fn retained_pointer_origin(
 }
 
 fn retained_stmts_safe(
-    body: &[IndentStmt],
+    body: &[Stmt],
     binding: &str,
     callee: &str,
     call_temps: &BTreeSet<String>,
@@ -3096,7 +3086,7 @@ fn retained_stmts_safe(
 ) -> bool {
     for indent in body {
         if !retained_stmt_safe(
-            &indent.stmt,
+            indent,
             binding,
             callee,
             call_temps,
@@ -3105,7 +3095,7 @@ fn retained_stmts_safe(
             frees,
         ) {
             if std::env::var_os("SLATE_PTR_LEN_DEBUG").is_some() {
-                eprintln!("return retention rejected: {:#?}", indent.stmt);
+                eprintln!("return retention rejected: {indent:#?}");
             }
             return false;
         }
@@ -3301,7 +3291,7 @@ fn retained_free_arg(stmt: &Stmt) -> Option<&Expr> {
                 .as_deref()
                 .and_then(free_expr_arg)
                 .or_else(|| match body.stmts.as_slice() {
-                    [indent] => retained_free_arg(&indent.stmt),
+                    [indent] => retained_free_arg(indent),
                     _ => None,
                 })
         }
@@ -3399,9 +3389,9 @@ fn return_buffer_candidates(fn_defs: &BTreeMap<String, &FnDef>) -> Vec<ReturnBuf
     out
 }
 
-fn collect_returns<'a>(body: &'a [IndentStmt], out: &mut Vec<&'a Expr>) {
+fn collect_returns<'a>(body: &'a [Stmt], out: &mut Vec<&'a Expr>) {
     for indent in body {
-        collect_returns_stmt(&indent.stmt, out);
+        collect_returns_stmt(indent, out);
     }
 }
 
@@ -3439,7 +3429,7 @@ fn collect_returns_stmt<'a>(stmt: &'a Stmt, out: &mut Vec<&'a Expr>) {
 
 fn returned_malloc_count(
     ret: &Expr,
-    body: &[IndentStmt],
+    body: &[Stmt],
     defs: &BTreeMap<String, Expr>,
     elem_ty: &Type,
     params: &BTreeSet<&str>,
@@ -3478,7 +3468,7 @@ fn returned_malloc_count(
 
 fn resolve_to_malloc<'a>(
     expr: &'a Expr,
-    body: &[IndentStmt],
+    body: &[Stmt],
     defs: &'a BTreeMap<String, Expr>,
     depth: usize,
 ) -> Option<&'a Expr> {
@@ -3517,7 +3507,7 @@ fn apply_return_retention(items: &mut [Item], plans: &[ReturnRetentionPlan]) {
                         args: Vec::new(),
                     };
                     for indent in &mut f.body {
-                        indent.stmt.substitute_var(&plan.binding, &raw);
+                        indent.substitute_var(&plan.binding, &raw);
                     }
                     let aliases = plan
                         .base_aliases
@@ -3534,7 +3524,7 @@ fn apply_return_retention(items: &mut [Item], plans: &[ReturnRetentionPlan]) {
     }
 }
 
-fn remove_unused_retained_aliases(body: &mut Vec<IndentStmt>, base_aliases: &BTreeSet<String>) {
+fn remove_unused_retained_aliases(body: &mut Vec<Stmt>, base_aliases: &BTreeSet<String>) {
     loop {
         let unused: BTreeSet<String> = base_aliases
             .iter()
@@ -3545,18 +3535,14 @@ fn remove_unused_retained_aliases(body: &mut Vec<IndentStmt>, base_aliases: &BTr
             return;
         }
         let before = body.len();
-        body.retain(
-            |indent| !matches!(&indent.stmt, Stmt::Let { name, .. } if unused.contains(name)),
-        );
+        body.retain(|indent| !matches!(indent, Stmt::Let { name, .. } if unused.contains(name)));
         for indent in body.iter_mut() {
-            remove_unused_retained_aliases_stmt(&mut indent.stmt, &unused);
+            remove_unused_retained_aliases_stmt(indent, &unused);
         }
         if body.len() == before
-            && !body.iter().any(|indent| {
-                unused
-                    .iter()
-                    .any(|name| indent.stmt.reads_var(name.as_str()))
-            })
+            && !body
+                .iter()
+                .any(|indent| unused.iter().any(|name| indent.reads_var(name.as_str())))
         {
             return;
         }
@@ -3594,15 +3580,15 @@ fn remove_unused_retained_aliases_stmt(stmt: &mut Stmt, unused: &BTreeSet<String
     }
 }
 
-fn remove_retained_frees(body: &mut Vec<IndentStmt>, base_aliases: &BTreeSet<String>) {
+fn remove_retained_frees(body: &mut Vec<Stmt>, base_aliases: &BTreeSet<String>) {
     body.retain_mut(|indent| {
-        if retained_free_arg(&indent.stmt)
+        if retained_free_arg(indent)
             .and_then(peeled_var)
             .is_some_and(|root| base_aliases.contains(root))
         {
             return false;
         }
-        remove_retained_frees_stmt(&mut indent.stmt, base_aliases);
+        remove_retained_frees_stmt(indent, base_aliases);
         true
     });
 }
@@ -3638,21 +3624,21 @@ fn remove_retained_frees_stmt(stmt: &mut Stmt, base_aliases: &BTreeSet<String>) 
     }
 }
 
-fn retain_call_binding(body: &mut Vec<IndentStmt>, plan: &ReturnRetentionPlan) -> bool {
+fn retain_call_binding(body: &mut Vec<Stmt>, plan: &ReturnRetentionPlan) -> bool {
     let has_decl = body
         .iter()
-        .any(|indent| matches!(&indent.stmt, Stmt::Let { name, .. } if name == &plan.binding));
+        .any(|indent| matches!(indent, Stmt::Let { name, .. } if name == &plan.binding));
     let has_assign = body.iter().any(|indent| {
-        matches!(&indent.stmt, Stmt::Assign { target: Expr::Var(name), .. } if name.as_str() == plan.binding)
+        matches!(indent, Stmt::Assign { target: Expr::Var(name), .. } if name.as_str() == plan.binding)
     });
     if has_decl && has_assign {
         body.retain(|indent| {
-            !matches!(&indent.stmt, Stmt::Let { name, .. } if name == &plan.binding || plan.call_temps.contains(name))
+            !matches!(indent, Stmt::Let { name, .. } if name == &plan.binding || plan.call_temps.contains(name))
         });
         for indent in body.iter_mut() {
-            if matches!(&indent.stmt, Stmt::Assign { target: Expr::Var(name), .. } if name.as_str() == plan.binding)
+            if matches!(indent, Stmt::Assign { target: Expr::Var(name), .. } if name.as_str() == plan.binding)
             {
-                indent.stmt = Stmt::Let {
+                *indent = Stmt::Let {
                     name: plan.binding.clone(),
                     mutable: true,
                     ty: Some(box_slice_type(&plan.elem_ty)),
@@ -3663,7 +3649,7 @@ fn retain_call_binding(body: &mut Vec<IndentStmt>, plan: &ReturnRetentionPlan) -
         }
     }
     for indent in body {
-        let changed = match &mut indent.stmt {
+        let changed = match indent {
             Stmt::LetIf {
                 then_body,
                 else_body,
@@ -3700,7 +3686,7 @@ fn retype_return_items(items: &mut [Item], by_fn: &BTreeMap<String, &ReturnBuffe
                 if let Some(lift) = by_fn.get(&f.name) {
                     f.ret = Some(box_slice_type(&lift.elem_ty));
                     for indent in &mut f.body {
-                        wrap_returns_stmt(&mut indent.stmt, &lift.elem_ty, &lift.count);
+                        wrap_returns_stmt(indent, &lift.elem_ty, &lift.count);
                     }
                 }
             }
@@ -3727,7 +3713,7 @@ fn wrap_returns_stmt(stmt: &mut Stmt, elem_ty: &Type, count: &Expr) {
             ..
         } => {
             for indent in then_body.iter_mut().chain(else_body.iter_mut()) {
-                wrap_returns_stmt(&mut indent.stmt, elem_ty, count);
+                wrap_returns_stmt(indent, elem_ty, count);
             }
         }
         Stmt::Loop { body, .. }
@@ -3735,19 +3721,19 @@ fn wrap_returns_stmt(stmt: &mut Stmt, elem_ty: &Type, count: &Expr) {
         | Stmt::Scope { body }
         | Stmt::LabeledBlock { body, .. } => {
             for indent in body {
-                wrap_returns_stmt(&mut indent.stmt, elem_ty, count);
+                wrap_returns_stmt(indent, elem_ty, count);
             }
         }
         Stmt::Match { arms, .. } => {
             for arm in arms {
                 for indent in &mut arm.body {
-                    wrap_returns_stmt(&mut indent.stmt, elem_ty, count);
+                    wrap_returns_stmt(indent, elem_ty, count);
                 }
             }
         }
         Stmt::While { body, .. } | Stmt::Unsafe { body } | Stmt::Block(body) => {
             for indent in &mut body.stmts {
-                wrap_returns_stmt(&mut indent.stmt, elem_ty, count);
+                wrap_returns_stmt(indent, elem_ty, count);
             }
         }
         _ => {}
@@ -3787,7 +3773,7 @@ fn rewrite_return_call_item(item: &mut Item, elems: &BTreeMap<String, Type>) {
     match item {
         Item::Fn(f) => {
             for indent in &mut f.body {
-                rewrite_return_call_stmt(&mut indent.stmt, elems);
+                rewrite_return_call_stmt(indent, elems);
             }
         }
         Item::InlineMod { items, .. } => {
@@ -3819,7 +3805,7 @@ fn rewrite_return_call_stmt(stmt: &mut Stmt, elems: &BTreeMap<String, Type>) {
         } => {
             rewrite_return_call_expr(cond, elems);
             for indent in then_body.iter_mut().chain(else_body.iter_mut()) {
-                rewrite_return_call_stmt(&mut indent.stmt, elems);
+                rewrite_return_call_stmt(indent, elems);
             }
             rewrite_return_call_expr(then_value, elems);
             rewrite_return_call_expr(else_value, elems);
@@ -3836,7 +3822,7 @@ fn rewrite_return_call_stmt(stmt: &mut Stmt, elems: &BTreeMap<String, Type>) {
         } => {
             rewrite_return_call_expr(cond, elems);
             for indent in then_body.iter_mut().chain(else_body.iter_mut()) {
-                rewrite_return_call_stmt(&mut indent.stmt, elems);
+                rewrite_return_call_stmt(indent, elems);
             }
         }
         Stmt::Loop { body, .. }
@@ -3844,12 +3830,12 @@ fn rewrite_return_call_stmt(stmt: &mut Stmt, elems: &BTreeMap<String, Type>) {
         | Stmt::Scope { body }
         | Stmt::LabeledBlock { body, .. } => {
             for indent in body {
-                rewrite_return_call_stmt(&mut indent.stmt, elems);
+                rewrite_return_call_stmt(indent, elems);
             }
         }
         Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
             for indent in &mut body.stmts {
-                rewrite_return_call_stmt(&mut indent.stmt, elems);
+                rewrite_return_call_stmt(indent, elems);
             }
             if let Some(tail) = &mut body.tail {
                 rewrite_return_call_expr(tail, elems);
@@ -3859,7 +3845,7 @@ fn rewrite_return_call_stmt(stmt: &mut Stmt, elems: &BTreeMap<String, Type>) {
             rewrite_return_call_expr(expr, elems);
             for arm in arms {
                 for indent in &mut arm.body {
-                    rewrite_return_call_stmt(&mut indent.stmt, elems);
+                    rewrite_return_call_stmt(indent, elems);
                 }
             }
         }
@@ -3887,7 +3873,7 @@ fn rewrite_return_call_expr(expr: &mut Expr, elems: &BTreeMap<String, Type>) {
         | Expr::Transmute { expr, .. } => rewrite_return_call_expr(expr, elems),
         Expr::Block(block) | Expr::Unsafe(block) => {
             for indent in &mut block.stmts {
-                rewrite_return_call_stmt(&mut indent.stmt, elems);
+                rewrite_return_call_stmt(indent, elems);
             }
             if let Some(tail) = &mut block.tail {
                 rewrite_return_call_expr(tail, elems);

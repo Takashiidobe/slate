@@ -204,7 +204,7 @@ fn alias_fixpoint(f: &FnDef, param_name: &str) -> AliasInfo {
 }
 
 fn find_zero_decl_then_assign_aliases(
-    body: &[IndentStmtBody],
+    body: &[Stmt],
     tracked: &BTreeSet<String>,
     found: &mut BTreeSet<String>,
 ) {
@@ -214,22 +214,20 @@ fn find_zero_decl_then_assign_aliases(
             ty: Some(ty),
             init: Some(init),
             ..
-        } = &decl.stmt
+        } = decl
         else {
             continue;
         };
         if !is_char_ptr(ty) || !is_zero_like(init) {
             continue;
         }
-        let first_write = body[decl_pos + 1..]
-            .iter()
-            .find_map(|indent| match &indent.stmt {
-                Stmt::Assign {
-                    target: Expr::Var(v),
-                    value,
-                } if v.as_str() == name.as_str() => Some(value),
-                _ => None,
-            });
+        let first_write = body[decl_pos + 1..].iter().find_map(|indent| match indent {
+            Stmt::Assign {
+                target: Expr::Var(v),
+                value,
+            } if v.as_str() == name.as_str() => Some(value),
+            _ => None,
+        });
         if let Some(Expr::Var(source)) = first_write
             && tracked.contains(source.as_str())
         {
@@ -237,7 +235,7 @@ fn find_zero_decl_then_assign_aliases(
         }
     }
     for indent in body {
-        match &indent.stmt {
+        match indent {
             Stmt::If {
                 then_body,
                 else_body,
@@ -287,7 +285,7 @@ fn is_zero_like(expr: &Expr) -> bool {
     )
 }
 
-fn literal_string_locals(body: &[IndentStmtBody]) -> BTreeMap<String, Vec<u8>> {
+fn literal_string_locals(body: &[Stmt]) -> BTreeMap<String, Vec<u8>> {
     let mut arrays = BTreeSet::new();
     walk_stmts(body, &mut |stmt| {
         if let Stmt::Let {
@@ -365,7 +363,7 @@ fn is_zero_literal(expr: &Expr) -> bool {
     )
 }
 
-fn collect_calls(body: &[IndentStmtBody], out: &mut Vec<(String, Vec<Expr>)>) {
+fn collect_calls(body: &[Stmt], out: &mut Vec<(String, Vec<Expr>)>) {
     walk_exprs(body, &mut |expr| {
         if let Expr::Call { func, args, .. } = expr
             && let Expr::Var(name) = &**func
@@ -375,12 +373,10 @@ fn collect_calls(body: &[IndentStmtBody], out: &mut Vec<(String, Vec<Expr>)>) {
     });
 }
 
-type IndentStmtBody = crate::backend::rust_ast::IndentStmt;
-
-fn walk_stmts(body: &[IndentStmtBody], f: &mut impl FnMut(&Stmt)) {
+fn walk_stmts(body: &[Stmt], f: &mut impl FnMut(&Stmt)) {
     for indent in body {
-        f(&indent.stmt);
-        match &indent.stmt {
+        f(indent);
+        match indent {
             Stmt::If {
                 then_body,
                 else_body,
@@ -411,7 +407,7 @@ fn walk_stmts(body: &[IndentStmtBody], f: &mut impl FnMut(&Stmt)) {
     }
 }
 
-fn walk_exprs(body: &[IndentStmtBody], f: &mut impl FnMut(&Expr)) {
+fn walk_exprs(body: &[Stmt], f: &mut impl FnMut(&Expr)) {
     walk_stmts(body, &mut |stmt| {
         stmt_visit_exprs(stmt, f);
     });
@@ -557,7 +553,7 @@ fn visit_block_deep(block: &Block, f: &mut impl FnMut(&Expr)) {
 }
 
 fn body_writes_tracked(
-    body: &[IndentStmtBody],
+    body: &[Stmt],
     tracked: &BTreeSet<String>,
     established: &BTreeSet<String>,
 ) -> bool {
@@ -609,7 +605,7 @@ impl Ctx<'_> {
 }
 
 fn body_reads_ok(
-    body: &[IndentStmtBody],
+    body: &[Stmt],
     tracked: &BTreeSet<String>,
     established: &BTreeSet<String>,
     candidates: &BTreeMap<String, CandidateFn>,
@@ -620,7 +616,7 @@ fn body_reads_ok(
         active,
         established,
     };
-    body.iter().all(|s| stmt_ok(&s.stmt, tracked, &ctx))
+    body.iter().all(|s| stmt_ok(s, tracked, &ctx))
 }
 
 fn stmt_ok(stmt: &Stmt, tracked: &BTreeSet<String>, ctx: &Ctx) -> bool {
@@ -643,9 +639,9 @@ fn stmt_ok(stmt: &Stmt, tracked: &BTreeSet<String>, ctx: &Ctx) -> bool {
             ..
         } => {
             expr_ok(cond, tracked, ctx)
-                && then_body.iter().all(|s| stmt_ok(&s.stmt, tracked, ctx))
+                && then_body.iter().all(|s| stmt_ok(s, tracked, ctx))
                 && expr_ok(then_value, tracked, ctx)
-                && else_body.iter().all(|s| stmt_ok(&s.stmt, tracked, ctx))
+                && else_body.iter().all(|s| stmt_ok(s, tracked, ctx))
                 && expr_ok(else_value, tracked, ctx)
         }
         Stmt::Assign {
@@ -669,10 +665,10 @@ fn stmt_ok(stmt: &Stmt, tracked: &BTreeSet<String>, ctx: &Ctx) -> bool {
         Stmt::Expr(expr) | Stmt::Return(Some(expr)) => expr_ok(expr, tracked, ctx),
         Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => true,
         Stmt::For { iter, body, .. } => {
-            expr_ok(iter, tracked, ctx) && body.iter().all(|s| stmt_ok(&s.stmt, tracked, ctx))
+            expr_ok(iter, tracked, ctx) && body.iter().all(|s| stmt_ok(s, tracked, ctx))
         }
         Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } | Stmt::Loop { body, .. } => {
-            body.iter().all(|s| stmt_ok(&s.stmt, tracked, ctx))
+            body.iter().all(|s| stmt_ok(s, tracked, ctx))
         }
         Stmt::Unsafe { body } => block_ok(body, tracked, ctx),
         Stmt::If {
@@ -684,7 +680,7 @@ fn stmt_ok(stmt: &Stmt, tracked: &BTreeSet<String>, ctx: &Ctx) -> bool {
                 && then_body
                     .iter()
                     .chain(else_body.iter())
-                    .all(|s| stmt_ok(&s.stmt, tracked, ctx))
+                    .all(|s| stmt_ok(s, tracked, ctx))
         }
         Stmt::Match { expr, arms } => {
             expr_ok(expr, tracked, ctx)
@@ -693,7 +689,7 @@ fn stmt_ok(stmt: &Stmt, tracked: &BTreeSet<String>, ctx: &Ctx) -> bool {
                         Pattern::Guarded { cond, .. } => expr_ok(cond, tracked, ctx),
                         _ => true,
                     };
-                    guard_ok && arm.body.iter().all(|s| stmt_ok(&s.stmt, tracked, ctx))
+                    guard_ok && arm.body.iter().all(|s| stmt_ok(s, tracked, ctx))
                 })
         }
         Stmt::While { cond, body, .. } => {
@@ -704,7 +700,7 @@ fn stmt_ok(stmt: &Stmt, tracked: &BTreeSet<String>, ctx: &Ctx) -> bool {
 }
 
 fn block_ok(block: &Block, tracked: &BTreeSet<String>, ctx: &Ctx) -> bool {
-    block.stmts.iter().all(|s| stmt_ok(&s.stmt, tracked, ctx))
+    block.stmts.iter().all(|s| stmt_ok(s, tracked, ctx))
         && block.tail.as_ref().is_none_or(|t| expr_ok(t, tracked, ctx))
 }
 
@@ -962,19 +958,19 @@ fn is_str_ref(ty: &Type) -> bool {
 /// subsumes the old single-level "just the param's direct aliases" rewrite:
 /// since `tracked` is already the transitive closure, one promotion pass
 /// over it handles every hop.
-fn promote_tracked_lets(body: &mut [IndentStmtBody], tracked: &BTreeSet<String>) -> bool {
+fn promote_tracked_lets(body: &mut [Stmt], tracked: &BTreeSet<String>) -> bool {
     let mut changed = false;
     for indent in body.iter_mut() {
         if let Stmt::Let {
             name, ty: Some(ty), ..
-        } = &mut indent.stmt
+        } = indent
             && is_char_ptr(ty)
             && tracked.contains(name.as_str())
         {
             *ty = str_ref_type();
             changed = true;
         }
-        changed |= promote_nested_bodies(&mut indent.stmt, tracked);
+        changed |= promote_nested_bodies(indent, tracked);
     }
     changed
 }
@@ -1016,10 +1012,10 @@ struct RewriteCtx<'a> {
     own_literals: &'a BTreeMap<String, Vec<u8>>,
 }
 
-fn rewrite_calls_in_stmts(body: &mut [IndentStmtBody], ctx: &RewriteCtx) -> bool {
+fn rewrite_calls_in_stmts(body: &mut [Stmt], ctx: &RewriteCtx) -> bool {
     let mut changed = false;
     for indent in body.iter_mut() {
-        changed |= rewrite_calls_in_stmt(&mut indent.stmt, ctx);
+        changed |= rewrite_calls_in_stmt(indent, ctx);
     }
     changed
 }

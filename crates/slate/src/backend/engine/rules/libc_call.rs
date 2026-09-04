@@ -1,7 +1,7 @@
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::{
-    BinOp, Block, Expr, Ident, IndentStmt, Path, Prim, RustValue, Stmt, Type, UnaryOp,
+    BinOp, Block, Expr, Ident, Path, Prim, RustValue, Stmt, Type, UnaryOp,
 };
 use crate::function_identity::{CallBinding, Known};
 
@@ -223,10 +223,7 @@ fn byte_ptr(mutable: bool) -> Type {
 
 fn block_then(effect: Expr, value: Expr) -> Expr {
     Expr::Block(Box::new(Block {
-        stmts: vec![IndentStmt {
-            depth: 0,
-            stmt: Stmt::Expr(effect),
-        }],
+        stmts: vec![Stmt::Expr(effect)],
         tail: Some(Box::new(value)),
     }))
 }

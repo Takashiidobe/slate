@@ -1,6 +1,6 @@
 use crate::backend::rust_ast::{
-    BinOp, Block, Expr, FnDef, FnParam, Ident, ImplItem, IndentStmt, Item, Path, Prim, Program,
-    RustValue, Stmt, Type, Visibility,
+    BinOp, Block, Expr, FnDef, FnParam, Ident, ImplItem, Item, Path, Prim, Program, RustValue,
+    Stmt, Type, Visibility,
 };
 use crate::function_identity::CallBinding;
 
@@ -32,7 +32,7 @@ fn item_calls<'a>(item: &'a Item, out: &mut Vec<(&'a Ident, &'a [Expr])>) {
     match item {
         Item::Fn(func) => {
             for stmt in &func.body {
-                stmt.stmt.collect_calls(out);
+                stmt.collect_calls(out);
             }
         }
         Item::InlineMod { items, .. } => {
@@ -46,7 +46,7 @@ fn item_calls<'a>(item: &'a Item, out: &mut Vec<(&'a Ident, &'a [Expr])>) {
                     && let Expr::Block(block) = &method.body
                 {
                     for stmt in &block.stmts {
-                        stmt.stmt.collect_calls(out);
+                        stmt.collect_calls(out);
                     }
                     if let Some(tail) = &block.tail {
                         tail.collect_calls(out);
@@ -107,10 +107,6 @@ fn mcall(recv: Expr, method: &str, args: Vec<Expr>) -> Expr {
     }
 }
 
-fn stmt(s: Stmt) -> IndentStmt {
-    IndentStmt { depth: 0, stmt: s }
-}
-
 fn step_i() -> Stmt {
     Stmt::CompoundAssign {
         target: var("i"),
@@ -144,7 +140,7 @@ fn while_stmt(cond: Expr) -> Stmt {
         label: None,
         cond,
         body: Block {
-            stmts: vec![stmt(step_i())],
+            stmts: vec![step_i()],
             tail: None,
         },
     }
@@ -200,30 +196,28 @@ fn ato_int_prelude(name: &str, ret: Prim) -> Item {
     );
 
     let body = vec![
-        stmt(let_stmt("bytes", false, bytes)),
-        stmt(let_stmt("n", false, mcall(var("bytes"), "len", Vec::new()))),
-        stmt(let_stmt("i", true, usize_lit(0))),
-        stmt(while_stmt(bin(BinOp::And, in_bounds(), is_c_space()))),
-        stmt(let_stmt("start", false, var("i"))),
-        stmt(Stmt::If {
+        let_stmt("bytes", false, bytes),
+        let_stmt("n", false, mcall(var("bytes"), "len", Vec::new())),
+        let_stmt("i", true, usize_lit(0)),
+        while_stmt(bin(BinOp::And, in_bounds(), is_c_space())),
+        let_stmt("start", false, var("i")),
+        Stmt::If {
             cond: bin(BinOp::And, in_bounds(), is_sign()),
-            then_body: vec![stmt(step_i())],
+            then_body: vec![step_i()],
             else_body: Vec::new(),
-        }),
-        stmt(let_stmt("digits", false, var("i"))),
-        stmt(while_stmt(bin(
+        },
+        let_stmt("digits", false, var("i")),
+        while_stmt(bin(
             BinOp::And,
             in_bounds(),
             mcall(idx(), "is_ascii_digit", Vec::new()),
-        ))),
-        stmt(Stmt::If {
+        )),
+        Stmt::If {
             cond: bin(BinOp::Eq, var("i"), var("digits")),
-            then_body: vec![stmt(Stmt::Return(Some(Expr::Value(RustValue::TypedInt(
-                0, ret,
-            )))))],
+            then_body: vec![Stmt::Return(Some(Expr::Value(RustValue::TypedInt(0, ret))))],
             else_body: Vec::new(),
-        }),
-        stmt(Stmt::Return(Some(parsed))),
+        },
+        Stmt::Return(Some(parsed)),
     ];
 
     Item::Fn(FnDef {

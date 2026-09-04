@@ -5,9 +5,7 @@ use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{
     self, Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag,
 };
-use crate::backend::rust_ast::{
-    Expr, Ident, IndentStmt, Label, MatchArm, Pattern, RustValue, Stmt, UnaryOp,
-};
+use crate::backend::rust_ast::{Expr, Ident, Label, MatchArm, Pattern, RustValue, Stmt, UnaryOp};
 
 pub(in crate::backend::engine) struct StructureReducible;
 
@@ -48,13 +46,6 @@ struct Graph {
     owner: Vec<Option<Owner>>,
     preamble: Vec<Stmt>,
     keeps_state: bool,
-}
-
-fn indent(stmts: Vec<Stmt>) -> Vec<IndentStmt> {
-    stmts
-        .into_iter()
-        .map(|stmt| IndentStmt { depth: 0, stmt })
-        .collect()
 }
 
 fn negate(cond: &Expr) -> Expr {
@@ -657,8 +648,8 @@ fn owner_of(bodies: &BTreeMap<usize, BTreeSet<usize>>, idom: &[usize], node: usi
     Owner::Inside(home)
 }
 
-fn drop_tail_continue(body: &mut Vec<IndentStmt>) {
-    match body.last_mut().map(|stmt| &mut stmt.stmt) {
+fn drop_tail_continue(body: &mut Vec<Stmt>) {
+    match body.last_mut() {
         Some(Stmt::Continue(None)) => {
             body.pop();
         }
@@ -682,16 +673,16 @@ fn drop_tail_continue(body: &mut Vec<IndentStmt>) {
     }
 }
 
-fn fold_empty_branches(body: &mut Vec<IndentStmt>) {
+fn fold_empty_branches(body: &mut Vec<Stmt>) {
     body.retain_mut(|stmt| {
-        for nested in stmt.stmt.child_bodies_mut() {
+        for nested in stmt.child_bodies_mut() {
             fold_empty_branches(nested);
         }
         let Stmt::If {
             cond,
             then_body,
             else_body,
-        } = &mut stmt.stmt
+        } = stmt
         else {
             return true;
         };
@@ -701,7 +692,7 @@ fn fold_empty_branches(body: &mut Vec<IndentStmt>) {
         if else_body.is_empty() {
             return false;
         }
-        stmt.stmt = Stmt::If {
+        *stmt = Stmt::If {
             cond: negate(cond),
             then_body: std::mem::take(else_body),
             else_body: Vec::new(),
@@ -710,11 +701,10 @@ fn fold_empty_branches(body: &mut Vec<IndentStmt>) {
     });
 }
 
-fn uses_label(body: &mut [IndentStmt], label: &Label) -> bool {
+fn uses_label(body: &mut [Stmt], label: &Label) -> bool {
     body.iter_mut().any(|stmt| {
-        matches!(&stmt.stmt, Stmt::Break(Some(target)) | Stmt::Continue(Some(target)) if target == label)
+        matches!(&*stmt, Stmt::Break(Some(target)) | Stmt::Continue(Some(target)) if target == label)
             || stmt
-                .stmt
                 .child_bodies_mut()
                 .into_iter()
                 .any(|nested| uses_label(nested, label))
@@ -761,7 +751,7 @@ impl Graph {
         let mut nested = loops.to_vec();
         nested.push(node);
         let label = self.loop_label(node);
-        let mut body = indent(self.within(node, &self.owned(node, Owner::Inside(node)), &nested));
+        let mut body = self.within(node, &self.owned(node, Owner::Inside(node)), &nested);
         drop_tail_continue(&mut body);
         fold_empty_branches(&mut body);
         let core = Stmt::Loop {
@@ -786,7 +776,7 @@ impl Graph {
         };
         let mut out = vec![Stmt::LabeledBlock {
             label: self.join_label(next),
-            body: indent(inner),
+            body: inner,
         }];
         out.extend(self.tree(next, loops));
         self.wrap_labeled(out, outer, loops)
@@ -799,7 +789,7 @@ impl Graph {
         let inner = self.within(node, inner_joins, loops);
         let mut out = vec![Stmt::LabeledBlock {
             label: self.join_label(outermost),
-            body: indent(inner),
+            body: inner,
         }];
         out.extend(self.tree(outermost, loops));
         out
@@ -817,8 +807,8 @@ impl Graph {
                 else_target,
             } => out.push(Stmt::If {
                 cond: cond.clone(),
-                then_body: indent(self.branch(*then_target, loops)),
-                else_body: indent(self.branch(*else_target, loops)),
+                then_body: self.branch(*then_target, loops),
+                else_body: self.branch(*else_target, loops),
             }),
             Term::Switch { selector, arms } => out.push(Stmt::Match {
                 expr: selector.clone(),
@@ -826,7 +816,7 @@ impl Graph {
                     .iter()
                     .map(|(pattern, target)| MatchArm {
                         pattern: pattern.clone(),
-                        body: indent(self.branch(*target, loops)),
+                        body: self.branch(*target, loops),
                     })
                     .collect(),
             }),

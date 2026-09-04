@@ -58,12 +58,9 @@ fn f80_assign_impl(trait_: StdTrait, shim: &str) -> Item {
         }],
         ret: None,
         body: Expr::Block(Box::new(crate::backend::rust_ast::Block {
-            stmts: vec![IndentStmt {
-                depth: 0,
-                stmt: Stmt::Assign {
-                    target: self_value.clone(),
-                    value: f80_call(shim, vec![self_value, Expr::Var("o".into())]),
-                },
+            stmts: vec![Stmt::Assign {
+                target: self_value.clone(),
+                value: f80_call(shim, vec![self_value, Expr::Var("o".into())]),
             }],
             tail: None,
         })),
@@ -681,13 +678,10 @@ pub(super) fn memchr_prelude() -> Item {
             })),
             rhs: Box::new(var("b")),
         },
-        then_body: vec![IndentStmt {
-            depth: 0,
-            stmt: Stmt::Return(Some(Expr::Cast {
-                expr: Box::new(FunctionLowerer::unsafe_expr(byte_at())),
-                ty: void_ptr(true),
-            })),
-        }],
+        then_body: vec![Stmt::Return(Some(Expr::Cast {
+            expr: Box::new(FunctionLowerer::unsafe_expr(byte_at())),
+            ty: void_ptr(true),
+        }))],
         else_body: Vec::new(),
     };
     let step = Stmt::CompoundAssign {
@@ -703,62 +697,38 @@ pub(super) fn memchr_prelude() -> Item {
             rhs: Box::new(var("n")),
         },
         body: crate::backend::rust_ast::Block {
-            stmts: vec![
-                IndentStmt {
-                    depth: 0,
-                    stmt: hit,
-                },
-                IndentStmt {
-                    depth: 0,
-                    stmt: step,
-                },
-            ],
+            stmts: vec![hit, step],
             tail: None,
         },
     };
 
     let body = vec![
-        IndentStmt {
-            depth: 1,
-            stmt: Stmt::Let {
-                name: "b".into(),
-                mutable: false,
-                ty: Some(Type::Prim(Prim::U8)),
-                init: Some(Expr::Cast {
-                    expr: Box::new(var("c")),
-                    ty: Type::Prim(Prim::U8),
-                }),
-            },
+        Stmt::Let {
+            name: "b".into(),
+            mutable: false,
+            ty: Some(Type::Prim(Prim::U8)),
+            init: Some(Expr::Cast {
+                expr: Box::new(var("c")),
+                ty: Type::Prim(Prim::U8),
+            }),
         },
-        IndentStmt {
-            depth: 1,
-            stmt: Stmt::Let {
-                name: "bytes".into(),
-                mutable: false,
-                ty: Some(u8_const_ptr.clone()),
-                init: Some(Expr::Cast {
-                    expr: Box::new(var("s")),
-                    ty: u8_const_ptr,
-                }),
-            },
+        Stmt::Let {
+            name: "bytes".into(),
+            mutable: false,
+            ty: Some(u8_const_ptr.clone()),
+            init: Some(Expr::Cast {
+                expr: Box::new(var("s")),
+                ty: u8_const_ptr,
+            }),
         },
-        IndentStmt {
-            depth: 1,
-            stmt: Stmt::Let {
-                name: "i".into(),
-                mutable: true,
-                ty: Some(Type::Prim(Prim::Usize)),
-                init: Some(Expr::Value(RustValue::I64(0))),
-            },
+        Stmt::Let {
+            name: "i".into(),
+            mutable: true,
+            ty: Some(Type::Prim(Prim::Usize)),
+            init: Some(Expr::Value(RustValue::I64(0))),
         },
-        IndentStmt {
-            depth: 1,
-            stmt: scan,
-        },
-        IndentStmt {
-            depth: 1,
-            stmt: Stmt::Return(Some(Expr::Value(RustValue::NullPtr))),
-        },
+        scan,
+        Stmt::Return(Some(Expr::Value(RustValue::NullPtr))),
     ];
 
     Item::Fn(FnDef {

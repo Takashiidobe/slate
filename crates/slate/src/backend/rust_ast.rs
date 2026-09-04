@@ -484,7 +484,7 @@ pub struct FnDef {
     pub name: String,
     pub params: Vec<FnParam>,
     pub ret: Option<Type>,
-    pub body: Vec<IndentStmt>,
+    pub body: Vec<Stmt>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -495,15 +495,9 @@ pub struct FnParam {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct IndentStmt {
-    pub depth: usize,
-    pub stmt: Stmt,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct MatchArm {
     pub pattern: Pattern,
-    pub body: Vec<IndentStmt>,
+    pub body: Vec<Stmt>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -593,7 +587,7 @@ pub enum AtomicRmwOp {
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Block {
-    pub stmts: Vec<IndentStmt>,
+    pub stmts: Vec<Stmt>,
     pub tail: Option<Box<Expr>>,
 }
 
@@ -689,9 +683,9 @@ pub enum Stmt {
         mutable: bool,
         ty: Option<Type>,
         cond: Expr,
-        then_body: Vec<IndentStmt>,
+        then_body: Vec<Stmt>,
         then_value: Expr,
-        else_body: Vec<IndentStmt>,
+        else_body: Vec<Stmt>,
         else_value: Expr,
     },
     Assign {
@@ -711,24 +705,24 @@ pub enum Stmt {
     },
     If {
         cond: Expr,
-        then_body: Vec<IndentStmt>,
-        else_body: Vec<IndentStmt>,
+        then_body: Vec<Stmt>,
+        else_body: Vec<Stmt>,
     },
     Loop {
         label: Option<Label>,
-        body: Vec<IndentStmt>,
+        body: Vec<Stmt>,
     },
     For {
         pat: String,
         iter: Expr,
-        body: Vec<IndentStmt>,
+        body: Vec<Stmt>,
     },
     Scope {
-        body: Vec<IndentStmt>,
+        body: Vec<Stmt>,
     },
     LabeledBlock {
         label: Label,
-        body: Vec<IndentStmt>,
+        body: Vec<Stmt>,
     },
     Match {
         expr: Expr,
@@ -1382,7 +1376,7 @@ impl Stmt {
         stmt_substitute_var(self, name, replacement)
     }
 
-    pub fn child_bodies_mut(&mut self) -> Vec<&mut Vec<IndentStmt>> {
+    pub fn child_bodies_mut(&mut self) -> Vec<&mut Vec<Stmt>> {
         match self {
             Stmt::LetIf {
                 then_body,
@@ -1476,10 +1470,7 @@ impl Expr {
             | Expr::AddrOf { expr, .. }
             | Expr::Transmute { expr, .. } => expr.reads_var(name),
             Expr::Block(block) | Expr::Unsafe(block) => {
-                block
-                    .stmts
-                    .iter()
-                    .any(|stmt| stmt_reads_var(&stmt.stmt, name))
+                block.stmts.iter().any(|stmt| stmt_reads_var(stmt, name))
                     || block.tail.as_ref().is_some_and(|tail| tail.reads_var(name))
             }
             Expr::CopyNonoverlapping { src, dst, .. } => src.reads_var(name) || dst.reads_var(name),
@@ -1559,7 +1550,7 @@ impl Expr {
             | Expr::Transmute { expr, .. } => expr.collect_vars(out),
             Expr::Block(block) | Expr::Unsafe(block) => {
                 for stmt in &block.stmts {
-                    stmt_collect_vars(&stmt.stmt, out);
+                    stmt_collect_vars(stmt, out);
                 }
                 if let Some(tail) = &block.tail {
                     tail.collect_vars(out);
@@ -1706,7 +1697,7 @@ impl Expr {
             | Expr::Transmute { expr, .. } => expr.collect_offset_calls(out),
             Expr::Block(block) | Expr::Unsafe(block) => {
                 for stmt in &block.stmts {
-                    stmt_collect_offset_calls(&stmt.stmt, out);
+                    stmt_collect_offset_calls(stmt, out);
                 }
                 if let Some(tail) = &block.tail {
                     tail.collect_offset_calls(out);
@@ -1845,7 +1836,7 @@ impl Expr {
             | Expr::Transmute { expr, .. } => expr.collect_calls(out),
             Expr::Block(block) | Expr::Unsafe(block) => {
                 for stmt in &block.stmts {
-                    stmt_collect_calls(&stmt.stmt, out);
+                    stmt_collect_calls(stmt, out);
                 }
                 if let Some(tail) = &block.tail {
                     tail.collect_calls(out);
@@ -1980,7 +1971,7 @@ impl Expr {
             Expr::Block(block) | Expr::Unsafe(block) => {
                 let mut changed = false;
                 for stmt in &mut block.stmts {
-                    changed |= stmt_substitute_var(&mut stmt.stmt, name, replacement);
+                    changed |= stmt_substitute_var(stmt, name, replacement);
                 }
                 if let Some(tail) = &mut block.tail {
                     changed |= tail.substitute_var(name, replacement);
@@ -2157,13 +2148,9 @@ fn stmt_reads_var(stmt: &Stmt, name: &str) -> bool {
             ..
         } => {
             cond.reads_var(name)
-                || then_body
-                    .iter()
-                    .any(|stmt| stmt_reads_var(&stmt.stmt, name))
+                || then_body.iter().any(|stmt| stmt_reads_var(stmt, name))
                 || then_value.reads_var(name)
-                || else_body
-                    .iter()
-                    .any(|stmt| stmt_reads_var(&stmt.stmt, name))
+                || else_body.iter().any(|stmt| stmt_reads_var(stmt, name))
                 || else_value.reads_var(name)
         }
         Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
@@ -2182,15 +2169,13 @@ fn stmt_reads_var(stmt: &Stmt, name: &str) -> bool {
         Stmt::Return(None) | Stmt::Break(_) | Stmt::Continue(_) => false,
         Stmt::For { iter, body, pat } => {
             (pat != name && iter.reads_var(name))
-                || (pat != name && body.iter().any(|stmt| stmt_reads_var(&stmt.stmt, name)))
+                || (pat != name && body.iter().any(|stmt| stmt_reads_var(stmt, name)))
         }
         Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } | Stmt::Loop { body, .. } => {
-            body.iter().any(|stmt| stmt_reads_var(&stmt.stmt, name))
+            body.iter().any(|stmt| stmt_reads_var(stmt, name))
         }
         Stmt::Unsafe { body } => {
-            body.stmts
-                .iter()
-                .any(|stmt| stmt_reads_var(&stmt.stmt, name))
+            body.stmts.iter().any(|stmt| stmt_reads_var(stmt, name))
                 || body.tail.as_ref().is_some_and(|tail| tail.reads_var(name))
         }
         Stmt::If {
@@ -2202,27 +2187,22 @@ fn stmt_reads_var(stmt: &Stmt, name: &str) -> bool {
                 || then_body
                     .iter()
                     .chain(else_body.iter())
-                    .any(|stmt| stmt_reads_var(&stmt.stmt, name))
+                    .any(|stmt| stmt_reads_var(stmt, name))
         }
         Stmt::Match { expr, arms } => {
             expr.reads_var(name)
                 || arms.iter().any(|arm| {
                     matches!(&arm.pattern, Pattern::Guarded { cond, .. } if cond.reads_var(name))
-                        || arm.body.iter().any(|stmt| stmt_reads_var(&stmt.stmt, name))
+                        || arm.body.iter().any(|stmt| stmt_reads_var(stmt, name))
                 })
         }
         Stmt::While { cond, body, .. } => {
             cond.reads_var(name)
-                || body
-                    .stmts
-                    .iter()
-                    .any(|stmt| stmt_reads_var(&stmt.stmt, name))
+                || body.stmts.iter().any(|stmt| stmt_reads_var(stmt, name))
                 || body.tail.as_ref().is_some_and(|tail| tail.reads_var(name))
         }
         Stmt::Block(body) => {
-            body.stmts
-                .iter()
-                .any(|stmt| stmt_reads_var(&stmt.stmt, name))
+            body.stmts.iter().any(|stmt| stmt_reads_var(stmt, name))
                 || body.tail.as_ref().is_some_and(|tail| tail.reads_var(name))
         }
     }
@@ -2244,11 +2224,11 @@ fn stmt_collect_offset_calls<'a>(stmt: &'a Stmt, out: &mut Vec<(&'a Ident, &'a s
         } => {
             cond.collect_offset_calls(out);
             for stmt in then_body {
-                stmt_collect_offset_calls(&stmt.stmt, out);
+                stmt_collect_offset_calls(stmt, out);
             }
             then_value.collect_offset_calls(out);
             for stmt in else_body {
-                stmt_collect_offset_calls(&stmt.stmt, out);
+                stmt_collect_offset_calls(stmt, out);
             }
             else_value.collect_offset_calls(out);
         }
@@ -2262,17 +2242,17 @@ fn stmt_collect_offset_calls<'a>(stmt: &'a Stmt, out: &mut Vec<(&'a Ident, &'a s
         Stmt::For { iter, body, .. } => {
             iter.collect_offset_calls(out);
             for stmt in body {
-                stmt_collect_offset_calls(&stmt.stmt, out);
+                stmt_collect_offset_calls(stmt, out);
             }
         }
         Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } | Stmt::Loop { body, .. } => {
             for stmt in body {
-                stmt_collect_offset_calls(&stmt.stmt, out);
+                stmt_collect_offset_calls(stmt, out);
             }
         }
         Stmt::Unsafe { body } => {
             for stmt in &body.stmts {
-                stmt_collect_offset_calls(&stmt.stmt, out);
+                stmt_collect_offset_calls(stmt, out);
             }
             if let Some(tail) = &body.tail {
                 tail.collect_offset_calls(out);
@@ -2285,7 +2265,7 @@ fn stmt_collect_offset_calls<'a>(stmt: &'a Stmt, out: &mut Vec<(&'a Ident, &'a s
         } => {
             cond.collect_offset_calls(out);
             for stmt in then_body.iter().chain(else_body.iter()) {
-                stmt_collect_offset_calls(&stmt.stmt, out);
+                stmt_collect_offset_calls(stmt, out);
             }
         }
         Stmt::Match { expr, arms } => {
@@ -2295,14 +2275,14 @@ fn stmt_collect_offset_calls<'a>(stmt: &'a Stmt, out: &mut Vec<(&'a Ident, &'a s
                     cond.collect_offset_calls(out);
                 }
                 for stmt in &arm.body {
-                    stmt_collect_offset_calls(&stmt.stmt, out);
+                    stmt_collect_offset_calls(stmt, out);
                 }
             }
         }
         Stmt::While { cond, body, .. } => {
             cond.collect_offset_calls(out);
             for stmt in &body.stmts {
-                stmt_collect_offset_calls(&stmt.stmt, out);
+                stmt_collect_offset_calls(stmt, out);
             }
             if let Some(tail) = &body.tail {
                 tail.collect_offset_calls(out);
@@ -2310,7 +2290,7 @@ fn stmt_collect_offset_calls<'a>(stmt: &'a Stmt, out: &mut Vec<(&'a Ident, &'a s
         }
         Stmt::Block(body) => {
             for stmt in &body.stmts {
-                stmt_collect_offset_calls(&stmt.stmt, out);
+                stmt_collect_offset_calls(stmt, out);
             }
             if let Some(tail) = &body.tail {
                 tail.collect_offset_calls(out);
@@ -2335,11 +2315,11 @@ fn stmt_collect_calls<'a>(stmt: &'a Stmt, out: &mut Vec<(&'a Ident, &'a [Expr])>
         } => {
             cond.collect_calls(out);
             for stmt in then_body {
-                stmt_collect_calls(&stmt.stmt, out);
+                stmt_collect_calls(stmt, out);
             }
             then_value.collect_calls(out);
             for stmt in else_body {
-                stmt_collect_calls(&stmt.stmt, out);
+                stmt_collect_calls(stmt, out);
             }
             else_value.collect_calls(out);
         }
@@ -2353,17 +2333,17 @@ fn stmt_collect_calls<'a>(stmt: &'a Stmt, out: &mut Vec<(&'a Ident, &'a [Expr])>
         Stmt::For { iter, body, .. } => {
             iter.collect_calls(out);
             for stmt in body {
-                stmt_collect_calls(&stmt.stmt, out);
+                stmt_collect_calls(stmt, out);
             }
         }
         Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } | Stmt::Loop { body, .. } => {
             for stmt in body {
-                stmt_collect_calls(&stmt.stmt, out);
+                stmt_collect_calls(stmt, out);
             }
         }
         Stmt::Unsafe { body } => {
             for stmt in &body.stmts {
-                stmt_collect_calls(&stmt.stmt, out);
+                stmt_collect_calls(stmt, out);
             }
             if let Some(tail) = &body.tail {
                 tail.collect_calls(out);
@@ -2376,7 +2356,7 @@ fn stmt_collect_calls<'a>(stmt: &'a Stmt, out: &mut Vec<(&'a Ident, &'a [Expr])>
         } => {
             cond.collect_calls(out);
             for stmt in then_body.iter().chain(else_body.iter()) {
-                stmt_collect_calls(&stmt.stmt, out);
+                stmt_collect_calls(stmt, out);
             }
         }
         Stmt::Match { expr, arms } => {
@@ -2386,14 +2366,14 @@ fn stmt_collect_calls<'a>(stmt: &'a Stmt, out: &mut Vec<(&'a Ident, &'a [Expr])>
                     cond.collect_calls(out);
                 }
                 for stmt in &arm.body {
-                    stmt_collect_calls(&stmt.stmt, out);
+                    stmt_collect_calls(stmt, out);
                 }
             }
         }
         Stmt::While { cond, body, .. } => {
             cond.collect_calls(out);
             for stmt in &body.stmts {
-                stmt_collect_calls(&stmt.stmt, out);
+                stmt_collect_calls(stmt, out);
             }
             if let Some(tail) = &body.tail {
                 tail.collect_calls(out);
@@ -2401,7 +2381,7 @@ fn stmt_collect_calls<'a>(stmt: &'a Stmt, out: &mut Vec<(&'a Ident, &'a [Expr])>
         }
         Stmt::Block(body) => {
             for stmt in &body.stmts {
-                stmt_collect_calls(&stmt.stmt, out);
+                stmt_collect_calls(stmt, out);
             }
             if let Some(tail) = &body.tail {
                 tail.collect_calls(out);
@@ -2426,11 +2406,11 @@ fn stmt_collect_vars(stmt: &Stmt, out: &mut Vec<Ident>) {
         } => {
             cond.collect_vars(out);
             for stmt in then_body {
-                stmt_collect_vars(&stmt.stmt, out);
+                stmt_collect_vars(stmt, out);
             }
             then_value.collect_vars(out);
             for stmt in else_body {
-                stmt_collect_vars(&stmt.stmt, out);
+                stmt_collect_vars(stmt, out);
             }
             else_value.collect_vars(out);
         }
@@ -2449,18 +2429,18 @@ fn stmt_collect_vars(stmt: &Stmt, out: &mut Vec<Ident>) {
             iter.collect_vars(out);
             let mut inner = Vec::new();
             for stmt in body {
-                stmt_collect_vars(&stmt.stmt, &mut inner);
+                stmt_collect_vars(stmt, &mut inner);
             }
             out.extend(inner.into_iter().filter(|v| v.as_str() != pat.as_str()));
         }
         Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } | Stmt::Loop { body, .. } => {
             for stmt in body {
-                stmt_collect_vars(&stmt.stmt, out);
+                stmt_collect_vars(stmt, out);
             }
         }
         Stmt::Unsafe { body } => {
             for stmt in &body.stmts {
-                stmt_collect_vars(&stmt.stmt, out);
+                stmt_collect_vars(stmt, out);
             }
             if let Some(tail) = &body.tail {
                 tail.collect_vars(out);
@@ -2473,7 +2453,7 @@ fn stmt_collect_vars(stmt: &Stmt, out: &mut Vec<Ident>) {
         } => {
             cond.collect_vars(out);
             for stmt in then_body.iter().chain(else_body.iter()) {
-                stmt_collect_vars(&stmt.stmt, out);
+                stmt_collect_vars(stmt, out);
             }
         }
         Stmt::Match { expr, arms } => {
@@ -2483,14 +2463,14 @@ fn stmt_collect_vars(stmt: &Stmt, out: &mut Vec<Ident>) {
                     cond.collect_vars(out);
                 }
                 for stmt in &arm.body {
-                    stmt_collect_vars(&stmt.stmt, out);
+                    stmt_collect_vars(stmt, out);
                 }
             }
         }
         Stmt::While { cond, body, .. } => {
             cond.collect_vars(out);
             for stmt in &body.stmts {
-                stmt_collect_vars(&stmt.stmt, out);
+                stmt_collect_vars(stmt, out);
             }
             if let Some(tail) = &body.tail {
                 tail.collect_vars(out);
@@ -2498,7 +2478,7 @@ fn stmt_collect_vars(stmt: &Stmt, out: &mut Vec<Ident>) {
         }
         Stmt::Block(body) => {
             for stmt in &body.stmts {
-                stmt_collect_vars(&stmt.stmt, out);
+                stmt_collect_vars(stmt, out);
             }
             if let Some(tail) = &body.tail {
                 tail.collect_vars(out);
@@ -2523,7 +2503,7 @@ fn stmt_substitute_var(stmt: &mut Stmt, name: &str, replacement: &Expr) -> bool 
         } => {
             let mut changed = cond.substitute_var(name, replacement);
             for stmt in then_body.iter_mut().chain(else_body.iter_mut()) {
-                changed |= stmt_substitute_var(&mut stmt.stmt, name, replacement);
+                changed |= stmt_substitute_var(stmt, name, replacement);
             }
             changed |= then_value.substitute_var(name, replacement);
             changed |= else_value.substitute_var(name, replacement);
@@ -2553,7 +2533,7 @@ fn stmt_substitute_var(stmt: &mut Stmt, name: &str, replacement: &Expr) -> bool 
             };
             if pat != name {
                 for stmt in body {
-                    changed |= stmt_substitute_var(&mut stmt.stmt, name, replacement);
+                    changed |= stmt_substitute_var(stmt, name, replacement);
                 }
             }
             changed
@@ -2561,14 +2541,14 @@ fn stmt_substitute_var(stmt: &mut Stmt, name: &str, replacement: &Expr) -> bool 
         Stmt::Scope { body } | Stmt::LabeledBlock { body, .. } => {
             let mut changed = false;
             for stmt in body {
-                changed |= stmt_substitute_var(&mut stmt.stmt, name, replacement);
+                changed |= stmt_substitute_var(stmt, name, replacement);
             }
             changed
         }
         Stmt::Unsafe { body } => {
             let mut changed = false;
             for stmt in &mut body.stmts {
-                changed |= stmt_substitute_var(&mut stmt.stmt, name, replacement);
+                changed |= stmt_substitute_var(stmt, name, replacement);
             }
             if let Some(tail) = &mut body.tail {
                 changed |= tail.substitute_var(name, replacement);
@@ -2582,14 +2562,14 @@ fn stmt_substitute_var(stmt: &mut Stmt, name: &str, replacement: &Expr) -> bool 
         } => {
             let mut changed = cond.substitute_var(name, replacement);
             for stmt in then_body.iter_mut().chain(else_body.iter_mut()) {
-                changed |= stmt_substitute_var(&mut stmt.stmt, name, replacement);
+                changed |= stmt_substitute_var(stmt, name, replacement);
             }
             changed
         }
         Stmt::Loop { body, .. } => {
             let mut changed = false;
             for stmt in body {
-                changed |= stmt_substitute_var(&mut stmt.stmt, name, replacement);
+                changed |= stmt_substitute_var(stmt, name, replacement);
             }
             changed
         }
@@ -2597,7 +2577,7 @@ fn stmt_substitute_var(stmt: &mut Stmt, name: &str, replacement: &Expr) -> bool 
             let mut changed = expr.substitute_var(name, replacement);
             for arm in arms {
                 for stmt in &mut arm.body {
-                    changed |= stmt_substitute_var(&mut stmt.stmt, name, replacement);
+                    changed |= stmt_substitute_var(stmt, name, replacement);
                 }
             }
             changed
@@ -2605,7 +2585,7 @@ fn stmt_substitute_var(stmt: &mut Stmt, name: &str, replacement: &Expr) -> bool 
         Stmt::While { cond, body, .. } => {
             let mut changed = cond.substitute_var(name, replacement);
             for stmt in &mut body.stmts {
-                changed |= stmt_substitute_var(&mut stmt.stmt, name, replacement);
+                changed |= stmt_substitute_var(stmt, name, replacement);
             }
             if let Some(tail) = &mut body.tail {
                 changed |= tail.substitute_var(name, replacement);
@@ -2615,7 +2595,7 @@ fn stmt_substitute_var(stmt: &mut Stmt, name: &str, replacement: &Expr) -> bool 
         Stmt::Block(body) => {
             let mut changed = false;
             for stmt in &mut body.stmts {
-                changed |= stmt_substitute_var(&mut stmt.stmt, name, replacement);
+                changed |= stmt_substitute_var(stmt, name, replacement);
             }
             if let Some(tail) = &mut body.tail {
                 changed |= tail.substitute_var(name, replacement);
