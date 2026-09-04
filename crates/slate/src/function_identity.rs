@@ -23,6 +23,7 @@ macro_rules! known_function_catalog {
             SPrintf, "sprintf", "stdio.h"; SNPrintf, "snprintf", "stdio.h";
             Sscanf, "sscanf", "stdio.h";
             Exit, "exit", "stdlib.h"; Abort, "abort", "stdlib.h";
+            Getenv, "getenv", "stdlib.h";
             Puts, "puts", "stdio.h"; FOpen, "fopen", "stdio.h";
             FPuts, "fputs", "stdio.h"; FGets, "fgets", "stdio.h";
             FRead, "fread", "stdio.h"; FWrite, "fwrite", "stdio.h";

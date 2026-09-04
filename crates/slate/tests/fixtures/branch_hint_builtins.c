@@ -74,6 +74,8 @@ int main(void) {
 // LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = x;
 // LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = bump({{_v[0-9]+}});
 // LOWERING-NEXT:         let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i64 = 1;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i64 = {{_v[0-9]+}};
 // LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // LOWERING-NEXT:         if {{_v[0-9]+}} {
 // LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 1;
@@ -96,6 +98,8 @@ int main(void) {
 // LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = x;
 // LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = bump({{_v[0-9]+}});
 // LOWERING-NEXT:         let {{_v[0-9]+}}: i64 = {{_v[0-9]+}} as i64;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i64 = 1;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i64 = {{_v[0-9]+}};
 // LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
 // LOWERING-NEXT:         if {{_v[0-9]+}} {
 // LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 1;
