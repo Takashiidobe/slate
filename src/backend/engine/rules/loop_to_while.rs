@@ -1,3 +1,4 @@
+use super::inline_temps;
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::{Expr, UnaryOp};
@@ -35,6 +36,35 @@ fn head_test(arena: &Arena, body: &[NodeId]) -> Option<Expr> {
     matches!(arena.get(only), Some(NodeKind::Break(None))).then(|| cond.clone())
 }
 
+fn tail_pending_inline(arena: &Arena, body: &[NodeId]) -> bool {
+    let Some(&last) = body.last() else {
+        return false;
+    };
+    let Some(NodeKind::Assign {
+        value: Expr::Var(tmp),
+        ..
+    }) = arena.get(last)
+    else {
+        return false;
+    };
+    let tmp = *tmp;
+    let Some(def_id) = arena.definition(tmp) else {
+        return false;
+    };
+    if !body.contains(&def_id) {
+        return false;
+    }
+    let Some(NodeKind::Let {
+        mutable: false,
+        init: Some(init),
+        ..
+    }) = arena.get(def_id)
+    else {
+        return false;
+    };
+    !inline_temps::expr_effects(init).is_side_effect() && arena.def_use_neighbors(tmp) == [last]
+}
+
 impl NodeRule for LoopToWhile {
     fn name(&self) -> &'static str {
         "loop_to_while::recover"
@@ -52,6 +82,9 @@ impl NodeRule for LoopToWhile {
         let Some(NodeKind::Loop { body, .. }) = arena.get(id) else {
             return false;
         };
+        if tail_pending_inline(arena, body) {
+            return false;
+        }
         head_test(arena, body).is_some()
     }
 

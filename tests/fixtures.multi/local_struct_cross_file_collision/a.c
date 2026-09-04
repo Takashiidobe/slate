@@ -39,11 +39,8 @@ int run_a(void) {
 // REWRITES-DAG:             weight: 20,
 // REWRITES-DAG:         },
 // REWRITES-DAG:     ];
-// REWRITES-DAG:     let mut i: i32 = 0;
-// REWRITES-DAG:     i = 0;
-// REWRITES-DAG:     while i < 2 {
+// REWRITES-DAG:     for i in 0..2 {
 // REWRITES-DAG:         total += items[((i as i64) as usize)].value * items[((i as i64) as usize)].weight;
-// REWRITES-DAG:         i += 1;
 // REWRITES-DAG:     }
 // REWRITES-DAG:     total
 // REWRITES-DAG: }

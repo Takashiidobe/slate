@@ -192,20 +192,15 @@ int main(void) {
 // REWRITES-NEXT:     let mut blen: i32 = {{arg[0-9]+}}.len() as i32;
 // REWRITES-NEXT:     let mut sa: i32 = 0;
 // REWRITES-NEXT:     let mut sb: i32 = 0;
-// REWRITES-NEXT:     let mut i: i32 = 0;
-// REWRITES-NEXT:     while i < alen {
+// REWRITES-NEXT:     for i in 0..alen {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut u8 = a;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
 // REWRITES-NEXT:         sa += (unsafe { *{{_v[0-9]+}} }) as i32;
-// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let mut i2: i32 = 0;
-// REWRITES-NEXT:     i2 = 0;
-// REWRITES-NEXT:     while i2 < blen {
+// REWRITES-NEXT:     for i2 in 0..blen {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut u8 = b;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut u8 = unsafe { {{_v[0-9]+}}.offset((i2 as i64) as isize) };
 // REWRITES-NEXT:         sb += (unsafe { *{{_v[0-9]+}} }) as i32;
-// REWRITES-NEXT:         i2 += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
 // REWRITES-NEXT:         {{arg[0-9]+}}[(0usize..(3 as u64) as usize)].cmp(&{{arg[0-9]+}}[(0usize..(3 as u64) as usize)]) as i32

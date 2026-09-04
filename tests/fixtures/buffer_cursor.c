@@ -110,13 +110,10 @@ int main(void) {
 // REWRITES-DAG:     let mut d: cursor = cursor {
 // REWRITES-DAG:         ptr: std::ptr::null_mut(),
 // REWRITES-DAG:     };
-// REWRITES-DAG:     let mut i: i32 = 0;
-// REWRITES-DAG:     i = 0;
-// REWRITES-DAG:     while i < 4 {
+// REWRITES-DAG:     for i in 0..4 {
 // REWRITES-DAG:         let {{_v[0-9]+}}: i32 = i;
 // REWRITES-DAG:         let {{_v[0-9]+}}: i32 = unsafe { getchar() };
 // REWRITES-DAG:         values[((i as i64) as usize)] = {{_v[0-9]+}} + {{_v[0-9]+}};
-// REWRITES-DAG:         i += 1;
 // REWRITES-DAG:     }
 // REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = values.as_mut_ptr() as *mut i32;
 // REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };

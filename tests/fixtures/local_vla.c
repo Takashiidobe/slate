@@ -173,15 +173,12 @@ int main(void) {
 // REWRITES-NEXT:     let mut result: i32 = 0;
 // REWRITES-NEXT:     let mut length: i32 = 4;
 // REWRITES-NEXT:     let mut values: Vec<i32> = vec![0; (length as u64) as usize];
-// REWRITES-NEXT:     let mut index: i32 = 0;
-// REWRITES-NEXT:     index = 0;
-// REWRITES-NEXT:     while index < length {
+// REWRITES-NEXT:     for index in 0..length {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = index + 3;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = unsafe { values.as_mut_ptr().offset((index as i64) as isize) };
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:             *{{_v[0-9]+}} = {{_v[0-9]+}};
 // REWRITES-NEXT:         }
-// REWRITES-NEXT:         index += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     result = sum_vla(length, values.as_mut_ptr());
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = result + 1;
