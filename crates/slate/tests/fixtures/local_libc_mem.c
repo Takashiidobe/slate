@@ -129,7 +129,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = dst.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = src.as_mut_ptr() as *mut i8;
-// REWRITES-NEXT:     unsafe { std::ptr::copy_nonoverlapping({{_v[0-9]+}} as *const u8, {{_v[0-9]+}} as *mut u8, (6 as u64) as usize) };
+// REWRITES-NEXT:     unsafe { dst[(0usize..6usize)].copy_from_slice(&src[(0usize..6usize)]) };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = dst.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add(5) };
 // REWRITES-NEXT:     unsafe { std::ptr::write_bytes({{_v[0-9]+}} as *mut u8, (65 as i32) as u8, (3 as u64) as usize) };
@@ -138,7 +138,7 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = moved.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = dst.as_mut_ptr() as *mut i8;
-// REWRITES-NEXT:     unsafe { std::ptr::copy({{_v[0-9]+}} as *const u8, {{_v[0-9]+}} as *mut u8, (9 as u64) as usize) };
+// REWRITES-NEXT:     unsafe { moved[(0usize..9usize)].copy_from_slice(&dst[(0usize..9usize)]) };
 // REWRITES-NEXT:     unsafe { printf(c"%s\n".as_ptr(), moved.as_mut_ptr() as *mut i8) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
