@@ -1,3 +1,4 @@
+use crate::backend::engine::arena::NodeKind;
 use crate::backend::rust_ast::{Expr, Stmt};
 
 pub(super) fn child_exprs(expr: &Expr) -> Vec<&Expr> {
@@ -200,4 +201,96 @@ pub(super) fn stmt_exprs_mut<'a>(stmt: &'a mut Stmt, out: &mut Vec<&'a mut Expr>
         }
         _ => {}
     }
+}
+
+pub(super) fn visit_kind_exprs(kind: &NodeKind, mut f: impl FnMut(&Expr)) {
+    match kind {
+        NodeKind::Let { init, .. } => init.as_ref().into_iter().for_each(&mut f),
+        NodeKind::LetIf {
+            cond,
+            then_value,
+            else_value,
+            ..
+        } => [cond, then_value, else_value].into_iter().for_each(&mut f),
+        NodeKind::Assign { target, value } | NodeKind::CompoundAssign { target, value, .. } => {
+            [target, value].into_iter().for_each(&mut f)
+        }
+        NodeKind::InlineAsm(asm) => {
+            for operand in &asm.operands {
+                operand.visit_exprs(&mut f);
+            }
+        }
+        NodeKind::Expr(expr) => f(expr),
+        NodeKind::Return(expr) => expr.as_ref().into_iter().for_each(&mut f),
+        NodeKind::Unsafe { tail, .. } | NodeKind::Block { tail, .. } => {
+            tail.as_deref().into_iter().for_each(&mut f)
+        }
+        NodeKind::While { cond, tail, .. } => {
+            f(cond);
+            tail.as_deref().into_iter().for_each(&mut f);
+        }
+        NodeKind::If { cond, .. } => f(cond),
+        NodeKind::For { iter, .. } => f(iter),
+        NodeKind::Match { expr, .. } => f(expr),
+        NodeKind::Loop { .. }
+        | NodeKind::Scope { .. }
+        | NodeKind::LabeledBlock { .. }
+        | NodeKind::Break(_)
+        | NodeKind::Continue(_) => {}
+    }
+}
+
+pub(super) fn visit_kind_exprs_mut(kind: &mut NodeKind, mut f: impl FnMut(&mut Expr)) {
+    match kind {
+        NodeKind::Let { init, .. } => init.as_mut().into_iter().for_each(&mut f),
+        NodeKind::LetIf {
+            cond,
+            then_value,
+            else_value,
+            ..
+        } => [cond, then_value, else_value].into_iter().for_each(&mut f),
+        NodeKind::Assign { target, value } | NodeKind::CompoundAssign { target, value, .. } => {
+            [target, value].into_iter().for_each(&mut f)
+        }
+        NodeKind::InlineAsm(asm) => {
+            for operand in &mut asm.operands {
+                operand.visit_exprs_mut(&mut f);
+            }
+        }
+        NodeKind::Expr(expr) => f(expr),
+        NodeKind::Return(expr) => expr.as_mut().into_iter().for_each(&mut f),
+        NodeKind::Unsafe { tail, .. } | NodeKind::Block { tail, .. } => {
+            tail.as_deref_mut().into_iter().for_each(&mut f)
+        }
+        NodeKind::While { cond, tail, .. } => {
+            f(cond);
+            tail.as_deref_mut().into_iter().for_each(&mut f);
+        }
+        NodeKind::If { cond, .. } => f(cond),
+        NodeKind::For { iter, .. } => f(iter),
+        NodeKind::Match { expr, .. } => f(expr),
+        NodeKind::Loop { .. }
+        | NodeKind::Scope { .. }
+        | NodeKind::LabeledBlock { .. }
+        | NodeKind::Break(_)
+        | NodeKind::Continue(_) => {}
+    }
+}
+
+pub(super) fn fold_bottom_up(
+    expr: &mut Expr,
+    rewrite_here: &mut impl FnMut(&mut Expr) -> bool,
+) -> bool {
+    let mut changed = false;
+    for child in child_exprs_mut(expr) {
+        changed |= fold_bottom_up(child, rewrite_here);
+    }
+    changed | rewrite_here(expr)
+}
+
+pub(super) fn any_collapsible(expr: &Expr, collapsible_here: &impl Fn(&Expr) -> bool) -> bool {
+    collapsible_here(expr)
+        || child_exprs(expr)
+            .iter()
+            .any(|child| any_collapsible(child, collapsible_here))
 }
