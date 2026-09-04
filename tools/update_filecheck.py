@@ -26,6 +26,7 @@ SOURCE_ROOT_PATTERN = "__SLATE_FILECHECK_SOURCE_ROOT__"
 FIXTURE_STD_OVERRIDES = {
     "gnu_asm_register_variable": "gnu23",
     "c23_typeof_unqual": "gnu23",
+    "imported_data_and_link_names": "gnu23",
 }
 FIXTURE_CLANG_ARG_OVERRIDES = {
     "goto_temp_cross_state": ["-O2"],

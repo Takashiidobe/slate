@@ -39,7 +39,7 @@ impl FixtureFlavor {
             FixtureFlavor::Default => None,
             FixtureFlavor::Bionic => Some("aarch64-linux-android"),
             FixtureFlavor::Macos => Some("aarch64-apple-darwin"),
-            FixtureFlavor::Msvc => None,
+            FixtureFlavor::Msvc => Some("x86_64-pc-windows-msvc"),
         }
     }
 
@@ -180,6 +180,13 @@ fn fixture_clang_arg_overrides(name: &str) -> Vec<String> {
         "c23_typeof_unqual" => vec!["-std=gnu23".to_string()],
         _ => Vec::new(),
     }
+}
+
+fn msvc_translation_ready(name: &str) -> bool {
+    matches!(
+        name,
+        "llp64" | "errno_stream_redirects" | "imported_data_and_link_names"
+    )
 }
 
 fn fixture_c_ref_std_override(name: &str) -> Option<String> {
@@ -455,7 +462,7 @@ fn run_cross_target_fixture(
         compile_for_target(&format!("{name}_xwin"), target, &[crt, ucrt], &[], path)
             .map_err(|e| format!("xwin oracle compile failed:\n{e}"))?;
     }
-    if flavor == FixtureFlavor::Msvc {
+    if flavor == FixtureFlavor::Msvc && !msvc_translation_ready(name) {
         return Ok(());
     }
     if flavor == FixtureFlavor::Macos
@@ -496,6 +503,7 @@ fn run_cross_target_fixture(
         path,
         flavor.translation_target().unwrap(),
         (flavor == FixtureFlavor::Bionic).then_some("21"),
+        cross_target_clang_arg_overrides(name),
     )?;
     if flavor == FixtureFlavor::Macos {
         check_generated_rust_for_target(
@@ -513,6 +521,14 @@ fn run_cross_target_fixture(
             )?;
         }
     }
+    if flavor == FixtureFlavor::Msvc {
+        check_generated_rust_for_target(
+            name,
+            flavor.translation_target().unwrap(),
+            &rust,
+            &work_dir.join("target-check"),
+        )?;
+    }
     support::filecheck::check_generated_rust_with_prefixes(
         &fixture,
         &rust,
@@ -521,7 +537,12 @@ fn run_cross_target_fixture(
         &work_dir.join(flavor.name()),
     )?;
     if flavor == FixtureFlavor::Bionic {
-        let rust = translate_cross_target(path, "x86_64-linux-android", Some("21"))?;
+        let rust = translate_cross_target(
+            path,
+            "x86_64-linux-android",
+            Some("21"),
+            cross_target_clang_arg_overrides(name),
+        )?;
         support::filecheck::check_generated_rust_with_prefixes(
             &fixture,
             &rust,
@@ -536,15 +557,24 @@ fn run_cross_target_fixture(
     Ok(())
 }
 
+fn cross_target_clang_arg_overrides(name: &str) -> &'static str {
+    match name {
+        "imported_data_and_link_names" => "-std=gnu23",
+        _ => "",
+    }
+}
+
 fn translate_cross_target(
     path: &Path,
     target: &str,
     android_api: Option<&str>,
+    clang_args_override: &str,
 ) -> Result<String, String> {
     let mut command = Command::new(env!("CARGO_BIN_EXE_slate"));
     command
         .args(["translate", path.to_str().unwrap()])
-        .env("SLATE_TARGET", target);
+        .env("SLATE_TARGET", target)
+        .env("SLATE_CLANG_ARGS", clang_args_override);
     if let Some(api) = android_api {
         command.env("SLATE_ANDROID_API", api);
     }
@@ -683,7 +713,12 @@ fn generated_differential() {
     let target_check_results = support::parallel_map(&target_check_fixtures, |fixture| {
         let source = std::fs::read_to_string(&fixture.path)
             .map_err(|error| format!("read {}: {error}", fixture.path.display()))?;
-        let rust = translate_cross_target(&fixture.path, fixture.target, None)?;
+        let rust = translate_cross_target(
+            &fixture.path,
+            fixture.target,
+            None,
+            cross_target_clang_arg_overrides(fixture.name),
+        )?;
         support::filecheck::check_generated_rust_with_prefixes(
             &source,
             &rust,
