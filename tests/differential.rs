@@ -175,6 +175,7 @@ fn fixture_clang_arg_overrides(name: &str) -> Vec<String> {
     match name {
         "goto_temp_cross_state" => vec!["-O2".to_string()],
         "ptr_param_field_addr_of_mut" => vec!["-O2".to_string()],
+        "branch_hint_builtins" => vec!["-O1".to_string()],
         "gnu_asm_register_variable" => vec!["-std=gnu23".to_string()],
         "c23_typeof_unqual" => vec!["-std=gnu23".to_string()],
         _ => Vec::new(),

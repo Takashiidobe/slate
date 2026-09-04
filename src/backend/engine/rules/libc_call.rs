@@ -84,6 +84,28 @@ impl CallCtx<'_> {
         }
     }
 
+    fn resolve_local_array(&self, expr: &Expr, depth: usize) -> Option<(Ident, Type, u64)> {
+        if depth > 8 {
+            return None;
+        }
+        let peeled = peel_ptr_view(expr);
+        let Expr::Var(name) = peeled else {
+            return None;
+        };
+        let ty = self.var_type(*name)?;
+        if let Type::Array { elem, len } = unwrap_aligned(&ty) {
+            return is_byte_elem(elem).then(|| (*name, (**elem).clone(), *len));
+        }
+        if is_raw_ptr(&ty) && !self.is_reassigned(*name) {
+            return self.resolve_local_array(&self.var_init(*name)?, depth + 1);
+        }
+        None
+    }
+
+    pub(super) fn lifted_local_array(&self, i: usize) -> Option<(Ident, Type, u64)> {
+        self.resolve_local_array(self.args.get(i)?, 0)
+    }
+
     fn var_init(&self, name: Ident) -> Option<Expr> {
         match self.arena.get(self.arena.definition(name)?)? {
             NodeKind::Let {
@@ -136,6 +158,30 @@ fn assign_root_var(expr: &Expr) -> Option<Ident> {
 
 fn is_raw_ptr(ty: &Type) -> bool {
     matches!(ty, Type::Ptr { .. })
+}
+
+fn unwrap_aligned(ty: &Type) -> &Type {
+    match ty {
+        Type::Generic { name, args } if name == "aligned::Aligned" && args.len() == 2 => &args[1],
+        other => other,
+    }
+}
+
+fn is_byte_elem(ty: &Type) -> bool {
+    matches!(ty, Type::Prim(Prim::U8 | Prim::I8))
+}
+
+fn const_len(expr: &Expr) -> Option<u64> {
+    match expr {
+        Expr::Cast { expr, .. } => const_len(expr),
+        Expr::Value(RustValue::I64(n)) => u64::try_from(*n).ok(),
+        Expr::Value(RustValue::Usize(n)) => Some(*n as u64),
+        Expr::Value(RustValue::I128(n)) => u64::try_from(*n).ok(),
+        Expr::Value(RustValue::U128(n)) => u64::try_from(*n).ok(),
+        Expr::Value(RustValue::TypedInt(n, _)) => u64::try_from(*n).ok(),
+        Expr::Value(RustValue::TypedUInt(n, _)) => u64::try_from(*n).ok(),
+        _ => None,
+    }
 }
 
 fn ref_str() -> Type {
@@ -258,6 +304,76 @@ fn mem_set(ctx: &CallCtx) -> Option<Expr> {
         val: Box::new(cast(val.clone(), Type::Prim(Prim::U8))),
         count: Box::new(cast(len.clone(), Type::Prim(Prim::Usize))),
     };
+    Some(returning_dst(ctx, effect, dst))
+}
+
+fn usize_lit(n: u64) -> Expr {
+    Expr::Value(RustValue::Usize(n as usize))
+}
+
+fn slice_upto(base: Expr, n: u64) -> Expr {
+    Expr::Index {
+        base: Box::new(base),
+        index: Box::new(Expr::Range {
+            start: Box::new(usize_lit(0)),
+            end: Box::new(usize_lit(n)),
+        }),
+    }
+}
+
+fn range_upto(n: u64) -> Expr {
+    Expr::Range {
+        start: Box::new(usize_lit(0)),
+        end: Box::new(usize_lit(n)),
+    }
+}
+
+fn safe_mem_copy_like(ctx: &CallCtx, allow_self: bool) -> Option<Expr> {
+    let [dst, _src, len] = ctx.args() else {
+        return None;
+    };
+    let n = const_len(len)?;
+    let (dst_name, dst_elem, dst_len) = ctx.lifted_local_array(0)?;
+    let (src_name, src_elem, src_len) = ctx.lifted_local_array(1)?;
+    if dst_elem != src_elem || n > dst_len || n > src_len {
+        return None;
+    }
+    let effect = if dst_name == src_name {
+        if !allow_self {
+            return None;
+        }
+        method_call(
+            Expr::Var(dst_name),
+            "copy_within",
+            vec![range_upto(n), usize_lit(0)],
+        )
+    } else {
+        method_call(
+            slice_upto(Expr::Var(dst_name), n),
+            "copy_from_slice",
+            vec![Expr::Ref {
+                mutable: false,
+                expr: Box::new(slice_upto(Expr::Var(src_name), n)),
+            }],
+        )
+    };
+    Some(returning_dst(ctx, effect, dst))
+}
+
+fn safe_mem_set(ctx: &CallCtx) -> Option<Expr> {
+    let [dst, val, len] = ctx.args() else {
+        return None;
+    };
+    let n = const_len(len)?;
+    let (dst_name, dst_elem, dst_len) = ctx.lifted_local_array(0)?;
+    if n > dst_len {
+        return None;
+    }
+    let effect = method_call(
+        slice_upto(Expr::Var(dst_name), n),
+        "fill",
+        vec![cast(val.clone(), dst_elem)],
+    );
     Some(returning_dst(ctx, effect, dst))
 }
 
@@ -665,9 +781,15 @@ pub(super) fn rules() -> Vec<Box<dyn NodeRule>> {
             fold_atoi(ctx, Prim::I64).or_else(|| ato_helper(ctx, "__slate_atol"))
         }),
         libc_call(Known::Atof, fold_atof),
-        libc_call(Known::MemCpy, |ctx| mem_copy(ctx, false)),
-        libc_call(Known::MemMove, |ctx| mem_copy(ctx, true)),
-        libc_call(Known::MemSet, mem_set),
+        libc_call(Known::MemCpy, |ctx| {
+            safe_mem_copy_like(ctx, false).or_else(|| mem_copy(ctx, false))
+        }),
+        libc_call(Known::MemMove, |ctx| {
+            safe_mem_copy_like(ctx, true).or_else(|| mem_copy(ctx, true))
+        }),
+        libc_call(Known::MemSet, |ctx| {
+            safe_mem_set(ctx).or_else(|| mem_set(ctx))
+        }),
         libc_call(Known::MemCmp, mem_cmp),
     ]
 }
