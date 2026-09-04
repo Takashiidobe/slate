@@ -3,20 +3,13 @@
 Slate is an idiomatic C to Rust transpiler inspired by
 [C2Rust](https://c2rust.com/).
 
-C2Rust has three phases to translate code from C to Rust:
+Slate aims to follow the path set by other C to Rust transpilers like
+C2Rust. First, lower to unidiomatic Rust, and then run a set of passes
+on the generated Rust in order to refine it to safer Rust with only
+static analyses and rewrites.
 
-- Transpile
-  - Translation of C to (mainly) unsafe Rust
-- Refactor
-  - Translating unsafe rust programs to safe rust programs (where
-    possible)
-- Postprocess
-  - an LLM harness to aid in refactoring code that isn't statically
-    known as safe into safe code
-
-Slate aims to do the first two, but with a different architecture under
-the hood and support for modern C (C23 support), cross-compilation,
-and a simpler user experience.
+Slate support for modern C (C23 support), cross-compilation,
+and a simple user experience.
 
 ## Installation
 
@@ -26,7 +19,7 @@ Clone this repo:
 git clone https://github.com/takashiidobe/slate
 ```
 
-You'll need a fork of LLVM with two patches I added:
+You'll need a fork of LLVM with some patches I added:
 
 ```
 git clone -b takashiidobe/slate-cir-loc-patches https://github.com/Takashiidobe/llvm-project
