@@ -180,59 +180,35 @@ done:
 // REWRITES-NEXT:     let mut choose_b: i32 = 0;
 // REWRITES-NEXT:     let mut x: i32 = 0;
 // REWRITES-NEXT:     let mut {{__state[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     '{{__dispatch[0-9]+}}: loop {
+// REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(choose_b), 0 as i32) };
+// REWRITES-NEXT:     x = 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(choose_b)) };
+// REWRITES-NEXT:     if {{_v[0-9]+}} != 0 {
+// REWRITES-NEXT:         {{__state[0-9]+}} = 4;
+// REWRITES-NEXT:     } else {
+// REWRITES-NEXT:         {{__state[0-9]+}} = 2;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     loop {
 // REWRITES-NEXT:         match {{__state[0-9]+}} {
-// REWRITES-NEXT:             0 => {
-// REWRITES-NEXT:                 __retval = 0;
-// REWRITES-NEXT:                 unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(choose_b), 0 as i32) };
-// REWRITES-NEXT:                 x = 0;
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 1;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             1 => {
-// REWRITES-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(choose_b)) };
-// REWRITES-NEXT:                 if {{_v[0-9]+}} != 0 {
-// REWRITES-NEXT:                     {{__state[0-9]+}} = 4;
-// REWRITES-NEXT:                 } else {
-// REWRITES-NEXT:                     {{__state[0-9]+}} = 2;
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
 // REWRITES-NEXT:             2 => {
 // REWRITES-NEXT:                 x += 1;
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 3;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             3 => {
 // REWRITES-NEXT:                 if x < 3 {
 // REWRITES-NEXT:                     {{__state[0-9]+}} = 4;
 // REWRITES-NEXT:                 } else {
-// REWRITES-NEXT:                     {{__state[0-9]+}} = 6;
+// REWRITES-NEXT:                     break;
 // REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }
-// REWRITES-NEXT:             4 => {
+// REWRITES-NEXT:             _ => {
 // REWRITES-NEXT:                 x += 2;
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 5;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             5 => {
 // REWRITES-NEXT:                 if x < 4 {
 // REWRITES-NEXT:                     {{__state[0-9]+}} = 2;
 // REWRITES-NEXT:                 } else {
-// REWRITES-NEXT:                     {{__state[0-9]+}} = 6;
+// REWRITES-NEXT:                     break;
 // REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             6 => {
-// REWRITES-NEXT:                 unsafe { printf(c"%d\n".as_ptr(), x) };
-// REWRITES-NEXT:                 __retval = 0;
-// REWRITES-NEXT:                 std::process::exit(__retval as i32);
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             _ => {
-// REWRITES-NEXT:                 break '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
+// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), x) };
+// REWRITES-NEXT:     std::process::exit(__retval as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites
