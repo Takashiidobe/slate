@@ -5,7 +5,7 @@ mod rules;
 use arena::{Arena, FunctionOptimizer, NodeId, NodeKindTag};
 use std::collections::{BTreeSet, HashMap};
 
-use crate::backend::rust_ast::{FnParam, Ident, IndentStmt, Item, Program};
+use crate::backend::rust_ast::{FnParam, Ident, Item, Program, Stmt};
 
 pub(in crate::backend) trait NodeRule {
     fn name(&self) -> &'static str;
@@ -114,7 +114,7 @@ fn apply_item(item: &mut Item, registry: &RuleRegistry) {
 }
 
 fn run_function(
-    body: &mut Vec<IndentStmt>,
+    body: &mut Vec<Stmt>,
     params: &mut Vec<FnParam>,
     return_type: Option<&crate::backend::rust_ast::Type>,
     registry: &RuleRegistry,

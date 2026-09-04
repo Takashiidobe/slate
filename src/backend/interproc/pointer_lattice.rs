@@ -2,8 +2,8 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use crate::backend::interproc::{self, CallGraph};
 use crate::backend::rust_ast::{
-    BinOp, Block, CLibType, Expr, FnDef, Ident, IndentStmt, Item, Path, Prim, Program, RustValue,
-    Stmt, Type, UnaryOp, Visibility,
+    BinOp, Block, CLibType, Expr, FnDef, Ident, Item, Path, Prim, Program, RustValue, Stmt, Type,
+    UnaryOp, Visibility,
 };
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 
@@ -528,9 +528,9 @@ fn return_source_var(expr: &Expr, return_aliases: &BTreeMap<String, ReturnAlias>
     return_source_var(args.get(alias.param_index)?, return_aliases)
 }
 
-fn collect_assignments(body: &[IndentStmt], out: &mut BTreeMap<String, Vec<Expr>>) {
+fn collect_assignments(body: &[Stmt], out: &mut BTreeMap<String, Vec<Expr>>) {
     for indent in body {
-        match &indent.stmt {
+        match indent {
             Stmt::Let {
                 name,
                 init: Some(init),
@@ -545,7 +545,7 @@ fn collect_assignments(body: &[IndentStmt], out: &mut BTreeMap<String, Vec<Expr>
                 .push(value.clone()),
             _ => {}
         }
-        match &indent.stmt {
+        match indent {
             Stmt::LetIf {
                 then_body,
                 else_body,
@@ -576,9 +576,9 @@ fn collect_assignments(body: &[IndentStmt], out: &mut BTreeMap<String, Vec<Expr>
     }
 }
 
-fn collect_return_exprs(body: &[IndentStmt], out: &mut Vec<Expr>) {
+fn collect_return_exprs(body: &[Stmt], out: &mut Vec<Expr>) {
     for indent in body {
-        match &indent.stmt {
+        match indent {
             Stmt::Return(Some(expr)) => out.push(expr.clone()),
             Stmt::LetIf {
                 then_body,
@@ -638,7 +638,7 @@ fn classify_function(
 
     let mut var_uses = Vec::new();
     for indent in &f.body {
-        indent.stmt.collect_vars(&mut var_uses);
+        indent.collect_vars(&mut var_uses);
     }
     let mut use_counts: BTreeMap<String, usize> = BTreeMap::new();
     for ident in &var_uses {
@@ -777,9 +777,9 @@ impl ClassifyCtx<'_> {
         }
     }
 
-    fn body(&mut self, body: &[crate::backend::rust_ast::IndentStmt]) {
+    fn body(&mut self, body: &[crate::backend::rust_ast::Stmt]) {
         for indent in body {
-            self.stmt(&indent.stmt);
+            self.stmt(indent);
         }
     }
 
@@ -1345,7 +1345,7 @@ pub(in crate::backend) fn apply(program: &mut Program) {
     apply_plans(&mut program.items, &plans, &param_names, &param_mutability);
 }
 
-fn for_each_fn_body<'a>(items: &'a [Item], f: &mut impl FnMut(&'a str, &'a [IndentStmt])) {
+fn for_each_fn_body<'a>(items: &'a [Item], f: &mut impl FnMut(&'a str, &'a [Stmt])) {
     for item in items {
         match item {
             Item::Fn(func) => f(func.name.as_str(), &func.body),
@@ -1368,9 +1368,9 @@ fn is_heap_alloc_call(expr: &Expr) -> bool {
     )
 }
 
-fn collect_heap_locals(body: &[IndentStmt], out: &mut std::collections::BTreeSet<String>) {
+fn collect_heap_locals(body: &[Stmt], out: &mut std::collections::BTreeSet<String>) {
     for indent in body {
-        collect_heap_locals_stmt(&indent.stmt, out);
+        collect_heap_locals_stmt(indent, out);
     }
 }
 
@@ -1439,7 +1439,7 @@ fn arg_is_provably_bridgeable(
 }
 
 fn collect_bridgeable_aliases(
-    body: &[IndentStmt],
+    body: &[Stmt],
     own: Option<&BTreeMap<String, LiftPlan>>,
 ) -> BTreeSet<String> {
     let mut aliases: BTreeSet<String> = own
@@ -1490,7 +1490,7 @@ fn validate_plans(
             let heap_locals = heap_locals_by_fn.get(caller_name).unwrap_or(&empty_locals);
             let mut calls = Vec::new();
             for indent in body {
-                indent.stmt.collect_calls(&mut calls);
+                indent.collect_calls(&mut calls);
             }
             for (callee, args) in calls {
                 let callee = callee.as_str();
@@ -1712,7 +1712,7 @@ fn resolve_alias_root(
 }
 
 fn collect_owned_aliases(
-    body: &[IndentStmt],
+    body: &[Stmt],
     own: &BTreeMap<String, LiftPlan>,
 ) -> BTreeMap<String, String> {
     let mut aliases = BTreeMap::new();
@@ -1741,12 +1741,12 @@ fn record_owned_alias(
 }
 
 fn collect_owned_aliases_stmts(
-    body: &[IndentStmt],
+    body: &[Stmt],
     own: &BTreeMap<String, LiftPlan>,
     aliases: &mut BTreeMap<String, String>,
 ) {
     for indent in body {
-        collect_owned_aliases_stmt(&indent.stmt, own, aliases);
+        collect_owned_aliases_stmt(indent, own, aliases);
     }
 }
 
@@ -1827,9 +1827,9 @@ fn is_owned_free_stmt(stmt: &Stmt, ctx: &LiftCtx) -> bool {
         .is_some_and(|plan| plan.kind == LiftKind::Owned)
 }
 
-fn collect_declared_ptr_mutability(body: &[IndentStmt], out: &mut BTreeMap<String, bool>) {
+fn collect_declared_ptr_mutability(body: &[Stmt], out: &mut BTreeMap<String, bool>) {
     for indent in body {
-        collect_declared_ptr_mutability_stmt(&indent.stmt, out);
+        collect_declared_ptr_mutability_stmt(indent, out);
     }
 }
 
@@ -1872,12 +1872,12 @@ fn collect_declared_ptr_mutability_stmt(stmt: &Stmt, out: &mut BTreeMap<String, 
     }
 }
 
-fn rewrite_stmts(body: &mut Vec<IndentStmt>, ctx: &LiftCtx) {
+fn rewrite_stmts(body: &mut Vec<Stmt>, ctx: &LiftCtx) {
     body.retain_mut(|indent| {
-        if is_owned_free_stmt(&indent.stmt, ctx) {
+        if is_owned_free_stmt(indent, ctx) {
             return false;
         }
-        rewrite_stmt(&mut indent.stmt, ctx);
+        rewrite_stmt(indent, ctx);
         true
     });
 }

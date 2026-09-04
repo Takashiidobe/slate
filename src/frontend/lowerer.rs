@@ -4,10 +4,10 @@ use crate::backend::rust_ast::{
     Abi, AsmDialect, AsmOperand, AsmReg, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType,
     Attr as RustAttr, AttrArg, BinOp, CLIB_RECORD_TYPES, CLibInitializer, CLibType, Cfg, Comment,
     CrateAttr, Derive, EnumConst, EnumDef, Expr, ExprMatchArm, ExternDecl, ExternFnDecl, Feature,
-    FnDef, FnParam, Ident, ImplBlock, ImplItem, IndentStmt, InlineAsm, InlineHint, Item, Label,
-    Lint, MatchArm, Method, Path, Pattern, Prim, Program, Raw, RecordDef, RecordField, Repr,
-    RustValue, SelfKind, StdTrait, Stmt, StructDef, StructField, StructFields, SupportModule,
-    TraitRef, Type, UnaryOp, UsedKind, Visibility,
+    FnDef, FnParam, Ident, ImplBlock, ImplItem, InlineAsm, InlineHint, Item, Label, Lint, MatchArm,
+    Method, Path, Pattern, Prim, Program, Raw, RecordDef, RecordField, Repr, RustValue, SelfKind,
+    StdTrait, Stmt, StructDef, StructField, StructFields, SupportModule, TraitRef, Type, UnaryOp,
+    UsedKind, Visibility,
 };
 use crate::ctx::Ctx;
 use crate::frontend::c_ast::{
@@ -827,8 +827,7 @@ struct FunctionLowerer<'a, 'b> {
     local_block_addr_arrays: BTreeMap<String, Vec<String>>,
     indirect_target_values: BTreeMap<String, Expr>,
     temp_counter: usize,
-    indent: usize,
-    body: Vec<IndentStmt>,
+    body: Vec<Stmt>,
     is_main: bool,
     loop_stack: Vec<LoopFrame>,
     label_counter: usize,
@@ -865,7 +864,7 @@ struct DispatchCtx {
     block_to_state: BTreeMap<String, usize>,
     cross_block_names: BTreeMap<String, String>,
     block_args: BTreeMap<usize, Vec<String>>,
-    pending_hoists: Vec<IndentStmt>,
+    pending_hoists: Vec<Stmt>,
 }
 
 struct LoopFrame {
@@ -2202,18 +2201,15 @@ impl __SlateVaArgs {
                 name: wrapper_name.clone(),
                 params: fn_params,
                 ret: Some(Type::Custom(enum_name.to_string())),
-                body: vec![IndentStmt {
-                    depth: 1,
-                    stmt: Stmt::Return(Some(Expr::Call {
+                body: vec![Stmt::Return(Some(Expr::Call {
+                    binding: crate::function_identity::CallBinding::Generated,
+                    func: Box::new(Expr::Path(Path::new([enum_name, "from"].map(Ident::from)))),
+                    args: vec![Expr::Call {
                         binding: crate::function_identity::CallBinding::Generated,
-                        func: Box::new(Expr::Path(Path::new([enum_name, "from"].map(Ident::from)))),
-                        args: vec![Expr::Call {
-                            binding: crate::function_identity::CallBinding::Generated,
-                            func: Box::new(Expr::Var(sanitize_ident(fn_name))),
-                            args,
-                        }],
-                    })),
-                }],
+                        func: Box::new(Expr::Var(sanitize_ident(fn_name))),
+                        args,
+                    }],
+                }))],
             });
         Expr::Call {
             binding: crate::function_identity::CallBinding::Generated,

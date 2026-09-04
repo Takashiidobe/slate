@@ -79,7 +79,7 @@ impl<'a> Lowerer<'a> {
             name: name.to_string(),
             params: decl.params,
             ret: decl.ret,
-            body: vec![IndentStmt { depth: 1, stmt }],
+            body: vec![stmt],
         }))
     }
 
@@ -385,7 +385,6 @@ impl<'a> Lowerer<'a> {
             local_block_addr_arrays: BTreeMap::new(),
             indirect_target_values: BTreeMap::new(),
             temp_counter: 0,
-            indent: 1,
             body: Vec::new(),
             is_main,
             loop_stack: Vec::new(),
@@ -445,7 +444,7 @@ impl<'a> Lowerer<'a> {
             f.lower_constant_size_bi_alloca_group(entry);
             f.lower_block(entry);
         }
-        if diverges && matches!(f.body.last().map(|s| &s.stmt), Some(Stmt::Return(None))) {
+        if diverges && matches!(f.body.last(), Some(Stmt::Return(None))) {
             f.body.pop();
         }
         Some(Item::Fn(FnDef {
@@ -505,7 +504,7 @@ impl<'a> Lowerer<'a> {
             name: name.to_string(),
             params,
             ret,
-            body: vec![IndentStmt { depth: 1, stmt }],
+            body: vec![stmt],
         }))
     }
 

@@ -847,13 +847,13 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         });
         self.push_stmt(Stmt::If {
             cond: Expr::Var(ok.clone().into()),
-            then_body: vec![Self::indent_stmt(Self::unsafe_stmt(Self::assign_stmt(
+            then_body: vec![Self::unsafe_stmt(Self::assign_stmt(
                 Expr::Unary {
                     op: UnaryOp::Deref,
                     expr: Box::new(addr),
                 },
                 desired,
-            )))],
+            ))],
             else_body: Vec::new(),
         });
         self.immutable_temps.insert(old.clone());

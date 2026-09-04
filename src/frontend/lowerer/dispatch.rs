@@ -87,12 +87,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 .as_mut()
                 .unwrap()
                 .pending_hoists
-                .push(Self::indent_stmt(Stmt::Let {
+                .push(Stmt::Let {
                     name: name.clone(),
                     mutable: true,
                     ty: Some(ty),
                     init: Some(default),
-                }));
+                });
             self.push_stmt(Self::assign_stmt(Expr::Var(name.clone().into()), current));
             self.values
                 .insert(result, Val::Expr(Expr::Var(name.into())));

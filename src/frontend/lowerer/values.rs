@@ -19,12 +19,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 .as_mut()
                 .unwrap()
                 .pending_hoists
-                .push(Self::indent_stmt(Stmt::Let {
+                .push(Stmt::Let {
                     name: name.clone(),
                     mutable: true,
                     ty: Some(ty),
                     init: Some(default),
-                }));
+                });
             self.push_stmt(Self::assign_stmt(Expr::Var(name.into()), expr));
             return;
         }
@@ -482,10 +482,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn push_stmt(&mut self, stmt: Stmt) {
-        self.body.push(IndentStmt {
-            depth: self.indent,
-            stmt,
-        });
+        self.body.push(stmt);
     }
 
     pub(super) fn unsafe_expr(value: Expr) -> Expr {
@@ -543,7 +540,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     pub(super) fn unsafe_stmt(stmt: Stmt) -> Stmt {
         Stmt::Unsafe {
             body: crate::backend::rust_ast::Block {
-                stmts: vec![IndentStmt { depth: 0, stmt }],
+                stmts: vec![stmt],
                 tail: None,
             },
         }

@@ -260,7 +260,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
 
     // Lower every op in a region, capturing the terminating cir.yield's operand as
     // the region's tail value instead of lowering the yield itself.
-    pub(super) fn lower_yield_region(&mut self, region: &inst::Region) -> (Vec<IndentStmt>, Expr) {
+    pub(super) fn lower_yield_region(&mut self, region: &inst::Region) -> (Vec<Stmt>, Expr) {
         let mut yielded = Expr::Todo("cir.yield".into());
         let body = self.capture_body(|this| {
             for block in &region.blocks {

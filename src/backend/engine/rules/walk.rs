@@ -64,7 +64,7 @@ pub(super) fn child_exprs(expr: &Expr) -> Vec<&Expr> {
         Expr::Block(block) | Expr::Unsafe(block) => {
             let mut out: Vec<&Expr> = Vec::new();
             for stmt in &block.stmts {
-                stmt_exprs(&stmt.stmt, &mut out);
+                stmt_exprs(stmt, &mut out);
             }
             if let Some(tail) = &block.tail {
                 out.push(tail);
@@ -150,7 +150,7 @@ pub(super) fn child_exprs_mut(expr: &mut Expr) -> Vec<&mut Expr> {
         Expr::Block(block) | Expr::Unsafe(block) => {
             let mut out: Vec<&mut Expr> = Vec::new();
             for stmt in &mut block.stmts {
-                stmt_exprs_mut(&mut stmt.stmt, &mut out);
+                stmt_exprs_mut(stmt, &mut out);
             }
             if let Some(tail) = &mut block.tail {
                 out.push(tail);

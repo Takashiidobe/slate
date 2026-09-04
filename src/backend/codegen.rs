@@ -3,8 +3,8 @@ use std::fmt::{self, Write};
 use crate::backend::rust_ast::{
     Abi, AsmDialect, AsmOperand, AsmReg, AtomicOrdering, AtomicPlace, AtomicRmwOp, AtomicType,
     Attr, Block, Cfg, Comment, CrateAttr, Derive, Expr, ExternDecl, FnDef, GenericParam, ImplBlock,
-    ImplItem, IndentStmt, InlineHint, Item, Method, Path, Program, RecordDef, RecordField, Repr,
-    RustValue, SelfKind, Stmt, StructDef, StructFields, TraitBound, TraitRef, Type,
+    ImplItem, InlineHint, Item, Method, Path, Program, RecordDef, RecordField, Repr, RustValue,
+    SelfKind, Stmt, StructDef, StructFields, TraitBound, TraitRef, Type,
 };
 
 const INDENT: &str = "    ";
@@ -329,16 +329,15 @@ impl<W: Write> Codegen<W> {
             self.ty(ret)?;
         }
         self.out.write_str(" {\n")?;
-        for (index, IndentStmt { depth, stmt }) in f.body.iter().enumerate() {
+        for (index, stmt) in f.body.iter().enumerate() {
             if f.ret.is_some()
                 && index + 1 == f.body.len()
                 && let Stmt::Expr(expr) = stmt
             {
-                self.out.write_str(&INDENT.repeat(*depth))?;
                 self.expr(expr)?;
                 self.out.write_char('\n')?;
             } else {
-                self.stmt(stmt, *depth)?;
+                self.stmt(stmt)?;
             }
         }
         self.out.write_str("}\n")
@@ -759,25 +758,23 @@ impl<W: Write> Codegen<W> {
         }
     }
 
-    fn block(&mut self, block: &Block, depth: usize) -> fmt::Result {
-        self.indent_stmts(&block.stmts, depth)?;
+    fn block(&mut self, block: &Block) -> fmt::Result {
+        self.stmts(&block.stmts)?;
         if let Some(tail) = &block.tail {
-            self.out.write_str(&INDENT.repeat(depth))?;
             self.expr(tail)?;
             self.out.write_char('\n')?;
         }
         Ok(())
     }
 
-    fn indent_stmts(&mut self, body: &[IndentStmt], depth: usize) -> fmt::Result {
-        for IndentStmt { depth: extra, stmt } in body {
-            self.stmt(stmt, depth + extra)?;
+    fn stmts(&mut self, body: &[Stmt]) -> fmt::Result {
+        for stmt in body {
+            self.stmt(stmt)?;
         }
         Ok(())
     }
 
-    pub fn stmt(&mut self, stmt: &Stmt, depth: usize) -> fmt::Result {
-        let pad = INDENT.repeat(depth);
+    pub fn stmt(&mut self, stmt: &Stmt) -> fmt::Result {
         match stmt {
             Stmt::Let {
                 name,
@@ -785,7 +782,6 @@ impl<W: Write> Codegen<W> {
                 ty,
                 init,
             } => {
-                self.out.write_str(&pad)?;
                 self.out.write_str("let ")?;
                 if *mutable {
                     self.out.write_str("mut ")?;
@@ -811,7 +807,6 @@ impl<W: Write> Codegen<W> {
                 else_body,
                 else_value,
             } => {
-                self.out.write_str(&pad)?;
                 self.out.write_str("let ")?;
                 if *mutable {
                     self.out.write_str("mut ")?;
@@ -824,31 +819,26 @@ impl<W: Write> Codegen<W> {
                 self.out.write_str(" = if ")?;
                 self.cond_expr(cond)?;
                 self.out.write_str(" {\n")?;
-                self.indent_stmts(then_body, depth + 1)?;
-                write!(self.out, "{pad}{INDENT}")?;
+                self.stmts(then_body)?;
                 self.expr(then_value)?;
-                write!(self.out, "\n{pad}}} else {{\n")?;
-                self.indent_stmts(else_body, depth + 1)?;
-                write!(self.out, "{pad}{INDENT}")?;
+                self.out.write_str("\n} else {\n")?;
+                self.stmts(else_body)?;
                 self.expr(else_value)?;
-                write!(self.out, "\n{pad}}};\n")
+                self.out.write_str("\n};\n")
             }
             Stmt::Assign { target, value } => {
-                self.out.write_str(&pad)?;
                 self.expr(target)?;
                 self.out.write_str(" = ")?;
                 self.expr(value)?;
                 self.out.write_str(";\n")
             }
             Stmt::CompoundAssign { target, op, value } => {
-                self.out.write_str(&pad)?;
                 self.expr(target)?;
                 write!(self.out, " {}= ", op.spelling())?;
                 self.expr(value)?;
                 self.out.write_str(";\n")
             }
             Stmt::InlineAsm(asm) => {
-                self.out.write_str(&pad)?;
                 self.out.write_str("core::arch::asm!(")?;
                 self.expr(&Expr::Str(asm.template.clone()))?;
                 for operand in &asm.operands {
@@ -897,13 +887,11 @@ impl<W: Write> Codegen<W> {
                             destination,
                         } => {
                             self.out.write_str("label {\n")?;
-                            write!(self.out, "{pad}{INDENT}")?;
                             self.expr(state)?;
                             self.out.write_str(" = ")?;
                             self.expr(value)?;
                             self.out.write_str(";\n")?;
-                            writeln!(self.out, "{pad}{INDENT}continue '{};", destination.as_str())?;
-                            self.out.write_str(&pad)?;
+                            writeln!(self.out, "continue '{};", destination.as_str())?;
                             self.out.write_char('}')?;
                         }
                     }
@@ -923,100 +911,98 @@ impl<W: Write> Codegen<W> {
                 self.out.write_str(");\n")
             }
             Stmt::Expr(e) => {
-                self.out.write_str(&pad)?;
                 self.expr(e)?;
                 self.out.write_str(";\n")
             }
             Stmt::Return(e) => match e {
                 Some(e) => {
-                    write!(self.out, "{pad}return ")?;
+                    self.out.write_str("return ")?;
                     self.expr(e)?;
                     self.out.write_str(";\n")
                 }
-                None => writeln!(self.out, "{pad}return;"),
+                None => self.out.write_str("return;\n"),
             },
             Stmt::Unsafe { body } => {
-                writeln!(self.out, "{pad}unsafe {{")?;
-                self.block(body, depth + 1)?;
-                writeln!(self.out, "{pad}}}")
+                self.out.write_str("unsafe {\n")?;
+                self.block(body)?;
+                self.out.write_str("}\n")
             }
             Stmt::If {
                 cond,
                 then_body,
                 else_body,
             } => {
-                write!(self.out, "{pad}if ")?;
+                self.out.write_str("if ")?;
                 self.cond_expr(cond)?;
                 self.out.write_str(" {\n")?;
-                self.indent_stmts(then_body, depth + 1)?;
+                self.stmts(then_body)?;
                 if else_body.is_empty() {
-                    writeln!(self.out, "{pad}}}")
+                    self.out.write_str("}\n")
                 } else {
-                    writeln!(self.out, "{pad}}} else {{")?;
-                    self.indent_stmts(else_body, depth + 1)?;
-                    writeln!(self.out, "{pad}}}")
+                    self.out.write_str("} else {\n")?;
+                    self.stmts(else_body)?;
+                    self.out.write_str("}\n")
                 }
             }
             Stmt::Loop { label, body } => {
                 match label {
-                    Some(label) => writeln!(self.out, "{pad}'{}: loop {{", label.as_str())?,
-                    None => writeln!(self.out, "{pad}loop {{")?,
+                    Some(label) => writeln!(self.out, "'{}: loop {{", label.as_str())?,
+                    None => self.out.write_str("loop {\n")?,
                 }
-                self.indent_stmts(body, depth + 1)?;
-                writeln!(self.out, "{pad}}}")
+                self.stmts(body)?;
+                self.out.write_str("}\n")
             }
             Stmt::For { pat, iter, body } => {
-                write!(self.out, "{pad}for {pat} in ")?;
+                write!(self.out, "for {pat} in ")?;
                 self.cond_expr(iter)?;
                 self.out.write_str(" {\n")?;
-                self.indent_stmts(body, depth + 1)?;
-                writeln!(self.out, "{pad}}}")
+                self.stmts(body)?;
+                self.out.write_str("}\n")
             }
             Stmt::Scope { body } => {
-                writeln!(self.out, "{pad}{{")?;
-                self.indent_stmts(body, depth + 1)?;
-                writeln!(self.out, "{pad}}}")
+                self.out.write_str("{\n")?;
+                self.stmts(body)?;
+                self.out.write_str("}\n")
             }
             Stmt::LabeledBlock { label, body } => {
-                writeln!(self.out, "{pad}'{}: {{", label.as_str())?;
-                self.indent_stmts(body, depth + 1)?;
-                writeln!(self.out, "{pad}}}")
+                writeln!(self.out, "'{}: {{", label.as_str())?;
+                self.stmts(body)?;
+                self.out.write_str("}\n")
             }
             Stmt::Match { expr, arms } => {
-                write!(self.out, "{pad}match ")?;
+                self.out.write_str("match ")?;
                 self.cond_expr(expr)?;
                 self.out.write_str(" {\n")?;
                 for arm in arms {
-                    write!(self.out, "{pad}{INDENT}")?;
                     self.pattern(&arm.pattern)?;
                     self.out.write_str(" => {\n")?;
-                    self.indent_stmts(&arm.body, depth + 2)?;
-                    writeln!(self.out, "{pad}{INDENT}}}")?;
+                    self.stmts(&arm.body)?;
+                    self.out.write_str("}\n")?;
                 }
-                writeln!(self.out, "{pad}}}")
+                self.out.write_str("}\n")
             }
             Stmt::Break(label) => match label {
-                Some(label) => writeln!(self.out, "{pad}break '{};", label.as_str()),
-                None => writeln!(self.out, "{pad}break;"),
+                Some(label) => writeln!(self.out, "break '{};", label.as_str()),
+                None => self.out.write_str("break;\n"),
             },
             Stmt::Continue(label) => match label {
-                Some(label) => writeln!(self.out, "{pad}continue '{};", label.as_str()),
-                None => writeln!(self.out, "{pad}continue;"),
+                Some(label) => writeln!(self.out, "continue '{};", label.as_str()),
+                None => self.out.write_str("continue;\n"),
             },
             Stmt::While { label, cond, body } => {
                 match label {
-                    Some(label) => write!(self.out, "{pad}'{}: while ", label.as_str())?,
-                    None => write!(self.out, "{pad}while ")?,
+                    Some(label) => write!(self.out, "'{}: while ", label.as_str())?,
+                    None => self.out.write_str("while ")?,
                 }
                 self.cond_expr(cond)?;
                 self.out.write_str(" {\n")?;
-                self.block(body, depth + 1)?;
-                writeln!(self.out, "{pad}}}")
+                self.block(body)?;
+                self.out.write_str("}\n")
             }
             Stmt::Block(b) => {
-                writeln!(self.out, "{pad}{{")?;
-                self.block(b, depth + 1)?;
-                writeln!(self.out, "{pad}}}")
+                self.out.write_str("{\n")?;
+                self.block(b)?;
+                self.out.write_str("}\n")
             }
         }
     }
@@ -1426,7 +1412,7 @@ impl<W: Write> Codegen<W> {
             self.out.write_str(" }")
         } else {
             self.out.write_str("{\n")?;
-            self.block(block, 1)?;
+            self.block(block)?;
             self.out.write_char('}')
         }
     }
@@ -1637,7 +1623,7 @@ pub fn expr_to_string(expr: &Expr) -> String {
 
 pub fn stmt_to_string(stmt: &Stmt) -> String {
     let mut cg = Codegen::new(String::new());
-    cg.stmt(stmt, 0).expect("writing to a String never fails");
+    cg.stmt(stmt).expect("writing to a String never fails");
     cg.into_inner()
 }
 

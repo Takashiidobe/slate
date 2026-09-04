@@ -411,10 +411,7 @@ fn expr_any(expr: &Expr, pred: &mut dyn FnMut(&Expr) -> bool) -> bool {
             else_expr,
         } => expr_any(cond, pred) || expr_any(then_expr, pred) || expr_any(else_expr, pred),
         Expr::Block(block) | Expr::Unsafe(block) => {
-            block
-                .stmts
-                .iter()
-                .any(|stmt| stmt_any_expr(&stmt.stmt, pred))
+            block.stmts.iter().any(|stmt| stmt_any_expr(stmt, pred))
                 || block
                     .tail
                     .as_deref()
@@ -464,7 +461,7 @@ fn stmt_any_expr(stmt: &Stmt, pred: &mut dyn FnMut(&Expr) -> bool) -> bool {
                 || then_body
                     .iter()
                     .chain(else_body)
-                    .any(|s| stmt_any_expr(&s.stmt, pred))
+                    .any(|s| stmt_any_expr(s, pred))
                 || expr_any(then_value, pred)
                 || expr_any(else_value, pred)
         }
@@ -489,25 +486,25 @@ fn stmt_any_expr(stmt: &Stmt, pred: &mut dyn FnMut(&Expr) -> bool) -> bool {
                 || then_body
                     .iter()
                     .chain(else_body)
-                    .any(|s| stmt_any_expr(&s.stmt, pred))
+                    .any(|s| stmt_any_expr(s, pred))
         }
         Stmt::Loop { body, .. }
         | Stmt::For { body, .. }
         | Stmt::Scope { body }
-        | Stmt::LabeledBlock { body, .. } => body.iter().any(|s| stmt_any_expr(&s.stmt, pred)),
+        | Stmt::LabeledBlock { body, .. } => body.iter().any(|s| stmt_any_expr(s, pred)),
         Stmt::Match { expr, arms } => {
             expr_any(expr, pred)
                 || arms
                     .iter()
-                    .any(|arm| arm.body.iter().any(|s| stmt_any_expr(&s.stmt, pred)))
+                    .any(|arm| arm.body.iter().any(|s| stmt_any_expr(s, pred)))
         }
         Stmt::While { cond, body, .. } => {
             expr_any(cond, pred)
-                || body.stmts.iter().any(|s| stmt_any_expr(&s.stmt, pred))
+                || body.stmts.iter().any(|s| stmt_any_expr(s, pred))
                 || body.tail.as_deref().is_some_and(|t| expr_any(t, pred))
         }
         Stmt::Unsafe { body } | Stmt::Block(body) => {
-            body.stmts.iter().any(|s| stmt_any_expr(&s.stmt, pred))
+            body.stmts.iter().any(|s| stmt_any_expr(s, pred))
                 || body.tail.as_deref().is_some_and(|t| expr_any(t, pred))
         }
     }
@@ -528,7 +525,7 @@ fn stmt_e_ident_count(stmt: &Stmt, name: Ident) -> usize {
                 + then_body
                     .iter()
                     .chain(else_body)
-                    .map(|s| stmt_e_ident_count(&s.stmt, name))
+                    .map(|s| stmt_e_ident_count(s, name))
                     .sum::<usize>()
                 + e_ident_count(then_value, name)
                 + e_ident_count(else_value, name)
@@ -554,15 +551,13 @@ fn stmt_e_ident_count(stmt: &Stmt, name: Ident) -> usize {
                 + then_body
                     .iter()
                     .chain(else_body)
-                    .map(|s| stmt_e_ident_count(&s.stmt, name))
+                    .map(|s| stmt_e_ident_count(s, name))
                     .sum::<usize>()
         }
         Stmt::Loop { body, .. }
         | Stmt::For { body, .. }
         | Stmt::Scope { body }
-        | Stmt::LabeledBlock { body, .. } => {
-            body.iter().map(|s| stmt_e_ident_count(&s.stmt, name)).sum()
-        }
+        | Stmt::LabeledBlock { body, .. } => body.iter().map(|s| stmt_e_ident_count(s, name)).sum(),
         Stmt::Match { expr, arms } => {
             e_ident_count(expr, name)
                 + arms
@@ -570,7 +565,7 @@ fn stmt_e_ident_count(stmt: &Stmt, name: Ident) -> usize {
                     .map(|arm| {
                         arm.body
                             .iter()
-                            .map(|s| stmt_e_ident_count(&s.stmt, name))
+                            .map(|s| stmt_e_ident_count(s, name))
                             .sum::<usize>()
                     })
                     .sum::<usize>()
@@ -580,14 +575,14 @@ fn stmt_e_ident_count(stmt: &Stmt, name: Ident) -> usize {
                 + body
                     .stmts
                     .iter()
-                    .map(|s| stmt_e_ident_count(&s.stmt, name))
+                    .map(|s| stmt_e_ident_count(s, name))
                     .sum::<usize>()
                 + body.tail.as_deref().map_or(0, |t| e_ident_count(t, name))
         }
         Stmt::Unsafe { body } | Stmt::Block(body) => {
             body.stmts
                 .iter()
-                .map(|s| stmt_e_ident_count(&s.stmt, name))
+                .map(|s| stmt_e_ident_count(s, name))
                 .sum::<usize>()
                 + body.tail.as_deref().map_or(0, |t| e_ident_count(t, name))
         }
@@ -761,7 +756,7 @@ fn e_ident_count(expr: &Expr, name: Ident) -> usize {
             block
                 .stmts
                 .iter()
-                .map(|stmt| stmt_e_ident_count(&stmt.stmt, name))
+                .map(|stmt| stmt_e_ident_count(stmt, name))
                 .sum::<usize>()
                 + block.tail.as_deref().map_or(0, |t| e_ident_count(t, name))
         }
