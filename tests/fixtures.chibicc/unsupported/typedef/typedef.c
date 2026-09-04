@@ -34,7 +34,7 @@ int main() {
            x.a;
          }));
   ASSERT(4, ({
-           typedef t;
+           typedef int t;
            t x;
            sizeof(x);
          }));

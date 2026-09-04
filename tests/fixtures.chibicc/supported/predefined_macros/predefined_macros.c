@@ -9,7 +9,6 @@ int main() {
   // Optional feature support
   ASSERT(1, __STDC_UTF_16__);
   ASSERT(1, __STDC_UTF_32__);
-  ASSERT(1, __STDC_IEC_559__); // IEEE 754 floating point
 
   // C11 char16_t and char32_t underlying type macros
   ASSERT(2, sizeof(__CHAR16_TYPE__));

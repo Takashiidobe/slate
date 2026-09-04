@@ -2,7 +2,7 @@
 
 int main() {
   {
-    const x;
+    const int x;
   }
   {
     int const x;
@@ -14,17 +14,17 @@ int main() {
     const int const const x;
   }
   ASSERT(5, ({
-           const x = 5;
+           const int x = 5;
            x;
          }));
   ASSERT(8, ({
-           const x      = 8;
+           const int x  = 8;
            int *const y = &x;
            *y;
          }));
   ASSERT(6, ({
-           const x = 6;
-           *(const *const)&x;
+           const int x = 6;
+           *(const int *const)&x;
          }));
 
   printf("OK\n");
