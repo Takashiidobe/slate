@@ -1,3 +1,4 @@
+use super::walk;
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::{Expr, Ident, Type, UnaryOp};
@@ -153,27 +154,6 @@ fn all_uses_deref_transitively(
     })
 }
 
-fn function_root(arena: &Arena, mut id: NodeId) -> NodeId {
-    while let Some(parent) = arena.parent(id) {
-        id = parent;
-    }
-    id
-}
-
-fn node_substitute_var(arena: &mut Arena, id: NodeId, name: &str, replacement: &Expr) -> bool {
-    let mut changed = arena
-        .get_mut(id)
-        .is_some_and(|kind| kind_own_substitute_var(kind, name, replacement));
-    let children: Vec<NodeId> = arena
-        .get(id)
-        .map(|kind| kind.child_lists().into_iter().flatten().copied().collect())
-        .unwrap_or_default();
-    for child in children {
-        changed |= node_substitute_var(arena, child, name, replacement);
-    }
-    changed
-}
-
 fn kind_own_substitute_var(kind: &mut NodeKind, name: &str, replacement: &Expr) -> bool {
     match kind {
         NodeKind::Let { init, .. } => init
@@ -221,17 +201,6 @@ fn kind_own_substitute_var(kind: &mut NodeKind, name: &str, replacement: &Expr) 
         NodeKind::Loop { .. } | NodeKind::Scope { .. } | NodeKind::LabeledBlock { .. } => false,
         NodeKind::Match { expr, .. } => expr.substitute_var(name, replacement),
         NodeKind::Break(_) | NodeKind::Continue(_) => false,
-    }
-}
-
-fn remove_from_parent(arena: &mut Arena, parent: NodeId, id: NodeId) {
-    if let Some(kind) = arena.get_mut(parent) {
-        for list in kind.child_lists_mut() {
-            if let Some(pos) = list.iter().position(|&child| child == id) {
-                list.remove(pos);
-                return;
-            }
-        }
     }
 }
 
@@ -285,8 +254,14 @@ impl NodeRule for RawPtrAliasElide {
             return false;
         }
 
-        let root = function_root(arena, id);
-        if !node_substitute_var(arena, root, name.as_str(), &replacement) {
+        let root = walk::function_root(arena, id);
+        if !walk::substitute_var_in_subtree(
+            arena,
+            root,
+            name.as_str(),
+            &replacement,
+            &kind_own_substitute_var,
+        ) {
             return false;
         }
         arena.touch_subtree(root);
@@ -295,7 +270,7 @@ impl NodeRule for RawPtrAliasElide {
             return false;
         };
         let _ = arena.take(id);
-        remove_from_parent(arena, parent, id);
+        let _ = walk::remove_from_parent(arena, parent, id);
         true
     }
 }

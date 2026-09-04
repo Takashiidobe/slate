@@ -1,4 +1,4 @@
-use crate::backend::engine::arena::NodeKind;
+use crate::backend::engine::arena::{Arena, NodeId, NodeKind};
 use crate::backend::rust_ast::{Expr, Stmt};
 
 pub(super) fn child_exprs(expr: &Expr) -> Vec<&Expr> {
@@ -293,4 +293,45 @@ pub(super) fn any_collapsible(expr: &Expr, collapsible_here: &impl Fn(&Expr) -> 
         || child_exprs(expr)
             .iter()
             .any(|child| any_collapsible(child, collapsible_here))
+}
+
+pub(super) fn function_root(arena: &Arena, mut id: NodeId) -> NodeId {
+    while let Some(parent) = arena.parent(id) {
+        id = parent;
+    }
+    id
+}
+
+pub(super) fn remove_from_parent(arena: &mut Arena, parent: NodeId, id: NodeId) -> bool {
+    let Some(kind) = arena.get_mut(parent) else {
+        return false;
+    };
+    for list in kind.child_lists_mut() {
+        if let Some(pos) = list.iter().position(|&child| child == id) {
+            list.remove(pos);
+            return true;
+        }
+    }
+    false
+}
+
+pub(super) fn substitute_var_in_subtree(
+    arena: &mut Arena,
+    id: NodeId,
+    name: &str,
+    replacement: &Expr,
+    kind_own_substitute_var: &impl Fn(&mut NodeKind, &str, &Expr) -> bool,
+) -> bool {
+    let mut changed = arena
+        .get_mut(id)
+        .is_some_and(|kind| kind_own_substitute_var(kind, name, replacement));
+    let children: Vec<NodeId> = arena
+        .get(id)
+        .map(|kind| kind.child_lists().into_iter().flatten().copied().collect())
+        .unwrap_or_default();
+    for child in children {
+        changed |=
+            substitute_var_in_subtree(arena, child, name, replacement, kind_own_substitute_var);
+    }
+    changed
 }

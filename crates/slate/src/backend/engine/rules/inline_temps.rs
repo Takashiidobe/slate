@@ -1,3 +1,4 @@
+use super::walk;
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::{BinOp, Expr, Ident, Prim, RustValue, Stmt, Type, UnaryOp};
@@ -1088,13 +1089,6 @@ fn locate_consumer(arena: &Arena, decl_id: NodeId, name: Ident) -> Option<Found>
     None
 }
 
-fn function_root(arena: &Arena, mut id: NodeId) -> NodeId {
-    while let Some(parent) = arena.parent(id) {
-        id = parent;
-    }
-    id
-}
-
 fn is_movable_pure_temp(arena: &Arena, id: NodeId) -> bool {
     match arena.get(id) {
         Some(NodeKind::Let {
@@ -1108,20 +1102,6 @@ fn is_movable_pure_temp(arena: &Arena, id: NodeId) -> bool {
         }
         _ => false,
     }
-}
-
-fn node_substitute_var(arena: &mut Arena, id: NodeId, name: &str, replacement: &Expr) -> bool {
-    let mut changed = arena
-        .get_mut(id)
-        .is_some_and(|kind| kind_own_substitute_var(kind, name, replacement));
-    let children: Vec<NodeId> = arena
-        .get(id)
-        .map(|kind| kind.child_lists().into_iter().flatten().copied().collect())
-        .unwrap_or_default();
-    for child in children {
-        changed |= node_substitute_var(arena, child, name, replacement);
-    }
-    changed
 }
 
 fn kind_own_substitute_var(kind: &mut NodeKind, name: &str, replacement: &Expr) -> bool {
@@ -1379,7 +1359,7 @@ impl NodeRule for LateInlineTemps {
         let ty = ty.clone();
         let init = init.clone();
 
-        let root = function_root(arena, id);
+        let root = walk::function_root(arena, id);
         if node_ident_count(arena, root, name) != 1 {
             return false;
         }
@@ -1451,7 +1431,13 @@ impl NodeRule for LateInlineTemps {
             return false;
         }
 
-        if !node_substitute_var(arena, found.consumer_id, name.as_str(), &init) {
+        if !walk::substitute_var_in_subtree(
+            arena,
+            found.consumer_id,
+            name.as_str(),
+            &init,
+            &kind_own_substitute_var,
+        ) {
             return false;
         }
         arena.touch_subtree(found.consumer_id);
@@ -1513,7 +1499,7 @@ impl NodeRule for EffectfulTempForward {
         let name = *name;
         let init = init.clone();
 
-        let root = function_root(arena, id);
+        let root = walk::function_root(arena, id);
         if node_ident_count(arena, root, name) != 1 {
             return false;
         }
@@ -1568,7 +1554,13 @@ impl NodeRule for EffectfulTempForward {
             return false;
         }
 
-        if !node_substitute_var(arena, found.consumer_id, name.as_str(), &init) {
+        if !walk::substitute_var_in_subtree(
+            arena,
+            found.consumer_id,
+            name.as_str(),
+            &init,
+            &kind_own_substitute_var,
+        ) {
             return false;
         }
         arena.touch_subtree(found.consumer_id);
@@ -1818,7 +1810,7 @@ impl NodeRule for InlineConstArgTemps {
         let ty = ty.clone();
         let init = init.clone();
 
-        let root = function_root(arena, id);
+        let root = walk::function_root(arena, id);
         if node_ident_count(arena, root, name) != 1 {
             return false;
         }
@@ -1841,7 +1833,13 @@ impl NodeRule for InlineConstArgTemps {
             Some(ArgPos::NonArg) | None => return false,
         };
 
-        if !node_substitute_var(arena, found.consumer_id, name.as_str(), &replacement) {
+        if !walk::substitute_var_in_subtree(
+            arena,
+            found.consumer_id,
+            name.as_str(),
+            &replacement,
+            &kind_own_substitute_var,
+        ) {
             return false;
         }
         arena.touch_subtree(found.consumer_id);

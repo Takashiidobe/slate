@@ -1,19 +1,7 @@
+use super::walk;
 use crate::backend::engine::NodeRule;
-use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
+use crate::backend::engine::arena::{FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::Expr;
-
-fn remove_from_parent(arena: &mut Arena, parent: NodeId, id: NodeId) -> bool {
-    let Some(kind) = arena.get_mut(parent) else {
-        return false;
-    };
-    for list in kind.child_lists_mut() {
-        if let Some(pos) = list.iter().position(|&child| child == id) {
-            list.remove(pos);
-            return true;
-        }
-    }
-    false
-}
 
 pub(in crate::backend::engine) struct ParamSpillFold;
 
@@ -74,6 +62,6 @@ impl NodeRule for ParamSpillFold {
         if arena.take(id).is_none() {
             return false;
         }
-        remove_from_parent(arena, parent, id)
+        walk::remove_from_parent(arena, parent, id)
     }
 }
