@@ -1,6 +1,8 @@
 #ifndef _SLATE_ERRNO_H
 #define _SLATE_ERRNO_H
 
+#include <features.h>
+
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
 #define __STDC_VERSION_ERRNO_H__ 202311L
 #endif
