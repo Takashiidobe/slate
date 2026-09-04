@@ -29,6 +29,17 @@ fn bionic_stdio_locale_headers() -> Vec<String> {
         .collect()
 }
 
+fn bionic_filesystem_headers() -> Vec<String> {
+    let manifest =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("libc-shim/bionic-filesystem-headers.txt");
+    fs::read_to_string(manifest)
+        .expect("read Bionic filesystem header manifest")
+        .lines()
+        .filter(|line| !line.is_empty())
+        .map(str::to_string)
+        .collect()
+}
+
 fn msvc_headers() -> Vec<String> {
     let manifest = Path::new(env!("CARGO_MANIFEST_DIR")).join("libc-shim/msvc-basic-headers.txt");
     fs::read_to_string(manifest)
@@ -342,6 +353,45 @@ fn bionic_stdio_locale_header_manifest_compiles_for_64_bit_targets() {
         let source = format!("{includes}\nint main(void) {{ return 0; }}\n");
         compile_test_program(&config, &source).unwrap();
     }
+}
+
+#[test]
+fn bionic_filesystem_header_manifest_compiles_for_64_bit_targets() {
+    let headers = bionic_filesystem_headers();
+    let includes = headers
+        .iter()
+        .map(|header| format!("#include <{header}>\n"))
+        .collect::<String>();
+    let source = format!("{includes}\nint main(void) {{ return 0; }}\n");
+    for arch in [Architecture::Aarch64, Architecture::X86_64] {
+        let config = TestConfig::new(arch, LibcVariant::Bionic);
+        compile_test_program(&config, &source).unwrap();
+    }
+}
+
+#[test]
+fn bionic_filesystem_layout_fixture_compiles_for_64_bit_targets() {
+    let fixture =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/bionic/filesystem_layout.c");
+    let source = fs::read_to_string(fixture).expect("read Bionic filesystem layout fixture");
+    for arch in [Architecture::Aarch64, Architecture::X86_64] {
+        let config = TestConfig::new(arch, LibcVariant::Bionic);
+        compile_test_program(&config, &source).unwrap();
+    }
+
+    let config = TestConfig::new(Architecture::X86_64, LibcVariant::Bionic);
+    let error = compile_test_program(
+        &config,
+        "#include <dirent.h>\nint main(void) { struct dirent d; return getdents(0, &d, 0); }\n",
+    )
+    .unwrap_err();
+    assert!(error.contains("getdents"));
+    let error = compile_test_program(
+        &config,
+        "#include <dirent.h>\nint main(void) { return posix_getdents(0, 0, 0, 0); }\n",
+    )
+    .unwrap_err();
+    assert!(error.contains("posix_getdents"));
 }
 
 #[test]

@@ -9,6 +9,15 @@
 #include <bits/darwin/statvfs.h>
 #elif defined(__SLATE_LIBC_FREEBSD)
 #include <bits/freebsd/statvfs.h>
+#elif defined(__SLATE_LIBC_BIONIC)
+struct statvfs {
+  unsigned long f_bsize, f_frsize;
+  fsblkcnt_t    f_blocks, f_bfree, f_bavail;
+  fsfilcnt_t    f_files, f_ffree, f_favail;
+  unsigned long f_fsid;
+  unsigned long f_flag, f_namemax;
+  unsigned int  __f_reserved[6];
+};
 #else
 struct statvfs {
   unsigned long f_bsize, f_frsize;
@@ -48,7 +57,7 @@ int fstatvfs(int, struct statvfs *);
 #define ST_RELATIME    4096
 #endif
 
-#if defined(_LARGEFILE64_SOURCE)
+#if defined(_LARGEFILE64_SOURCE) || defined(__SLATE_LIBC_BIONIC)
 #define statvfs64    statvfs
 #define fstatvfs64   fstatvfs
 #define fsblkcnt64_t fsblkcnt_t

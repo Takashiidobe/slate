@@ -52,7 +52,8 @@ int            readdir_r(DIR *__restrict, struct dirent *__restrict,
 void           rewinddir(DIR *);
 int            dirfd(DIR *);
 
-#if !defined(__SLATE_LIBC_DARWIN) && !defined(__SLATE_LIBC_FREEBSD)
+#if !defined(__SLATE_LIBC_DARWIN) && !defined(__SLATE_LIBC_FREEBSD) &&          \
+    !defined(__SLATE_LIBC_BIONIC)
 ssize_t posix_getdents(int, void *, size_t, int);
 #endif
 
@@ -61,7 +62,8 @@ int scandir(const char *, struct dirent ***, int (*)(const struct dirent *),
             int (*)(const struct dirent **, const struct dirent **));
 
 #if defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE) ||   \
-    defined(__SLATE_LIBC_DARWIN) || defined(__SLATE_LIBC_FREEBSD)
+    defined(__SLATE_LIBC_DARWIN) || defined(__SLATE_LIBC_FREEBSD) ||           \
+    defined(__SLATE_LIBC_BIONIC)
 void seekdir(DIR *, long);
 long telldir(DIR *);
 #endif
@@ -77,7 +79,8 @@ long telldir(DIR *);
 #define DT_WHT     14
 
 #if (defined(_GNU_SOURCE) || defined(_BSD_SOURCE)) &&                          \
-    !defined(__SLATE_LIBC_DARWIN) && !defined(__SLATE_LIBC_FREEBSD)
+    !defined(__SLATE_LIBC_DARWIN) && !defined(__SLATE_LIBC_FREEBSD) &&         \
+    !defined(__SLATE_LIBC_BIONIC)
 #define IFTODT(x) ((x) >> 12 & 017)
 #define DTTOIF(x) ((x) << 12)
 int getdents(int, struct dirent *, size_t);
@@ -103,6 +106,14 @@ int versionsort(const struct dirent **, const struct dirent **);
 #define off64_t       off_t
 #define ino64_t       ino_t
 #define getdents64    getdents
+#elif defined(__SLATE_LIBC_BIONIC)
+#define dirent64    dirent
+#define readdir64   readdir
+#define readdir64_r readdir_r
+#define scandir64   scandir
+#define alphasort64 alphasort
+#define off64_t     off_t
+#define ino64_t     ino_t
 #endif
 
 #endif

@@ -5,7 +5,9 @@
 #error "Never include <bits/stat.h> directly; include <stat.h> instead."
 #endif
 
-#if defined(__SLATE_ARCH_X86_64)
+#if defined(__SLATE_LIBC_BIONIC)
+#include <bits/bionic/stat.h>
+#elif defined(__SLATE_ARCH_X86_64)
 #include <bits/x86_64/stat.h>
 #elif defined(__SLATE_ARCH_X86)
 #include <bits/x86/stat.h>
