@@ -3,8 +3,6 @@
 long double f(void) { return LDBL_TRUE_MIN; }
 
 int main(void) { return f() == 0.0L; }
-// REWRITES-MSVC-DAG: f64::from_bits
-// REWRITES-MSVC-NOT: LongDouble
 
 // SLATE-FILECHECK-BEGIN lowering-msvc
 // LOWERING-MSVC: #![allow(
@@ -34,3 +32,27 @@ int main(void) { return f() == 0.0L; }
 // LOWERING-MSVC-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-MSVC-NEXT: }
 // SLATE-FILECHECK-END lowering-msvc
+
+// SLATE-FILECHECK-BEGIN rewrites-msvc
+// REWRITES-MSVC: #![allow(
+// REWRITES-MSVC-NEXT:     dead_code,
+// REWRITES-MSVC-NEXT:     unused,
+// REWRITES-MSVC-NEXT:     non_camel_case_types,
+// REWRITES-MSVC-NEXT:     non_snake_case,
+// REWRITES-MSVC-NEXT:     non_upper_case_globals,
+// REWRITES-MSVC-NEXT:     arithmetic_overflow,
+// REWRITES-MSVC-NEXT:     unconditional_panic,
+// REWRITES-MSVC-NEXT:     suspicious_runtime_symbol_definitions,
+// REWRITES-MSVC-NEXT:     unpredictable_function_pointer_comparisons,
+// REWRITES-MSVC-NEXT:     unused_comparisons
+// REWRITES-MSVC-NEXT: )]
+// REWRITES-MSVC-EMPTY:
+// REWRITES-MSVC-NEXT: fn f() -> f64 {
+// REWRITES-MSVC-NEXT:     0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005
+// REWRITES-MSVC-NEXT: }
+// REWRITES-MSVC-EMPTY:
+// REWRITES-MSVC-NEXT: fn main() {
+// REWRITES-MSVC-NEXT:     let {{_v[0-9]+}}: f64 = f();
+// REWRITES-MSVC-NEXT:     std::process::exit(({{_v[0-9]+}} == 0.0) as i32);
+// REWRITES-MSVC-NEXT: }
+// SLATE-FILECHECK-END rewrites-msvc

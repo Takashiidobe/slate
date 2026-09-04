@@ -1,3 +1,5 @@
+#include <features.h>
+
 #if !defined(__SLATE_LIBC_MSVC)
 #include_next <stddef.h>
 

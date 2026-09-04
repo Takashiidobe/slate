@@ -185,7 +185,15 @@ fn fixture_clang_arg_overrides(name: &str) -> Vec<String> {
 fn msvc_translation_ready(name: &str) -> bool {
     matches!(
         name,
-        "llp64" | "errno_stream_redirects" | "imported_data_and_link_names"
+        "llp64"
+            | "errno_stream_redirects"
+            | "imported_data_and_link_names"
+            | "wctype_surface"
+            | "float_surface"
+            | "long_double_macro_constant"
+            | "long_double_pointer"
+            | "scalar_layout"
+            | "stdio_surface"
     )
 }
 
