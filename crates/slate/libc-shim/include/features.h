@@ -73,6 +73,10 @@
 #error "The FreeBSD platform requires the FreeBSD libc profile."
 #endif
 
+#if defined(__SLATE_LIBC_GLIBC) && !defined(__SLATE_GLIBC_MINOR__)
+#error "The glibc libc profile requires __SLATE_GLIBC_MINOR__."
+#endif
+
 #if defined(__SLATE_PLATFORM_ANDROID) + defined(__SLATE_PLATFORM_MACOS) +      \
         defined(__SLATE_PLATFORM_FREEBSD) >                                    \
     1

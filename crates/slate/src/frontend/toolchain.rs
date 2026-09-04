@@ -79,6 +79,21 @@ pub enum TargetError {
         release: String,
         supported: &'static str,
     },
+    #[error("spawn getconf GNU_LIBC_VERSION: {source}")]
+    GlibcVersionQueryFailed {
+        #[source]
+        source: std::io::Error,
+    },
+    #[error("getconf GNU_LIBC_VERSION failed:\n{stderr}")]
+    GlibcVersionQueryUnsuccessful { stderr: String },
+    #[error("unrecognized `getconf GNU_LIBC_VERSION` output: `{text}`")]
+    UnrecognizedGlibcVersion { text: String },
+    #[error("unrecognized glibc minor version `{value}`: {source}")]
+    InvalidGlibcMinor {
+        value: String,
+        #[source]
+        source: std::num::ParseIntError,
+    },
 }
 
 #[derive(Debug, Error)]
@@ -448,6 +463,37 @@ fn freebsd_release(target: &str) -> Result<Option<(String, u32)>, TargetError> {
     Ok(Some((release, FREEBSD_SUPPORTED_VERSION_NUMBER)))
 }
 
+fn glibc_minor_version(target: &str) -> Result<Option<u32>, TargetError> {
+    let triple = parse_target(target)?;
+    if libc_name(&triple) != "glibc" {
+        return Ok(None);
+    }
+    let output = Command::new("getconf")
+        .arg("GNU_LIBC_VERSION")
+        .output()
+        .map_err(|source| TargetError::GlibcVersionQueryFailed { source })?;
+    if !output.status.success() {
+        return Err(TargetError::GlibcVersionQueryUnsuccessful {
+            stderr: String::from_utf8_lossy(&output.stderr).into_owned(),
+        });
+    }
+    let text = String::from_utf8_lossy(&output.stdout).trim().to_string();
+    let version = text
+        .strip_prefix("glibc ")
+        .ok_or_else(|| TargetError::UnrecognizedGlibcVersion { text: text.clone() })?;
+    let minor = version
+        .split('.')
+        .nth(1)
+        .ok_or_else(|| TargetError::UnrecognizedGlibcVersion { text: text.clone() })?;
+    minor
+        .parse::<u32>()
+        .map(Some)
+        .map_err(|source| TargetError::InvalidGlibcMinor {
+            value: minor.to_string(),
+            source,
+        })
+}
+
 pub fn uses_f64_long_double_abi() -> bool {
     matches!(
         active_target().as_str(),
@@ -504,6 +550,9 @@ pub fn target_args() -> Result<Vec<String>, TargetError> {
     let freebsd = freebsd_release(&target)?;
     if let Some((_, version_number)) = &freebsd {
         args.push(format!("-D__SLATE_FREEBSD_VERSION__={version_number}"));
+    }
+    if let Some(minor) = glibc_minor_version(&target)? {
+        args.push(format!("-D__SLATE_GLIBC_MINOR__={minor}"));
     }
     let clang_target_name = if let Some(api) = api {
         format!("{target}{api}")

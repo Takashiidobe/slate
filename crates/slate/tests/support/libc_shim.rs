@@ -85,6 +85,8 @@ impl LibcVariant {
 
 pub const FREEBSD_VERSION_NUMBER: u32 = 1_501_000;
 
+pub const GLIBC_MINOR_VERSION: u32 = 43;
+
 pub struct TestConfig {
     pub arch: Architecture,
     pub libc: LibcVariant,
@@ -167,6 +169,10 @@ impl TestConfig {
 
         if self.libc == LibcVariant::Bionic {
             defines.push("-D__SLATE_ANDROID_API__=21".to_string());
+        }
+
+        if self.libc == LibcVariant::Glibc {
+            defines.push(format!("-D__SLATE_GLIBC_MINOR__={GLIBC_MINOR_VERSION}"));
         }
 
         defines
