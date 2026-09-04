@@ -7,6 +7,7 @@ mod for_range;
 mod inline_temps;
 mod label_elide;
 mod libc_call;
+mod loop_to_while;
 mod param_spills;
 mod pattern_range;
 mod peel_casts;
@@ -34,6 +35,7 @@ pub(super) fn registry() -> Vec<Box<dyn NodeRule>> {
         Box::new(singleton_scopes::ScopeFlatten),
         Box::new(for_range::ForRangeRecover),
         Box::new(array_iter::ForArrayIterRecover),
+        Box::new(loop_to_while::LoopToWhile),
         Box::new(return_cleanup::ReturnSlotFold),
         Box::new(inline_temps::LateInlineTemps),
         Box::new(inline_temps::EffectfulTempForward),

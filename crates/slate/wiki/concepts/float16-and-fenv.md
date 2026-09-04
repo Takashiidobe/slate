@@ -35,6 +35,37 @@ and `cir_type_to_ctype`'s fallback silently mapped it to a 32-bit int. Any
 fixture hitting either path today would silently miscompile to `i32` rather
 than erroring.
 
+## TS 18661-3 library surface for `_Float16` (`slate-5exy.3.8`)
+
+C23's floating-formatting family (`strfromd`/`strfromf`/`strfroml`) is done —
+covered end-to-end by `tests/fixtures.library/c23_strfrom/` and the
+`strfromf`/`strfromd`/`strfroml` calls in `tests/fixtures/c23_library.c`. The
+remaining question was the wider TS 18661-3 surface: `strfromf16`/`strtof16`
+and the ~20 `f16`-suffixed `<math.h>` functions (`sqrtf16`, `fabsf16`, etc.)
+that would exist for `_Float16` alongside those.
+
+**Confirmed unavailable, not just undeclared under strict flags.** Probed
+directly against both this repo's `libc-shim/include` (nothing in
+`stdlib.h`/`math.h` declares any `f16`-suffixed symbol — Slate has never
+implemented this surface in its own shim) and the host's real glibc headers,
+including with `__STDC_WANT_IEC_60559_TYPES_EXT__`/`_GNU_SOURCE` defined —
+`strfromf16`/`strtof16`/`sqrtf16` all fail as undeclared regardless. Root
+cause: `/usr/include/bits/floatn-common.h` hardcodes
+`#define __HAVE_FLOAT16 0` unconditionally on this glibc — the gate every
+one of these declarations sits behind (`__HAVE_FLOAT16 && __GLIBC_USE
+(IEC_60559_TYPES_EXT)`) is permanently closed, independent of any feature-
+test macro. `nm -D` on the installed `libc.so.6`/`libm.so.6` confirms it goes
+deeper than headers: no `f16`-suffixed symbol is exported by either shared
+object, so there is nothing to link a reference binary against even if a
+declaration were forced. This is a toolchain/platform ceiling, not a Slate
+gap — same shape as the `_Float32`/`_Float64`/`_Float128` rejection above,
+one layer down (Clang accepts the *type*; glibc has no *library* for it).
+
+**Disposition**: no differential fixture is possible for this surface on the
+configured toolchain — there's no working C reference to diff against.
+Nothing in the shim needed adding. Revisit only if the configured glibc ever
+ships `__HAVE_FLOAT16 1` (tracked upstream as glibc bug 28457).
+
 ## Constrained floating point (`FENV_ACCESS`)
 
 `docs/floating-point-environment.md` (or its wiki successor) covers current
