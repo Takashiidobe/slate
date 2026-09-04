@@ -32,33 +32,60 @@ fn direct_index_match(expr: &Expr, ind_var: Ident) -> Option<Ident> {
     }
 }
 
-fn array_index_target(expr: &Expr, ind_var: Ident) -> Option<Ident> {
-    if let Some(arr) = direct_index_match(expr, ind_var) {
-        return Some(arr);
-    }
+fn index_search_children(expr: &Expr) -> Vec<&Expr> {
     match expr {
-        Expr::Binary { lhs, rhs, .. } => {
-            array_index_target(lhs, ind_var).or_else(|| array_index_target(rhs, ind_var))
-        }
+        Expr::Binary { lhs, rhs, .. } => vec![lhs, rhs],
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
-        | Expr::Transmute { expr, .. } => array_index_target(expr, ind_var),
-        Expr::Call { func, args, .. } => array_index_target(func, ind_var)
-            .or_else(|| args.iter().find_map(|arg| array_index_target(arg, ind_var))),
+        | Expr::Transmute { expr, .. } => vec![expr],
+        Expr::Call { func, args, .. } => {
+            let mut out = vec![func.as_ref()];
+            out.extend(args.iter());
+            out
+        }
         Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
-            array_index_target(recv, ind_var)
-                .or_else(|| args.iter().find_map(|arg| array_index_target(arg, ind_var)))
+            let mut out = vec![recv.as_ref()];
+            out.extend(args.iter());
+            out
         }
-        Expr::Field { base, .. } | Expr::TupleField { base, .. } => {
-            array_index_target(base, ind_var)
-        }
-        Expr::Index { base, index } => {
-            array_index_target(base, ind_var).or_else(|| array_index_target(index, ind_var))
-        }
-        _ => None,
+        Expr::Field { base, .. } | Expr::TupleField { base, .. } => vec![base],
+        Expr::Index { base, index } => vec![base, index],
+        _ => Vec::new(),
     }
+}
+
+fn index_search_children_mut(expr: &mut Expr) -> Vec<&mut Expr> {
+    match expr {
+        Expr::Binary { lhs, rhs, .. } => vec![lhs, rhs],
+        Expr::Unary { expr, .. }
+        | Expr::Cast { expr, .. }
+        | Expr::Ref { expr, .. }
+        | Expr::AddrOf { expr, .. }
+        | Expr::Transmute { expr, .. } => vec![expr],
+        Expr::Call { func, args, .. } => {
+            let mut out = vec![func.as_mut()];
+            out.extend(args.iter_mut());
+            out
+        }
+        Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
+            let mut out = vec![recv.as_mut()];
+            out.extend(args.iter_mut());
+            out
+        }
+        Expr::Field { base, .. } | Expr::TupleField { base, .. } => vec![base],
+        Expr::Index { base, index } => vec![base, index],
+        _ => Vec::new(),
+    }
+}
+
+fn array_index_target(expr: &Expr, ind_var: Ident) -> Option<Ident> {
+    direct_index_match(expr, ind_var).or_else(|| {
+        index_search_children(expr)
+            .into_iter()
+            .find_map(|child| array_index_target(child, ind_var))
+    })
 }
 
 fn count_var(arena: &Arena, id: NodeId, name: Ident) -> usize {
@@ -87,35 +114,9 @@ fn replace_index_use(expr: &mut Expr, arr: Ident, ind_var: Ident) -> bool {
         *expr = Expr::Var(ind_var);
         return true;
     }
-    match expr {
-        Expr::Binary { lhs, rhs, .. } => {
-            replace_index_use(lhs, arr, ind_var) || replace_index_use(rhs, arr, ind_var)
-        }
-        Expr::Unary { expr, .. }
-        | Expr::Cast { expr, .. }
-        | Expr::Ref { expr, .. }
-        | Expr::AddrOf { expr, .. }
-        | Expr::Transmute { expr, .. } => replace_index_use(expr, arr, ind_var),
-        Expr::Call { func, args, .. } => {
-            replace_index_use(func, arr, ind_var)
-                || args
-                    .iter_mut()
-                    .any(|arg| replace_index_use(arg, arr, ind_var))
-        }
-        Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
-            replace_index_use(recv, arr, ind_var)
-                || args
-                    .iter_mut()
-                    .any(|arg| replace_index_use(arg, arr, ind_var))
-        }
-        Expr::Field { base, .. } | Expr::TupleField { base, .. } => {
-            replace_index_use(base, arr, ind_var)
-        }
-        Expr::Index { base, index } => {
-            replace_index_use(base, arr, ind_var) || replace_index_use(index, arr, ind_var)
-        }
-        _ => false,
-    }
+    index_search_children_mut(expr)
+        .into_iter()
+        .any(|child| replace_index_use(child, arr, ind_var))
 }
 
 fn replace_index_use_stmt(arena: &mut Arena, id: NodeId, arr: Ident, ind_var: Ident) -> bool {
