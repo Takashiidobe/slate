@@ -545,6 +545,21 @@ fn effective_type_alignment(
     type_alignment(ty)
 }
 
+fn empty_record_marker_field() -> crate::frontend::c_ast::Decl {
+    crate::frontend::c_ast::Decl {
+        name: "__slate_empty".into(),
+        comments: Vec::new(),
+        ty: crate::frontend::c_ast::CType::Array(
+            Box::new(crate::frontend::c_ast::CType::Int {
+                signed: false,
+                bits: 8,
+            }),
+            Some(0),
+        ),
+        bit_width: None,
+    }
+}
+
 fn lower_record_def(
     record: &crate::frontend::c_ast::Record,
     vis: Visibility,
@@ -556,6 +571,16 @@ fn lower_record_def(
     if record.fields.is_empty() && !allow_empty {
         return Vec::new();
     }
+    let empty_storage;
+    let record = if record.fields.is_empty() {
+        empty_storage = crate::frontend::c_ast::Record {
+            fields: vec![empty_record_marker_field()],
+            ..record.clone()
+        };
+        &empty_storage
+    } else {
+        record
+    };
     let is_union = record.kind == RecordKind::Union;
     let fields: Vec<RecordField> = record
         .fields
@@ -1965,25 +1990,7 @@ impl __SlateVaArgs {
         }
         let storage_record;
         let mut synthesized_storage = false;
-        let record = if record.kind == RecordKind::Union && record.fields.is_empty() {
-            synthesized_storage = true;
-            storage_record = crate::frontend::c_ast::Record {
-                fields: vec![crate::frontend::c_ast::Decl {
-                    name: "__slate_empty".into(),
-                    comments: Vec::new(),
-                    ty: crate::frontend::c_ast::CType::Array(
-                        Box::new(crate::frontend::c_ast::CType::Int {
-                            signed: false,
-                            bits: 8,
-                        }),
-                        Some(0),
-                    ),
-                    bit_width: None,
-                }],
-                ..record.clone()
-            };
-            &storage_record
-        } else if let Some(fields) = self.bitfield_storage_fields(record) {
+        let record = if let Some(fields) = self.bitfield_storage_fields(record) {
             synthesized_storage = true;
             storage_record = crate::frontend::c_ast::Record {
                 fields,
@@ -2308,6 +2315,12 @@ impl __SlateVaArgs {
                                 .collect(),
                         };
                     }
+                    if record.fields.is_empty() {
+                        return Expr::StructLit {
+                            name: record_lit_name(record),
+                            fields: vec![("__slate_empty".into(), Expr::ArrayLit(Vec::new()))],
+                        };
+                    }
                     match record.kind {
                         RecordKind::Struct => {
                             let fields = record
@@ -2331,15 +2344,6 @@ impl __SlateVaArgs {
                             );
                         }
                         RecordKind::Union => {
-                            if record.fields.is_empty() {
-                                return Expr::StructLit {
-                                    name: record_lit_name(record),
-                                    fields: vec![(
-                                        "__slate_empty".into(),
-                                        Expr::ArrayLit(Vec::new()),
-                                    )],
-                                };
-                            }
                             let name = sanitize_ident(&record.name).into_string();
                             return Expr::Unsafe(Box::new(crate::backend::rust_ast::Block {
                                 stmts: Vec::new(),
@@ -2467,7 +2471,7 @@ impl __SlateVaArgs {
             && self
                 .records
                 .get(name)
-                .is_some_and(|record| record.kind == RecordKind::Union && record.fields.is_empty())
+                .is_some_and(|record| record.fields.is_empty())
         {
             return Some(self.default_value_expr(ty));
         }

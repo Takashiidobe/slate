@@ -110,7 +110,9 @@ int classify_wide(wint_t value, locale_t locale) {
 // LOWERING-MACOS-EMPTY:
 // LOWERING-MACOS-NEXT: #[repr(C)]
 // LOWERING-MACOS-NEXT: #[derive(Clone, Copy)]
-// LOWERING-MACOS-NEXT: struct __sFILEX {}
+// LOWERING-MACOS-NEXT: struct __sFILEX {
+// LOWERING-MACOS-NEXT:     __slate_empty: [u8; 0],
+// LOWERING-MACOS-NEXT: }
 // LOWERING-MACOS-EMPTY:
 // LOWERING-MACOS-NEXT: #[repr(C)]
 // LOWERING-MACOS-NEXT: #[derive(Clone, Copy)]
@@ -121,7 +123,9 @@ int classify_wide(wint_t value, locale_t locale) {
 // LOWERING-MACOS-EMPTY:
 // LOWERING-MACOS-NEXT: #[repr(C)]
 // LOWERING-MACOS-NEXT: #[derive(Clone, Copy)]
-// LOWERING-MACOS-NEXT: struct _xlocale {}
+// LOWERING-MACOS-NEXT: struct _xlocale {
+// LOWERING-MACOS-NEXT:     __slate_empty: [u8; 0],
+// LOWERING-MACOS-NEXT: }
 // LOWERING-MACOS-EMPTY:
 // LOWERING-MACOS-NEXT: unsafe extern "C" {
 // LOWERING-MACOS-NEXT:     static mut __stdinp: *mut __sFILE;
