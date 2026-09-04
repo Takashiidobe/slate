@@ -2642,7 +2642,22 @@ fn attached_comment(node: &Value) -> Vec<String> {
     children(node)
         .iter()
         .find(|child| kind(child) == Some("FullComment"))
+        .filter(|child| !is_filecheck_annotation_comment(child))
         .map_or_else(Vec::new, |child| full_comment_lines(child))
+}
+
+fn is_filecheck_annotation_comment(node: &Value) -> bool {
+    if kind(node) == Some("InlineCommandComment")
+        && matches!(
+            node.get("name").and_then(Value::as_str),
+            Some("lowering" | "rewrite")
+        )
+    {
+        return true;
+    }
+    children(node)
+        .iter()
+        .any(|child| is_filecheck_annotation_comment(child))
 }
 
 fn full_comment_lines(node: &Value) -> Vec<String> {

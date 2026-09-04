@@ -27,10 +27,19 @@ FIXTURE_STD_OVERRIDES = {
     "gnu_asm_register_variable": "gnu23",
     "c23_typeof_unqual": "gnu23",
 }
+FIXTURE_CLANG_ARG_OVERRIDES = {
+    "goto_temp_cross_state": ["-O2"],
+    "ptr_param_field_addr_of_mut": ["-O2"],
+    "branch_hint_builtins": ["-O1"],
+}
 
 
 def fixture_std(path):
     return FIXTURE_STD_OVERRIDES.get(path.stem, "c23")
+
+
+def fixture_clang_args(path):
+    return FIXTURE_CLANG_ARG_OVERRIDES.get(path.stem, [])
 
 
 ANNOTATION_PATTERN = re.compile(
@@ -387,12 +396,19 @@ def insert_generated_blocks(source, blocks):
     return f"{source}{separator}{blocks}\n"
 
 
-def translate_output(path, command, environment=None):
+def translate_output(path, command, environment=None, fixture_path=None):
+    fixture_path = fixture_path or path
     env = os.environ.copy()
     if environment:
         env.update(environment)
     clang_args = shlex.split(env.get("SLATE_CLANG_ARGS", ""))
-    env["SLATE_CLANG_ARGS"] = shlex.join([*clang_args, f"-std={fixture_std(path)}"])
+    env["SLATE_CLANG_ARGS"] = shlex.join(
+        [
+            *clang_args,
+            f"-std={fixture_std(fixture_path)}",
+            *fixture_clang_args(fixture_path),
+        ]
+    )
     result = subprocess.run(
         [*command, str(path.resolve())],
         check=False,
@@ -419,7 +435,7 @@ def translate_instrumented(path, source, command, environment=None):
         ) as file:
             file.write(source)
             temporary = Path(file.name)
-        rust = translate_output(temporary, command, environment)
+        rust = translate_output(temporary, command, environment, fixture_path=path)
         return rust.replace(str(temporary.resolve()), str(path.resolve()))
     finally:
         if temporary is not None:

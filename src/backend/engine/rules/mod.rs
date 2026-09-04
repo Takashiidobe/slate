@@ -4,6 +4,7 @@ mod constant_index_casts;
 mod cstr_literal;
 mod dead_store;
 mod for_range;
+mod getenv_var;
 mod inline_temps;
 mod label_elide;
 mod libc_call;
@@ -44,6 +45,7 @@ pub(super) fn registry() -> Vec<Box<dyn NodeRule>> {
         Box::new(constant_index_casts::ConstantIndexCasts),
         Box::new(pattern_range::MatchRangeFold),
         Box::new(cstr_literal::CStrLiteral),
+        Box::new(getenv_var::GetenvVar),
         Box::new(compound_assign::CompoundAssignRecover),
         Box::new(dead_store::DeadStore),
         Box::new(return_cleanup::FinalReturnTail),
