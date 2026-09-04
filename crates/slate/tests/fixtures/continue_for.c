@@ -123,10 +123,7 @@ int main(void) {
 // REWRITES-NEXT:     let mut total: i32 = 0;
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     i = 0;
-// REWRITES-NEXT:     '__loop0: loop {
-// REWRITES-NEXT:         if !(i <= n) {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     '__loop0: while i <= n {
 // REWRITES-NEXT:         if i % 2 == 0 {
 // REWRITES-NEXT:         } else {
 // REWRITES-NEXT:             total += i;

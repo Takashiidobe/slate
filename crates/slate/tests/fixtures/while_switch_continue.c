@@ -147,10 +147,7 @@ int main(void) {
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     let mut steps: i32 = 0;
-// REWRITES-NEXT:     '__loop0: loop {
-// REWRITES-NEXT:         if !(i < 6) {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     '__loop0: while i < 6 {
 // REWRITES-NEXT:         '__continue0: {
 // REWRITES-NEXT:             let mut x: i32 = i % 3;
 // REWRITES-NEXT:             match x {

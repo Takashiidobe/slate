@@ -173,7 +173,9 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut p: Parser = Parser { processor: None };
-// REWRITES-NEXT:     for i in 0..2 {
+// REWRITES-NEXT:     let mut i: i32 = 0;
+// REWRITES-NEXT:     i = 0;
+// REWRITES-NEXT:     while i < 2 {
 // REWRITES-NEXT:         let mut result: aligned::Aligned<aligned::A4, Status> = aligned::Aligned(Status::E_OK);
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = i == 0;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: Option<unsafe extern "C-unwind" fn(i32) -> u32> = if {{_v[0-9]+}} {
@@ -192,6 +194,7 @@ int main(void) {
 // REWRITES-NEXT:         } else {
 // REWRITES-NEXT:             unsafe { printf(c"fail\n".as_ptr()) };
 // REWRITES-NEXT:         }
+// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }

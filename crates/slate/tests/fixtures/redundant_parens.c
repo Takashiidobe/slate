@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+// @rewrite-fn-begin
 int classify(int a, int b) {
   int r = 0;
   while (a < b) {
@@ -13,18 +14,12 @@ int classify(int a, int b) {
   int m = (a & b) + (a << 1);
   return r + t + m;
 }
+// @rewrite-fn-end
 
 int main() {
   printf("%d\n", classify(2, 5));
   return 0;
 }
-
-// REWRITES-LABEL: {{^}}fn classify(
-// REWRITES-DAG: if !(a < b) {
-// REWRITES-NOT: if (a == b)
-// REWRITES-NOT: if (a > b)
-// REWRITES-NOT: if (!(a < b))
-// REWRITES: {{^}}}
 
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
@@ -122,3 +117,25 @@ int main() {
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
+
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES-DAG: fn classify(mut a: i32, mut b: i32) -> i32 {
+// REWRITES-DAG:     let mut r: i32 = 0;
+// REWRITES-DAG:     while a < b {
+// REWRITES-DAG:         a += 1;
+// REWRITES-DAG:         r += 1;
+// REWRITES-DAG:     }
+// REWRITES-DAG:     if a == b {
+// REWRITES-DAG:         r += 10;
+// REWRITES-DAG:     }
+// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = if a > b {
+// REWRITES-DAG:         let {{_v[0-9]+}}: i32 = a - b;
+// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     } else {
+// REWRITES-DAG:         let {{_v[0-9]+}}: i32 = b - a;
+// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     };
+// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-DAG:     r + {{_v[0-9]+}} + ((a & b) + (a << {{_v[0-9]+}}))
+// REWRITES-DAG: }
+// SLATE-FILECHECK-END rewrites

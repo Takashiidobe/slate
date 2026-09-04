@@ -4,6 +4,7 @@ struct cursor {
   int *ptr;
 };
 
+// @rewrite-fn-begin
 int main(void) {
   int values[4];
   for (int i = 0; i < 4; i++) {
@@ -16,12 +17,7 @@ int main(void) {
   printf("%d %ld\n", *c.ptr + *d.ptr, d.ptr - c.ptr);
   return 0;
 }
-
-// REWRITES-LABEL: {{^}}fn main() {
-// REWRITES-NOT: c.ptr
-// REWRITES-NOT: d.ptr
-// REWRITES-NOT: .offset_from(
-// REWRITES: {{^}}}
+// @rewrite-fn-end
 
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
@@ -104,3 +100,39 @@ int main(void) {
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
+
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES-DAG: fn main() {
+// REWRITES-DAG:     let mut values: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
+// REWRITES-DAG:     let mut c: cursor = cursor {
+// REWRITES-DAG:         ptr: std::ptr::null_mut(),
+// REWRITES-DAG:     };
+// REWRITES-DAG:     let mut d: cursor = cursor {
+// REWRITES-DAG:         ptr: std::ptr::null_mut(),
+// REWRITES-DAG:     };
+// REWRITES-DAG:     let mut i: i32 = 0;
+// REWRITES-DAG:     i = 0;
+// REWRITES-DAG:     while i < 4 {
+// REWRITES-DAG:         let {{_v[0-9]+}}: i32 = i;
+// REWRITES-DAG:         let {{_v[0-9]+}}: i32 = unsafe { getchar() };
+// REWRITES-DAG:         values[((i as i64) as usize)] = {{_v[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-DAG:         i += 1;
+// REWRITES-DAG:     }
+// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = values.as_mut_ptr() as *mut i32;
+// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(1) };
+// REWRITES-DAG:     c.ptr = {{_v[0-9]+}};
+// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = values.as_mut_ptr() as *mut i32;
+// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(3) };
+// REWRITES-DAG:     d.ptr = {{_v[0-9]+}};
+// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = d.ptr;
+// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i32 = c.ptr;
+// REWRITES-DAG:     unsafe {
+// REWRITES-DAG:         printf(
+// REWRITES-DAG:             c"%d %ld\n".as_ptr(),
+// REWRITES-DAG:             (unsafe { *c.ptr }) + unsafe { *d.ptr },
+// REWRITES-DAG:             unsafe { {{_v[0-9]+}}.offset_from({{_v[0-9]+}}) as i64 },
+// REWRITES-DAG:         )
+// REWRITES-DAG:     };
+// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG: }
+// SLATE-FILECHECK-END rewrites

@@ -167,10 +167,7 @@ int main(void) {
 // REWRITES-NEXT:     ];
 // REWRITES-NEXT:     *actual = Status::E_OK;
 // REWRITES-NEXT:     let mut i: i32 = 0;
-// REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         if !(i < 2) {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     while i < 2 {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: bool = (*actual as u32) != (cases[((i as i64) as usize)].expected as u32);
 // REWRITES-NEXT:         if {{_v[0-9]+}} {
 // REWRITES-NEXT:             unsafe { printf(c"mismatch %d\n".as_ptr(), i) };

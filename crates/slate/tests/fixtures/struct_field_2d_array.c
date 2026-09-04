@@ -376,7 +376,9 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn fill({{arg[0-9]+}}: &mut table) {
-// REWRITES-NEXT:     for i in 0..4 {
+// REWRITES-NEXT:     let mut i: i32 = 0;
+// REWRITES-NEXT:     i = 0;
+// REWRITES-NEXT:     while i < 4 {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i64 = 0;
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:             (*{{arg[0-9]+}}).rows[((i as i64) as usize)][({{_v[0-9]+}} as usize)] = (97 + i) as i8;
@@ -389,6 +391,7 @@ int main(void) {
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:             (*{{arg[0-9]+}}).rows[((i as i64) as usize)][({{_v[0-9]+}} as usize)] = 0;
 // REWRITES-NEXT:         }
+// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
@@ -407,15 +410,24 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn fill_cube({{arg[0-9]+}}: &mut cube) {
-// REWRITES-NEXT:     for i in 0..2 {
-// REWRITES-NEXT:         for j in 0..3 {
-// REWRITES-NEXT:             for k in 0..4 {
+// REWRITES-NEXT:     let mut i: i32 = 0;
+// REWRITES-NEXT:     i = 0;
+// REWRITES-NEXT:     while i < 2 {
+// REWRITES-NEXT:         let mut j: i32 = 0;
+// REWRITES-NEXT:         j = 0;
+// REWRITES-NEXT:         while j < 3 {
+// REWRITES-NEXT:             let mut k: i32 = 0;
+// REWRITES-NEXT:             k = 0;
+// REWRITES-NEXT:             while k < 4 {
 // REWRITES-NEXT:                 unsafe {
 // REWRITES-NEXT:                     (*{{arg[0-9]+}}).v[((i as i64) as usize)][((j as i64) as usize)]
 // REWRITES-NEXT:                         [((k as i64) as usize)] = i * 100 + j * 10 + k;
 // REWRITES-NEXT:                 }
+// REWRITES-NEXT:                 k += 1;
 // REWRITES-NEXT:             }
+// REWRITES-NEXT:             j += 1;
 // REWRITES-NEXT:         }
+// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
@@ -426,14 +438,20 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut [i32; 4] =
 // REWRITES-NEXT:         (unsafe { std::ptr::addr_of_mut!((*({{arg[0-9]+}} as *mut cube)).v[1]) }) as *mut [i32; 4];
 // REWRITES-NEXT:     plane = {{_v[0-9]+}};
-// REWRITES-NEXT:     for j in 0..3 {
-// REWRITES-NEXT:         for k in 0..4 {
+// REWRITES-NEXT:     let mut j: i32 = 0;
+// REWRITES-NEXT:     j = 0;
+// REWRITES-NEXT:     while j < 3 {
+// REWRITES-NEXT:         let mut k: i32 = 0;
+// REWRITES-NEXT:         k = 0;
+// REWRITES-NEXT:         while k < 4 {
 // REWRITES-NEXT:             let {{_v[0-9]+}}: i64 = k as i64;
 // REWRITES-NEXT:             let {{_v[0-9]+}}: *mut [i32; 4] = plane;
 // REWRITES-NEXT:             let {{_v[0-9]+}}: *mut [i32; 4] = unsafe { {{_v[0-9]+}}.offset(j as isize) };
 // REWRITES-NEXT:             let {{_v[0-9]+}}: *mut [i32; 4] = unsafe { {{_v[0-9]+}}.add(0) };
 // REWRITES-NEXT:             total += unsafe { (*{{_v[0-9]+}})[({{_v[0-9]+}} as usize)] };
+// REWRITES-NEXT:             k += 1;
 // REWRITES-NEXT:         }
+// REWRITES-NEXT:         j += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     total
 // REWRITES-NEXT: }
@@ -445,10 +463,13 @@ int main(void) {
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     fill(unsafe { &mut (*std::ptr::addr_of_mut!(t)) });
 // REWRITES-NEXT:     fill_via_ptr(unsafe { &mut (*std::ptr::addr_of_mut!(t)) }, 2);
-// REWRITES-NEXT:     for i in 0..4 {
+// REWRITES-NEXT:     let mut i: i32 = 0;
+// REWRITES-NEXT:     i = 0;
+// REWRITES-NEXT:     while i < 4 {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = c"%s\n".as_ptr() as *mut i8;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i8 = std::ptr::addr_of_mut!(t.rows[((i as i64) as usize)]) as *mut i8;
 // REWRITES-NEXT:         unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
+// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     fill_cube(unsafe { &mut (*std::ptr::addr_of_mut!(c)) });
 // REWRITES-NEXT:     unsafe {

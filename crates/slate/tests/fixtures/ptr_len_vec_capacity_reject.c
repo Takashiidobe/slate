@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// @rewrite-fn-begin
 static int consume_extra_capacity(int *values, int len) {
   int sum = 0;
   for (int i = 0; i < len; ++i) {
@@ -10,6 +11,7 @@ static int consume_extra_capacity(int *values, int len) {
   free(values);
   return sum;
 }
+// @rewrite-fn-end
 
 int main(void) {
   int  len    = 3;
@@ -18,9 +20,6 @@ int main(void) {
   printf("%d\n", sum);
   return 0;
 }
-
-// REWRITES: fn consume_extra_capacity(arg{{[0-9]+}}: *mut i32, arg{{[0-9]+}}: i32) -> i32
-// REWRITES-NOT: Vec::from_raw_parts(
 
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
@@ -111,3 +110,25 @@ int main(void) {
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
+
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES-DAG: fn consume_extra_capacity(mut values: *mut i32, mut len: i32) -> i32 {
+// REWRITES-DAG:     let mut sum: i32 = 0;
+// REWRITES-DAG:     let mut i: i32 = 0;
+// REWRITES-DAG:     i = 0;
+// REWRITES-DAG:     while i < len {
+// REWRITES-DAG:         let {{_v[0-9]+}}: i32 = i + 1;
+// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = values;
+// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
+// REWRITES-DAG:         unsafe {
+// REWRITES-DAG:             *{{_v[0-9]+}} = {{_v[0-9]+}};
+// REWRITES-DAG:         }
+// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = values;
+// REWRITES-DAG:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
+// REWRITES-DAG:         sum += unsafe { *{{_v[0-9]+}} };
+// REWRITES-DAG:         i += 1;
+// REWRITES-DAG:     }
+// REWRITES-DAG:     unsafe { free(values as *mut core::ffi::c_void) };
+// REWRITES-DAG:     sum
+// REWRITES-DAG: }
+// SLATE-FILECHECK-END rewrites

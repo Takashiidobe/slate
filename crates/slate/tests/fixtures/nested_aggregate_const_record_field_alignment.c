@@ -300,10 +300,7 @@ int main(void) {
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let mut i: i32 = 0;
-// REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         if !(i < 8) {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     while i < 8 {
 // REWRITES-NEXT:         unsafe {
 // REWRITES-NEXT:             printf(
 // REWRITES-NEXT:                 c"%d ".as_ptr(),

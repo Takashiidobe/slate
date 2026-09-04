@@ -287,10 +287,13 @@ int main(void) {
 // REWRITES-NEXT:         ap = __slate_va_args.clone();
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     total = (0 as i32) as f16;
-// REWRITES-NEXT:     for i in 0..n {
+// REWRITES-NEXT:     let mut i: i32 = 0;
+// REWRITES-NEXT:     i = 0;
+// REWRITES-NEXT:     while i < n {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: f32 = total as f32;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: f16 = unsafe { ap.next_arg::<f16>() };
 // REWRITES-NEXT:         total = ({{_v[0-9]+}} + ({{_v[0-9]+}} as f32)) as f16;
+// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     total
 // REWRITES-NEXT: }

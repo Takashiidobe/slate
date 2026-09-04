@@ -103,10 +103,13 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe fn sum4(mut arr: *mut i32) -> i32 {
 // REWRITES-NEXT:     let mut s: i32 = 0;
-// REWRITES-NEXT:     for i in 0..4 {
+// REWRITES-NEXT:     let mut i: i32 = 0;
+// REWRITES-NEXT:     i = 0;
+// REWRITES-NEXT:     while i < 4 {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = arr;
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.offset((i as i64) as isize) };
 // REWRITES-NEXT:         s += unsafe { *{{_v[0-9]+}} };
+// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     s
 // REWRITES-NEXT: }

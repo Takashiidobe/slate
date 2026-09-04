@@ -1,20 +1,26 @@
 int        real_global = 12;
 extern int alias_global __attribute__((alias("real_global")));
 
+// @lowering-fn-begin
+// @rewrite-fn-begin
 int main(void) {
   int result;
-  // @lowering-begin
-  // @rewrite-begin
   result = alias_global;
-  // @rewrite-end
-  // @lowering-end
   return result;
 }
+// @rewrite-fn-end
+// @lowering-fn-end
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: let {{_v[0-9]+}}: i32 = unsafe { real_global };
+// LOWERING-DAG: fn main() {
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = unsafe { real_global };
+// LOWERING-DAG:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: let {{_v[0-9]+}}: i32 = unsafe { real_global };
+// REWRITES-DAG: fn main() {
+// REWRITES-DAG:     std::process::exit((unsafe { real_global }) as i32);
+// REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

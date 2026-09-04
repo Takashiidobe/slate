@@ -11,33 +11,54 @@ static void dump80(const char *name, long double value) {
   printf("\n");
 }
 
+// @lowering-fn-begin
+// @rewrite-fn-begin
 int main(void) {
   char       *end;
-  // @lowering-begin
-  // @rewrite-begin
   long double value = strtold("0x1.0000000000000002p0", &end);
-  // @rewrite-end
-  // @lowering-end
   dump80("strtold", value);
   printf("%d\n", *end == '\0');
   return 0;
 }
+// @rewrite-fn-end
+// @lowering-fn-end
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: let {{_v[0-9]+}}: *mut i8 = b"0x1.0000000000000002p0\0".as_ptr() as *mut i8;
-// LOWERING-DAG: let {{_v[0-9]+}}: LongDouble = unsafe {
-// LOWERING-DAG:     __slate_strtold__rf80_pc_ppc(
-// LOWERING-DAG:         {{_v[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-DAG:         std::ptr::addr_of_mut!(end) as *mut *mut core::ffi::c_char,
-// LOWERING-DAG:     )
-// LOWERING-DAG: };
+// LOWERING-DAG: fn main() {
+// LOWERING-DAG:     let mut end: *mut i8 = std::ptr::null_mut();
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i8 = b"0x1.0000000000000002p0\0".as_ptr() as *mut i8;
+// LOWERING-DAG:     let {{_v[0-9]+}}: LongDouble = unsafe {
+// LOWERING-DAG:         __slate_strtold__rf80_pc_ppc(
+// LOWERING-DAG:             {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-DAG:             std::ptr::addr_of_mut!(end) as *mut *mut core::ffi::c_char,
+// LOWERING-DAG:         )
+// LOWERING-DAG:     };
+// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i8 = b"strtold\0".as_ptr() as *mut i8;
+// LOWERING-DAG:     dump80({{_v[0-9]+}}, {{_v[0-9]+}});
+// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i8 = end;
+// LOWERING-DAG:     let {{_v[0-9]+}}: i8 = unsafe { *{{_v[0-9]+}} };
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} == {{_v[0-9]+}};
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-DAG:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: let {{_v[0-9]+}}: LongDouble = unsafe {
-// REWRITES-DAG:     __slate_strtold__rf80_pc_ppc(
-// REWRITES-DAG:         c"0x1.0000000000000002p0".as_ptr(),
-// REWRITES-DAG:         std::ptr::addr_of_mut!(end) as *mut *mut core::ffi::c_char,
-// REWRITES-DAG:     )
-// REWRITES-DAG: };
+// REWRITES-DAG: fn main() {
+// REWRITES-DAG:     let mut end: *mut i8 = std::ptr::null_mut();
+// REWRITES-DAG:     dump80(c"strtold".as_ptr() as *mut i8, unsafe {
+// REWRITES-DAG:         __slate_strtold__rf80_pc_ppc(
+// REWRITES-DAG:             c"0x1.0000000000000002p0".as_ptr(),
+// REWRITES-DAG:             std::ptr::addr_of_mut!(end) as *mut *mut core::ffi::c_char,
+// REWRITES-DAG:         )
+// REWRITES-DAG:     });
+// REWRITES-DAG:     unsafe { printf(c"%d\n".as_ptr(), (((unsafe { *end }) as i32) == 0) as i32) };
+// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

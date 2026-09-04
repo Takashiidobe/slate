@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 from collections import Counter
+import glob
 import os
 import re
 import shlex
@@ -11,6 +12,16 @@ import tempfile
 from pathlib import Path
 
 TARGET_FIXTURE_DIRECTORIES = {"bionic", "macos", "msvc"}
+FIXTURE_GLOB_ROOTS = (
+    "tests/fixtures",
+    "tests/fixtures/bionic",
+    "tests/fixtures/macos",
+    "tests/fixtures/msvc",
+    "tests/fixtures.link",
+    "tests/fixtures.cfg",
+    "tests/fixtures.multi",
+    "tests/fixtures.library",
+)
 SOURCE_ROOT_PATTERN = "__SLATE_FILECHECK_SOURCE_ROOT__"
 FIXTURE_STD_OVERRIDES = {
     "gnu_asm_register_variable": "gnu23",
@@ -114,7 +125,7 @@ def strip_attribute_groups(text):
 
 def c_function_definition_name(lines):
     head = strip_attribute_groups("\n".join(lines).split("{", 1)[0])
-    for match in re.finditer(r"\b([A-Za-z_]\w*)\s*\(", head):
+    for match in re.finditer(r"\b([^\W\d]\w*)\s*\(", head):
         if match.group(1) not in C_DECLARATOR_KEYWORDS:
             return match.group(1)
     return None
@@ -204,6 +215,8 @@ def extract_fn_item(lines, name):
 
 
 def extract_generated_regions(rust, fn_targets=None):
+    if not rust:
+        return {}
     lines = rust.splitlines()
     regions = {}
     for marker_id, name in (fn_targets or {}).items():
@@ -709,11 +722,51 @@ def make_profiles(slate, targets, profile_name):
     return profiles
 
 
+def resolve_paths(raw_args):
+    resolved = []
+    seen = set()
+    for raw in raw_args:
+        literal = Path(raw)
+        if literal.exists():
+            matches = [literal]
+        else:
+            matches = sorted(Path(p) for p in glob.glob(raw, recursive=True))
+            if not matches and "/" not in raw:
+                for root in FIXTURE_GLOB_ROOTS:
+                    root_path = Path(root)
+                    if not root_path.is_dir():
+                        continue
+                    matches.extend(sorted(root_path.glob(raw)))
+                    matches.extend(sorted(root_path.glob(f"{raw}.c")))
+        if not matches:
+            raise SystemExit(f"error: no fixtures matched {raw!r}")
+        for match in matches:
+            if match not in seen:
+                seen.add(match)
+                resolved.append(match)
+    return resolved
+
+
+def infer_mode(path, project_flag, library_flag):
+    if project_flag:
+        return "project"
+    if library_flag:
+        return "library"
+    parts = path.parts
+    if "fixtures.multi" in parts:
+        return "project"
+    if "fixtures.library" in parts:
+        return "library"
+    return "plain"
+
+
 def main(argv):
     parser = argparse.ArgumentParser(
         description="generate stable Slate FileCheck scaffolding"
     )
-    parser.add_argument("paths", nargs="+", type=Path)
+    parser.add_argument(
+        "paths", nargs="+", help="fixture paths, or glob patterns against them"
+    )
     parser.add_argument(
         "--profile", choices=("lowering", "rewrites", "both"), default="both"
     )
@@ -739,12 +792,14 @@ def main(argv):
             parser.error(f"--target must be PREFIX=TRIPLE, got {target!r}")
         explicit_targets.append((prefix, target_environment(triple)))
 
-    for path in args.paths:
-        if args.project or args.library_project:
+    for path in resolve_paths(args.paths):
+        path_mode = infer_mode(path, args.project, args.library_project)
+        if path_mode in ("project", "library"):
+            library = path_mode == "library"
             if not path.is_dir():
                 if path.is_file():
                     path = path.parent
-                    if args.library_project and path.name == "src":
+                    if library and path.name == "src":
                         path = path.parent
                 else:
                     parser.error(f"project path does not exist: {path}")
@@ -752,7 +807,7 @@ def main(argv):
                 [
                     p
                     for p in sorted(path.iterdir())
-                    if p.is_dir() and project_sources(p, args.library_project)
+                    if p.is_dir() and project_sources(p, library)
                 ]
                 if (
                     path.name.startswith("fixtures.multi")
@@ -768,7 +823,7 @@ def main(argv):
                         profiles,
                         args.in_place,
                         slate,
-                        args.library_project,
+                        library,
                     )
                 except RuntimeError as error:
                     print(f"skip: {proj}: {error}", file=sys.stderr)

@@ -1,12 +1,15 @@
 static int bump(int value) { return value + 1; }
 
+// @rewrite-fn-begin
 static int maybe_apply(int (*op)(int), int value) {
   if (op) {
     return op(value);
   }
   return value;
 }
+// @rewrite-fn-end
 
+// @rewrite-fn-begin
 int main(void) {
   int (*op)(int) = 0;
   int total      = maybe_apply(op, 4);
@@ -19,12 +22,7 @@ int main(void) {
   }
   return total == 10 ? 0 : 1;
 }
-
-// REWRITES-DAG: .is_some()
-// REWRITES-NOT: != None
-// REWRITES-NOT: == None
-// REWRITES-NOT: std::ptr::null_mut()
-// REWRITES-NOT: let _v{{[0-9]+}}: Option<fn(i32) -> i32> = op;
+// @rewrite-fn-end
 
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![allow(
@@ -122,3 +120,38 @@ int main(void) {
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
+
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES-DAG: fn maybe_apply(mut op: Option<unsafe extern "C-unwind" fn(i32) -> i32>, mut value: i32) -> i32 {
+// REWRITES-DAG:     let {{_v[0-9]+}}: bool = op.is_some();
+// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:         return unsafe { op.unwrap()(value) };
+// REWRITES-DAG:     }
+// REWRITES-DAG:     value
+// REWRITES-DAG: }
+// REWRITES-DAG: fn main() {
+// REWRITES-DAG:     let mut __retval: i32 = 0;
+// REWRITES-DAG:     let mut op: Option<unsafe extern "C-unwind" fn(i32) -> i32> = None;
+// REWRITES-DAG:     let mut total: i32 = maybe_apply(op, 4);
+// REWRITES-DAG:     op = unsafe {
+// REWRITES-DAG:         std::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
+// REWRITES-DAG:             bump as *const (),
+// REWRITES-DAG:         )
+// REWRITES-DAG:     };
+// REWRITES-DAG:     let {{_v[0-9]+}}: bool = op != None;
+// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:         let {{_v[0-9]+}}: i32 = total;
+// REWRITES-DAG:         let {{_v[0-9]+}}: i32 = maybe_apply(op, 5);
+// REWRITES-DAG:         total = {{_v[0-9]+}} + {{_v[0-9]+}};
+// REWRITES-DAG:     }
+// REWRITES-DAG:     let {{_v[0-9]+}}: bool = op == None;
+// REWRITES-DAG:     if {{_v[0-9]+}} {
+// REWRITES-DAG:         __retval = 2;
+// REWRITES-DAG:         std::process::exit(__retval as i32);
+// REWRITES-DAG:     }
+// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = 1;
+// REWRITES-DAG:     __retval = if total == 10 { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// REWRITES-DAG:     std::process::exit(__retval as i32);
+// REWRITES-DAG: }
+// SLATE-FILECHECK-END rewrites

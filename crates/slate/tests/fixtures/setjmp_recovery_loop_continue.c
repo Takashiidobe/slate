@@ -216,10 +216,7 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut i: i32 = 0;
-// REWRITES-NEXT:     '__loop0: loop {
-// REWRITES-NEXT:         if !(i < 5) {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     '__loop0: while i < 5 {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: *mut __slate_jmp_buf_tag =
 // REWRITES-NEXT:             std::ptr::addr_of_mut!(env).cast::<__slate_jmp_buf_tag>();
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { setjmp({{_v[0-9]+}} as *mut __slate_jmp_buf_tag) };

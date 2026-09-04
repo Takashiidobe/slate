@@ -127,10 +127,7 @@ int main(void) {
 // REWRITES-NEXT: fn first_multiple(mut n: i32, mut m: i32) -> i32 {
 // REWRITES-NEXT:     let mut i: i32 = 0;
 // REWRITES-NEXT:     i = 1;
-// REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         if !(i <= n) {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
+// REWRITES-NEXT:     while i <= n {
 // REWRITES-NEXT:         if i % m == 0 {
 // REWRITES-NEXT:             return i;
 // REWRITES-NEXT:         }

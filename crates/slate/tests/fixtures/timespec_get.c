@@ -1,13 +1,8 @@
 
-// REWRITES-DAG: fn timespec_get(_0: *mut libc::timespec, _1: i32) -> i32;
-// REWRITES-NOT: *mut timespec
-// REWRITES-LABEL: {{^}}fn main() {
-// REWRITES-DAG: let mut value: libc::timespec = libc::timespec { tv_sec: 0, tv_nsec: 0 };
-// REWRITES: {{^}}}
-
 #include <stdio.h>
 #include <time.h>
 
+// @rewrite-fn-begin
 int main(void) {
   struct timespec value    = {0};
   int             result   = timespec_get(&value, TIME_UTC);
@@ -15,6 +10,7 @@ int main(void) {
   printf("%d %d\n", result == TIME_UTC, nanoseconds_in_range);
   return 0;
 }
+// @rewrite-fn-end
 
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING: #![feature(c_variadic)]
@@ -75,3 +71,27 @@ int main(void) {
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
+
+// SLATE-FILECHECK-BEGIN rewrites
+// REWRITES-DAG: fn main() {
+// REWRITES-DAG:     let mut value: libc::timespec = libc::timespec {
+// REWRITES-DAG:         tv_sec: 0,
+// REWRITES-DAG:         tv_nsec: 0,
+// REWRITES-DAG:     };
+// REWRITES-DAG:     let {{_v[0-9]+}}: i32 = unsafe {
+// REWRITES-DAG:         timespec_get(
+// REWRITES-DAG:             std::ptr::addr_of_mut!(value) as *mut libc::timespec,
+// REWRITES-DAG:             1 as i32,
+// REWRITES-DAG:         )
+// REWRITES-DAG:     };
+// REWRITES-DAG:     let {{_v[0-9]+}}: bool = if value.tv_nsec >= 0 {
+// REWRITES-DAG:         let {{_v[0-9]+}}: bool = value.tv_nsec < 1000000000;
+// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     } else {
+// REWRITES-DAG:         let {{_v[0-9]+}}: bool = false;
+// REWRITES-DAG:         {{_v[0-9]+}}
+// REWRITES-DAG:     };
+// REWRITES-DAG:     unsafe { printf(c"%d %d\n".as_ptr(), ({{_v[0-9]+}} == 1) as i32, {{_v[0-9]+}} as i32) };
+// REWRITES-DAG:     std::process::exit(0 as i32);
+// REWRITES-DAG: }
+// SLATE-FILECHECK-END rewrites

@@ -202,8 +202,11 @@ int main(void) {
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let mut total: i32 = 0;
 // REWRITES-NEXT:     fill(unsafe { &mut (*std::ptr::addr_of_mut!(c)) }, 1);
-// REWRITES-NEXT:     for i in 0..8 {
+// REWRITES-NEXT:     let mut i: i32 = 0;
+// REWRITES-NEXT:     i = 0;
+// REWRITES-NEXT:     while i < 8 {
 // REWRITES-NEXT:         total += c.buf[((i as i64) as usize)] as i32;
+// REWRITES-NEXT:         i += 1;
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), total) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
