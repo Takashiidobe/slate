@@ -5,7 +5,9 @@ use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{
     self, Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag,
 };
-use crate::backend::rust_ast::{Expr, IndentStmt, Label, MatchArm, Pattern, Stmt, UnaryOp};
+use crate::backend::rust_ast::{
+    Expr, Ident, IndentStmt, Label, MatchArm, Pattern, RustValue, Stmt, UnaryOp,
+};
 
 pub(in crate::backend::engine) struct StructureReducible;
 
@@ -44,6 +46,8 @@ struct Graph {
     headers: BTreeSet<usize>,
     labeled: Vec<bool>,
     owner: Vec<Option<Owner>>,
+    preamble: Vec<Stmt>,
+    keeps_state: bool,
 }
 
 fn indent(stmts: Vec<Stmt>) -> Vec<IndentStmt> {
@@ -316,6 +320,162 @@ fn natural_loop(preds: &[Vec<usize>], header: usize, tails: &[usize]) -> BTreeSe
     body
 }
 
+fn is_reducible(blocks: &[Block], entry: usize) -> bool {
+    let order = reverse_postorder(blocks, entry);
+    let mut rank = vec![usize::MAX; blocks.len()];
+    for (position, &node) in order.iter().enumerate() {
+        rank[node] = position;
+    }
+    let preds = predecessors(blocks, &order);
+    let idom = dominators(blocks, entry, &order, &rank, &preds);
+    reducible(blocks, &idom, entry)
+}
+
+fn sccs(blocks: &[Block]) -> Vec<Vec<usize>> {
+    let count = blocks.len();
+    let mut index = vec![usize::MAX; count];
+    let mut low = vec![0usize; count];
+    let mut on_stack = vec![false; count];
+    let mut pending: Vec<usize> = Vec::new();
+    let mut next = 0usize;
+    let mut components = Vec::new();
+    let mut calls: Vec<(usize, usize)> = Vec::new();
+
+    for start in 0..count {
+        if index[start] != usize::MAX {
+            continue;
+        }
+        index[start] = next;
+        low[start] = next;
+        next += 1;
+        pending.push(start);
+        on_stack[start] = true;
+        calls.push((start, 0));
+        while let Some(&mut (node, ref mut cursor)) = calls.last_mut() {
+            let successors = edges(&blocks[node].term);
+            if *cursor < successors.len() {
+                let child = successors[*cursor];
+                *cursor += 1;
+                if index[child] == usize::MAX {
+                    index[child] = next;
+                    low[child] = next;
+                    next += 1;
+                    pending.push(child);
+                    on_stack[child] = true;
+                    calls.push((child, 0));
+                } else if on_stack[child] {
+                    low[node] = low[node].min(index[child]);
+                }
+                continue;
+            }
+            calls.pop();
+            if let Some(&(parent, _)) = calls.last() {
+                low[parent] = low[parent].min(low[node]);
+            }
+            if low[node] == index[node] {
+                let mut component = Vec::new();
+                while let Some(top) = pending.pop() {
+                    on_stack[top] = false;
+                    component.push(top);
+                    if top == node {
+                        break;
+                    }
+                }
+                components.push(component);
+            }
+        }
+    }
+    components
+}
+
+fn retarget_term(term: &mut Term, from: usize, to: usize) {
+    let targets: Vec<&mut usize> = match term {
+        Term::Diverge => Vec::new(),
+        Term::Jump(target) => vec![target],
+        Term::Branch {
+            then_target,
+            else_target,
+            ..
+        } => vec![then_target, else_target],
+        Term::Switch { arms, .. } => arms.iter_mut().map(|(_, target)| target).collect(),
+    };
+    for target in targets {
+        if *target == from {
+            *target = to;
+        }
+    }
+}
+
+fn split_irreducible(blocks: &mut Vec<Block>, entry: usize, state: Ident) -> Option<usize> {
+    let components = sccs(blocks);
+    let preds = predecessors(blocks, &(0..blocks.len()).collect::<Vec<_>>());
+    let mut next_state = blocks.iter().map(|block| block.state).max()? + 1;
+    let mut new_entry = entry;
+
+    for component in components {
+        if component.len() < 2 {
+            continue;
+        }
+        let members: BTreeSet<usize> = component.iter().copied().collect();
+        let mut entries: Vec<usize> = component
+            .iter()
+            .copied()
+            .filter(|&node| node == entry || preds[node].iter().any(|pred| !members.contains(pred)))
+            .collect();
+        if entries.len() < 2 {
+            continue;
+        }
+        entries.sort_unstable();
+
+        let header = blocks.len();
+        let arms = entries
+            .iter()
+            .enumerate()
+            .map(|(position, &target)| {
+                let pattern = match position + 1 == entries.len() {
+                    true => Pattern::Wildcard,
+                    false => Pattern::I64(blocks[target].state),
+                };
+                (pattern, target)
+            })
+            .collect();
+        blocks.push(Block {
+            state: next_state,
+            prefix: Vec::new(),
+            term: Term::Switch {
+                selector: Expr::Var(state),
+                arms,
+            },
+        });
+        next_state += 1;
+
+        for source in 0..header {
+            let reached: BTreeSet<usize> = edges(&blocks[source].term)
+                .into_iter()
+                .filter(|target| entries.contains(target))
+                .collect();
+            for target in reached {
+                let trampoline = blocks.len();
+                blocks.push(Block {
+                    state: next_state,
+                    prefix: vec![Stmt::Assign {
+                        target: Expr::Var(state),
+                        value: Expr::Value(RustValue::I64(blocks[target].state)),
+                    }],
+                    term: Term::Jump(header),
+                });
+                next_state += 1;
+                retarget_term(&mut blocks[source].term, target, trampoline);
+            }
+        }
+
+        if members.contains(&entry) {
+            new_entry = header;
+        }
+    }
+    (new_entry != entry || blocks.len() > preds.len()).then_some(new_entry)
+}
+
 fn build(arena: &Arena, dispatch: &Dispatch, entry_state: i64) -> Option<Graph> {
     let mut index_of = BTreeMap::new();
     for (index, (state, _)) in dispatch.arms.iter().enumerate() {
@@ -341,6 +501,24 @@ fn build(arena: &Arena, dispatch: &Dispatch, entry_state: i64) -> Option<Graph> 
         });
     }
 
+    let mut entry = entry;
+    let mut preamble = Vec::new();
+    let mut keeps_state = false;
+    if !is_reducible(&blocks, entry) {
+        let split = split_irreducible(&mut blocks, entry, dispatch.state)?;
+        if split != entry {
+            preamble.push(Stmt::Assign {
+                target: Expr::Var(dispatch.state),
+                value: Expr::Value(RustValue::I64(entry_state)),
+            });
+            entry = split;
+        }
+        keeps_state = true;
+        if !is_reducible(&blocks, entry) {
+            return None;
+        }
+    }
+
     let order = reverse_postorder(&blocks, entry);
     let mut rank = vec![usize::MAX; blocks.len()];
     for (position, &node) in order.iter().enumerate() {
@@ -358,9 +536,6 @@ fn build(arena: &Arena, dispatch: &Dispatch, entry_state: i64) -> Option<Graph> 
                 false => forward[target] += 1,
             }
         }
-    }
-    if !reducible(&blocks, &idom, entry) {
-        return None;
     }
 
     let headers: BTreeSet<usize> = tails.keys().copied().collect();
@@ -392,6 +567,8 @@ fn build(arena: &Arena, dispatch: &Dispatch, entry_state: i64) -> Option<Graph> 
         headers,
         labeled,
         owner,
+        preamble,
+        keeps_state,
     })
 }
 
@@ -681,7 +858,9 @@ impl Graph {
     }
 
     fn emit(&self) -> Vec<Stmt> {
-        self.tree(self.entry, &[])
+        let mut out = self.preamble.clone();
+        out.extend(self.tree(self.entry, &[]));
+        out
     }
 }
 
@@ -737,11 +916,14 @@ impl NodeRule for StructureReducible {
         let Some((dispatch, entry, graph)) = graph_of(arena, id) else {
             return false;
         };
+        let keeps_state = graph.keeps_state;
         let stmts = graph.emit();
         arena.discard_subtree(dispatch.match_id);
         let body = arena::insert_stmts(arena, Some(id), stmts);
         arena.set_kind(id, NodeKind::Scope { body });
-        remove_stmt(arena, entry);
+        if !keeps_state {
+            remove_stmt(arena, entry);
+        }
         arena.touch_subtree(id);
         true
     }
