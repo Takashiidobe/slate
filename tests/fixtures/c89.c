@@ -1255,196 +1255,50 @@ int main(void) {
 // REWRITES-NEXT:     total
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn c89_control_flow({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let mut value: i32 = 0;
+// REWRITES-NEXT: fn c89_control_flow(mut value: i32) -> i32 {
+// REWRITES-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-NEXT:     let mut result: i32 = 0;
 // REWRITES-NEXT:     let mut index: i32 = 0;
 // REWRITES-NEXT:     let mut {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     let mut {{__state[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     '{{__dispatch[0-9]+}}: loop {
-// REWRITES-NEXT:         match {{__state[0-9]+}} {
-// REWRITES-NEXT:             0 => {
-// REWRITES-NEXT:                 value = {{arg[0-9]+}};
-// REWRITES-NEXT:                 result = 0;
-// REWRITES-NEXT:                 index = 0;
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 1;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             1 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 2;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             2 => {
-// REWRITES-NEXT:                 if index < value {
-// REWRITES-NEXT:                     {{__state[0-9]+}} = 3;
-// REWRITES-NEXT:                 } else {
-// REWRITES-NEXT:                     {{__state[0-9]+}} = 14;
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             3 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 4;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             4 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 5;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             5 => {
-// REWRITES-NEXT:                 if index == 1 {
-// REWRITES-NEXT:                     {{__state[0-9]+}} = 6;
-// REWRITES-NEXT:                 } else {
-// REWRITES-NEXT:                     {{__state[0-9]+}} = 7;
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             6 => {
+// REWRITES-NEXT:     result = 0;
+// REWRITES-NEXT:     index = 0;
+// REWRITES-NEXT:     loop {
+// REWRITES-NEXT:         if index < value {
+// REWRITES-NEXT:             if index == 1 {
 // REWRITES-NEXT:                 index += 1;
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 2;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             7 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 8;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             8 => {
+// REWRITES-NEXT:             } else {
 // REWRITES-NEXT:                 result += index;
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 9;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             9 => {
 // REWRITES-NEXT:                 if result > 20 {
-// REWRITES-NEXT:                     {{__state[0-9]+}} = 10;
+// REWRITES-NEXT:                     break;
 // REWRITES-NEXT:                 } else {
-// REWRITES-NEXT:                     {{__state[0-9]+}} = 11;
+// REWRITES-NEXT:                     index += 1;
 // REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
 // REWRITES-NEXT:             }
-// REWRITES-NEXT:             10 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 14;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             11 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 12;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             12 => {
-// REWRITES-NEXT:                 index += 1;
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 13;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             13 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 2;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             14 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 15;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             15 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 16;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             16 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 18;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             17 => {
-// REWRITES-NEXT:                 if result > 6 {
-// REWRITES-NEXT:                     {{__state[0-9]+}} = 18;
-// REWRITES-NEXT:                 } else {
-// REWRITES-NEXT:                     {{__state[0-9]+}} = 21;
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             18 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 19;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             19 => {
-// REWRITES-NEXT:                 result -= 1;
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 20;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             20 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 17;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             21 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 22;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             22 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 23;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             23 => {
-// REWRITES-NEXT:                 {{_v[0-9]+}} = value;
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 24;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             24 => {
-// REWRITES-NEXT:                 match {{_v[0-9]+}} {
-// REWRITES-NEXT:                     4 => {
-// REWRITES-NEXT:                         {{__state[0-9]+}} = 26;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                     _ => {
-// REWRITES-NEXT:                         {{__state[0-9]+}} = 27;
-// REWRITES-NEXT:                     }
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             25 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 26;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             26 => {
-// REWRITES-NEXT:                 result += 10;
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 28;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             27 => {
-// REWRITES-NEXT:                 result = 0;
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 28;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             28 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 29;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             29 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 30;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             30 => {
-// REWRITES-NEXT:                 if result == 16 {
-// REWRITES-NEXT:                     {{__state[0-9]+}} = 31;
-// REWRITES-NEXT:                 } else {
-// REWRITES-NEXT:                     {{__state[0-9]+}} = 32;
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             31 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 34;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             32 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 33;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             33 => {
-// REWRITES-NEXT:                 result = -1;
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 34;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             34 => {
-// REWRITES-NEXT:                 return result;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             _ => {
-// REWRITES-NEXT:                 unreachable!();
-// REWRITES-NEXT:             }
+// REWRITES-NEXT:         } else {
+// REWRITES-NEXT:             break;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
+// REWRITES-NEXT:     loop {
+// REWRITES-NEXT:         result -= 1;
+// REWRITES-NEXT:         if !(result > 6) {
+// REWRITES-NEXT:             break;
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     {{_v[0-9]+}} = value;
+// REWRITES-NEXT:     match {{_v[0-9]+}} {
+// REWRITES-NEXT:         4 => {
+// REWRITES-NEXT:             result += 10;
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:         _ => {
+// REWRITES-NEXT:             result = 0;
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     if result == 16 {
+// REWRITES-NEXT:     } else {
+// REWRITES-NEXT:         result = -1;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     __retval = result;
+// REWRITES-NEXT:     __retval
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {

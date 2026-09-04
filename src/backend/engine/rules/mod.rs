@@ -24,6 +24,7 @@ pub(super) fn registry() -> Vec<Box<dyn NodeRule>> {
     let mut rules: Vec<Box<dyn NodeRule>> = vec![
         Box::new(structure_dispatch::StructureDispatch),
         Box::new(structure_goto::StructureGoto),
+        Box::new(structure_goto::reducible::StructureReducible),
         Box::new(label_elide::BreakToElse),
         Box::new(label_elide::TailBreakDrop),
         Box::new(label_elide::LabelElide),

@@ -148,64 +148,14 @@ int main() {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn classify({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let mut n: i32 = 0;
-// REWRITES-NEXT:     let mut {{__state[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     '{{__dispatch[0-9]+}}: loop {
-// REWRITES-NEXT:         match {{__state[0-9]+}} {
-// REWRITES-NEXT:             0 => {
-// REWRITES-NEXT:                 n = {{arg[0-9]+}};
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 1;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             1 => {
-// REWRITES-NEXT:                 if n < 0 {
-// REWRITES-NEXT:                     {{__state[0-9]+}} = 2;
-// REWRITES-NEXT:                 } else {
-// REWRITES-NEXT:                     {{__state[0-9]+}} = 3;
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             2 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 9;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             3 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 4;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             4 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 5;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             5 => {
-// REWRITES-NEXT:                 if n == 0 {
-// REWRITES-NEXT:                     {{__state[0-9]+}} = 6;
-// REWRITES-NEXT:                 } else {
-// REWRITES-NEXT:                     {{__state[0-9]+}} = 7;
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             6 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 10;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             7 => {
-// REWRITES-NEXT:                 {{__state[0-9]+}} = 8;
-// REWRITES-NEXT:                 continue '{{__dispatch[0-9]+}};
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             8 => {
-// REWRITES-NEXT:                 return 1;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             9 => {
-// REWRITES-NEXT:                 return -1;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             10 => {
-// REWRITES-NEXT:                 return 0;
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:             _ => {
-// REWRITES-NEXT:                 unreachable!();
-// REWRITES-NEXT:             }
+// REWRITES-NEXT: fn classify(mut n: i32) -> i32 {
+// REWRITES-NEXT:     if n < 0 {
+// REWRITES-NEXT:         return -1;
+// REWRITES-NEXT:     } else {
+// REWRITES-NEXT:         if n == 0 {
+// REWRITES-NEXT:             return 0;
+// REWRITES-NEXT:         } else {
+// REWRITES-NEXT:             return 1;
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:     }
 // REWRITES-NEXT: }
