@@ -48,10 +48,28 @@ fn fixture_std(dir: &Path) -> &'static str {
     }
 }
 
+fn fixture_extra_clang_args(dir: &Path) -> Vec<String> {
+    std::fs::read_to_string(dir.join("clang-args.txt"))
+        .map(|contents| {
+            contents
+                .lines()
+                .map(str::trim)
+                .filter(|line| !line.is_empty())
+                .map(str::to_string)
+                .collect()
+        })
+        .unwrap_or_default()
+}
+
 fn attempt_translate(name: &str, dir: &Path, work: &Path) -> Attempt {
     let out_dir = work.join("translated").join(name);
     let _ = std::fs::remove_dir_all(&out_dir);
-    match support::translate_project_with_std(dir, &out_dir, fixture_std(dir)) {
+    match support::translate_project_with_std_and_args(
+        dir,
+        &out_dir,
+        fixture_std(dir),
+        &fixture_extra_clang_args(dir),
+    ) {
         Ok(()) => {
             let types_rs = out_dir.join("src/types.rs");
             Attempt {
@@ -122,11 +140,12 @@ fn run_bucket(bucket: &str) -> Vec<(String, Result<(), String>)> {
                 .executable(&attempt.name)
                 .map_err(|error| format!("Rust build failed:\n{error}"))?;
             let c_bin = work.join(format!("{}_c", attempt.name));
-            support::compile_c_multi_with_std_and_include(
+            support::compile_c_multi_with_std_include_and_args(
                 &c_sources(&attempt.dir),
                 &c_bin,
                 fixture_std(&attempt.dir),
                 Some(&attempt.dir),
+                &fixture_extra_clang_args(&attempt.dir),
             )?;
             let run_dir = work.join("runs").join(&attempt.name);
             let _ = std::fs::remove_dir_all(&run_dir);

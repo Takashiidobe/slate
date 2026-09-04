@@ -236,7 +236,17 @@ pub fn compile_c_multi_with_std_and_include(
     std: &str,
     include_dir: Option<&Path>,
 ) -> Result<(), String> {
-    let cache_key = serde_json::to_string(&(3, srcs, cc(), std, include_dir))
+    compile_c_multi_with_std_include_and_args(srcs, out, std, include_dir, &[])
+}
+
+pub fn compile_c_multi_with_std_include_and_args(
+    srcs: &[PathBuf],
+    out: &Path,
+    std: &str,
+    include_dir: Option<&Path>,
+    extra_args: &[String],
+) -> Result<(), String> {
+    let cache_key = serde_json::to_string(&(3, srcs, cc(), std, include_dir, extra_args))
         .map_err(|e| format!("encode multi-file C cache key: {e}"))?;
     let inputs: Vec<&Path> = srcs.iter().map(PathBuf::as_path).collect();
     compile_c_cached(&inputs, out, &cache_key, "C compile failed", |temporary| {
@@ -245,6 +255,7 @@ pub fn compile_c_multi_with_std_and_include(
             .arg(temporary)
             .args(srcs)
             .args(include_dir.map(|dir| format!("-I{}", dir.display())))
+            .args(extra_args)
             .arg("-lm")
             .output()
             .map_err(|e| format!("spawn {}: {e}", cc()))
@@ -308,7 +319,20 @@ pub fn translate_project(dir: &Path, crate_dir: &Path) -> Result<(), String> {
 }
 
 pub fn translate_project_with_std(dir: &Path, crate_dir: &Path, std: &str) -> Result<(), String> {
-    let clang_args = format!("{} -I{} -fcommon", std_clang_args(std), dir.display());
+    translate_project_with_std_and_args(dir, crate_dir, std, &[])
+}
+
+pub fn translate_project_with_std_and_args(
+    dir: &Path,
+    crate_dir: &Path,
+    std: &str,
+    extra_args: &[String],
+) -> Result<(), String> {
+    let mut clang_args = format!("{} -I{} -fcommon", std_clang_args(std), dir.display());
+    for arg in extra_args {
+        clang_args.push(' ');
+        clang_args.push_str(arg);
+    }
     translate_project_with_clang_args(dir, crate_dir, clang_args)
 }
 

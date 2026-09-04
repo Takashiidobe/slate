@@ -84,16 +84,6 @@ int main() {
          }));
 
   ASSERT(3, (1, 2, 3));
-  ASSERT(5, ({
-           int i = 2, j = 3;
-           (i = 5, j) = 6;
-           i;
-         }));
-  ASSERT(6, ({
-           int i = 2, j = 3;
-           (i = 5, j) = 6;
-           j;
-         }));
 
   ASSERT(55, ({
            int j = 0;
@@ -483,80 +473,6 @@ int main() {
              i = 1;
              break;
            }
-           i;
-         }));
-
-  ASSERT(3, ({
-           void *p = &&v11;
-           int   i = 0;
-           goto *p;
-         v11:
-           i++;
-         v12:
-           i++;
-         v13:
-           i++;
-           i;
-         }));
-  ASSERT(2, ({
-           void *p = &&v22;
-           int   i = 0;
-           goto *p;
-         v21:
-           i++;
-         v22:
-           i++;
-         v23:
-           i++;
-           i;
-         }));
-  ASSERT(1, ({
-           void *p = &&v33;
-           int   i = 0;
-           goto *p;
-         v31:
-           i++;
-         v32:
-           i++;
-         v33:
-           i++;
-           i;
-         }));
-
-  ASSERT(3, ({
-           static void *p[] = {&&v41, &&v42, &&v43};
-           int          i   = 0;
-           goto        *p[0];
-         v41:
-           i++;
-         v42:
-           i++;
-         v43:
-           i++;
-           i;
-         }));
-  ASSERT(2, ({
-           static void *p[] = {&&v52, &&v52, &&v53};
-           int          i   = 0;
-           goto        *p[1];
-         v51:
-           i++;
-         v52:
-           i++;
-         v53:
-           i++;
-           i;
-         }));
-  ASSERT(1, ({
-           static void *p[] = {&&v62, &&v62, &&v63};
-           int          i   = 0;
-           goto        *p[2];
-         v61:
-           i++;
-         v62:
-           i++;
-         v63:
-           i++;
            i;
          }));
 

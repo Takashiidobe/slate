@@ -92,7 +92,7 @@ int main() {
   0x10.1p0;
   .1E4f;
 
-  ASSERT(4, sizeof(8f));
+  ASSERT(4, sizeof(8.0f));
   ASSERT(4, sizeof(0.3F));
   ASSERT(8, sizeof(0.));
   ASSERT(8, sizeof(.0));
