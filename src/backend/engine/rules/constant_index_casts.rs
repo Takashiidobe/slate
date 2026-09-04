@@ -1,6 +1,6 @@
-use super::walk::{child_exprs, child_exprs_mut};
+use super::walk;
 use crate::backend::engine::NodeRule;
-use crate::backend::engine::arena::{FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
+use crate::backend::engine::arena::{FunctionOptimizer, NodeId, NodeKindTag};
 use crate::backend::rust_ast::{Expr, Prim, RustValue, Type};
 
 const KINDS: &[NodeKindTag] = &[
@@ -79,101 +79,8 @@ fn collapse_here(expr: &mut Expr) -> bool {
     true
 }
 
-fn fold_expr(expr: &mut Expr) -> bool {
-    let mut changed = false;
-    for child in child_exprs_mut(expr) {
-        changed |= fold_expr(child);
-    }
-    changed | collapse_here(expr)
-}
-
-fn has_collapsible(expr: &Expr) -> bool {
-    (matches!(expr, Expr::Index { index, .. } if constant_index_literal(index).is_some()))
-        || child_exprs(expr).iter().any(|child| has_collapsible(child))
-}
-
-fn fold_kind(kind: &mut NodeKind) -> bool {
-    let mut changed = false;
-    let mut fold = |expr: &mut Expr| changed |= fold_expr(expr);
-    match kind {
-        NodeKind::Let { init, .. } => init.as_mut().into_iter().for_each(&mut fold),
-        NodeKind::LetIf {
-            cond,
-            then_value,
-            else_value,
-            ..
-        } => [cond, then_value, else_value]
-            .into_iter()
-            .for_each(&mut fold),
-        NodeKind::Assign { target, value } | NodeKind::CompoundAssign { target, value, .. } => {
-            [target, value].into_iter().for_each(&mut fold)
-        }
-        NodeKind::InlineAsm(asm) => {
-            for operand in &mut asm.operands {
-                operand.visit_exprs_mut(&mut fold);
-            }
-        }
-        NodeKind::Expr(expr) => fold(expr),
-        NodeKind::Return(expr) => expr.as_mut().into_iter().for_each(&mut fold),
-        NodeKind::Unsafe { tail, .. } | NodeKind::Block { tail, .. } => {
-            tail.as_deref_mut().into_iter().for_each(&mut fold)
-        }
-        NodeKind::While { cond, tail, .. } => {
-            fold(cond);
-            tail.as_deref_mut().into_iter().for_each(&mut fold);
-        }
-        NodeKind::If { cond, .. } => fold(cond),
-        NodeKind::For { iter, .. } => fold(iter),
-        NodeKind::Match { expr, .. } => fold(expr),
-        NodeKind::Loop { .. }
-        | NodeKind::Scope { .. }
-        | NodeKind::LabeledBlock { .. }
-        | NodeKind::Break(_)
-        | NodeKind::Continue(_) => {}
-    }
-    changed
-}
-
-fn kind_has_collapsible(kind: &NodeKind) -> bool {
-    let mut found = false;
-    let mut scan = |expr: &Expr| found |= has_collapsible(expr);
-    match kind {
-        NodeKind::Let { init, .. } => init.as_ref().into_iter().for_each(&mut scan),
-        NodeKind::LetIf {
-            cond,
-            then_value,
-            else_value,
-            ..
-        } => [cond, then_value, else_value]
-            .into_iter()
-            .for_each(&mut scan),
-        NodeKind::Assign { target, value } | NodeKind::CompoundAssign { target, value, .. } => {
-            [target, value].into_iter().for_each(&mut scan)
-        }
-        NodeKind::InlineAsm(asm) => {
-            for operand in &asm.operands {
-                operand.visit_exprs(&mut scan);
-            }
-        }
-        NodeKind::Expr(expr) => scan(expr),
-        NodeKind::Return(expr) => expr.as_ref().into_iter().for_each(&mut scan),
-        NodeKind::Unsafe { tail, .. } | NodeKind::Block { tail, .. } => {
-            tail.as_deref().into_iter().for_each(&mut scan)
-        }
-        NodeKind::While { cond, tail, .. } => {
-            scan(cond);
-            tail.as_deref().into_iter().for_each(&mut scan);
-        }
-        NodeKind::If { cond, .. } => scan(cond),
-        NodeKind::For { iter, .. } => scan(iter),
-        NodeKind::Match { expr, .. } => scan(expr),
-        NodeKind::Loop { .. }
-        | NodeKind::Scope { .. }
-        | NodeKind::LabeledBlock { .. }
-        | NodeKind::Break(_)
-        | NodeKind::Continue(_) => {}
-    }
-    found
+fn collapsible_here(expr: &Expr) -> bool {
+    matches!(expr, Expr::Index { index, .. } if constant_index_literal(index).is_some())
 }
 
 pub(in crate::backend::engine) struct ConstantIndexCasts;
@@ -192,14 +99,24 @@ impl NodeRule for ConstantIndexCasts {
     }
 
     fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
-        arena.get(id).is_some_and(kind_has_collapsible)
+        arena.get(id).is_some_and(|kind| {
+            let mut found = false;
+            walk::visit_kind_exprs(kind, |expr| {
+                found |= walk::any_collapsible(expr, &collapsible_here)
+            });
+            found
+        })
     }
 
     fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
         let Some(kind) = arena.get_mut(id) else {
             return false;
         };
-        if !fold_kind(kind) {
+        let mut changed = false;
+        walk::visit_kind_exprs_mut(kind, |expr| {
+            changed |= walk::fold_bottom_up(expr, &mut collapse_here)
+        });
+        if !changed {
             return false;
         }
         arena.touch(id);

@@ -129,21 +129,27 @@ impl CallCtx<'_> {
     }
 }
 
-fn peel_ptr_view(expr: &Expr) -> &Expr {
+fn peel_wrapper(expr: &Expr, through_ptr_methods: bool) -> &Expr {
     match expr {
-        Expr::Cast { expr, .. } => peel_ptr_view(expr),
+        Expr::Cast { expr, .. } => peel_wrapper(expr, through_ptr_methods),
         Expr::MethodCall { recv, method, args }
-            if args.is_empty() && (method == "as_ptr" || method == "as_mut_ptr") =>
+            if through_ptr_methods
+                && args.is_empty()
+                && (method == "as_ptr" || method == "as_mut_ptr") =>
         {
-            peel_ptr_view(recv)
+            peel_wrapper(recv, through_ptr_methods)
         }
         Expr::Unsafe(block) | Expr::Block(block)
             if block.stmts.is_empty() && block.tail.is_some() =>
         {
-            peel_ptr_view(block.tail.as_deref().unwrap())
+            peel_wrapper(block.tail.as_deref().unwrap(), through_ptr_methods)
         }
         other => other,
     }
+}
+
+fn peel_ptr_view(expr: &Expr) -> &Expr {
+    peel_wrapper(expr, true)
 }
 
 fn assign_root_var(expr: &Expr) -> Option<Ident> {
@@ -596,15 +602,7 @@ fn call_slot_mut(kind: &mut NodeKind) -> Option<&mut Expr> {
 }
 
 fn peel_call_head(expr: &Expr) -> &Expr {
-    match expr {
-        Expr::Cast { expr, .. } => peel_call_head(expr),
-        Expr::Unsafe(block) | Expr::Block(block)
-            if block.stmts.is_empty() && block.tail.is_some() =>
-        {
-            peel_call_head(block.tail.as_deref().unwrap())
-        }
-        other => other,
-    }
+    peel_wrapper(expr, false)
 }
 
 enum PeelStep {
