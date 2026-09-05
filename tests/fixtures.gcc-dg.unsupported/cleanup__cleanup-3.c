@@ -1,5 +1,6 @@
 /* { dg-do run } */
 /* { dg-options "" } */
+/* Blocked by CIR emission: CleanupAttr lowering is not implemented. */
 /* Verify that the cleanup handler receives the proper contents
    of the variable.  */
 

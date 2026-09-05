@@ -1,6 +1,7 @@
 /* Test C23 support for empty initializers: valid use cases.  */
 /* { dg-do run } */
 /* { dg-options "-std=c23 -pedantic-errors" } */
+/* Blocked by CIR emission: variable-array empty initializers are not implemented. */
 
 extern void exit (int);
 extern void abort (void);

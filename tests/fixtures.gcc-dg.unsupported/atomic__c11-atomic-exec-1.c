@@ -2,6 +2,7 @@
    and stores.  */
 /* { dg-do run } */
 /* { dg-options "-std=c11 -pedantic-errors" } */
+/* Blocked by CIR emission: converting this atomic expression through a bitcast is not implemented. */
 
 extern void abort (void);
 extern void exit (int);

@@ -1,5 +1,6 @@
 /* { dg-do run } */
 /* { dg-options "" } */
+/* Blocked by CIR emission: CleanupAttr lowering is not implemented. */
 /* Verify that cleanup works in the most basic of ways.  */
 
 extern void exit(int);

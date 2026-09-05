@@ -1,6 +1,7 @@
 /* Test C23 support for empty initializers: valid use cases.  */
 /* { dg-do run } */
 /* { dg-options "-std=c23 -pedantic-errors" } */
+/* Blocked by CIR emission: designated initializer updates are not implemented. */
 
 extern void abort (void);
 extern void *memset (void *, int, __SIZE_TYPE__);
