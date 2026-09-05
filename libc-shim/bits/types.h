@@ -56,7 +56,7 @@ typedef int                __pid_t;
 typedef unsigned int       __uid_t;
 typedef unsigned int       __gid_t;
 typedef unsigned long long __dev_t;
-#if defined(__SLATE_LIBC_GLIBC) && defined(__SLATE_WORDSIZE_64)
+#if defined(__SLATE_WORDSIZE_64) && defined(__SLATE_ARCH_X86_64)
 typedef unsigned long __nlink_t;
 #else
 typedef unsigned int __nlink_t;
@@ -251,7 +251,11 @@ typedef long          __time_t;
 typedef long          __suseconds_t;
 typedef unsigned long __ino_t;
 typedef unsigned long __ino64_t;
+#if defined(__SLATE_ARCH_X86_64)
 typedef long          __blksize_t;
+#else
+typedef int           __blksize_t;
+#endif
 typedef long          __blkcnt_t;
 typedef long          __blkcnt64_t;
 typedef unsigned long __fsblkcnt_t;

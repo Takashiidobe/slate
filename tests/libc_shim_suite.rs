@@ -75,6 +75,31 @@ fn linux_riscv32_headers_compile() {
 }
 
 #[test]
+fn linux_stat_layout_matches_architecture() {
+    let source = r#"
+#include <stddef.h>
+#include <sys/stat.h>
+_Static_assert(sizeof(struct stat) == STAT_SIZE, "stat size");
+_Static_assert(offsetof(struct stat, st_nlink) == STAT_NLINK_OFFSET, "st_nlink offset");
+_Static_assert(sizeof(((struct stat *)0)->st_nlink) == STAT_NLINK_SIZE, "st_nlink size");
+int main(void) { return 0; }
+"#;
+    for libc in [LibcVariant::Glibc, LibcVariant::Musl] {
+        for (arch, size, offset, nlink_size) in [
+            (Architecture::X86_64, 144, 16, 8),
+            (Architecture::Aarch64, 128, 20, 4),
+        ] {
+            let source = source
+                .replace("STAT_SIZE", &size.to_string())
+                .replace("STAT_NLINK_OFFSET", &offset.to_string())
+                .replace("STAT_NLINK_SIZE", &nlink_size.to_string());
+            compile_test_program(&TestConfig::new(arch, libc), &source)
+                .unwrap_or_else(|error| panic!("{} {}: {error}", arch.name(), libc.name()));
+        }
+    }
+}
+
+#[test]
 fn bits_headers_reject_direct_inclusion() {
     let bits = libc_shim_dir().join("bits");
     let headers = discover_bits_headers(&bits);
