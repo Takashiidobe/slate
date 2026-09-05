@@ -463,7 +463,7 @@ fn parse_plugin_events(stderr: &str) -> PluginEvents {
             ) else {
                 continue;
             };
-            let values = values
+            let values: Vec<FloatingLiteralFact> = values
                 .iter()
                 .filter_map(|value| {
                     Some(FloatingLiteralFact {

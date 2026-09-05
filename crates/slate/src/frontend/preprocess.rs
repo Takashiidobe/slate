@@ -941,7 +941,9 @@ pub fn record_translation_unit(
     source: &str,
     clang_args: &[String],
 ) -> Result<Preprocessing, PreprocessError> {
-    let mut pp = record_file(source, clang_args)?;
+    let macros = crate::frontend::toolchain::source_macros(path, clang_args)
+        .map_err(|source| PreprocessError::PredefinedMacros { source })?;
+    let mut pp = record(source, &macros);
     if pp
         .directives
         .iter()

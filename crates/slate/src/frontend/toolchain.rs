@@ -604,6 +604,13 @@ pub fn predefined_macros(extra_args: &[String]) -> Result<BTreeMap<String, Strin
     query_macros(Path::new("/dev/null"), extra_args)
 }
 
+pub fn source_macros(
+    src: &Path,
+    extra_args: &[String],
+) -> Result<BTreeMap<String, String>, EmitError> {
+    query_macros(src, extra_args)
+}
+
 pub fn preprocess_diagnostics(
     src: &Path,
     extra_args: &[String],

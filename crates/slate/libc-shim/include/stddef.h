@@ -36,3 +36,9 @@ typedef __WCHAR_TYPE__   wchar_t;
 
 #endif
 #endif
+
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
+#ifndef unreachable
+#define unreachable() __builtin_unreachable()
+#endif
+#endif
