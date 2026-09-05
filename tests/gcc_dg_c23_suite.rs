@@ -2,8 +2,8 @@ mod support;
 
 use std::path::{Path, PathBuf};
 
-fn gcc_torture_jobs() -> usize {
-    std::env::var("SLATE_GCC_TORTURE_JOBS")
+fn gcc_dg_c23_jobs() -> usize {
+    std::env::var("SLATE_GCC_DG_C23_JOBS")
         .ok()
         .and_then(|value| value.parse().ok())
         .filter(|jobs| *jobs > 0)
@@ -21,15 +21,15 @@ fn gcc_torture_jobs() -> usize {
 }
 
 fn supported_root() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures.gcc-torture")
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures.gcc-dg-c23")
 }
 
 fn unsupported_root() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures.gcc-torture.unsupported")
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures.gcc-dg-c23.unsupported")
 }
 
 fn collect_cases(dir: &Path) -> Vec<(String, PathBuf)> {
-    let selected = std::env::var("SLATE_GCC_TORTURE_FIXTURE").ok();
+    let selected = std::env::var("SLATE_GCC_DG_C23_FIXTURE").ok();
     let mut cases: Vec<(String, PathBuf)> = std::fs::read_dir(dir)
         .unwrap_or_else(|e| panic!("read {}: {e}", dir.display()))
         .filter_map(|e| e.ok())
@@ -49,9 +49,9 @@ fn collect_cases(dir: &Path) -> Vec<(String, PathBuf)> {
 
 fn run_cases(group: &str, dir: &Path) -> Vec<(String, Result<(), String>)> {
     let cases = collect_cases(dir);
-    let jobs = gcc_torture_jobs();
+    let jobs = gcc_dg_c23_jobs();
     let work = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("target/gcc-torture-suite")
+        .join("target/gcc-dg-c23-suite")
         .join(group);
     std::fs::create_dir_all(&work).expect("create work dir");
 
@@ -85,7 +85,7 @@ fn run_cases(group: &str, dir: &Path) -> Vec<(String, Result<(), String>)> {
 }
 
 #[test]
-fn gcc_torture_supported_tests_match_c() {
+fn gcc_dg_c23_supported_tests_match_c() {
     let results = run_cases("supported", &supported_root());
     let failures: Vec<String> = results
         .into_iter()
@@ -93,13 +93,13 @@ fn gcc_torture_supported_tests_match_c() {
         .collect();
     assert!(
         failures.is_empty(),
-        "gcc-torture supported tests failed:\n{}",
+        "gcc.dg c23 supported tests failed:\n{}",
         failures.join("\n\n")
     );
 }
 
 #[test]
-fn gcc_torture_unsupported_tests_still_fail() {
+fn gcc_dg_c23_unsupported_tests_still_fail() {
     let results = run_cases("unsupported", &unsupported_root());
     let unexpected_passes: Vec<String> = results
         .into_iter()
@@ -107,11 +107,11 @@ fn gcc_torture_unsupported_tests_still_fail() {
         .collect();
     assert!(
         unexpected_passes.is_empty(),
-        "gcc-torture test(s) now pass end-to-end -- promote them:\n{}",
+        "gcc.dg c23 test(s) now pass end-to-end -- promote them:\n{}",
         unexpected_passes
             .iter()
             .map(|name| format!(
-                "  git mv tests/fixtures.gcc-torture.unsupported/{name}.c tests/fixtures.gcc-torture/{name}.c"
+                "  git mv tests/fixtures.gcc-dg-c23.unsupported/{name}.c tests/fixtures.gcc-dg-c23/{name}.c"
             ))
             .collect::<Vec<_>>()
             .join("\n")
@@ -120,7 +120,7 @@ fn gcc_torture_unsupported_tests_still_fail() {
 
 #[test]
 #[ignore]
-fn gcc_torture_unsupported_triage_report() {
+fn gcc_dg_c23_unsupported_triage_report() {
     let results = run_cases("unsupported", &unsupported_root());
     for (name, result) in results {
         match result {
