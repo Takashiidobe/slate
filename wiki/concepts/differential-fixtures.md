@@ -5,8 +5,11 @@ Slate compiles and runs the C source and generated Rust, then compares stdout
 and exit status. FileCheck directives add generated-Rust shape assertions; they
 do not replace runtime comparison.
 
-`NEXTEST_PROFILE=lowering` activates `COMMON` and `LOWERING` directives. The
-`rewrites` profile activates `COMMON` and `REWRITES` directives.
+`NEXTEST_PROFILE=lowering` activates `COMMON`, `COMMON-LOWERING`, and
+`LOWERING` directives. The `rewrites` profile activates `COMMON`,
+`COMMON-REWRITES`, and `REWRITES` directives. The profile-qualified common
+prefixes let target-specific generation share checks within one profile without
+requiring lowering checks to pass against rewritten Rust.
 
 `REWRITES` directives are enforced against the new worklist engine's output.
 Only assertions satisfied by the current engine belong in the baseline; add
@@ -75,6 +78,17 @@ Project mode instruments every annotated C source before translating the copied
 fixture, then maps each marker-bearing generated module back to its owning C
 file. Test execution reuses the generated crate for FileCheck, Rust compilation,
 and differential comparison; FileCheck does not trigger another translation.
+
+Pass repeated `--target PREFIX=TRIPLE` arguments to generate checks for
+multiple ABIs. The updater factors identical checks into `COMMON-LOWERING` or
+`COMMON-REWRITES` blocks and leaves ABI-specific checks under the corresponding
+target prefix. For example:
+
+```bash
+python3 tools/update_filecheck.py --profile both --in-place \
+  --target X86_64-GNU=x86_64-unknown-linux-gnu \
+  --target AARCH64-GNU=aarch64-unknown-linux-gnu tests/fixtures/add.c
+```
 
 `translate-directives` fixtures use `DIRECTIVES` prefixes against that
 command's stdout. Those checks are separate from lowering and rewrite profile
