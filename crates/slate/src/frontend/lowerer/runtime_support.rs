@@ -344,12 +344,39 @@ pub(super) fn f80_shim_decls() -> Vec<ExternFnDecl> {
         f80_binary_extern_decl("__slate_f80_copysign"),
         f80_binary_extern_decl("__slate_f80_fmax"),
         f80_binary_extern_decl("__slate_f80_fmin"),
+        f80_extern_decl(
+            "__slate_f80_powi",
+            vec![f80_param("a", f80()), f80_param("n", Type::Prim(Prim::I32))],
+            Some(f80()),
+        ),
         f80_extern_decl("__slate_f80_neg", vec![f80_param("a", f80())], Some(f80())),
     ];
     for shim in [
         "__slate_f80_abs",
         "__slate_f80_ceil",
         "__slate_f80_floor",
+        "__slate_f80_sqrt",
+        "__slate_f80_cbrt",
+        "__slate_f80_exp",
+        "__slate_f80_exp2",
+        "__slate_f80_expm1",
+        "__slate_f80_log",
+        "__slate_f80_log2",
+        "__slate_f80_log10",
+        "__slate_f80_log1p",
+        "__slate_f80_sin",
+        "__slate_f80_cos",
+        "__slate_f80_tan",
+        "__slate_f80_asin",
+        "__slate_f80_acos",
+        "__slate_f80_atan",
+        "__slate_f80_sinh",
+        "__slate_f80_cosh",
+        "__slate_f80_tanh",
+        "__slate_f80_asinh",
+        "__slate_f80_acosh",
+        "__slate_f80_atanh",
+        "__slate_f80_nearbyint",
         "__slate_f80_fract",
         "__slate_f80_round",
         "__slate_f80_trunc",
@@ -360,6 +387,15 @@ pub(super) fn f80_shim_decls() -> Vec<ExternFnDecl> {
             vec![f80_param("a", f80())],
             Some(f80()),
         ));
+    }
+    for shim in [
+        "__slate_f80_fmod",
+        "__slate_f80_remainder",
+        "__slate_f80_pow",
+        "__slate_f80_fdim",
+        "__slate_f80_hypot",
+    ] {
+        decls.push(f80_binary_extern_decl(shim));
     }
     decls.push(f80_extern_decl(
         "__slate_f80_signbit",
