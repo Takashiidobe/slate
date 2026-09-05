@@ -78,10 +78,11 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = o.z;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     init = Outer {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Outer = Outer {
 // LOWERING-NEXT:         a: Inner { x: 1, y: 2 },
 // LOWERING-NEXT:         z: 3,
 // LOWERING-NEXT:     };
+// LOWERING-NEXT:     init = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = init.a.x;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = init.a.y;

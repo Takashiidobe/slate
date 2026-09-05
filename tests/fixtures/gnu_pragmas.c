@@ -108,16 +108,11 @@ int main(void) {
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn gnu_pragma_diagnostic() -> i32 {
-// LOWERING-NEXT:     let mut ignored: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 23;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut packed: GNUPragmaPacked = GNUPragmaPacked { tag: 0, value: 0 };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     packed = GNUPragmaPacked { tag: 29, value: 31 };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: GNUPragmaPacked = GNUPragmaPacked { tag: 29, value: 31 };
+// LOWERING-NEXT:     packed = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { gnu_pragma_inner_macro };
@@ -151,6 +146,12 @@ int main(void) {
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn gnu_pragma_diagnostic() -> i32 {
+// LOWERING-NEXT:     let mut ignored: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 23;
+// LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -204,10 +205,6 @@ int main(void) {
 // REWRITES-NEXT:     19
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn gnu_pragma_diagnostic() -> i32 {
-// REWRITES-NEXT:     23
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut packed: GNUPragmaPacked = GNUPragmaPacked { tag: 29, value: 31 };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d %d %d %d %d %d %d %d\n".as_ptr() as *mut i8;
@@ -232,5 +229,9 @@ int main(void) {
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn gnu_pragma_diagnostic() -> i32 {
+// REWRITES-NEXT:     23
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

@@ -21,6 +21,16 @@ int main(void) { return frame_address_is_plausible() ? 0 : 1; }
 // LOWERING-NEXT:     unused_comparisons
 // LOWERING-NEXT: )]
 // LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = frame_address_is_plausible();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
 // LOWERING-NEXT: fn frame_address_is_plausible() -> i32 {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 0;
 // LOWERING-NEXT:     let mut {{_v[0-9]+}}: u8 = 0u8;
@@ -31,16 +41,6 @@ int main(void) { return frame_address_is_plausible() ? 0 : 1; }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = frame_address_is_plausible();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -58,17 +58,17 @@ int main(void) { return frame_address_is_plausible() ? 0 : 1; }
 // REWRITES-NEXT:     unused_comparisons
 // REWRITES-NEXT: )]
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn frame_address_is_plausible() -> i32 {
-// REWRITES-NEXT:     let mut {{_v[0-9]+}}: u8 = 0u8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u8 = std::ptr::addr_of_mut!({{_v[0-9]+}}) as *mut u8;
-// REWRITES-NEXT:     ((({{_v[0-9]+}} as *mut core::ffi::c_void) as u64) > 4096) as i32
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = frame_address_is_plausible();
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} != 0 { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
 // REWRITES-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn frame_address_is_plausible() -> i32 {
+// REWRITES-NEXT:     let mut {{_v[0-9]+}}: u8 = 0u8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u8 = std::ptr::addr_of_mut!({{_v[0-9]+}}) as *mut u8;
+// REWRITES-NEXT:     ((({{_v[0-9]+}} as *mut core::ffi::c_void) as u64) > 4096) as i32
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

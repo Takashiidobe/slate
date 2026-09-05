@@ -38,8 +38,10 @@ int main(void) {
 // LOWERING-NEXT:     let mut greeting: [i8; 4] = [0; 4];
 // LOWERING-NEXT:     let mut mutate: [i8; 4] = [0; 4];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     greeting = [104, -61, -87, 0];
-// LOWERING-NEXT:     mutate = [97, 98, 99, 0];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 4] = [104, -61, -87, 0];
+// LOWERING-NEXT:     greeting = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 4] = [97, 98, 99, 0];
+// LOWERING-NEXT:     mutate = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = mutate.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = 90;
 // LOWERING-NEXT:     unsafe {

@@ -170,6 +170,17 @@ int main(void) {
 // LOWERING-NEXT:     fn envz_strip(_0: *mut *mut core::ffi::c_char, _1: *mut usize);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_string_extensions();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_argz_extensions();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_envz_extensions();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
 // LOWERING-NEXT: fn gnu_string_extensions() -> i32 {
 // LOWERING-NEXT:     let mut {{__slate_alloca_frame[0-9]+}}: __SlateAllocaFrame0 = __SlateAllocaFrame0(
 // LOWERING-NEXT:         0,
@@ -180,10 +191,14 @@ int main(void) {
 // LOWERING-NEXT:         [0; 5],
 // LOWERING-NEXT:         aligned::Aligned([0; 16]),
 // LOWERING-NEXT:     );
-// LOWERING-NEXT:     *{{__slate_alloca_frame[0-9]+}}.6 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-// LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.5 = [97, 98, 99, 97, 0];
-// LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.4 = [103, 110, 117, 0];
-// LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.3 = [97, 58, 58, 98, 99, 0];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 16] = [0; 16];
+// LOWERING-NEXT:     *{{__slate_alloca_frame[0-9]+}}.6 = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 5] = [97, 98, 99, 97, 0];
+// LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.5 = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 4] = [103, 110, 117, 0];
+// LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.4 = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 6] = [97, 58, 58, 98, 99, 0];
+// LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.3 = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{__slate_alloca_frame[0-9]+}}.3.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.2 = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = {{__slate_alloca_frame[0-9]+}}.6.as_mut_ptr() as *mut i8;
@@ -574,17 +589,6 @@ int main(void) {
 // LOWERING-NEXT:     unsafe { free({{_v[0-9]+}} as *mut core::ffi::c_void) };
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_string_extensions();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_argz_extensions();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_envz_extensions();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
-// LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
@@ -679,6 +683,18 @@ int main(void) {
 // REWRITES-NEXT:     fn envz_strip(_0: *mut *mut core::ffi::c_char, _1: *mut usize);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         printf(
+// REWRITES-NEXT:             c"%d %d %d\n".as_ptr(),
+// REWRITES-NEXT:             gnu_string_extensions(),
+// REWRITES-NEXT:             gnu_argz_extensions(),
+// REWRITES-NEXT:             gnu_envz_extensions(),
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn gnu_string_extensions() -> i32 {
 // REWRITES-NEXT:     let mut {{__slate_alloca_frame[0-9]+}}: __SlateAllocaFrame0 = __SlateAllocaFrame0(
 // REWRITES-NEXT:         0,
@@ -689,7 +705,7 @@ int main(void) {
 // REWRITES-NEXT:         [0; 5],
 // REWRITES-NEXT:         aligned::Aligned([0; 16]),
 // REWRITES-NEXT:     );
-// REWRITES-NEXT:     *{{__slate_alloca_frame[0-9]+}}.6 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+// REWRITES-NEXT:     *{{__slate_alloca_frame[0-9]+}}.6 = [0; 16];
 // REWRITES-NEXT:     {{__slate_alloca_frame[0-9]+}}.5 = [97, 98, 99, 97, 0];
 // REWRITES-NEXT:     {{__slate_alloca_frame[0-9]+}}.4 = [103, 110, 117, 0];
 // REWRITES-NEXT:     {{__slate_alloca_frame[0-9]+}}.3 = [97, 58, 58, 98, 99, 0];
@@ -904,17 +920,5 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + ((length == 0) as i32);
 // REWRITES-NEXT:     unsafe { free(envz as *mut core::ffi::c_void) };
 // REWRITES-NEXT:     {{_v[0-9]+}}
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             gnu_string_extensions(),
-// REWRITES-NEXT:             gnu_argz_extensions(),
-// REWRITES-NEXT:             gnu_envz_extensions(),
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

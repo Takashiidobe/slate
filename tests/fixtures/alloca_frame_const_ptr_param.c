@@ -37,18 +37,6 @@ int main(void) {
 // LOWERING-NEXT:     windowLog: i32,
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn use_params({{arg[0-9]+}}: *mut Params, {{arg[0-9]+}}: *mut u32, {{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8) {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { {{arg[0-9]+}}.offset_from({{arg[0-9]+}}) as i64 };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { (*{{arg[0-9]+}}).windowLog };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} as u32;
-// LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         *{{arg[0-9]+}} = {{_v[0-9]+}};
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     return;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut p: Params = Params { windowLog: 0 };
 // LOWERING-NEXT:     let mut buf: [i8; 8] = [0; 8];
@@ -72,6 +60,18 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn use_params({{arg[0-9]+}}: *mut Params, {{arg[0-9]+}}: *mut u32, {{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8) {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { {{arg[0-9]+}}.offset_from({{arg[0-9]+}}) as i64 };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { (*{{arg[0-9]+}}).windowLog };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = {{_v[0-9]+}} as u32;
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         *{{arg[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     return;
+// LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
@@ -94,15 +94,6 @@ int main(void) {
 // REWRITES-NEXT:     windowLog: i32,
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn use_params({{arg[0-9]+}}: &Params, {{arg[0-9]+}}: &mut u32, {{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8) {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { {{arg[0-9]+}}.offset_from({{arg[0-9]+}}) as i64 };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         *({{arg[0-9]+}} as *mut u32) =
-// REWRITES-NEXT:             ((unsafe { (*({{arg[0-9]+}} as *const Params)).windowLog }) + ({{_v[0-9]+}} as i32)) as u32;
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     return;
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut p: Params = Params { windowLog: 0 };
 // REWRITES-NEXT:     let mut buf: [i8; 8] = [0; 8];
@@ -117,5 +108,14 @@ int main(void) {
 // REWRITES-NEXT:         unsafe { {{_v[0-9]+}}.add(4) },
 // REWRITES-NEXT:     );
 // REWRITES-NEXT:     std::process::exit(out as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn use_params({{arg[0-9]+}}: &Params, {{arg[0-9]+}}: &mut u32, {{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: *mut i8) {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i64 = unsafe { {{arg[0-9]+}}.offset_from({{arg[0-9]+}}) as i64 };
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         *({{arg[0-9]+}} as *mut u32) =
+// REWRITES-NEXT:             ((unsafe { (*({{arg[0-9]+}} as *const Params)).windowLog }) + ({{_v[0-9]+}} as i32)) as u32;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

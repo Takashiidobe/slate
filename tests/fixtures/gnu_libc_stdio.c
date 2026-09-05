@@ -156,18 +156,30 @@ int main(void) {
 // LOWERING-NEXT:     fn getline(_0: *mut *mut core::ffi::c_char, _1: *mut usize, _2: *mut libc::FILE) -> isize;
 // LOWERING-NEXT:     fn __freading(_0: *mut libc::FILE) -> i32;
 // LOWERING-NEXT:     fn __fbufsize(_0: *mut libc::FILE) -> usize;
-// LOWERING-NEXT:     fn memcpy(
-// LOWERING-NEXT:         _0: *mut core::ffi::c_void,
-// LOWERING-NEXT:         _1: *const core::ffi::c_void,
-// LOWERING-NEXT:         _2: usize,
-// LOWERING-NEXT:     ) -> *mut core::ffi::c_void;
 // LOWERING-NEXT:     fn fopencookie(
 // LOWERING-NEXT:         _0: *mut core::ffi::c_void,
 // LOWERING-NEXT:         _1: *const core::ffi::c_char,
 // LOWERING-NEXT:         _2: _IO_cookie_io_functions_t,
 // LOWERING-NEXT:     ) -> *mut libc::FILE;
 // LOWERING-NEXT:     fn memcmp(_0: *const core::ffi::c_void, _1: *const core::ffi::c_void, _2: usize) -> i32;
+// LOWERING-NEXT:     fn memcpy(
+// LOWERING-NEXT:         _0: *mut core::ffi::c_void,
+// LOWERING-NEXT:         _1: *const core::ffi::c_void,
+// LOWERING-NEXT:         _2: usize,
+// LOWERING-NEXT:     ) -> *mut core::ffi::c_void;
 // LOWERING-NEXT:     fn parse_printf_format(_0: *const core::ffi::c_char, _1: usize, _2: *mut i32) -> usize;
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_allocating_stdio();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_memory_stdio();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_cookie_stdio();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_printf_introspection();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn gnu_allocating_stdio() -> i32 {
@@ -283,7 +295,8 @@ int main(void) {
 // LOWERING-NEXT:     let mut source: [i8; 12] = [0; 12];
 // LOWERING-NEXT:     let mut line: *mut i8 = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut capacity: u64 = 0;
-// LOWERING-NEXT:     source = [97, 108, 112, 104, 97, 124, 98, 101, 116, 97, 10, 0];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 12] = [97, 108, 112, 104, 97, 124, 98, 101, 116, 97, 10, 0];
+// LOWERING-NEXT:     source = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = std::ptr::null_mut();
 // LOWERING-NEXT:     line = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 0;
@@ -374,43 +387,6 @@ int main(void) {
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C-unwind" fn gnu_cookie_write(
-// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
-// LOWERING-NEXT:     {{arg[0-9]+}}: *mut i8,
-// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
-// LOWERING-NEXT: ) -> i64 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut GNUCookie = {{arg[0-9]+}} as *mut GNUCookie;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = (unsafe { std::ptr::addr_of_mut!((*{{_v[0-9]+}}).bytes) }) as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = unsafe { (*{{_v[0-9]+}}).length };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add({{_v[0-9]+}} as usize) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{arg[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe {
-// LOWERING-NEXT:         memcpy(
-// LOWERING-NEXT:             {{_v[0-9]+}} as *mut core::ffi::c_void,
-// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_void,
-// LOWERING-NEXT:             {{arg[0-9]+}} as usize,
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = unsafe { (*{{_v[0-9]+}}).length };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         (*{{_v[0-9]+}}).length = {{_v[0-9]+}};
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = {{arg[0-9]+}} as i64;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C-unwind" fn gnu_cookie_close({{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut GNUCookie = {{arg[0-9]+}} as *mut GNUCookie;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         (*{{_v[0-9]+}}).closed = {{_v[0-9]+}};
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
 // LOWERING-NEXT: fn gnu_cookie_stdio() -> i32 {
 // LOWERING-NEXT:     let mut cookie: GNUCookie = GNUCookie {
 // LOWERING-NEXT:         bytes: [0; 32],
@@ -423,17 +399,19 @@ int main(void) {
 // LOWERING-NEXT:         seek: None,
 // LOWERING-NEXT:         close: None,
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     cookie = GNUCookie {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: GNUCookie = GNUCookie {
 // LOWERING-NEXT:         bytes: [0; 32],
 // LOWERING-NEXT:         length: 0,
 // LOWERING-NEXT:         closed: 0,
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     functions = _IO_cookie_io_functions_t {
+// LOWERING-NEXT:     cookie = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: _IO_cookie_io_functions_t = _IO_cookie_io_functions_t {
 // LOWERING-NEXT:         read: None,
 // LOWERING-NEXT:         write: None,
 // LOWERING-NEXT:         seek: None,
 // LOWERING-NEXT:         close: None,
 // LOWERING-NEXT:     };
+// LOWERING-NEXT:     functions = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     functions.write = unsafe {
 // LOWERING-NEXT:         std::mem::transmute::<
@@ -450,22 +428,11 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(cookie) as *mut core::ffi::c_void;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"w\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: _IO_cookie_io_functions_t = functions;
-// LOWERING-NEXT:     let mut byval: _IO_cookie_io_functions_t = _IO_cookie_io_functions_t {
-// LOWERING-NEXT:         read: None,
-// LOWERING-NEXT:         write: None,
-// LOWERING-NEXT:         seek: None,
-// LOWERING-NEXT:         close: None,
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut libc::FILE = unsafe {
 // LOWERING-NEXT:         fopencookie(
 // LOWERING-NEXT:             {{_v[0-9]+}} as *mut core::ffi::c_void,
 // LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-NEXT:             unsafe {
-// LOWERING-NEXT:                 std::ptr::read_unaligned(
-// LOWERING-NEXT:                     std::ptr::addr_of_mut!(byval) as *const _IO_cookie_io_functions_t
-// LOWERING-NEXT:                 )
-// LOWERING-NEXT:             },
+// LOWERING-NEXT:             {{_v[0-9]+}} as _IO_cookie_io_functions_t,
 // LOWERING-NEXT:         )
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut libc::FILE = std::ptr::null_mut();
@@ -523,7 +490,8 @@ int main(void) {
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn gnu_printf_introspection() -> i32 {
 // LOWERING-NEXT:     let mut types: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
-// LOWERING-NEXT:     *types = [0, 0, 0, 0];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i32; 4] = [0; 4];
+// LOWERING-NEXT:     *types = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%2$d %1$s\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 4;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = types.as_mut_ptr() as *mut i32;
@@ -564,16 +532,41 @@ int main(void) {
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT: extern "C-unwind" fn gnu_cookie_write(
+// LOWERING-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
+// LOWERING-NEXT:     {{arg[0-9]+}}: *mut i8,
+// LOWERING-NEXT:     {{arg[0-9]+}}: u64,
+// LOWERING-NEXT: ) -> i64 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut GNUCookie = {{arg[0-9]+}} as *mut GNUCookie;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = (unsafe { std::ptr::addr_of_mut!((*{{_v[0-9]+}}).bytes) }) as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = unsafe { (*{{_v[0-9]+}}).length };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add({{_v[0-9]+}} as usize) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{arg[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe {
+// LOWERING-NEXT:         memcpy(
+// LOWERING-NEXT:             {{_v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_void,
+// LOWERING-NEXT:             {{arg[0-9]+}} as usize,
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = unsafe { (*{{_v[0-9]+}}).length };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = {{_v[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         (*{{_v[0-9]+}}).length = {{_v[0-9]+}};
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = {{arg[0-9]+}} as i64;
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: extern "C-unwind" fn gnu_cookie_close({{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut GNUCookie = {{arg[0-9]+}} as *mut GNUCookie;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         (*{{_v[0-9]+}}).closed = {{_v[0-9]+}};
+// LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_allocating_stdio();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_memory_stdio();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_cookie_stdio();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_printf_introspection();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -635,18 +628,31 @@ int main(void) {
 // REWRITES-NEXT:     fn getline(_0: *mut *mut core::ffi::c_char, _1: *mut usize, _2: *mut libc::FILE) -> isize;
 // REWRITES-NEXT:     fn __freading(_0: *mut libc::FILE) -> i32;
 // REWRITES-NEXT:     fn __fbufsize(_0: *mut libc::FILE) -> usize;
-// REWRITES-NEXT:     fn memcpy(
-// REWRITES-NEXT:         _0: *mut core::ffi::c_void,
-// REWRITES-NEXT:         _1: *const core::ffi::c_void,
-// REWRITES-NEXT:         _2: usize,
-// REWRITES-NEXT:     ) -> *mut core::ffi::c_void;
 // REWRITES-NEXT:     fn fopencookie(
 // REWRITES-NEXT:         _0: *mut core::ffi::c_void,
 // REWRITES-NEXT:         _1: *const core::ffi::c_char,
 // REWRITES-NEXT:         _2: _IO_cookie_io_functions_t,
 // REWRITES-NEXT:     ) -> *mut libc::FILE;
 // REWRITES-NEXT:     fn memcmp(_0: *const core::ffi::c_void, _1: *const core::ffi::c_void, _2: usize) -> i32;
+// REWRITES-NEXT:     fn memcpy(
+// REWRITES-NEXT:         _0: *mut core::ffi::c_void,
+// REWRITES-NEXT:         _1: *const core::ffi::c_void,
+// REWRITES-NEXT:         _2: usize,
+// REWRITES-NEXT:     ) -> *mut core::ffi::c_void;
 // REWRITES-NEXT:     fn parse_printf_format(_0: *const core::ffi::c_char, _1: usize, _2: *mut i32) -> usize;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         printf(
+// REWRITES-NEXT:             c"%d %d %d %d\n".as_ptr(),
+// REWRITES-NEXT:             gnu_allocating_stdio(),
+// REWRITES-NEXT:             gnu_memory_stdio(),
+// REWRITES-NEXT:             gnu_cookie_stdio(),
+// REWRITES-NEXT:             gnu_printf_introspection(),
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn gnu_allocating_stdio() -> i32 {
@@ -704,9 +710,10 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn gnu_memory_stdio() -> i32 {
-// REWRITES-NEXT:     let mut source: [i8; 12] = [97, 108, 112, 104, 97, 124, 98, 101, 116, 97, 10, 0];
+// REWRITES-NEXT:     let mut source: [i8; 12] = [0; 12];
 // REWRITES-NEXT:     let mut line: *mut i8 = std::ptr::null_mut();
 // REWRITES-NEXT:     let mut capacity: u64 = 0;
+// REWRITES-NEXT:     source = [97, 108, 112, 104, 97, 124, 98, 101, 116, 97, 10, 0];
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = source.as_mut_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = source.as_mut_ptr() as *mut i8;
@@ -745,29 +752,6 @@ int main(void) {
 // REWRITES-NEXT:     {{_v[0-9]+}}
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C-unwind" fn gnu_cookie_write(
-// REWRITES-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
-// REWRITES-NEXT:     {{arg[0-9]+}}: *mut i8,
-// REWRITES-NEXT:     {{arg[0-9]+}}: u64,
-// REWRITES-NEXT: ) -> i64 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut GNUCookie = {{arg[0-9]+}} as *mut GNUCookie;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = (unsafe { std::ptr::addr_of_mut!((*{{_v[0-9]+}}).bytes) }) as *mut i8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = unsafe { (*{{_v[0-9]+}}).length };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add({{_v[0-9]+}} as usize) };
-// REWRITES-NEXT:     unsafe { std::ptr::copy_nonoverlapping({{arg[0-9]+}} as *const u8, {{_v[0-9]+}} as *mut u8, {{arg[0-9]+}} as usize) };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         (*{{_v[0-9]+}}).length = (unsafe { (*{{_v[0-9]+}}).length }) + {{arg[0-9]+}};
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     {{arg[0-9]+}} as i64
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C-unwind" fn gnu_cookie_close({{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         (*({{arg[0-9]+}} as *mut GNUCookie)).closed = 1;
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     0
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
 // REWRITES-NEXT: fn gnu_cookie_stdio() -> i32 {
 // REWRITES-NEXT:     let mut cookie: GNUCookie = GNUCookie {
 // REWRITES-NEXT:         bytes: [0; 32],
@@ -775,6 +759,17 @@ int main(void) {
 // REWRITES-NEXT:         closed: 0,
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let mut functions: _IO_cookie_io_functions_t = _IO_cookie_io_functions_t {
+// REWRITES-NEXT:         read: None,
+// REWRITES-NEXT:         write: None,
+// REWRITES-NEXT:         seek: None,
+// REWRITES-NEXT:         close: None,
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     cookie = GNUCookie {
+// REWRITES-NEXT:         bytes: [0; 32],
+// REWRITES-NEXT:         length: 0,
+// REWRITES-NEXT:         closed: 0,
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     functions = _IO_cookie_io_functions_t {
 // REWRITES-NEXT:         read: None,
 // REWRITES-NEXT:         write: None,
 // REWRITES-NEXT:         seek: None,
@@ -794,18 +789,11 @@ int main(void) {
 // REWRITES-NEXT:         >(gnu_cookie_close as *const ())
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::addr_of_mut!(cookie) as *mut core::ffi::c_void;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"w".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: _IO_cookie_io_functions_t = functions;
-// REWRITES-NEXT:     let mut byval: _IO_cookie_io_functions_t = {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut libc::FILE = unsafe {
 // REWRITES-NEXT:         fopencookie(
 // REWRITES-NEXT:             {{_v[0-9]+}} as *mut core::ffi::c_void,
-// REWRITES-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
-// REWRITES-NEXT:             unsafe {
-// REWRITES-NEXT:                 std::ptr::read_unaligned(
-// REWRITES-NEXT:                     std::ptr::addr_of_mut!(byval) as *const _IO_cookie_io_functions_t
-// REWRITES-NEXT:                 )
-// REWRITES-NEXT:             },
+// REWRITES-NEXT:             c"w".as_ptr(),
+// REWRITES-NEXT:             functions as _IO_cookie_io_functions_t,
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + (({{_v[0-9]+}} != std::ptr::null_mut()) as i32);
@@ -834,7 +822,7 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn gnu_printf_introspection() -> i32 {
 // REWRITES-NEXT:     let mut types: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
-// REWRITES-NEXT:     *types = [0, 0, 0, 0];
+// REWRITES-NEXT:     *types = [0; 4];
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%2$d %1$s".as_ptr() as *mut i8;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = types.as_mut_ptr() as *mut i32;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe {
@@ -861,16 +849,26 @@ int main(void) {
 // REWRITES-NEXT:     {{_v[0-9]+}} as i32
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: extern "C-unwind" fn gnu_cookie_write(
+// REWRITES-NEXT:     {{arg[0-9]+}}: *mut core::ffi::c_void,
+// REWRITES-NEXT:     {{arg[0-9]+}}: *mut i8,
+// REWRITES-NEXT:     {{arg[0-9]+}}: u64,
+// REWRITES-NEXT: ) -> i64 {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut GNUCookie = {{arg[0-9]+}} as *mut GNUCookie;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = (unsafe { std::ptr::addr_of_mut!((*{{_v[0-9]+}}).bytes) }) as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = unsafe { (*{{_v[0-9]+}}).length };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = unsafe { {{_v[0-9]+}}.add({{_v[0-9]+}} as usize) };
+// REWRITES-NEXT:     unsafe { std::ptr::copy_nonoverlapping({{arg[0-9]+}} as *const u8, {{_v[0-9]+}} as *mut u8, {{arg[0-9]+}} as usize) };
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             gnu_allocating_stdio(),
-// REWRITES-NEXT:             gnu_memory_stdio(),
-// REWRITES-NEXT:             gnu_cookie_stdio(),
-// REWRITES-NEXT:             gnu_printf_introspection(),
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:         (*{{_v[0-9]+}}).length = (unsafe { (*{{_v[0-9]+}}).length }) + {{arg[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     {{arg[0-9]+}} as i64
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: extern "C-unwind" fn gnu_cookie_close({{arg[0-9]+}}: *mut core::ffi::c_void) -> i32 {
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         (*({{arg[0-9]+}} as *mut GNUCookie)).closed = 1;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     0
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

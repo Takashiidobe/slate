@@ -29,12 +29,8 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: fn make_byte() -> i8 {
-// LOWERING-DAG:     let mut coerce: Byte = Byte { value: 0 };
+// LOWERING-DAG: fn make_byte() -> Byte {
 // LOWERING-DAG:     let {{_v[0-9]+}}: Byte = Byte { value: 7 };
-// LOWERING-DAG:     coerce = {{_v[0-9]+}};
-// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i8 = std::ptr::addr_of_mut!(coerce) as *mut i8;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i8 = unsafe { *{{_v[0-9]+}} };
 // LOWERING-DAG:     return {{_v[0-9]+}};
 // LOWERING-DAG: }
 // LOWERING-DAG: fn initialize_chars() -> i32 {
@@ -45,11 +41,8 @@ int main(void) {
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn make_byte() -> i8 {
-// REWRITES-DAG:     let mut coerce: Byte = Byte { value: 0 };
-// REWRITES-DAG:     coerce = Byte { value: 7 };
-// REWRITES-DAG:     let {{_v[0-9]+}}: *mut i8 = std::ptr::addr_of_mut!(coerce) as *mut i8;
-// REWRITES-DAG:     unsafe { *{{_v[0-9]+}} }
+// REWRITES-DAG: fn make_byte() -> Byte {
+// REWRITES-DAG:     return Byte { value: 7 };
 // REWRITES-DAG: }
 // REWRITES-DAG: fn initialize_chars() -> i32 {
 // REWRITES-DAG:     5

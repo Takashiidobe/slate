@@ -271,6 +271,11 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         };
         let src_ty = &src_ty;
+        if matches!(src_ty, CirType::Complex { .. }) || matches!(result_ty, CirType::Complex { .. })
+        {
+            self.lower_complex_cast(op, src_ty);
+            return;
+        }
         if fenv_is_constrained(&op.fenv) && self.try_lower_fenv_cast(result, result_ty, src, src_ty)
         {
             return;
@@ -737,6 +742,17 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 .and_then(CirType::pointee)
                 .is_some_and(|ty| self.parent.cir_type_is_union(ty));
         let field_is_trailing = self.member_field_is_trailing(&op.addr, &field);
+        let unaligned = storage.is_none()
+            && field_ty.as_ref().is_some_and(|ty| {
+                self.member_record_name(&op.addr)
+                    .or_else(|| self.record_name_from_base_type(&op.addr))
+                    .and_then(|record_name| self.parent.records.get(&record_name))
+                    .is_some_and(|record| {
+                        record
+                            .packed
+                            .is_some_and(|packed| u64::from(type_alignment(ty)) > u64::from(packed))
+                    })
+            });
         self.member_ptrs.insert(
             op.result.clone(),
             MemberPtr {
@@ -749,6 +765,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                     .and_then(|storage| storage.wrapped.then_some(logical_field)),
                 bitfield_unaligned: storage.as_ref().is_some_and(|storage| storage.unaligned),
                 field_is_trailing,
+                unaligned,
             },
         );
     }

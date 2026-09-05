@@ -551,7 +551,7 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
                 Op::Switch(value) => return self.lower_switch(&value),
                 Op::SwitchFlat(value) => return self.lower_switch_flat(&value),
                 Op::CleanupScope(value) => return self.lower_cleanup_scope(&value),
-                Op::Stackrestore(_) => return,
+                Op::Stackrestore(_) | Op::LifetimeStart(_) | Op::LifetimeEnd(_) => return,
                 Op::Ternary(value) => return self.lower_ternary(&value),
                 Op::For(value) => return self.lower_for(&value),
                 Op::While(value) => return self.lower_while(&value),

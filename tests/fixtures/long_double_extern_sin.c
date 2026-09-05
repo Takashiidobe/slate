@@ -128,13 +128,26 @@ int main(void) {
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
+// LOWERING-NEXT:     fn sinl(_0: LongDouble) -> LongDouble;
 // LOWERING-NEXT:     fn memcpy(
 // LOWERING-NEXT:         _0: *mut core::ffi::c_void,
 // LOWERING-NEXT:         _1: *const core::ffi::c_void,
 // LOWERING-NEXT:         _2: usize,
 // LOWERING-NEXT:     ) -> *mut core::ffi::c_void;
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// LOWERING-NEXT:     fn sinl(_0: LongDouble) -> LongDouble;
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let mut x: LongDouble = LongDouble([0; 10]);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(x), {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"sinl\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { __slate_sinl__rf80_f80({{_v[0-9]+}}) };
+// LOWERING-NEXT:     dump80({{_v[0-9]+}}, {{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn dump80({{arg[0-9]+}}: *mut i8, {{arg[0-9]+}}: LongDouble) {
@@ -179,19 +192,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char) };
 // LOWERING-NEXT:     return;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut x: LongDouble = LongDouble([0; 10]);
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(x), {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"sinl\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { __slate_sinl__rf80_f80({{_v[0-9]+}}) };
-// LOWERING-NEXT:     dump80({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
@@ -368,13 +368,23 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
+// REWRITES-NEXT:     fn sinl(_0: LongDouble) -> LongDouble;
 // REWRITES-NEXT:     fn memcpy(
 // REWRITES-NEXT:         _0: *mut core::ffi::c_void,
 // REWRITES-NEXT:         _1: *const core::ffi::c_void,
 // REWRITES-NEXT:         _2: usize,
 // REWRITES-NEXT:     ) -> *mut core::ffi::c_void;
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// REWRITES-NEXT:     fn sinl(_0: LongDouble) -> LongDouble;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT:     let mut x: LongDouble = LongDouble([0; 10]);
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(x), {{_v[0-9]+}}) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"sinl".as_ptr() as *mut i8;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
+// REWRITES-NEXT:     dump80({{_v[0-9]+}}, unsafe { __slate_sinl__rf80_f80({{_v[0-9]+}}) });
+// REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn dump80({{arg[0-9]+}}: *mut i8, mut value: LongDouble) {
@@ -393,16 +403,6 @@ int main(void) {
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     unsafe { printf(c"\n".as_ptr()) };
 // REWRITES-NEXT:     return;
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let mut x: LongDouble = LongDouble([0; 10]);
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
-// REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(x), {{_v[0-9]+}}) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"sinl".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
-// REWRITES-NEXT:     dump80({{_v[0-9]+}}, unsafe { __slate_sinl__rf80_f80({{_v[0-9]+}}) });
-// REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {

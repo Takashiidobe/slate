@@ -37,6 +37,34 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let mut left: i32 = 0;
+// LOWERING-NEXT:     let mut right: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 11;
+// LOWERING-NEXT:     left = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
+// LOWERING-NEXT:     right = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = std::ptr::null_mut();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = combine(
+// LOWERING-NEXT:         std::ptr::addr_of_mut!(left),
+// LOWERING-NEXT:         {{_v[0-9]+}},
+// LOWERING-NEXT:         std::ptr::addr_of_mut!(right),
+// LOWERING-NEXT:         {{_v[0-9]+}},
+// LOWERING-NEXT:     );
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = difference(
+// LOWERING-NEXT:         std::ptr::addr_of_mut!(left),
+// LOWERING-NEXT:         {{_v[0-9]+}},
+// LOWERING-NEXT:         std::ptr::addr_of_mut!(right),
+// LOWERING-NEXT:     );
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
 // LOWERING-NEXT: fn combine({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: *mut i32) -> i32 {
 // LOWERING-NEXT:     let mut optional: *mut i32 = std::ptr::null_mut();
 // LOWERING-NEXT:     optional = {{arg[0-9]+}};
@@ -65,34 +93,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} - {{_v[0-9]+}};
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut left: i32 = 0;
-// LOWERING-NEXT:     let mut right: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 11;
-// LOWERING-NEXT:     left = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-NEXT:     right = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = std::ptr::null_mut();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = combine(
-// LOWERING-NEXT:         std::ptr::addr_of_mut!(left),
-// LOWERING-NEXT:         {{_v[0-9]+}},
-// LOWERING-NEXT:         std::ptr::addr_of_mut!(right),
-// LOWERING-NEXT:         {{_v[0-9]+}},
-// LOWERING-NEXT:     );
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = difference(
-// LOWERING-NEXT:         std::ptr::addr_of_mut!(left),
-// LOWERING-NEXT:         {{_v[0-9]+}},
-// LOWERING-NEXT:         std::ptr::addr_of_mut!(right),
-// LOWERING-NEXT:     );
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
-// LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
@@ -114,22 +114,6 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn combine({{arg[0-9]+}}: &i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: &i32, mut optional: *mut i32) -> i32 {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = (unsafe { *({{arg[0-9]+}} as *const i32) }) + {{arg[0-9]+}} * unsafe { *({{arg[0-9]+}} as *const i32) };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = if optional != std::ptr::null_mut() {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { *optional };
-// REWRITES-NEXT:         {{_v[0-9]+}}
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:         {{_v[0-9]+}}
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     {{_v[0-9]+}} + {{_v[0-9]+}}
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn difference({{arg[0-9]+}}: &i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: &i32) -> i32 {
-// REWRITES-NEXT:     (unsafe { *({{arg[0-9]+}} as *const i32) }) - {{arg[0-9]+}} * unsafe { *({{arg[0-9]+}} as *const i32) }
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut left: i32 = 11;
 // REWRITES-NEXT:     let mut right: i32 = 3;
@@ -149,5 +133,21 @@ int main(void) {
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn combine({{arg[0-9]+}}: &i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: &i32, mut optional: *mut i32) -> i32 {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = (unsafe { *({{arg[0-9]+}} as *const i32) }) + {{arg[0-9]+}} * unsafe { *({{arg[0-9]+}} as *const i32) };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = if optional != std::ptr::null_mut() {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { *optional };
+// REWRITES-NEXT:         {{_v[0-9]+}}
+// REWRITES-NEXT:     } else {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:         {{_v[0-9]+}}
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     {{_v[0-9]+}} + {{_v[0-9]+}}
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn difference({{arg[0-9]+}}: &i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: &i32) -> i32 {
+// REWRITES-NEXT:     (unsafe { *({{arg[0-9]+}} as *const i32) }) - {{arg[0-9]+}} * unsafe { *({{arg[0-9]+}} as *const i32) }
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

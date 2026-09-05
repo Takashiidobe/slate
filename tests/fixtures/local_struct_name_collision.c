@@ -105,6 +105,17 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = sum_docs();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = sum_flags();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = sum_movements();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
 // LOWERING-NEXT: fn sum_docs() -> i32 {
 // LOWERING-NEXT:     let mut cases: aligned::Aligned<aligned::A16, [TestCase; 3]> = aligned::Aligned(
 // LOWERING-NEXT:         [TestCase {
@@ -113,7 +124,7 @@ int main(void) {
 // LOWERING-NEXT:         }; 3],
 // LOWERING-NEXT:     );
 // LOWERING-NEXT:     let mut total: i32 = 0;
-// LOWERING-NEXT:     *cases = [
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [TestCase; 3] = [
 // LOWERING-NEXT:         TestCase {
 // LOWERING-NEXT:             doc: b"a\0".as_ptr() as *mut i8,
 // LOWERING-NEXT:             expectedStatus: 1,
@@ -127,6 +138,7 @@ int main(void) {
 // LOWERING-NEXT:             expectedStatus: 3,
 // LOWERING-NEXT:         },
 // LOWERING-NEXT:     ];
+// LOWERING-NEXT:     *cases = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     {
@@ -173,7 +185,7 @@ int main(void) {
 // LOWERING-NEXT:         }; 2],
 // LOWERING-NEXT:     );
 // LOWERING-NEXT:     let mut total: i32 = 0;
-// LOWERING-NEXT:     *cases = [
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [TestCase_0; 2] = [
 // LOWERING-NEXT:         TestCase_0 {
 // LOWERING-NEXT:             usesParameterEntities: 1,
 // LOWERING-NEXT:             weight: 10,
@@ -183,6 +195,7 @@ int main(void) {
 // LOWERING-NEXT:             weight: 20,
 // LOWERING-NEXT:         },
 // LOWERING-NEXT:     ];
+// LOWERING-NEXT:     *cases = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     {
@@ -236,7 +249,7 @@ int main(void) {
 // LOWERING-NEXT:         }; 3],
 // LOWERING-NEXT:     );
 // LOWERING-NEXT:     let mut total: i32 = 0;
-// LOWERING-NEXT:     *cases = [
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [TestCase_1; 3] = [
 // LOWERING-NEXT:         TestCase_1 {
 // LOWERING-NEXT:             expectedMovementInChars: 1,
 // LOWERING-NEXT:             input: b"x\0".as_ptr() as *mut i8,
@@ -250,6 +263,7 @@ int main(void) {
 // LOWERING-NEXT:             input: b"zzz\0".as_ptr() as *mut i8,
 // LOWERING-NEXT:         },
 // LOWERING-NEXT:     ];
+// LOWERING-NEXT:     *cases = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     {
@@ -286,17 +300,6 @@ int main(void) {
 // LOWERING-NEXT:     }
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = sum_docs();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = sum_flags();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = sum_movements();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -338,6 +341,18 @@ int main(void) {
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         printf(
+// REWRITES-NEXT:             c"%d %d %d\n".as_ptr(),
+// REWRITES-NEXT:             sum_docs(),
+// REWRITES-NEXT:             sum_flags(),
+// REWRITES-NEXT:             sum_movements(),
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn sum_docs() -> i32 {
@@ -427,17 +442,5 @@ int main(void) {
 // REWRITES-NEXT:         total += {{_v[0-9]+}} + ((unsafe { *{{_v[0-9]+}} }) as i32);
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     total
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             sum_docs(),
-// REWRITES-NEXT:             sum_flags(),
-// REWRITES-NEXT:             sum_movements(),
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

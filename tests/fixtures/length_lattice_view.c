@@ -25,6 +25,17 @@ int main(void) {
 // LOWERING-NEXT:     unused_comparisons
 // LOWERING-NEXT: )]
 // LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let mut a: aligned::Aligned<aligned::A16, [i32; 5]> = aligned::Aligned([0; 5]);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i32; 5] = [1, 2, 3, 4, 5];
+// LOWERING-NEXT:     *a = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = a.as_mut_ptr() as *mut i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = sum_n({{_v[0-9]+}}, {{_v[0-9]+}});
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
 // LOWERING-NEXT: fn sum_n({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: i32) -> i32 {
 // LOWERING-NEXT:     let mut p: *mut i32 = std::ptr::null_mut();
 // LOWERING-NEXT:     let mut n: i32 = 0;
@@ -62,16 +73,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = s;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut a: aligned::Aligned<aligned::A16, [i32; 5]> = aligned::Aligned([0; 5]);
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     *a = [1, 2, 3, 4, 5];
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = a.as_mut_ptr() as *mut i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = sum_n({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
-// LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
@@ -88,6 +89,15 @@ int main(void) {
 // REWRITES-NEXT:     unused_comparisons
 // REWRITES-NEXT: )]
 // REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT:     let mut a: aligned::Aligned<aligned::A16, [i32; 5]> = aligned::Aligned([0; 5]);
+// REWRITES-NEXT:     *a = [1, 2, 3, 4, 5];
+// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = a.as_mut_ptr() as *mut i32;
+// REWRITES-NEXT:     std::process::exit(sum_n(unsafe {
+// REWRITES-NEXT:         std::slice::from_raw_parts({{_v[0-9]+}} as *const i32, (5 as i32) as usize)
+// REWRITES-NEXT:     }) as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn sum_n({{arg[0-9]+}}: &[i32]) -> i32 {
 // REWRITES-NEXT:     let mut p: *mut i32 = {{arg[0-9]+}}.as_ptr() as *mut i32;
 // REWRITES-NEXT:     let mut n: i32 = {{arg[0-9]+}}.len() as i32;
@@ -98,14 +108,5 @@ int main(void) {
 // REWRITES-NEXT:         s += unsafe { *{{_v[0-9]+}} };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     s
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let mut a: aligned::Aligned<aligned::A16, [i32; 5]> = aligned::Aligned([0; 5]);
-// REWRITES-NEXT:     *a = [1, 2, 3, 4, 5];
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i32 = a.as_mut_ptr() as *mut i32;
-// REWRITES-NEXT:     std::process::exit(sum_n(unsafe {
-// REWRITES-NEXT:         std::slice::from_raw_parts({{_v[0-9]+}} as *const i32, (5 as i32) as usize)
-// REWRITES-NEXT:     }) as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

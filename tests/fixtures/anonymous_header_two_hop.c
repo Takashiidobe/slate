@@ -40,10 +40,11 @@ int main(void) {
 // LOWERING-NEXT:         value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() },
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     state = anonymous_header_state {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: anonymous_header_state = anonymous_header_state {
 // LOWERING-NEXT:         count: 0,
 // LOWERING-NEXT:         value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() },
 // LOWERING-NEXT:     };
+// LOWERING-NEXT:     state = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
 // LOWERING-NEXT:     unsafe {
 // LOWERING-NEXT:         state.value.wide = {{_v[0-9]+}};

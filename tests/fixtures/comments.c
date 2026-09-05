@@ -80,18 +80,6 @@ int main(void) {
 // REWRITES-NEXT: /// counts completed operations
 // REWRITES-NEXT: static mut completed_count: i32 = 1;
 // REWRITES-EMPTY:
-// REWRITES-NEXT: /// increments a value and records the operation
-// REWRITES-NEXT: /// stores the intermediate result
-// REWRITES-NEXT: fn increment({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let mut next: i32 = 0;
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + 1;
-// REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(next), {{_v[0-9]+}}) };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         completed_count = (unsafe { completed_count }) + 1;
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { std::ptr::read_volatile(std::ptr::addr_of!(next)) }
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut holder: Holder = Holder {
 // REWRITES-NEXT:         mode: Mode::MODE_OFF,
@@ -119,5 +107,17 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 1;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
 // REWRITES-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: /// increments a value and records the operation
+// REWRITES-NEXT: /// stores the intermediate result
+// REWRITES-NEXT: fn increment({{arg[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT:     let mut next: i32 = 0;
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = {{arg[0-9]+}} + 1;
+// REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(next), {{_v[0-9]+}}) };
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         completed_count = (unsafe { completed_count }) + 1;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     unsafe { std::ptr::read_volatile(std::ptr::addr_of!(next)) }
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

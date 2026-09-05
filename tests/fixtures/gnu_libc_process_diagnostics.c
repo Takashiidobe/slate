@@ -87,16 +87,6 @@ int main(void) {
 // LOWERING-NEXT:     );
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: extern "C-unwind" fn handle_exit({{arg[0-9]+}}: i32, {{arg[0-9]+}}: *mut core::ffi::c_void) {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{arg[0-9]+}} as *mut i32;
-// LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         *{{_v[0-9]+}} = {{arg[0-9]+}};
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"on_exit:%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{arg[0-9]+}}) };
-// LOWERING-NEXT:     return;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut captured: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
@@ -194,6 +184,16 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: extern "C-unwind" fn handle_exit({{arg[0-9]+}}: i32, {{arg[0-9]+}}: *mut core::ffi::c_void) {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{arg[0-9]+}} as *mut i32;
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         *{{_v[0-9]+}} = {{arg[0-9]+}};
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"on_exit:%d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{arg[0-9]+}}) };
+// LOWERING-NEXT:     return;
+// LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
@@ -243,14 +243,6 @@ int main(void) {
 // REWRITES-NEXT:         _4: *const core::ffi::c_char,
 // REWRITES-NEXT:         ...
 // REWRITES-NEXT:     );
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C-unwind" fn handle_exit({{arg[0-9]+}}: i32, {{arg[0-9]+}}: *mut core::ffi::c_void) {
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         *({{arg[0-9]+}} as *mut i32) = {{arg[0-9]+}};
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { printf(c"on_exit:%d\n".as_ptr(), {{arg[0-9]+}}) };
-// REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
@@ -320,5 +312,13 @@ int main(void) {
 // REWRITES-NEXT:     unsafe { error(5 as i32, 0 as i32, c"fatal message".as_ptr()) };
 // REWRITES-NEXT:     unsafe { printf(c"unreachable\n".as_ptr()) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: extern "C-unwind" fn handle_exit({{arg[0-9]+}}: i32, {{arg[0-9]+}}: *mut core::ffi::c_void) {
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         *({{arg[0-9]+}} as *mut i32) = {{arg[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     unsafe { printf(c"on_exit:%d\n".as_ptr(), {{arg[0-9]+}}) };
+// REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

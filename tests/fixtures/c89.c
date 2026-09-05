@@ -424,14 +424,220 @@ int main(void) {
 // LOWERING-NEXT:     }
 // LOWERING-EMPTY:
 // LOWERING-NEXT:     fn next_arg<T: Copy + 'static>(&mut self) -> T {
+// LOWERING-NEXT:         let index = self.index;
+// LOWERING-NEXT:         self.index += 1;
 // LOWERING-NEXT:         if std::mem::size_of::<T>() == 0 {
 // LOWERING-NEXT:             return unsafe { std::mem::zeroed() };
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:         let args = self.args.as_ref().expect("va_arg with no arguments");
-// LOWERING-NEXT:         let value = args[self.index].read::<T>();
-// LOWERING-NEXT:         self.index += 1;
-// LOWERING-NEXT:         value
+// LOWERING-NEXT:         args[index].read::<T>()
 // LOWERING-NEXT:     }
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let mut unsigned_value: u64 = 0;
+// LOWERING-NEXT:     let mut point: C89Point = C89Point { x: 0, y: 0 };
+// LOWERING-NEXT:     let mut bits: C89Bits = C89Bits {
+// LOWERING-NEXT:         __bitfield_0: unsafe {
+// LOWERING-NEXT:             std::mem::transmute::<u8, __slate_bitfields::__SlateBitfield_C89Bits_0>(0)
+// LOWERING-NEXT:         },
+// LOWERING-NEXT:         __bitfield_1: [0; 3],
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let mut number: C89Number = unsafe { std::mem::zeroed::<C89Number>() };
+// LOWERING-NEXT:     let mut array: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
+// LOWERING-NEXT:     let mut copied_value: i32 = 0;
+// LOWERING-NEXT:     let mut source_value: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = -5;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 29;
+// LOWERING-NEXT:     unsigned_value = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = -7;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = 2.5;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 3.5;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 1, 64]);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 90;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = C89Color::C89_GREEN as u32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 31;
+// LOWERING-NEXT:     point.x = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 37;
+// LOWERING-NEXT:     point.y = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 6;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = ({{_v[0-9]+}} as u32) << 29 >> 29;
+// LOWERING-NEXT:     bits.__bitfield_0.set_low(({{_v[0-9]+}} as u32) << 29 >> 29);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = -3;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}} as i32) << 28 >> 28;
+// LOWERING-NEXT:     bits.__bitfield_0.set_high(({{_v[0-9]+}} as i32) << 28 >> 28);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 41;
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         number.integer = {{_v[0-9]+}};
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
+// LOWERING-NEXT:     array[({{_v[0-9]+}} as usize)] = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 1;
+// LOWERING-NEXT:     array[({{_v[0-9]+}} as usize)] = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 2;
+// LOWERING-NEXT:     array[({{_v[0-9]+}} as usize)] = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 4;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// LOWERING-NEXT:     array[({{_v[0-9]+}} as usize)] = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = array.as_mut_ptr() as *mut i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 43;
+// LOWERING-NEXT:     source_value = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     copied_value = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void =
+// LOWERING-NEXT:         std::ptr::addr_of_mut!(copied_value) as *mut core::ffi::c_void;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void =
+// LOWERING-NEXT:         std::ptr::addr_of_mut!(source_value) as *mut core::ffi::c_void;
+// LOWERING-NEXT:     c89_store(
+// LOWERING-NEXT:         {{_v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-NEXT:         {{_v[0-9]+}} as *mut core::ffi::c_void,
+// LOWERING-NEXT:     );
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 4;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} * {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} - {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 17;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} / {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} % {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} << {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} | {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} ^ {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 31;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} & {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = unsigned_value;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = 0;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > {{_v[0-9]+}};
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = true;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     } else {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:         {{_v[0-9]+}}
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 47;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 49;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} - {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = c89_static_local();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 10;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} * {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = c89_static_local();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 4;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:         c89_variadic_sum(
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             __SlateVaArgs::new(vec![
+// LOWERING-NEXT:                 __SlateVaArg::new({{_v[0-9]+}}),
+// LOWERING-NEXT:                 __SlateVaArg::new({{_v[0-9]+}}),
+// LOWERING-NEXT:                 __SlateVaArg::new({{_v[0-9]+}}),
+// LOWERING-NEXT:                 __SlateVaArg::new({{_v[0-9]+}}),
+// LOWERING-NEXT:             ]),
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 4;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = c89_control_flow({{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { c89_external_value };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { c89_const_global };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c89_volatile_global)) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { c89_joined_value };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 13;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = unsigned_value;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __slate_f80_to_i32({{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = point.x;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = point.y;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = (bits.__bitfield_0.low() as u32) << 29 >> 29;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = (bits.__bitfield_0.high() as i32) << 28 >> 28;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { number.integer };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(0) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 3;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(3) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = copied_value;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 53;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 6;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { Some(c89_add).unwrap()({{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
+// LOWERING-NEXT:         printf(
+// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:             {{_v[0-9]+}},
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn c89_store({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void) {
@@ -723,212 +929,6 @@ int main(void) {
 // LOWERING-NEXT:     }
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut unsigned_value: u64 = 0;
-// LOWERING-NEXT:     let mut point: C89Point = C89Point { x: 0, y: 0 };
-// LOWERING-NEXT:     let mut bits: C89Bits = C89Bits {
-// LOWERING-NEXT:         __bitfield_0: unsafe {
-// LOWERING-NEXT:             std::mem::transmute::<u8, __slate_bitfields::__SlateBitfield_C89Bits_0>(0)
-// LOWERING-NEXT:         },
-// LOWERING-NEXT:         __bitfield_1: [0; 3],
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let mut number: C89Number = unsafe { std::mem::zeroed::<C89Number>() };
-// LOWERING-NEXT:     let mut array: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
-// LOWERING-NEXT:     let mut copied_value: i32 = 0;
-// LOWERING-NEXT:     let mut source_value: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = -5;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 29;
-// LOWERING-NEXT:     unsigned_value = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i8 = -7;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = 2.5;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 3.5;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 1, 64]);
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 90;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = C89Color::C89_GREEN as u32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 31;
-// LOWERING-NEXT:     point.x = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 37;
-// LOWERING-NEXT:     point.y = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 6;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = ({{_v[0-9]+}} as u32) << 29 >> 29;
-// LOWERING-NEXT:     bits.__bitfield_0.set_low(({{_v[0-9]+}} as u32) << 29 >> 29);
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = -3;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = ({{_v[0-9]+}} as i32) << 28 >> 28;
-// LOWERING-NEXT:     bits.__bitfield_0.set_high(({{_v[0-9]+}} as i32) << 28 >> 28);
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 41;
-// LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         number.integer = {{_v[0-9]+}};
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-NEXT:     array[({{_v[0-9]+}} as usize)] = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 1;
-// LOWERING-NEXT:     array[({{_v[0-9]+}} as usize)] = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 2;
-// LOWERING-NEXT:     array[({{_v[0-9]+}} as usize)] = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 4;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// LOWERING-NEXT:     array[({{_v[0-9]+}} as usize)] = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = array.as_mut_ptr() as *mut i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 43;
-// LOWERING-NEXT:     source_value = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     copied_value = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void =
-// LOWERING-NEXT:         std::ptr::addr_of_mut!(copied_value) as *mut core::ffi::c_void;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void =
-// LOWERING-NEXT:         std::ptr::addr_of_mut!(source_value) as *mut core::ffi::c_void;
-// LOWERING-NEXT:     c89_store(
-// LOWERING-NEXT:         {{_v[0-9]+}} as *mut core::ffi::c_void,
-// LOWERING-NEXT:         {{_v[0-9]+}} as *mut core::ffi::c_void,
-// LOWERING-NEXT:     );
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 4;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} - {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 17;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} / {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} % {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} << {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} | {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} ^ {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 31;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} & {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} < {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = unsigned_value;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: u64 = 0;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} > {{_v[0-9]+}};
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = false;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = true;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         {{_v[0-9]+}}
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 47;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = if {{_v[0-9]+}} { {{_v[0-9]+}} } else { {{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 49;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} - {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = c89_static_local();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 10;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} * {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = c89_static_local();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 4;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 5;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 7;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
-// LOWERING-NEXT:         c89_variadic_sum(
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             __SlateVaArgs::new(vec![
-// LOWERING-NEXT:                 __SlateVaArg::new({{_v[0-9]+}}),
-// LOWERING-NEXT:                 __SlateVaArg::new({{_v[0-9]+}}),
-// LOWERING-NEXT:                 __SlateVaArg::new({{_v[0-9]+}}),
-// LOWERING-NEXT:                 __SlateVaArg::new({{_v[0-9]+}}),
-// LOWERING-NEXT:             ]),
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 4;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = c89_control_flow({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { c89_external_value };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { c89_const_global };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(c89_volatile_global)) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { c89_joined_value };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 13;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = unsigned_value;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __slate_f80_to_i32({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = point.x;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = point.y;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = (bits.__bitfield_0.low() as u32) << 29 >> 29;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = (bits.__bitfield_0.high() as i32) << 28 >> 28;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { number.integer };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(0) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 3;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = unsafe { {{_v[0-9]+}}.add(3) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = copied_value;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 53;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 6;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { Some(c89_add).unwrap()({{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe {
-// LOWERING-NEXT:         printf(
-// LOWERING-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:             {{_v[0-9]+}},
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
 // LOWERING-NEXT:     safe fn __slate_cf80_div(
 // LOWERING-NEXT:         a: num_complex::Complex<LongDouble>,
@@ -1214,91 +1214,14 @@ int main(void) {
 // REWRITES-NEXT:     }
 // REWRITES-EMPTY:
 // REWRITES-NEXT:     fn next_arg<T: Copy + 'static>(&mut self) -> T {
+// REWRITES-NEXT:         let index = self.index;
+// REWRITES-NEXT:         self.index += 1;
 // REWRITES-NEXT:         if std::mem::size_of::<T>() == 0 {
 // REWRITES-NEXT:             return unsafe { std::mem::zeroed() };
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let args = self.args.as_ref().expect("va_arg with no arguments");
-// REWRITES-NEXT:         let value = args[self.index].read::<T>();
-// REWRITES-NEXT:         self.index += 1;
-// REWRITES-NEXT:         value
+// REWRITES-NEXT:         args[index].read::<T>()
 // REWRITES-NEXT:     }
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn c89_store({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void) {
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         *({{arg[0-9]+}} as *mut i32) = unsafe { *({{arg[0-9]+}} as *mut i32) };
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     return;
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: extern "C-unwind" fn c89_add({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     {{arg[0-9]+}} + {{arg[0-9]+}}
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn c89_static_local() -> i32 {
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         c89_static_local_calls = (unsafe { c89_static_local_calls }) + 1;
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     unsafe { c89_static_local_calls }
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: unsafe fn c89_variadic_sum(mut count: i32, mut __slate_va_args: __SlateVaArgs) -> i32 {
-// REWRITES-NEXT:     let mut arguments: __SlateVaArgs = __SlateVaArgs::empty();
-// REWRITES-NEXT:     let mut total: i32 = 0;
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         arguments = __slate_va_args.clone();
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     for index in 0..count {
-// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { arguments.next_arg::<i32>() };
-// REWRITES-NEXT:         total += {{_v[0-9]+}};
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     total
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn c89_control_flow(mut value: i32) -> i32 {
-// REWRITES-NEXT:     let mut __retval: i32 = 0;
-// REWRITES-NEXT:     let mut result: i32 = 0;
-// REWRITES-NEXT:     let mut index: i32 = 0;
-// REWRITES-NEXT:     let mut {{_v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     result = 0;
-// REWRITES-NEXT:     index = 0;
-// REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         if index < value {
-// REWRITES-NEXT:             if index == 1 {
-// REWRITES-NEXT:                 index += 1;
-// REWRITES-NEXT:             } else {
-// REWRITES-NEXT:                 result += index;
-// REWRITES-NEXT:                 if result > 20 {
-// REWRITES-NEXT:                     break;
-// REWRITES-NEXT:                 } else {
-// REWRITES-NEXT:                     index += 1;
-// REWRITES-NEXT:                 }
-// REWRITES-NEXT:             }
-// REWRITES-NEXT:         } else {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     loop {
-// REWRITES-NEXT:         result -= 1;
-// REWRITES-NEXT:         if !(result > 6) {
-// REWRITES-NEXT:             break;
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     {{_v[0-9]+}} = value;
-// REWRITES-NEXT:     match {{_v[0-9]+}} {
-// REWRITES-NEXT:         4 => {
-// REWRITES-NEXT:             result += 10;
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:         _ => {
-// REWRITES-NEXT:             result = 0;
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     if result == 16 {
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         result = -1;
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     __retval = result;
-// REWRITES-NEXT:     __retval
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
@@ -1440,6 +1363,83 @@ int main(void) {
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn c89_store({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: *mut core::ffi::c_void) {
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         *({{arg[0-9]+}} as *mut i32) = unsafe { *({{arg[0-9]+}} as *mut i32) };
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     return;
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: extern "C-unwind" fn c89_add({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT:     {{arg[0-9]+}} + {{arg[0-9]+}}
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn c89_static_local() -> i32 {
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         c89_static_local_calls = (unsafe { c89_static_local_calls }) + 1;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     unsafe { c89_static_local_calls }
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe fn c89_variadic_sum(mut count: i32, mut __slate_va_args: __SlateVaArgs) -> i32 {
+// REWRITES-NEXT:     let mut arguments: __SlateVaArgs = __SlateVaArgs::empty();
+// REWRITES-NEXT:     let mut total: i32 = 0;
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         arguments = __slate_va_args.clone();
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     for index in 0..count {
+// REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = unsafe { arguments.next_arg::<i32>() };
+// REWRITES-NEXT:         total += {{_v[0-9]+}};
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     total
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn c89_control_flow(mut value: i32) -> i32 {
+// REWRITES-NEXT:     let mut __retval: i32 = 0;
+// REWRITES-NEXT:     let mut result: i32 = 0;
+// REWRITES-NEXT:     let mut index: i32 = 0;
+// REWRITES-NEXT:     let mut {{_v[0-9]+}}: i32 = 0;
+// REWRITES-NEXT:     result = 0;
+// REWRITES-NEXT:     index = 0;
+// REWRITES-NEXT:     loop {
+// REWRITES-NEXT:         if index < value {
+// REWRITES-NEXT:             if index == 1 {
+// REWRITES-NEXT:                 index += 1;
+// REWRITES-NEXT:             } else {
+// REWRITES-NEXT:                 result += index;
+// REWRITES-NEXT:                 if result > 20 {
+// REWRITES-NEXT:                     break;
+// REWRITES-NEXT:                 } else {
+// REWRITES-NEXT:                     index += 1;
+// REWRITES-NEXT:                 }
+// REWRITES-NEXT:             }
+// REWRITES-NEXT:         } else {
+// REWRITES-NEXT:             break;
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     loop {
+// REWRITES-NEXT:         result -= 1;
+// REWRITES-NEXT:         if !(result > 6) {
+// REWRITES-NEXT:             break;
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     {{_v[0-9]+}} = value;
+// REWRITES-NEXT:     match {{_v[0-9]+}} {
+// REWRITES-NEXT:         4 => {
+// REWRITES-NEXT:             result += 10;
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:         _ => {
+// REWRITES-NEXT:             result = 0;
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     if result == 16 {
+// REWRITES-NEXT:     } else {
+// REWRITES-NEXT:         result = -1;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     __retval = result;
+// REWRITES-NEXT:     __retval
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {

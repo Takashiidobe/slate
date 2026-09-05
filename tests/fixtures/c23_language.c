@@ -266,8 +266,8 @@ int main(void) {
 // LOWERING-NEXT: static mut main_utf8_text: [u8; 3] = [206, 169, 0];
 // LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
-// LOWERING-NEXT:     fn exit(_0: i32) -> !;
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// LOWERING-NEXT:     fn exit(_0: i32) -> !;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: struct __SlateVaArg {
@@ -318,132 +318,13 @@ int main(void) {
 // LOWERING-NEXT:     }
 // LOWERING-EMPTY:
 // LOWERING-NEXT:     fn next_arg<T: Copy + 'static>(&mut self) -> T {
+// LOWERING-NEXT:         let index = self.index;
+// LOWERING-NEXT:         self.index += 1;
 // LOWERING-NEXT:         if std::mem::size_of::<T>() == 0 {
 // LOWERING-NEXT:             return unsafe { std::mem::zeroed() };
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:         let args = self.args.as_ref().expect("va_arg with no arguments");
-// LOWERING-NEXT:         let value = args[self.index].read::<T>();
-// LOWERING-NEXT:         self.index += 1;
-// LOWERING-NEXT:         value
-// LOWERING-NEXT:     }
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: #[must_use]
-// LOWERING-NEXT: fn c23_nodiscard_value() -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 47;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn c23_unnamed_parameter({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-NEXT:     return {{arg[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn c23_label_declaration({{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-NEXT:     let mut value: i32 = 0;
-// LOWERING-NEXT:     let mut __retval: i32 = 0;
-// LOWERING-NEXT:     let mut result: i32 = 0;
-// LOWERING-NEXT:     let mut {{__state[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     '{{__dispatch[0-9]+}}: loop {
-// LOWERING-NEXT:         match {{__state[0-9]+}} {
-// LOWERING-NEXT:             0 => {
-// LOWERING-NEXT:                 value = {{arg[0-9]+}};
-// LOWERING-NEXT:                 {{__state[0-9]+}} = 1;
-// LOWERING-NEXT:                 continue '{{__dispatch[0-9]+}};
-// LOWERING-NEXT:             }
-// LOWERING-NEXT:             1 => {
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = value;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:                 result = {{_v[0-9]+}};
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = result;
-// LOWERING-NEXT:                 __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = __retval;
-// LOWERING-NEXT:                 return {{_v[0-9]+}};
-// LOWERING-NEXT:             }
-// LOWERING-NEXT:             _ => {
-// LOWERING-NEXT:                 unreachable!();
-// LOWERING-NEXT:             }
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn c23_switch_fallthrough({{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-NEXT:     let mut value: i32 = 0;
-// LOWERING-NEXT:     let mut result: i32 = 0;
-// LOWERING-NEXT:     value = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     result = {{_v[0-9]+}};
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = value;
-// LOWERING-NEXT:         {
-// LOWERING-NEXT:             let __switch_value0 = {{_v[0-9]+}};
-// LOWERING-NEXT:             let mut __switch_case0: i32 = match __switch_value0 {
-// LOWERING-NEXT:                 1 => 0,
-// LOWERING-NEXT:                 2 => 1,
-// LOWERING-NEXT:                 _ => 2,
-// LOWERING-NEXT:             };
-// LOWERING-NEXT:             '__switch0: loop {
-// LOWERING-NEXT:                 match __switch_case0 {
-// LOWERING-NEXT:                     0 => {
-// LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = 3;
-// LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = result;
-// LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:                         result = {{_v[0-9]+}};
-// LOWERING-NEXT:                         __switch_case0 = 1;
-// LOWERING-NEXT:                         continue '__switch0;
-// LOWERING-NEXT:                     }
-// LOWERING-NEXT:                     1 => {
-// LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = 5;
-// LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = result;
-// LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:                         result = {{_v[0-9]+}};
-// LOWERING-NEXT:                         break '__switch0;
-// LOWERING-NEXT:                     }
-// LOWERING-NEXT:                     2 => {
-// LOWERING-NEXT:                         break '__switch0;
-// LOWERING-NEXT:                     }
-// LOWERING-NEXT:                     _ => {
-// LOWERING-NEXT:                         break '__switch0;
-// LOWERING-NEXT:                     }
-// LOWERING-NEXT:                 }
-// LOWERING-NEXT:             }
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = result;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: unsafe fn c23_relaxed_variadic(mut __slate_va_args: __SlateVaArgs) -> i32 {
-// LOWERING-NEXT:     let mut arguments: __SlateVaArgs = __SlateVaArgs::empty();
-// LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         arguments = __slate_va_args.clone();
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { arguments.next_arg::<i32>() };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { arguments.next_arg::<i32>() };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn c23_never_return() -> ! {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 99;
-// LOWERING-NEXT:     unsafe { exit({{_v[0-9]+}} as i32) }
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn c23_label_before_brace() {
-// LOWERING-NEXT:     let mut {{__state[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     '{{__dispatch[0-9]+}}: loop {
-// LOWERING-NEXT:         match {{__state[0-9]+}} {
-// LOWERING-NEXT:             0 => {
-// LOWERING-NEXT:                 {{__state[0-9]+}} = 1;
-// LOWERING-NEXT:                 continue '{{__dispatch[0-9]+}};
-// LOWERING-NEXT:             }
-// LOWERING-NEXT:             1 => {
-// LOWERING-NEXT:                 return;
-// LOWERING-NEXT:             }
-// LOWERING-NEXT:             _ => {
-// LOWERING-NEXT:                 break '{{__dispatch[0-9]+}};
-// LOWERING-NEXT:             }
-// LOWERING-NEXT:         }
+// LOWERING-NEXT:         args[index].read::<T>()
 // LOWERING-NEXT:     }
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
@@ -466,12 +347,15 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: bitint::BUint<17, 1, 4> = bitint::BUint::<17, 1, 4>::from_decimal_str("100000");
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 165;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = 90;
-// LOWERING-NEXT:     empty_struct = C23Empty {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: C23Empty = C23Empty {
 // LOWERING-NEXT:         first: 0,
 // LOWERING-NEXT:         second: 0,
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     empty_array = [0, 0, 0];
-// LOWERING-NEXT:     qualified_array = [2, 3, 5];
+// LOWERING-NEXT:     empty_struct = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i32; 3] = [0; 3];
+// LOWERING-NEXT:     empty_array = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i32; 3] = [2, 3, 5];
+// LOWERING-NEXT:     qualified_array = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u16 = 37;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 8589934591u64;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = std::ptr::null_mut();
@@ -633,6 +517,125 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: #[must_use]
+// LOWERING-NEXT: fn c23_nodiscard_value() -> i32 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 47;
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn c23_unnamed_parameter({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
+// LOWERING-NEXT:     return {{arg[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn c23_label_declaration({{arg[0-9]+}}: i32) -> i32 {
+// LOWERING-NEXT:     let mut value: i32 = 0;
+// LOWERING-NEXT:     let mut __retval: i32 = 0;
+// LOWERING-NEXT:     let mut result: i32 = 0;
+// LOWERING-NEXT:     let mut {{__state[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     '{{__dispatch[0-9]+}}: loop {
+// LOWERING-NEXT:         match {{__state[0-9]+}} {
+// LOWERING-NEXT:             0 => {
+// LOWERING-NEXT:                 value = {{arg[0-9]+}};
+// LOWERING-NEXT:                 {{__state[0-9]+}} = 1;
+// LOWERING-NEXT:                 continue '{{__dispatch[0-9]+}};
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:             1 => {
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = value;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:                 result = {{_v[0-9]+}};
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = result;
+// LOWERING-NEXT:                 __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:                 return {{_v[0-9]+}};
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:             _ => {
+// LOWERING-NEXT:                 unreachable!();
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:         }
+// LOWERING-NEXT:     }
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn c23_switch_fallthrough({{arg[0-9]+}}: i32) -> i32 {
+// LOWERING-NEXT:     let mut value: i32 = 0;
+// LOWERING-NEXT:     let mut result: i32 = 0;
+// LOWERING-NEXT:     value = {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     result = {{_v[0-9]+}};
+// LOWERING-NEXT:     {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = value;
+// LOWERING-NEXT:         {
+// LOWERING-NEXT:             let __switch_value0 = {{_v[0-9]+}};
+// LOWERING-NEXT:             let mut __switch_case0: i32 = match __switch_value0 {
+// LOWERING-NEXT:                 1 => 0,
+// LOWERING-NEXT:                 2 => 1,
+// LOWERING-NEXT:                 _ => 2,
+// LOWERING-NEXT:             };
+// LOWERING-NEXT:             '__switch0: loop {
+// LOWERING-NEXT:                 match __switch_case0 {
+// LOWERING-NEXT:                     0 => {
+// LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = 3;
+// LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = result;
+// LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:                         result = {{_v[0-9]+}};
+// LOWERING-NEXT:                         __switch_case0 = 1;
+// LOWERING-NEXT:                         continue '__switch0;
+// LOWERING-NEXT:                     }
+// LOWERING-NEXT:                     1 => {
+// LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = 5;
+// LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = result;
+// LOWERING-NEXT:                         let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:                         result = {{_v[0-9]+}};
+// LOWERING-NEXT:                         break '__switch0;
+// LOWERING-NEXT:                     }
+// LOWERING-NEXT:                     2 => {
+// LOWERING-NEXT:                         break '__switch0;
+// LOWERING-NEXT:                     }
+// LOWERING-NEXT:                     _ => {
+// LOWERING-NEXT:                         break '__switch0;
+// LOWERING-NEXT:                     }
+// LOWERING-NEXT:                 }
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:         }
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = result;
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: unsafe fn c23_relaxed_variadic(mut __slate_va_args: __SlateVaArgs) -> i32 {
+// LOWERING-NEXT:     let mut arguments: __SlateVaArgs = __SlateVaArgs::empty();
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         arguments = __slate_va_args.clone();
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { arguments.next_arg::<i32>() };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { arguments.next_arg::<i32>() };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn c23_never_return() -> ! {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 99;
+// LOWERING-NEXT:     unsafe { exit({{_v[0-9]+}} as i32) }
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn c23_label_before_brace() {
+// LOWERING-NEXT:     let mut {{__state[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     '{{__dispatch[0-9]+}}: loop {
+// LOWERING-NEXT:         match {{__state[0-9]+}} {
+// LOWERING-NEXT:             0 => {
+// LOWERING-NEXT:                 {{__state[0-9]+}} = 1;
+// LOWERING-NEXT:                 continue '{{__dispatch[0-9]+}};
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:             1 => {
+// LOWERING-NEXT:                 return;
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:             _ => {
+// LOWERING-NEXT:                 break '{{__dispatch[0-9]+}};
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:         }
+// LOWERING-NEXT:     }
+// LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
@@ -690,8 +693,8 @@ int main(void) {
 // REWRITES-NEXT: static mut main_utf8_text: [u8; 3] = [206, 169, 0];
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {
-// REWRITES-NEXT:     fn exit(_0: i32) -> !;
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// REWRITES-NEXT:     fn exit(_0: i32) -> !;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: struct __SlateVaArg {
@@ -742,64 +745,14 @@ int main(void) {
 // REWRITES-NEXT:     }
 // REWRITES-EMPTY:
 // REWRITES-NEXT:     fn next_arg<T: Copy + 'static>(&mut self) -> T {
+// REWRITES-NEXT:         let index = self.index;
+// REWRITES-NEXT:         self.index += 1;
 // REWRITES-NEXT:         if std::mem::size_of::<T>() == 0 {
 // REWRITES-NEXT:             return unsafe { std::mem::zeroed() };
 // REWRITES-NEXT:         }
 // REWRITES-NEXT:         let args = self.args.as_ref().expect("va_arg with no arguments");
-// REWRITES-NEXT:         let value = args[self.index].read::<T>();
-// REWRITES-NEXT:         self.index += 1;
-// REWRITES-NEXT:         value
+// REWRITES-NEXT:         args[index].read::<T>()
 // REWRITES-NEXT:     }
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: #[must_use]
-// REWRITES-NEXT: fn c23_nodiscard_value() -> i32 {
-// REWRITES-NEXT:     47
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn c23_unnamed_parameter({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     {{arg[0-9]+}}
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn c23_label_declaration(mut {{_v[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let mut __retval: i32 = 0;
-// REWRITES-NEXT:     let mut result: i32 = 0;
-// REWRITES-NEXT:     result = {{_v[0-9]+}} + 1;
-// REWRITES-NEXT:     __retval = result;
-// REWRITES-NEXT:     __retval
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn c23_switch_fallthrough(mut {{_v[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     let mut result: i32 = 0;
-// REWRITES-NEXT:     match {{_v[0-9]+}} {
-// REWRITES-NEXT:         1 => {
-// REWRITES-NEXT:             result += 3;
-// REWRITES-NEXT:             result += 5;
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:         2 => {
-// REWRITES-NEXT:             result += 5;
-// REWRITES-NEXT:         }
-// REWRITES-NEXT:         _ => {}
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     result
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: unsafe fn c23_relaxed_variadic(mut __slate_va_args: __SlateVaArgs) -> i32 {
-// REWRITES-NEXT:     let mut arguments: __SlateVaArgs = __SlateVaArgs::empty();
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         arguments = __slate_va_args.clone();
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { arguments.next_arg::<i32>() };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { arguments.next_arg::<i32>() };
-// REWRITES-NEXT:     {{_v[0-9]+}} + {{_v[0-9]+}}
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn c23_never_return() -> ! {
-// REWRITES-NEXT:     unsafe { std::process::exit(99 as i32) }
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn c23_label_before_brace() {
-// REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
@@ -807,7 +760,7 @@ int main(void) {
 // REWRITES-NEXT:         first: 0,
 // REWRITES-NEXT:         second: 0,
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     let mut empty_array: [i32; 3] = [0, 0, 0];
+// REWRITES-NEXT:     let mut empty_array: [i32; 3] = [0; 3];
 // REWRITES-NEXT:     let mut qualified_array: [i32; 3] = [2, 3, 5];
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 61;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 67;
@@ -891,5 +844,55 @@ int main(void) {
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: #[must_use]
+// REWRITES-NEXT: fn c23_nodiscard_value() -> i32 {
+// REWRITES-NEXT:     47
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn c23_unnamed_parameter({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT:     {{arg[0-9]+}}
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn c23_label_declaration(mut {{_v[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT:     let mut __retval: i32 = 0;
+// REWRITES-NEXT:     let mut result: i32 = 0;
+// REWRITES-NEXT:     result = {{_v[0-9]+}} + 1;
+// REWRITES-NEXT:     __retval = result;
+// REWRITES-NEXT:     __retval
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn c23_switch_fallthrough(mut {{_v[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT:     let mut result: i32 = 0;
+// REWRITES-NEXT:     match {{_v[0-9]+}} {
+// REWRITES-NEXT:         1 => {
+// REWRITES-NEXT:             result += 3;
+// REWRITES-NEXT:             result += 5;
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:         2 => {
+// REWRITES-NEXT:             result += 5;
+// REWRITES-NEXT:         }
+// REWRITES-NEXT:         _ => {}
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     result
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: unsafe fn c23_relaxed_variadic(mut __slate_va_args: __SlateVaArgs) -> i32 {
+// REWRITES-NEXT:     let mut arguments: __SlateVaArgs = __SlateVaArgs::empty();
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         arguments = __slate_va_args.clone();
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { arguments.next_arg::<i32>() };
+// REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { arguments.next_arg::<i32>() };
+// REWRITES-NEXT:     {{_v[0-9]+}} + {{_v[0-9]+}}
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn c23_never_return() -> ! {
+// REWRITES-NEXT:     unsafe { std::process::exit(99 as i32) }
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn c23_label_before_brace() {
+// REWRITES-NEXT:     return;
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

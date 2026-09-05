@@ -81,20 +81,24 @@ int main(void) {
 // LOWERING-NEXT:     let mut multibyte16: [i8; 4] = [0; 4];
 // LOWERING-NEXT:     let mut multibyte32: [i8; 4] = [0; 4];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     state16 = __mbstate_t {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: __mbstate_t = __mbstate_t {
 // LOWERING-NEXT:         __count: 0,
 // LOWERING-NEXT:         __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() },
 // LOWERING-NEXT:     };
-// LOWERING-NEXT:     state32 = __mbstate_t {
+// LOWERING-NEXT:     state16 = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: __mbstate_t = __mbstate_t {
 // LOWERING-NEXT:         __count: 0,
 // LOWERING-NEXT:         __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() },
 // LOWERING-NEXT:     };
+// LOWERING-NEXT:     state32 = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u16 = 0;
 // LOWERING-NEXT:     converted16 = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u32 = 0;
 // LOWERING-NEXT:     converted32 = {{_v[0-9]+}};
-// LOWERING-NEXT:     multibyte16 = [0, 0, 0, 0];
-// LOWERING-NEXT:     multibyte32 = [0, 0, 0, 0];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 4] = [0; 4];
+// LOWERING-NEXT:     multibyte16 = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 4] = [0; 4];
+// LOWERING-NEXT:     multibyte32 = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"A\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 1;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe {
@@ -229,8 +233,8 @@ int main(void) {
 // REWRITES-NEXT:         __count: 0,
 // REWRITES-NEXT:         __value: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() },
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     multibyte16 = [0, 0, 0, 0];
-// REWRITES-NEXT:     multibyte32 = [0, 0, 0, 0];
+// REWRITES-NEXT:     multibyte16 = [0; 4];
+// REWRITES-NEXT:     multibyte32 = [0; 4];
 // REWRITES-NEXT:     let {{_v[0-9]+}}: u64 = (unsafe {
 // REWRITES-NEXT:         mbrtoc16(
 // REWRITES-NEXT:             std::ptr::addr_of_mut!(converted16) as *mut u16,

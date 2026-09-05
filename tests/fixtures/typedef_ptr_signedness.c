@@ -50,7 +50,8 @@ int main(void) {
 // LOWERING-NEXT:         end: std::ptr::null_mut(),
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     data = [65, 66, 67, 0];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [u8; 4] = [65, 66, 67, 0];
+// LOWERING-NEXT:     data = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = data.as_mut_ptr() as *mut u8;
 // LOWERING-NEXT:     b.start = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = data.as_mut_ptr() as *mut u8;
@@ -112,11 +113,12 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let mut data: [u8; 4] = [65, 66, 67, 0];
+// REWRITES-NEXT:     let mut data: [u8; 4] = [0; 4];
 // REWRITES-NEXT:     let mut b: buffer = buffer {
 // REWRITES-NEXT:         start: std::ptr::null_mut(),
 // REWRITES-NEXT:         end: std::ptr::null_mut(),
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     data = [65, 66, 67, 0];
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u8 = data.as_mut_ptr() as *mut u8;
 // REWRITES-NEXT:     b.start = {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u8 = data.as_mut_ptr() as *mut u8;

@@ -73,9 +73,12 @@ int main(void) {
 // LOWERING-NEXT:     let mut {{__slate_alloca_frame[0-9]+}}: __SlateAllocaFrame0 =
 // LOWERING-NEXT:         __SlateAllocaFrame0(0, [0; 4], [0; 4], [0; 8]);
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.3 = [10, 20, 30, 40, 50, 60, 70, 80];
-// LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.2 = [9, 8, 7, 6];
-// LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.1 = [97, 98, 99, 0];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [u8; 8] = [10, 20, 30, 40, 50, 60, 70, 80];
+// LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.3 = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [u8; 4] = [9, 8, 7, 6];
+// LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.2 = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 4] = [97, 98, 99, 0];
+// LOWERING-NEXT:     {{__slate_alloca_frame[0-9]+}}.1 = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i64 = 3;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: u8 = {{__slate_alloca_frame[0-9]+}}.3[({{_v[0-9]+}} as usize)];
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} as i32;

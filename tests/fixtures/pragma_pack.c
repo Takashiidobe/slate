@@ -101,7 +101,8 @@ int main(void) {
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut packed: PackedOne = PackedOne { tag: 0, value: 0 };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     packed = PackedOne { tag: 29, value: 31 };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: PackedOne = PackedOne { tag: 29, value: 31 };
+// LOWERING-NEXT:     packed = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d %d %d %d %d %d %d\n\0".as_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = std::mem::size_of::<NaturalBefore>() as i32;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = std::mem::offset_of!(NaturalBefore, value) as i32;
@@ -205,7 +206,8 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let mut packed: PackedOne = PackedOne { tag: 29, value: 31 };
+// REWRITES-NEXT:     let mut packed: PackedOne = PackedOne { tag: 0, value: 0 };
+// REWRITES-NEXT:     packed = PackedOne { tag: 29, value: 31 };
 // REWRITES-NEXT:     unsafe {
 // REWRITES-NEXT:         printf(
 // REWRITES-NEXT:             c"%d %d %d %d %d %d %d %d %d %d %d\n".as_ptr(),

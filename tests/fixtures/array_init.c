@@ -43,10 +43,14 @@ int main(void) {
 // LOWERING-NEXT:     let mut padded: [i8; 8] = [0; 8];
 // LOWERING-NEXT:     let mut sum: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     *a = [1, 2, 3, 4, 5];
-// LOWERING-NEXT:     *partial = [7, 8, 0, 0];
-// LOWERING-NEXT:     s = [104, 101, 108, 108, 111, 0];
-// LOWERING-NEXT:     padded = [104, 105, 0, 0, 0, 0, 0, 0];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i32; 5] = [1, 2, 3, 4, 5];
+// LOWERING-NEXT:     *a = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i32; 4] = [7, 8, 0, 0];
+// LOWERING-NEXT:     *partial = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 6] = [104, 101, 108, 108, 111, 0];
+// LOWERING-NEXT:     s = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 8] = [104, 105, 0, 0, 0, 0, 0, 0];
+// LOWERING-NEXT:     padded = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     sum = {{_v[0-9]+}};
 // LOWERING-NEXT:     {

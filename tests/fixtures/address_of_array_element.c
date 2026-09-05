@@ -27,12 +27,14 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN lowering
 // LOWERING-DAG: fn read_array_element_through_call() -> i32 {
 // LOWERING-DAG:     let mut values: [i32; 1] = [0; 1];
-// LOWERING-DAG:     values = [10];
+// LOWERING-DAG:     let {{_v[0-9]+}}: [i32; 1] = [10];
+// LOWERING-DAG:     values = {{_v[0-9]+}};
 // LOWERING-DAG:     let {{_v[0-9]+}}: i64 = 0;
 // LOWERING-DAG:     let {{_v[0-9]+}}: i32 = unsafe { read_pointer(std::ptr::addr_of_mut!(values[({{_v[0-9]+}} as usize)])) };
 // LOWERING-DAG:     return {{_v[0-9]+}};
 // LOWERING-DAG: }
-// LOWERING-DAG: *values = [2, 4, 6, 8];
+// LOWERING-DAG: let {{_v[0-9]+}}: [i32; 4] = [2, 4, 6, 8];
+// LOWERING-DAG: *values = {{_v[0-9]+}};
 // LOWERING-DAG: let {{_v[0-9]+}}: i64 = 1;
 // LOWERING-DAG: let {{_v[0-9]+}}: i64 = 3;
 // LOWERING-DAG: let {{_v[0-9]+}}: *mut i8 = b"%d %ld %d\n\0".as_ptr() as *mut i8;

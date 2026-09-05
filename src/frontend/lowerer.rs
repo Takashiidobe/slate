@@ -18,7 +18,7 @@ use crate::frontend::function_abi::repair_function_signature;
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 use clang_ir::ast::SourceLocation;
 use clang_ir::ast::{Attribute as Attr, Type as CirType};
-use clang_ir::enums::{AssumeBundleKind, CmpOpKind};
+use clang_ir::enums::{AssumeBundleKind, CmpOpKind, RecordMemberKind as CirRecordMemberKind};
 use clang_ir::model::Module;
 use clang_ir::model::{
     Function as CirFunction, Global as CirGlobal, GlobalLinkageKind, MemOrder, Op, VisibilityKind,
@@ -825,6 +825,7 @@ struct FunctionLowerer<'a, 'b> {
     element_ptrs: BTreeMap<String, ElementPtr>,
     block_addr_element_ptrs: BTreeMap<String, BlockAddrElementPtr>,
     local_block_addr_arrays: BTreeMap<String, Vec<String>>,
+    block_addr_array_values: BTreeMap<String, Vec<String>>,
     indirect_target_values: BTreeMap<String, Expr>,
     temp_counter: usize,
     body: Vec<Stmt>,
@@ -894,6 +895,7 @@ struct MemberPtr {
     bitfield_name: Option<String>,
     bitfield_unaligned: bool,
     field_is_trailing: bool,
+    unaligned: bool,
 }
 
 struct BitfieldAccessor {
@@ -1447,13 +1449,13 @@ impl __SlateVaArgs {
     }
 
     fn next_arg<T: Copy + 'static>(&mut self) -> T {
+        let index = self.index;
+        self.index += 1;
         if std::mem::size_of::<T>() == 0 {
             return unsafe { std::mem::zeroed() };
         }
         let args = self.args.as_ref().expect("va_arg with no arguments");
-        let value = args[self.index].read::<T>();
-        self.index += 1;
-        value
+        args[index].read::<T>()
     }
 }"#
                 .into(),
@@ -2513,6 +2515,21 @@ impl __SlateVaArgs {
                                 fields,
                             });
                         }
+                        let member_kinds = match self.expand_alias(record_cir_ty) {
+                            CirType::Struct { member_kinds, .. } => Some(member_kinds.as_slice()),
+                            _ => None,
+                        };
+                        let mut data_indices = member_kinds
+                            .filter(|kinds| kinds.len() == elements.len())
+                            .into_iter()
+                            .flat_map(|kinds| kinds.iter().enumerate())
+                            .filter(|(_, kind)| {
+                                matches!(
+                                    kind,
+                                    CirRecordMemberKind::Data | CirRecordMemberKind::BitField
+                                )
+                            })
+                            .map(|(i, _)| i);
                         let fields = record
                             .fields
                             .iter()
@@ -2521,8 +2538,9 @@ impl __SlateVaArgs {
                                 let field_ty = self
                                     .record_field_type_at(record, i)
                                     .unwrap_or_else(|| self.c_record_field_type(&field.ty));
+                                let elem_index = data_indices.next().unwrap_or(i);
                                 let value = elements
-                                    .get(i)
+                                    .get(elem_index)
                                     .and_then(|e| self.render_const_value_expr(&field_ty, e, facts))
                                     .unwrap_or_else(|| self.default_value_expr(&field_ty));
                                 (sanitize_ident(&field.name).into_string(), value)

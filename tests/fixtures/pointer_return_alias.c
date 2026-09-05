@@ -1,17 +1,24 @@
 #include <stdio.h>
 
+// @lowering-fn-begin
 // @rewrite-fn-begin
 static int *identity_mut(int *value) { return value; }
 // @rewrite-fn-end
+// @lowering-fn-end
 
+// @lowering-fn-begin
 // @rewrite-fn-begin
 static int *forward_mut(int *value) { return identity_mut(value); }
 // @rewrite-fn-end
+// @lowering-fn-end
 
+// @lowering-fn-begin
 // @rewrite-fn-begin
 static const int *identity_const(const int *value) { return value; }
 // @rewrite-fn-end
+// @lowering-fn-end
 
+// @lowering-fn-begin
 // @rewrite-fn-begin
 static int *choose_value(int *first, int *second, int choose_first) {
   if (choose_first)
@@ -19,6 +26,7 @@ static int *choose_value(int *first, int *second, int choose_first) {
   return second;
 }
 // @rewrite-fn-end
+// @lowering-fn-end
 
 int main(void) {
   int  first             = 20;
@@ -32,88 +40,36 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(
-// LOWERING-NEXT:     dead_code,
-// LOWERING-NEXT:     unused,
-// LOWERING-NEXT:     non_camel_case_types,
-// LOWERING-NEXT:     non_snake_case,
-// LOWERING-NEXT:     non_upper_case_globals,
-// LOWERING-NEXT:     arithmetic_overflow,
-// LOWERING-NEXT:     unconditional_panic,
-// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
-// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
-// LOWERING-NEXT:     unused_comparisons
-// LOWERING-NEXT: )]
-// LOWERING-EMPTY:
-// LOWERING-NEXT: unsafe extern "C" {
-// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn identity_mut({{arg[0-9]+}}: *mut i32) -> *mut i32 {
-// LOWERING-NEXT:     return {{arg[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn forward_mut({{arg[0-9]+}}: *mut i32) -> *mut i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = identity_mut({{arg[0-9]+}});
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn identity_const({{arg[0-9]+}}: *mut i32) -> *mut i32 {
-// LOWERING-NEXT:     return {{arg[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn choose_value({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: i32) -> *mut i32 {
-// LOWERING-NEXT:     let mut first: *mut i32 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut choose_first: i32 = 0;
-// LOWERING-NEXT:     let mut __retval: *mut i32 = std::ptr::null_mut();
-// LOWERING-NEXT:     first = {{arg[0-9]+}};
-// LOWERING-NEXT:     choose_first = {{arg[0-9]+}};
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = choose_first;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i32 = first;
-// LOWERING-NEXT:             __retval = {{_v[0-9]+}};
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i32 = __retval;
-// LOWERING-NEXT:             return {{_v[0-9]+}};
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     __retval = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = __retval;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut first: i32 = 0;
-// LOWERING-NEXT:     let mut second: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 20;
-// LOWERING-NEXT:     first = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 22;
-// LOWERING-NEXT:     second = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = forward_mut(std::ptr::addr_of_mut!(first));
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 2;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = identity_const(std::ptr::addr_of_mut!(second));
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = choose_value(
-// LOWERING-NEXT:         std::ptr::addr_of_mut!(first),
-// LOWERING-NEXT:         std::ptr::addr_of_mut!(second),
-// LOWERING-NEXT:         {{_v[0-9]+}},
-// LOWERING-NEXT:     );
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = first;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
-// LOWERING-NEXT: }
+// LOWERING-DAG: fn identity_mut({{arg[0-9]+}}: *mut i32) -> *mut i32 {
+// LOWERING-DAG:     return {{arg[0-9]+}};
+// LOWERING-DAG: }
+// LOWERING-DAG: fn forward_mut({{arg[0-9]+}}: *mut i32) -> *mut i32 {
+// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i32 = identity_mut({{arg[0-9]+}});
+// LOWERING-DAG:     return {{_v[0-9]+}};
+// LOWERING-DAG: }
+// LOWERING-DAG: fn identity_const({{arg[0-9]+}}: *mut i32) -> *mut i32 {
+// LOWERING-DAG:     return {{arg[0-9]+}};
+// LOWERING-DAG: }
+// LOWERING-DAG: fn choose_value({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: i32) -> *mut i32 {
+// LOWERING-DAG:     let mut first: *mut i32 = std::ptr::null_mut();
+// LOWERING-DAG:     let mut choose_first: i32 = 0;
+// LOWERING-DAG:     let mut __retval: *mut i32 = std::ptr::null_mut();
+// LOWERING-DAG:     first = {{arg[0-9]+}};
+// LOWERING-DAG:     choose_first = {{arg[0-9]+}};
+// LOWERING-DAG:     {
+// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = choose_first;
+// LOWERING-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-DAG:         if {{_v[0-9]+}} {
+// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = first;
+// LOWERING-DAG:             __retval = {{_v[0-9]+}};
+// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = __retval;
+// LOWERING-DAG:             return {{_v[0-9]+}};
+// LOWERING-DAG:         }
+// LOWERING-DAG:     }
+// LOWERING-DAG:     __retval = {{arg[0-9]+}};
+// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i32 = __retval;
+// LOWERING-DAG:     return {{_v[0-9]+}};
+// LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites

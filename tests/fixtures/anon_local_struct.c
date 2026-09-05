@@ -72,12 +72,14 @@ int main(void) {
 // LOWERING-NEXT:         pointer: std::ptr::null_mut(),
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     point = {{anon_[0-9]+}} { x: 3, y: 4 };
-// LOWERING-NEXT:     buf = buffer_t {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: {{anon_[0-9]+}} = {{anon_[0-9]+}} { x: 3, y: 4 };
+// LOWERING-NEXT:     point = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: buffer_t = buffer_t {
 // LOWERING-NEXT:         start: std::ptr::null_mut(),
 // LOWERING-NEXT:         end: std::ptr::null_mut(),
 // LOWERING-NEXT:         pointer: std::ptr::null_mut(),
 // LOWERING-NEXT:     };
+// LOWERING-NEXT:     buf = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = storage.as_mut_ptr() as *mut i32;
 // LOWERING-NEXT:     buf.start = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = storage.as_mut_ptr() as *mut i32;
@@ -164,9 +166,15 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let mut point: {{anon_[0-9]+}} = {{anon_[0-9]+}} { x: 3, y: 4 };
+// REWRITES-NEXT:     let mut point: {{anon_[0-9]+}} = {{anon_[0-9]+}} { x: 0, y: 0 };
 // REWRITES-NEXT:     let mut storage: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
 // REWRITES-NEXT:     let mut buf: buffer_t = buffer_t {
+// REWRITES-NEXT:         start: std::ptr::null_mut(),
+// REWRITES-NEXT:         end: std::ptr::null_mut(),
+// REWRITES-NEXT:         pointer: std::ptr::null_mut(),
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     point = {{anon_[0-9]+}} { x: 3, y: 4 };
+// REWRITES-NEXT:     buf = buffer_t {
 // REWRITES-NEXT:         start: std::ptr::null_mut(),
 // REWRITES-NEXT:         end: std::ptr::null_mut(),
 // REWRITES-NEXT:         pointer: std::ptr::null_mut(),

@@ -19,6 +19,12 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let ty = &op.res_ty;
         let attr = self.parent.resolve_attr(&op.value).clone();
         let result_ty = Some(ty);
+        if let Attr::ConstArray { elts, .. } = &attr
+            && let Some(items) = attr_array_values(elts)
+            && let Some(labels) = block_addr_labels(items)
+        {
+            self.block_addr_array_values.insert(result.clone(), labels);
+        }
         let const_int = attr.as_int();
         if let Some(value) = const_int {
             self.const_int_values.insert(result.clone(), value);
@@ -152,11 +158,20 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         let volatile = op.is_volatile;
+        let unaligned = self
+            .member_ptrs
+            .get(ptr)
+            .is_some_and(|member| member.unaligned);
         let mut value = if volatile {
+            let method = if unaligned {
+                "read_unaligned"
+            } else {
+                "read_volatile"
+            };
             Self::unsafe_expr(Expr::Call {
                 binding: crate::function_identity::CallBinding::Generated,
                 func: Box::new(Expr::Path(Path::new(
-                    ["std", "ptr", "read_volatile"].map(Ident::from),
+                    ["std", "ptr", method].map(Ident::from),
                 ))),
                 args: vec![self.load_address_expr(ptr)],
             })
@@ -205,6 +220,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     pub(super) fn lower_store(&mut self, op: &inst::Store) {
         let src = &op.value;
         let ptr = &op.addr;
+        if let Some(labels) = self.block_addr_array_values.get(src).cloned() {
+            self.local_block_addr_arrays.insert(ptr.clone(), labels);
+        }
         if let Some(outputs) = self.asm_outputs.get(src).cloned() {
             self.asm_outputs.insert(ptr.clone(), outputs);
             return;
@@ -243,10 +261,19 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             return;
         }
         if op.is_volatile {
+            let method = if self
+                .member_ptrs
+                .get(ptr)
+                .is_some_and(|member| member.unaligned)
+            {
+                "write_unaligned"
+            } else {
+                "write_volatile"
+            };
             self.push_stmt(Stmt::Expr(Self::unsafe_expr(Expr::Call {
                 binding: crate::function_identity::CallBinding::Generated,
                 func: Box::new(Expr::Path(Path::new(
-                    ["std", "ptr", "write_volatile"].map(Ident::from),
+                    ["std", "ptr", method].map(Ident::from),
                 ))),
                 args: vec![self.store_address_expr(ptr), value],
             })));

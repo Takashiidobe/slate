@@ -193,13 +193,13 @@ int main(void) { return printf("%d\n", errno == 0); }
 // LOWERING-MACOS-NEXT:     }
 // LOWERING-MACOS-EMPTY:
 // LOWERING-MACOS-NEXT:     fn next_arg<T: Copy + 'static>(&mut self) -> T {
+// LOWERING-MACOS-NEXT:         let index = self.index;
+// LOWERING-MACOS-NEXT:         self.index += 1;
 // LOWERING-MACOS-NEXT:         if std::mem::size_of::<T>() == 0 {
 // LOWERING-MACOS-NEXT:             return unsafe { std::mem::zeroed() };
 // LOWERING-MACOS-NEXT:         }
 // LOWERING-MACOS-NEXT:         let args = self.args.as_ref().expect("va_arg with no arguments");
-// LOWERING-MACOS-NEXT:         let value = args[self.index].read::<T>();
-// LOWERING-MACOS-NEXT:         self.index += 1;
-// LOWERING-MACOS-NEXT:         value
+// LOWERING-MACOS-NEXT:         args[index].read::<T>()
 // LOWERING-MACOS-NEXT:     }
 // LOWERING-MACOS-NEXT: }
 // LOWERING-MACOS-EMPTY:

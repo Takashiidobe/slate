@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// @lowering-fn-begin
 // @rewrite-fn-begin
 static int touch_and_maybe_free(int *q, int do_free) {
   *q    = *q + 1;
@@ -11,6 +12,7 @@ static int touch_and_maybe_free(int *q, int do_free) {
   return v;
 }
 // @rewrite-fn-end
+// @lowering-fn-end
 
 int main(void) {
   int  stack_val  = 10;
@@ -26,77 +28,32 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN lowering
-// LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(
-// LOWERING-NEXT:     dead_code,
-// LOWERING-NEXT:     unused,
-// LOWERING-NEXT:     non_camel_case_types,
-// LOWERING-NEXT:     non_snake_case,
-// LOWERING-NEXT:     non_upper_case_globals,
-// LOWERING-NEXT:     arithmetic_overflow,
-// LOWERING-NEXT:     unconditional_panic,
-// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
-// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
-// LOWERING-NEXT:     unused_comparisons
-// LOWERING-NEXT: )]
-// LOWERING-EMPTY:
-// LOWERING-NEXT: unsafe extern "C" {
-// LOWERING-NEXT:     fn free(_0: *mut core::ffi::c_void);
-// LOWERING-NEXT:     fn malloc(_0: usize) -> *mut core::ffi::c_void;
-// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn touch_and_maybe_free({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-NEXT:     let mut q: *mut i32 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut do_free: i32 = 0;
-// LOWERING-NEXT:     q = {{arg[0-9]+}};
-// LOWERING-NEXT:     do_free = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = q;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = q;
-// LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = q;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = do_free;
-// LOWERING-NEXT:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
-// LOWERING-NEXT:         if {{_v[0-9]+}} {
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut i32 = q;
-// LOWERING-NEXT:             let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-NEXT:             unsafe { free({{_v[0-9]+}} as *mut core::ffi::c_void) };
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut stack_val: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 10;
-// LOWERING-NEXT:     stack_val = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = touch_and_maybe_free(std::ptr::addr_of_mut!(stack_val), {{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 4;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = unsafe { malloc({{_v[0-9]+}} as usize) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i32 = {{_v[0-9]+}} as *mut i32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 100;
-// LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         *{{_v[0-9]+}} = {{_v[0-9]+}};
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = touch_and_maybe_free({{_v[0-9]+}}, {{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = stack_val;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = stack_val;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
-// LOWERING-NEXT: }
+// LOWERING-DAG: fn touch_and_maybe_free({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: i32) -> i32 {
+// LOWERING-DAG:     let mut q: *mut i32 = std::ptr::null_mut();
+// LOWERING-DAG:     let mut do_free: i32 = 0;
+// LOWERING-DAG:     q = {{arg[0-9]+}};
+// LOWERING-DAG:     do_free = {{arg[0-9]+}};
+// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i32 = q;
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + {{_v[0-9]+}};
+// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i32 = q;
+// LOWERING-DAG:     unsafe {
+// LOWERING-DAG:         *{{_v[0-9]+}} = {{_v[0-9]+}};
+// LOWERING-DAG:     }
+// LOWERING-DAG:     let {{_v[0-9]+}}: *mut i32 = q;
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = unsafe { *{{_v[0-9]+}} };
+// LOWERING-DAG:     {
+// LOWERING-DAG:         let {{_v[0-9]+}}: i32 = do_free;
+// LOWERING-DAG:         let {{_v[0-9]+}}: bool = {{_v[0-9]+}} != 0;
+// LOWERING-DAG:         if {{_v[0-9]+}} {
+// LOWERING-DAG:             let {{_v[0-9]+}}: *mut i32 = q;
+// LOWERING-DAG:             let {{_v[0-9]+}}: *mut core::ffi::c_void = {{_v[0-9]+}} as *mut core::ffi::c_void;
+// LOWERING-DAG:             unsafe { free({{_v[0-9]+}} as *mut core::ffi::c_void) };
+// LOWERING-DAG:         }
+// LOWERING-DAG:     }
+// LOWERING-DAG:     return {{_v[0-9]+}};
+// LOWERING-DAG: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites

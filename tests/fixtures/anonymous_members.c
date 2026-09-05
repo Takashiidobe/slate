@@ -80,11 +80,12 @@ int main(void) {
 // LOWERING-NEXT:         __slate_anon_2: {{anon_[0-9]+}} { x: 0, y: 0 },
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     value = container {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: container = container {
 // LOWERING-NEXT:         prefix: 0,
 // LOWERING-NEXT:         __slate_anon_1: unsafe { std::mem::zeroed::<{{anon_[0-9]+}}>() },
 // LOWERING-NEXT:         __slate_anon_2: {{anon_[0-9]+}} { x: 0, y: 0 },
 // LOWERING-NEXT:     };
+// LOWERING-NEXT:     value = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 3;
 // LOWERING-NEXT:     value.prefix = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 31;

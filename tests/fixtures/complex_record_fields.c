@@ -43,16 +43,19 @@ int main(void) {
 // LOWERING-DAG:     };
 // LOWERING-DAG:     let mut overlay: complex_union = unsafe { std::mem::zeroed::<complex_union>() };
 // LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     fields = complex_fields {
+// LOWERING-DAG:     let {{_v[0-9]+}}: complex_fields = complex_fields {
 // LOWERING-DAG:         c8: num_complex::Complex { re: 0, im: 0 },
 // LOWERING-DAG:         u16: num_complex::Complex { re: 0, im: 0 },
 // LOWERING-DAG:         f32: num_complex::Complex { re: 0.0, im: 0.0 },
 // LOWERING-DAG:         f64: num_complex::Complex { re: 0.0, im: 0.0 },
 // LOWERING-DAG:     };
-// LOWERING-DAG:     overlay = complex_union {
+// LOWERING-DAG:     fields = {{_v[0-9]+}};
+// LOWERING-DAG:     let {{_v[0-9]+}}: complex_union = complex_union {
 // LOWERING-DAG:         value: num_complex::Complex { re: 0.0, im: 0.0 },
 // LOWERING-DAG:     };
+// LOWERING-DAG:     overlay = {{_v[0-9]+}};
 // LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}};
 // LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-DAG:     let {{_v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
 // LOWERING-DAG:     let {{_v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: 0, im: 2 };
@@ -60,13 +63,12 @@ int main(void) {
 // LOWERING-DAG:         re: {{_v[0-9]+}}.re + {{_v[0-9]+}}.re,
 // LOWERING-DAG:         im: {{_v[0-9]+}}.im + {{_v[0-9]+}}.im,
 // LOWERING-DAG:     };
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.re;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.im;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i8 = {{_v[0-9]+}} as i8;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i8 = {{_v[0-9]+}} as i8;
+// LOWERING-DAG:     let {{_v[0-9]+}}: i8 = {{_v[0-9]+}}.re as i8;
+// LOWERING-DAG:     let {{_v[0-9]+}}: i8 = {{_v[0-9]+}}.im as i8;
 // LOWERING-DAG:     let {{_v[0-9]+}}: num_complex::Complex<i8> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
 // LOWERING-DAG:     fields.c8 = {{_v[0-9]+}};
 // LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 3;
+// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}};
 // LOWERING-DAG:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-DAG:     let {{_v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
 // LOWERING-DAG:     let {{_v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: 0, im: 4 };
@@ -74,10 +76,8 @@ int main(void) {
 // LOWERING-DAG:         re: {{_v[0-9]+}}.re + {{_v[0-9]+}}.re,
 // LOWERING-DAG:         im: {{_v[0-9]+}}.im + {{_v[0-9]+}}.im,
 // LOWERING-DAG:     };
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.re;
-// LOWERING-DAG:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}}.im;
-// LOWERING-DAG:     let {{_v[0-9]+}}: u16 = {{_v[0-9]+}} as u16;
-// LOWERING-DAG:     let {{_v[0-9]+}}: u16 = {{_v[0-9]+}} as u16;
+// LOWERING-DAG:     let {{_v[0-9]+}}: u16 = {{_v[0-9]+}}.re as u16;
+// LOWERING-DAG:     let {{_v[0-9]+}}: u16 = {{_v[0-9]+}}.im as u16;
 // LOWERING-DAG:     let {{_v[0-9]+}}: num_complex::Complex<u16> = num_complex::Complex { re: {{_v[0-9]+}}, im: {{_v[0-9]+}} };
 // LOWERING-DAG:     fields.u16 = {{_v[0-9]+}};
 // LOWERING-DAG:     let {{_v[0-9]+}}: f32 = 5.0;

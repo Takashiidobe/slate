@@ -52,15 +52,28 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn report({{arg[0-9]+}}: *mut Handlers) -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Handlers = unsafe { *{{arg[0-9]+}} };
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Handlers = Handlers {
+// LOWERING-NEXT:         label: b"none\0".as_ptr() as *mut i8,
+// LOWERING-NEXT:         onEvent: None,
+// LOWERING-NEXT:         counter: std::ptr::null_mut(),
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = report({{_v[0-9]+}});
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn report({{arg[0-9]+}}: Handlers) -> i32 {
 // LOWERING-NEXT:     let mut h: Handlers = Handlers {
 // LOWERING-NEXT:         label: std::ptr::null_mut(),
 // LOWERING-NEXT:         onEvent: None,
 // LOWERING-NEXT:         counter: std::ptr::null_mut(),
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let mut total: i32 = 0;
-// LOWERING-NEXT:     h = {{_v[0-9]+}};
+// LOWERING-NEXT:     h = {{arg[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     total = {{_v[0-9]+}};
 // LOWERING-NEXT:     {
@@ -91,26 +104,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = total;
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: Handlers = Handlers {
-// LOWERING-NEXT:         label: b"none\0".as_ptr() as *mut i8,
-// LOWERING-NEXT:         onEvent: None,
-// LOWERING-NEXT:         counter: std::ptr::null_mut(),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let mut byval: Handlers = Handlers {
-// LOWERING-NEXT:         label: std::ptr::null_mut(),
-// LOWERING-NEXT:         onEvent: None,
-// LOWERING-NEXT:         counter: std::ptr::null_mut(),
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     byval = {{_v[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = report(std::ptr::addr_of_mut!(byval));
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
-// LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
@@ -140,8 +133,17 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn report({{arg[0-9]+}}: &Handlers) -> i32 {
-// REWRITES-NEXT:     let mut h: Handlers = unsafe { *({{arg[0-9]+}} as *const Handlers) };
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: Handlers = Handlers {
+// REWRITES-NEXT:         label: c"none".as_ptr() as *mut i8,
+// REWRITES-NEXT:         onEvent: None,
+// REWRITES-NEXT:         counter: std::ptr::null_mut(),
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), report({{_v[0-9]+}})) };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn report(mut h: Handlers) -> i32 {
 // REWRITES-NEXT:     let mut total: i32 = 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = h.onEvent != None;
 // REWRITES-NEXT:     if {{_v[0-9]+}} {
@@ -152,22 +154,5 @@ int main(void) {
 // REWRITES-NEXT:         total += unsafe { *h.counter };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     total
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let {{_v[0-9]+}}: Handlers = Handlers {
-// REWRITES-NEXT:         label: c"none".as_ptr() as *mut i8,
-// REWRITES-NEXT:         onEvent: None,
-// REWRITES-NEXT:         counter: std::ptr::null_mut(),
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     let {{_v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let mut byval: Handlers = {{_v[0-9]+}};
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             {{_v[0-9]+}} as *const core::ffi::c_char,
-// REWRITES-NEXT:             report(unsafe { &(*std::ptr::addr_of_mut!(byval)) }),
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

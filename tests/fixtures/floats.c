@@ -33,13 +33,6 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn avg({{arg[0-9]+}}: f64, {{arg[0-9]+}}: f64) -> f64 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{arg[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 2.0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} / {{_v[0-9]+}};
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: f32 = 1.5;
@@ -60,6 +53,13 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn avg({{arg[0-9]+}}: f64, {{arg[0-9]+}}: f64) -> f64 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{arg[0-9]+}} + {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = 2.0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: f64 = {{_v[0-9]+}} / {{_v[0-9]+}};
+// LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -82,14 +82,14 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn avg({{arg[0-9]+}}: f64, {{arg[0-9]+}}: f64) -> f64 {
-// REWRITES-NEXT:     ({{arg[0-9]+}} + {{arg[0-9]+}}) / 2.0
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     unsafe { printf(c"%f\n".as_ptr(), (1.5 + (0.5 as f32)) as f64) };
 // REWRITES-NEXT:     unsafe { printf(c"%f\n".as_ptr(), avg(3.0, 4.0)) };
 // REWRITES-NEXT:     unsafe { printf(c"%.2f\n".as_ptr(), (2.25 as f64) * 2.0) };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn avg({{arg[0-9]+}}: f64, {{arg[0-9]+}}: f64) -> f64 {
+// REWRITES-NEXT:     ({{arg[0-9]+}} + {{arg[0-9]+}}) / 2.0
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

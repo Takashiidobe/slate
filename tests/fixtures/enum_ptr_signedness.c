@@ -60,7 +60,8 @@ int main(void) {
 // LOWERING-NEXT:         top: std::ptr::null_mut(),
 // LOWERING-NEXT:     };
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     data = [0, 1, 2];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [u32; 3] = [0, 1, 2];
+// LOWERING-NEXT:     data = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u32 = data.as_mut_ptr() as *mut u32;
 // LOWERING-NEXT:     p.start = {{_v[0-9]+}} as *mut color_t;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u32 = data.as_mut_ptr() as *mut u32;
@@ -121,11 +122,12 @@ int main(void) {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let mut data: [u32; 3] = [0, 1, 2];
+// REWRITES-NEXT:     let mut data: [u32; 3] = [0; 3];
 // REWRITES-NEXT:     let mut p: palette = palette {
 // REWRITES-NEXT:         start: std::ptr::null_mut(),
 // REWRITES-NEXT:         top: std::ptr::null_mut(),
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     data = [0, 1, 2];
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u32 = data.as_mut_ptr() as *mut u32;
 // REWRITES-NEXT:     p.start = {{_v[0-9]+}} as *mut color_t;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u32 = data.as_mut_ptr() as *mut u32;

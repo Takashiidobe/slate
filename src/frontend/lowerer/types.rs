@@ -76,6 +76,10 @@ pub(super) fn rust_type_with_aliases(
         }
         CirType::Bool => Type::Prim(Prim::Bool),
         CirType::Void => Type::CLib(CLibType::VOID),
+        CirType::BitField {
+            storage_type: Some(storage_type),
+            ..
+        } => rust_type_with_aliases(storage_type, aliases, va_list_boxed),
         CirType::Int {
             is_signed, width, ..
         } => scalar_int_type(*is_signed, *width),
@@ -125,8 +129,10 @@ pub(super) fn rust_type_with_aliases(
         | CirType::Index
         | CirType::Dialect { .. }
         | CirType::Bf16
+        | CirType::BitField { .. }
         | CirType::CatchToken
         | CirType::CleanupToken
+        | CirType::CudaDeviceTexture
         | CirType::DataMember { .. }
         | CirType::EhToken
         | CirType::Method { .. }
@@ -763,6 +769,13 @@ pub(super) fn cir_type_to_ctype(
             };
         }
         return CType::Ptr(Box::new(cir_type_to_ctype(inner, aliases)));
+    }
+    if let CirType::BitField {
+        storage_type: Some(storage_type),
+        ..
+    } = ty
+    {
+        return cir_type_to_ctype(storage_type, aliases);
     }
     match ty {
         CirType::Void => return CType::Void,

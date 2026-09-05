@@ -46,18 +46,21 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
     }
 
     pub(super) fn lower_cleanup_scope(&mut self, op: &inst::CleanupScope) {
-        let saw_stackrestore = op.cleanup_region.blocks.iter().any(|block| {
+        let saw_storage_cleanup = op.cleanup_region.blocks.iter().any(|block| {
             block
                 .ops
                 .iter()
-                .any(|cleanup_op| matches!(cleanup_op, Op::Stackrestore(_)))
+                .any(|cleanup_op| matches!(cleanup_op, Op::Stackrestore(_) | Op::LifetimeEnd(_)))
         });
         let cleanup_supported = op.cleanup_region.blocks.iter().all(|block| {
             block.ops.iter().all(|cleanup_op| {
-                matches!(cleanup_op, Op::Load(_) | Op::Yield(_) | Op::Stackrestore(_))
+                matches!(
+                    cleanup_op,
+                    Op::Load(_) | Op::Yield(_) | Op::Stackrestore(_) | Op::LifetimeEnd(_)
+                )
             })
         });
-        if !cleanup_supported || !saw_stackrestore {
+        if !cleanup_supported || !saw_storage_cleanup {
             self.emit_todo("cir.cleanup.scope");
             return;
         }

@@ -39,7 +39,8 @@ int main(void) {
 // LOWERING-NEXT:     let mut path: [i8; 13] = [0; 13];
 // LOWERING-NEXT:     let mut fd: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     path = [115, 108, 97, 116, 101, 45, 88, 88, 88, 88, 88, 88, 0];
+// LOWERING-NEXT:     let {{_v[0-9]+}}: [i8; 13] = [115, 108, 97, 116, 101, 45, 88, 88, 88, 88, 88, 88, 0];
+// LOWERING-NEXT:     path = {{_v[0-9]+}};
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = path.as_mut_ptr() as *mut i8;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { mkstemp({{_v[0-9]+}} as *mut core::ffi::c_char) };
 // LOWERING-NEXT:     fd = {{_v[0-9]+}};

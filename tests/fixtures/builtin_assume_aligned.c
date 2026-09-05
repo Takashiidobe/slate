@@ -40,24 +40,6 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn first_word({{arg[0-9]+}}: *mut core::ffi::c_void) -> *mut core::ffi::c_void {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = true;
-// LOWERING-NEXT:     unsafe { core::hint::assert_unchecked(({{arg[0-9]+}} as usize) % ({{_v[0-9]+}} as usize) == 0usize) };
-// LOWERING-NEXT:     return {{arg[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn first_word_offset({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: u64) -> *mut core::ffi::c_void {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 32;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = true;
-// LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         core::hint::assert_unchecked(
-// LOWERING-NEXT:             ({{arg[0-9]+}} as usize).wrapping_sub({{arg[0-9]+}} as usize) % ({{_v[0-9]+}} as usize) == 0usize,
-// LOWERING-NEXT:         )
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     return {{arg[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     let {{_v[0-9]+}}: *mut u8 = std::ptr::addr_of_mut!(main_buf).cast::<u8>();
@@ -84,6 +66,24 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
 // LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn first_word({{arg[0-9]+}}: *mut core::ffi::c_void) -> *mut core::ffi::c_void {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = true;
+// LOWERING-NEXT:     unsafe { core::hint::assert_unchecked(({{arg[0-9]+}} as usize) % ({{_v[0-9]+}} as usize) == 0usize) };
+// LOWERING-NEXT:     return {{arg[0-9]+}};
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn first_word_offset({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: u64) -> *mut core::ffi::c_void {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: u64 = 32;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: bool = true;
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         core::hint::assert_unchecked(
+// LOWERING-NEXT:             ({{arg[0-9]+}} as usize).wrapping_sub({{arg[0-9]+}} as usize) % ({{_v[0-9]+}} as usize) == 0usize,
+// LOWERING-NEXT:         )
+// LOWERING-NEXT:     };
+// LOWERING-NEXT:     return {{arg[0-9]+}};
+// LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
@@ -107,20 +107,6 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn first_word({{arg[0-9]+}}: *mut core::ffi::c_void) -> *mut core::ffi::c_void {
-// REWRITES-NEXT:     unsafe { core::hint::assert_unchecked(({{arg[0-9]+}} as usize) % ((32 as u64) as usize) == 0usize) };
-// REWRITES-NEXT:     {{arg[0-9]+}}
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn first_word_offset({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: u64) -> *mut core::ffi::c_void {
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         core::hint::assert_unchecked(
-// REWRITES-NEXT:             ({{arg[0-9]+}} as usize).wrapping_sub({{arg[0-9]+}} as usize) % ((32 as u64) as usize) == 0usize,
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     {{arg[0-9]+}}
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut u8 = std::ptr::addr_of_mut!(main_buf).cast::<u8>();
 // REWRITES-NEXT:     let {{_v[0-9]+}}: *mut core::ffi::c_void = first_word({{_v[0-9]+}} as *mut core::ffi::c_void);
@@ -140,5 +126,19 @@ int main(void) {
 // REWRITES-NEXT:         )
 // REWRITES-NEXT:     };
 // REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn first_word({{arg[0-9]+}}: *mut core::ffi::c_void) -> *mut core::ffi::c_void {
+// REWRITES-NEXT:     unsafe { core::hint::assert_unchecked(({{arg[0-9]+}} as usize) % ((32 as u64) as usize) == 0usize) };
+// REWRITES-NEXT:     {{arg[0-9]+}}
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn first_word_offset({{arg[0-9]+}}: *mut core::ffi::c_void, {{arg[0-9]+}}: u64) -> *mut core::ffi::c_void {
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         core::hint::assert_unchecked(
+// REWRITES-NEXT:             ({{arg[0-9]+}} as usize).wrapping_sub({{arg[0-9]+}} as usize) % ((32 as u64) as usize) == 0usize,
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     {{arg[0-9]+}}
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

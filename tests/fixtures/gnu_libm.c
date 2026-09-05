@@ -230,6 +230,19 @@ int main(void) {
 // LOWERING-NEXT:     fn fedisableexcept(_0: i32) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_sincos_extensions();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_exponential_extensions();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_bessel_extensions();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_fenv_extensions();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_constant_extensions();
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
 // LOWERING-NEXT: fn gnu_sincos_extensions() -> i32 {
 // LOWERING-NEXT:     let mut sine: f64 = 0.0;
 // LOWERING-NEXT:     let mut cosine: f64 = 0.0;
@@ -535,19 +548,6 @@ int main(void) {
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_sincos_extensions();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_exponential_extensions();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_bessel_extensions();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_fenv_extensions();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = gnu_constant_extensions();
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
 // LOWERING-NEXT: unsafe extern "C" {
 // LOWERING-NEXT:     safe fn __slate_cf80_div(
 // LOWERING-NEXT:         a: num_complex::Complex<LongDouble>,
@@ -759,6 +759,20 @@ int main(void) {
 // REWRITES-NEXT:     fn fedisableexcept(_0: i32) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT:     unsafe {
+// REWRITES-NEXT:         printf(
+// REWRITES-NEXT:             c"%d %d %d %d %d\n".as_ptr(),
+// REWRITES-NEXT:             gnu_sincos_extensions(),
+// REWRITES-NEXT:             gnu_exponential_extensions(),
+// REWRITES-NEXT:             gnu_bessel_extensions(),
+// REWRITES-NEXT:             gnu_fenv_extensions(),
+// REWRITES-NEXT:             gnu_constant_extensions(),
+// REWRITES-NEXT:         )
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn gnu_sincos_extensions() -> i32 {
 // REWRITES-NEXT:     let mut sine: f64 = 0.0;
 // REWRITES-NEXT:     let mut cosine: f64 = 0.0;
@@ -910,20 +924,6 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: LongDouble = LongDouble([172, 121, 207, 209, 247, 23, 114, 177, 254, 63]);
 // REWRITES-NEXT:     let {{_v[0-9]+}}: f64 = __slate_f80_to_f64({{_v[0-9]+}});
 // REWRITES-NEXT:     {{_v[0-9]+}} + (({{_v[0-9]+}} == 0.6931471805599453) as i32)
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             gnu_sincos_extensions(),
-// REWRITES-NEXT:             gnu_exponential_extensions(),
-// REWRITES-NEXT:             gnu_bessel_extensions(),
-// REWRITES-NEXT:             gnu_fenv_extensions(),
-// REWRITES-NEXT:             gnu_constant_extensions(),
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: unsafe extern "C" {

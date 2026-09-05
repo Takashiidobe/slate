@@ -57,13 +57,41 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn bump({{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { side_effect_calls };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
-// LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         side_effect_calls = {{_v[0-9]+}};
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let mut __retval: i32 = 0;
+// LOWERING-NEXT:     let mut a: i32 = 0;
+// LOWERING-NEXT:     let mut b: i32 = 0;
+// LOWERING-NEXT:     let mut c: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:     {
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:         let {{_v[0-9]+}}: i32 = use_expect({{_v[0-9]+}});
+// LOWERING-NEXT:         a = {{_v[0-9]+}};
+// LOWERING-NEXT:         {
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:             let {{_v[0-9]+}}: i32 = use_expect_with_probability({{_v[0-9]+}});
+// LOWERING-NEXT:             b = {{_v[0-9]+}};
+// LOWERING-NEXT:             {
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = use_unpredictable({{_v[0-9]+}});
+// LOWERING-NEXT:                 c = {{_v[0-9]+}};
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = a;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = b;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = c;
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = unsafe { side_effect_calls };
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 =
+// LOWERING-NEXT:                     unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:                 __retval = {{_v[0-9]+}};
+// LOWERING-NEXT:                 let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:                 std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:             }
+// LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
-// LOWERING-NEXT:     return {{arg[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = __retval;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
 // LOWERING-NEXT: fn use_expect({{arg[0-9]+}}: i32) -> i32 {
@@ -136,19 +164,13 @@ int main(void) {
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = use_expect({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = use_expect_with_probability({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = use_unpredictable({{_v[0-9]+}});
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"%d %d %d %d\n\0".as_ptr() as *mut i8;
+// LOWERING-NEXT: fn bump({{arg[0-9]+}}: i32) -> i32 {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { side_effect_calls };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}, {{_v[0-9]+}}) };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = {{_v[0-9]+}} + 1;
+// LOWERING-NEXT:     unsafe {
+// LOWERING-NEXT:         side_effect_calls = {{_v[0-9]+}};
+// LOWERING-NEXT:     }
+// LOWERING-NEXT:     return {{arg[0-9]+}};
 // LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
@@ -173,11 +195,19 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn bump({{arg[0-9]+}}: i32) -> i32 {
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT:     let mut __retval: i32 = 0;
+// REWRITES-NEXT:     let mut a: i32 = use_expect(1);
+// REWRITES-NEXT:     let mut b: i32 = use_expect_with_probability(1);
+// REWRITES-NEXT:     let mut c: i32 = use_unpredictable(1);
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         side_effect_calls = (unsafe { side_effect_calls }) + 1;
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     {{arg[0-9]+}}
+// REWRITES-NEXT:         printf(c"%d %d %d %d\n".as_ptr(), a, b, c, unsafe {
+// REWRITES-NEXT:             side_effect_calls
+// REWRITES-NEXT:         })
+// REWRITES-NEXT:     };
+// REWRITES-NEXT:     __retval = 0;
+// REWRITES-NEXT:     std::process::exit(__retval as i32);
+// REWRITES-NEXT:     std::process::exit(__retval as i32);
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn use_expect(mut {{_v[0-9]+}}: i32) -> i32 {
@@ -204,16 +234,10 @@ int main(void) {
 // REWRITES-NEXT:     0
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT: fn bump({{arg[0-9]+}}: i32) -> i32 {
 // REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%d %d %d %d\n".as_ptr(),
-// REWRITES-NEXT:             use_expect(1),
-// REWRITES-NEXT:             use_expect_with_probability(1),
-// REWRITES-NEXT:             use_unpredictable(1),
-// REWRITES-NEXT:             unsafe { side_effect_calls },
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT:         side_effect_calls = (unsafe { side_effect_calls }) + 1;
+// REWRITES-NEXT:     }
+// REWRITES-NEXT:     {{arg[0-9]+}}
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

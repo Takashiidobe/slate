@@ -58,6 +58,19 @@ int main(void) {
 // LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
+// LOWERING-NEXT: fn main() {
+// LOWERING-NEXT:     let mut d: Data = Data { value: 0 };
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     let {{_v[0-9]+}}: Data = Data { value: 7 };
+// LOWERING-NEXT:     d = {{_v[0-9]+}};
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
+// LOWERING-NEXT:     process({{_v[0-9]+}}, Some(print_handler), std::ptr::addr_of_mut!(d));
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     process({{_v[0-9]+}}, Some(print_handler), std::ptr::addr_of_mut!(d));
+// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
+// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
+// LOWERING-NEXT: }
+// LOWERING-EMPTY:
 // LOWERING-NEXT: fn process(
 // LOWERING-NEXT:     {{arg[0-9]+}}: i32,
 // LOWERING-NEXT:     {{arg[0-9]+}}: Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, i32)>,
@@ -113,18 +126,6 @@ int main(void) {
 // LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { printf({{_v[0-9]+}} as *const core::ffi::c_char, {{_v[0-9]+}}, {{_v[0-9]+}}) };
 // LOWERING-NEXT:     return;
 // LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut d: Data = Data { value: 0 };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     d = Data { value: 7 };
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     process({{_v[0-9]+}}, Some(print_handler), std::ptr::addr_of_mut!(d));
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     process({{_v[0-9]+}}, Some(print_handler), std::ptr::addr_of_mut!(d));
-// LOWERING-NEXT:     let {{_v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{_v[0-9]+}} as i32);
-// LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
@@ -154,6 +155,13 @@ int main(void) {
 // REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
+// REWRITES-NEXT: fn main() {
+// REWRITES-NEXT:     let mut d: Data = Data { value: 7 };
+// REWRITES-NEXT:     process(1, Some(print_handler), std::ptr::addr_of_mut!(d));
+// REWRITES-NEXT:     process(0, Some(print_handler), std::ptr::addr_of_mut!(d));
+// REWRITES-NEXT:     std::process::exit(0 as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
 // REWRITES-NEXT: fn process(
 // REWRITES-NEXT:     mut {{_v[0-9]+}}: i32,
 // REWRITES-NEXT:     mut handler: Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, i32)>,
@@ -180,12 +188,5 @@ int main(void) {
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = unsafe { (*(p as *mut Data)).value };
 // REWRITES-NEXT:     unsafe { printf(c"%d %d\n".as_ptr(), {{_v[0-9]+}}, extra) };
 // REWRITES-NEXT:     return;
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let mut d: Data = Data { value: 7 };
-// REWRITES-NEXT:     process(1, Some(print_handler), std::ptr::addr_of_mut!(d));
-// REWRITES-NEXT:     process(0, Some(print_handler), std::ptr::addr_of_mut!(d));
-// REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

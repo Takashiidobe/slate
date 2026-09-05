@@ -49,11 +49,6 @@ done:
 // LOWERING-NEXT:     return {{_v[0-9]+}};
 // LOWERING-NEXT: }
 // LOWERING-EMPTY:
-// LOWERING-NEXT: fn pretty() -> *mut i8 {
-// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"const char *pretty(void)\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     return {{_v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
 // LOWERING-NEXT: fn main() {
 // LOWERING-NEXT:     let mut __retval: i32 = 0;
 // LOWERING-NEXT:     let mut {{__state[0-9]+}}: i32 = 0;
@@ -111,6 +106,11 @@ done:
 // LOWERING-NEXT:         }
 // LOWERING-NEXT:     }
 // LOWERING-NEXT: }
+// LOWERING-EMPTY:
+// LOWERING-NEXT: fn pretty() -> *mut i8 {
+// LOWERING-NEXT:     let {{_v[0-9]+}}: *mut i8 = b"const char *pretty(void)\0".as_ptr() as *mut i8;
+// LOWERING-NEXT:     return {{_v[0-9]+}};
+// LOWERING-NEXT: }
 // SLATE-FILECHECK-END lowering
 
 // SLATE-FILECHECK-BEGIN rewrites
@@ -140,10 +140,6 @@ done:
 // REWRITES-NEXT:     1
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
-// REWRITES-NEXT: fn pretty() -> *mut i8 {
-// REWRITES-NEXT:     c"const char *pretty(void)".as_ptr() as *mut i8
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
 // REWRITES-NEXT:     let mut __retval: i32 = 0;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: i32 = 0;
@@ -156,5 +152,9 @@ done:
 // REWRITES-NEXT:         unsafe { printf(c"%d\n".as_ptr(), 1 as i32) };
 // REWRITES-NEXT:     }
 // REWRITES-NEXT:     std::process::exit(__retval as i32);
+// REWRITES-NEXT: }
+// REWRITES-EMPTY:
+// REWRITES-NEXT: fn pretty() -> *mut i8 {
+// REWRITES-NEXT:     c"const char *pretty(void)".as_ptr() as *mut i8
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites
