@@ -100,7 +100,9 @@ codegen-units = 256
 }
 
 pub fn test_cache_root() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("target/test-cache")
+    std::env::var_os("SLATE_TEST_CACHE_ROOT")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| Path::new(env!("CARGO_MANIFEST_DIR")).join("target/test-cache"))
 }
 
 fn test_target_dir_for_project(project: &std::path::Path) -> std::path::PathBuf {

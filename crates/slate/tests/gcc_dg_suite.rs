@@ -21,6 +21,9 @@ fn jobs() -> usize {
 }
 
 fn root(group: &str) -> PathBuf {
+    if let Ok(source) = std::env::var("SLATE_GCC_DG_SOURCE") {
+        return PathBuf::from(source);
+    }
     let suffix = (group != "supported").then_some(format!(".{group}"));
     Path::new(env!("CARGO_MANIFEST_DIR")).join(format!(
         "tests/fixtures.gcc-dg{}",
@@ -125,6 +128,9 @@ fn gcc_dg_supported_tests_match_c() {
         .into_iter()
         .filter_map(|(name, result)| result.err().map(|e| format!("{name}: {e}")))
         .collect();
+    if let Ok(report) = std::env::var("SLATE_GCC_DG_FAILURES") {
+        std::fs::write(report, failures.join("\n")).expect("write gcc.dg failure report");
+    }
     assert!(
         failures.is_empty(),
         "gcc.dg supported tests failed:\n{}",
