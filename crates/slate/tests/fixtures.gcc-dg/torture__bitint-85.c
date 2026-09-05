@@ -68,9 +68,7 @@ int main() {
 // REWRITES-DAG:     let mut y: aligned::Aligned<aligned::A8, bitint::BInt<1024, 16, 128>> =
 // REWRITES-DAG:         aligned::Aligned(bitint::BInt::<1024, 16, 128>::ZERO);
 // REWRITES-DAG:     *y = {{arg[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BInt<1024, 16, 128> = *y;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BInt<1024, 16, 128> = unsafe { *d };
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = *y != unsafe { *d };
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { std::process::abort() };
 // REWRITES-DAG:     }
@@ -79,11 +77,8 @@ int main() {
 // REWRITES-DAG: fn main() {
 // REWRITES-DAG:     let mut x: aligned::Aligned<aligned::A8, bitint::BInt<1024, 16, 128>> =
 // REWRITES-DAG:         aligned::Aligned(bitint::BInt::<1024, 16, 128>::ZERO);
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BInt<1024, 16, 128> = unsafe { *d };
-// REWRITES-DAG:     foo({{__v[0-9]+}}, unsafe { &mut (*std::ptr::addr_of_mut!(*x)) });
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BInt<1024, 16, 128> = *x;
-// REWRITES-DAG:     bar({{__v[0-9]+}});
-// REWRITES-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// REWRITES-DAG:     foo(unsafe { *d }, unsafe { &mut (*std::ptr::addr_of_mut!(*x)) });
+// REWRITES-DAG:     bar(*x);
+// REWRITES-DAG:     std::process::exit(0 as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

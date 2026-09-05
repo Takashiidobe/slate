@@ -582,338 +582,273 @@ int main(void) {
 // REWRITES-DAG: fn check_long_double() {
 // REWRITES-DAG:     loop {
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
-// REWRITES-DAG:                 num_complex::Complex { re: {{__v[0-9]+}}, im: {{__v[0-9]+}} };
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { check_long_double_cs };
+// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
+// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-DAG:             };
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs }, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
-// REWRITES-DAG:             if !{{__v[0-9]+}} {
+// REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:                 re: {{__v[0-9]+}},
-// REWRITES-DAG:                 im: {{__v[0-9]+}},
+// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]),
 // REWRITES-DAG:             };
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { check_long_double_cs_1 };
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs_1 }, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
-// REWRITES-DAG:             if !{{__v[0-9]+}} {
+// REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:                 re: {{__v[0-9]+}},
-// REWRITES-DAG:                 im: {{__v[0-9]+}},
+// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]),
 // REWRITES-DAG:             };
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { check_long_double_cs_2 };
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs_2 }, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
-// REWRITES-DAG:             if !{{__v[0-9]+}} {
+// REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:                 re: {{__v[0-9]+}},
-// REWRITES-DAG:                 im: {{__v[0-9]+}},
+// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]),
 // REWRITES-DAG:             };
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { check_long_double_cs_3 };
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs_3 }, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
-// REWRITES-DAG:             if !{{__v[0-9]+}} {
+// REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:                 re: {{__v[0-9]+}},
-// REWRITES-DAG:                 im: {{__v[0-9]+}},
+// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]),
+// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-DAG:             };
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { check_long_double_cs_4 };
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs_4 }, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
-// REWRITES-DAG:             if !{{__v[0-9]+}} {
+// REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:                 re: {{__v[0-9]+}},
-// REWRITES-DAG:                 im: {{__v[0-9]+}},
+// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]),
+// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]),
 // REWRITES-DAG:             };
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { check_long_double_cs_5 };
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs_5 }, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
-// REWRITES-DAG:             if !{{__v[0-9]+}} {
+// REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:                 re: {{__v[0-9]+}},
-// REWRITES-DAG:                 im: {{__v[0-9]+}},
+// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]),
+// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]),
 // REWRITES-DAG:             };
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { check_long_double_cs_6 };
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs_6 }, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
-// REWRITES-DAG:             if !{{__v[0-9]+}} {
+// REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:                 re: {{__v[0-9]+}},
-// REWRITES-DAG:                 im: {{__v[0-9]+}},
+// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]),
+// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]),
 // REWRITES-DAG:             };
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { check_long_double_cs_7 };
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs_7 }, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
-// REWRITES-DAG:             if !{{__v[0-9]+}} {
+// REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:                 re: {{__v[0-9]+}},
-// REWRITES-DAG:                 im: {{__v[0-9]+}},
+// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]),
+// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-DAG:             };
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { check_long_double_cs_8 };
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs_8 }, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
-// REWRITES-DAG:             if !{{__v[0-9]+}} {
+// REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:                 re: {{__v[0-9]+}},
-// REWRITES-DAG:                 im: {{__v[0-9]+}},
+// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]),
+// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]),
 // REWRITES-DAG:             };
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { check_long_double_cs_9 };
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs_9 }, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
-// REWRITES-DAG:             if !{{__v[0-9]+}} {
+// REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:                 re: {{__v[0-9]+}},
-// REWRITES-DAG:                 im: {{__v[0-9]+}},
+// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]),
+// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]),
 // REWRITES-DAG:             };
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { check_long_double_cs_10 };
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs_10 }, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
-// REWRITES-DAG:             if !{{__v[0-9]+}} {
+// REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:                 re: {{__v[0-9]+}},
-// REWRITES-DAG:                 im: {{__v[0-9]+}},
+// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]),
+// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]),
 // REWRITES-DAG:             };
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { check_long_double_cs_11 };
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs_11 }, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
-// REWRITES-DAG:             if !{{__v[0-9]+}} {
+// REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:                 re: {{__v[0-9]+}},
-// REWRITES-DAG:                 im: {{__v[0-9]+}},
+// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]),
+// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
 // REWRITES-DAG:             };
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { check_long_double_cs_12 };
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs_12 }, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
-// REWRITES-DAG:             if !{{__v[0-9]+}} {
+// REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:                 re: {{__v[0-9]+}},
-// REWRITES-DAG:                 im: {{__v[0-9]+}},
+// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]),
+// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]),
 // REWRITES-DAG:             };
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { check_long_double_cs_13 };
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 128]);
-// REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs_13 }, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
-// REWRITES-DAG:             if !{{__v[0-9]+}} {
+// REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:                 re: {{__v[0-9]+}},
-// REWRITES-DAG:                 im: {{__v[0-9]+}},
+// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]),
+// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]),
 // REWRITES-DAG:             };
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { check_long_double_cs_14 };
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
-// REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs_14 }, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
-// REWRITES-DAG:             if !{{__v[0-9]+}} {
+// REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:                 re: {{__v[0-9]+}},
-// REWRITES-DAG:                 im: {{__v[0-9]+}},
+// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]),
+// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]),
 // REWRITES-DAG:             };
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
 // REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe { check_long_double_cs_15 };
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
 // REWRITES-DAG:             let {{__v[0-9]+}}: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
-// REWRITES-DAG:             comparecl({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
+// REWRITES-DAG:             comparecl(unsafe { check_long_double_cs_15 }, {{__v[0-9]+}}, {{__v[0-9]+}});
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
-// REWRITES-DAG:             if !{{__v[0-9]+}} {
+// REWRITES-DAG:             if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
 // REWRITES-DAG:         }
 // REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
-// REWRITES-DAG:         if !{{__v[0-9]+}} {
+// REWRITES-DAG:         if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:             break;
 // REWRITES-DAG:         }
 // REWRITES-DAG:     }
 // REWRITES-DAG:     return;
 // REWRITES-DAG: }
 // REWRITES-DAG: fn main() {
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-DAG:     check_float();
 // REWRITES-DAG:     check_double();
 // REWRITES-DAG:     check_long_double();
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:     unsafe { exit({{__v[0-9]+}} as i32) };
-// REWRITES-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// REWRITES-DAG:     unsafe { exit(0 as i32) };
+// REWRITES-DAG:     std::process::exit(0 as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

@@ -92,29 +92,26 @@ int main() {
 // REWRITES-DAG: ) {
 // REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = unsafe { *v };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = bitint::BUint::<512, 8, 64>::from_buint({{arg[0-9]+}});
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = {{__v[0-9]+}} + {{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<257, 5, 40> = bitint::BUint::<257, 5, 40>::from_buint({{__v[0-9]+}});
+// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<257, 5, 40> = bitint::BUint::<257, 5, 40>::from_buint({{__v[0-9]+}} + {{__v[0-9]+}});
 // REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<257, 5, 40> = bitint::BUint::<257, 5, 40>::from_buint({{arg[0-9]+}});
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<257, 5, 40> = {{__v[0-9]+}} - {{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<257, 5, 40> = {{__v[0-9]+}} | {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<257, 5, 40> = {{__v[0-9]+}} | {{__v[0-9]+}} - {{__v[0-9]+}};
 // REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<257, 5, 40> = bitint::BUint::<257, 5, 40>::from_decimal_str("6");
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<257, 5, 40> = {{__v[0-9]+}} * {{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = bitint::BUint::<512, 8, 64>::from_buint({{__v[0-9]+}});
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = unsafe { *u };
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = {{__v[0-9]+}} >> {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = bitint::BUint::<512, 8, 64>::from_buint({{__v[0-9]+}} * {{__v[0-9]+}});
 // REWRITES-DAG:     unsafe {
-// REWRITES-DAG:         *{{arg[0-9]+}} = {{__v[0-9]+}};
+// REWRITES-DAG:         *{{arg[0-9]+}} = {{__v[0-9]+}} >> unsafe { *u };
 // REWRITES-DAG:     }
 // REWRITES-DAG:     return;
 // REWRITES-DAG: }
 // REWRITES-DAG: fn main() {
 // REWRITES-DAG:     let mut x: aligned::Aligned<aligned::A8, bitint::BUint<512, 8, 64>> =
 // REWRITES-DAG:         aligned::Aligned(bitint::BUint::<512, 8, 64>::ZERO);
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<255, 4, 32> =
-// REWRITES-DAG:         bitint::BUint::<255, 4, 32>::from_decimal_str("18446744073709551616");
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<257, 5, 40> =
-// REWRITES-DAG:         bitint::BUint::<257, 5, 40>::from_decimal_str("18446744073709551617");
-// REWRITES-DAG:     unsafe { foo({{__v[0-9]+}}, {{__v[0-9]+}}, std::ptr::addr_of_mut!(*x)) };
+// REWRITES-DAG:     unsafe {
+// REWRITES-DAG:         foo(
+// REWRITES-DAG:             bitint::BUint::<255, 4, 32>::from_decimal_str("18446744073709551616"),
+// REWRITES-DAG:             bitint::BUint::<257, 5, 40>::from_decimal_str("18446744073709551617"),
+// REWRITES-DAG:             std::ptr::addr_of_mut!(*x),
+// REWRITES-DAG:         )
+// REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = *x;
 // REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<512, 8, 64> = bitint::BUint::<512, 8, 64>::from_decimal_str(
 // REWRITES-DAG:         "231584178474632390847141970017375815706539969331281128078915168015826259279866",
@@ -123,7 +120,6 @@ int main() {
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { std::process::abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// REWRITES-DAG:     std::process::exit(0 as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

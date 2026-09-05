@@ -202,33 +202,18 @@ int main() {
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn main() {
 // REWRITES-DAG:     loop {
-// REWRITES-DAG:         let mut r1: i32 = 0;
-// REWRITES-DAG:         let mut r2: i32 = 0;
-// REWRITES-DAG:         let mut r3: i32 = 0;
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 2;
-// REWRITES-DAG:         r1 = {{__v[0-9]+}};
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:         r2 = {{__v[0-9]+}};
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:         r3 = {{__v[0-9]+}};
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = r1;
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = r1;
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let mut r1: i32 = 2;
+// REWRITES-DAG:         let mut r2: i32 = true as i32;
+// REWRITES-DAG:         let mut r3: i32 = true as i32;
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if r1 != 0 {
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = r1 != 1;
 // REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         } else {
 // REWRITES-DAG:             let {{__v[0-9]+}}: bool = false;
 // REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         };
 // REWRITES-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = r1;
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 2;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = r1 != 2;
 // REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         } else {
 // REWRITES-DAG:             let {{__v[0-9]+}}: bool = false;
@@ -237,13 +222,8 @@ int main() {
 // REWRITES-DAG:         if {{__v[0-9]+}} {
 // REWRITES-DAG:             unsafe { abort() };
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = r2;
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = r2;
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if r2 != 0 {
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = r2 != 1;
 // REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         } else {
 // REWRITES-DAG:             let {{__v[0-9]+}}: bool = false;
@@ -252,13 +232,8 @@ int main() {
 // REWRITES-DAG:         if {{__v[0-9]+}} {
 // REWRITES-DAG:             unsafe { abort() };
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = r3;
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = r3;
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if r3 != 0 {
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = r3 != 1;
 // REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         } else {
 // REWRITES-DAG:             let {{__v[0-9]+}}: bool = false;
@@ -267,13 +242,8 @@ int main() {
 // REWRITES-DAG:         if {{__v[0-9]+}} {
 // REWRITES-DAG:             unsafe { abort() };
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = r1;
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 2;
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = r2;
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if r1 == 2 {
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = r2 != 1;
 // REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         } else {
 // REWRITES-DAG:             let {{__v[0-9]+}}: bool = false;
@@ -282,13 +252,8 @@ int main() {
 // REWRITES-DAG:         if {{__v[0-9]+}} {
 // REWRITES-DAG:             unsafe { abort() };
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = r1;
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 2;
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = r3;
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if r1 == 2 {
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = r3 != 1;
 // REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         } else {
 // REWRITES-DAG:             let {{__v[0-9]+}}: bool = false;
@@ -297,13 +262,8 @@ int main() {
 // REWRITES-DAG:         if {{__v[0-9]+}} {
 // REWRITES-DAG:             unsafe { abort() };
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = r1;
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = r2;
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if r1 == 0 {
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = r2 != 0;
 // REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         } else {
 // REWRITES-DAG:             let {{__v[0-9]+}}: bool = false;
@@ -312,13 +272,8 @@ int main() {
 // REWRITES-DAG:         if {{__v[0-9]+}} {
 // REWRITES-DAG:             unsafe { abort() };
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = r1;
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = r3;
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = if r1 == 0 {
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = r3 != 0;
 // REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         } else {
 // REWRITES-DAG:             let {{__v[0-9]+}}: bool = false;
@@ -328,12 +283,10 @@ int main() {
 // REWRITES-DAG:             unsafe { abort() };
 // REWRITES-DAG:         }
 // REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
-// REWRITES-DAG:         if !{{__v[0-9]+}} {
+// REWRITES-DAG:         if !({{__v[0-9]+}} != 0) {
 // REWRITES-DAG:             break;
 // REWRITES-DAG:         }
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// REWRITES-DAG:     std::process::exit(0 as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

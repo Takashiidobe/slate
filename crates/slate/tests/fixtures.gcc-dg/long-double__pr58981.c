@@ -285,192 +285,93 @@ int main() {
 // REWRITES-DAG:     let mut i: i32 = 0;
 // REWRITES-DAG:     let mut p: *mut i8 = std::ptr::null_mut();
 // REWRITES-DAG:     let mut q: *mut i8 = std::ptr::null_mut();
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:     i = {{__v[0-9]+}};
 // REWRITES-DAG:     loop {
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = i;
-// REWRITES-DAG:         let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} as u64;
 // REWRITES-DAG:         let {{__v[0-9]+}}: u64 = 8;
-// REWRITES-DAG:         let {{__v[0-9]+}}: u64 = 8;
-// REWRITES-DAG:         let {{__v[0-9]+}}: u64 = 8;
-// REWRITES-DAG:         let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} * {{__v[0-9]+}};
-// REWRITES-DAG:         let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// REWRITES-DAG:         let {{__v[0-9]+}}: u64 = 8;
-// REWRITES-DAG:         let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
-// REWRITES-DAG:         if !{{__v[0-9]+}} {
+// REWRITES-DAG:         if !((i as u64) < 8 + 8 * {{__v[0-9]+}} + 8) {
 // REWRITES-DAG:             break;
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{__v[0-9]+}}: i8 = 65;
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = i;
-// REWRITES-DAG:         let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
 // REWRITES-DAG:         unsafe {
-// REWRITES-DAG:             (*A)[({{__v[0-9]+}} as usize)] = {{__v[0-9]+}};
+// REWRITES-DAG:             (*A)[((i as i64) as usize)] = 65;
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = i;
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
-// REWRITES-DAG:         i = {{__v[0-9]+}};
+// REWRITES-DAG:         i += 1;
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:     off = {{__v[0-9]+}};
-// REWRITES-DAG:     loop {
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = off;
-// REWRITES-DAG:         let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} as u64;
-// REWRITES-DAG:         let {{__v[0-9]+}}: u64 = 8;
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
-// REWRITES-DAG:         if !{{__v[0-9]+}} {
-// REWRITES-DAG:             break;
-// REWRITES-DAG:         }
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-DAG:         len = {{__v[0-9]+}};
+// REWRITES-DAG:     off = 0;
+// REWRITES-DAG:     while (off as u64) < 8 {
+// REWRITES-DAG:         len = 1;
 // REWRITES-DAG:         loop {
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = len;
-// REWRITES-DAG:             let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} as u64;
 // REWRITES-DAG:             let {{__v[0-9]+}}: u64 = 8;
-// REWRITES-DAG:             let {{__v[0-9]+}}: u64 = 8;
-// REWRITES-DAG:             let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} * {{__v[0-9]+}};
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
-// REWRITES-DAG:             if !{{__v[0-9]+}} {
+// REWRITES-DAG:             if !((len as u64) < 8 * {{__v[0-9]+}}) {
 // REWRITES-DAG:                 break;
 // REWRITES-DAG:             }
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:             i = {{__v[0-9]+}};
+// REWRITES-DAG:             i = 0;
 // REWRITES-DAG:             loop {
-// REWRITES-DAG:                 let {{__v[0-9]+}}: i32 = i;
-// REWRITES-DAG:                 let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} as u64;
 // REWRITES-DAG:                 let {{__v[0-9]+}}: u64 = 8;
-// REWRITES-DAG:                 let {{__v[0-9]+}}: u64 = 8;
-// REWRITES-DAG:                 let {{__v[0-9]+}}: u64 = 8;
-// REWRITES-DAG:                 let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} * {{__v[0-9]+}};
-// REWRITES-DAG:                 let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// REWRITES-DAG:                 let {{__v[0-9]+}}: u64 = 8;
-// REWRITES-DAG:                 let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// REWRITES-DAG:                 let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
-// REWRITES-DAG:                 if !{{__v[0-9]+}} {
+// REWRITES-DAG:                 if !((i as u64) < 8 + 8 * {{__v[0-9]+}} + 8) {
 // REWRITES-DAG:                     break;
 // REWRITES-DAG:                 }
-// REWRITES-DAG:                 let {{__v[0-9]+}}: i8 = 97;
-// REWRITES-DAG:                 let {{__v[0-9]+}}: i32 = i;
-// REWRITES-DAG:                 let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
 // REWRITES-DAG:                 unsafe {
-// REWRITES-DAG:                     u.buf[({{__v[0-9]+}} as usize)] = {{__v[0-9]+}};
+// REWRITES-DAG:                     u.buf[((i as i64) as usize)] = 97;
 // REWRITES-DAG:                 }
-// REWRITES-DAG:                 let {{__v[0-9]+}}: i32 = i;
-// REWRITES-DAG:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
-// REWRITES-DAG:                 i = {{__v[0-9]+}};
+// REWRITES-DAG:                 i += 1;
 // REWRITES-DAG:             }
 // REWRITES-DAG:             let {{__v[0-9]+}}: *mut i8 = (unsafe { std::ptr::addr_of_mut!(u.buf) }) as *mut i8;
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = off;
-// REWRITES-DAG:             let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.offset({{__v[0-9]+}} as isize) };
+// REWRITES-DAG:             let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.offset(off as isize) };
 // REWRITES-DAG:             let {{__v[0-9]+}}: *mut core::ffi::c_void = {{__v[0-9]+}} as *mut core::ffi::c_void;
 // REWRITES-DAG:             let {{__v[0-9]+}}: *mut i8 = std::ptr::addr_of_mut!(A).cast::<i8>();
-// REWRITES-DAG:             let {{__v[0-9]+}}: *mut core::ffi::c_void = {{__v[0-9]+}} as *mut core::ffi::c_void;
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = len;
-// REWRITES-DAG:             let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} as u64;
 // REWRITES-DAG:             let {{__v[0-9]+}}: *mut core::ffi::c_void = unsafe {
 // REWRITES-DAG:                 {
 // REWRITES-DAG:                     std::ptr::copy_nonoverlapping(
 // REWRITES-DAG:                         {{__v[0-9]+}} as *const u8,
 // REWRITES-DAG:                         {{__v[0-9]+}} as *mut u8,
-// REWRITES-DAG:                         ({{__v[0-9]+}} as u64) as usize,
+// REWRITES-DAG:                         (len as u64) as usize,
 // REWRITES-DAG:                     );
 // REWRITES-DAG:                     {{__v[0-9]+}} as *mut core::ffi::c_void
 // REWRITES-DAG:                 }
 // REWRITES-DAG:             };
-// REWRITES-DAG:             let {{__v[0-9]+}}: *mut i8 = {{__v[0-9]+}} as *mut i8;
-// REWRITES-DAG:             p = {{__v[0-9]+}};
+// REWRITES-DAG:             p = {{__v[0-9]+}} as *mut i8;
 // REWRITES-DAG:             let {{__v[0-9]+}}: *mut i8 = p;
 // REWRITES-DAG:             let {{__v[0-9]+}}: *mut i8 = (unsafe { std::ptr::addr_of_mut!(u.buf) }) as *mut i8;
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = off;
-// REWRITES-DAG:             let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.offset({{__v[0-9]+}} as isize) };
+// REWRITES-DAG:             let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.offset(off as isize) };
 // REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // REWRITES-DAG:             if {{__v[0-9]+}} {
 // REWRITES-DAG:                 unsafe { abort() };
 // REWRITES-DAG:             }
 // REWRITES-DAG:             let {{__v[0-9]+}}: *mut i8 = (unsafe { std::ptr::addr_of_mut!(u.buf) }) as *mut i8;
 // REWRITES-DAG:             q = {{__v[0-9]+}};
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:             i = {{__v[0-9]+}};
-// REWRITES-DAG:             loop {
-// REWRITES-DAG:                 let {{__v[0-9]+}}: i32 = i;
-// REWRITES-DAG:                 let {{__v[0-9]+}}: i32 = off;
-// REWRITES-DAG:                 let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
-// REWRITES-DAG:                 if !{{__v[0-9]+}} {
-// REWRITES-DAG:                     break;
-// REWRITES-DAG:                 }
-// REWRITES-DAG:                 let {{__v[0-9]+}}: *mut i8 = q;
-// REWRITES-DAG:                 let {{__v[0-9]+}}: i8 = unsafe { *{{__v[0-9]+}} };
-// REWRITES-DAG:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:                 let {{__v[0-9]+}}: i32 = 97;
-// REWRITES-DAG:                 let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:             i = 0;
+// REWRITES-DAG:             while i < off {
+// REWRITES-DAG:                 let {{__v[0-9]+}}: bool = ((unsafe { *q }) as i32) != 97;
 // REWRITES-DAG:                 if {{__v[0-9]+}} {
 // REWRITES-DAG:                     unsafe { abort() };
 // REWRITES-DAG:                 }
-// REWRITES-DAG:                 let {{__v[0-9]+}}: i32 = i;
-// REWRITES-DAG:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
-// REWRITES-DAG:                 i = {{__v[0-9]+}};
+// REWRITES-DAG:                 i += 1;
 // REWRITES-DAG:                 let {{__v[0-9]+}}: *mut i8 = q;
-// REWRITES-DAG:                 let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(1) };
-// REWRITES-DAG:                 q = {{__v[0-9]+}};
+// REWRITES-DAG:                 q = unsafe { {{__v[0-9]+}}.add(1) };
 // REWRITES-DAG:             }
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:             i = {{__v[0-9]+}};
-// REWRITES-DAG:             loop {
-// REWRITES-DAG:                 let {{__v[0-9]+}}: i32 = i;
-// REWRITES-DAG:                 let {{__v[0-9]+}}: i32 = len;
-// REWRITES-DAG:                 let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
-// REWRITES-DAG:                 if !{{__v[0-9]+}} {
-// REWRITES-DAG:                     break;
-// REWRITES-DAG:                 }
-// REWRITES-DAG:                 let {{__v[0-9]+}}: *mut i8 = q;
-// REWRITES-DAG:                 let {{__v[0-9]+}}: i8 = unsafe { *{{__v[0-9]+}} };
-// REWRITES-DAG:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:                 let {{__v[0-9]+}}: i32 = 65;
-// REWRITES-DAG:                 let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:             i = 0;
+// REWRITES-DAG:             while i < len {
+// REWRITES-DAG:                 let {{__v[0-9]+}}: bool = ((unsafe { *q }) as i32) != 65;
 // REWRITES-DAG:                 if {{__v[0-9]+}} {
 // REWRITES-DAG:                     unsafe { abort() };
 // REWRITES-DAG:                 }
-// REWRITES-DAG:                 let {{__v[0-9]+}}: i32 = i;
-// REWRITES-DAG:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
-// REWRITES-DAG:                 i = {{__v[0-9]+}};
+// REWRITES-DAG:                 i += 1;
 // REWRITES-DAG:                 let {{__v[0-9]+}}: *mut i8 = q;
-// REWRITES-DAG:                 let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(1) };
-// REWRITES-DAG:                 q = {{__v[0-9]+}};
+// REWRITES-DAG:                 q = unsafe { {{__v[0-9]+}}.add(1) };
 // REWRITES-DAG:             }
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:             i = {{__v[0-9]+}};
-// REWRITES-DAG:             loop {
-// REWRITES-DAG:                 let {{__v[0-9]+}}: i32 = i;
-// REWRITES-DAG:                 let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} as u64;
-// REWRITES-DAG:                 let {{__v[0-9]+}}: u64 = 8;
-// REWRITES-DAG:                 let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
-// REWRITES-DAG:                 if !{{__v[0-9]+}} {
-// REWRITES-DAG:                     break;
-// REWRITES-DAG:                 }
-// REWRITES-DAG:                 let {{__v[0-9]+}}: *mut i8 = q;
-// REWRITES-DAG:                 let {{__v[0-9]+}}: i8 = unsafe { *{{__v[0-9]+}} };
-// REWRITES-DAG:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:                 let {{__v[0-9]+}}: i32 = 97;
-// REWRITES-DAG:                 let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:             i = 0;
+// REWRITES-DAG:             while (i as u64) < 8 {
+// REWRITES-DAG:                 let {{__v[0-9]+}}: bool = ((unsafe { *q }) as i32) != 97;
 // REWRITES-DAG:                 if {{__v[0-9]+}} {
 // REWRITES-DAG:                     unsafe { abort() };
 // REWRITES-DAG:                 }
-// REWRITES-DAG:                 let {{__v[0-9]+}}: i32 = i;
-// REWRITES-DAG:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
-// REWRITES-DAG:                 i = {{__v[0-9]+}};
+// REWRITES-DAG:                 i += 1;
 // REWRITES-DAG:                 let {{__v[0-9]+}}: *mut i8 = q;
-// REWRITES-DAG:                 let {{__v[0-9]+}}: *mut i8 = unsafe { {{__v[0-9]+}}.add(1) };
-// REWRITES-DAG:                 q = {{__v[0-9]+}};
+// REWRITES-DAG:                 q = unsafe { {{__v[0-9]+}}.add(1) };
 // REWRITES-DAG:             }
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = len;
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
-// REWRITES-DAG:             len = {{__v[0-9]+}};
+// REWRITES-DAG:             len += 1;
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = off;
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
-// REWRITES-DAG:         off = {{__v[0-9]+}};
+// REWRITES-DAG:         off += 1;
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// REWRITES-DAG:     std::process::exit(0 as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

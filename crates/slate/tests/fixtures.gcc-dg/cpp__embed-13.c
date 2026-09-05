@@ -395,343 +395,173 @@ int main() {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: unsafe fn foo(mut __slate_va_args: __SlateVaArgs) -> i32 {
-// REWRITES-DAG:     let mut __retval: i32 = 0;
 // REWRITES-DAG:     let mut ap: __SlateVaArgs = __SlateVaArgs::empty();
 // REWRITES-DAG:     unsafe {
 // REWRITES-DAG:         ap = __slate_va_args.clone();
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let mut i: i32 = 0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:     i = {{__v[0-9]+}};
-// REWRITES-DAG:     loop {
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = i;
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 128;
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
-// REWRITES-DAG:         if !{{__v[0-9]+}} {
-// REWRITES-DAG:             break;
-// REWRITES-DAG:         }
+// REWRITES-DAG:     for i in 0..128 {
 // REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { ap.next_arg::<i32>() };
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = i;
-// REWRITES-DAG:         let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
-// REWRITES-DAG:         let {{__v[0-9]+}}: u8 = unsafe { (*a)[({{__v[0-9]+}} as usize)] };
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// REWRITES-DAG:         if {{__v[0-9]+}} {
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-DAG:             __retval = {{__v[0-9]+}};
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = __retval;
-// REWRITES-DAG:             return {{__v[0-9]+}};
+// REWRITES-DAG:         if {{__v[0-9]+}} != ((unsafe { (*a)[((i as i64) as usize)] }) as i32) {
+// REWRITES-DAG:             return 1;
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = i;
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
-// REWRITES-DAG:         i = {{__v[0-9]+}};
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:     __retval = {{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = __retval;
-// REWRITES-DAG:     {{__v[0-9]+}}
+// REWRITES-DAG:     0
 // REWRITES-DAG: }
 // REWRITES-DAG: fn main() {
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 47;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 42;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 123;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 100;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 103;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 45;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 100;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 111;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 114;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 117;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 110;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 125;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 42;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 47;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 10;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 47;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 42;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 123;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 100;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 103;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 45;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 111;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 112;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 116;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 105;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 111;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 110;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 115;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 34;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 45;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 115;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 116;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 100;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 61;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 99;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 50;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 51;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 45;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 87;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 117;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 110;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 117;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 115;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 101;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 100;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 45;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 118;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 97;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 108;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 117;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 101;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 34;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 125;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 42;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 47;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 10;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 10;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 35;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 105;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 110;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 99;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 108;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 117;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 100;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 101;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 60;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 115;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 116;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 100;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 97;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 114;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 103;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 46;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 104;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 62;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 10;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 10;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 99;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 111;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 110;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 115;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 116;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 117;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 110;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 115;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 105;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 103;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 110;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 101;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 100;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 99;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 104;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 97;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 114;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 97;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 91;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 93;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 61;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 123;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 10;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 35;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 101;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 109;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 98;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 101;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 100;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 95;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 95;
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = unsafe {
 // REWRITES-DAG:         foo(__SlateVaArgs::new(vec![
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
-// REWRITES-DAG:             __SlateVaArg::new({{__v[0-9]+}}),
+// REWRITES-DAG:             __SlateVaArg::new(47 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(42 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(32 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(123 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(32 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(100 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(103 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(45 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(100 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(111 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(32 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(114 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(117 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(110 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(32 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(125 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(32 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(42 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(47 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(10 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(47 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(42 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(32 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(123 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(32 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(100 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(103 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(45 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(111 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(112 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(116 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(105 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(111 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(110 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(115 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(32 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(34 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(45 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(115 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(116 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(100 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(61 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(99 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(50 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(51 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(32 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(45 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(87 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(117 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(110 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(117 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(115 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(101 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(100 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(45 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(118 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(97 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(108 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(117 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(101 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(34 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(32 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(125 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(32 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(42 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(47 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(10 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(10 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(35 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(105 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(110 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(99 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(108 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(117 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(100 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(101 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(32 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(60 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(115 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(116 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(100 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(97 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(114 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(103 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(46 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(104 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(62 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(10 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(10 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(99 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(111 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(110 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(115 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(116 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(32 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(117 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(110 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(115 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(105 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(103 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(110 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(101 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(100 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(32 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(99 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(104 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(97 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(114 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(32 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(97 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(91 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(93 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(32 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(61 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(32 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(123 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(10 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(35 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(101 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(109 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(98 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(101 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(100 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(32 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(95 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(95 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(70 as i32),
+// REWRITES-DAG:             __SlateVaArg::new(73 as i32),
 // REWRITES-DAG:         ]))
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { std::process::abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 2;
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 47;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} * {{__v[0-9]+}};
 // REWRITES-DAG:     unsafe {
-// REWRITES-DAG:         c = {{__v[0-9]+}};
+// REWRITES-DAG:         c = 2 * {{__v[0-9]+}};
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 95;
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 6;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
 // REWRITES-DAG:     unsafe {
-// REWRITES-DAG:         b = {{__v[0-9]+}};
+// REWRITES-DAG:         b = 73 + {{__v[0-9]+}};
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = unsafe { b };
-// REWRITES-DAG:     let {{__v[0-9]+}}: i64 = 127;
-// REWRITES-DAG:     let {{__v[0-9]+}}: u8 = unsafe { (*a)[({{__v[0-9]+}} as usize)] };
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 6;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if (unsafe { b }) != ((unsafe { (*a)[127] }) as i32) + 6 {
 // REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = unsafe { c };
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 2;
-// REWRITES-DAG:         let {{__v[0-9]+}}: i64 = 0;
-// REWRITES-DAG:         let {{__v[0-9]+}}: u8 = unsafe { (*a)[({{__v[0-9]+}} as usize)] };
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} * {{__v[0-9]+}};
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = (unsafe { c }) != 2 * ((unsafe { (*a)[0] }) as i32);
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { std::process::abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// REWRITES-DAG:     std::process::exit(0 as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

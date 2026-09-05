@@ -47,7 +47,6 @@ int main() {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn main() {
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BInt<156, 3, 24> = bar();
 // REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BInt<156, 3, 24> =
 // REWRITES-DAG:         bitint::BInt::<156, 3, 24>::from_decimal_str("-13055525270329736316393717310914023773847");
@@ -55,6 +54,6 @@ int main() {
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { std::process::abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// REWRITES-DAG:     std::process::exit(0 as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

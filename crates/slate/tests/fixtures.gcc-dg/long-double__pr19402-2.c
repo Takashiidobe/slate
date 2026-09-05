@@ -192,111 +192,74 @@ int main() {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn main() {
-// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = 1.0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 5;
-// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = unsafe { __slate_intrinsic_powi_25635816560c9105({{__v[0-9]+}}, {{__v[0-9]+}}) };
-// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = 1.0;
+// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = unsafe { __slate_intrinsic_powi_25635816560c9105(1.0 as f64, 5 as i32) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 1.0;
+// REWRITES-DAG:     if {{__v[0-9]+}} {
+// REWRITES-DAG:         unsafe { abort() };
+// REWRITES-DAG:     }
+// REWRITES-DAG:     let {{__v[0-9]+}}: f32 =
+// REWRITES-DAG:         unsafe { __slate_intrinsic_powi_cd10e01fde9d80b9((1.0 as f64) as f32, 5 as i32) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = ({{__v[0-9]+}} as f64) != 1.0;
+// REWRITES-DAG:     if {{__v[0-9]+}} {
+// REWRITES-DAG:         unsafe { abort() };
+// REWRITES-DAG:     }
+// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64(1.0 as f64);
+// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_f80_powi({{__v[0-9]+}}, 5 as i32) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64(1.0 as f64);
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = 1.0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: f32 = {{__v[0-9]+}} as f32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 5;
-// REWRITES-DAG:     let {{__v[0-9]+}}: f32 = unsafe { __slate_intrinsic_powi_cd10e01fde9d80b9({{__v[0-9]+}}, {{__v[0-9]+}}) };
-// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} as f64;
-// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = 1.0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = powci(1.0);
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 1.0;
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = 1.0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64({{__v[0-9]+}});
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 5;
-// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = unsafe { __slate_f80_powi({{__v[0-9]+}}, {{__v[0-9]+}}) };
-// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = 1.0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64({{__v[0-9]+}});
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: f32 = powcif((1.0 as f64) as f32);
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = ({{__v[0-9]+}} as f64) != 1.0;
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = 1.0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = powci({{__v[0-9]+}});
-// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = 1.0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// REWRITES-DAG:     if {{__v[0-9]+}} {
-// REWRITES-DAG:         unsafe { abort() };
-// REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = 1.0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: f32 = {{__v[0-9]+}} as f32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: f32 = powcif({{__v[0-9]+}});
-// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} as f64;
-// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = 1.0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// REWRITES-DAG:     if {{__v[0-9]+}} {
-// REWRITES-DAG:         unsafe { abort() };
-// REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = 1.0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64({{__v[0-9]+}});
+// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64(1.0 as f64);
 // REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = powcil({{__v[0-9]+}});
-// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = 1.0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64({{__v[0-9]+}});
+// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64(1.0 as f64);
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = 1.0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = -5;
-// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = powi({{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = 1.0;
+// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = powi(1.0, -5);
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 1.0;
+// REWRITES-DAG:     if {{__v[0-9]+}} {
+// REWRITES-DAG:         unsafe { abort() };
+// REWRITES-DAG:     }
+// REWRITES-DAG:     let {{__v[0-9]+}}: f32 = powif((1.0 as f64) as f32, -5);
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = ({{__v[0-9]+}} as f64) != 1.0;
+// REWRITES-DAG:     if {{__v[0-9]+}} {
+// REWRITES-DAG:         unsafe { abort() };
+// REWRITES-DAG:     }
+// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64(1.0 as f64);
+// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = powil({{__v[0-9]+}}, -5);
+// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64(1.0 as f64);
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = 1.0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: f32 = {{__v[0-9]+}} as f32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = -5;
-// REWRITES-DAG:     let {{__v[0-9]+}}: f32 = powif({{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} as f64;
-// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = 1.0;
+// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = powic(1);
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 2.0;
+// REWRITES-DAG:     if {{__v[0-9]+}} {
+// REWRITES-DAG:         unsafe { abort() };
+// REWRITES-DAG:     }
+// REWRITES-DAG:     let {{__v[0-9]+}}: f32 = powicf(1);
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = ({{__v[0-9]+}} as f64) != 2.0;
+// REWRITES-DAG:     if {{__v[0-9]+}} {
+// REWRITES-DAG:         unsafe { abort() };
+// REWRITES-DAG:     }
+// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = powicl(1);
+// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64(2.0 as f64);
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = 1.0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64({{__v[0-9]+}});
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = -5;
-// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = powil({{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = 1.0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64({{__v[0-9]+}});
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// REWRITES-DAG:     if {{__v[0-9]+}} {
-// REWRITES-DAG:         unsafe { abort() };
-// REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = powic({{__v[0-9]+}});
-// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = 2.0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// REWRITES-DAG:     if {{__v[0-9]+}} {
-// REWRITES-DAG:         unsafe { abort() };
-// REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-DAG:     let {{__v[0-9]+}}: f32 = powicf({{__v[0-9]+}});
-// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} as f64;
-// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = 2.0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// REWRITES-DAG:     if {{__v[0-9]+}} {
-// REWRITES-DAG:         unsafe { abort() };
-// REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = powicl({{__v[0-9]+}});
-// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = 2.0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = __slate_f80_from_f64({{__v[0-9]+}});
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// REWRITES-DAG:     if {{__v[0-9]+}} {
-// REWRITES-DAG:         unsafe { abort() };
-// REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// REWRITES-DAG:     std::process::exit(0 as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

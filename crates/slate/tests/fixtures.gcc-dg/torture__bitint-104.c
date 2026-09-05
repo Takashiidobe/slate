@@ -346,248 +346,126 @@ int main() {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn foo({{arg[0-9]+}}: bitint::BUint<1, 1, 1>, {{arg[0-9]+}}: bitint::BUint<1, 1, 1>) -> i32 {
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = {{arg[0-9]+}} & {{arg[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = {{arg[0-9]+}} ^ {{arg[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// REWRITES-DAG:     {{__v[0-9]+}}
+// REWRITES-DAG:     (({{arg[0-9]+}} & {{arg[0-9]+}} == {{arg[0-9]+}} ^ {{arg[0-9]+}}) as i32) + 1
 // REWRITES-DAG: }
 // REWRITES-DAG: fn bar({{arg[0-9]+}}: bitint::BUint<1, 1, 1>, {{arg[0-9]+}}: bitint::BUint<1, 1, 1>) -> i32 {
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = {{arg[0-9]+}} & {{arg[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = {{arg[0-9]+}} ^ {{arg[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:     {{__v[0-9]+}}
+// REWRITES-DAG:     ((({{arg[0-9]+}} & {{arg[0-9]+}} == {{arg[0-9]+}} ^ {{arg[0-9]+}}) as i32) != 0) as i32
 // REWRITES-DAG: }
 // REWRITES-DAG: fn baz({{arg[0-9]+}}: bitint::BUint<1, 1, 1>, {{arg[0-9]+}}: bitint::BUint<1, 1, 1>) -> i32 {
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = {{arg[0-9]+}} & {{arg[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = {{arg[0-9]+}} ^ {{arg[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:     {{__v[0-9]+}}
+// REWRITES-DAG:     ((({{arg[0-9]+}} & {{arg[0-9]+}} == {{arg[0-9]+}} ^ {{arg[0-9]+}}) as i32) == 0) as i32
 // REWRITES-DAG: }
 // REWRITES-DAG: fn qux({{arg[0-9]+}}: bitint::BUint<1, 1, 1>, {{arg[0-9]+}}: bitint::BUint<1, 1, 1>) -> i32 {
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = {{arg[0-9]+}} & {{arg[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = {{arg[0-9]+}} ^ {{arg[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:     {{__v[0-9]+}}
+// REWRITES-DAG:     ((({{arg[0-9]+}} & {{arg[0-9]+}} == {{arg[0-9]+}} ^ {{arg[0-9]+}}) as i32) < 1) as i32
 // REWRITES-DAG: }
 // REWRITES-DAG: fn corge({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{arg[0-9]+}} & {{arg[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{arg[0-9]+}} ^ {{arg[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:     {{__v[0-9]+}}
+// REWRITES-DAG:     ({{arg[0-9]+}} & {{arg[0-9]+}} == {{arg[0-9]+}} ^ {{arg[0-9]+}}) as i32
 // REWRITES-DAG: }
 // REWRITES-DAG: fn garply({{arg[0-9]+}}: bitint::BUint<1, 1, 1>, {{arg[0-9]+}}: bitint::BUint<1, 1, 1>) -> i32 {
 // REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = {{arg[0-9]+}} & {{arg[0-9]+}};
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}.to_u128() as i32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{arg[0-9]+}} == {{arg[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} ^ {{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// REWRITES-DAG:     {{__v[0-9]+}}
+// REWRITES-DAG:     ({{__v[0-9]+}} ^ (({{arg[0-9]+}} == {{arg[0-9]+}}) as i32)) + 1
 // REWRITES-DAG: }
 // REWRITES-DAG: fn fred({{arg[0-9]+}}: bitint::BUint<1, 1, 1>, {{arg[0-9]+}}: bitint::BUint<1, 1, 1>) -> i32 {
 // REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = {{arg[0-9]+}} & {{arg[0-9]+}};
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}.to_u128() as i32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{arg[0-9]+}} == {{arg[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} ^ {{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:     {{__v[0-9]+}}
+// REWRITES-DAG:     ({{__v[0-9]+}} ^ (({{arg[0-9]+}} == {{arg[0-9]+}}) as i32) != 0) as i32
 // REWRITES-DAG: }
 // REWRITES-DAG: fn xyzzy({{arg[0-9]+}}: bitint::BUint<1, 1, 1>, {{arg[0-9]+}}: bitint::BUint<1, 1, 1>) -> i32 {
 // REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = {{arg[0-9]+}} & {{arg[0-9]+}};
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}.to_u128() as i32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{arg[0-9]+}} == {{arg[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} ^ {{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:     {{__v[0-9]+}}
+// REWRITES-DAG:     ({{__v[0-9]+}} ^ (({{arg[0-9]+}} == {{arg[0-9]+}}) as i32) == 0) as i32
 // REWRITES-DAG: }
 // REWRITES-DAG: fn waldo({{arg[0-9]+}}: bitint::BUint<1, 1, 1>, {{arg[0-9]+}}: bitint::BUint<1, 1, 1>) -> i32 {
 // REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = {{arg[0-9]+}} & {{arg[0-9]+}};
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}.to_u128() as i32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{arg[0-9]+}} == {{arg[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} ^ {{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:     {{__v[0-9]+}}
+// REWRITES-DAG:     ({{__v[0-9]+}} ^ (({{arg[0-9]+}} == {{arg[0-9]+}}) as i32) < 1) as i32
 // REWRITES-DAG: }
 // REWRITES-DAG: fn main() {
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:     let mut i: i32 = 0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:     i = {{__v[0-9]+}};
-// REWRITES-DAG:     loop {
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = i;
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 4;
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
-// REWRITES-DAG:         if !{{__v[0-9]+}} {
-// REWRITES-DAG:             break;
-// REWRITES-DAG:         }
-// REWRITES-DAG:         let mut a: i32 = 0;
+// REWRITES-DAG:     for i in 0..4 {
+// REWRITES-DAG:         let mut a: i32 = i & 1;
 // REWRITES-DAG:         let mut b: i32 = 0;
 // REWRITES-DAG:         let mut c: i32 = 0;
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = i;
 // REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} & {{__v[0-9]+}};
-// REWRITES-DAG:         a = {{__v[0-9]+}};
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = i;
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} >> {{__v[0-9]+}};
-// REWRITES-DAG:         b = {{__v[0-9]+}};
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = a;
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = b;
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = corge({{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:         c = {{__v[0-9]+}};
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = a;
-// REWRITES-DAG:         let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128({{__v[0-9]+}} as i128);
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = b;
-// REWRITES-DAG:         let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128({{__v[0-9]+}} as i128);
+// REWRITES-DAG:         b = i >> {{__v[0-9]+}};
+// REWRITES-DAG:         c = corge(a, b);
+// REWRITES-DAG:         let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128(a as i128);
+// REWRITES-DAG:         let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128(b as i128);
 // REWRITES-DAG:         let {{__v[0-9]+}}: i32 = foo({{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = c;
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != c + 1;
 // REWRITES-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
 // REWRITES-DAG:             let {{__v[0-9]+}}: bool = true;
 // REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         } else {
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = a;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128({{__v[0-9]+}} as i128);
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = b;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128({{__v[0-9]+}} as i128);
+// REWRITES-DAG:             let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128(a as i128);
+// REWRITES-DAG:             let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128(b as i128);
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = bar({{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = c;
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != ((c != 0) as i32);
 // REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         };
 // REWRITES-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
 // REWRITES-DAG:             let {{__v[0-9]+}}: bool = true;
 // REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         } else {
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = a;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128({{__v[0-9]+}} as i128);
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = b;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128({{__v[0-9]+}} as i128);
+// REWRITES-DAG:             let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128(a as i128);
+// REWRITES-DAG:             let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128(b as i128);
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = baz({{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = c;
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != ((c == 0) as i32);
 // REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         };
 // REWRITES-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
 // REWRITES-DAG:             let {{__v[0-9]+}}: bool = true;
 // REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         } else {
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = a;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128({{__v[0-9]+}} as i128);
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = b;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128({{__v[0-9]+}} as i128);
+// REWRITES-DAG:             let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128(a as i128);
+// REWRITES-DAG:             let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128(b as i128);
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = qux({{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = c;
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != ((c < 1) as i32);
 // REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         };
 // REWRITES-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
 // REWRITES-DAG:             let {{__v[0-9]+}}: bool = true;
 // REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         } else {
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = a;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128({{__v[0-9]+}} as i128);
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = b;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128({{__v[0-9]+}} as i128);
+// REWRITES-DAG:             let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128(a as i128);
+// REWRITES-DAG:             let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128(b as i128);
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = garply({{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = c;
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != c + 1;
 // REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         };
 // REWRITES-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
 // REWRITES-DAG:             let {{__v[0-9]+}}: bool = true;
 // REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         } else {
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = a;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128({{__v[0-9]+}} as i128);
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = b;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128({{__v[0-9]+}} as i128);
+// REWRITES-DAG:             let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128(a as i128);
+// REWRITES-DAG:             let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128(b as i128);
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = fred({{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = c;
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != ((c != 0) as i32);
 // REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         };
 // REWRITES-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
 // REWRITES-DAG:             let {{__v[0-9]+}}: bool = true;
 // REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         } else {
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = a;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128({{__v[0-9]+}} as i128);
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = b;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128({{__v[0-9]+}} as i128);
+// REWRITES-DAG:             let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128(a as i128);
+// REWRITES-DAG:             let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128(b as i128);
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = xyzzy({{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = c;
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != ((c == 0) as i32);
 // REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         };
 // REWRITES-DAG:         let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
 // REWRITES-DAG:             let {{__v[0-9]+}}: bool = true;
 // REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         } else {
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = a;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128({{__v[0-9]+}} as i128);
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = b;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128({{__v[0-9]+}} as i128);
+// REWRITES-DAG:             let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128(a as i128);
+// REWRITES-DAG:             let {{__v[0-9]+}}: bitint::BUint<1, 1, 1> = bitint::BUint::<1, 1, 1>::from_i128(b as i128);
 // REWRITES-DAG:             let {{__v[0-9]+}}: i32 = waldo({{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = c;
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
-// REWRITES-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != ((c < 1) as i32);
 // REWRITES-DAG:             {{__v[0-9]+}}
 // REWRITES-DAG:         };
 // REWRITES-DAG:         if {{__v[0-9]+}} {
 // REWRITES-DAG:             unsafe { std::process::abort() };
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = i;
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
-// REWRITES-DAG:         i = {{__v[0-9]+}};
 // REWRITES-DAG:     }
-// REWRITES-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// REWRITES-DAG:     std::process::exit(0 as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

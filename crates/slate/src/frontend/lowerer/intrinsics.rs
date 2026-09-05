@@ -1057,15 +1057,14 @@ fn long_double_intrinsic_shim(
     }
 }
 
-static TOOLCHAIN_SIGNATURE_OVERRIDES: &[intrinsics_table::IntrinsicSignature] = &[
-    intrinsics_table::IntrinsicSignature {
+static TOOLCHAIN_SIGNATURE_OVERRIDES: &[intrinsics_table::IntrinsicSignature] =
+    &[intrinsics_table::IntrinsicSignature {
         name: "llvm.clear_cache",
         overloaded: false,
         ret: None,
         params: None,
         overloaded_positions: None,
-    },
-];
+    }];
 
 fn find_intrinsic_signature(
     llvm_name: &str,

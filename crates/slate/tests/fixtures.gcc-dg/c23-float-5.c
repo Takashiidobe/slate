@@ -56,19 +56,15 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn main() {
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-DAG:     let {{__v[0-9]+}}: f32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f)) };
 // REWRITES-DAG:     let {{__v[0-9]+}}: f32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(f)) };
-// REWRITES-DAG:     let {{__v[0-9]+}}: f32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// REWRITES-DAG:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(f), {{__v[0-9]+}}) };
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = unsafe { fetestexcept({{__v[0-9]+}} as i32) };
+// REWRITES-DAG:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(f), {{__v[0-9]+}} + {{__v[0-9]+}}) };
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = unsafe { fetestexcept(1 as i32) };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:     unsafe { exit({{__v[0-9]+}} as i32) };
-// REWRITES-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// REWRITES-DAG:     unsafe { exit(0 as i32) };
+// REWRITES-DAG:     std::process::exit(0 as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites
