@@ -10,18 +10,16 @@
 #error "INFINITY undefined"
 #endif
 
-extern void abort (void);
-extern void exit (int);
+extern void abort(void);
+extern void exit(int);
 
 /* @lowering-fn-begin */
 /* @rewrite-fn-begin */
-int
-main (void)
-{
-  (void) _Generic (INFINITY, float : 0);
+int main(void) {
+  (void)_Generic(INFINITY, float: 0);
   if (!(INFINITY >= FLT_MAX))
-    abort ();
-  exit (0);
+    abort();
+  exit(0);
 }
 /* @rewrite-fn-end */
 /* @lowering-fn-end */

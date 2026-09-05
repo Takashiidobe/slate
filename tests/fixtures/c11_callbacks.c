@@ -40,32 +40,32 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: unsafe {
-// LOWERING-DAG:     call_once(
-// LOWERING-DAG:         std::ptr::addr_of_mut!(control) as *mut i32,
-// LOWERING-DAG:         Some(once_handler),
-// LOWERING-DAG:     )
-// LOWERING-DAG: };
-// LOWERING-DAG: unsafe {
-// LOWERING-DAG:     call_once(
-// LOWERING-DAG:         std::ptr::addr_of_mut!(control) as *mut i32,
-// LOWERING-DAG:         Some(once_handler),
-// LOWERING-DAG:     )
-// LOWERING-DAG: };
-// SLATE-FILECHECK-END lowering
+// SLATE-FILECHECK-BEGIN common-lowering
+// COMMON-LOWERING-DAG: unsafe {
+// COMMON-LOWERING-DAG:     call_once(
+// COMMON-LOWERING-DAG:         std::ptr::addr_of_mut!(control) as *mut i32,
+// COMMON-LOWERING-DAG:         Some(once_handler),
+// COMMON-LOWERING-DAG:     )
+// COMMON-LOWERING-DAG: };
+// COMMON-LOWERING-DAG: unsafe {
+// COMMON-LOWERING-DAG:     call_once(
+// COMMON-LOWERING-DAG:         std::ptr::addr_of_mut!(control) as *mut i32,
+// COMMON-LOWERING-DAG:         Some(once_handler),
+// COMMON-LOWERING-DAG:     )
+// COMMON-LOWERING-DAG: };
+// SLATE-FILECHECK-END common-lowering
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: unsafe {
-// REWRITES-DAG:     call_once(
-// REWRITES-DAG:         std::ptr::addr_of_mut!(control) as *mut i32,
-// REWRITES-DAG:         Some(once_handler),
-// REWRITES-DAG:     )
-// REWRITES-DAG: };
-// REWRITES-DAG: unsafe {
-// REWRITES-DAG:     call_once(
-// REWRITES-DAG:         std::ptr::addr_of_mut!(control) as *mut i32,
-// REWRITES-DAG:         Some(once_handler),
-// REWRITES-DAG:     )
-// REWRITES-DAG: };
-// SLATE-FILECHECK-END rewrites
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES-DAG: unsafe {
+// COMMON-REWRITES-DAG:     call_once(
+// COMMON-REWRITES-DAG:         std::ptr::addr_of_mut!(control) as *mut i32,
+// COMMON-REWRITES-DAG:         Some(once_handler),
+// COMMON-REWRITES-DAG:     )
+// COMMON-REWRITES-DAG: };
+// COMMON-REWRITES-DAG: unsafe {
+// COMMON-REWRITES-DAG:     call_once(
+// COMMON-REWRITES-DAG:         std::ptr::addr_of_mut!(control) as *mut i32,
+// COMMON-REWRITES-DAG:         Some(once_handler),
+// COMMON-REWRITES-DAG:     )
+// COMMON-REWRITES-DAG: };
+// SLATE-FILECHECK-END common-rewrites

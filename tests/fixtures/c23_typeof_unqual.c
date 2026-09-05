@@ -20,26 +20,42 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: let {{__v[0-9]+}}: *mut i8 = b"%d %d %d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(preserved)) };
-// LOWERING-DAG: let {{__v[0-9]+}}: *mut i32 = std::ptr::null_mut();
-// LOWERING-DAG: let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}.to_u128() as i32;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
-// SLATE-FILECHECK-END lowering
+// SLATE-FILECHECK-BEGIN common-lowering
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(preserved)) };
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: *mut i32 = std::ptr::null_mut();
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}.to_u128() as i32;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe {
+// COMMON-LOWERING-DAG:     printf(
+// COMMON-LOWERING-DAG:         {{__v[0-9]+}} as *const core::ffi::c_char,
+// COMMON-LOWERING-DAG:         {{__v[0-9]+}},
+// COMMON-LOWERING-DAG:         {{__v[0-9]+}},
+// COMMON-LOWERING-DAG:         {{__v[0-9]+}},
+// COMMON-LOWERING-DAG:         {{__v[0-9]+}},
+// COMMON-LOWERING-DAG:         {{__v[0-9]+}},
+// COMMON-LOWERING-DAG:     )
+// COMMON-LOWERING-DAG: };
+// SLATE-FILECHECK-END common-lowering
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: unsafe {
-// REWRITES-DAG:     printf(
-// REWRITES-DAG:         c"%d %d %d %d %d\n".as_ptr(),
-// REWRITES-DAG:         {{__v[0-9]+}},
-// REWRITES-DAG:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(preserved)) },
-// REWRITES-DAG:         ({{__v[0-9]+}} == std::ptr::null_mut()) as i32,
-// REWRITES-DAG:         {{__v[0-9]+}}.to_u128() as i32,
-// REWRITES-DAG:         (1 as i32) + (1 as i32),
-// REWRITES-DAG:     )
-// REWRITES-DAG: };
-// SLATE-FILECHECK-END rewrites
+// SLATE-FILECHECK-BEGIN lowering-x86_64-gnu
+// LOWERING-X86_64-GNU-DAG: let {{__v[0-9]+}}: *mut i8 = b"%d %d %d %d %d\n\0".as_ptr() as *mut i8;
+// SLATE-FILECHECK-END lowering-x86_64-gnu
+
+// SLATE-FILECHECK-BEGIN lowering-aarch64-gnu
+// LOWERING-AARCH64-GNU-DAG: let {{__v[0-9]+}}: *mut u8 = b"%d %d %d %d %d\n\0".as_ptr() as *mut u8;
+// SLATE-FILECHECK-END lowering-aarch64-gnu
+
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES-DAG: unsafe {
+// COMMON-REWRITES-DAG:     printf(
+// COMMON-REWRITES-DAG:         c"%d %d %d %d %d\n".as_ptr(),
+// COMMON-REWRITES-DAG:         {{__v[0-9]+}},
+// COMMON-REWRITES-DAG:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(preserved)) },
+// COMMON-REWRITES-DAG:         ({{__v[0-9]+}} == std::ptr::null_mut()) as i32,
+// COMMON-REWRITES-DAG:         {{__v[0-9]+}}.to_u128() as i32,
+// COMMON-REWRITES-DAG:         (1 as i32) + (1 as i32),
+// COMMON-REWRITES-DAG:     )
+// COMMON-REWRITES-DAG: };
+// SLATE-FILECHECK-END common-rewrites

@@ -45,104 +45,179 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(
-// LOWERING-NEXT:     dead_code,
-// LOWERING-NEXT:     unused,
-// LOWERING-NEXT:     non_camel_case_types,
-// LOWERING-NEXT:     non_snake_case,
-// LOWERING-NEXT:     non_upper_case_globals,
-// LOWERING-NEXT:     arithmetic_overflow,
-// LOWERING-NEXT:     unconditional_panic,
-// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
-// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
-// LOWERING-NEXT:     unused_comparisons
-// LOWERING-NEXT: )]
-// LOWERING-EMPTY:
-// LOWERING-NEXT: #[repr(C)]
-// LOWERING-NEXT: #[derive(Clone, Copy)]
-// LOWERING-NEXT: struct FixedPair {
-// LOWERING-NEXT:     left: i16,
-// LOWERING-NEXT:     right: u32,
-// LOWERING-NEXT:     count: u64,
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: static mut global_size: u64 = 7;
-// LOWERING-EMPTY:
-// LOWERING-NEXT: static mut global_u32: u32 = 4000000000;
-// LOWERING-EMPTY:
-// LOWERING-NEXT: unsafe extern "C" {
-// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 10;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i16 = 20;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = add_i32({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%lu\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = 5;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = widen_u32({{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = use_fixed_types();
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn add_i32({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i16) -> i32 {
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{arg[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{arg[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-NEXT:     return {{__v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: /// REWRITES-DAG: println!("{}
-// LOWERING-NEXT: fn widen_u32({{arg[0-9]+}}: u32) -> u64 {
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = {{arg[0-9]+}} as u64;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = unsafe { global_size };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-NEXT:     return {{__v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn use_fixed_types() -> i32 {
-// LOWERING-NEXT:     let mut pair: FixedPair = FixedPair {
-// LOWERING-NEXT:         left: 0,
-// LOWERING-NEXT:         right: 0,
-// LOWERING-NEXT:         count: 0,
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = -5;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u8 = 250;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i16 = 1200;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u16 = 65000;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 100000;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = add_i32({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = unsafe { global_u32 };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = widen_u32({{__v[0-9]+}});
-// LOWERING-NEXT:     pair.left = {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = unsafe { global_u32 };
-// LOWERING-NEXT:     pair.right = {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = unsafe { global_size };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 3;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-NEXT:     pair.count = {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i16 = pair.left;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} as u64;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = pair.count;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-NEXT:     return {{__v[0-9]+}};
-// LOWERING-NEXT: }
-// SLATE-FILECHECK-END lowering
+// SLATE-FILECHECK-BEGIN common-lowering
+// COMMON-LOWERING: #![feature(c_variadic)]
+// COMMON-LOWERING-NEXT: #![allow(
+// COMMON-LOWERING-NEXT:     dead_code,
+// COMMON-LOWERING-NEXT:     unused,
+// COMMON-LOWERING-NEXT:     non_camel_case_types,
+// COMMON-LOWERING-NEXT:     non_snake_case,
+// COMMON-LOWERING-NEXT:     non_upper_case_globals,
+// COMMON-LOWERING-NEXT:     arithmetic_overflow,
+// COMMON-LOWERING-NEXT:     unconditional_panic,
+// COMMON-LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// COMMON-LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// COMMON-LOWERING-NEXT:     unused_comparisons
+// COMMON-LOWERING-NEXT: )]
+// COMMON-LOWERING-EMPTY:
+// COMMON-LOWERING-NEXT: #[repr(C)]
+// COMMON-LOWERING-NEXT: #[derive(Clone, Copy)]
+// COMMON-LOWERING-NEXT: struct FixedPair {
+// COMMON-LOWERING-NEXT:     left: i16,
+// COMMON-LOWERING-NEXT:     right: u32,
+// COMMON-LOWERING-NEXT:     count: u64,
+// COMMON-LOWERING-NEXT: }
+// COMMON-LOWERING-EMPTY:
+// COMMON-LOWERING-NEXT: static mut global_size: u64 = 7;
+// COMMON-LOWERING-EMPTY:
+// COMMON-LOWERING-NEXT: static mut global_u32: u32 = 4000000000;
+// COMMON-LOWERING-EMPTY:
+// COMMON-LOWERING-NEXT: unsafe extern "C" {
+// COMMON-LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// COMMON-LOWERING-NEXT: }
+// COMMON-LOWERING-EMPTY:
+// COMMON-LOWERING-NEXT: fn main() {
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 10;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i16 = 20;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = add_i32({{__v[0-9]+}}, {{__v[0-9]+}});
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = 5;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = widen_u32({{__v[0-9]+}});
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = use_fixed_types();
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// COMMON-LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// COMMON-LOWERING-NEXT: }
+// COMMON-LOWERING-EMPTY:
+// COMMON-LOWERING-NEXT: fn add_i32({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i16) -> i32 {
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{arg[0-9]+}} as i32;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{arg[0-9]+}} + {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT:     return {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT: }
+// COMMON-LOWERING-EMPTY:
+// COMMON-LOWERING-NEXT: /// REWRITES-DAG: println!("{}
+// COMMON-LOWERING-NEXT: fn widen_u32({{arg[0-9]+}}: u32) -> u64 {
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = {{arg[0-9]+}} as u64;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = unsafe { global_size };
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT:     return {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT: }
+// COMMON-LOWERING-EMPTY:
+// COMMON-LOWERING-NEXT: fn use_fixed_types() -> i32 {
+// COMMON-LOWERING-NEXT:     let mut pair: FixedPair = FixedPair {
+// COMMON-LOWERING-NEXT:         left: 0,
+// COMMON-LOWERING-NEXT:         right: 0,
+// COMMON-LOWERING-NEXT:         count: 0,
+// COMMON-LOWERING-NEXT:     };
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = -5;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u8 = 250;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i16 = 1200;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u16 = 65000;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 100000;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = add_i32({{__v[0-9]+}}, {{__v[0-9]+}});
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = unsafe { global_u32 };
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = widen_u32({{__v[0-9]+}});
+// COMMON-LOWERING-NEXT:     pair.left = {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u32 = unsafe { global_u32 };
+// COMMON-LOWERING-NEXT:     pair.right = {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = unsafe { global_size };
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 3;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT:     pair.count = {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i16 = pair.left;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} as u64;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = pair.count;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// COMMON-LOWERING-NEXT:     return {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT: }
+// SLATE-FILECHECK-END common-lowering
+
+// SLATE-FILECHECK-BEGIN lowering-x86_64-gnu
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%lu\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// SLATE-FILECHECK-END lowering-x86_64-gnu
+
+// SLATE-FILECHECK-BEGIN lowering-aarch64-gnu
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = b"%d\n\0".as_ptr() as *mut u8;
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = b"%lu\n\0".as_ptr() as *mut u8;
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = b"%d\n\0".as_ptr() as *mut u8;
+// SLATE-FILECHECK-END lowering-aarch64-gnu
+
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES: #![feature(c_variadic)]
+// COMMON-REWRITES-NEXT: #![allow(
+// COMMON-REWRITES-NEXT:     dead_code,
+// COMMON-REWRITES-NEXT:     unused,
+// COMMON-REWRITES-NEXT:     non_camel_case_types,
+// COMMON-REWRITES-NEXT:     non_snake_case,
+// COMMON-REWRITES-NEXT:     non_upper_case_globals,
+// COMMON-REWRITES-NEXT:     arithmetic_overflow,
+// COMMON-REWRITES-NEXT:     unconditional_panic,
+// COMMON-REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// COMMON-REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// COMMON-REWRITES-NEXT:     unused_comparisons
+// COMMON-REWRITES-NEXT: )]
+// COMMON-REWRITES-EMPTY:
+// COMMON-REWRITES-NEXT: #[repr(C)]
+// COMMON-REWRITES-NEXT: #[derive(Clone, Copy)]
+// COMMON-REWRITES-NEXT: struct FixedPair {
+// COMMON-REWRITES-NEXT:     left: i16,
+// COMMON-REWRITES-NEXT:     right: u32,
+// COMMON-REWRITES-NEXT:     count: u64,
+// COMMON-REWRITES-NEXT: }
+// COMMON-REWRITES-EMPTY:
+// COMMON-REWRITES-NEXT: static mut global_size: u64 = 7;
+// COMMON-REWRITES-EMPTY:
+// COMMON-REWRITES-NEXT: static mut global_u32: u32 = 4000000000;
+// COMMON-REWRITES-EMPTY:
+// COMMON-REWRITES-NEXT: unsafe extern "C" {
+// COMMON-REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// COMMON-REWRITES-NEXT: }
+// COMMON-REWRITES-EMPTY:
+// COMMON-REWRITES-NEXT: fn main() {
+// COMMON-REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), add_i32(10, 20)) };
+// COMMON-REWRITES-NEXT:     unsafe { printf(c"%lu\n".as_ptr(), widen_u32(5)) };
+// COMMON-REWRITES-NEXT:     unsafe { printf(c"%d\n".as_ptr(), use_fixed_types()) };
+// COMMON-REWRITES-NEXT:     std::process::exit(0 as i32);
+// COMMON-REWRITES-NEXT: }
+// COMMON-REWRITES-EMPTY:
+// COMMON-REWRITES-NEXT: fn add_i32({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i16) -> i32 {
+// COMMON-REWRITES-NEXT:     {{arg[0-9]+}} + ({{arg[0-9]+}} as i32)
+// COMMON-REWRITES-NEXT: }
+// COMMON-REWRITES-EMPTY:
+// COMMON-REWRITES-NEXT: /// REWRITES-DAG: println!("{}
+// COMMON-REWRITES-NEXT: fn widen_u32({{arg[0-9]+}}: u32) -> u64 {
+// COMMON-REWRITES-NEXT:     ({{arg[0-9]+}} as u64) + unsafe { global_size }
+// COMMON-REWRITES-NEXT: }
+// COMMON-REWRITES-EMPTY:
+// COMMON-REWRITES-NEXT: fn use_fixed_types() -> i32 {
+// COMMON-REWRITES-NEXT:     let mut pair: FixedPair = FixedPair {
+// COMMON-REWRITES-NEXT:         left: 0,
+// COMMON-REWRITES-NEXT:         right: 0,
+// COMMON-REWRITES-NEXT:         count: 0,
+// COMMON-REWRITES-NEXT:     };
+// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: i16 = 1200;
+// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = add_i32(100000, {{__v[0-9]+}});
+// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = widen_u32(unsafe { global_u32 });
+// COMMON-REWRITES-NEXT:     pair.left = {{__v[0-9]+}};
+// COMMON-REWRITES-NEXT:     pair.right = unsafe { global_u32 };
+// COMMON-REWRITES-NEXT:     pair.count = (unsafe { global_size }) + 3;
+// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = (250 as u8) as i32;
+// COMMON-REWRITES-NEXT:     (((((-5 as i8) as i32) + {{__v[0-9]+}} + (pair.left as i32) + {{__v[0-9]+}} + ((65000 as u16) as i32)) as u64)
+// COMMON-REWRITES-NEXT:         + pair.count
+// COMMON-REWRITES-NEXT:         + {{__v[0-9]+}}) as i32
+// COMMON-REWRITES-NEXT: }
+// SLATE-FILECHECK-END common-rewrites

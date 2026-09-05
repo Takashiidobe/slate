@@ -9,40 +9,36 @@ extern void abort(void);
 
 int v, count;
 
-int
-main ()
-{
-  v = 0;
+int main() {
+  v     = 0;
   count = 0;
 
-  __atomic_store_n (&v, count + 1, __ATOMIC_RELAXED);
+  __atomic_store_n(&v, count + 1, __ATOMIC_RELAXED);
   if (v != ++count)
-    abort ();
+    abort();
 
-  __atomic_store_n (&v, count + 1, __ATOMIC_RELEASE);
+  __atomic_store_n(&v, count + 1, __ATOMIC_RELEASE);
   if (v != ++count)
-    abort ();
+    abort();
 
-  __atomic_store_n (&v, count + 1, __ATOMIC_SEQ_CST);
+  __atomic_store_n(&v, count + 1, __ATOMIC_SEQ_CST);
   if (v != ++count)
-    abort ();
+    abort();
 
   /* Now test the generic variant.  */
   count++;
 
-  __atomic_store (&v, &count, __ATOMIC_RELAXED);
+  __atomic_store(&v, &count, __ATOMIC_RELAXED);
   if (v != count++)
-    abort ();
+    abort();
 
-  __atomic_store (&v, &count, __ATOMIC_RELEASE);
+  __atomic_store(&v, &count, __ATOMIC_RELEASE);
   if (v != count++)
-    abort ();
+    abort();
 
-  __atomic_store (&v, &count, __ATOMIC_SEQ_CST);
+  __atomic_store(&v, &count, __ATOMIC_SEQ_CST);
   if (v != count)
-    abort ();
-
+    abort();
 
   return 0;
 }
-

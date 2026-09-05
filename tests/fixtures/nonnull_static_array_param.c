@@ -14,110 +14,128 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(
-// LOWERING-NEXT:     dead_code,
-// LOWERING-NEXT:     unused,
-// LOWERING-NEXT:     non_camel_case_types,
-// LOWERING-NEXT:     non_snake_case,
-// LOWERING-NEXT:     non_upper_case_globals,
-// LOWERING-NEXT:     arithmetic_overflow,
-// LOWERING-NEXT:     unconditional_panic,
-// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
-// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
-// LOWERING-NEXT:     unused_comparisons
-// LOWERING-NEXT: )]
-// LOWERING-EMPTY:
-// LOWERING-NEXT: unsafe extern "C" {
-// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: unsafe fn sum4({{arg[0-9]+}}: *mut i32) -> i32 {
-// LOWERING-NEXT:     let mut arr: *mut i32 = std::ptr::null_mut();
-// LOWERING-NEXT:     let mut s: i32 = 0;
-// LOWERING-NEXT:     arr = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     s = {{__v[0-9]+}};
-// LOWERING-NEXT:     {
-// LOWERING-NEXT:         let mut i: i32 = 0;
-// LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:         i = {{__v[0-9]+}};
-// LOWERING-NEXT:         loop {
-// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 4;
-// LOWERING-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
-// LOWERING-NEXT:             if !{{__v[0-9]+}} {
-// LOWERING-NEXT:                 break;
-// LOWERING-NEXT:             }
-// LOWERING-NEXT:             {
-// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:                 let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
-// LOWERING-NEXT:                 let {{__v[0-9]+}}: *mut i32 = arr;
-// LOWERING-NEXT:                 let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.offset({{__v[0-9]+}} as isize) };
-// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
-// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = s;
-// LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-NEXT:                 s = {{__v[0-9]+}};
-// LOWERING-NEXT:             }
-// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
-// LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
-// LOWERING-NEXT:             i = {{__v[0-9]+}};
-// LOWERING-NEXT:         }
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = s;
-// LOWERING-NEXT:     return {{__v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let mut values: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: [i32; 4] = [1, 2, 3, 4];
-// LOWERING-NEXT:     *values = {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i32 = values.as_mut_ptr() as *mut i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { sum4({{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
-// LOWERING-NEXT: }
-// SLATE-FILECHECK-END lowering
+// SLATE-FILECHECK-BEGIN common-lowering
+// COMMON-LOWERING: #![feature(c_variadic)]
+// COMMON-LOWERING-NEXT: #![allow(
+// COMMON-LOWERING-NEXT:     dead_code,
+// COMMON-LOWERING-NEXT:     unused,
+// COMMON-LOWERING-NEXT:     non_camel_case_types,
+// COMMON-LOWERING-NEXT:     non_snake_case,
+// COMMON-LOWERING-NEXT:     non_upper_case_globals,
+// COMMON-LOWERING-NEXT:     arithmetic_overflow,
+// COMMON-LOWERING-NEXT:     unconditional_panic,
+// COMMON-LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// COMMON-LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// COMMON-LOWERING-NEXT:     unused_comparisons
+// COMMON-LOWERING-NEXT: )]
+// COMMON-LOWERING-EMPTY:
+// COMMON-LOWERING-NEXT: unsafe extern "C" {
+// COMMON-LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// COMMON-LOWERING-NEXT: }
+// COMMON-LOWERING-EMPTY:
+// COMMON-LOWERING-NEXT: unsafe fn sum4({{arg[0-9]+}}: *mut i32) -> i32 {
+// COMMON-LOWERING-NEXT:     let mut arr: *mut i32 = std::ptr::null_mut();
+// COMMON-LOWERING-NEXT:     let mut s: i32 = 0;
+// COMMON-LOWERING-NEXT:     arr = {{arg[0-9]+}};
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// COMMON-LOWERING-NEXT:     s = {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT:     {
+// COMMON-LOWERING-NEXT:         let mut i: i32 = 0;
+// COMMON-LOWERING-NEXT:         let {{__v[0-9]+}}: i32 = 0;
+// COMMON-LOWERING-NEXT:         i = {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT:         loop {
+// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = 4;
+// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT:             if !{{__v[0-9]+}} {
+// COMMON-LOWERING-NEXT:                 break;
+// COMMON-LOWERING-NEXT:             }
+// COMMON-LOWERING-NEXT:             {
+// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = i;
+// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: *mut i32 = arr;
+// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.offset({{__v[0-9]+}} as isize) };
+// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = s;
+// COMMON-LOWERING-NEXT:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT:                 s = {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT:             }
+// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = i;
+// COMMON-LOWERING-NEXT:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// COMMON-LOWERING-NEXT:             i = {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT:         }
+// COMMON-LOWERING-NEXT:     }
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = s;
+// COMMON-LOWERING-NEXT:     return {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT: }
+// COMMON-LOWERING-EMPTY:
+// COMMON-LOWERING-NEXT: fn main() {
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: [i32; 4] = [1, 2, 3, 4];
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i32 = values.as_mut_ptr() as *mut i32;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { sum4({{__v[0-9]+}}) };
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// COMMON-LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// COMMON-LOWERING-NEXT: }
+// SLATE-FILECHECK-END common-lowering
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(
-// REWRITES-NEXT:     dead_code,
-// REWRITES-NEXT:     unused,
-// REWRITES-NEXT:     non_camel_case_types,
-// REWRITES-NEXT:     non_snake_case,
-// REWRITES-NEXT:     non_upper_case_globals,
-// REWRITES-NEXT:     arithmetic_overflow,
-// REWRITES-NEXT:     unconditional_panic,
-// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
-// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
-// REWRITES-NEXT:     unused_comparisons
-// REWRITES-NEXT: )]
-// REWRITES-EMPTY:
-// REWRITES-NEXT: unsafe extern "C" {
-// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: unsafe fn sum4(mut arr: *mut i32) -> i32 {
-// REWRITES-NEXT:     let mut s: i32 = 0;
-// REWRITES-NEXT:     for i in 0..4 {
-// REWRITES-NEXT:         let {{__v[0-9]+}}: *mut i32 = arr;
-// REWRITES-NEXT:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.offset((i as i64) as isize) };
-// REWRITES-NEXT:         s += unsafe { *{{__v[0-9]+}} };
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     s
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let mut values: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
-// REWRITES-NEXT:     *values = [1, 2, 3, 4];
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i32 = values.as_mut_ptr() as *mut i32;
-// REWRITES-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, unsafe { sum4({{__v[0-9]+}}) }) };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
-// REWRITES-NEXT: }
-// SLATE-FILECHECK-END rewrites
+// SLATE-FILECHECK-BEGIN lowering-x86_64-gnu
+// LOWERING-X86_64-GNU-NEXT:     let mut values: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
+// LOWERING-X86_64-GNU-NEXT:     *values = {{__v[0-9]+}};
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%d\n\0".as_ptr() as *mut i8;
+// SLATE-FILECHECK-END lowering-x86_64-gnu
+
+// SLATE-FILECHECK-BEGIN lowering-aarch64-gnu
+// LOWERING-AARCH64-GNU-NEXT:     let mut values: [i32; 4] = [0; 4];
+// LOWERING-AARCH64-GNU-NEXT:     values = {{__v[0-9]+}};
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = b"%d\n\0".as_ptr() as *mut u8;
+// SLATE-FILECHECK-END lowering-aarch64-gnu
+
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES: #![feature(c_variadic)]
+// COMMON-REWRITES-NEXT: #![allow(
+// COMMON-REWRITES-NEXT:     dead_code,
+// COMMON-REWRITES-NEXT:     unused,
+// COMMON-REWRITES-NEXT:     non_camel_case_types,
+// COMMON-REWRITES-NEXT:     non_snake_case,
+// COMMON-REWRITES-NEXT:     non_upper_case_globals,
+// COMMON-REWRITES-NEXT:     arithmetic_overflow,
+// COMMON-REWRITES-NEXT:     unconditional_panic,
+// COMMON-REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// COMMON-REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// COMMON-REWRITES-NEXT:     unused_comparisons
+// COMMON-REWRITES-NEXT: )]
+// COMMON-REWRITES-EMPTY:
+// COMMON-REWRITES-NEXT: unsafe extern "C" {
+// COMMON-REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// COMMON-REWRITES-NEXT: }
+// COMMON-REWRITES-EMPTY:
+// COMMON-REWRITES-NEXT: unsafe fn sum4(mut arr: *mut i32) -> i32 {
+// COMMON-REWRITES-NEXT:     let mut s: i32 = 0;
+// COMMON-REWRITES-NEXT:     for i in 0..4 {
+// COMMON-REWRITES-NEXT:         let {{__v[0-9]+}}: *mut i32 = arr;
+// COMMON-REWRITES-NEXT:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.offset((i as i64) as isize) };
+// COMMON-REWRITES-NEXT:         s += unsafe { *{{__v[0-9]+}} };
+// COMMON-REWRITES-NEXT:     }
+// COMMON-REWRITES-NEXT:     s
+// COMMON-REWRITES-NEXT: }
+// COMMON-REWRITES-EMPTY:
+// COMMON-REWRITES-NEXT: fn main() {
+// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: *mut i32 = values.as_mut_ptr() as *mut i32;
+// COMMON-REWRITES-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, unsafe { sum4({{__v[0-9]+}}) }) };
+// COMMON-REWRITES-NEXT:     std::process::exit(0 as i32);
+// COMMON-REWRITES-NEXT: }
+// SLATE-FILECHECK-END common-rewrites
+
+// SLATE-FILECHECK-BEGIN rewrites-x86_64-gnu
+// REWRITES-X86_64-GNU-NEXT:     let mut values: aligned::Aligned<aligned::A16, [i32; 4]> = aligned::Aligned([0; 4]);
+// REWRITES-X86_64-GNU-NEXT:     *values = [1, 2, 3, 4];
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
+// SLATE-FILECHECK-END rewrites-x86_64-gnu
+
+// SLATE-FILECHECK-BEGIN rewrites-aarch64-gnu
+// REWRITES-AARCH64-GNU-NEXT:     let mut values: [i32; 4] = [0; 4];
+// REWRITES-AARCH64-GNU-NEXT:     values = [1, 2, 3, 4];
+// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = c"%d\n".as_ptr() as *mut u8;
+// SLATE-FILECHECK-END rewrites-aarch64-gnu

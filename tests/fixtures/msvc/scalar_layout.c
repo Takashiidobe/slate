@@ -89,7 +89,6 @@ int main(void) { return 0; }
 // REWRITES-MSVC-NEXT: )]
 // REWRITES-MSVC-EMPTY:
 // REWRITES-MSVC-NEXT: fn main() {
-// REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-MSVC-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// REWRITES-MSVC-NEXT:     std::process::exit(0 as i32);
 // REWRITES-MSVC-NEXT: }
 // SLATE-FILECHECK-END rewrites-msvc

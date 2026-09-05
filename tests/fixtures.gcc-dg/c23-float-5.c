@@ -19,18 +19,16 @@
 
 volatile float f = NAN;
 
-extern void abort (void);
-extern void exit (int);
+extern void abort(void);
+extern void exit(int);
 
 /* @lowering-fn-begin */
 /* @rewrite-fn-begin */
-int
-main (void)
-{
+int main(void) {
   f += f;
-  if (fetestexcept (FE_INVALID))
-    abort ();
-  exit (0);
+  if (fetestexcept(FE_INVALID))
+    abort();
+  exit(0);
 }
 /* @rewrite-fn-end */
 /* @lowering-fn-end */

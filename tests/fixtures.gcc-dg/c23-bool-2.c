@@ -2,8 +2,8 @@
 /* { dg-do run } */
 /* { dg-options "-std=c23 -pedantic-errors" } */
 
-extern void abort (void);
-extern void exit (int);
+extern void abort(void);
+extern void exit(int);
 
 #if false - 1 >= 0
 #error "false unsigned in #if"
@@ -21,22 +21,20 @@ extern void exit (int);
 #error "true not 1 in #if"
 #endif
 
-extern bool b;
+extern bool  b;
 extern _Bool b;
 
-_Static_assert (false == 0);
-_Static_assert (true == 1);
+_Static_assert(false == 0);
+_Static_assert(true == 1);
 
-int
-main (void)
-{
-  if (_Generic (true, bool : 1) != 1)
-    abort ();
+int main(void) {
+  if (_Generic(true, bool: 1) != 1)
+    abort();
   if (true != 1)
-    abort ();
-  if (_Generic (false, bool : 1) != 1)
-    abort ();
+    abort();
+  if (_Generic(false, bool: 1) != 1)
+    abort();
   if (false != 0)
-    abort ();
-  exit (0);
+    abort();
+  exit(0);
 }

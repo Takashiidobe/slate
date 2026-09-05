@@ -18,19 +18,17 @@
 
 volatile float f = FLT_SNAN;
 
-extern void abort (void);
-extern void exit (int);
+extern void abort(void);
+extern void exit(int);
 
 /* @lowering-fn-begin */
 /* @rewrite-fn-begin */
-int
-main (void)
-{
-  feclearexcept (FE_ALL_EXCEPT);
+int main(void) {
+  feclearexcept(FE_ALL_EXCEPT);
   f += f;
-  if (!fetestexcept (FE_INVALID))
-    abort ();
-  exit (0);
+  if (!fetestexcept(FE_INVALID))
+    abort();
+  exit(0);
 }
 /* @rewrite-fn-end */
 /* @lowering-fn-end */

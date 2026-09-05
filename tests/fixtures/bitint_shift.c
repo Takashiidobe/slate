@@ -5,19 +5,19 @@ void abort(void);
 // @lowering-fn-begin
 // @rewrite-fn-begin
 int shift_by_promoted_types(int seed) {
-  int i = 4;
-  unsigned u = 3;
-  long l = 5;
+  int                i   = 4;
+  unsigned           u   = 3;
+  long               l   = 5;
   unsigned long long ull = 6;
-  short s = 2;
+  short              s   = 2;
 
-  unsigned _BitInt(129) a = 1;
-  a = a << i;
-  a = a >> u;
-  a <<= l;
-  a >>= s;
-  a = a << ull;
-  a = a + (unsigned _BitInt(129))seed;
+  unsigned _BitInt(129) a   = 1;
+  a                         = a << i;
+  a                         = a >> u;
+  a                       <<= l;
+  a                       >>= s;
+  a                         = a << ull;
+  a                         = a + (unsigned _BitInt(129))seed;
   return (int)a;
 }
 // @rewrite-fn-end
@@ -27,8 +27,8 @@ int shift_by_promoted_types(int seed) {
 // @rewrite-fn-begin
 int shift_across_limbs(int seed) {
   unsigned _BitInt(129) wide = 1;
-  wide = wide << 128;
-  wide = wide >> 127;
+  wide                       = wide << 128;
+  wide                       = wide >> 127;
   return (int)wide + seed;
 }
 // @rewrite-fn-end
@@ -38,8 +38,8 @@ int shift_across_limbs(int seed) {
 // @rewrite-fn-begin
 int shift_signed_arithmetic(int seed) {
   _BitInt(256) n = -1024;
-  n = n >> 3;
-  n = n << 2;
+  n              = n >> 3;
+  n              = n << 2;
   return (int)n + seed;
 }
 // @rewrite-fn-end
@@ -49,9 +49,9 @@ int shift_signed_arithmetic(int seed) {
 // @rewrite-fn-begin
 int shift_by_bitint(int seed) {
   _BitInt(256) amount = 4;
-  _BitInt(256) v = 3;
-  v = v << amount;
-  v = v >> amount;
+  _BitInt(256) v      = 3;
+  v                   = v << amount;
+  v                   = v >> amount;
   return (int)v + seed;
 }
 // @rewrite-fn-end

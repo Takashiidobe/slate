@@ -39,53 +39,53 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: fn identity_mut({{arg[0-9]+}}: *mut i32) -> *mut i32 {
-// LOWERING-DAG:     return {{arg[0-9]+}};
-// LOWERING-DAG: }
-// LOWERING-DAG: fn forward_mut({{arg[0-9]+}}: *mut i32) -> *mut i32 {
-// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i32 = identity_mut({{arg[0-9]+}});
-// LOWERING-DAG:     return {{__v[0-9]+}};
-// LOWERING-DAG: }
-// LOWERING-DAG: fn identity_const({{arg[0-9]+}}: *mut i32) -> *mut i32 {
-// LOWERING-DAG:     return {{arg[0-9]+}};
-// LOWERING-DAG: }
-// LOWERING-DAG: fn choose_value({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: i32) -> *mut i32 {
-// LOWERING-DAG:     let mut first: *mut i32 = std::ptr::null_mut();
-// LOWERING-DAG:     let mut choose_first: i32 = 0;
-// LOWERING-DAG:     let mut __retval: *mut i32 = std::ptr::null_mut();
-// LOWERING-DAG:     first = {{arg[0-9]+}};
-// LOWERING-DAG:     choose_first = {{arg[0-9]+}};
-// LOWERING-DAG:     {
-// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = choose_first;
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
-// LOWERING-DAG:         if {{__v[0-9]+}} {
-// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = first;
-// LOWERING-DAG:             __retval = {{__v[0-9]+}};
-// LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = __retval;
-// LOWERING-DAG:             return {{__v[0-9]+}};
-// LOWERING-DAG:         }
-// LOWERING-DAG:     }
-// LOWERING-DAG:     __retval = {{arg[0-9]+}};
-// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i32 = __retval;
-// LOWERING-DAG:     return {{__v[0-9]+}};
-// LOWERING-DAG: }
-// SLATE-FILECHECK-END lowering
+// SLATE-FILECHECK-BEGIN common-lowering
+// COMMON-LOWERING-DAG: fn identity_mut({{arg[0-9]+}}: *mut i32) -> *mut i32 {
+// COMMON-LOWERING-DAG:     return {{arg[0-9]+}};
+// COMMON-LOWERING-DAG: }
+// COMMON-LOWERING-DAG: fn forward_mut({{arg[0-9]+}}: *mut i32) -> *mut i32 {
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: *mut i32 = identity_mut({{arg[0-9]+}});
+// COMMON-LOWERING-DAG:     return {{__v[0-9]+}};
+// COMMON-LOWERING-DAG: }
+// COMMON-LOWERING-DAG: fn identity_const({{arg[0-9]+}}: *mut i32) -> *mut i32 {
+// COMMON-LOWERING-DAG:     return {{arg[0-9]+}};
+// COMMON-LOWERING-DAG: }
+// COMMON-LOWERING-DAG: fn choose_value({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: i32) -> *mut i32 {
+// COMMON-LOWERING-DAG:     let mut first: *mut i32 = std::ptr::null_mut();
+// COMMON-LOWERING-DAG:     let mut choose_first: i32 = 0;
+// COMMON-LOWERING-DAG:     let mut __retval: *mut i32 = std::ptr::null_mut();
+// COMMON-LOWERING-DAG:     first = {{arg[0-9]+}};
+// COMMON-LOWERING-DAG:     choose_first = {{arg[0-9]+}};
+// COMMON-LOWERING-DAG:     {
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: i32 = choose_first;
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
+// COMMON-LOWERING-DAG:         if {{__v[0-9]+}} {
+// COMMON-LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = first;
+// COMMON-LOWERING-DAG:             __retval = {{__v[0-9]+}};
+// COMMON-LOWERING-DAG:             let {{__v[0-9]+}}: *mut i32 = __retval;
+// COMMON-LOWERING-DAG:             return {{__v[0-9]+}};
+// COMMON-LOWERING-DAG:         }
+// COMMON-LOWERING-DAG:     }
+// COMMON-LOWERING-DAG:     __retval = {{arg[0-9]+}};
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: *mut i32 = __retval;
+// COMMON-LOWERING-DAG:     return {{__v[0-9]+}};
+// COMMON-LOWERING-DAG: }
+// SLATE-FILECHECK-END common-lowering
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn identity_mut({{arg[0-9]+}}: &mut i32) -> *mut i32 {
-// REWRITES-DAG:     {{arg[0-9]+}} as *mut i32
-// REWRITES-DAG: }
-// REWRITES-DAG: fn forward_mut({{arg[0-9]+}}: &mut i32) -> *mut i32 {
-// REWRITES-DAG:     identity_mut({{arg[0-9]+}})
-// REWRITES-DAG: }
-// REWRITES-DAG: fn identity_const({{arg[0-9]+}}: &i32) -> *mut i32 {
-// REWRITES-DAG:     ({{arg[0-9]+}} as *const i32) as *mut i32
-// REWRITES-DAG: }
-// REWRITES-DAG: fn choose_value(mut first: *mut i32, {{arg[0-9]+}}: *mut i32, mut {{__v[0-9]+}}: i32) -> *mut i32 {
-// REWRITES-DAG:     if {{__v[0-9]+}} != 0 {
-// REWRITES-DAG:         return first;
-// REWRITES-DAG:     }
-// REWRITES-DAG:     {{arg[0-9]+}}
-// REWRITES-DAG: }
-// SLATE-FILECHECK-END rewrites
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES-DAG: fn identity_mut({{arg[0-9]+}}: &mut i32) -> *mut i32 {
+// COMMON-REWRITES-DAG:     {{arg[0-9]+}} as *mut i32
+// COMMON-REWRITES-DAG: }
+// COMMON-REWRITES-DAG: fn forward_mut({{arg[0-9]+}}: &mut i32) -> *mut i32 {
+// COMMON-REWRITES-DAG:     identity_mut({{arg[0-9]+}})
+// COMMON-REWRITES-DAG: }
+// COMMON-REWRITES-DAG: fn identity_const({{arg[0-9]+}}: &i32) -> *mut i32 {
+// COMMON-REWRITES-DAG:     ({{arg[0-9]+}} as *const i32) as *mut i32
+// COMMON-REWRITES-DAG: }
+// COMMON-REWRITES-DAG: fn choose_value(mut first: *mut i32, {{arg[0-9]+}}: *mut i32, mut {{__v[0-9]+}}: i32) -> *mut i32 {
+// COMMON-REWRITES-DAG:     if {{__v[0-9]+}} != 0 {
+// COMMON-REWRITES-DAG:         return first;
+// COMMON-REWRITES-DAG:     }
+// COMMON-REWRITES-DAG:     {{arg[0-9]+}}
+// COMMON-REWRITES-DAG: }
+// SLATE-FILECHECK-END common-rewrites

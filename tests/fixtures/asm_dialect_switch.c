@@ -27,24 +27,24 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: let {{__v[0-9]+}}: i32;
-// LOWERING-DAG: unsafe {
-// LOWERING-DAG:     core::arch::asm!("add {0:e}, 7", inlateout(reg) {{arg[0-9]+}} => {{__v[0-9]+}});
-// LOWERING-DAG: }
-// LOWERING-DAG: let {{__v[0-9]+}}: i32;
-// LOWERING-DAG: unsafe {
-// LOWERING-DAG:     core::arch::asm!("subl $2, {0:e}", inlateout(reg) {{arg[0-9]+}} => {{__v[0-9]+}}, options(att_syntax));
-// LOWERING-DAG: }
-// SLATE-FILECHECK-END lowering
+// SLATE-FILECHECK-BEGIN common-lowering
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32;
+// COMMON-LOWERING-DAG: unsafe {
+// COMMON-LOWERING-DAG:     core::arch::asm!("add {0:e}, 7", inlateout(reg) {{arg[0-9]+}} => {{__v[0-9]+}});
+// COMMON-LOWERING-DAG: }
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32;
+// COMMON-LOWERING-DAG: unsafe {
+// COMMON-LOWERING-DAG:     core::arch::asm!("subl $2, {0:e}", inlateout(reg) {{arg[0-9]+}} => {{__v[0-9]+}}, options(att_syntax));
+// COMMON-LOWERING-DAG: }
+// SLATE-FILECHECK-END common-lowering
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: let {{__v[0-9]+}}: i32;
-// REWRITES-DAG: unsafe {
-// REWRITES-DAG:     core::arch::asm!("add {0:e}, 7", inlateout(reg) {{arg[0-9]+}} => {{__v[0-9]+}});
-// REWRITES-DAG: }
-// REWRITES-DAG: let {{__v[0-9]+}}: i32;
-// REWRITES-DAG: unsafe {
-// REWRITES-DAG:     core::arch::asm!("subl $2, {0:e}", inlateout(reg) {{arg[0-9]+}} => {{__v[0-9]+}}, options(att_syntax));
-// REWRITES-DAG: }
-// SLATE-FILECHECK-END rewrites
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES-DAG: let {{__v[0-9]+}}: i32;
+// COMMON-REWRITES-DAG: unsafe {
+// COMMON-REWRITES-DAG:     core::arch::asm!("add {0:e}, 7", inlateout(reg) {{arg[0-9]+}} => {{__v[0-9]+}});
+// COMMON-REWRITES-DAG: }
+// COMMON-REWRITES-DAG: let {{__v[0-9]+}}: i32;
+// COMMON-REWRITES-DAG: unsafe {
+// COMMON-REWRITES-DAG:     core::arch::asm!("subl $2, {0:e}", inlateout(reg) {{arg[0-9]+}} => {{__v[0-9]+}}, options(att_syntax));
+// COMMON-REWRITES-DAG: }
+// SLATE-FILECHECK-END common-rewrites

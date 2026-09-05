@@ -20,34 +20,32 @@
 #error "LDBL_SNAN undefined"
 #endif
 
-volatile float f = FLT_SNAN;
-volatile double d = DBL_SNAN;
+volatile float       f  = FLT_SNAN;
+volatile double      d  = DBL_SNAN;
 volatile long double ld = LDBL_SNAN;
 
-extern void abort (void);
-extern void exit (int);
+extern void abort(void);
+extern void exit(int);
 
 /* @lowering-fn-begin */
 /* @rewrite-fn-begin */
-int
-main (void)
-{
-  (void) _Generic (FLT_SNAN, float : 0);
-  (void) _Generic (DBL_SNAN, double : 0);
-  (void) _Generic (LDBL_SNAN, long double : 0);
-  if (!__builtin_isnan (FLT_SNAN))
-    abort ();
-  if (!__builtin_isnan (f))
-    abort ();
-  if (!__builtin_isnan (DBL_SNAN))
-    abort ();
-  if (!__builtin_isnan (d))
-    abort ();
-  if (!__builtin_isnan (LDBL_SNAN))
-    abort ();
-  if (!__builtin_isnan (ld))
-    abort ();
-  exit (0);
+int main(void) {
+  (void)_Generic(FLT_SNAN, float: 0);
+  (void)_Generic(DBL_SNAN, double: 0);
+  (void)_Generic(LDBL_SNAN, long double: 0);
+  if (!__builtin_isnan(FLT_SNAN))
+    abort();
+  if (!__builtin_isnan(f))
+    abort();
+  if (!__builtin_isnan(DBL_SNAN))
+    abort();
+  if (!__builtin_isnan(d))
+    abort();
+  if (!__builtin_isnan(LDBL_SNAN))
+    abort();
+  if (!__builtin_isnan(ld))
+    abort();
+  exit(0);
 }
 /* @rewrite-fn-end */
 /* @lowering-fn-end */

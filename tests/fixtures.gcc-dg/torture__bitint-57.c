@@ -10,14 +10,13 @@ unsigned _BitInt(512) v;
 
 // @lowering-fn-begin
 // @rewrite-fn-begin
-void
-foo (unsigned _BitInt(255) a, unsigned _BitInt(257) b, unsigned _BitInt(512) *r)
-{
-  b += v;
-  b |= a - b;
-  unsigned _BitInt(512) c = b * 6;
-  unsigned _BitInt(512) h = c >> u;
-  *r = h;
+void foo(unsigned _BitInt(255) a, unsigned _BitInt(257) b,
+         unsigned _BitInt(512) * r) {
+  b                       += v;
+  b                       |= a - b;
+  unsigned _BitInt(512) c  = b * 6;
+  unsigned _BitInt(512) h  = c >> u;
+  *r                       = h;
 }
 // @rewrite-fn-end
 // @lowering-fn-end
@@ -25,14 +24,13 @@ foo (unsigned _BitInt(255) a, unsigned _BitInt(257) b, unsigned _BitInt(512) *r)
 
 // @lowering-fn-begin
 // @rewrite-fn-begin
-int
-main ()
-{
+int main() {
 #if __BITINT_MAXWIDTH__ >= 512
   unsigned _BitInt(512) x;
-  foo (0x10000000000000000wb, 0x10000000000000001wb, &x);
-  if (x != 0x1fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffawb)
-    __builtin_abort ();
+  foo(0x10000000000000000wb, 0x10000000000000001wb, &x);
+  if (x !=
+      0x1fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffawb)
+    __builtin_abort();
 #endif
   return 0;
 }

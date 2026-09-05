@@ -24,21 +24,23 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites-macos
 // REWRITES-MACOS-DAG: fn main() {
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: *mut i8 = c"%zu %zu\n".as_ptr() as *mut i8;
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: u64 = 8;
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: u64 = 8;
-// REWRITES-MACOS-DAG:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: *mut i8 = c"%zu %zu %zu %zu\n".as_ptr() as *mut i8;
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: u64 = std::mem::size_of::<ld_box>() as u64;
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: u64 = std::mem::align_of::<ld_box>() as u64;
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: u64 = std::mem::offset_of!(ld_box, value) as u64;
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: u64 = std::mem::offset_of!(ld_box, tail) as u64;
-// REWRITES-MACOS-DAG:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: *mut i8 = c"%zu %zu\n".as_ptr() as *mut i8;
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: u64 = std::mem::size_of::<ld_union>() as u64;
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: u64 = std::mem::align_of::<ld_union>() as u64;
-// REWRITES-MACOS-DAG:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-MACOS-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// REWRITES-MACOS-DAG:     unsafe { printf(c"%zu %zu\n".as_ptr(), 8 as u64, 8 as u64) };
+// REWRITES-MACOS-DAG:     unsafe {
+// REWRITES-MACOS-DAG:         printf(
+// REWRITES-MACOS-DAG:             c"%zu %zu %zu %zu\n".as_ptr(),
+// REWRITES-MACOS-DAG:             std::mem::size_of::<ld_box>() as u64,
+// REWRITES-MACOS-DAG:             std::mem::align_of::<ld_box>() as u64,
+// REWRITES-MACOS-DAG:             std::mem::offset_of!(ld_box, value) as u64,
+// REWRITES-MACOS-DAG:             std::mem::offset_of!(ld_box, tail) as u64,
+// REWRITES-MACOS-DAG:         )
+// REWRITES-MACOS-DAG:     };
+// REWRITES-MACOS-DAG:     unsafe {
+// REWRITES-MACOS-DAG:         printf(
+// REWRITES-MACOS-DAG:             c"%zu %zu\n".as_ptr(),
+// REWRITES-MACOS-DAG:             std::mem::size_of::<ld_union>() as u64,
+// REWRITES-MACOS-DAG:             std::mem::align_of::<ld_union>() as u64,
+// REWRITES-MACOS-DAG:         )
+// REWRITES-MACOS-DAG:     };
+// REWRITES-MACOS-DAG:     std::process::exit(0 as i32);
 // REWRITES-MACOS-DAG: }
 // SLATE-FILECHECK-END rewrites-macos

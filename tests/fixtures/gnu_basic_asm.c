@@ -28,27 +28,27 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: fn gnu_function_basic_asm() -> i32 {
-// LOWERING-DAG:     unsafe {
-// LOWERING-DAG:         core::arch::asm!(
-// LOWERING-DAG:             "movl $23, gnu_basic_asm_value(%rip)",
-// LOWERING-DAG:             options(att_syntax, raw)
-// LOWERING-DAG:         );
-// LOWERING-DAG:     }
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = unsafe { gnu_basic_asm_value };
-// LOWERING-DAG:     return {{__v[0-9]+}};
-// LOWERING-DAG: }
-// SLATE-FILECHECK-END lowering
+// SLATE-FILECHECK-BEGIN common-lowering
+// COMMON-LOWERING-DAG: fn gnu_function_basic_asm() -> i32 {
+// COMMON-LOWERING-DAG:     unsafe {
+// COMMON-LOWERING-DAG:         core::arch::asm!(
+// COMMON-LOWERING-DAG:             "movl $23, gnu_basic_asm_value(%rip)",
+// COMMON-LOWERING-DAG:             options(att_syntax, raw)
+// COMMON-LOWERING-DAG:         );
+// COMMON-LOWERING-DAG:     }
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = unsafe { gnu_basic_asm_value };
+// COMMON-LOWERING-DAG:     return {{__v[0-9]+}};
+// COMMON-LOWERING-DAG: }
+// SLATE-FILECHECK-END common-lowering
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn gnu_function_basic_asm() -> i32 {
-// REWRITES-DAG:     unsafe {
-// REWRITES-DAG:         core::arch::asm!(
-// REWRITES-DAG:             "movl $23, gnu_basic_asm_value(%rip)",
-// REWRITES-DAG:             options(att_syntax, raw)
-// REWRITES-DAG:         );
-// REWRITES-DAG:     }
-// REWRITES-DAG:     unsafe { gnu_basic_asm_value }
-// REWRITES-DAG: }
-// SLATE-FILECHECK-END rewrites
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES-DAG: fn gnu_function_basic_asm() -> i32 {
+// COMMON-REWRITES-DAG:     unsafe {
+// COMMON-REWRITES-DAG:         core::arch::asm!(
+// COMMON-REWRITES-DAG:             "movl $23, gnu_basic_asm_value(%rip)",
+// COMMON-REWRITES-DAG:             options(att_syntax, raw)
+// COMMON-REWRITES-DAG:         );
+// COMMON-REWRITES-DAG:     }
+// COMMON-REWRITES-DAG:     unsafe { gnu_basic_asm_value }
+// COMMON-REWRITES-DAG: }
+// SLATE-FILECHECK-END common-rewrites

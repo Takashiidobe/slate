@@ -68,12 +68,10 @@ int main(void) { return 0; }
 // REWRITES-MSVC-NEXT:     unsafe { store_long_double(std::ptr::addr_of_mut!(value) as *mut f64) };
 // REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: *mut f64 =
 // REWRITES-MSVC-NEXT:         (unsafe { load_long_double(std::ptr::addr_of_mut!(value) as *const f64) }) as *mut f64;
-// REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { *{{__v[0-9]+}} };
-// REWRITES-MSVC-NEXT:     {{__v[0-9]+}}
+// REWRITES-MSVC-NEXT:     unsafe { *{{__v[0-9]+}} }
 // REWRITES-MSVC-NEXT: }
 // REWRITES-MSVC-EMPTY:
 // REWRITES-MSVC-NEXT: fn main() {
-// REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-MSVC-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// REWRITES-MSVC-NEXT:     std::process::exit(0 as i32);
 // REWRITES-MSVC-NEXT: }
 // SLATE-FILECHECK-END rewrites-msvc

@@ -20,16 +20,33 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: fn consume(mut {{arg[0-9]+}}: __SlateVaArgs) -> i32 {
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = unsafe { {{arg[0-9]+}}.next_arg::<i32>() };
-// LOWERING-DAG:     return {{__v[0-9]+}};
-// LOWERING-DAG: }
-// SLATE-FILECHECK-END lowering
+// SLATE-FILECHECK-BEGIN common-lowering
+// COMMON-LOWERING-DAG: fn consume(mut {{arg[0-9]+}}: __SlateVaArgs) -> i32 {
+// COMMON-LOWERING-DAG:     return {{__v[0-9]+}};
+// COMMON-LOWERING-DAG: }
+// SLATE-FILECHECK-END common-lowering
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn consume(mut {{arg[0-9]+}}: __SlateVaArgs) -> i32 {
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = unsafe { {{arg[0-9]+}}.next_arg::<i32>() };
-// REWRITES-DAG:     {{__v[0-9]+}}
-// REWRITES-DAG: }
-// SLATE-FILECHECK-END rewrites
+// SLATE-FILECHECK-BEGIN lowering-x86_64-gnu
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: i32 = unsafe { {{arg[0-9]+}}.next_arg::<i32>() };
+// SLATE-FILECHECK-END lowering-x86_64-gnu
+
+// SLATE-FILECHECK-BEGIN lowering-aarch64-gnu
+// LOWERING-AARCH64-GNU-DAG:     let mut arguments: __SlateVaArgs = __SlateVaArgs::empty();
+// LOWERING-AARCH64-GNU-DAG:     arguments = {{arg[0-9]+}}.clone();
+// LOWERING-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: i32 = unsafe { arguments.next_arg::<i32>() };
+// SLATE-FILECHECK-END lowering-aarch64-gnu
+
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES-DAG: fn consume(mut {{arg[0-9]+}}: __SlateVaArgs) -> i32 {
+// COMMON-REWRITES-DAG: }
+// SLATE-FILECHECK-END common-rewrites
+
+// SLATE-FILECHECK-BEGIN rewrites-x86_64-gnu
+// REWRITES-X86_64-GNU-DAG:     unsafe { {{arg[0-9]+}}.next_arg::<i32>() }
+// SLATE-FILECHECK-END rewrites-x86_64-gnu
+
+// SLATE-FILECHECK-BEGIN rewrites-aarch64-gnu
+// REWRITES-AARCH64-GNU-DAG:     let mut arguments: __SlateVaArgs = __SlateVaArgs::empty();
+// REWRITES-AARCH64-GNU-DAG:     arguments = {{arg[0-9]+}}.clone();
+// REWRITES-AARCH64-GNU-DAG:     unsafe { arguments.next_arg::<i32>() }
+// SLATE-FILECHECK-END rewrites-aarch64-gnu

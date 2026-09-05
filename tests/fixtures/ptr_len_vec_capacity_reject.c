@@ -23,74 +23,74 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: fn consume_extra_capacity({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-DAG:     let mut values: *mut i32 = std::ptr::null_mut();
-// LOWERING-DAG:     let mut len: i32 = 0;
-// LOWERING-DAG:     let mut sum: i32 = 0;
-// LOWERING-DAG:     values = {{arg[0-9]+}};
-// LOWERING-DAG:     len = {{arg[0-9]+}};
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     sum = {{__v[0-9]+}};
-// LOWERING-DAG:     {
-// LOWERING-DAG:         let mut i: i32 = 0;
-// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:         i = {{__v[0-9]+}};
-// LOWERING-DAG:         loop {
-// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = i;
-// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = len;
-// LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
-// LOWERING-DAG:             if !{{__v[0-9]+}} {
-// LOWERING-DAG:                 break;
-// LOWERING-DAG:             }
-// LOWERING-DAG:             {
-// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = i;
-// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = i;
-// LOWERING-DAG:                 let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
-// LOWERING-DAG:                 let {{__v[0-9]+}}: *mut i32 = values;
-// LOWERING-DAG:                 let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.offset({{__v[0-9]+}} as isize) };
-// LOWERING-DAG:                 unsafe {
-// LOWERING-DAG:                     *{{__v[0-9]+}} = {{__v[0-9]+}};
-// LOWERING-DAG:                 }
-// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = i;
-// LOWERING-DAG:                 let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
-// LOWERING-DAG:                 let {{__v[0-9]+}}: *mut i32 = values;
-// LOWERING-DAG:                 let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.offset({{__v[0-9]+}} as isize) };
-// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
-// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = sum;
-// LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-DAG:                 sum = {{__v[0-9]+}};
-// LOWERING-DAG:             }
-// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = i;
-// LOWERING-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
-// LOWERING-DAG:             i = {{__v[0-9]+}};
-// LOWERING-DAG:         }
-// LOWERING-DAG:     }
-// LOWERING-DAG:     let {{__v[0-9]+}}: *mut i32 = values;
-// LOWERING-DAG:     let {{__v[0-9]+}}: *mut core::ffi::c_void = {{__v[0-9]+}} as *mut core::ffi::c_void;
-// LOWERING-DAG:     unsafe { free({{__v[0-9]+}} as *mut core::ffi::c_void) };
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = sum;
-// LOWERING-DAG:     return {{__v[0-9]+}};
-// LOWERING-DAG: }
-// SLATE-FILECHECK-END lowering
+// SLATE-FILECHECK-BEGIN common-lowering
+// COMMON-LOWERING-DAG: fn consume_extra_capacity({{arg[0-9]+}}: *mut i32, {{arg[0-9]+}}: i32) -> i32 {
+// COMMON-LOWERING-DAG:     let mut values: *mut i32 = std::ptr::null_mut();
+// COMMON-LOWERING-DAG:     let mut len: i32 = 0;
+// COMMON-LOWERING-DAG:     let mut sum: i32 = 0;
+// COMMON-LOWERING-DAG:     values = {{arg[0-9]+}};
+// COMMON-LOWERING-DAG:     len = {{arg[0-9]+}};
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// COMMON-LOWERING-DAG:     sum = {{__v[0-9]+}};
+// COMMON-LOWERING-DAG:     {
+// COMMON-LOWERING-DAG:         let mut i: i32 = 0;
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 0;
+// COMMON-LOWERING-DAG:         i = {{__v[0-9]+}};
+// COMMON-LOWERING-DAG:         loop {
+// COMMON-LOWERING-DAG:             let {{__v[0-9]+}}: i32 = i;
+// COMMON-LOWERING-DAG:             let {{__v[0-9]+}}: i32 = len;
+// COMMON-LOWERING-DAG:             let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// COMMON-LOWERING-DAG:             if !{{__v[0-9]+}} {
+// COMMON-LOWERING-DAG:                 break;
+// COMMON-LOWERING-DAG:             }
+// COMMON-LOWERING-DAG:             {
+// COMMON-LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = i;
+// COMMON-LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = 1;
+// COMMON-LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// COMMON-LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = i;
+// COMMON-LOWERING-DAG:                 let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// COMMON-LOWERING-DAG:                 let {{__v[0-9]+}}: *mut i32 = values;
+// COMMON-LOWERING-DAG:                 let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.offset({{__v[0-9]+}} as isize) };
+// COMMON-LOWERING-DAG:                 unsafe {
+// COMMON-LOWERING-DAG:                     *{{__v[0-9]+}} = {{__v[0-9]+}};
+// COMMON-LOWERING-DAG:                 }
+// COMMON-LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = i;
+// COMMON-LOWERING-DAG:                 let {{__v[0-9]+}}: i64 = {{__v[0-9]+}} as i64;
+// COMMON-LOWERING-DAG:                 let {{__v[0-9]+}}: *mut i32 = values;
+// COMMON-LOWERING-DAG:                 let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.offset({{__v[0-9]+}} as isize) };
+// COMMON-LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = unsafe { *{{__v[0-9]+}} };
+// COMMON-LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = sum;
+// COMMON-LOWERING-DAG:                 let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// COMMON-LOWERING-DAG:                 sum = {{__v[0-9]+}};
+// COMMON-LOWERING-DAG:             }
+// COMMON-LOWERING-DAG:             let {{__v[0-9]+}}: i32 = i;
+// COMMON-LOWERING-DAG:             let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + 1;
+// COMMON-LOWERING-DAG:             i = {{__v[0-9]+}};
+// COMMON-LOWERING-DAG:         }
+// COMMON-LOWERING-DAG:     }
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: *mut i32 = values;
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: *mut core::ffi::c_void = {{__v[0-9]+}} as *mut core::ffi::c_void;
+// COMMON-LOWERING-DAG:     unsafe { free({{__v[0-9]+}} as *mut core::ffi::c_void) };
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = sum;
+// COMMON-LOWERING-DAG:     return {{__v[0-9]+}};
+// COMMON-LOWERING-DAG: }
+// SLATE-FILECHECK-END common-lowering
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn consume_extra_capacity(mut values: *mut i32, mut len: i32) -> i32 {
-// REWRITES-DAG:     let mut sum: i32 = 0;
-// REWRITES-DAG:     for i in 0..len {
-// REWRITES-DAG:         let {{__v[0-9]+}}: i32 = i + 1;
-// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = values;
-// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.offset((i as i64) as isize) };
-// REWRITES-DAG:         unsafe {
-// REWRITES-DAG:             *{{__v[0-9]+}} = {{__v[0-9]+}};
-// REWRITES-DAG:         }
-// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = values;
-// REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.offset((i as i64) as isize) };
-// REWRITES-DAG:         sum += unsafe { *{{__v[0-9]+}} };
-// REWRITES-DAG:     }
-// REWRITES-DAG:     unsafe { free(values as *mut core::ffi::c_void) };
-// REWRITES-DAG:     sum
-// REWRITES-DAG: }
-// SLATE-FILECHECK-END rewrites
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES-DAG: fn consume_extra_capacity(mut values: *mut i32, mut len: i32) -> i32 {
+// COMMON-REWRITES-DAG:     let mut sum: i32 = 0;
+// COMMON-REWRITES-DAG:     for i in 0..len {
+// COMMON-REWRITES-DAG:         let {{__v[0-9]+}}: i32 = i + 1;
+// COMMON-REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = values;
+// COMMON-REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.offset((i as i64) as isize) };
+// COMMON-REWRITES-DAG:         unsafe {
+// COMMON-REWRITES-DAG:             *{{__v[0-9]+}} = {{__v[0-9]+}};
+// COMMON-REWRITES-DAG:         }
+// COMMON-REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = values;
+// COMMON-REWRITES-DAG:         let {{__v[0-9]+}}: *mut i32 = unsafe { {{__v[0-9]+}}.offset((i as i64) as isize) };
+// COMMON-REWRITES-DAG:         sum += unsafe { *{{__v[0-9]+}} };
+// COMMON-REWRITES-DAG:     }
+// COMMON-REWRITES-DAG:     unsafe { free(values as *mut core::ffi::c_void) };
+// COMMON-REWRITES-DAG:     sum
+// COMMON-REWRITES-DAG: }
+// SLATE-FILECHECK-END common-rewrites

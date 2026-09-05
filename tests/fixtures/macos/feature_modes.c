@@ -36,8 +36,6 @@ long feature_level(void) { return __DARWIN_C_LEVEL; }
 // LOWERING-MACOS-NEXT:     unused_comparisons
 // LOWERING-MACOS-NEXT: )]
 // LOWERING-MACOS-EMPTY:
-// LOWERING-MACOS-NEXT: compile_error!("\"Darwin extensions missing\"");
-// LOWERING-MACOS-EMPTY:
 // LOWERING-MACOS-NEXT: fn feature_level() -> i64 {
 // LOWERING-MACOS-NEXT:     let {{__v[0-9]+}}: i64 = 900000;
 // LOWERING-MACOS-NEXT:     return {{__v[0-9]+}};
@@ -58,10 +56,7 @@ long feature_level(void) { return __DARWIN_C_LEVEL; }
 // REWRITES-MACOS-NEXT:     unused_comparisons
 // REWRITES-MACOS-NEXT: )]
 // REWRITES-MACOS-EMPTY:
-// REWRITES-MACOS-NEXT: compile_error!("\"Darwin extensions missing\"");
-// REWRITES-MACOS-EMPTY:
 // REWRITES-MACOS-NEXT: fn feature_level() -> i64 {
-// REWRITES-MACOS-NEXT:     let {{__v[0-9]+}}: i64 = 900000;
-// REWRITES-MACOS-NEXT:     {{__v[0-9]+}}
+// REWRITES-MACOS-NEXT:     900000
 // REWRITES-MACOS-NEXT: }
 // SLATE-FILECHECK-END rewrites-macos

@@ -9,17 +9,13 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: let {{__v[0-9]+}}: *mut i8 = buf.as_mut_ptr() as *mut i8;
-// REWRITES-DAG: let {{__v[0-9]+}}: *mut i8 = c"%d".as_ptr() as *mut i8;
-// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 7;
-// REWRITES-DAG: unsafe {
-// REWRITES-DAG:     sprintf(
-// REWRITES-DAG:         {{__v[0-9]+}} as *mut core::ffi::c_char,
-// REWRITES-DAG:         {{__v[0-9]+}} as *const core::ffi::c_char,
-// REWRITES-DAG:         {{__v[0-9]+}},
-// REWRITES-DAG:     )
-// REWRITES-DAG: };
-// REWRITES-DAG: let {{__v[0-9]+}}: *mut i8 = buf.as_mut_ptr() as *mut i8;
-// REWRITES-DAG: unsafe { puts({{__v[0-9]+}} as *const core::ffi::c_char) };
-// SLATE-FILECHECK-END rewrites
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES-DAG: unsafe {
+// COMMON-REWRITES-DAG:     sprintf(
+// COMMON-REWRITES-DAG:         buf.as_mut_ptr() as *mut core::ffi::c_char,
+// COMMON-REWRITES-DAG:         c"%d".as_ptr(),
+// COMMON-REWRITES-DAG:         7 as i32,
+// COMMON-REWRITES-DAG:     )
+// COMMON-REWRITES-DAG: };
+// COMMON-REWRITES-DAG: unsafe { puts(buf.as_mut_ptr() as *const core::ffi::c_char) };
+// SLATE-FILECHECK-END common-rewrites

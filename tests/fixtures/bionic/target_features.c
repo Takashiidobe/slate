@@ -36,84 +36,42 @@ _Static_assert(__SLATE_ANDROID_API__ == 21, "Android API 21 required");
 
 int main(void) { return 0; }
 
-// SLATE-FILECHECK-BEGIN lowering-bionic-aarch64
-// LOWERING-BIONIC-AARCH64: #![allow(
-// LOWERING-BIONIC-AARCH64-NEXT:     dead_code,
-// LOWERING-BIONIC-AARCH64-NEXT:     unused,
-// LOWERING-BIONIC-AARCH64-NEXT:     non_camel_case_types,
-// LOWERING-BIONIC-AARCH64-NEXT:     non_snake_case,
-// LOWERING-BIONIC-AARCH64-NEXT:     non_upper_case_globals,
-// LOWERING-BIONIC-AARCH64-NEXT:     arithmetic_overflow,
-// LOWERING-BIONIC-AARCH64-NEXT:     unconditional_panic,
-// LOWERING-BIONIC-AARCH64-NEXT:     suspicious_runtime_symbol_definitions,
-// LOWERING-BIONIC-AARCH64-NEXT:     unpredictable_function_pointer_comparisons,
-// LOWERING-BIONIC-AARCH64-NEXT:     unused_comparisons
-// LOWERING-BIONIC-AARCH64-NEXT: )]
-// LOWERING-BIONIC-AARCH64-EMPTY:
-// LOWERING-BIONIC-AARCH64-NEXT: fn main() {
-// LOWERING-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-BIONIC-AARCH64-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
-// LOWERING-BIONIC-AARCH64-NEXT: }
-// SLATE-FILECHECK-END lowering-bionic-aarch64
+// SLATE-FILECHECK-BEGIN common-lowering
+// COMMON-LOWERING: #![allow(
+// COMMON-LOWERING-NEXT:     dead_code,
+// COMMON-LOWERING-NEXT:     unused,
+// COMMON-LOWERING-NEXT:     non_camel_case_types,
+// COMMON-LOWERING-NEXT:     non_snake_case,
+// COMMON-LOWERING-NEXT:     non_upper_case_globals,
+// COMMON-LOWERING-NEXT:     arithmetic_overflow,
+// COMMON-LOWERING-NEXT:     unconditional_panic,
+// COMMON-LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// COMMON-LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// COMMON-LOWERING-NEXT:     unused_comparisons
+// COMMON-LOWERING-NEXT: )]
+// COMMON-LOWERING-EMPTY:
+// COMMON-LOWERING-NEXT: fn main() {
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// COMMON-LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// COMMON-LOWERING-NEXT: }
+// SLATE-FILECHECK-END common-lowering
 
-// SLATE-FILECHECK-BEGIN lowering-bionic-x86_64
-// LOWERING-BIONIC-X86_64: #![allow(
-// LOWERING-BIONIC-X86_64-NEXT:     dead_code,
-// LOWERING-BIONIC-X86_64-NEXT:     unused,
-// LOWERING-BIONIC-X86_64-NEXT:     non_camel_case_types,
-// LOWERING-BIONIC-X86_64-NEXT:     non_snake_case,
-// LOWERING-BIONIC-X86_64-NEXT:     non_upper_case_globals,
-// LOWERING-BIONIC-X86_64-NEXT:     arithmetic_overflow,
-// LOWERING-BIONIC-X86_64-NEXT:     unconditional_panic,
-// LOWERING-BIONIC-X86_64-NEXT:     suspicious_runtime_symbol_definitions,
-// LOWERING-BIONIC-X86_64-NEXT:     unpredictable_function_pointer_comparisons,
-// LOWERING-BIONIC-X86_64-NEXT:     unused_comparisons
-// LOWERING-BIONIC-X86_64-NEXT: )]
-// LOWERING-BIONIC-X86_64-EMPTY:
-// LOWERING-BIONIC-X86_64-NEXT: fn main() {
-// LOWERING-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-BIONIC-X86_64-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
-// LOWERING-BIONIC-X86_64-NEXT: }
-// SLATE-FILECHECK-END lowering-bionic-x86_64
-
-// SLATE-FILECHECK-BEGIN rewrites-bionic-aarch64
-// REWRITES-BIONIC-AARCH64: #![allow(
-// REWRITES-BIONIC-AARCH64-NEXT:     dead_code,
-// REWRITES-BIONIC-AARCH64-NEXT:     unused,
-// REWRITES-BIONIC-AARCH64-NEXT:     non_camel_case_types,
-// REWRITES-BIONIC-AARCH64-NEXT:     non_snake_case,
-// REWRITES-BIONIC-AARCH64-NEXT:     non_upper_case_globals,
-// REWRITES-BIONIC-AARCH64-NEXT:     arithmetic_overflow,
-// REWRITES-BIONIC-AARCH64-NEXT:     unconditional_panic,
-// REWRITES-BIONIC-AARCH64-NEXT:     suspicious_runtime_symbol_definitions,
-// REWRITES-BIONIC-AARCH64-NEXT:     unpredictable_function_pointer_comparisons,
-// REWRITES-BIONIC-AARCH64-NEXT:     unused_comparisons
-// REWRITES-BIONIC-AARCH64-NEXT: )]
-// REWRITES-BIONIC-AARCH64-EMPTY:
-// REWRITES-BIONIC-AARCH64-NEXT: fn main() {
-// REWRITES-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-BIONIC-AARCH64-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
-// REWRITES-BIONIC-AARCH64-NEXT: }
-// SLATE-FILECHECK-END rewrites-bionic-aarch64
-
-// SLATE-FILECHECK-BEGIN rewrites-bionic-x86_64
-// REWRITES-BIONIC-X86_64: #![allow(
-// REWRITES-BIONIC-X86_64-NEXT:     dead_code,
-// REWRITES-BIONIC-X86_64-NEXT:     unused,
-// REWRITES-BIONIC-X86_64-NEXT:     non_camel_case_types,
-// REWRITES-BIONIC-X86_64-NEXT:     non_snake_case,
-// REWRITES-BIONIC-X86_64-NEXT:     non_upper_case_globals,
-// REWRITES-BIONIC-X86_64-NEXT:     arithmetic_overflow,
-// REWRITES-BIONIC-X86_64-NEXT:     unconditional_panic,
-// REWRITES-BIONIC-X86_64-NEXT:     suspicious_runtime_symbol_definitions,
-// REWRITES-BIONIC-X86_64-NEXT:     unpredictable_function_pointer_comparisons,
-// REWRITES-BIONIC-X86_64-NEXT:     unused_comparisons
-// REWRITES-BIONIC-X86_64-NEXT: )]
-// REWRITES-BIONIC-X86_64-EMPTY:
-// REWRITES-BIONIC-X86_64-NEXT: fn main() {
-// REWRITES-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-BIONIC-X86_64-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
-// REWRITES-BIONIC-X86_64-NEXT: }
-// SLATE-FILECHECK-END rewrites-bionic-x86_64
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES: #![allow(
+// COMMON-REWRITES-NEXT:     dead_code,
+// COMMON-REWRITES-NEXT:     unused,
+// COMMON-REWRITES-NEXT:     non_camel_case_types,
+// COMMON-REWRITES-NEXT:     non_snake_case,
+// COMMON-REWRITES-NEXT:     non_upper_case_globals,
+// COMMON-REWRITES-NEXT:     arithmetic_overflow,
+// COMMON-REWRITES-NEXT:     unconditional_panic,
+// COMMON-REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// COMMON-REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// COMMON-REWRITES-NEXT:     unused_comparisons
+// COMMON-REWRITES-NEXT: )]
+// COMMON-REWRITES-EMPTY:
+// COMMON-REWRITES-NEXT: fn main() {
+// COMMON-REWRITES-NEXT:     std::process::exit(0 as i32);
+// COMMON-REWRITES-NEXT: }
+// SLATE-FILECHECK-END common-rewrites

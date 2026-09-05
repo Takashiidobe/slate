@@ -20,18 +20,15 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 6;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 7;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} * {{__v[0-9]+}};
-// SLATE-FILECHECK-END lowering
+// SLATE-FILECHECK-BEGIN common-lowering
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = 6;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = 7;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} * {{__v[0-9]+}};
+// SLATE-FILECHECK-END common-lowering
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 6;
-// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 7;
-// REWRITES-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} * {{__v[0-9]+}};
-// REWRITES-DAG: let {{__v[0-9]+}}: *mut i8 = c"%d %d %d\n".as_ptr() as *mut i8;
-// REWRITES-DAG: unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
-// REWRITES-DAG: let {{__v[0-9]+}}: *mut i8 = c"_v9 anon_4 anon_struct_i32".as_ptr() as *mut i8;
-// REWRITES-DAG: unsafe { puts({{__v[0-9]+}} as *const core::ffi::c_char) };
-// SLATE-FILECHECK-END rewrites
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES-DAG: let {{__v[0-9]+}}: i32 = 7;
+// COMMON-REWRITES-DAG: let {{__v[0-9]+}}: i32 = 6 * {{__v[0-9]+}};
+// COMMON-REWRITES-DAG: unsafe { printf(c"%d %d %d\n".as_ptr(), {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// COMMON-REWRITES-DAG: unsafe { puts(c"_v9 anon_4 anon_struct_i32".as_ptr()) };
+// SLATE-FILECHECK-END common-rewrites

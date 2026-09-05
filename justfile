@@ -89,6 +89,11 @@ filecheck_libraries := split(`rg -l '@(lowering|rewrite)(-fn)?-(begin|not-begin)
 filecheck_fixtures := filecheck_files ++ filecheck_bionic ++ filecheck_macos ++ filecheck_msvc ++ filecheck_link ++ filecheck_cfg ++ filecheck_projects ++ filecheck_libraries
 filecheck_jobs := if num_jobs() { num_jobs() } else { "8" }
 
+# aarch64/x86_64 linux-gnu --target flags the regen-* recipes pass by default; override with e.g.
+#   just filecheck_targets='--target MACOS=aarch64-apple-darwin' regen-filecheck
+# or filecheck_targets='' to fall back to update_filecheck.py's own per-path target inference
+filecheck_targets := "--target X86_64-GNU=x86_64-unknown-linux-gnu --target AARCH64-GNU=aarch64-unknown-linux-gnu"
+
 # regenerate the lowering FileCheck blocks in every fixture, leaving rewrites blocks frozen
 regen-lowering *paths=filecheck_fixtures:
     just --jobs {{filecheck_jobs}} _regen-filechecks lowering {{quote(paths)}}
@@ -103,23 +108,32 @@ regen-filecheck *paths=filecheck_fixtures:
 
 # regenerate the lowering FileCheck blocks for fixtures matching PATTERN (glob or bare fixture name, e.g. `mem*` or `long_double_layout`)
 regen-lowering-match *pattern:
-    python3 tools/update_filecheck.py --in-place --profile lowering {{pattern}}
+    python3 tools/update_filecheck.py --in-place --profile lowering {{filecheck_targets}} {{pattern}}
 
 # regenerate the rewrites FileCheck blocks for fixtures matching PATTERN, leaving lowering blocks frozen
 regen-rewrites-match *pattern:
-    python3 tools/update_filecheck.py --in-place --profile rewrites {{pattern}}
+    python3 tools/update_filecheck.py --in-place --profile rewrites {{filecheck_targets}} {{pattern}}
 
 # regenerate both FileCheck profiles for fixtures matching PATTERN
 regen-filecheck-match *pattern:
-    python3 tools/update_filecheck.py --in-place --profile both {{pattern}}
+    python3 tools/update_filecheck.py --in-place --profile both {{filecheck_targets}} {{pattern}}
 
 [private]
 [parallel]
 _regen-filechecks profile *paths: *(_regen-filecheck profile *paths)
 
+# bionic/macos/msvc fixtures carry their own android/darwin/msvc --target defaults inside
+# update_filecheck.py (see default_targets_for_path); forcing the generic linux-gnu targets
+# on top of those would overwrite their real cross-target checks, so they're excluded here.
 [private]
 _regen-filecheck profile path:
-    python3 tools/update_filecheck.py --in-place --profile {{quote(profile)}} {{quote(path)}}
+    #!/usr/bin/env bash
+    set -euo pipefail
+    case {{quote(path)}} in
+        */fixtures/bionic/*|*/fixtures/macos/*|*/fixtures/msvc/*) target_args=() ;;
+        *) target_args=({{filecheck_targets}}) ;;
+    esac
+    python3 tools/update_filecheck.py --in-place --profile {{quote(profile)}} "${target_args[@]}" {{quote(path)}}
 
 # cargo check every already-transpiled crate; keeps going past per-project failures and reports them at the end
 check-all:

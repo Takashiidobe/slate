@@ -4,23 +4,20 @@
 #include <stdarg.h>
 
 const unsigned char a[] = {
-  #embed __FILE__ limit (128)
+#embed __FILE__     limit(128)
 };
 
 // @lowering-fn-begin
 // @rewrite-fn-begin
-int
-foo (...)
-{
+int foo(...) {
   va_list ap;
-  va_start (ap);
+  va_start(ap);
   for (int i = 0; i < 128; ++i)
-    if (va_arg (ap, int) != a[i])
-      {
-	va_end (ap);
-	return 1;
-      }
-  va_end (ap);
+    if (va_arg(ap, int) != a[i]) {
+      va_end(ap);
+      return 1;
+    }
+  va_end(ap);
   return 0;
 }
 // @rewrite-fn-end
@@ -30,18 +27,17 @@ int b, c;
 
 // @lowering-fn-begin
 // @rewrite-fn-begin
-int
-main ()
-{
-  if (foo (
-#embed __FILE__ limit (128)
-      ))
-    __builtin_abort ();
+int main() {
+  if (foo(
+#embed __FILE__ limit(128)
+          ))
+    __builtin_abort();
   b = (
-#embed __FILE__ limit (128) prefix (c = 2 * ) suffix ( + 6)	/* { dg-warning "right-hand operand of comma expression has no effect" } */
+#embed __FILE__ limit(128) prefix(c = 2 *) suffix(                             \
+    +6) /* { dg-warning "right-hand operand of comma expression has no effect" } */
   );
   if (b != a[127] + 6 || c != 2 * a[0])
-    __builtin_abort ();
+    __builtin_abort();
 }
 // @rewrite-fn-end
 // @lowering-fn-end
