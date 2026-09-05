@@ -171,17 +171,6 @@ fn collect_fixtures(
     }
 }
 
-fn fixture_clang_arg_overrides(name: &str) -> Vec<String> {
-    match name {
-        "goto_temp_cross_state" => vec!["-O2".to_string()],
-        "ptr_param_field_addr_of_mut" => vec!["-O2".to_string()],
-        "branch_hint_builtins" => vec!["-O1".to_string()],
-        "gnu_asm_register_variable" => vec!["-std=gnu23".to_string()],
-        "c23_typeof_unqual" => vec!["-std=gnu23".to_string()],
-        _ => Vec::new(),
-    }
-}
-
 fn msvc_translation_ready(name: &str) -> bool {
     matches!(
         name,
@@ -195,14 +184,6 @@ fn msvc_translation_ready(name: &str) -> bool {
             | "scalar_layout"
             | "stdio_surface"
     )
-}
-
-fn fixture_c_ref_std_override(name: &str) -> Option<String> {
-    match name {
-        "gnu_asm_register_variable" => Some("-std=gnu23".to_string()),
-        "c23_typeof_unqual" => Some("-std=gnu23".to_string()),
-        _ => None,
-    }
 }
 
 fn fixtures() -> Vec<Fixture> {
@@ -652,27 +633,33 @@ fn generated_differential() {
         .collect();
     let translated = support::parallel_map(&default_fixtures, |f| {
         let generated = tmp.join(format!("{}.generated.rs", f.name));
-        support::translate_with_args(&f.path, &generated, &fixture_clang_arg_overrides(&f.name))
-            .and_then(|()| {
-                let fixture = std::fs::read_to_string(&f.path)
-                    .map_err(|e| format!("read {}: {e}", f.path.display()))?;
-                let rust = std::fs::read_to_string(&generated)
-                    .map_err(|e| format!("read {}: {e}", generated.display()))?;
-                support::filecheck::check_generated_rust(
-                    &fixture,
-                    &rust,
-                    support::filecheck::Profile::active(),
-                    &tmp.join("filecheck").join(&f.name),
-                )?;
-                let mut config = support::RunConfig::default();
-                config.c_args.extend(fixture_c_ref_std_override(&f.name));
-                Ok(support::Case {
-                    name: f.name.clone(),
-                    c_src: f.path.clone(),
-                    rs_src: generated,
-                    config,
-                })
+        support::translate_with_args(
+            &f.path,
+            &generated,
+            &support::fixture_clang_arg_overrides(&f.name),
+        )
+        .and_then(|()| {
+            let fixture = std::fs::read_to_string(&f.path)
+                .map_err(|e| format!("read {}: {e}", f.path.display()))?;
+            let rust = std::fs::read_to_string(&generated)
+                .map_err(|e| format!("read {}: {e}", generated.display()))?;
+            support::filecheck::check_generated_rust(
+                &fixture,
+                &rust,
+                support::filecheck::Profile::active(),
+                &tmp.join("filecheck").join(&f.name),
+            )?;
+            let mut config = support::RunConfig::default();
+            config
+                .c_args
+                .extend(support::fixture_c_ref_std_override(&f.name));
+            Ok(support::Case {
+                name: f.name.clone(),
+                c_src: f.path.clone(),
+                rs_src: generated,
+                config,
             })
+        })
     });
     let mut cases = Vec::new();
     for (f, result) in default_fixtures.iter().zip(translated) {

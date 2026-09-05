@@ -58,15 +58,27 @@ fn run_cases(group: &str, dir: &Path) -> Vec<(String, Result<(), String>)> {
     let translated = support::parallel_map_with_jobs(&cases, jobs, |(name, path)| {
         let generated = work.join(format!("{name}.generated.rs"));
         let extra_args = support::dg_option_flags(path);
-        support::translate_with_args(path, &generated, &extra_args).map(|()| support::Case {
-            name: name.clone(),
-            c_src: path.clone(),
-            rs_src: generated,
-            config: support::RunConfig {
-                timeout_seconds: Some(5),
-                c_args: extra_args,
-                ..support::RunConfig::default()
-            },
+        support::translate_with_args(path, &generated, &extra_args).and_then(|()| {
+            let fixture = std::fs::read_to_string(path)
+                .map_err(|e| format!("read {}: {e}", path.display()))?;
+            let rust = std::fs::read_to_string(&generated)
+                .map_err(|e| format!("read {}: {e}", generated.display()))?;
+            support::filecheck::check_generated_rust(
+                &fixture,
+                &rust,
+                support::filecheck::Profile::active(),
+                &work.join("filecheck").join(name),
+            )?;
+            Ok(support::Case {
+                name: name.clone(),
+                c_src: path.clone(),
+                rs_src: generated,
+                config: support::RunConfig {
+                    timeout_seconds: Some(5),
+                    c_args: extra_args,
+                    ..support::RunConfig::default()
+                },
+            })
         })
     });
 
