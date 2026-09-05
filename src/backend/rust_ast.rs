@@ -2,6 +2,14 @@ use crate::function_identity::{CallBinding, FunctionIdentity};
 use ordered_float::OrderedFloat;
 use std::collections::BTreeSet;
 
+pub fn temp_index(name: &str) -> Option<u32> {
+    name.strip_prefix("__v")?.parse().ok()
+}
+
+pub fn is_temp_name(name: &str) -> bool {
+    temp_index(name).is_some()
+}
+
 #[derive(Debug, Clone, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Program {
     pub items: Vec<Item>,

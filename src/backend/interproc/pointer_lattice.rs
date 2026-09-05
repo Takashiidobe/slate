@@ -3,7 +3,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use crate::backend::interproc::{self, CallGraph};
 use crate::backend::rust_ast::{
     BinOp, Block, CLibType, Expr, FnDef, Ident, Item, Path, Prim, Program, RustValue, Stmt,
-    StructDef, StructFields, Type, UnaryOp, Visibility,
+    StructDef, StructFields, Type, UnaryOp, Visibility, is_temp_name,
 };
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 
@@ -1199,11 +1199,6 @@ impl ClassifyCtx<'_> {
             self.observe(canonical, PointerFact::observe_escape);
         }
     }
-}
-
-fn is_temp_name(name: &str) -> bool {
-    name.strip_prefix("_v")
-        .is_some_and(|rest| !rest.is_empty() && rest.bytes().all(|byte| byte.is_ascii_digit()))
 }
 
 fn peel_cast(expr: &Expr) -> &Expr {

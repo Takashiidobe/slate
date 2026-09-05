@@ -1,13 +1,8 @@
 use super::walk;
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
-use crate::backend::rust_ast::{BinOp, Expr, Ident, Prim, RustValue, Stmt, Type, UnaryOp};
+use crate::backend::rust_ast::{BinOp, Expr, Ident, Prim, RustValue, Stmt, Type, UnaryOp, is_temp_name};
 use crate::function_identity::CallBinding;
-
-fn is_temp_name(name: &str) -> bool {
-    name.strip_prefix("_v")
-        .is_some_and(|rest| !rest.is_empty() && rest.bytes().all(|byte| byte.is_ascii_digit()))
-}
 
 fn expr_ident(expr: &Expr) -> Option<Ident> {
     match expr {
