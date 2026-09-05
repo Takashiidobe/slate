@@ -1606,9 +1606,13 @@ fn apply_plans(
                 };
                 rewrite_stmts(&mut f.body, &ctx);
             }
-            Item::InlineMod { items, .. } => {
-                apply_plans(items, plans, param_names, param_mutability, field_mutability)
-            }
+            Item::InlineMod { items, .. } => apply_plans(
+                items,
+                plans,
+                param_names,
+                param_mutability,
+                field_mutability,
+            ),
             _ => {}
         }
     }
