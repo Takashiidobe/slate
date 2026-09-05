@@ -121,6 +121,56 @@ impl<'a> Lowerer<'a> {
         }
     }
 
+    pub(super) fn register_long_double_callback_trampolines(&mut self, module: &Module) {
+        for function in &module.functions {
+            if function.body.is_none() || function.varargs {
+                continue;
+            }
+            let name = &function.name;
+            if !self.c_abi_functions.contains(name) {
+                continue;
+            }
+            let params: Vec<Type> = function
+                .params
+                .iter()
+                .map(|(_, ty)| self.rust_type(ty))
+                .collect();
+            let ret = Some(self.rust_type(&function.return_ty))
+                .filter(|ty| !matches!(ty, Type::CLib(c) if *c == CLibType::VOID));
+            if !params.iter().any(type_mentions_long_double)
+                && !ret.as_ref().is_some_and(type_mentions_long_double)
+            {
+                continue;
+            }
+            let ret_shim_ty = ret.clone().unwrap_or(Type::Unit);
+            let trampoline = format!("__slate_ld_{}", sanitize_ident(name));
+            self.long_double_shims
+                .entry(trampoline.clone())
+                .or_insert_with(|| ExternFnDecl {
+                    attrs: Vec::new(),
+                    identity: FunctionIdentity::Unknown,
+                    name: trampoline.clone(),
+                    declared_type: None,
+                    trusted_headers: std::collections::BTreeSet::new(),
+                    params: params
+                        .iter()
+                        .enumerate()
+                        .map(|(i, ty)| FnParam {
+                            name: format!("_{i}"),
+                            mutable: false,
+                            ty: ty.clone(),
+                        })
+                        .collect(),
+                    variadic: false,
+                    ret: (!ret_shim_ty.is_unit()).then_some(ret_shim_ty),
+                    safe: true,
+                });
+            self.long_double_callback_trampolines
+                .entry(name.to_string())
+                .or_insert(trampoline);
+        }
+    }
+
     pub(super) fn lower_func(&mut self, function: &CirFunction) -> Option<Item> {
         let name = &function.name;
         let weak_alias_target = self.weak_aliases.values().any(|target| target == name);

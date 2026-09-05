@@ -84,9 +84,10 @@ int main(void) {
 // REWRITES-NEXT:     let mut holder: Holder = Holder {
 // REWRITES-NEXT:         mode: Mode::MODE_OFF,
 // REWRITES-NEXT:     };
-// REWRITES-NEXT:     holder = Holder {
+// REWRITES-NEXT:     let {{_v[0-9]+}}: Holder = Holder {
 // REWRITES-NEXT:         mode: Mode::MODE_ON,
 // REWRITES-NEXT:     };
+// REWRITES-NEXT:     holder = {{_v[0-9]+}};
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = (holder.mode as u32) == 1;
 // REWRITES-NEXT:     let {{_v[0-9]+}}: bool = if {{_v[0-9]+}} {
 // REWRITES-NEXT:         let {{_v[0-9]+}}: i32 = increment(1);

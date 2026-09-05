@@ -1121,6 +1121,7 @@ impl<'a> Lowerer<'a> {
         self.c_abi_functions = c_abi_function_targets(module);
         self.c_abi_functions
             .extend(self.project.address_taken_functions.iter().cloned());
+        self.register_long_double_callback_trampolines(module);
         self.va_list_boxed = !module_requires_native_va_list(
             module,
             &self.c_abi_functions,
