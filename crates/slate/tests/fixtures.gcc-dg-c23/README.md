@@ -3,9 +3,10 @@ Vendored from `gcc/testsuite/gcc.dg` at GCC commit
 
 Unlike `gcc.c-torture/execute`, `gcc.dg` is GCC's general test directory: most
 of it is `dg-do compile` (checking accepted/rejected diagnostics, not runtime
-behavior) and has nothing to differential-test. This corpus is scoped to the
+behavior) and has nothing to differential-test. The initial import selected
 `c23-*.c` cases (GCC's C23-conformance tests, renamed from `c2x-*` once C23
-was ratified) that are `dg-do run`.
+was ratified) that are `dg-do run`. A selective supplement now covers C23
+features in other runnable gcc.dg tests.
 
 The source snapshot is filtered with:
 
@@ -33,18 +34,19 @@ warning-but-allowing what clang treats as a hard error -- unrelated to Slate).
 Differential classification placed 22 admitted cases here and 20 in the
 unsupported tree.
 
-The supported bucket runs under `cargo nextest r --release --profile lowering`.
-The unsupported guard is ignored during the normal gate. To check the full
-unsupported bucket for cases ready to promote, run:
+Both buckets run under `cargo nextest r --release --profile lowering` and the
+`rewrites` profile. Supported cases must match C; the unsupported guard reports
+cases ready to promote. Fixtures with FileCheck directives also check generated
+Rust for the active profile. To check the full unsupported bucket, run:
 
 ```bash
-cargo nextest r --release --test gcc_dg_c23_suite -E 'test(gcc_dg_c23_unsupported_tests_still_fail)' --run-ignored ignored-only
+cargo nextest r --release --profile lowering --test gcc_dg_c23_suite -E 'test(gcc_dg_c23_unsupported_tests_still_fail)'
 ```
 
 To inspect one unsupported case, run:
 
 ```bash
-SLATE_GCC_DG_C23_FIXTURE=<case-stem> cargo nextest r --release --test gcc_dg_c23_suite -E 'test(gcc_dg_c23_unsupported_triage_report)' --run-ignored ignored-only --nocapture
+SLATE_GCC_DG_C23_FIXTURE=<case-stem> cargo nextest r --release --profile lowering --test gcc_dg_c23_suite --ignore-default-filter -E 'test(gcc_dg_c23_unsupported_triage_report)' --run-ignored ignored-only --nocapture
 ```
 
 The vendored sources remain under GCC's GPLv3 terms; `COPYING3` is retained

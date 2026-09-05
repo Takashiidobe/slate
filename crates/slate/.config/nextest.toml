@@ -13,23 +13,32 @@ default-filter = '''
     + binary_id(=slate::libc_test_api_suite)
     + binary_id(=slate::libc_test_functional_suite)
     + binary_id(=slate::header_compilation)
+    + binary_id(=slate::differential_aarch64)
   )
 '''
 
+[profile.aarch64-lowering]
+default-filter = 'binary_id(=slate::differential_aarch64)'
+
+[profile.aarch64-rewrites]
+default-filter = 'binary_id(=slate::differential_aarch64)'
+
 [profile.lowering]
 default-filter = '''
-  test(generated_differential)
-  + test(generated_cross_tu_filecheck)
-  + test(generated_library_filecheck)
-  + test(c_testsuite_supported_tests_match_c)
-  + test(chibicc_supported_tests_match_c)
-  + test(chibicc_unsupported_tests_still_fail)
-  + test(gcc_torture_supported_tests_match_c)
-  + test(gcc_torture_unsupported_tests_still_fail)
-  + test(gcc_dg_c23_supported_tests_match_c)
-  + test(gcc_dg_c23_unsupported_tests_still_fail)
-  + test(libc_test_functional_supported_tests_match_c)
-  + test(stdlib_coverage)
+  (
+    test(generated_differential)
+    + test(generated_cross_tu_filecheck)
+    + test(generated_library_filecheck)
+    + test(c_testsuite_supported_tests_match_c)
+    + test(chibicc_supported_tests_match_c)
+    + test(chibicc_unsupported_tests_still_fail)
+    + test(gcc_torture_supported_tests_match_c)
+    + test(gcc_torture_unsupported_tests_still_fail)
+    + test(gcc_dg_c23_supported_tests_match_c)
+    + test(gcc_dg_c23_unsupported_tests_still_fail)
+    + test(libc_test_functional_supported_tests_match_c)
+    + test(stdlib_coverage)
+  ) - binary_id(=slate::differential_aarch64)
 '''
 
 [[profile.default.overrides]]

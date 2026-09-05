@@ -19,6 +19,35 @@ pub struct Run {
     exit: Option<i32>,
 }
 
+pub fn fixture_clang_arg_overrides(name: &str) -> Vec<String> {
+    match name {
+        "goto_temp_cross_state" => vec!["-O2".to_string()],
+        "ptr_param_field_addr_of_mut" => vec!["-O2".to_string()],
+        "branch_hint_builtins" => vec!["-O1".to_string()],
+        "gnu_asm_register_variable" => vec!["-std=gnu23".to_string()],
+        "c23_typeof_unqual" => vec!["-std=gnu23".to_string()],
+        _ => Vec::new(),
+    }
+}
+
+pub fn fixture_c_ref_std_override(name: &str) -> Option<String> {
+    match name {
+        "gnu_asm_register_variable" => Some("-std=gnu23".to_string()),
+        "c23_typeof_unqual" => Some("-std=gnu23".to_string()),
+        _ => None,
+    }
+}
+
+pub struct CrossTarget {
+    pub rust_triple: &'static str,
+    pub cc: String,
+    pub cc_extra_args: Vec<String>,
+    pub cargo_linker_env: String,
+    pub linker: String,
+    pub qemu: String,
+    pub qemu_args: Vec<String>,
+}
+
 fn cc() -> String {
     std::env::var("SLATE_CC").unwrap_or_else(|_| "clang".into())
 }
@@ -173,7 +202,20 @@ pub fn compile_c(src: &Path, out: &Path) -> Result<(), String> {
 }
 
 pub fn compile_c_with_args(src: &Path, out: &Path, extra_args: &[String]) -> Result<(), String> {
-    let cache_key = serde_json::to_string(&(1, src, cc(), extra_args))
+    compile_c_with_args_for_target(src, out, extra_args, None)
+}
+
+pub fn compile_c_with_args_for_target(
+    src: &Path,
+    out: &Path,
+    extra_args: &[String],
+    cross: Option<&CrossTarget>,
+) -> Result<(), String> {
+    let cc_bin = cross.map_or_else(cc, |cross| cross.cc.clone());
+    let cc_extra_args = cross
+        .map(|cross| cross.cc_extra_args.clone())
+        .unwrap_or_default();
+    let cache_key = serde_json::to_string(&(1, src, &cc_bin, &cc_extra_args, extra_args))
         .map_err(|e| format!("encode C cache key: {e}"))?;
     let mut inputs = vec![src];
     inputs.extend(
@@ -183,15 +225,16 @@ pub fn compile_c_with_args(src: &Path, out: &Path, extra_args: &[String]) -> Res
             .filter(|argument| argument.is_file()),
     );
     compile_c_cached(&inputs, out, &cache_key, "C compile failed", |temporary| {
-        Command::new(cc())
+        Command::new(&cc_bin)
             .args(["-O0", "-std=c23"])
+            .args(&cc_extra_args)
             .args(extra_args)
             .arg("-o")
             .arg(temporary)
             .arg(src)
             .arg("-lm")
             .output()
-            .map_err(|e| format!("spawn {}: {e}", cc()))
+            .map_err(|e| format!("spawn {cc_bin}: {e}"))
     })
 }
 
@@ -687,11 +730,27 @@ pub fn compare_batch_with_jobs(
     work_dir: &Path,
     jobs: usize,
 ) -> Vec<(String, Result<(), String>)> {
+    compare_batch_with_jobs_for_target(cases, work_dir, jobs, None)
+}
+
+pub fn compare_batch_for_target(
+    cases: &[Case],
+    work_dir: &Path,
+    cross: Option<&CrossTarget>,
+) -> Vec<(String, Result<(), String>)> {
+    compare_batch_with_jobs_for_target(cases, work_dir, test_jobs(), cross)
+}
+
+pub fn compare_batch_with_jobs_for_target(
+    cases: &[Case],
+    work_dir: &Path,
+    jobs: usize,
+    cross: Option<&CrossTarget>,
+) -> Vec<(String, Result<(), String>)> {
     if cases.is_empty() {
         return Vec::new();
     }
 
-    // preserve the project so Cargo can reuse target artifacts across runs.
     let project = work_dir.join("batch_cargo");
     let bin_dir = project.join("src/bin");
     let rust_cases: Vec<RustCase> = cases
@@ -702,7 +761,7 @@ pub fn compare_batch_with_jobs(
         })
         .collect();
 
-    let batch_bins = build_batch(&rust_cases, &project, &bin_dir, jobs);
+    let batch_bins = build_batch(&rust_cases, &project, &bin_dir, jobs, cross);
 
     parallel_map_with_jobs(cases, jobs, |case| {
         let result = (|| {
@@ -714,7 +773,7 @@ pub fn compare_batch_with_jobs(
                 Err(error) => return Err(format!("Rust batch build failed:\n{error}")),
             };
             let c_bin = work_dir.join(format!("{}_c", bn));
-            compile_c_with_args(&case.c_src, &c_bin, &case.config.c_args)?;
+            compile_c_with_args_for_target(&case.c_src, &c_bin, &case.config.c_args, cross)?;
             let run_dir = work_dir.join("runs").join(&bn);
             if run_dir.exists() {
                 std::fs::remove_dir_all(&run_dir)
@@ -733,8 +792,8 @@ pub fn compare_batch_with_jobs(
                     .map_err(|e| format!("stage {}: {e}", extra.display()))?;
             }
             compare_runs(
-                &run_with_config(&c_bin, &case.config, &run_dir)?,
-                &run_with_config(&rs_bin, &case.config, &run_dir)?,
+                &run_with_config_for_target(&c_bin, &case.config, &run_dir, cross)?,
+                &run_with_config_for_target(&rs_bin, &case.config, &run_dir, cross)?,
                 case.config.compare_stderr,
             )
         })();
@@ -748,7 +807,7 @@ pub fn compile_rs_batch(cases: &[RustCase], work_dir: &Path) -> Vec<(String, Res
     }
     let project = work_dir.join("batch_cargo");
     let bin_dir = project.join("src/bin");
-    let batch = build_batch(cases, &project, &bin_dir, test_jobs());
+    let batch = build_batch(cases, &project, &bin_dir, test_jobs(), None);
     parallel_map(cases, |case| {
         let bn = bin_name(&case.name);
         let result = match &batch {
@@ -768,6 +827,7 @@ fn build_batch(
     project: &Path,
     bin_dir: &Path,
     jobs: usize,
+    cross: Option<&CrossTarget>,
 ) -> Result<BatchBuild, String> {
     std::fs::create_dir_all(bin_dir).map_err(|e| format!("create {}: {e}", bin_dir.display()))?;
     write_if_changed(
@@ -803,19 +863,27 @@ fn build_batch(
     let target_dir = test_target_dir_for_project(project);
     std::fs::create_dir_all(&target_dir)
         .map_err(|e| format!("create {}: {e}", target_dir.display()))?;
-    let o = Command::new(cargo())
+    let mut command = Command::new(cargo());
+    command
         .args([
             "build",
             "--quiet",
             "--keep-going",
-            "--message-format=json-render-diagnostics",
+            "--message-format=json",
             "--manifest-path",
         ])
         .arg(project.join("Cargo.toml"))
         .arg("--jobs")
         .arg(jobs.max(1).to_string())
         .arg("--target-dir")
-        .arg(&target_dir)
+        .arg(&target_dir);
+    if let Some(cross) = cross {
+        command
+            .arg("--target")
+            .arg(cross.rust_triple)
+            .env(&cross.cargo_linker_env, &cross.linker);
+    }
+    let o = command
         .output()
         .map_err(|e| format!("spawn {}: {e}", cargo()))?;
 
@@ -929,7 +997,7 @@ pub fn build_multi_bin_batch(cases: &[MultiBinCase], project: &Path) -> Result<B
             "build",
             "--quiet",
             "--keep-going",
-            "--message-format=json-render-diagnostics",
+            "--message-format=json",
             "--manifest-path",
         ])
         .arg(project.join("Cargo.toml"))
@@ -1040,10 +1108,26 @@ pub fn write_if_changed(path: impl AsRef<Path>, contents: &[u8]) -> std::io::Res
 }
 
 pub fn run_with_config(bin: &Path, config: &RunConfig, cwd: &Path) -> Result<Run, String> {
+    run_with_config_for_target(bin, config, cwd, None)
+}
+
+pub fn run_with_config_for_target(
+    bin: &Path,
+    config: &RunConfig,
+    cwd: &Path,
+    cross: Option<&CrossTarget>,
+) -> Result<Run, String> {
     let mut cmd = if let Some(seconds) = config.timeout_seconds {
         let mut cmd = Command::new("timeout");
-        cmd.args(["--kill-after=1", &format!("{seconds}s")])
-            .arg(bin);
+        cmd.args(["--kill-after=1", &format!("{seconds}s")]);
+        if let Some(cross) = cross {
+            cmd.arg(&cross.qemu).args(&cross.qemu_args);
+        }
+        cmd.arg(bin);
+        cmd
+    } else if let Some(cross) = cross {
+        let mut cmd = Command::new(&cross.qemu);
+        cmd.args(&cross.qemu_args).arg(bin);
         cmd
     } else {
         Command::new(bin)
