@@ -856,43 +856,51 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             .map(|ty| simd_type(ty).unwrap_or_else(|| ty.clone()))
             .collect();
         let shim_ret_type = ret_type.as_ref().and_then(simd_type);
+        let long_double_shim =
+            long_double_intrinsic_shim(&op.intrinsic_name, &param_types, ret_type.as_ref());
 
-        let sanitized = sanitize_ident(&op.intrinsic_name);
-        let sig_key = format!("{sanitized}__{shim_ret_type:?}__{shim_param_types:?}");
-        let sig_hash = {
-            use std::hash::{Hash, Hasher};
-            let mut hasher = std::collections::hash_map::DefaultHasher::new();
-            sig_key.hash(&mut hasher);
-            hasher.finish()
+        let shim_name = if let Some(shim) = long_double_shim {
+            shim.to_string()
+        } else {
+            let sanitized = sanitize_ident(&op.intrinsic_name);
+            let sig_key = format!("{sanitized}__{shim_ret_type:?}__{shim_param_types:?}");
+            let sig_hash = {
+                use std::hash::{Hash, Hasher};
+                let mut hasher = std::collections::hash_map::DefaultHasher::new();
+                sig_key.hash(&mut hasher);
+                hasher.finish()
+            };
+            format!("__slate_intrinsic_{sanitized}_{sig_hash:x}")
         };
-        let shim_name = format!("__slate_intrinsic_{sanitized}_{sig_hash:x}");
 
         let link_name = stdarch_override
             .map(|entry| entry.link_name.to_string())
             .unwrap_or_else(|| mangled_link_name(&op.intrinsic_name, &raw_ret_type, &param_types));
 
-        self.parent
-            .llvm_intrinsic_shims
-            .entry(shim_name.clone())
-            .or_insert_with(|| ExternFnDecl {
-                attrs: vec![RustAttr::LinkName(link_name)],
-                identity: FunctionIdentity::Unknown,
-                name: shim_name.clone(),
-                declared_type: None,
-                trusted_headers: std::collections::BTreeSet::new(),
-                params: shim_param_types
-                    .iter()
-                    .enumerate()
-                    .map(|(i, ty)| FnParam {
-                        name: format!("_{i}"),
-                        mutable: false,
-                        ty: ty.clone(),
-                    })
-                    .collect(),
-                variadic: false,
-                ret: shim_ret_type.clone().or_else(|| ret_type.clone()),
-                safe: false,
-            });
+        if long_double_shim.is_none() {
+            self.parent
+                .llvm_intrinsic_shims
+                .entry(shim_name.clone())
+                .or_insert_with(|| ExternFnDecl {
+                    attrs: vec![RustAttr::LinkName(link_name)],
+                    identity: FunctionIdentity::Unknown,
+                    name: shim_name.clone(),
+                    declared_type: None,
+                    trusted_headers: std::collections::BTreeSet::new(),
+                    params: shim_param_types
+                        .iter()
+                        .enumerate()
+                        .map(|(i, ty)| FnParam {
+                            name: format!("_{i}"),
+                            mutable: false,
+                            ty: ty.clone(),
+                        })
+                        .collect(),
+                    variadic: false,
+                    ret: shim_ret_type.clone().or_else(|| ret_type.clone()),
+                    safe: false,
+                });
+        }
 
         let args: Vec<Expr> = op
             .arg_ops
@@ -985,6 +993,62 @@ fn simd_to_array_expr(expr: Expr) -> Expr {
         recv: Box::new(expr),
         method: "to_array".into(),
         args: vec![],
+    }
+}
+
+fn long_double_intrinsic_shim(
+    intrinsic_name: &str,
+    param_types: &[Type],
+    ret_type: Option<&Type>,
+) -> Option<&'static str> {
+    if !matches!(ret_type, Some(Type::LongDouble)) {
+        return None;
+    }
+    let all_long_double = |count: usize| {
+        param_types.len() == count && param_types.iter().all(|ty| matches!(ty, Type::LongDouble))
+    };
+    match intrinsic_name {
+        "powi" if param_types == [Type::LongDouble, Type::Prim(Prim::I32)] => {
+            Some("__slate_f80_powi")
+        }
+        "copysign" if all_long_double(2) => Some("__slate_f80_copysign"),
+        "fmax" if all_long_double(2) => Some("__slate_f80_fmax"),
+        "fmin" if all_long_double(2) => Some("__slate_f80_fmin"),
+        "fma" if all_long_double(3) => Some("__slate_f80_fma"),
+        "fmod" if all_long_double(2) => Some("__slate_f80_fmod"),
+        "remainder" if all_long_double(2) => Some("__slate_f80_remainder"),
+        "pow" if all_long_double(2) => Some("__slate_f80_pow"),
+        "fdim" if all_long_double(2) => Some("__slate_f80_fdim"),
+        "hypot" if all_long_double(2) => Some("__slate_f80_hypot"),
+        "abs" | "fabs" if all_long_double(1) => Some("__slate_f80_abs"),
+        "ceil" if all_long_double(1) => Some("__slate_f80_ceil"),
+        "floor" if all_long_double(1) => Some("__slate_f80_floor"),
+        "sqrt" if all_long_double(1) => Some("__slate_f80_sqrt"),
+        "cbrt" if all_long_double(1) => Some("__slate_f80_cbrt"),
+        "exp" if all_long_double(1) => Some("__slate_f80_exp"),
+        "exp2" if all_long_double(1) => Some("__slate_f80_exp2"),
+        "expm1" if all_long_double(1) => Some("__slate_f80_expm1"),
+        "log" if all_long_double(1) => Some("__slate_f80_log"),
+        "log2" if all_long_double(1) => Some("__slate_f80_log2"),
+        "log10" if all_long_double(1) => Some("__slate_f80_log10"),
+        "log1p" if all_long_double(1) => Some("__slate_f80_log1p"),
+        "sin" if all_long_double(1) => Some("__slate_f80_sin"),
+        "cos" if all_long_double(1) => Some("__slate_f80_cos"),
+        "tan" if all_long_double(1) => Some("__slate_f80_tan"),
+        "asin" if all_long_double(1) => Some("__slate_f80_asin"),
+        "acos" if all_long_double(1) => Some("__slate_f80_acos"),
+        "atan" if all_long_double(1) => Some("__slate_f80_atan"),
+        "sinh" if all_long_double(1) => Some("__slate_f80_sinh"),
+        "cosh" if all_long_double(1) => Some("__slate_f80_cosh"),
+        "tanh" if all_long_double(1) => Some("__slate_f80_tanh"),
+        "asinh" if all_long_double(1) => Some("__slate_f80_asinh"),
+        "acosh" if all_long_double(1) => Some("__slate_f80_acosh"),
+        "atanh" if all_long_double(1) => Some("__slate_f80_atanh"),
+        "nearbyint" if all_long_double(1) => Some("__slate_f80_nearbyint"),
+        "round" if all_long_double(1) => Some("__slate_f80_round"),
+        "trunc" if all_long_double(1) => Some("__slate_f80_trunc"),
+        "rint" if all_long_double(1) => Some("__slate_f80_rint"),
+        _ => None,
     }
 }
 
