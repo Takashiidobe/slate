@@ -15,8 +15,8 @@ int main(void) {
 // DIRECTIVES-DAG: #[cfg(unix)]
 // DIRECTIVES-DAG: #[cfg(not(unix))]
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn unix_code() -> i32 {
-// REWRITES-DAG:     1
-// REWRITES-DAG: }
-// SLATE-FILECHECK-END rewrites
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES-DAG: fn unix_code() -> i32 {
+// COMMON-REWRITES-DAG:     1
+// COMMON-REWRITES-DAG: }
+// SLATE-FILECHECK-END common-rewrites

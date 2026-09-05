@@ -15,8 +15,15 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn arm_endian_code() -> i32 {
-// REWRITES-DAG:     0
-// REWRITES-DAG: }
-// SLATE-FILECHECK-END rewrites
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES-DAG: fn arm_endian_code() -> i32 {
+// COMMON-REWRITES-DAG: }
+// SLATE-FILECHECK-END common-rewrites
+
+// SLATE-FILECHECK-BEGIN rewrites-x86_64-gnu
+// REWRITES-X86_64-GNU-DAG:     0
+// SLATE-FILECHECK-END rewrites-x86_64-gnu
+
+// SLATE-FILECHECK-BEGIN rewrites-aarch64-gnu
+// REWRITES-AARCH64-GNU-DAG:     200
+// SLATE-FILECHECK-END rewrites-aarch64-gnu

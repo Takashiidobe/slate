@@ -26,8 +26,8 @@ int main(void) {
 // DIRECTIVES-DAG: #[cfg(target_vendor = "apple")]
 // DIRECTIVES-DAG: #[cfg(target_os = "freebsd")]
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn os_code() -> i32 {
-// REWRITES-DAG:     20
-// REWRITES-DAG: }
-// SLATE-FILECHECK-END rewrites
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES-DAG: fn os_code() -> i32 {
+// COMMON-REWRITES-DAG:     20
+// COMMON-REWRITES-DAG: }
+// SLATE-FILECHECK-END common-rewrites

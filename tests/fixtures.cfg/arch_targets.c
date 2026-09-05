@@ -41,8 +41,15 @@ int main(void) {
 // DIRECTIVES-DAG: #[cfg(target_arch = "riscv64")]
 // DIRECTIVES-DAG: #[cfg(target_arch = "riscv32")]
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn arch_code() -> i32 {
-// REWRITES-DAG:     64
-// REWRITES-DAG: }
-// SLATE-FILECHECK-END rewrites
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES-DAG: fn arch_code() -> i32 {
+// COMMON-REWRITES-DAG: }
+// SLATE-FILECHECK-END common-rewrites
+
+// SLATE-FILECHECK-BEGIN rewrites-x86_64-gnu
+// REWRITES-X86_64-GNU-DAG:     64
+// SLATE-FILECHECK-END rewrites-x86_64-gnu
+
+// SLATE-FILECHECK-BEGIN rewrites-aarch64-gnu
+// REWRITES-AARCH64-GNU-DAG:     128
+// SLATE-FILECHECK-END rewrites-aarch64-gnu

@@ -15,8 +15,8 @@ int main(void) {
 // DIRECTIVES-DAG: #[cfg(all(windows, target_pointer_width = "64"))]
 // DIRECTIVES-DAG: #[cfg(not(all(windows, target_pointer_width = "64")))]
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn win64_code() -> i32 {
-// REWRITES-DAG:     0
-// REWRITES-DAG: }
-// SLATE-FILECHECK-END rewrites
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES-DAG: fn win64_code() -> i32 {
+// COMMON-REWRITES-DAG:     0
+// COMMON-REWRITES-DAG: }
+// SLATE-FILECHECK-END common-rewrites
