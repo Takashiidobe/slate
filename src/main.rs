@@ -712,6 +712,7 @@ harness = false
         ""
     };
     let autobins_line = if autobins { "" } else { "autobins = false\n" };
+    let bitfields_path = Path::new(env!("CARGO_MANIFEST_DIR")).join("vendor/bitfields");
     format!(
         r#"[package]
 name = "{package}"
@@ -723,13 +724,14 @@ libc = "0.2"
 aligned = {{ path = "aligned" }}
 bitint = {{ path = "bitint" }}
 num-complex = {{ path = "num-complex", default-features = false }}
-bitfields = "3.0.0"
+bitfields = {{ path = "{}" }}
 {support_dependency}
 {build_section}
 [profile.dev]
 overflow-checks = false
 codegen-units = 256
-{test_targets}"#
+{test_targets}"#,
+        bitfields_path.display()
     )
 }
 
@@ -945,7 +947,7 @@ fn project_warning_items(
             .as_ref()
             .map(|condition| {
                 preprocess::pred_to_cfg(condition).ok_or_else(|| {
-                    format!(
+    format!(
                         "{context}: #warning at line {} is guarded by predicate `{}` which does not map to a known Rust cfg",
                         directive.line_start,
                         preprocess::predicate_text(condition)

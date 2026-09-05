@@ -126,6 +126,18 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BUint<BITS, LIMB
         }
     }
 
+    pub const fn from_le_bytes<const SBITS: usize, const SBYTES: usize>(
+        bytes: [u8; SBYTES],
+    ) -> Self {
+        Self {
+            bytes: cast_bytes::<BITS, BYTES, SBITS, SBYTES>(&bytes, false),
+        }
+    }
+
+    pub const fn to_le_bytes<const DBYTES: usize>(self) -> [u8; DBYTES] {
+        cast_bytes::<BITS, DBYTES, BITS, BYTES>(&self.bytes, false)
+    }
+
     pub const fn to_u128(self) -> u128 {
         self.to_limbs().to_u128()
     }
@@ -437,6 +449,18 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize> BInt<BITS, LIMBS
         Self {
             bytes: cast_bytes::<BITS, BYTES, SBITS, SBYTES>(&v.bytes, false),
         }
+    }
+
+    pub const fn from_le_bytes<const SBITS: usize, const SBYTES: usize>(
+        bytes: [u8; SBYTES],
+    ) -> Self {
+        Self {
+            bytes: cast_bytes::<BITS, BYTES, SBITS, SBYTES>(&bytes, true),
+        }
+    }
+
+    pub const fn to_le_bytes<const DBYTES: usize>(self) -> [u8; DBYTES] {
+        cast_bytes::<BITS, DBYTES, BITS, BYTES>(&self.bytes, false)
     }
 
     pub const fn from_bint<const SBITS: usize, const SLIMBS: usize, const SBYTES: usize>(
