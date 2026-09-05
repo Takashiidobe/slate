@@ -1176,9 +1176,10 @@ impl<'a> Lowerer<'a> {
             Visibility::Private,
         ));
 
+        let mut lowered_enum_names = BTreeSet::new();
         for enm in &c.enums {
             let name = sanitize_ident(&enm.name).into_string();
-            if self.project.shared_enums.contains(&name) {
+            if self.project.shared_enums.contains(&name) || !lowered_enum_names.insert(name) {
                 continue;
             }
             if let Some(item) = self.lower_enum(enm) {
