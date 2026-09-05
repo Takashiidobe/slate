@@ -47,6 +47,58 @@ fn collect_cases(dir: &Path) -> Vec<(String, PathBuf)> {
     cases
 }
 
+fn dg_option_flags(path: &Path) -> Vec<String> {
+    let Ok(text) = std::fs::read_to_string(path) else {
+        return Vec::new();
+    };
+    let mut flags = Vec::new();
+    for line in text.lines() {
+        if !line.contains("dg-options") && !line.contains("dg-additional-options") {
+            continue;
+        }
+        let Some(quote_start) = line.find('"') else {
+            continue;
+        };
+        let rest = &line[quote_start + 1..];
+        let Some(quote_len) = rest.find('"') else {
+            continue;
+        };
+        let quoted = &rest[..quote_len];
+        let after = &rest[quote_len + 1..];
+        if after.contains("target") && !dg_target_clause_applies(after) {
+            continue;
+        }
+        flags.extend(
+            quoted
+                .split_whitespace()
+                .filter(|flag| is_semantic_dg_flag(flag))
+                .map(str::to_string),
+        );
+    }
+    flags
+}
+
+fn dg_target_clause_applies(clause: &str) -> bool {
+    if clause.contains("ia32") {
+        return false;
+    }
+    clause.contains("x86_64") || clause.contains("i?86") || clause.contains("i386")
+}
+
+fn is_semantic_dg_flag(flag: &str) -> bool {
+    matches!(
+        flag,
+        "-fwrapv"
+            | "-fno-strict-overflow"
+            | "-fno-strict-aliasing"
+            | "-fno-trapping-math"
+            | "-ffast-math"
+            | "-fno-common"
+            | "-mno-mmx"
+    ) || flag.starts_with("-std=")
+        || flag.starts_with("-finput-charset=")
+}
+
 fn run_cases(group: &str, dir: &Path) -> Vec<(String, Result<(), String>)> {
     let cases = collect_cases(dir);
     let jobs = gcc_torture_jobs();
@@ -57,12 +109,14 @@ fn run_cases(group: &str, dir: &Path) -> Vec<(String, Result<(), String>)> {
 
     let translated = support::parallel_map_with_jobs(&cases, jobs, |(name, path)| {
         let generated = work.join(format!("{name}.generated.rs"));
-        support::translate(path, &generated).map(|()| support::Case {
+        let extra_args = dg_option_flags(path);
+        support::translate_with_args(path, &generated, &extra_args).map(|()| support::Case {
             name: name.clone(),
             c_src: path.clone(),
             rs_src: generated,
             config: support::RunConfig {
                 timeout_seconds: Some(5),
+                c_args: extra_args,
                 ..support::RunConfig::default()
             },
         })
