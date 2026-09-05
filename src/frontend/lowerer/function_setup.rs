@@ -385,6 +385,12 @@ impl<'a> Lowerer<'a> {
             .cloned()
             .unwrap_or_default()
             .into();
+        let imaginary_promotion_consts: VecDeque<_> = self
+            .imaginary_promotion_consts
+            .get(name)
+            .cloned()
+            .unwrap_or_default()
+            .into();
         let asm_gotos: VecDeque<_> = self.asm_gotos.get(name).cloned().unwrap_or_default().into();
         if self.naked_functions.contains(name) {
             return self.lower_naked_func(name, body, attrs, vis, params, ret);
@@ -454,6 +460,7 @@ impl<'a> Lowerer<'a> {
             va_args_param,
             layout_queries,
             macro_consts,
+            imaginary_promotion_consts,
             enum_consts,
             macro_arith_values: BTreeMap::new(),
             asm_outputs: BTreeMap::new(),

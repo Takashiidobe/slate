@@ -137,6 +137,7 @@ pub struct Function {
     pub enum_consts: Vec<EnumConstRef>,
     pub asm_gotos: Vec<AsmGoto>,
     pub local_enum_decls: Vec<LocalEnumDecl>,
+    pub imaginary_promotion_consts: Vec<FloatingLiteralFact>,
 }
 
 #[derive(Debug, Clone)]
@@ -1830,7 +1831,61 @@ fn extract_function(
         enum_consts: collect_enum_const_refs(node, source_text, enum_const_ids),
         asm_gotos: collect_asm_gotos(node, source_text, asm_goto_events),
         local_enum_decls: collect_local_enum_decls(node),
+        imaginary_promotion_consts: collect_imaginary_promotion_consts(node),
     })
+}
+
+fn collect_imaginary_promotion_consts(node: &Value) -> Vec<FloatingLiteralFact> {
+    let mut out = Vec::new();
+    collect_imaginary_promotion_consts_at(node, &mut out);
+    out
+}
+
+fn collect_imaginary_promotion_consts_at(node: &Value, out: &mut Vec<FloatingLiteralFact>) {
+    let opcode = node.get("opcode").and_then(Value::as_str);
+    let is_complex_long_double_op = kind(node) == Some("BinaryOperator")
+        && matches!(opcode, Some("+") | Some("-"))
+        && qual_type(node).is_some_and(|ty| ty.contains("Complex") && ty.contains("long double"));
+    if is_complex_long_double_op && let [lhs, rhs] = children(node).as_slice() {
+        let real_lhs_imaginary_rhs = kind(lhs) == Some("FloatingLiteral")
+            && qual_type(lhs) == Some("long double")
+            && kind(rhs) == Some("ImaginaryLiteral");
+        let imaginary_lhs_real_rhs = kind(rhs) == Some("FloatingLiteral")
+            && qual_type(rhs) == Some("long double")
+            && kind(lhs) == Some("ImaginaryLiteral");
+        let operands = if real_lhs_imaginary_rhs {
+            Some((true, rhs))
+        } else if imaginary_lhs_real_rhs {
+            Some((false, lhs))
+        } else {
+            None
+        };
+        if let Some((real_is_lhs, imaginary_operand)) = operands
+            && let [imag] = children(imaginary_operand).as_slice()
+            && kind(imag) == Some("FloatingLiteral")
+            && let Some(value) = imag.get("value").and_then(Value::as_str)
+        {
+            out.push(FloatingLiteralFact {
+                value: "0".to_string(),
+                bits: String::new(),
+                bit_width: 0,
+            });
+            let literal_fact = FloatingLiteralFact {
+                value: value.to_string(),
+                bits: String::new(),
+                bit_width: 0,
+            };
+            out.push(if opcode == Some("-") && real_is_lhs {
+                negate_floating_literal_fact(literal_fact)
+            } else {
+                literal_fact
+            });
+            return;
+        }
+    }
+    for child in children(node) {
+        collect_imaginary_promotion_consts_at(child, out);
+    }
 }
 
 fn collect_local_enum_decls(node: &Value) -> Vec<LocalEnumDecl> {

@@ -85,7 +85,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.materialize_expr(result, expr, result_ty);
             return;
         }
-        let fact = self.ast_floating_literal(op.loc.as_ref());
+        let fact = self
+            .ast_floating_literal(op.loc.as_ref())
+            .or_else(|| self.next_imaginary_promotion_const(&attr));
         let mut facts = fact.into_iter().collect();
         let expr = match self
             .parent
@@ -987,6 +989,25 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             };
         }
         Some(expr)
+    }
+
+    pub(super) fn next_imaginary_promotion_const(
+        &mut self,
+        attr: &Attr,
+    ) -> Option<FloatingLiteralFact> {
+        let fact = self.imaginary_promotion_consts.front()?;
+        let expected: f64 = match attr {
+            Attr::Float { text, .. } | Attr::CirFloat { value: text, .. } => {
+                text.trim().parse().ok()?
+            }
+            _ => return None,
+        };
+        let candidate: f64 = fact.value.parse().ok()?;
+        let tolerance = (expected.abs() * 1e-6).max(1e-6);
+        if (candidate - expected).abs() > tolerance {
+            return None;
+        }
+        self.imaginary_promotion_consts.pop_front()
     }
 
     pub(super) fn next_long_double_macro_const_expr(

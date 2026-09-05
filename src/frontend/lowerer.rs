@@ -277,6 +277,16 @@ pub fn lower_with_project(cir: &Module, c: &Unit, ctx: &mut Ctx, project: &Proje
             .iter()
             .map(|function| (function.name.clone(), function.macro_consts.clone()))
             .collect(),
+        imaginary_promotion_consts: c
+            .functions
+            .iter()
+            .map(|function| {
+                (
+                    function.name.clone(),
+                    function.imaginary_promotion_consts.clone(),
+                )
+            })
+            .collect(),
         floating_literals: c.floating_literals.clone(),
         global_floating_literals: c.global_floating_literals.clone(),
         long_double_callback_trampolines: BTreeMap::new(),
@@ -831,6 +841,7 @@ struct Lowerer<'a> {
     generated_alloca_frames: Vec<StructDef>,
     layout_queries: BTreeMap<String, Vec<LayoutQuery>>,
     macro_consts: BTreeMap<String, Vec<MacroConst>>,
+    imaginary_promotion_consts: BTreeMap<String, Vec<FloatingLiteralFact>>,
     floating_literals: HashMap<FloatingLiteralLoc, FloatingLiteralFact>,
     global_floating_literals: HashMap<String, Vec<FloatingLiteralFact>>,
     long_double_callback_trampolines: BTreeMap<String, String>,
@@ -881,6 +892,7 @@ struct FunctionLowerer<'a, 'b> {
     va_args_param: Option<String>,
     layout_queries: VecDeque<LayoutQuery>,
     macro_consts: VecDeque<MacroConst>,
+    imaginary_promotion_consts: VecDeque<FloatingLiteralFact>,
     enum_consts: VecDeque<EnumConstRef>,
     macro_arith_values: BTreeMap<String, i128>,
     asm_outputs: BTreeMap<String, Vec<Expr>>,
