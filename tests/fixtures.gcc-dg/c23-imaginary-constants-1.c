@@ -453,12 +453,10 @@ int main() {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn main() {
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { a };
 // REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { a };
 // REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { __mulsc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
-// REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -1.0, im: 0.0 };
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != num_complex::Complex { re: -1.0, im: 0.0 };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
 // REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
 // REWRITES-DAG:         {{__v[0-9]+}}
@@ -467,8 +465,7 @@ int main() {
 // REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { b };
 // REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> =
 // REWRITES-DAG:             unsafe { __mulsc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -4.0, im: 0.0 };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != num_complex::Complex { re: -4.0, im: 0.0 };
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
@@ -479,8 +476,7 @@ int main() {
 // REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { c };
 // REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> =
 // REWRITES-DAG:             unsafe { __mulsc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -9.0, im: 0.0 };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != num_complex::Complex { re: -9.0, im: 0.0 };
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
@@ -491,8 +487,7 @@ int main() {
 // REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { d };
 // REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> =
 // REWRITES-DAG:             unsafe { __mulsc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -16.0, im: 0.0 };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != num_complex::Complex { re: -16.0, im: 0.0 };
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
@@ -503,8 +498,7 @@ int main() {
 // REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { e };
 // REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> =
 // REWRITES-DAG:             unsafe { __muldc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -1.0, im: 0.0 };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != num_complex::Complex { re: -1.0, im: 0.0 };
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
@@ -515,8 +509,7 @@ int main() {
 // REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { f };
 // REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> =
 // REWRITES-DAG:             unsafe { __muldc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -4.0, im: 0.0 };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != num_complex::Complex { re: -4.0, im: 0.0 };
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
@@ -527,8 +520,7 @@ int main() {
 // REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { g };
 // REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> =
 // REWRITES-DAG:             unsafe { __muldc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -9.0, im: 0.0 };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != num_complex::Complex { re: -9.0, im: 0.0 };
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
@@ -539,8 +531,7 @@ int main() {
 // REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { h };
 // REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> =
 // REWRITES-DAG:             unsafe { __muldc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -16.0, im: 0.0 };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != num_complex::Complex { re: -16.0, im: 0.0 };
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
@@ -561,11 +552,11 @@ int main() {
 // REWRITES-DAG:                 },
 // REWRITES-DAG:             )
 // REWRITES-DAG:         };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:             re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]),
-// REWRITES-DAG:             im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// REWRITES-DAG:         };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}
+// REWRITES-DAG:             != num_complex::Complex {
+// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]),
+// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-DAG:             };
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
@@ -586,11 +577,11 @@ int main() {
 // REWRITES-DAG:                 },
 // REWRITES-DAG:             )
 // REWRITES-DAG:         };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:             re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 192]),
-// REWRITES-DAG:             im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// REWRITES-DAG:         };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}
+// REWRITES-DAG:             != num_complex::Complex {
+// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 192]),
+// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-DAG:             };
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
@@ -611,11 +602,11 @@ int main() {
 // REWRITES-DAG:                 },
 // REWRITES-DAG:             )
 // REWRITES-DAG:         };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:             re: LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 2, 192]),
-// REWRITES-DAG:             im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// REWRITES-DAG:         };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}
+// REWRITES-DAG:             != num_complex::Complex {
+// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 2, 192]),
+// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-DAG:             };
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
@@ -636,11 +627,11 @@ int main() {
 // REWRITES-DAG:                 },
 // REWRITES-DAG:             )
 // REWRITES-DAG:         };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:             re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 3, 192]),
-// REWRITES-DAG:             im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// REWRITES-DAG:         };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}
+// REWRITES-DAG:             != num_complex::Complex {
+// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 3, 192]),
+// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-DAG:             };
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
@@ -651,8 +642,7 @@ int main() {
 // REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { m };
 // REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> =
 // REWRITES-DAG:             unsafe { __mulsc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -1.0, im: 0.0 };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != num_complex::Complex { re: -1.0, im: 0.0 };
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
@@ -663,8 +653,7 @@ int main() {
 // REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { n };
 // REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> =
 // REWRITES-DAG:             unsafe { __mulsc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -4.0, im: 0.0 };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != num_complex::Complex { re: -4.0, im: 0.0 };
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
@@ -675,8 +664,7 @@ int main() {
 // REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { o };
 // REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> =
 // REWRITES-DAG:             unsafe { __mulsc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -9.0, im: 0.0 };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != num_complex::Complex { re: -9.0, im: 0.0 };
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
@@ -687,8 +675,7 @@ int main() {
 // REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { p };
 // REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> =
 // REWRITES-DAG:             unsafe { __mulsc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: -16.0, im: 0.0 };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != num_complex::Complex { re: -16.0, im: 0.0 };
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
@@ -699,8 +686,7 @@ int main() {
 // REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { q };
 // REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> =
 // REWRITES-DAG:             unsafe { __muldc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -1.0, im: 0.0 };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != num_complex::Complex { re: -1.0, im: 0.0 };
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
@@ -711,8 +697,7 @@ int main() {
 // REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { r };
 // REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> =
 // REWRITES-DAG:             unsafe { __muldc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -4.0, im: 0.0 };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != num_complex::Complex { re: -4.0, im: 0.0 };
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
@@ -723,8 +708,7 @@ int main() {
 // REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { s };
 // REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> =
 // REWRITES-DAG:             unsafe { __muldc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -9.0, im: 0.0 };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != num_complex::Complex { re: -9.0, im: 0.0 };
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
@@ -735,8 +719,7 @@ int main() {
 // REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { t };
 // REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> =
 // REWRITES-DAG:             unsafe { __muldc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: -16.0, im: 0.0 };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != num_complex::Complex { re: -16.0, im: 0.0 };
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
@@ -757,11 +740,11 @@ int main() {
 // REWRITES-DAG:                 },
 // REWRITES-DAG:             )
 // REWRITES-DAG:         };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:             re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]),
-// REWRITES-DAG:             im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// REWRITES-DAG:         };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}
+// REWRITES-DAG:             != num_complex::Complex {
+// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]),
+// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-DAG:             };
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
@@ -782,11 +765,11 @@ int main() {
 // REWRITES-DAG:                 },
 // REWRITES-DAG:             )
 // REWRITES-DAG:         };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:             re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 192]),
-// REWRITES-DAG:             im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// REWRITES-DAG:         };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}
+// REWRITES-DAG:             != num_complex::Complex {
+// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 192]),
+// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-DAG:             };
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
@@ -807,11 +790,11 @@ int main() {
 // REWRITES-DAG:                 },
 // REWRITES-DAG:             )
 // REWRITES-DAG:         };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:             re: LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 2, 192]),
-// REWRITES-DAG:             im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// REWRITES-DAG:         };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}
+// REWRITES-DAG:             != num_complex::Complex {
+// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 2, 192]),
+// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-DAG:             };
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
@@ -832,16 +815,16 @@ int main() {
 // REWRITES-DAG:                 },
 // REWRITES-DAG:             )
 // REWRITES-DAG:         };
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = num_complex::Complex {
-// REWRITES-DAG:             re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 3, 192]),
-// REWRITES-DAG:             im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// REWRITES-DAG:         };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}
+// REWRITES-DAG:             != num_complex::Complex {
+// REWRITES-DAG:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 3, 192]),
+// REWRITES-DAG:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// REWRITES-DAG:             };
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     };
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { std::process::abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// REWRITES-DAG:     std::process::exit(0 as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

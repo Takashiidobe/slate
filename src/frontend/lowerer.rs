@@ -446,10 +446,11 @@ pub fn lower_shared_types(
     if shared_types_use_long_double(records) {
         items.extend(long_double_prelude(Visibility::Pub));
         let decls = f80_shim_decls();
-        if decls
-            .iter()
-            .any(|decl| decl.params.iter().any(|param| type_mentions_f128(&param.ty)))
-        {
+        if decls.iter().any(|decl| {
+            decl.params
+                .iter()
+                .any(|param| type_mentions_f128(&param.ty))
+        }) {
             insert_crate_feature(&mut items, Feature::F128);
         }
         items.push(Item::ExternBlock {

@@ -85,16 +85,13 @@ int main() {
 // REWRITES-NEXT: }
 // REWRITES-EMPTY:
 // REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(x)) };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 2;
-// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// REWRITES-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == 2;
 // REWRITES-NEXT:     if {{__v[0-9]+}} {
 // REWRITES-NEXT:         unreachable!();
 // REWRITES-NEXT:         unsafe { not_defined() };
 // REWRITES-NEXT:     }
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-NEXT:     unsafe { exit({{__v[0-9]+}} as i32) };
-// REWRITES-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// REWRITES-NEXT:     unsafe { exit(0 as i32) };
+// REWRITES-NEXT:     std::process::exit(0 as i32);
 // REWRITES-NEXT: }
 // SLATE-FILECHECK-END rewrites

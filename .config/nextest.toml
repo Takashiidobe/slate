@@ -42,10 +42,6 @@ default-filter = '''
 '''
 
 [[profile.default.overrides]]
-filter = 'test(serial_temp_chain_translates_within_a_bounded_time)'
-threads-required = "num-test-threads"
-
-[[profile.default.overrides]]
 filter = 'test(gcc_torture_supported_tests_match_c)'
 threads-required = "num-test-threads"
 priority = 100
@@ -55,24 +51,28 @@ filter = 'test(generated_differential)'
 priority = 90
 
 [[profile.default.overrides]]
-filter = 'test(libc_test_functional_supported_tests_match_c)'
+filter = 'test(c_testsuite_supported_tests_match_c)'
 priority = 80
 
 [[profile.default.overrides]]
-filter = 'test(c_testsuite_supported_tests_match_c)'
+filter = 'test(libc_test_functional_supported_tests_match_c)'
 priority = 70
 
 [[profile.default.overrides]]
-filter = 'test(chibicc_supported_tests_match_c)'
+filter = 'test(generated_cross_tu_filecheck)'
 priority = 60
 
 [[profile.default.overrides]]
-filter = 'test(stdlib_coverage)'
+filter = 'test(chibicc_supported_tests_match_c)'
 priority = 50
 
 [[profile.default.overrides]]
-filter = 'test(chibicc_unsupported_tests_still_fail)'
+filter = 'test(stdlib_coverage)'
 priority = 40
+
+[[profile.default.overrides]]
+filter = 'test(chibicc_unsupported_tests_still_fail)'
+priority = 30
 
 [[profile.default.overrides]]
 filter = '''

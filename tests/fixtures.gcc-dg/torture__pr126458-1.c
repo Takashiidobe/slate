@@ -131,21 +131,16 @@ int main(void) {
 // REWRITES-DAG: fn neg({{arg[0-9]+}}: bitint::BUint<16, 1, 2>) -> i32 {
 // REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BInt<16, 1, 2> = bitint::BInt::<16, 1, 2>::from_buint({{arg[0-9]+}});
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}.to_i128() as i32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG:     {{__v[0-9]+}}
+// REWRITES-DAG:     ({{__v[0-9]+}} < 0) as i32
 // REWRITES-DAG: }
 // REWRITES-DAG: fn fref({{arg[0-9]+}}: bitint::BUint<16, 1, 2>) -> bitint::BUint<17, 1, 4> {
 // REWRITES-DAG:     let mut a: aligned::Aligned<aligned::A2, bitint::BUint<16, 1, 2>> =
 // REWRITES-DAG:         aligned::Aligned(bitint::BUint::<16, 1, 2>::ZERO);
 // REWRITES-DAG:     *a = {{arg[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<16, 1, 2> = *a;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = neg({{__v[0-9]+}});
+// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = neg(*a);
 // REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
 // REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<17, 1, 4> = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bitint::BUint<16, 1, 2> = *a;
-// REWRITES-DAG:         let {{__v[0-9]+}}: bitint::BUint<17, 1, 4> = bitint::BUint::<17, 1, 4>::from_buint({{__v[0-9]+}});
+// REWRITES-DAG:         let {{__v[0-9]+}}: bitint::BUint<17, 1, 4> = bitint::BUint::<17, 1, 4>::from_buint(*a);
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
 // REWRITES-DAG:         let {{__v[0-9]+}}: bitint::BUint<17, 1, 4> = bitint::BUint::<17, 1, 4>::from_decimal_str("65535");
@@ -157,14 +152,11 @@ int main(void) {
 // REWRITES-DAG:     let mut a: aligned::Aligned<aligned::A2, bitint::BUint<16, 1, 2>> =
 // REWRITES-DAG:         aligned::Aligned(bitint::BUint::<16, 1, 2>::ZERO);
 // REWRITES-DAG:     *a = {{arg[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<16, 1, 2> = *a;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BInt<16, 1, 2> = bitint::BInt::<16, 1, 2>::from_buint({{__v[0-9]+}});
+// REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BInt<16, 1, 2> = bitint::BInt::<16, 1, 2>::from_buint(*a);
 // REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}}.to_i128() as i32;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
+// REWRITES-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < 0;
 // REWRITES-DAG:     let {{__v[0-9]+}}: bitint::BUint<17, 1, 4> = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bitint::BUint<16, 1, 2> = *a;
-// REWRITES-DAG:         let {{__v[0-9]+}}: bitint::BUint<17, 1, 4> = bitint::BUint::<17, 1, 4>::from_buint({{__v[0-9]+}});
+// REWRITES-DAG:         let {{__v[0-9]+}}: bitint::BUint<17, 1, 4> = bitint::BUint::<17, 1, 4>::from_buint(*a);
 // REWRITES-DAG:         {{__v[0-9]+}}
 // REWRITES-DAG:     } else {
 // REWRITES-DAG:         let {{__v[0-9]+}}: bitint::BUint<17, 1, 4> = bitint::BUint::<17, 1, 4>::from_decimal_str("65535");
@@ -174,35 +166,20 @@ int main(void) {
 // REWRITES-DAG: }
 // REWRITES-DAG: fn main() {
 // REWRITES-DAG:     let mut i: u32 = 0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: u32 = 0;
-// REWRITES-DAG:     i = {{__v[0-9]+}};
+// REWRITES-DAG:     i = 0;
 // REWRITES-DAG:     loop {
-// REWRITES-DAG:         let {{__v[0-9]+}}: u32 = i;
-// REWRITES-DAG:         let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} as u64;
-// REWRITES-DAG:         let {{__v[0-9]+}}: u64 = 10;
 // REWRITES-DAG:         let {{__v[0-9]+}}: u64 = 2;
-// REWRITES-DAG:         let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} / {{__v[0-9]+}};
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} < {{__v[0-9]+}};
-// REWRITES-DAG:         if !{{__v[0-9]+}} {
+// REWRITES-DAG:         if !((i as u64) < 10 / {{__v[0-9]+}}) {
 // REWRITES-DAG:             break;
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{__v[0-9]+}}: u32 = i;
-// REWRITES-DAG:         let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} as u64;
-// REWRITES-DAG:         let {{__v[0-9]+}}: bitint::BUint<16, 1, 2> = unsafe { (*main_v)[({{__v[0-9]+}} as usize)] };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bitint::BUint<17, 1, 4> = f({{__v[0-9]+}});
-// REWRITES-DAG:         let {{__v[0-9]+}}: u32 = i;
-// REWRITES-DAG:         let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} as u64;
-// REWRITES-DAG:         let {{__v[0-9]+}}: bitint::BUint<16, 1, 2> = unsafe { (*main_v)[({{__v[0-9]+}} as usize)] };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bitint::BUint<17, 1, 4> = fref({{__v[0-9]+}});
+// REWRITES-DAG:         let {{__v[0-9]+}}: bitint::BUint<17, 1, 4> = f(unsafe { (*main_v)[((i as u64) as usize)] });
+// REWRITES-DAG:         let {{__v[0-9]+}}: bitint::BUint<17, 1, 4> = fref(unsafe { (*main_v)[((i as u64) as usize)] });
 // REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
 // REWRITES-DAG:         if {{__v[0-9]+}} {
 // REWRITES-DAG:             unsafe { std::process::abort() };
 // REWRITES-DAG:         }
-// REWRITES-DAG:         let {{__v[0-9]+}}: u32 = i;
-// REWRITES-DAG:         let {{__v[0-9]+}}: u32 = {{__v[0-9]+}} + 1;
-// REWRITES-DAG:         i = {{__v[0-9]+}};
+// REWRITES-DAG:         i += 1;
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// REWRITES-DAG:     std::process::exit(0 as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites

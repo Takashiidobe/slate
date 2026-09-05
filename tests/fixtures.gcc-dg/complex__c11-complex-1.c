@@ -214,13 +214,15 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN rewrites
 // REWRITES-DAG: fn main() {
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f32> =
 // REWRITES-DAG:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(num_f)) };
 // REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f32> =
 // REWRITES-DAG:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(den_f)) };
-// REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f32> = unsafe { __divsc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
-// REWRITES-DAG:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(res_f), {{__v[0-9]+}}) };
+// REWRITES-DAG:     unsafe {
+// REWRITES-DAG:         std::ptr::write_volatile(std::ptr::addr_of_mut!(res_f), unsafe {
+// REWRITES-DAG:             __divsc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im)
+// REWRITES-DAG:         })
+// REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f32> =
 // REWRITES-DAG:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(res_f)) };
 // REWRITES-DAG:     let {{__v[0-9]+}}: f32 = {{__v[0-9]+}}.re;
@@ -266,9 +268,11 @@ int main(void) {
 // REWRITES-DAG:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(num_d)) };
 // REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f64> =
 // REWRITES-DAG:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(den_d)) };
-// REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f64> =
-// REWRITES-DAG:         unsafe { __divdc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im) };
-// REWRITES-DAG:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(res_d), {{__v[0-9]+}}) };
+// REWRITES-DAG:     unsafe {
+// REWRITES-DAG:         std::ptr::write_volatile(std::ptr::addr_of_mut!(res_d), unsafe {
+// REWRITES-DAG:             __divdc3({{__v[0-9]+}}.re, {{__v[0-9]+}}.im, {{__v[0-9]+}}.re, {{__v[0-9]+}}.im)
+// REWRITES-DAG:         })
+// REWRITES-DAG:     };
 // REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f64> =
 // REWRITES-DAG:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(res_d)) };
 // REWRITES-DAG:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.re;
@@ -314,19 +318,20 @@ int main(void) {
 // REWRITES-DAG:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(num_ld)) };
 // REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
 // REWRITES-DAG:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(den_ld)) };
-// REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<LongDouble> = unsafe {
-// REWRITES-DAG:         __slate_cf80_div(
-// REWRITES-DAG:             num_complex::Complex {
-// REWRITES-DAG:                 re: {{__v[0-9]+}}.re,
-// REWRITES-DAG:                 im: {{__v[0-9]+}}.im,
-// REWRITES-DAG:             },
-// REWRITES-DAG:             num_complex::Complex {
-// REWRITES-DAG:                 re: {{__v[0-9]+}}.re,
-// REWRITES-DAG:                 im: {{__v[0-9]+}}.im,
-// REWRITES-DAG:             },
-// REWRITES-DAG:         )
+// REWRITES-DAG:     unsafe {
+// REWRITES-DAG:         std::ptr::write_volatile(std::ptr::addr_of_mut!(res_ld), unsafe {
+// REWRITES-DAG:             __slate_cf80_div(
+// REWRITES-DAG:                 num_complex::Complex {
+// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
+// REWRITES-DAG:                 },
+// REWRITES-DAG:                 num_complex::Complex {
+// REWRITES-DAG:                     re: {{__v[0-9]+}}.re,
+// REWRITES-DAG:                     im: {{__v[0-9]+}}.im,
+// REWRITES-DAG:                 },
+// REWRITES-DAG:             )
+// REWRITES-DAG:         })
 // REWRITES-DAG:     };
-// REWRITES-DAG:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(res_ld), {{__v[0-9]+}}) };
 // REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<LongDouble> =
 // REWRITES-DAG:         unsafe { std::ptr::read_volatile(std::ptr::addr_of!(res_ld)) };
 // REWRITES-DAG:     let {{__v[0-9]+}}: LongDouble = {{__v[0-9]+}}.re;
@@ -368,8 +373,7 @@ int main(void) {
 // REWRITES-DAG:     if {{__v[0-9]+}} {
 // REWRITES-DAG:         unsafe { abort() };
 // REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:     unsafe { exit({{__v[0-9]+}} as i32) };
-// REWRITES-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// REWRITES-DAG:     unsafe { exit(0 as i32) };
+// REWRITES-DAG:     std::process::exit(0 as i32);
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites
