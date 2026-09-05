@@ -7,6 +7,15 @@ use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
+const GLIBC_MINOR_VERSION: u32 = 43;
+
+fn default_clang_args() -> Vec<String> {
+    vec![
+        "-std=gnu23".into(),
+        format!("-D__SLATE_GLIBC_MINOR__={GLIBC_MINOR_VERSION}"),
+    ]
+}
+
 #[derive(Debug, Clone)]
 struct FuzzConfig {
     yarpgen_bin: PathBuf,
@@ -246,7 +255,12 @@ OPTIONS:
 }
 
 fn parse_args() -> Result<FuzzConfig, String> {
-    let args: Vec<String> = std::env::args().skip(1).collect();
+    let args = std::env::var("YARPGEN_FUZZ_ARGS")
+        .map_err(|error| format!("read YARPGEN_FUZZ_ARGS: {error}"))
+        .and_then(|args| {
+            shlex::split(&args).ok_or_else(|| "invalid YARPGEN_FUZZ_ARGS quoting".into())
+        })
+        .unwrap_or_default();
     let mut yarpgen_bin = find_default_yarpgen();
     let mut clang_bin = find_default_clang();
     let mut slate_bin = None;
@@ -255,7 +269,7 @@ fn parse_args() -> Result<FuzzConfig, String> {
     let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     let mut work_dir = manifest_dir.join("target/yarpgen-fuzz/work");
     let mut failures_dir = manifest_dir.join("target/yarpgen-fuzz/failures");
-    let mut seeds_file = Some(manifest_dir.join("src/bin/seeds.txt"));
+    let mut seeds_file = Some(manifest_dir.join("tests/yarpgen-seeds.txt"));
     let mut export_fixture = None;
     let mut single_seed = None;
     let mut start_seed = 1;
@@ -378,7 +392,7 @@ fn parse_args() -> Result<FuzzConfig, String> {
             }
             "-h" | "--help" => {
                 print_usage();
-                std::process::exit(0);
+                return Err("help requested".into());
             }
             unknown => return Err(format!("unknown argument: {unknown}")),
         }
@@ -404,7 +418,7 @@ fn parse_args() -> Result<FuzzConfig, String> {
         failures_dir,
         seeds_file,
         export_fixture,
-        clang_args: vec!["-std=gnu23".into()],
+        clang_args: default_clang_args(),
         single_seed,
         start_seed,
         count,
@@ -535,9 +549,15 @@ fn run_single_case(
         .env("SLATE_CLANG", &config.clang_bin)
         .env("SLATE_CLANG_ARGS", config.clang_args.join(" "));
 
-    let slate_run = run_command_with_timeout(slate_cmd, config.timeout * 2)
+    let translate_timeout = config.timeout.max(Duration::from_secs(30)) * 2;
+    let slate_run = run_command_with_timeout(slate_cmd, translate_timeout)
         .map_err(|e| CaseFailure::SlateTranslate(format!("spawn slate: {e}")))?;
-    if slate_run.exit_code != Some(0) || slate_run.timed_out {
+    if slate_run.timed_out {
+        return Err(CaseFailure::SlateTranslate(format!(
+            "timed out after {translate_timeout:?}"
+        )));
+    }
+    if slate_run.exit_code != Some(0) {
         return Err(CaseFailure::SlateTranslate(
             String::from_utf8_lossy(&slate_run.stderr).into_owned(),
         ));
@@ -714,15 +734,8 @@ fn copy_dir_recursive(src: &Path, dst: &Path) -> std::io::Result<()> {
     Ok(())
 }
 
-fn main() {
-    let config = match parse_args() {
-        Ok(cfg) => cfg,
-        Err(e) => {
-            eprintln!("error: {e}\n");
-            print_usage();
-            std::process::exit(1);
-        }
-    };
+fn run_fuzzer() -> Result<(), String> {
+    let config = parse_args().map_err(|e| format!("{e}\n"))?;
 
     let (tracker, initial_seeds_count) = SeedTracker::new(config.seeds_file.as_deref());
     let tracker = Arc::new(tracker);
@@ -771,10 +784,10 @@ fn main() {
                     Ok(path) => eprintln!("Saved reproduction bundle to: {}", path.display()),
                     Err(e) => eprintln!("Failed to save reproduction bundle: {e}"),
                 }
-                std::process::exit(1);
+                return Err(format!("seed {seed} failed: {failure}"));
             }
         }
-        return;
+        return Ok(());
     }
 
     // Batch or continuous mode
@@ -888,8 +901,16 @@ fn main() {
     println!("===============");
 
     if failed > 0 {
-        std::process::exit(1);
+        return Err(format!("{failed} fuzz cases failed"));
     }
+
+    Ok(())
+}
+
+#[test]
+#[ignore = "requires an external YARPGen installation"]
+fn yarpgen_fuzz() {
+    run_fuzzer().unwrap_or_else(|error| panic!("{error}"));
 }
 
 fn rand_seed() -> [u8; 8] {

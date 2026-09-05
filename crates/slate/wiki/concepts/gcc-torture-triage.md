@@ -200,7 +200,7 @@ run in the same window; libc-test (`tests/fixtures.libc-test/`) started as a
 port shortly after and grew into the dedicated `libc` nextest profile.
 
 A generated-program fuzzer was added back later on different terms:
-`src/bin/yarpgen_fuzz.rs` (2026-08-20, `wiki/log/2026-08-20-00-00_2.md`, run
+`tests/yarpgen.rs` (2026-08-20, `wiki/log/2026-08-20-00-00_2.md`, run
 via `tools/yarpgen-fuzz.sh`) wraps the [yarpgen](https://github.com/intel/yarpgen)
 random-C-program generator through the same differential contract as the
 rest of the suite (generate → compile+run C → translate+compile+run Rust →
@@ -210,7 +210,7 @@ diff stdout/exit code), reporting which pipeline stage failed
 realistic programs and differentially runs them rather than validating
 individual IR transforms in isolation — different failure surface than the
 fixed corpora, since it isn't limited to cases someone already wrote down.
-`src/bin/seeds.txt` records known-good generator seeds, not curated
+`tests/yarpgen-seeds.txt` records known-good generator seeds, not curated
 regressions; failures found this way get exported as real fixtures
 (`--export-fixture`) into the regular corpus instead of staying fuzzer-only.
 
