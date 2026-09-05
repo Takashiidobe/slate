@@ -136,7 +136,10 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
             self.values.insert(result.clone(), Val::Expr(value.clone()));
             return;
         }
-        if let Some(expr) = self.block_addr_dispatch_expr(ptr) {
+        if let Some(expr) = self
+            .block_addr_dispatch_expr(ptr)
+            .or_else(|| self.indirect_target_places.get(ptr).cloned())
+        {
             self.indirect_target_values.insert(result.clone(), expr);
             self.lower_opaque_pointer(&op.result, &op.result_ty, true);
             return;
@@ -222,6 +225,9 @@ impl<'a, 'b> FunctionLowerer<'a, 'b> {
         let ptr = &op.addr;
         if let Some(labels) = self.block_addr_array_values.get(src).cloned() {
             self.local_block_addr_arrays.insert(ptr.clone(), labels);
+        }
+        if let Some(expr) = self.indirect_target_values.get(src).cloned() {
+            self.indirect_target_places.insert(ptr.clone(), expr);
         }
         if let Some(outputs) = self.asm_outputs.get(src).cloned() {
             self.asm_outputs.insert(ptr.clone(), outputs);

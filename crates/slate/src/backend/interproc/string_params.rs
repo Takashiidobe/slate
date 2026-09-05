@@ -301,7 +301,9 @@ fn literal_string_locals(body: &[Stmt]) -> BTreeMap<String, Vec<u8>> {
     let mut temp_array_lits: BTreeMap<String, Vec<u8>> = BTreeMap::new();
     walk_stmts(body, &mut |stmt| {
         let Stmt::Let {
-            name, init: Some(init), ..
+            name,
+            init: Some(init),
+            ..
         } = stmt
         else {
             return;

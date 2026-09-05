@@ -827,6 +827,7 @@ struct FunctionLowerer<'a, 'b> {
     local_block_addr_arrays: BTreeMap<String, Vec<String>>,
     block_addr_array_values: BTreeMap<String, Vec<String>>,
     indirect_target_values: BTreeMap<String, Expr>,
+    indirect_target_places: BTreeMap<String, Expr>,
     temp_counter: usize,
     body: Vec<Stmt>,
     is_main: bool,
