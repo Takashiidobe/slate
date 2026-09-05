@@ -2,7 +2,9 @@ use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{
     self, Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag,
 };
-use crate::backend::rust_ast::{BinOp, Expr, Ident, Label, MatchArm, Pattern, RustValue, Stmt};
+use crate::backend::rust_ast::{
+    BinOp, Expr, Ident, Label, MatchArm, Pattern, RustValue, Stmt, temp_index,
+};
 
 const MAX_DUPLICATED_STMTS: usize = 24;
 
@@ -207,10 +209,6 @@ fn scan(
         }
     }
     true
-}
-
-fn temp_index(name: &str) -> Option<u32> {
-    name.strip_prefix("_v")?.parse().ok()
 }
 
 fn is_compiler_temp_let(stmt: &Stmt) -> bool {
