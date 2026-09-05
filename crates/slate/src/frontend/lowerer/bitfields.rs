@@ -146,6 +146,7 @@ fn bitfield_info(info: &Attr, module: &Module) -> Option<(u32, u32)> {
 
 pub(super) fn bitfield_items(storages: &BitfieldStorages, vis: Visibility) -> Vec<Item> {
     let mut wrappers = Vec::new();
+    let mut conversions = Vec::new();
     for storage in storages.values() {
         let Some(total) = bit_size(&storage.backing) else {
             continue;
@@ -164,11 +165,54 @@ pub(super) fn bitfield_items(storages: &BitfieldStorages, vis: Visibility) -> Ve
                 ));
                 reserved += 1;
             }
-            rust_fields.push(bitfield_struct_field(
-                field.name.clone(),
-                field.ty.clone(),
-                field.size,
-            ));
+            let mut attrs = vec![RustAttr::Call {
+                path: Path::new([Ident::from("bits")]),
+                args: vec![AttrArg::UInt(u64::from(field.size))],
+            }];
+            if let Some((name, bits, limbs, bytes)) = bitint_generic_parts(&field.ty)
+                && field.size > 128
+            {
+                let len = field.size.div_ceil(8) as usize;
+                let wrapper_name = storage
+                    .wrapper
+                    .rsplit("::")
+                    .next()
+                    .expect("bitfield wrapper name");
+                let from = format!(
+                    "slate_bitfield_from_{}_{}_{}",
+                    sanitize_ident(wrapper_name),
+                    sanitize_ident(&field.name),
+                    field.size
+                );
+                let into = format!(
+                    "slate_bitfield_into_{}_{}_{}",
+                    sanitize_ident(wrapper_name),
+                    sanitize_ident(&field.name),
+                    field.size
+                );
+                attrs[0] = RustAttr::Call {
+                    path: Path::new([Ident::from("bits")]),
+                    args: vec![
+                        AttrArg::UInt(u64::from(field.size)),
+                        AttrArg::Named(
+                            "from".into(),
+                            Box::new(AttrArg::Type(Type::Custom(from.clone()))),
+                        ),
+                        AttrArg::Named(
+                            "into".into(),
+                            Box::new(AttrArg::Type(Type::Custom(into.clone()))),
+                        ),
+                    ],
+                };
+                conversions.extend(bitint_conversions(
+                    &from, &into, &field.ty, name, bits, limbs, bytes, len, field.size,
+                ));
+            }
+            rust_fields.push(StructField {
+                attrs,
+                name: field.name.clone(),
+                ty: field.ty.clone(),
+            });
             cursor = field.offset + field.size;
         }
         if cursor < total {
@@ -213,9 +257,75 @@ pub(super) fn bitfield_items(storages: &BitfieldStorages, vis: Visibility) -> Ve
         vec![Item::InlineMod {
             vis,
             name: "__slate_bitfields".into(),
-            items: wrappers,
+            items: conversions.into_iter().chain(wrappers).collect(),
         }]
     }
+}
+
+#[expect(
+    clippy::too_many_arguments,
+    reason = "conversion metadata is kept explicit"
+)]
+fn bitint_conversions(
+    from: &str,
+    into: &str,
+    ty: &Type,
+    name: &str,
+    bits: &str,
+    limbs: &str,
+    bytes: &str,
+    len: usize,
+    field_bits: u32,
+) -> Vec<Item> {
+    let from_expr = Expr::Call {
+        binding: crate::function_identity::CallBinding::Generated,
+        func: Box::new(Expr::Var(
+            format!("{name}::<{bits}, {limbs}, {bytes}>::from_le_bytes::<{field_bits}, {len}>")
+                .into(),
+        )),
+        args: vec![Expr::Var("bytes".into())],
+    };
+    let into_expr = Expr::Call {
+        binding: crate::function_identity::CallBinding::Generated,
+        func: Box::new(Expr::Var(
+            format!("{name}::<{bits}, {limbs}, {bytes}>::to_le_bytes::<{len}>").into(),
+        )),
+        args: vec![Expr::Var("value".into())],
+    };
+    let array_ty = Type::Array {
+        elem: Box::new(Type::Prim(Prim::U8)),
+        len: len as u64,
+    };
+    vec![
+        Item::Fn(FnDef {
+            attrs: Vec::new(),
+            vis: Visibility::Private,
+            unsafe_: false,
+            abi: None,
+            name: from.into(),
+            params: vec![FnParam {
+                name: "bytes".into(),
+                mutable: false,
+                ty: array_ty.clone(),
+            }],
+            ret: Some(ty.clone()),
+            body: vec![Stmt::Return(Some(from_expr))],
+        }),
+        Item::Fn(FnDef {
+            attrs: Vec::new(),
+            vis: Visibility::Private,
+            unsafe_: false,
+            abi: None,
+            name: into.into(),
+            params: vec![FnParam {
+                name: "value".into(),
+                mutable: false,
+                ty: ty.clone(),
+            }],
+            ret: Some(array_ty),
+            body: vec![Stmt::Return(Some(into_expr))],
+        }),
+    ]
 }
 
 fn bitfield_struct_field(name: String, ty: Type, bits: u32) -> StructField {
