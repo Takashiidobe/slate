@@ -425,6 +425,16 @@ pub fn target_config(target: &str) -> Result<TargetConfig, TargetError> {
     })
 }
 
+pub fn char_is_signed_default(target: &str) -> bool {
+    let Ok(config) = target_config(target) else {
+        return true;
+    };
+    if config.vendor == "apple" {
+        return true;
+    }
+    !matches!(config.arch, "arm" | "aarch64") && !config.arch.starts_with("riscv")
+}
+
 fn android_api(target: &str) -> Result<Option<u32>, TargetError> {
     let triple = parse_target(target)?;
     if triple.env != Some(Env::Android) {

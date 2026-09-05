@@ -78,20 +78,23 @@ pub(super) fn reconcile_anonymous_member_types(
             };
             let (CirType::Struct {
                 members: Some(members),
+                member_kinds,
                 ..
             }
             | CirType::Union {
                 members: Some(members),
+                member_kinds,
                 ..
             }) = expanded
             else {
                 continue;
             };
+            let members = cir_data_members(members, member_kinds);
             if members.len() != record.fields.len() {
                 continue;
             }
             for (index, field) in record.fields.iter_mut().enumerate() {
-                let cir_ty = cir_type_to_ctype(&members[index], &module.type_aliases);
+                let cir_ty = cir_type_to_ctype(members[index], &module.type_aliases);
                 if field.name == format!("__slate_anon_{index}") {
                     field.ty = cir_ty;
                     continue;

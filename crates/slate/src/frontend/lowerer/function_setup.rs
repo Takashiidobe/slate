@@ -575,9 +575,16 @@ impl<'a> Lowerer<'a> {
             method: name.into(),
             args,
         };
+        let char_prim = if crate::frontend::toolchain::char_is_signed_default(
+            &crate::frontend::toolchain::active_target(),
+        ) {
+            Prim::I8
+        } else {
+            Prim::U8
+        };
         let char_ptr = Type::Ptr {
             mutable: true,
-            inner: Box::new(Type::Prim(Prim::I8)),
+            inner: Box::new(Type::Prim(char_prim)),
         };
 
         let storage_init = method(

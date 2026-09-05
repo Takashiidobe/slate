@@ -530,18 +530,18 @@ fn fold_atof(ctx: &CallCtx) -> Option<Expr> {
     Some(Expr::Value(RustValue::from(value)))
 }
 
-fn const_i8_ptr() -> Type {
+fn const_char_ptr() -> Type {
     Type::Ptr {
         mutable: false,
-        inner: Box::new(Type::Prim(Prim::I8)),
+        inner: Box::new(Type::Prim(crate::backend::engine::prelude::char_prim())),
     }
 }
 
 fn ato_helper(ctx: &CallCtx, name: &str) -> Option<Expr> {
     let arg = ctx.args().first()?.clone();
     let arg = match &arg {
-        Expr::Cast { ty, .. } if *ty == const_i8_ptr() => arg,
-        _ => cast(arg, const_i8_ptr()),
+        Expr::Cast { ty, .. } if *ty == const_char_ptr() => arg,
+        _ => cast(arg, const_char_ptr()),
     };
     Some(Expr::Call {
         binding: CallBinding::Generated,
