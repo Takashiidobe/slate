@@ -38,19 +38,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN common-rewrites
 // COMMON-REWRITES-DAG: fn add({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{arg[0-9]+}} + {{arg[0-9]+}};
-// COMMON-REWRITES-DAG:     {{__v[0-9]+}}
+// COMMON-REWRITES-DAG:     {{arg[0-9]+}} + {{arg[0-9]+}}
 // COMMON-REWRITES-DAG: }
-// COMMON-REWRITES-DAG: let {{__v[0-9]+}}: i32 = 2;
-// COMMON-REWRITES-DAG: let {{__v[0-9]+}}: i32 = 3;
-// COMMON-REWRITES-DAG: let {{__v[0-9]+}}: i32 = add({{__v[0-9]+}}, {{__v[0-9]+}});
-// COMMON-REWRITES-DAG: unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// COMMON-REWRITES-DAG: unsafe { printf(c"%d\n".as_ptr(), add(2, 3)) };
 // SLATE-FILECHECK-END common-rewrites
-
-// SLATE-FILECHECK-BEGIN rewrites-x86_64-gnu
-// REWRITES-X86_64-GNU-DAG: let {{__v[0-9]+}}: *mut i8 = c"%d\n".as_ptr() as *mut i8;
-// SLATE-FILECHECK-END rewrites-x86_64-gnu
-
-// SLATE-FILECHECK-BEGIN rewrites-aarch64-gnu
-// REWRITES-AARCH64-GNU-DAG: let {{__v[0-9]+}}: *mut u8 = c"%d\n".as_ptr() as *mut u8;
-// SLATE-FILECHECK-END rewrites-aarch64-gnu

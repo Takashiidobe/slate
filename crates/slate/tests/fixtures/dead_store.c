@@ -21,18 +21,17 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 1;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 2;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 9;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = noisy({{__v[0-9]+}});
-// SLATE-FILECHECK-END lowering
+// SLATE-FILECHECK-BEGIN common-lowering
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = 1;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = 2;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = 9;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = noisy({{__v[0-9]+}});
+// SLATE-FILECHECK-END common-lowering
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-NOT: let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-NOT: let {{__v[0-9]+}}: i32 = 2;
-// REWRITES-NOT: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 9;
-// REWRITES-DAG: noisy({{__v[0-9]+}});
-// SLATE-FILECHECK-END rewrites
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES-NOT: let {{__v[0-9]+}}: i32 = 1;
+// COMMON-REWRITES-NOT: let {{__v[0-9]+}}: i32 = 2;
+// COMMON-REWRITES-NOT: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// COMMON-REWRITES-DAG: noisy(9);
+// SLATE-FILECHECK-END common-rewrites

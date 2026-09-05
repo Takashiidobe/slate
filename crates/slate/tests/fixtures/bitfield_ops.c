@@ -53,180 +53,211 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: let {{__v[0-9]+}}: u32 = 5;
-// LOWERING-DAG: let {{__v[0-9]+}}: u32 = ({{__v[0-9]+}} as u32) << 29 >> 29;
-// LOWERING-DAG: s.__bitfield_0.set_a(({{__v[0-9]+}} as u32) << 29 >> 29);
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = -3;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = ({{__v[0-9]+}} as i32) << 27 >> 27;
-// LOWERING-DAG: s.__bitfield_0.set_b(({{__v[0-9]+}} as i32) << 27 >> 27);
-// LOWERING-DAG: let {{__v[0-9]+}}: u32 = 1;
-// LOWERING-DAG: let {{__v[0-9]+}}: u32 = ({{__v[0-9]+}} as u32) << 31 >> 31;
-// LOWERING-DAG: s.__bitfield_0.set_c(({{__v[0-9]+}} as u32) << 31 >> 31);
-// LOWERING-DAG: let {{__v[0-9]+}}: u32 = 4000;
-// LOWERING-DAG: let {{__v[0-9]+}}: u32 = ({{__v[0-9]+}} as u32) << 20 >> 20;
-// LOWERING-DAG: s.__bitfield_0.set_d(({{__v[0-9]+}} as u32) << 20 >> 20);
-// LOWERING-DAG: let {{__v[0-9]+}}: *mut i8 = b"%u %d %u %u\n\0".as_ptr() as *mut i8;
-// LOWERING-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.a() as u32) << 29 >> 29;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = (s.__bitfield_0.b() as i32) << 27 >> 27;
-// LOWERING-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.c() as u32) << 31 >> 31;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.d() as u32) << 20 >> 20;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
-// LOWERING-DAG: let {{__v[0-9]+}}: u32 = 13;
-// LOWERING-DAG: let {{__v[0-9]+}}: u32 = ({{__v[0-9]+}} as u32) << 29 >> 29;
-// LOWERING-DAG: s.__bitfield_0.set_a(({{__v[0-9]+}} as u32) << 29 >> 29);
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 20;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = ({{__v[0-9]+}} as i32) << 27 >> 27;
-// LOWERING-DAG: s.__bitfield_0.set_b(({{__v[0-9]+}} as i32) << 27 >> 27);
-// LOWERING-DAG: let {{__v[0-9]+}}: u32 = 3;
-// LOWERING-DAG: let {{__v[0-9]+}}: u32 = ({{__v[0-9]+}} as u32) << 31 >> 31;
-// LOWERING-DAG: s.__bitfield_0.set_c(({{__v[0-9]+}} as u32) << 31 >> 31);
-// LOWERING-DAG: let {{__v[0-9]+}}: *mut i8 = b"%u %d %u\n\0".as_ptr() as *mut i8;
-// LOWERING-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.a() as u32) << 29 >> 29;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = (s.__bitfield_0.b() as i32) << 27 >> 27;
-// LOWERING-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.c() as u32) << 31 >> 31;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 4;
-// LOWERING-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.a() as u32) << 29 >> 29;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-DAG: let {{__v[0-9]+}}: u32 = {{__v[0-9]+}} as u32;
-// LOWERING-DAG: let {{__v[0-9]+}}: u32 = ({{__v[0-9]+}} as u32) << 29 >> 29;
-// LOWERING-DAG: s.__bitfield_0.set_a(({{__v[0-9]+}} as u32) << 29 >> 29);
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 1;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = (s.__bitfield_0.b() as i32) << 27 >> 27;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} - {{__v[0-9]+}};
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = ({{__v[0-9]+}} as i32) << 27 >> 27;
-// LOWERING-DAG: s.__bitfield_0.set_b(({{__v[0-9]+}} as i32) << 27 >> 27);
-// LOWERING-DAG: let {{__v[0-9]+}}: *mut i8 = b"%u %d\n\0".as_ptr() as *mut i8;
-// LOWERING-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.a() as u32) << 29 >> 29;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = (s.__bitfield_0.b() as i32) << 27 >> 27;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
-// LOWERING-DAG: let {{__v[0-9]+}}: u32 = 7;
-// LOWERING-DAG: let {{__v[0-9]+}}: u32 = ({{__v[0-9]+}} as u32) << 29 >> 29;
-// LOWERING-DAG: s.__bitfield_0.set_a(({{__v[0-9]+}} as u32) << 29 >> 29);
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 15;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = ({{__v[0-9]+}} as i32) << 27 >> 27;
-// LOWERING-DAG: s.__bitfield_0.set_b(({{__v[0-9]+}} as i32) << 27 >> 27);
-// LOWERING-DAG: let {{__v[0-9]+}}: u32 = 0;
-// LOWERING-DAG: let {{__v[0-9]+}}: u32 = ({{__v[0-9]+}} as u32) << 31 >> 31;
-// LOWERING-DAG: s.__bitfield_0.set_c(({{__v[0-9]+}} as u32) << 31 >> 31);
-// LOWERING-DAG: let {{__v[0-9]+}}: u32 = 4095;
-// LOWERING-DAG: let {{__v[0-9]+}}: u32 = ({{__v[0-9]+}} as u32) << 20 >> 20;
-// LOWERING-DAG: s.__bitfield_0.set_d(({{__v[0-9]+}} as u32) << 20 >> 20);
-// LOWERING-DAG: let {{__v[0-9]+}}: *mut i8 = b"%u %d %u %u\n\0".as_ptr() as *mut i8;
-// LOWERING-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.a() as u32) << 29 >> 29;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = (s.__bitfield_0.b() as i32) << 27 >> 27;
-// LOWERING-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.c() as u32) << 31 >> 31;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.d() as u32) << 20 >> 20;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
-// LOWERING-DAG: let {{__v[0-9]+}}: u64 = 1099511627775u64;
-// LOWERING-DAG: let {{__v[0-9]+}}: u64 = ({{__v[0-9]+}} as u64) << 24 >> 24;
-// LOWERING-DAG: w.__bitfield_0.set_x(({{__v[0-9]+}} as u64) << 24 >> 24);
-// LOWERING-DAG: let {{__v[0-9]+}}: i64 = -500000;
-// LOWERING-DAG: let {{__v[0-9]+}}: i64 = ({{__v[0-9]+}} as i64) << 24 >> 24;
-// LOWERING-DAG: w.__bitfield_1.set_y(({{__v[0-9]+}} as i64) << 24 >> 24);
-// LOWERING-DAG: let {{__v[0-9]+}}: *mut i8 = b"%llu %lld\n\0".as_ptr() as *mut i8;
-// LOWERING-DAG: let {{__v[0-9]+}}: u64 = (w.__bitfield_0.x() as u64) << 24 >> 24;
-// LOWERING-DAG: let {{__v[0-9]+}}: i64 = (w.__bitfield_1.y() as i64) << 24 >> 24;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
-// LOWERING-DAG: let {{__v[0-9]+}}: u64 = 1;
-// LOWERING-DAG: let {{__v[0-9]+}}: u64 = (w.__bitfield_0.x() as u64) << 24 >> 24;
-// LOWERING-DAG: let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-DAG: let {{__v[0-9]+}}: u64 = ({{__v[0-9]+}} as u64) << 24 >> 24;
-// LOWERING-DAG: w.__bitfield_0.set_x(({{__v[0-9]+}} as u64) << 24 >> 24);
-// LOWERING-DAG: let {{__v[0-9]+}}: *mut i8 = b"%llu\n\0".as_ptr() as *mut i8;
-// LOWERING-DAG: let {{__v[0-9]+}}: u64 = (w.__bitfield_0.x() as u64) << 24 >> 24;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
-// SLATE-FILECHECK-END lowering
+// SLATE-FILECHECK-BEGIN common-lowering
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u32 = 5;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u32 = ({{__v[0-9]+}} as u32) << 29 >> 29;
+// COMMON-LOWERING-DAG: s.__bitfield_0.set_a(({{__v[0-9]+}} as u32) << 29 >> 29);
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = -3;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = ({{__v[0-9]+}} as i32) << 27 >> 27;
+// COMMON-LOWERING-DAG: s.__bitfield_0.set_b(({{__v[0-9]+}} as i32) << 27 >> 27);
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u32 = 1;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u32 = ({{__v[0-9]+}} as u32) << 31 >> 31;
+// COMMON-LOWERING-DAG: s.__bitfield_0.set_c(({{__v[0-9]+}} as u32) << 31 >> 31);
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u32 = 4000;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u32 = ({{__v[0-9]+}} as u32) << 20 >> 20;
+// COMMON-LOWERING-DAG: s.__bitfield_0.set_d(({{__v[0-9]+}} as u32) << 20 >> 20);
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.a() as u32) << 29 >> 29;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = (s.__bitfield_0.b() as i32) << 27 >> 27;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.c() as u32) << 31 >> 31;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.d() as u32) << 20 >> 20;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 =
+// COMMON-LOWERING-DAG:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u32 = 13;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u32 = ({{__v[0-9]+}} as u32) << 29 >> 29;
+// COMMON-LOWERING-DAG: s.__bitfield_0.set_a(({{__v[0-9]+}} as u32) << 29 >> 29);
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = 20;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = ({{__v[0-9]+}} as i32) << 27 >> 27;
+// COMMON-LOWERING-DAG: s.__bitfield_0.set_b(({{__v[0-9]+}} as i32) << 27 >> 27);
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u32 = 3;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u32 = ({{__v[0-9]+}} as u32) << 31 >> 31;
+// COMMON-LOWERING-DAG: s.__bitfield_0.set_c(({{__v[0-9]+}} as u32) << 31 >> 31);
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.a() as u32) << 29 >> 29;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = (s.__bitfield_0.b() as i32) << 27 >> 27;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.c() as u32) << 31 >> 31;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = 4;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.a() as u32) << 29 >> 29;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u32 = {{__v[0-9]+}} as u32;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u32 = ({{__v[0-9]+}} as u32) << 29 >> 29;
+// COMMON-LOWERING-DAG: s.__bitfield_0.set_a(({{__v[0-9]+}} as u32) << 29 >> 29);
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = 1;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = (s.__bitfield_0.b() as i32) << 27 >> 27;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} - {{__v[0-9]+}};
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = ({{__v[0-9]+}} as i32) << 27 >> 27;
+// COMMON-LOWERING-DAG: s.__bitfield_0.set_b(({{__v[0-9]+}} as i32) << 27 >> 27);
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.a() as u32) << 29 >> 29;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = (s.__bitfield_0.b() as i32) << 27 >> 27;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u32 = 7;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u32 = ({{__v[0-9]+}} as u32) << 29 >> 29;
+// COMMON-LOWERING-DAG: s.__bitfield_0.set_a(({{__v[0-9]+}} as u32) << 29 >> 29);
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = 15;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = ({{__v[0-9]+}} as i32) << 27 >> 27;
+// COMMON-LOWERING-DAG: s.__bitfield_0.set_b(({{__v[0-9]+}} as i32) << 27 >> 27);
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u32 = 0;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u32 = ({{__v[0-9]+}} as u32) << 31 >> 31;
+// COMMON-LOWERING-DAG: s.__bitfield_0.set_c(({{__v[0-9]+}} as u32) << 31 >> 31);
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u32 = 4095;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u32 = ({{__v[0-9]+}} as u32) << 20 >> 20;
+// COMMON-LOWERING-DAG: s.__bitfield_0.set_d(({{__v[0-9]+}} as u32) << 20 >> 20);
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.a() as u32) << 29 >> 29;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = (s.__bitfield_0.b() as i32) << 27 >> 27;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.c() as u32) << 31 >> 31;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.d() as u32) << 20 >> 20;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe {
+// COMMON-LOWERING-DAG:     printf(
+// COMMON-LOWERING-DAG:         {{__v[0-9]+}} as *const core::ffi::c_char,
+// COMMON-LOWERING-DAG:         {{__v[0-9]+}},
+// COMMON-LOWERING-DAG:         {{__v[0-9]+}},
+// COMMON-LOWERING-DAG:         {{__v[0-9]+}},
+// COMMON-LOWERING-DAG:         {{__v[0-9]+}},
+// COMMON-LOWERING-DAG:     )
+// COMMON-LOWERING-DAG: };
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u64 = 1099511627775u64;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u64 = ({{__v[0-9]+}} as u64) << 24 >> 24;
+// COMMON-LOWERING-DAG: w.__bitfield_0.set_x(({{__v[0-9]+}} as u64) << 24 >> 24);
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i64 = -500000;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i64 = ({{__v[0-9]+}} as i64) << 24 >> 24;
+// COMMON-LOWERING-DAG: w.__bitfield_1.set_y(({{__v[0-9]+}} as i64) << 24 >> 24);
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u64 = (w.__bitfield_0.x() as u64) << 24 >> 24;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i64 = (w.__bitfield_1.y() as i64) << 24 >> 24;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u64 = 1;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u64 = (w.__bitfield_0.x() as u64) << 24 >> 24;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u64 = ({{__v[0-9]+}} as u64) << 24 >> 24;
+// COMMON-LOWERING-DAG: w.__bitfield_0.set_x(({{__v[0-9]+}} as u64) << 24 >> 24);
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u64 = (w.__bitfield_0.x() as u64) << 24 >> 24;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// SLATE-FILECHECK-END common-lowering
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: s.__bitfield_0.set_a((5 as u32) << 29 >> 29);
-// REWRITES-DAG: s.__bitfield_0.set_b((-3 as i32) << 27 >> 27);
-// REWRITES-DAG: s.__bitfield_0.set_c((1 as u32) << 31 >> 31);
-// REWRITES-DAG: s.__bitfield_0.set_d((4000 as u32) << 20 >> 20);
-// REWRITES-DAG: let {{__v[0-9]+}}: *mut i8 = c"%u %d %u %u\n".as_ptr() as *mut i8;
-// REWRITES-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.a() as u32) << 29 >> 29;
-// REWRITES-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG: let {{__v[0-9]+}}: i32 = (s.__bitfield_0.b() as i32) << 27 >> 27;
-// REWRITES-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.c() as u32) << 31 >> 31;
-// REWRITES-DAG: unsafe {
-// REWRITES-DAG:     printf(
-// REWRITES-DAG:         {{__v[0-9]+}} as *const core::ffi::c_char,
-// REWRITES-DAG:         {{__v[0-9]+}},
-// REWRITES-DAG:         {{__v[0-9]+}},
-// REWRITES-DAG:         {{__v[0-9]+}} as i32,
-// REWRITES-DAG:         ((s.__bitfield_0.d() as u32) << 20 >> 20) as i32,
-// REWRITES-DAG:     )
-// REWRITES-DAG: };
-// REWRITES-DAG: s.__bitfield_0.set_a((13 as u32) << 29 >> 29);
-// REWRITES-DAG: s.__bitfield_0.set_b((20 as i32) << 27 >> 27);
-// REWRITES-DAG: s.__bitfield_0.set_c((3 as u32) << 31 >> 31);
-// REWRITES-DAG: let {{__v[0-9]+}}: *mut i8 = c"%u %d %u\n".as_ptr() as *mut i8;
-// REWRITES-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.a() as u32) << 29 >> 29;
-// REWRITES-DAG: unsafe {
-// REWRITES-DAG:     printf(
-// REWRITES-DAG:         {{__v[0-9]+}} as *const core::ffi::c_char,
-// REWRITES-DAG:         {{__v[0-9]+}} as i32,
-// REWRITES-DAG:         (s.__bitfield_0.b() as i32) << 27 >> 27,
-// REWRITES-DAG:         ((s.__bitfield_0.c() as u32) << 31 >> 31) as i32,
-// REWRITES-DAG:     )
-// REWRITES-DAG: };
-// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 4;
-// REWRITES-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.a() as u32) << 29 >> 29;
-// REWRITES-DAG: s.__bitfield_0
-// REWRITES-DAG:     .set_a(((({{__v[0-9]+}} as i32) + {{__v[0-9]+}}) as u32) << 29 >> 29);
-// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-DAG: let {{__v[0-9]+}}: i32 = (s.__bitfield_0.b() as i32) << 27 >> 27;
-// REWRITES-DAG: s.__bitfield_0.set_b((({{__v[0-9]+}} - {{__v[0-9]+}}) as i32) << 27 >> 27);
-// REWRITES-DAG: let {{__v[0-9]+}}: *mut i8 = c"%u %d\n".as_ptr() as *mut i8;
-// REWRITES-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.a() as u32) << 29 >> 29;
-// REWRITES-DAG: unsafe {
-// REWRITES-DAG:     printf(
-// REWRITES-DAG:         {{__v[0-9]+}} as *const core::ffi::c_char,
-// REWRITES-DAG:         {{__v[0-9]+}} as i32,
-// REWRITES-DAG:         (s.__bitfield_0.b() as i32) << 27 >> 27,
-// REWRITES-DAG:     )
-// REWRITES-DAG: };
-// REWRITES-DAG: s.__bitfield_0.set_a((7 as u32) << 29 >> 29);
-// REWRITES-DAG: s.__bitfield_0.set_b((15 as i32) << 27 >> 27);
-// REWRITES-DAG: s.__bitfield_0.set_c((0 as u32) << 31 >> 31);
-// REWRITES-DAG: s.__bitfield_0.set_d((4095 as u32) << 20 >> 20);
-// REWRITES-DAG: let {{__v[0-9]+}}: *mut i8 = c"%u %d %u %u\n".as_ptr() as *mut i8;
-// REWRITES-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.a() as u32) << 29 >> 29;
-// REWRITES-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-DAG: let {{__v[0-9]+}}: i32 = (s.__bitfield_0.b() as i32) << 27 >> 27;
-// REWRITES-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.c() as u32) << 31 >> 31;
-// REWRITES-DAG: unsafe {
-// REWRITES-DAG:     printf(
-// REWRITES-DAG:         {{__v[0-9]+}} as *const core::ffi::c_char,
-// REWRITES-DAG:         {{__v[0-9]+}},
-// REWRITES-DAG:         {{__v[0-9]+}},
-// REWRITES-DAG:         {{__v[0-9]+}} as i32,
-// REWRITES-DAG:         ((s.__bitfield_0.d() as u32) << 20 >> 20) as i32,
-// REWRITES-DAG:     )
-// REWRITES-DAG: };
-// REWRITES-DAG: let {{__v[0-9]+}}: u64 = 1099511627775u64;
-// REWRITES-DAG: w.__bitfield_0.set_x(({{__v[0-9]+}} as u64) << 24 >> 24);
-// REWRITES-DAG: w.__bitfield_1.set_y((-500000 as i64) << 24 >> 24);
-// REWRITES-DAG: unsafe {
-// REWRITES-DAG:     printf(
-// REWRITES-DAG:         c"%llu %lld\n".as_ptr(),
-// REWRITES-DAG:         (w.__bitfield_0.x() as u64) << 24 >> 24,
-// REWRITES-DAG:         (w.__bitfield_1.y() as i64) << 24 >> 24,
-// REWRITES-DAG:     )
-// REWRITES-DAG: };
-// REWRITES-DAG: let {{__v[0-9]+}}: u64 = 1;
-// REWRITES-DAG: let {{__v[0-9]+}}: u64 = (w.__bitfield_0.x() as u64) << 24 >> 24;
-// REWRITES-DAG: w.__bitfield_0.set_x((({{__v[0-9]+}} + {{__v[0-9]+}}) as u64) << 24 >> 24);
-// REWRITES-DAG: unsafe { printf(c"%llu\n".as_ptr(), (w.__bitfield_0.x() as u64) << 24 >> 24) };
-// SLATE-FILECHECK-END rewrites
+// SLATE-FILECHECK-BEGIN lowering-x86_64-gnu
+// LOWERING-X86_64-GNU-DAG: let {{__v[0-9]+}}: *mut i8 = b"%u %d %u %u\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-DAG: let {{__v[0-9]+}}: *mut i8 = b"%u %d %u\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-DAG: let {{__v[0-9]+}}: *mut i8 = b"%u %d\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-DAG: let {{__v[0-9]+}}: *mut i8 = b"%u %d %u %u\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-DAG: let {{__v[0-9]+}}: *mut i8 = b"%llu %lld\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-DAG: let {{__v[0-9]+}}: *mut i8 = b"%llu\n\0".as_ptr() as *mut i8;
+// SLATE-FILECHECK-END lowering-x86_64-gnu
+
+// SLATE-FILECHECK-BEGIN lowering-aarch64-gnu
+// LOWERING-AARCH64-GNU-DAG: let {{__v[0-9]+}}: *mut u8 = b"%u %d %u %u\n\0".as_ptr() as *mut u8;
+// LOWERING-AARCH64-GNU-DAG: let {{__v[0-9]+}}: *mut u8 = b"%u %d %u\n\0".as_ptr() as *mut u8;
+// LOWERING-AARCH64-GNU-DAG: let {{__v[0-9]+}}: *mut u8 = b"%u %d\n\0".as_ptr() as *mut u8;
+// LOWERING-AARCH64-GNU-DAG: let {{__v[0-9]+}}: *mut u8 = b"%u %d %u %u\n\0".as_ptr() as *mut u8;
+// LOWERING-AARCH64-GNU-DAG: let {{__v[0-9]+}}: *mut u8 = b"%llu %lld\n\0".as_ptr() as *mut u8;
+// LOWERING-AARCH64-GNU-DAG: let {{__v[0-9]+}}: *mut u8 = b"%llu\n\0".as_ptr() as *mut u8;
+// SLATE-FILECHECK-END lowering-aarch64-gnu
+
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES-DAG: s.__bitfield_0.set_a((5 as u32) << 29 >> 29);
+// COMMON-REWRITES-DAG: s.__bitfield_0.set_b((-3 as i32) << 27 >> 27);
+// COMMON-REWRITES-DAG: s.__bitfield_0.set_c((1 as u32) << 31 >> 31);
+// COMMON-REWRITES-DAG: s.__bitfield_0.set_d((4000 as u32) << 20 >> 20);
+// COMMON-REWRITES-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.a() as u32) << 29 >> 29;
+// COMMON-REWRITES-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// COMMON-REWRITES-DAG: let {{__v[0-9]+}}: i32 = (s.__bitfield_0.b() as i32) << 27 >> 27;
+// COMMON-REWRITES-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.c() as u32) << 31 >> 31;
+// COMMON-REWRITES-DAG: unsafe {
+// COMMON-REWRITES-DAG:     printf(
+// COMMON-REWRITES-DAG:         {{__v[0-9]+}} as *const core::ffi::c_char,
+// COMMON-REWRITES-DAG:         {{__v[0-9]+}},
+// COMMON-REWRITES-DAG:         {{__v[0-9]+}},
+// COMMON-REWRITES-DAG:         {{__v[0-9]+}} as i32,
+// COMMON-REWRITES-DAG:         ((s.__bitfield_0.d() as u32) << 20 >> 20) as i32,
+// COMMON-REWRITES-DAG:     )
+// COMMON-REWRITES-DAG: };
+// COMMON-REWRITES-DAG: s.__bitfield_0.set_a((13 as u32) << 29 >> 29);
+// COMMON-REWRITES-DAG: s.__bitfield_0.set_b((20 as i32) << 27 >> 27);
+// COMMON-REWRITES-DAG: s.__bitfield_0.set_c((3 as u32) << 31 >> 31);
+// COMMON-REWRITES-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.a() as u32) << 29 >> 29;
+// COMMON-REWRITES-DAG: unsafe {
+// COMMON-REWRITES-DAG:     printf(
+// COMMON-REWRITES-DAG:         {{__v[0-9]+}} as *const core::ffi::c_char,
+// COMMON-REWRITES-DAG:         {{__v[0-9]+}} as i32,
+// COMMON-REWRITES-DAG:         (s.__bitfield_0.b() as i32) << 27 >> 27,
+// COMMON-REWRITES-DAG:         ((s.__bitfield_0.c() as u32) << 31 >> 31) as i32,
+// COMMON-REWRITES-DAG:     )
+// COMMON-REWRITES-DAG: };
+// COMMON-REWRITES-DAG: let {{__v[0-9]+}}: i32 = 4;
+// COMMON-REWRITES-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.a() as u32) << 29 >> 29;
+// COMMON-REWRITES-DAG: s.__bitfield_0
+// COMMON-REWRITES-DAG:     .set_a(((({{__v[0-9]+}} as i32) + {{__v[0-9]+}}) as u32) << 29 >> 29);
+// COMMON-REWRITES-DAG: let {{__v[0-9]+}}: i32 = 1;
+// COMMON-REWRITES-DAG: let {{__v[0-9]+}}: i32 = (s.__bitfield_0.b() as i32) << 27 >> 27;
+// COMMON-REWRITES-DAG: s.__bitfield_0.set_b((({{__v[0-9]+}} - {{__v[0-9]+}}) as i32) << 27 >> 27);
+// COMMON-REWRITES-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.a() as u32) << 29 >> 29;
+// COMMON-REWRITES-DAG: unsafe {
+// COMMON-REWRITES-DAG:     printf(
+// COMMON-REWRITES-DAG:         {{__v[0-9]+}} as *const core::ffi::c_char,
+// COMMON-REWRITES-DAG:         {{__v[0-9]+}} as i32,
+// COMMON-REWRITES-DAG:         (s.__bitfield_0.b() as i32) << 27 >> 27,
+// COMMON-REWRITES-DAG:     )
+// COMMON-REWRITES-DAG: };
+// COMMON-REWRITES-DAG: s.__bitfield_0.set_a((7 as u32) << 29 >> 29);
+// COMMON-REWRITES-DAG: s.__bitfield_0.set_b((15 as i32) << 27 >> 27);
+// COMMON-REWRITES-DAG: s.__bitfield_0.set_c((0 as u32) << 31 >> 31);
+// COMMON-REWRITES-DAG: s.__bitfield_0.set_d((4095 as u32) << 20 >> 20);
+// COMMON-REWRITES-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.a() as u32) << 29 >> 29;
+// COMMON-REWRITES-DAG: let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// COMMON-REWRITES-DAG: let {{__v[0-9]+}}: i32 = (s.__bitfield_0.b() as i32) << 27 >> 27;
+// COMMON-REWRITES-DAG: let {{__v[0-9]+}}: u32 = (s.__bitfield_0.c() as u32) << 31 >> 31;
+// COMMON-REWRITES-DAG: unsafe {
+// COMMON-REWRITES-DAG:     printf(
+// COMMON-REWRITES-DAG:         {{__v[0-9]+}} as *const core::ffi::c_char,
+// COMMON-REWRITES-DAG:         {{__v[0-9]+}},
+// COMMON-REWRITES-DAG:         {{__v[0-9]+}},
+// COMMON-REWRITES-DAG:         {{__v[0-9]+}} as i32,
+// COMMON-REWRITES-DAG:         ((s.__bitfield_0.d() as u32) << 20 >> 20) as i32,
+// COMMON-REWRITES-DAG:     )
+// COMMON-REWRITES-DAG: };
+// COMMON-REWRITES-DAG: let {{__v[0-9]+}}: u64 = 1099511627775u64;
+// COMMON-REWRITES-DAG: w.__bitfield_0.set_x(({{__v[0-9]+}} as u64) << 24 >> 24);
+// COMMON-REWRITES-DAG: w.__bitfield_1.set_y((-500000 as i64) << 24 >> 24);
+// COMMON-REWRITES-DAG: unsafe {
+// COMMON-REWRITES-DAG:     printf(
+// COMMON-REWRITES-DAG:         c"%llu %lld\n".as_ptr(),
+// COMMON-REWRITES-DAG:         (w.__bitfield_0.x() as u64) << 24 >> 24,
+// COMMON-REWRITES-DAG:         (w.__bitfield_1.y() as i64) << 24 >> 24,
+// COMMON-REWRITES-DAG:     )
+// COMMON-REWRITES-DAG: };
+// COMMON-REWRITES-DAG: let {{__v[0-9]+}}: u64 = 1;
+// COMMON-REWRITES-DAG: let {{__v[0-9]+}}: u64 = (w.__bitfield_0.x() as u64) << 24 >> 24;
+// COMMON-REWRITES-DAG: w.__bitfield_0.set_x((({{__v[0-9]+}} + {{__v[0-9]+}}) as u64) << 24 >> 24);
+// COMMON-REWRITES-DAG: unsafe { printf(c"%llu\n".as_ptr(), (w.__bitfield_0.x() as u64) << 24 >> 24) };
+// SLATE-FILECHECK-END common-rewrites
+
+// SLATE-FILECHECK-BEGIN rewrites-x86_64-gnu
+// REWRITES-X86_64-GNU-DAG: let {{__v[0-9]+}}: *mut i8 = c"%u %d %u %u\n".as_ptr() as *mut i8;
+// REWRITES-X86_64-GNU-DAG: let {{__v[0-9]+}}: *mut i8 = c"%u %d %u\n".as_ptr() as *mut i8;
+// REWRITES-X86_64-GNU-DAG: let {{__v[0-9]+}}: *mut i8 = c"%u %d\n".as_ptr() as *mut i8;
+// REWRITES-X86_64-GNU-DAG: let {{__v[0-9]+}}: *mut i8 = c"%u %d %u %u\n".as_ptr() as *mut i8;
+// SLATE-FILECHECK-END rewrites-x86_64-gnu
+
+// SLATE-FILECHECK-BEGIN rewrites-aarch64-gnu
+// REWRITES-AARCH64-GNU-DAG: let {{__v[0-9]+}}: *mut u8 = c"%u %d %u %u\n".as_ptr() as *mut u8;
+// REWRITES-AARCH64-GNU-DAG: let {{__v[0-9]+}}: *mut u8 = c"%u %d %u\n".as_ptr() as *mut u8;
+// REWRITES-AARCH64-GNU-DAG: let {{__v[0-9]+}}: *mut u8 = c"%u %d\n".as_ptr() as *mut u8;
+// REWRITES-AARCH64-GNU-DAG: let {{__v[0-9]+}}: *mut u8 = c"%u %d %u %u\n".as_ptr() as *mut u8;
+// SLATE-FILECHECK-END rewrites-aarch64-gnu

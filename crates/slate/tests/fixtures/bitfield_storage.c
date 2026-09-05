@@ -7,7 +7,7 @@ union U {
 };
 
 int main(void) {
-  union U value = {0};
+  union U value     = {0};
   // @lowering-begin
   // @rewrite-begin
   value.bits.second = 1;
@@ -16,16 +16,19 @@ int main(void) {
   return value.bits.second != 1;
 }
 
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: let {{__v[0-9]+}}: u32 = 1;
-// LOWERING-DAG: let {{__v[0-9]+}}: u32 = ({{__v[0-9]+}} as u32) << 31 >> 31;
-// LOWERING-DAG: unsafe {
-// LOWERING-DAG:     value.bits.__bitfield_0.set_second(({{__v[0-9]+}} as u32) << 31 >> 31);
-// LOWERING-DAG: }
-// SLATE-FILECHECK-END lowering
+// SLATE-FILECHECK-BEGIN common-lowering
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u32 = 1;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: u32 = ({{__v[0-9]+}} as u32) << 31 >> 31;
+// COMMON-LOWERING-DAG: unsafe {
+// COMMON-LOWERING-DAG:     value
+// COMMON-LOWERING-DAG:         .bits
+// COMMON-LOWERING-DAG:         .__bitfield_0
+// COMMON-LOWERING-DAG:         .set_second(({{__v[0-9]+}} as u32) << 31 >> 31);
+// COMMON-LOWERING-DAG: }
+// SLATE-FILECHECK-END common-lowering
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: unsafe {
-// REWRITES-DAG:     value.bits.__bitfield_0.set_second((1 as u32) << 31 >> 31);
-// REWRITES-DAG: }
-// SLATE-FILECHECK-END rewrites
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES-DAG: unsafe {
+// COMMON-REWRITES-DAG:     value.bits.__bitfield_0.set_second((1 as u32) << 31 >> 31);
+// COMMON-REWRITES-DAG: }
+// SLATE-FILECHECK-END common-rewrites

@@ -15,212 +15,119 @@ int main(void) {
   return strcmp(entry_name(&entry), "root") == 0 ? 0 : 1;
 }
 
+// SLATE-FILECHECK-BEGIN common-lowering
+// COMMON-LOWERING: #![allow(
+// COMMON-LOWERING-NEXT:     dead_code,
+// COMMON-LOWERING-NEXT:     unused,
+// COMMON-LOWERING-NEXT:     non_camel_case_types,
+// COMMON-LOWERING-NEXT:     non_snake_case,
+// COMMON-LOWERING-NEXT:     non_upper_case_globals,
+// COMMON-LOWERING-NEXT:     arithmetic_overflow,
+// COMMON-LOWERING-NEXT:     unconditional_panic,
+// COMMON-LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// COMMON-LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// COMMON-LOWERING-NEXT:     unused_comparisons
+// COMMON-LOWERING-NEXT: )]
+// COMMON-LOWERING-EMPTY:
+// COMMON-LOWERING-NEXT: #[repr(C)]
+// COMMON-LOWERING-NEXT: #[derive(Clone, Copy)]
+// COMMON-LOWERING-NEXT: struct pw_entry {
+// COMMON-LOWERING-NEXT: }
+// COMMON-LOWERING-EMPTY:
+// COMMON-LOWERING-NEXT: unsafe extern "C" {
+// COMMON-LOWERING-NEXT:     fn strcmp(_0: *const core::ffi::c_char, _1: *const core::ffi::c_char) -> i32;
+// COMMON-LOWERING-NEXT: }
+// COMMON-LOWERING-EMPTY:
+// COMMON-LOWERING-NEXT:     return {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT: }
+// COMMON-LOWERING-EMPTY:
+// COMMON-LOWERING-NEXT: fn main() {
+// COMMON-LOWERING-NEXT:     let mut entry: pw_entry = pw_entry {
+// COMMON-LOWERING-NEXT:         pw_name: std::ptr::null_mut(),
+// COMMON-LOWERING-NEXT:     };
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// COMMON-LOWERING-NEXT:     entry.pw_name = {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
+// COMMON-LOWERING-NEXT:         strcmp(
+// COMMON-LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// COMMON-LOWERING-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// COMMON-LOWERING-NEXT:         )
+// COMMON-LOWERING-NEXT:     };
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} };
+// COMMON-LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// COMMON-LOWERING-NEXT: }
+// SLATE-FILECHECK-END common-lowering
+
 // SLATE-FILECHECK-BEGIN lowering-bionic-aarch64
-// LOWERING-BIONIC-AARCH64: #![allow(
-// LOWERING-BIONIC-AARCH64-NEXT:     dead_code,
-// LOWERING-BIONIC-AARCH64-NEXT:     unused,
-// LOWERING-BIONIC-AARCH64-NEXT:     non_camel_case_types,
-// LOWERING-BIONIC-AARCH64-NEXT:     non_snake_case,
-// LOWERING-BIONIC-AARCH64-NEXT:     non_upper_case_globals,
-// LOWERING-BIONIC-AARCH64-NEXT:     arithmetic_overflow,
-// LOWERING-BIONIC-AARCH64-NEXT:     unconditional_panic,
-// LOWERING-BIONIC-AARCH64-NEXT:     suspicious_runtime_symbol_definitions,
-// LOWERING-BIONIC-AARCH64-NEXT:     unpredictable_function_pointer_comparisons,
-// LOWERING-BIONIC-AARCH64-NEXT:     unused_comparisons
-// LOWERING-BIONIC-AARCH64-NEXT: )]
-// LOWERING-BIONIC-AARCH64-EMPTY:
-// LOWERING-BIONIC-AARCH64-NEXT: #[repr(C)]
-// LOWERING-BIONIC-AARCH64-NEXT: #[derive(Clone, Copy)]
-// LOWERING-BIONIC-AARCH64-NEXT: struct pw_entry {
 // LOWERING-BIONIC-AARCH64-NEXT:     pw_name: *mut u8,
-// LOWERING-BIONIC-AARCH64-NEXT: }
-// LOWERING-BIONIC-AARCH64-EMPTY:
-// LOWERING-BIONIC-AARCH64-NEXT: unsafe extern "C" {
-// LOWERING-BIONIC-AARCH64-NEXT:     fn strcmp(_0: *const core::ffi::c_char, _1: *const core::ffi::c_char) -> i32;
-// LOWERING-BIONIC-AARCH64-NEXT: }
-// LOWERING-BIONIC-AARCH64-EMPTY:
 // LOWERING-BIONIC-AARCH64-NEXT: unsafe fn entry_name({{arg[0-9]+}}: *mut pw_entry) -> *mut u8 {
 // LOWERING-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: *mut u8 = unsafe { (*{{arg[0-9]+}}).pw_name };
-// LOWERING-BIONIC-AARCH64-NEXT:     return {{__v[0-9]+}};
-// LOWERING-BIONIC-AARCH64-NEXT: }
-// LOWERING-BIONIC-AARCH64-EMPTY:
-// LOWERING-BIONIC-AARCH64-NEXT: fn main() {
-// LOWERING-BIONIC-AARCH64-NEXT:     let mut entry: pw_entry = pw_entry {
-// LOWERING-BIONIC-AARCH64-NEXT:         pw_name: std::ptr::null_mut(),
-// LOWERING-BIONIC-AARCH64-NEXT:     };
-// LOWERING-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: *mut u8 = b"root\0".as_ptr() as *mut u8;
-// LOWERING-BIONIC-AARCH64-NEXT:     entry.pw_name = {{__v[0-9]+}};
 // LOWERING-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: *mut u8 = unsafe { entry_name(std::ptr::addr_of_mut!(entry)) };
 // LOWERING-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: *mut u8 = b"root\0".as_ptr() as *mut u8;
-// LOWERING-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
-// LOWERING-BIONIC-AARCH64-NEXT:         strcmp(
-// LOWERING-BIONIC-AARCH64-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-BIONIC-AARCH64-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-BIONIC-AARCH64-NEXT:         )
-// LOWERING-BIONIC-AARCH64-NEXT:     };
-// LOWERING-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
-// LOWERING-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: i32 = 1;
-// LOWERING-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} };
-// LOWERING-BIONIC-AARCH64-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
-// LOWERING-BIONIC-AARCH64-NEXT: }
 // SLATE-FILECHECK-END lowering-bionic-aarch64
 
 // SLATE-FILECHECK-BEGIN lowering-bionic-x86_64
-// LOWERING-BIONIC-X86_64: #![allow(
-// LOWERING-BIONIC-X86_64-NEXT:     dead_code,
-// LOWERING-BIONIC-X86_64-NEXT:     unused,
-// LOWERING-BIONIC-X86_64-NEXT:     non_camel_case_types,
-// LOWERING-BIONIC-X86_64-NEXT:     non_snake_case,
-// LOWERING-BIONIC-X86_64-NEXT:     non_upper_case_globals,
-// LOWERING-BIONIC-X86_64-NEXT:     arithmetic_overflow,
-// LOWERING-BIONIC-X86_64-NEXT:     unconditional_panic,
-// LOWERING-BIONIC-X86_64-NEXT:     suspicious_runtime_symbol_definitions,
-// LOWERING-BIONIC-X86_64-NEXT:     unpredictable_function_pointer_comparisons,
-// LOWERING-BIONIC-X86_64-NEXT:     unused_comparisons
-// LOWERING-BIONIC-X86_64-NEXT: )]
-// LOWERING-BIONIC-X86_64-EMPTY:
-// LOWERING-BIONIC-X86_64-NEXT: #[repr(C)]
-// LOWERING-BIONIC-X86_64-NEXT: #[derive(Clone, Copy)]
-// LOWERING-BIONIC-X86_64-NEXT: struct pw_entry {
 // LOWERING-BIONIC-X86_64-NEXT:     pw_name: *mut i8,
-// LOWERING-BIONIC-X86_64-NEXT: }
-// LOWERING-BIONIC-X86_64-EMPTY:
-// LOWERING-BIONIC-X86_64-NEXT: unsafe extern "C" {
-// LOWERING-BIONIC-X86_64-NEXT:     fn strcmp(_0: *const core::ffi::c_char, _1: *const core::ffi::c_char) -> i32;
-// LOWERING-BIONIC-X86_64-NEXT: }
-// LOWERING-BIONIC-X86_64-EMPTY:
 // LOWERING-BIONIC-X86_64-NEXT: unsafe fn entry_name({{arg[0-9]+}}: *mut pw_entry) -> *mut i8 {
 // LOWERING-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: *mut i8 = unsafe { (*{{arg[0-9]+}}).pw_name };
-// LOWERING-BIONIC-X86_64-NEXT:     return {{__v[0-9]+}};
-// LOWERING-BIONIC-X86_64-NEXT: }
-// LOWERING-BIONIC-X86_64-EMPTY:
-// LOWERING-BIONIC-X86_64-NEXT: fn main() {
-// LOWERING-BIONIC-X86_64-NEXT:     let mut entry: pw_entry = pw_entry {
-// LOWERING-BIONIC-X86_64-NEXT:         pw_name: std::ptr::null_mut(),
-// LOWERING-BIONIC-X86_64-NEXT:     };
-// LOWERING-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: i32 = 0;
 // LOWERING-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"root\0".as_ptr() as *mut i8;
-// LOWERING-BIONIC-X86_64-NEXT:     entry.pw_name = {{__v[0-9]+}};
 // LOWERING-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: *mut i8 = unsafe { entry_name(std::ptr::addr_of_mut!(entry)) };
 // LOWERING-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"root\0".as_ptr() as *mut i8;
-// LOWERING-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
-// LOWERING-BIONIC-X86_64-NEXT:         strcmp(
-// LOWERING-BIONIC-X86_64-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-BIONIC-X86_64-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
-// LOWERING-BIONIC-X86_64-NEXT:         )
-// LOWERING-BIONIC-X86_64-NEXT:     };
-// LOWERING-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
-// LOWERING-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: i32 = 1;
-// LOWERING-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} };
-// LOWERING-BIONIC-X86_64-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
-// LOWERING-BIONIC-X86_64-NEXT: }
 // SLATE-FILECHECK-END lowering-bionic-x86_64
 
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES: #![allow(
+// COMMON-REWRITES-NEXT:     dead_code,
+// COMMON-REWRITES-NEXT:     unused,
+// COMMON-REWRITES-NEXT:     non_camel_case_types,
+// COMMON-REWRITES-NEXT:     non_snake_case,
+// COMMON-REWRITES-NEXT:     non_upper_case_globals,
+// COMMON-REWRITES-NEXT:     arithmetic_overflow,
+// COMMON-REWRITES-NEXT:     unconditional_panic,
+// COMMON-REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// COMMON-REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// COMMON-REWRITES-NEXT:     unused_comparisons
+// COMMON-REWRITES-NEXT: )]
+// COMMON-REWRITES-EMPTY:
+// COMMON-REWRITES-NEXT: #[repr(C)]
+// COMMON-REWRITES-NEXT: #[derive(Clone, Copy)]
+// COMMON-REWRITES-NEXT: struct pw_entry {
+// COMMON-REWRITES-NEXT: }
+// COMMON-REWRITES-EMPTY:
+// COMMON-REWRITES-NEXT: unsafe extern "C" {
+// COMMON-REWRITES-NEXT:     fn strcmp(_0: *const core::ffi::c_char, _1: *const core::ffi::c_char) -> i32;
+// COMMON-REWRITES-NEXT: }
+// COMMON-REWRITES-EMPTY:
+// COMMON-REWRITES-NEXT:     unsafe { (*{{arg[0-9]+}}).pw_name }
+// COMMON-REWRITES-NEXT: }
+// COMMON-REWRITES-EMPTY:
+// COMMON-REWRITES-NEXT: fn main() {
+// COMMON-REWRITES-NEXT:     let mut entry: pw_entry = pw_entry {
+// COMMON-REWRITES-NEXT:         pw_name: std::ptr::null_mut(),
+// COMMON-REWRITES-NEXT:     };
+// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { strcmp({{__v[0-9]+}} as *const core::ffi::c_char, c"root".as_ptr()) };
+// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} == 0 { {{__v[0-9]+}} } else { {{__v[0-9]+}} };
+// COMMON-REWRITES-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// COMMON-REWRITES-NEXT: }
+// SLATE-FILECHECK-END common-rewrites
+
 // SLATE-FILECHECK-BEGIN rewrites-bionic-aarch64
-// REWRITES-BIONIC-AARCH64: #![allow(
-// REWRITES-BIONIC-AARCH64-NEXT:     dead_code,
-// REWRITES-BIONIC-AARCH64-NEXT:     unused,
-// REWRITES-BIONIC-AARCH64-NEXT:     non_camel_case_types,
-// REWRITES-BIONIC-AARCH64-NEXT:     non_snake_case,
-// REWRITES-BIONIC-AARCH64-NEXT:     non_upper_case_globals,
-// REWRITES-BIONIC-AARCH64-NEXT:     arithmetic_overflow,
-// REWRITES-BIONIC-AARCH64-NEXT:     unconditional_panic,
-// REWRITES-BIONIC-AARCH64-NEXT:     suspicious_runtime_symbol_definitions,
-// REWRITES-BIONIC-AARCH64-NEXT:     unpredictable_function_pointer_comparisons,
-// REWRITES-BIONIC-AARCH64-NEXT:     unused_comparisons
-// REWRITES-BIONIC-AARCH64-NEXT: )]
-// REWRITES-BIONIC-AARCH64-EMPTY:
-// REWRITES-BIONIC-AARCH64-NEXT: #[repr(C)]
-// REWRITES-BIONIC-AARCH64-NEXT: #[derive(Clone, Copy)]
-// REWRITES-BIONIC-AARCH64-NEXT: struct pw_entry {
 // REWRITES-BIONIC-AARCH64-NEXT:     pw_name: *mut u8,
-// REWRITES-BIONIC-AARCH64-NEXT: }
-// REWRITES-BIONIC-AARCH64-EMPTY:
-// REWRITES-BIONIC-AARCH64-NEXT: unsafe extern "C" {
-// REWRITES-BIONIC-AARCH64-NEXT:     fn strcmp(_0: *const core::ffi::c_char, _1: *const core::ffi::c_char) -> i32;
-// REWRITES-BIONIC-AARCH64-NEXT: }
-// REWRITES-BIONIC-AARCH64-EMPTY:
 // REWRITES-BIONIC-AARCH64-NEXT: unsafe fn entry_name({{arg[0-9]+}}: *mut pw_entry) -> *mut u8 {
-// REWRITES-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: *mut u8 = unsafe { (*{{arg[0-9]+}}).pw_name };
-// REWRITES-BIONIC-AARCH64-NEXT:     {{__v[0-9]+}}
-// REWRITES-BIONIC-AARCH64-NEXT: }
-// REWRITES-BIONIC-AARCH64-EMPTY:
-// REWRITES-BIONIC-AARCH64-NEXT: fn main() {
-// REWRITES-BIONIC-AARCH64-NEXT:     let mut entry: pw_entry = pw_entry {
-// REWRITES-BIONIC-AARCH64-NEXT:         pw_name: std::ptr::null_mut(),
-// REWRITES-BIONIC-AARCH64-NEXT:     };
-// REWRITES-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: *mut u8 = c"root".as_ptr() as *mut u8;
-// REWRITES-BIONIC-AARCH64-NEXT:     entry.pw_name = {{__v[0-9]+}};
+// REWRITES-BIONIC-AARCH64-NEXT:     entry.pw_name = c"root".as_ptr() as *mut u8;
 // REWRITES-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: *mut u8 = unsafe { entry_name(std::ptr::addr_of_mut!(entry)) };
-// REWRITES-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: *mut u8 = c"root".as_ptr() as *mut u8;
-// REWRITES-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
-// REWRITES-BIONIC-AARCH64-NEXT:         strcmp(
-// REWRITES-BIONIC-AARCH64-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
-// REWRITES-BIONIC-AARCH64-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
-// REWRITES-BIONIC-AARCH64-NEXT:         )
-// REWRITES-BIONIC-AARCH64-NEXT:     };
-// REWRITES-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
-// REWRITES-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-BIONIC-AARCH64-NEXT:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} };
-// REWRITES-BIONIC-AARCH64-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
-// REWRITES-BIONIC-AARCH64-NEXT: }
 // SLATE-FILECHECK-END rewrites-bionic-aarch64
 
 // SLATE-FILECHECK-BEGIN rewrites-bionic-x86_64
-// REWRITES-BIONIC-X86_64: #![allow(
-// REWRITES-BIONIC-X86_64-NEXT:     dead_code,
-// REWRITES-BIONIC-X86_64-NEXT:     unused,
-// REWRITES-BIONIC-X86_64-NEXT:     non_camel_case_types,
-// REWRITES-BIONIC-X86_64-NEXT:     non_snake_case,
-// REWRITES-BIONIC-X86_64-NEXT:     non_upper_case_globals,
-// REWRITES-BIONIC-X86_64-NEXT:     arithmetic_overflow,
-// REWRITES-BIONIC-X86_64-NEXT:     unconditional_panic,
-// REWRITES-BIONIC-X86_64-NEXT:     suspicious_runtime_symbol_definitions,
-// REWRITES-BIONIC-X86_64-NEXT:     unpredictable_function_pointer_comparisons,
-// REWRITES-BIONIC-X86_64-NEXT:     unused_comparisons
-// REWRITES-BIONIC-X86_64-NEXT: )]
-// REWRITES-BIONIC-X86_64-EMPTY:
-// REWRITES-BIONIC-X86_64-NEXT: #[repr(C)]
-// REWRITES-BIONIC-X86_64-NEXT: #[derive(Clone, Copy)]
-// REWRITES-BIONIC-X86_64-NEXT: struct pw_entry {
 // REWRITES-BIONIC-X86_64-NEXT:     pw_name: *mut i8,
-// REWRITES-BIONIC-X86_64-NEXT: }
-// REWRITES-BIONIC-X86_64-EMPTY:
-// REWRITES-BIONIC-X86_64-NEXT: unsafe extern "C" {
-// REWRITES-BIONIC-X86_64-NEXT:     fn strcmp(_0: *const core::ffi::c_char, _1: *const core::ffi::c_char) -> i32;
-// REWRITES-BIONIC-X86_64-NEXT: }
-// REWRITES-BIONIC-X86_64-EMPTY:
 // REWRITES-BIONIC-X86_64-NEXT: unsafe fn entry_name({{arg[0-9]+}}: *mut pw_entry) -> *mut i8 {
-// REWRITES-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: *mut i8 = unsafe { (*{{arg[0-9]+}}).pw_name };
-// REWRITES-BIONIC-X86_64-NEXT:     {{__v[0-9]+}}
-// REWRITES-BIONIC-X86_64-NEXT: }
-// REWRITES-BIONIC-X86_64-EMPTY:
-// REWRITES-BIONIC-X86_64-NEXT: fn main() {
-// REWRITES-BIONIC-X86_64-NEXT:     let mut entry: pw_entry = pw_entry {
-// REWRITES-BIONIC-X86_64-NEXT:         pw_name: std::ptr::null_mut(),
-// REWRITES-BIONIC-X86_64-NEXT:     };
-// REWRITES-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"root".as_ptr() as *mut i8;
-// REWRITES-BIONIC-X86_64-NEXT:     entry.pw_name = {{__v[0-9]+}};
+// REWRITES-BIONIC-X86_64-NEXT:     entry.pw_name = c"root".as_ptr() as *mut i8;
 // REWRITES-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: *mut i8 = unsafe { entry_name(std::ptr::addr_of_mut!(entry)) };
-// REWRITES-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"root".as_ptr() as *mut i8;
-// REWRITES-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: i32 = unsafe {
-// REWRITES-BIONIC-X86_64-NEXT:         strcmp(
-// REWRITES-BIONIC-X86_64-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
-// REWRITES-BIONIC-X86_64-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
-// REWRITES-BIONIC-X86_64-NEXT:         )
-// REWRITES-BIONIC-X86_64-NEXT:     };
-// REWRITES-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} == {{__v[0-9]+}};
-// REWRITES-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-BIONIC-X86_64-NEXT:     let {{__v[0-9]+}}: i32 = if {{__v[0-9]+}} { {{__v[0-9]+}} } else { {{__v[0-9]+}} };
-// REWRITES-BIONIC-X86_64-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
-// REWRITES-BIONIC-X86_64-NEXT: }
 // SLATE-FILECHECK-END rewrites-bionic-x86_64

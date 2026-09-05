@@ -15,9 +15,8 @@ int main(void) {
 // DIRECTIVES-DAG: #[cfg(feature = "my_feature")]
 // DIRECTIVES-DAG: #[cfg(not(feature = "my_feature"))]
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn feature_code() -> i32 {
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 20;
-// REWRITES-DAG:     {{__v[0-9]+}}
-// REWRITES-DAG: }
-// SLATE-FILECHECK-END rewrites
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES-DAG: fn feature_code() -> i32 {
+// COMMON-REWRITES-DAG:     20
+// COMMON-REWRITES-DAG: }
+// SLATE-FILECHECK-END common-rewrites

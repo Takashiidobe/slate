@@ -8,24 +8,20 @@
 
 enum bar : long { A = 1, B = 3 };
 
-int test_bar(enum bar* a, void* b)
-{
-	*a = A;
+int test_bar(enum bar *a, void *b) {
+  *a = A;
 
-	enum foo : long { C = 2, D = 4 }* p = b;
-	*p = B;
+  enum foo : long { C = 2, D = 4 } *p = b;
+  *p                                  = B;
 
-	return *a;
+  return *a;
 }
 
+int main() {
+  enum bar z;
 
-int main()
-{
-	enum bar z;
+  if (B != test_bar(&z, &z))
+    __builtin_abort();
 
-	if (B != test_bar(&z, &z))
-		__builtin_abort();
-
-	return 0;
+  return 0;
 }
-

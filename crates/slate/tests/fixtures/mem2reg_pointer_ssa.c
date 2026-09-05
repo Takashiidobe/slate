@@ -28,27 +28,27 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: fn return_global() -> *mut i32 {
-// LOWERING-DAG:     return std::ptr::addr_of_mut!(value);
-// LOWERING-DAG: }
-// LOWERING-DAG: fn return_global_pointer() -> *mut *mut i32 {
-// LOWERING-DAG:     return std::ptr::addr_of_mut!(value_pointer);
-// LOWERING-DAG: }
-// LOWERING-DAG: fn return_element() -> *mut i32 {
-// LOWERING-DAG:     let {{__v[0-9]+}}: i64 = 1;
-// LOWERING-DAG:     return unsafe { std::ptr::addr_of_mut!(values[({{__v[0-9]+}} as usize)]) };
-// LOWERING-DAG: }
-// SLATE-FILECHECK-END lowering
+// SLATE-FILECHECK-BEGIN common-lowering
+// COMMON-LOWERING-DAG: fn return_global() -> *mut i32 {
+// COMMON-LOWERING-DAG:     return std::ptr::addr_of_mut!(value);
+// COMMON-LOWERING-DAG: }
+// COMMON-LOWERING-DAG: fn return_global_pointer() -> *mut *mut i32 {
+// COMMON-LOWERING-DAG:     return std::ptr::addr_of_mut!(value_pointer);
+// COMMON-LOWERING-DAG: }
+// COMMON-LOWERING-DAG: fn return_element() -> *mut i32 {
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i64 = 1;
+// COMMON-LOWERING-DAG:     return unsafe { std::ptr::addr_of_mut!(values[({{__v[0-9]+}} as usize)]) };
+// COMMON-LOWERING-DAG: }
+// SLATE-FILECHECK-END common-lowering
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn return_global() -> *mut i32 {
-// REWRITES-DAG:     std::ptr::addr_of_mut!(value)
-// REWRITES-DAG: }
-// REWRITES-DAG: fn return_global_pointer() -> *mut *mut i32 {
-// REWRITES-DAG:     std::ptr::addr_of_mut!(value_pointer)
-// REWRITES-DAG: }
-// REWRITES-DAG: fn return_element() -> *mut i32 {
-// REWRITES-DAG:     unsafe { std::ptr::addr_of_mut!(values[1]) }
-// REWRITES-DAG: }
-// SLATE-FILECHECK-END rewrites
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES-DAG: fn return_global() -> *mut i32 {
+// COMMON-REWRITES-DAG:     std::ptr::addr_of_mut!(value)
+// COMMON-REWRITES-DAG: }
+// COMMON-REWRITES-DAG: fn return_global_pointer() -> *mut *mut i32 {
+// COMMON-REWRITES-DAG:     std::ptr::addr_of_mut!(value_pointer)
+// COMMON-REWRITES-DAG: }
+// COMMON-REWRITES-DAG: fn return_element() -> *mut i32 {
+// COMMON-REWRITES-DAG:     unsafe { std::ptr::addr_of_mut!(values[1]) }
+// COMMON-REWRITES-DAG: }
+// SLATE-FILECHECK-END common-rewrites

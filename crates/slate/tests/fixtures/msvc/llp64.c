@@ -159,7 +159,7 @@ int main(void) {
 // REWRITES-MSVC-NEXT:     {{arg[0-9]+}}: i64,
 // REWRITES-MSVC-NEXT:     {{arg[0-9]+}}: f64,
 // REWRITES-MSVC-NEXT: ) -> i64 {
-// REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: i64 = unsafe {
+// REWRITES-MSVC-NEXT:     unsafe {
 // REWRITES-MSVC-NEXT:         imported_msvc(
 // REWRITES-MSVC-NEXT:             {{arg[0-9]+}} as usize,
 // REWRITES-MSVC-NEXT:             {{arg[0-9]+}} as isize,
@@ -170,30 +170,22 @@ int main(void) {
 // REWRITES-MSVC-NEXT:             {{arg[0-9]+}} as i64,
 // REWRITES-MSVC-NEXT:             {{arg[0-9]+}} as f64,
 // REWRITES-MSVC-NEXT:         )
-// REWRITES-MSVC-NEXT:     };
-// REWRITES-MSVC-NEXT:     {{__v[0-9]+}}
+// REWRITES-MSVC-NEXT:     }
 // REWRITES-MSVC-NEXT: }
 // REWRITES-MSVC-EMPTY:
 // REWRITES-MSVC-NEXT: fn main() {
 // REWRITES-MSVC-NEXT:     let mut buffer: [i8; 8] = [0; 8];
-// REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: *mut i8 = buffer.as_mut_ptr() as *mut i8;
-// REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"slate".as_ptr() as *mut i8;
 // REWRITES-MSVC-NEXT:     (unsafe {
 // REWRITES-MSVC-NEXT:         strcpy(
-// REWRITES-MSVC-NEXT:             {{__v[0-9]+}} as *mut core::ffi::c_char,
-// REWRITES-MSVC-NEXT:             {{__v[0-9]+}} as *const core::ffi::c_char,
+// REWRITES-MSVC-NEXT:             buffer.as_mut_ptr() as *mut core::ffi::c_char,
+// REWRITES-MSVC-NEXT:             c"slate".as_ptr(),
 // REWRITES-MSVC-NEXT:         )
 // REWRITES-MSVC-NEXT:     }) as *mut i8;
 // REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: *mut i8 = c"%zu %d\n".as_ptr() as *mut i8;
 // REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: *mut i8 = buffer.as_mut_ptr() as *mut i8;
 // REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: u64 = (unsafe { strlen({{__v[0-9]+}} as *const core::ffi::c_char) }) as u64;
-// REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: i32 = 55;
-// REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { isdigit({{__v[0-9]+}} as i32) };
-// REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-MSVC-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
-// REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-MSVC-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// REWRITES-MSVC-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { isdigit(55 as i32) };
+// REWRITES-MSVC-NEXT:     unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, ({{__v[0-9]+}} != 0) as i32) };
+// REWRITES-MSVC-NEXT:     std::process::exit(0 as i32);
 // REWRITES-MSVC-NEXT: }
 // SLATE-FILECHECK-END rewrites-msvc

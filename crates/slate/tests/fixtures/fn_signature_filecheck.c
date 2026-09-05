@@ -11,18 +11,16 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: fn sum3({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{arg[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-DAG:     return {{__v[0-9]+}};
-// LOWERING-DAG: }
-// SLATE-FILECHECK-END lowering
+// SLATE-FILECHECK-BEGIN common-lowering
+// COMMON-LOWERING-DAG: fn sum3({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{arg[0-9]+}} + {{arg[0-9]+}};
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{arg[0-9]+}};
+// COMMON-LOWERING-DAG:     return {{__v[0-9]+}};
+// COMMON-LOWERING-DAG: }
+// SLATE-FILECHECK-END common-lowering
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn sum3({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{arg[0-9]+}} + {{arg[0-9]+}};
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{arg[0-9]+}};
-// REWRITES-DAG:     {{__v[0-9]+}}
-// REWRITES-DAG: }
-// SLATE-FILECHECK-END rewrites
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES-DAG: fn sum3({{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32, {{arg[0-9]+}}: i32) -> i32 {
+// COMMON-REWRITES-DAG:     {{arg[0-9]+}} + {{arg[0-9]+}} + {{arg[0-9]+}}
+// COMMON-REWRITES-DAG: }
+// SLATE-FILECHECK-END common-rewrites

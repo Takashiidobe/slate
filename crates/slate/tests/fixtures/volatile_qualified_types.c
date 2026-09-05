@@ -28,167 +28,189 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(
-// LOWERING-NEXT:     dead_code,
-// LOWERING-NEXT:     unused,
-// LOWERING-NEXT:     non_camel_case_types,
-// LOWERING-NEXT:     non_snake_case,
-// LOWERING-NEXT:     non_upper_case_globals,
-// LOWERING-NEXT:     arithmetic_overflow,
-// LOWERING-NEXT:     unconditional_panic,
-// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
-// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
-// LOWERING-NEXT:     unused_comparisons
-// LOWERING-NEXT: )]
-// LOWERING-EMPTY:
-// LOWERING-NEXT: #[repr(C)]
-// LOWERING-NEXT: #[derive(Clone, Copy)]
-// LOWERING-NEXT: struct VolatileFields {
-// LOWERING-NEXT:     count: i32,
-// LOWERING-NEXT:     ratio: f64,
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: static mut gain: f64 = 1.5;
-// LOWERING-EMPTY:
-// LOWERING-NEXT: static mut marker: i8 = 65;
-// LOWERING-EMPTY:
-// LOWERING-NEXT: unsafe extern "C" {
-// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(marker)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = {{__v[0-9]+}} as i8;
-// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(marker), {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(gain)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = read_volatile_param({{__v[0-9]+}});
-// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(gain), {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%c\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i8 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(marker)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%f\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(gain)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%f\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = 2.0;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = use_volatile_fields({{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn read_volatile_param({{arg[0-9]+}}: f64) -> f64 {
-// LOWERING-NEXT:     let mut value: f64 = 0.0;
-// LOWERING-NEXT:     value = {{arg[0-9]+}};
-// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(value)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = 0.5;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-NEXT:     return {{__v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn use_volatile_fields({{arg[0-9]+}}: f64) -> f64 {
-// LOWERING-NEXT:     let mut fields: VolatileFields = VolatileFields {
-// LOWERING-NEXT:         count: 0,
-// LOWERING-NEXT:         ratio: 0.0,
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 4;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = bump_return({{__v[0-9]+}});
-// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(fields.count), {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(gain)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = {{arg[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(fields.ratio), {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(fields.ratio)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(fields.count)) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} as f64;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-NEXT:     return {{__v[0-9]+}};
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn bump_return({{arg[0-9]+}}: i32) -> i32 {
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{arg[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-NEXT:     return {{__v[0-9]+}};
-// LOWERING-NEXT: }
-// SLATE-FILECHECK-END lowering
+// SLATE-FILECHECK-BEGIN common-lowering
+// COMMON-LOWERING: #![feature(c_variadic)]
+// COMMON-LOWERING-NEXT: #![allow(
+// COMMON-LOWERING-NEXT:     dead_code,
+// COMMON-LOWERING-NEXT:     unused,
+// COMMON-LOWERING-NEXT:     non_camel_case_types,
+// COMMON-LOWERING-NEXT:     non_snake_case,
+// COMMON-LOWERING-NEXT:     non_upper_case_globals,
+// COMMON-LOWERING-NEXT:     arithmetic_overflow,
+// COMMON-LOWERING-NEXT:     unconditional_panic,
+// COMMON-LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// COMMON-LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// COMMON-LOWERING-NEXT:     unused_comparisons
+// COMMON-LOWERING-NEXT: )]
+// COMMON-LOWERING-EMPTY:
+// COMMON-LOWERING-NEXT: #[repr(C)]
+// COMMON-LOWERING-NEXT: #[derive(Clone, Copy)]
+// COMMON-LOWERING-NEXT: struct VolatileFields {
+// COMMON-LOWERING-NEXT:     count: i32,
+// COMMON-LOWERING-NEXT:     ratio: f64,
+// COMMON-LOWERING-NEXT: }
+// COMMON-LOWERING-EMPTY:
+// COMMON-LOWERING-NEXT: static mut gain: f64 = 1.5;
+// COMMON-LOWERING-EMPTY:
+// COMMON-LOWERING-EMPTY:
+// COMMON-LOWERING-NEXT: unsafe extern "C" {
+// COMMON-LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// COMMON-LOWERING-NEXT: }
+// COMMON-LOWERING-EMPTY:
+// COMMON-LOWERING-NEXT: fn main() {
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(marker), {{__v[0-9]+}}) };
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(gain)) };
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = read_volatile_param({{__v[0-9]+}});
+// COMMON-LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(gain), {{__v[0-9]+}}) };
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(gain)) };
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = 2.0;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = use_volatile_fields({{__v[0-9]+}});
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}) };
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// COMMON-LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// COMMON-LOWERING-NEXT: }
+// COMMON-LOWERING-EMPTY:
+// COMMON-LOWERING-NEXT: fn read_volatile_param({{arg[0-9]+}}: f64) -> f64 {
+// COMMON-LOWERING-NEXT:     let mut value: f64 = 0.0;
+// COMMON-LOWERING-NEXT:     value = {{arg[0-9]+}};
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(value)) };
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = 0.5;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT:     return {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT: }
+// COMMON-LOWERING-EMPTY:
+// COMMON-LOWERING-NEXT: fn use_volatile_fields({{arg[0-9]+}}: f64) -> f64 {
+// COMMON-LOWERING-NEXT:     let mut fields: VolatileFields = VolatileFields {
+// COMMON-LOWERING-NEXT:         count: 0,
+// COMMON-LOWERING-NEXT:         ratio: 0.0,
+// COMMON-LOWERING-NEXT:     };
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 4;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = bump_return({{__v[0-9]+}});
+// COMMON-LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(fields.count), {{__v[0-9]+}}) };
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(gain)) };
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = {{arg[0-9]+}} + {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(fields.ratio), {{__v[0-9]+}}) };
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(fields.ratio)) };
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(fields.count)) };
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} as f64;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT:     return {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT: }
+// COMMON-LOWERING-EMPTY:
+// COMMON-LOWERING-NEXT: fn bump_return({{arg[0-9]+}}: i32) -> i32 {
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = {{arg[0-9]+}} + {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT:     return {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT: }
+// SLATE-FILECHECK-END common-lowering
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(
-// REWRITES-NEXT:     dead_code,
-// REWRITES-NEXT:     unused,
-// REWRITES-NEXT:     non_camel_case_types,
-// REWRITES-NEXT:     non_snake_case,
-// REWRITES-NEXT:     non_upper_case_globals,
-// REWRITES-NEXT:     arithmetic_overflow,
-// REWRITES-NEXT:     unconditional_panic,
-// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
-// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
-// REWRITES-NEXT:     unused_comparisons
-// REWRITES-NEXT: )]
-// REWRITES-EMPTY:
-// REWRITES-NEXT: #[repr(C)]
-// REWRITES-NEXT: #[derive(Clone, Copy)]
-// REWRITES-NEXT: struct VolatileFields {
-// REWRITES-NEXT:     count: i32,
-// REWRITES-NEXT:     ratio: f64,
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: static mut gain: f64 = 1.5;
-// REWRITES-EMPTY:
-// REWRITES-NEXT: static mut marker: i8 = 65;
-// REWRITES-EMPTY:
-// REWRITES-NEXT: unsafe extern "C" {
-// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i8 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(marker)) };
-// REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(marker), (({{__v[0-9]+}} as i32) + 1) as i8) };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(gain)) };
-// REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(gain), read_volatile_param({{__v[0-9]+}})) };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(
-// REWRITES-NEXT:             c"%c\n".as_ptr(),
-// REWRITES-NEXT:             (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(marker)) }) as i32,
-// REWRITES-NEXT:         )
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         printf(c"%f\n".as_ptr(), unsafe {
-// REWRITES-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(gain))
-// REWRITES-NEXT:         })
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     unsafe { printf(c"%f\n".as_ptr(), use_volatile_fields(2.0)) };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn read_volatile_param({{arg[0-9]+}}: f64) -> f64 {
-// REWRITES-NEXT:     let mut value: f64 = 0.0;
-// REWRITES-NEXT:     value = {{arg[0-9]+}};
-// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(value)) };
-// REWRITES-NEXT:     {{__v[0-9]+}} + 0.5
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn use_volatile_fields({{arg[0-9]+}}: f64) -> f64 {
-// REWRITES-NEXT:     let mut fields: VolatileFields = VolatileFields {
-// REWRITES-NEXT:         count: 0,
-// REWRITES-NEXT:         ratio: 0.0,
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(fields.count), bump_return(4)) };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(gain)) };
-// REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(fields.ratio), {{arg[0-9]+}} + {{__v[0-9]+}}) };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(fields.ratio)) };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(fields.count)) };
-// REWRITES-NEXT:     {{__v[0-9]+}} + ({{__v[0-9]+}} as f64)
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn bump_return({{arg[0-9]+}}: i32) -> i32 {
-// REWRITES-NEXT:     {{arg[0-9]+}} + 1
-// REWRITES-NEXT: }
-// SLATE-FILECHECK-END rewrites
+// SLATE-FILECHECK-BEGIN lowering-x86_64-gnu
+// LOWERING-X86_64-GNU-NEXT: static mut marker: i8 = 65;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i8 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(marker)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i8 = {{__v[0-9]+}} as i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%c\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i8 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(marker)) };
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%f\n\0".as_ptr() as *mut i8;
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%f\n\0".as_ptr() as *mut i8;
+// SLATE-FILECHECK-END lowering-x86_64-gnu
+
+// SLATE-FILECHECK-BEGIN lowering-aarch64-gnu
+// LOWERING-AARCH64-GNU-NEXT: static mut marker: u8 = 65;
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(marker)) };
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = {{__v[0-9]+}} as u8;
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = b"%c\n\0".as_ptr() as *mut u8;
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(marker)) };
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = b"%f\n\0".as_ptr() as *mut u8;
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = b"%f\n\0".as_ptr() as *mut u8;
+// SLATE-FILECHECK-END lowering-aarch64-gnu
+
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES: #![feature(c_variadic)]
+// COMMON-REWRITES-NEXT: #![allow(
+// COMMON-REWRITES-NEXT:     dead_code,
+// COMMON-REWRITES-NEXT:     unused,
+// COMMON-REWRITES-NEXT:     non_camel_case_types,
+// COMMON-REWRITES-NEXT:     non_snake_case,
+// COMMON-REWRITES-NEXT:     non_upper_case_globals,
+// COMMON-REWRITES-NEXT:     arithmetic_overflow,
+// COMMON-REWRITES-NEXT:     unconditional_panic,
+// COMMON-REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// COMMON-REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// COMMON-REWRITES-NEXT:     unused_comparisons
+// COMMON-REWRITES-NEXT: )]
+// COMMON-REWRITES-EMPTY:
+// COMMON-REWRITES-NEXT: #[repr(C)]
+// COMMON-REWRITES-NEXT: #[derive(Clone, Copy)]
+// COMMON-REWRITES-NEXT: struct VolatileFields {
+// COMMON-REWRITES-NEXT:     count: i32,
+// COMMON-REWRITES-NEXT:     ratio: f64,
+// COMMON-REWRITES-NEXT: }
+// COMMON-REWRITES-EMPTY:
+// COMMON-REWRITES-NEXT: static mut gain: f64 = 1.5;
+// COMMON-REWRITES-EMPTY:
+// COMMON-REWRITES-EMPTY:
+// COMMON-REWRITES-NEXT: unsafe extern "C" {
+// COMMON-REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// COMMON-REWRITES-NEXT: }
+// COMMON-REWRITES-EMPTY:
+// COMMON-REWRITES-NEXT: fn main() {
+// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(gain)) };
+// COMMON-REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(gain), read_volatile_param({{__v[0-9]+}})) };
+// COMMON-REWRITES-NEXT:     unsafe {
+// COMMON-REWRITES-NEXT:         printf(
+// COMMON-REWRITES-NEXT:             c"%c\n".as_ptr(),
+// COMMON-REWRITES-NEXT:             (unsafe { std::ptr::read_volatile(std::ptr::addr_of!(marker)) }) as i32,
+// COMMON-REWRITES-NEXT:         )
+// COMMON-REWRITES-NEXT:     };
+// COMMON-REWRITES-NEXT:     unsafe {
+// COMMON-REWRITES-NEXT:         printf(c"%f\n".as_ptr(), unsafe {
+// COMMON-REWRITES-NEXT:             std::ptr::read_volatile(std::ptr::addr_of!(gain))
+// COMMON-REWRITES-NEXT:         })
+// COMMON-REWRITES-NEXT:     };
+// COMMON-REWRITES-NEXT:     unsafe { printf(c"%f\n".as_ptr(), use_volatile_fields(2.0)) };
+// COMMON-REWRITES-NEXT:     std::process::exit(0 as i32);
+// COMMON-REWRITES-NEXT: }
+// COMMON-REWRITES-EMPTY:
+// COMMON-REWRITES-NEXT: fn read_volatile_param({{arg[0-9]+}}: f64) -> f64 {
+// COMMON-REWRITES-NEXT:     let mut value: f64 = 0.0;
+// COMMON-REWRITES-NEXT:     value = {{arg[0-9]+}};
+// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(value)) };
+// COMMON-REWRITES-NEXT:     {{__v[0-9]+}} + 0.5
+// COMMON-REWRITES-NEXT: }
+// COMMON-REWRITES-EMPTY:
+// COMMON-REWRITES-NEXT: fn use_volatile_fields({{arg[0-9]+}}: f64) -> f64 {
+// COMMON-REWRITES-NEXT:     let mut fields: VolatileFields = VolatileFields {
+// COMMON-REWRITES-NEXT:         count: 0,
+// COMMON-REWRITES-NEXT:         ratio: 0.0,
+// COMMON-REWRITES-NEXT:     };
+// COMMON-REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(fields.count), bump_return(4)) };
+// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(gain)) };
+// COMMON-REWRITES-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(fields.ratio), {{arg[0-9]+}} + {{__v[0-9]+}}) };
+// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: f64 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(fields.ratio)) };
+// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(fields.count)) };
+// COMMON-REWRITES-NEXT:     {{__v[0-9]+}} + ({{__v[0-9]+}} as f64)
+// COMMON-REWRITES-NEXT: }
+// COMMON-REWRITES-EMPTY:
+// COMMON-REWRITES-NEXT: fn bump_return({{arg[0-9]+}}: i32) -> i32 {
+// COMMON-REWRITES-NEXT:     {{arg[0-9]+}} + 1
+// COMMON-REWRITES-NEXT: }
+// SLATE-FILECHECK-END common-rewrites
+
+// SLATE-FILECHECK-BEGIN rewrites-x86_64-gnu
+// REWRITES-X86_64-GNU-NEXT: static mut marker: i8 = 65;
+// REWRITES-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: i8 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(marker)) };
+// REWRITES-X86_64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(marker), (({{__v[0-9]+}} as i32) + 1) as i8) };
+// SLATE-FILECHECK-END rewrites-x86_64-gnu
+
+// SLATE-FILECHECK-BEGIN rewrites-aarch64-gnu
+// REWRITES-AARCH64-GNU-NEXT: static mut marker: u8 = 65;
+// REWRITES-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: u8 = unsafe { std::ptr::read_volatile(std::ptr::addr_of!(marker)) };
+// REWRITES-AARCH64-GNU-NEXT:     unsafe { std::ptr::write_volatile(std::ptr::addr_of_mut!(marker), (({{__v[0-9]+}} as i32) + 1) as u8) };
+// SLATE-FILECHECK-END rewrites-aarch64-gnu

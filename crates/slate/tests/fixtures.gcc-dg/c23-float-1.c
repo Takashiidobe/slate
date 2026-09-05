@@ -16,26 +16,24 @@
 #error "LDBL_NORM_MAX undefined"
 #endif
 
-extern void abort (void);
-extern void exit (int);
+extern void abort(void);
+extern void exit(int);
 
 /* @lowering-fn-begin */
 /* @rewrite-fn-begin */
-int
-main (void)
-{
+int main(void) {
   if (FLT_NORM_MAX != FLT_MAX)
-    abort ();
+    abort();
   if (DBL_NORM_MAX != DBL_MAX)
-    abort ();
+    abort();
 #if LDBL_MANT_DIG == 106
   if (LDBL_NORM_MAX != 0x0.ffffffffffffffffffffffffffcp1023L)
-    abort ();
+    abort();
 #else
   if (LDBL_NORM_MAX != LDBL_MAX)
-    abort ();
+    abort();
 #endif
-  exit (0);
+  exit(0);
 }
 /* @rewrite-fn-end */
 /* @lowering-fn-end */

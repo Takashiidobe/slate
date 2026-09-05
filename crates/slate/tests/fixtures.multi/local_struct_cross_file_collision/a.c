@@ -70,3 +70,57 @@ int run_a(void) {
 // REWRITES-DAG:     {{__v[0-9]+}}
 // REWRITES-DAG: }
 // SLATE-FILECHECK-END rewrites
+
+// SLATE-FILECHECK-BEGIN rewrites-x86_64-gnu
+// REWRITES-X86_64-GNU-DAG: #[unsafe(no_mangle)]
+// REWRITES-X86_64-GNU-DAG: pub extern "C-unwind" fn run_a() -> i32 {
+// REWRITES-X86_64-GNU-DAG:     let mut items: aligned::Aligned<aligned::A16, [Item; 2]> = aligned::Aligned(
+// REWRITES-X86_64-GNU-DAG:         [Item {
+// REWRITES-X86_64-GNU-DAG:             value: 0,
+// REWRITES-X86_64-GNU-DAG:             weight: 0,
+// REWRITES-X86_64-GNU-DAG:         }; 2],
+// REWRITES-X86_64-GNU-DAG:     );
+// REWRITES-X86_64-GNU-DAG:     let mut total: i32 = 0;
+// REWRITES-X86_64-GNU-DAG:     *items = [
+// REWRITES-X86_64-GNU-DAG:         Item {
+// REWRITES-X86_64-GNU-DAG:             value: 1,
+// REWRITES-X86_64-GNU-DAG:             weight: 10,
+// REWRITES-X86_64-GNU-DAG:         },
+// REWRITES-X86_64-GNU-DAG:         Item {
+// REWRITES-X86_64-GNU-DAG:             value: 2,
+// REWRITES-X86_64-GNU-DAG:             weight: 20,
+// REWRITES-X86_64-GNU-DAG:         },
+// REWRITES-X86_64-GNU-DAG:     ];
+// REWRITES-X86_64-GNU-DAG:     for i in 0..2 {
+// REWRITES-X86_64-GNU-DAG:         total += items[((i as i64) as usize)].value * items[((i as i64) as usize)].weight;
+// REWRITES-X86_64-GNU-DAG:     }
+// REWRITES-X86_64-GNU-DAG:     total
+// REWRITES-X86_64-GNU-DAG: }
+// SLATE-FILECHECK-END rewrites-x86_64-gnu
+
+// SLATE-FILECHECK-BEGIN rewrites-aarch64-gnu
+// REWRITES-AARCH64-GNU-DAG: #[unsafe(no_mangle)]
+// REWRITES-AARCH64-GNU-DAG: pub extern "C-unwind" fn run_a() -> i32 {
+// REWRITES-AARCH64-GNU-DAG:     let mut items: aligned::Aligned<aligned::A16, [Item; 2]> = aligned::Aligned(
+// REWRITES-AARCH64-GNU-DAG:         [Item {
+// REWRITES-AARCH64-GNU-DAG:             value: 0,
+// REWRITES-AARCH64-GNU-DAG:             weight: 0,
+// REWRITES-AARCH64-GNU-DAG:         }; 2],
+// REWRITES-AARCH64-GNU-DAG:     );
+// REWRITES-AARCH64-GNU-DAG:     let mut total: i32 = 0;
+// REWRITES-AARCH64-GNU-DAG:     *items = [
+// REWRITES-AARCH64-GNU-DAG:         Item {
+// REWRITES-AARCH64-GNU-DAG:             value: 1,
+// REWRITES-AARCH64-GNU-DAG:             weight: 10,
+// REWRITES-AARCH64-GNU-DAG:         },
+// REWRITES-AARCH64-GNU-DAG:         Item {
+// REWRITES-AARCH64-GNU-DAG:             value: 2,
+// REWRITES-AARCH64-GNU-DAG:             weight: 20,
+// REWRITES-AARCH64-GNU-DAG:         },
+// REWRITES-AARCH64-GNU-DAG:     ];
+// REWRITES-AARCH64-GNU-DAG:     for i in 0..2 {
+// REWRITES-AARCH64-GNU-DAG:         total += items[((i as i64) as usize)].value * items[((i as i64) as usize)].weight;
+// REWRITES-AARCH64-GNU-DAG:     }
+// REWRITES-AARCH64-GNU-DAG:     total
+// REWRITES-AARCH64-GNU-DAG: }
+// SLATE-FILECHECK-END rewrites-aarch64-gnu

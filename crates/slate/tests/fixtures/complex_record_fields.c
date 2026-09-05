@@ -33,266 +33,284 @@ int main(void) {
 // @rewrite-fn-end
 // @lowering-fn-end
 
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: fn main() {
-// LOWERING-DAG:     let mut fields: complex_fields = complex_fields {
-// LOWERING-DAG:         c8: num_complex::Complex { re: 0, im: 0 },
-// LOWERING-DAG:         u16: num_complex::Complex { re: 0, im: 0 },
-// LOWERING-DAG:         f32: num_complex::Complex { re: 0.0, im: 0.0 },
-// LOWERING-DAG:         f64: num_complex::Complex { re: 0.0, im: 0.0 },
-// LOWERING-DAG:     };
-// LOWERING-DAG:     let mut overlay: complex_union = unsafe { std::mem::zeroed::<complex_union>() };
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     let {{__v[0-9]+}}: complex_fields = complex_fields {
-// LOWERING-DAG:         c8: num_complex::Complex { re: 0, im: 0 },
-// LOWERING-DAG:         u16: num_complex::Complex { re: 0, im: 0 },
-// LOWERING-DAG:         f32: num_complex::Complex { re: 0.0, im: 0.0 },
-// LOWERING-DAG:         f64: num_complex::Complex { re: 0.0, im: 0.0 },
-// LOWERING-DAG:     };
-// LOWERING-DAG:     fields = {{__v[0-9]+}};
-// LOWERING-DAG:     let {{__v[0-9]+}}: complex_union = complex_union {
-// LOWERING-DAG:         value: num_complex::Complex { re: 0.0, im: 0.0 },
-// LOWERING-DAG:     };
-// LOWERING-DAG:     overlay = {{__v[0-9]+}};
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}};
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: {{__v[0-9]+}}, im: {{__v[0-9]+}} };
-// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: 0, im: 2 };
-// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex {
-// LOWERING-DAG:         re: {{__v[0-9]+}}.re + {{__v[0-9]+}}.re,
-// LOWERING-DAG:         im: {{__v[0-9]+}}.im + {{__v[0-9]+}}.im,
-// LOWERING-DAG:     };
-// LOWERING-DAG:     let {{__v[0-9]+}}: i8 = {{__v[0-9]+}}.re as i8;
-// LOWERING-DAG:     let {{__v[0-9]+}}: i8 = {{__v[0-9]+}}.im as i8;
-// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<i8> = num_complex::Complex { re: {{__v[0-9]+}}, im: {{__v[0-9]+}} };
-// LOWERING-DAG:     fields.c8 = {{__v[0-9]+}};
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 3;
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}};
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: {{__v[0-9]+}}, im: {{__v[0-9]+}} };
-// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: 0, im: 4 };
-// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex {
-// LOWERING-DAG:         re: {{__v[0-9]+}}.re + {{__v[0-9]+}}.re,
-// LOWERING-DAG:         im: {{__v[0-9]+}}.im + {{__v[0-9]+}}.im,
-// LOWERING-DAG:     };
-// LOWERING-DAG:     let {{__v[0-9]+}}: u16 = {{__v[0-9]+}}.re as u16;
-// LOWERING-DAG:     let {{__v[0-9]+}}: u16 = {{__v[0-9]+}}.im as u16;
-// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<u16> = num_complex::Complex { re: {{__v[0-9]+}}, im: {{__v[0-9]+}} };
-// LOWERING-DAG:     fields.u16 = {{__v[0-9]+}};
-// LOWERING-DAG:     let {{__v[0-9]+}}: f32 = 5.0;
-// LOWERING-DAG:     let {{__v[0-9]+}}: f32 = 0.0;
-// LOWERING-DAG:     let {{__v[0-9]+}}: f32 = 6.0;
-// LOWERING-DAG:     let {{__v[0-9]+}}: f32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex { re: {{__v[0-9]+}}, im: {{__v[0-9]+}} };
-// LOWERING-DAG:     fields.f32 = {{__v[0-9]+}};
-// LOWERING-DAG:     let {{__v[0-9]+}}: f64 = 7.0;
-// LOWERING-DAG:     let {{__v[0-9]+}}: f64 = 0.0;
-// LOWERING-DAG:     let {{__v[0-9]+}}: f64 = 8.0;
-// LOWERING-DAG:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex { re: {{__v[0-9]+}}, im: {{__v[0-9]+}} };
-// LOWERING-DAG:     fields.f64 = {{__v[0-9]+}};
-// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f64> = fields.f64;
-// LOWERING-DAG:     unsafe {
-// LOWERING-DAG:         overlay.value = {{__v[0-9]+}};
-// LOWERING-DAG:     }
-// LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<i8> = fields.c8;
-// LOWERING-DAG:     let {{__v[0-9]+}}: i8 = {{__v[0-9]+}}.re;
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 1;
-// LOWERING-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = true;
-// LOWERING-DAG:         {{__v[0-9]+}}
-// LOWERING-DAG:     } else {
-// LOWERING-DAG:         let {{__v[0-9]+}}: num_complex::Complex<i8> = fields.c8;
-// LOWERING-DAG:         let {{__v[0-9]+}}: i8 = {{__v[0-9]+}}.im;
-// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 2;
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-DAG:         {{__v[0-9]+}}
-// LOWERING-DAG:     };
-// LOWERING-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = true;
-// LOWERING-DAG:         {{__v[0-9]+}}
-// LOWERING-DAG:     } else {
-// LOWERING-DAG:         let {{__v[0-9]+}}: num_complex::Complex<u16> = fields.u16;
-// LOWERING-DAG:         let {{__v[0-9]+}}: u16 = {{__v[0-9]+}}.re;
-// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 3;
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-DAG:         {{__v[0-9]+}}
-// LOWERING-DAG:     };
-// LOWERING-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = true;
-// LOWERING-DAG:         {{__v[0-9]+}}
-// LOWERING-DAG:     } else {
-// LOWERING-DAG:         let {{__v[0-9]+}}: num_complex::Complex<u16> = fields.u16;
-// LOWERING-DAG:         let {{__v[0-9]+}}: u16 = {{__v[0-9]+}}.im;
-// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 4;
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-DAG:         {{__v[0-9]+}}
-// LOWERING-DAG:     };
-// LOWERING-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = true;
-// LOWERING-DAG:         {{__v[0-9]+}}
-// LOWERING-DAG:     } else {
-// LOWERING-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = fields.f32;
-// LOWERING-DAG:         let {{__v[0-9]+}}: f32 = {{__v[0-9]+}}.re;
-// LOWERING-DAG:         let {{__v[0-9]+}}: f32 = 5.0;
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-DAG:         {{__v[0-9]+}}
-// LOWERING-DAG:     };
-// LOWERING-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = true;
-// LOWERING-DAG:         {{__v[0-9]+}}
-// LOWERING-DAG:     } else {
-// LOWERING-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = fields.f32;
-// LOWERING-DAG:         let {{__v[0-9]+}}: f32 = {{__v[0-9]+}}.im;
-// LOWERING-DAG:         let {{__v[0-9]+}}: f32 = 6.0;
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-DAG:         {{__v[0-9]+}}
-// LOWERING-DAG:     };
-// LOWERING-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = true;
-// LOWERING-DAG:         {{__v[0-9]+}}
-// LOWERING-DAG:     } else {
-// LOWERING-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { overlay.value };
-// LOWERING-DAG:         let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.re;
-// LOWERING-DAG:         let {{__v[0-9]+}}: f64 = 7.0;
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-DAG:         {{__v[0-9]+}}
-// LOWERING-DAG:     };
-// LOWERING-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = true;
-// LOWERING-DAG:         {{__v[0-9]+}}
-// LOWERING-DAG:     } else {
-// LOWERING-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { overlay.value };
-// LOWERING-DAG:         let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.im;
-// LOWERING-DAG:         let {{__v[0-9]+}}: f64 = 8.0;
-// LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// LOWERING-DAG:         {{__v[0-9]+}}
-// LOWERING-DAG:     };
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
-// LOWERING-DAG: }
-// SLATE-FILECHECK-END lowering
+// SLATE-FILECHECK-BEGIN common-lowering
+// COMMON-LOWERING-DAG: fn main() {
+// COMMON-LOWERING-DAG:     let mut fields: complex_fields = complex_fields {
+// COMMON-LOWERING-DAG:         c8: num_complex::Complex { re: 0, im: 0 },
+// COMMON-LOWERING-DAG:         u16: num_complex::Complex { re: 0, im: 0 },
+// COMMON-LOWERING-DAG:         f32: num_complex::Complex { re: 0.0, im: 0.0 },
+// COMMON-LOWERING-DAG:         f64: num_complex::Complex { re: 0.0, im: 0.0 },
+// COMMON-LOWERING-DAG:     };
+// COMMON-LOWERING-DAG:     let mut overlay: complex_union = unsafe { std::mem::zeroed::<complex_union>() };
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: complex_fields = complex_fields {
+// COMMON-LOWERING-DAG:         c8: num_complex::Complex { re: 0, im: 0 },
+// COMMON-LOWERING-DAG:         u16: num_complex::Complex { re: 0, im: 0 },
+// COMMON-LOWERING-DAG:         f32: num_complex::Complex { re: 0.0, im: 0.0 },
+// COMMON-LOWERING-DAG:         f64: num_complex::Complex { re: 0.0, im: 0.0 },
+// COMMON-LOWERING-DAG:     };
+// COMMON-LOWERING-DAG:     fields = {{__v[0-9]+}};
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: complex_union = complex_union {
+// COMMON-LOWERING-DAG:         value: num_complex::Complex { re: 0.0, im: 0.0 },
+// COMMON-LOWERING-DAG:     };
+// COMMON-LOWERING-DAG:     overlay = {{__v[0-9]+}};
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 1;
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}};
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: {{__v[0-9]+}}, im: {{__v[0-9]+}} };
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: 0, im: 2 };
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex {
+// COMMON-LOWERING-DAG:         re: {{__v[0-9]+}}.re + {{__v[0-9]+}}.re,
+// COMMON-LOWERING-DAG:         im: {{__v[0-9]+}}.im + {{__v[0-9]+}}.im,
+// COMMON-LOWERING-DAG:     };
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i8 = {{__v[0-9]+}}.re as i8;
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i8 = {{__v[0-9]+}}.im as i8;
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<i8> = num_complex::Complex {
+// COMMON-LOWERING-DAG:         re: {{__v[0-9]+}},
+// COMMON-LOWERING-DAG:         im: {{__v[0-9]+}},
+// COMMON-LOWERING-DAG:     };
+// COMMON-LOWERING-DAG:     fields.c8 = {{__v[0-9]+}};
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 3;
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}};
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex {
+// COMMON-LOWERING-DAG:         re: {{__v[0-9]+}},
+// COMMON-LOWERING-DAG:         im: {{__v[0-9]+}},
+// COMMON-LOWERING-DAG:     };
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: 0, im: 4 };
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex {
+// COMMON-LOWERING-DAG:         re: {{__v[0-9]+}}.re + {{__v[0-9]+}}.re,
+// COMMON-LOWERING-DAG:         im: {{__v[0-9]+}}.im + {{__v[0-9]+}}.im,
+// COMMON-LOWERING-DAG:     };
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: u16 = {{__v[0-9]+}}.re as u16;
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: u16 = {{__v[0-9]+}}.im as u16;
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<u16> = num_complex::Complex {
+// COMMON-LOWERING-DAG:         re: {{__v[0-9]+}},
+// COMMON-LOWERING-DAG:         im: {{__v[0-9]+}},
+// COMMON-LOWERING-DAG:     };
+// COMMON-LOWERING-DAG:     fields.u16 = {{__v[0-9]+}};
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: f32 = 5.0;
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: f32 = 0.0;
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: f32 = 6.0;
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: f32 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f32> = num_complex::Complex {
+// COMMON-LOWERING-DAG:         re: {{__v[0-9]+}},
+// COMMON-LOWERING-DAG:         im: {{__v[0-9]+}},
+// COMMON-LOWERING-DAG:     };
+// COMMON-LOWERING-DAG:     fields.f32 = {{__v[0-9]+}};
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: f64 = 7.0;
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: f64 = 0.0;
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: f64 = 8.0;
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: f64 = {{__v[0-9]+}} + {{__v[0-9]+}};
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f64> = num_complex::Complex {
+// COMMON-LOWERING-DAG:         re: {{__v[0-9]+}},
+// COMMON-LOWERING-DAG:         im: {{__v[0-9]+}},
+// COMMON-LOWERING-DAG:     };
+// COMMON-LOWERING-DAG:     fields.f64 = {{__v[0-9]+}};
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<f64> = fields.f64;
+// COMMON-LOWERING-DAG:     unsafe {
+// COMMON-LOWERING-DAG:         overlay.value = {{__v[0-9]+}};
+// COMMON-LOWERING-DAG:     }
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: num_complex::Complex<i8> = fields.c8;
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i8 = {{__v[0-9]+}}.re;
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 1;
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: bool = true;
+// COMMON-LOWERING-DAG:         {{__v[0-9]+}}
+// COMMON-LOWERING-DAG:     } else {
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: num_complex::Complex<i8> = fields.c8;
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: i8 = {{__v[0-9]+}}.im;
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 2;
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// COMMON-LOWERING-DAG:         {{__v[0-9]+}}
+// COMMON-LOWERING-DAG:     };
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: bool = true;
+// COMMON-LOWERING-DAG:         {{__v[0-9]+}}
+// COMMON-LOWERING-DAG:     } else {
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: num_complex::Complex<u16> = fields.u16;
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: u16 = {{__v[0-9]+}}.re;
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 3;
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// COMMON-LOWERING-DAG:         {{__v[0-9]+}}
+// COMMON-LOWERING-DAG:     };
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: bool = true;
+// COMMON-LOWERING-DAG:         {{__v[0-9]+}}
+// COMMON-LOWERING-DAG:     } else {
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: num_complex::Complex<u16> = fields.u16;
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: u16 = {{__v[0-9]+}}.im;
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: i32 = 4;
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// COMMON-LOWERING-DAG:         {{__v[0-9]+}}
+// COMMON-LOWERING-DAG:     };
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: bool = true;
+// COMMON-LOWERING-DAG:         {{__v[0-9]+}}
+// COMMON-LOWERING-DAG:     } else {
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = fields.f32;
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: f32 = {{__v[0-9]+}}.re;
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: f32 = 5.0;
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// COMMON-LOWERING-DAG:         {{__v[0-9]+}}
+// COMMON-LOWERING-DAG:     };
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: bool = true;
+// COMMON-LOWERING-DAG:         {{__v[0-9]+}}
+// COMMON-LOWERING-DAG:     } else {
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = fields.f32;
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: f32 = {{__v[0-9]+}}.im;
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: f32 = 6.0;
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// COMMON-LOWERING-DAG:         {{__v[0-9]+}}
+// COMMON-LOWERING-DAG:     };
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: bool = true;
+// COMMON-LOWERING-DAG:         {{__v[0-9]+}}
+// COMMON-LOWERING-DAG:     } else {
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { overlay.value };
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.re;
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: f64 = 7.0;
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// COMMON-LOWERING-DAG:         {{__v[0-9]+}}
+// COMMON-LOWERING-DAG:     };
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: bool = true;
+// COMMON-LOWERING-DAG:         {{__v[0-9]+}}
+// COMMON-LOWERING-DAG:     } else {
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { overlay.value };
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: f64 = {{__v[0-9]+}}.im;
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: f64 = 8.0;
+// COMMON-LOWERING-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
+// COMMON-LOWERING-DAG:         {{__v[0-9]+}}
+// COMMON-LOWERING-DAG:     };
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
+// COMMON-LOWERING-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// COMMON-LOWERING-DAG: }
+// SLATE-FILECHECK-END common-lowering
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn main() {
-// REWRITES-DAG:     let mut fields: complex_fields = complex_fields {
-// REWRITES-DAG:         c8: num_complex::Complex { re: 0, im: 0 },
-// REWRITES-DAG:         u16: num_complex::Complex { re: 0, im: 0 },
-// REWRITES-DAG:         f32: num_complex::Complex { re: 0.0, im: 0.0 },
-// REWRITES-DAG:         f64: num_complex::Complex { re: 0.0, im: 0.0 },
-// REWRITES-DAG:     };
-// REWRITES-DAG:     let mut overlay: complex_union = unsafe { std::mem::zeroed::<complex_union>() };
-// REWRITES-DAG:     fields = complex_fields {
-// REWRITES-DAG:         c8: num_complex::Complex { re: 0, im: 0 },
-// REWRITES-DAG:         u16: num_complex::Complex { re: 0, im: 0 },
-// REWRITES-DAG:         f32: num_complex::Complex { re: 0.0, im: 0.0 },
-// REWRITES-DAG:         f64: num_complex::Complex { re: 0.0, im: 0.0 },
-// REWRITES-DAG:     };
-// REWRITES-DAG:     overlay = complex_union {
-// REWRITES-DAG:         value: num_complex::Complex { re: 0.0, im: 0.0 },
-// REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: {{__v[0-9]+}}, im: {{__v[0-9]+}} };
-// REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: 0, im: 2 };
-// REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex {
-// REWRITES-DAG:         re: {{__v[0-9]+}}.re + {{__v[0-9]+}}.re,
-// REWRITES-DAG:         im: {{__v[0-9]+}}.im + {{__v[0-9]+}}.im,
-// REWRITES-DAG:     };
-// REWRITES-DAG:     fields.c8 = num_complex::Complex {
-// REWRITES-DAG:         re: {{__v[0-9]+}}.re as i8,
-// REWRITES-DAG:         im: {{__v[0-9]+}}.im as i8,
-// REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 3;
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: {{__v[0-9]+}}, im: {{__v[0-9]+}} };
-// REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: 0, im: 4 };
-// REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex {
-// REWRITES-DAG:         re: {{__v[0-9]+}}.re + {{__v[0-9]+}}.re,
-// REWRITES-DAG:         im: {{__v[0-9]+}}.im + {{__v[0-9]+}}.im,
-// REWRITES-DAG:     };
-// REWRITES-DAG:     fields.u16 = num_complex::Complex {
-// REWRITES-DAG:         re: {{__v[0-9]+}}.re as u16,
-// REWRITES-DAG:         im: {{__v[0-9]+}}.im as u16,
-// REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: f32 = 0.0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: f32 = 6.0;
-// REWRITES-DAG:     fields.f32 = num_complex::Complex {
-// REWRITES-DAG:         re: 5.0 + {{__v[0-9]+}},
-// REWRITES-DAG:         im: {{__v[0-9]+}},
-// REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = 0.0;
-// REWRITES-DAG:     let {{__v[0-9]+}}: f64 = 8.0;
-// REWRITES-DAG:     fields.f64 = num_complex::Complex {
-// REWRITES-DAG:         re: 7.0 + {{__v[0-9]+}},
-// REWRITES-DAG:         im: {{__v[0-9]+}},
-// REWRITES-DAG:     };
-// REWRITES-DAG:     unsafe {
-// REWRITES-DAG:         overlay.value = fields.f64;
-// REWRITES-DAG:     }
-// REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<i8> = fields.c8;
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if ({{__v[0-9]+}}.re as i32) != 1 {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<i8> = fields.c8;
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = ({{__v[0-9]+}}.im as i32) != 2;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<u16> = fields.u16;
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = ({{__v[0-9]+}}.re as i32) != 3;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<u16> = fields.u16;
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = ({{__v[0-9]+}}.im as i32) != 4;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = fields.f32;
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.re != 5.0;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = fields.f32;
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.im != 6.0;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { overlay.value };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.re != 7.0;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
-// REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     } else {
-// REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { overlay.value };
-// REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.im != 8.0;
-// REWRITES-DAG:         {{__v[0-9]+}}
-// REWRITES-DAG:     };
-// REWRITES-DAG:     std::process::exit({{__v[0-9]+}} as i32);
-// REWRITES-DAG: }
-// SLATE-FILECHECK-END rewrites
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES-DAG: fn main() {
+// COMMON-REWRITES-DAG:     let mut fields: complex_fields = complex_fields {
+// COMMON-REWRITES-DAG:         c8: num_complex::Complex { re: 0, im: 0 },
+// COMMON-REWRITES-DAG:         u16: num_complex::Complex { re: 0, im: 0 },
+// COMMON-REWRITES-DAG:         f32: num_complex::Complex { re: 0.0, im: 0.0 },
+// COMMON-REWRITES-DAG:         f64: num_complex::Complex { re: 0.0, im: 0.0 },
+// COMMON-REWRITES-DAG:     };
+// COMMON-REWRITES-DAG:     let mut overlay: complex_union = unsafe { std::mem::zeroed::<complex_union>() };
+// COMMON-REWRITES-DAG:     fields = complex_fields {
+// COMMON-REWRITES-DAG:         c8: num_complex::Complex { re: 0, im: 0 },
+// COMMON-REWRITES-DAG:         u16: num_complex::Complex { re: 0, im: 0 },
+// COMMON-REWRITES-DAG:         f32: num_complex::Complex { re: 0.0, im: 0.0 },
+// COMMON-REWRITES-DAG:         f64: num_complex::Complex { re: 0.0, im: 0.0 },
+// COMMON-REWRITES-DAG:     };
+// COMMON-REWRITES-DAG:     overlay = complex_union {
+// COMMON-REWRITES-DAG:         value: num_complex::Complex { re: 0.0, im: 0.0 },
+// COMMON-REWRITES-DAG:     };
+// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 1;
+// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: {{__v[0-9]+}}, im: {{__v[0-9]+}} };
+// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: 0, im: 2 };
+// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex {
+// COMMON-REWRITES-DAG:         re: {{__v[0-9]+}}.re + {{__v[0-9]+}}.re,
+// COMMON-REWRITES-DAG:         im: {{__v[0-9]+}}.im + {{__v[0-9]+}}.im,
+// COMMON-REWRITES-DAG:     };
+// COMMON-REWRITES-DAG:     fields.c8 = num_complex::Complex {
+// COMMON-REWRITES-DAG:         re: {{__v[0-9]+}}.re as i8,
+// COMMON-REWRITES-DAG:         im: {{__v[0-9]+}}.im as i8,
+// COMMON-REWRITES-DAG:     };
+// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 3;
+// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 0;
+// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex {
+// COMMON-REWRITES-DAG:         re: {{__v[0-9]+}},
+// COMMON-REWRITES-DAG:         im: {{__v[0-9]+}},
+// COMMON-REWRITES-DAG:     };
+// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex { re: 0, im: 4 };
+// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<i32> = num_complex::Complex {
+// COMMON-REWRITES-DAG:         re: {{__v[0-9]+}}.re + {{__v[0-9]+}}.re,
+// COMMON-REWRITES-DAG:         im: {{__v[0-9]+}}.im + {{__v[0-9]+}}.im,
+// COMMON-REWRITES-DAG:     };
+// COMMON-REWRITES-DAG:     fields.u16 = num_complex::Complex {
+// COMMON-REWRITES-DAG:         re: {{__v[0-9]+}}.re as u16,
+// COMMON-REWRITES-DAG:         im: {{__v[0-9]+}}.im as u16,
+// COMMON-REWRITES-DAG:     };
+// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: f32 = 0.0;
+// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: f32 = 6.0;
+// COMMON-REWRITES-DAG:     fields.f32 = num_complex::Complex {
+// COMMON-REWRITES-DAG:         re: 5.0 + {{__v[0-9]+}},
+// COMMON-REWRITES-DAG:         im: {{__v[0-9]+}},
+// COMMON-REWRITES-DAG:     };
+// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: f64 = 0.0;
+// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: f64 = 8.0;
+// COMMON-REWRITES-DAG:     fields.f64 = num_complex::Complex {
+// COMMON-REWRITES-DAG:         re: 7.0 + {{__v[0-9]+}},
+// COMMON-REWRITES-DAG:         im: {{__v[0-9]+}},
+// COMMON-REWRITES-DAG:     };
+// COMMON-REWRITES-DAG:     unsafe {
+// COMMON-REWRITES-DAG:         overlay.value = fields.f64;
+// COMMON-REWRITES-DAG:     }
+// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: num_complex::Complex<i8> = fields.c8;
+// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: bool = if ({{__v[0-9]+}}.re as i32) != 1 {
+// COMMON-REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// COMMON-REWRITES-DAG:         {{__v[0-9]+}}
+// COMMON-REWRITES-DAG:     } else {
+// COMMON-REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<i8> = fields.c8;
+// COMMON-REWRITES-DAG:         let {{__v[0-9]+}}: bool = ({{__v[0-9]+}}.im as i32) != 2;
+// COMMON-REWRITES-DAG:         {{__v[0-9]+}}
+// COMMON-REWRITES-DAG:     };
+// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// COMMON-REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// COMMON-REWRITES-DAG:         {{__v[0-9]+}}
+// COMMON-REWRITES-DAG:     } else {
+// COMMON-REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<u16> = fields.u16;
+// COMMON-REWRITES-DAG:         let {{__v[0-9]+}}: bool = ({{__v[0-9]+}}.re as i32) != 3;
+// COMMON-REWRITES-DAG:         {{__v[0-9]+}}
+// COMMON-REWRITES-DAG:     };
+// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// COMMON-REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// COMMON-REWRITES-DAG:         {{__v[0-9]+}}
+// COMMON-REWRITES-DAG:     } else {
+// COMMON-REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<u16> = fields.u16;
+// COMMON-REWRITES-DAG:         let {{__v[0-9]+}}: bool = ({{__v[0-9]+}}.im as i32) != 4;
+// COMMON-REWRITES-DAG:         {{__v[0-9]+}}
+// COMMON-REWRITES-DAG:     };
+// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// COMMON-REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// COMMON-REWRITES-DAG:         {{__v[0-9]+}}
+// COMMON-REWRITES-DAG:     } else {
+// COMMON-REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = fields.f32;
+// COMMON-REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.re != 5.0;
+// COMMON-REWRITES-DAG:         {{__v[0-9]+}}
+// COMMON-REWRITES-DAG:     };
+// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// COMMON-REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// COMMON-REWRITES-DAG:         {{__v[0-9]+}}
+// COMMON-REWRITES-DAG:     } else {
+// COMMON-REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f32> = fields.f32;
+// COMMON-REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.im != 6.0;
+// COMMON-REWRITES-DAG:         {{__v[0-9]+}}
+// COMMON-REWRITES-DAG:     };
+// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// COMMON-REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// COMMON-REWRITES-DAG:         {{__v[0-9]+}}
+// COMMON-REWRITES-DAG:     } else {
+// COMMON-REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { overlay.value };
+// COMMON-REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.re != 7.0;
+// COMMON-REWRITES-DAG:         {{__v[0-9]+}}
+// COMMON-REWRITES-DAG:     };
+// COMMON-REWRITES-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
+// COMMON-REWRITES-DAG:         let {{__v[0-9]+}}: bool = true;
+// COMMON-REWRITES-DAG:         {{__v[0-9]+}}
+// COMMON-REWRITES-DAG:     } else {
+// COMMON-REWRITES-DAG:         let {{__v[0-9]+}}: num_complex::Complex<f64> = unsafe { overlay.value };
+// COMMON-REWRITES-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}}.im != 8.0;
+// COMMON-REWRITES-DAG:         {{__v[0-9]+}}
+// COMMON-REWRITES-DAG:     };
+// COMMON-REWRITES-DAG:     std::process::exit({{__v[0-9]+}} as i32);
+// COMMON-REWRITES-DAG: }
+// SLATE-FILECHECK-END common-rewrites

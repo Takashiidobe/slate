@@ -25,9 +25,7 @@ int main(void) { return use_imported_data_and_link_name(); }
 // SLATE-FILECHECK-BEGIN rewrites-msvc
 // REWRITES-MSVC-DAG: fn use_imported_data_and_link_name() -> i32 {
 // REWRITES-MSVC-DAG:     let {{__v[0-9]+}}: i32 = unsafe { g_counter };
-// REWRITES-MSVC-DAG:     let {{__v[0-9]+}}: i32 = 3;
-// REWRITES-MSVC-DAG:     let {{__v[0-9]+}}: i32 = unsafe { actual_symbol({{__v[0-9]+}} as i32) };
-// REWRITES-MSVC-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} + {{__v[0-9]+}};
-// REWRITES-MSVC-DAG:     {{__v[0-9]+}}
+// REWRITES-MSVC-DAG:     let {{__v[0-9]+}}: i32 = unsafe { actual_symbol(3 as i32) };
+// REWRITES-MSVC-DAG:     {{__v[0-9]+}} + {{__v[0-9]+}}
 // REWRITES-MSVC-DAG: }
 // SLATE-FILECHECK-END rewrites-msvc

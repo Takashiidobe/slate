@@ -28,25 +28,30 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: fn make_byte() -> Byte {
-// LOWERING-DAG:     let {{__v[0-9]+}}: Byte = Byte { value: 7 };
-// LOWERING-DAG:     return {{__v[0-9]+}};
-// LOWERING-DAG: }
-// LOWERING-DAG: fn initialize_chars() -> i32 {
-// LOWERING-DAG:     let {{__v[0-9]+}}: [i8; 4] = [97, 98, 99, 0];
-// LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 5;
-// LOWERING-DAG:     return {{__v[0-9]+}};
-// LOWERING-DAG: }
-// SLATE-FILECHECK-END lowering
+// SLATE-FILECHECK-BEGIN common-lowering
+// COMMON-LOWERING-DAG: fn make_byte() -> Byte {
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: Byte = Byte { value: 7 };
+// COMMON-LOWERING-DAG:     return {{__v[0-9]+}};
+// COMMON-LOWERING-DAG: }
+// COMMON-LOWERING-DAG: fn initialize_chars() -> i32 {
+// COMMON-LOWERING-DAG:     let {{__v[0-9]+}}: i32 = 5;
+// COMMON-LOWERING-DAG:     return {{__v[0-9]+}};
+// COMMON-LOWERING-DAG: }
+// SLATE-FILECHECK-END common-lowering
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: fn make_byte() -> Byte {
-// REWRITES-DAG:     let {{__v[0-9]+}}: Byte = Byte { value: 7 };
-// REWRITES-DAG:     return {{__v[0-9]+}};
-// REWRITES-DAG: }
-// REWRITES-DAG: fn initialize_chars() -> i32 {
-// REWRITES-DAG:     let {{__v[0-9]+}}: i32 = 5;
-// REWRITES-DAG:     {{__v[0-9]+}}
-// REWRITES-DAG: }
-// SLATE-FILECHECK-END rewrites
+// SLATE-FILECHECK-BEGIN lowering-x86_64-gnu
+// LOWERING-X86_64-GNU-DAG:     let {{__v[0-9]+}}: [i8; 4] = [97, 98, 99, 0];
+// SLATE-FILECHECK-END lowering-x86_64-gnu
+
+// SLATE-FILECHECK-BEGIN lowering-aarch64-gnu
+// LOWERING-AARCH64-GNU-DAG:     let {{__v[0-9]+}}: [u8; 4] = [97, 98, 99, 0];
+// SLATE-FILECHECK-END lowering-aarch64-gnu
+
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES-DAG: fn make_byte() -> Byte {
+// COMMON-REWRITES-DAG:     return Byte { value: 7 };
+// COMMON-REWRITES-DAG: }
+// COMMON-REWRITES-DAG: fn initialize_chars() -> i32 {
+// COMMON-REWRITES-DAG:     5
+// COMMON-REWRITES-DAG: }
+// SLATE-FILECHECK-END common-rewrites

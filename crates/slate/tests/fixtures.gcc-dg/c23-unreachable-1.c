@@ -8,24 +8,21 @@
 #error "unreachable not defined"
 #endif
 
-extern void *p;
-extern __typeof__ (unreachable ()) *p;
+extern void                      *p;
+extern __typeof__(unreachable()) *p;
 
 volatile int x = 1;
 
-extern void not_defined (void);
+extern void not_defined(void);
 
-extern void exit (int);
+extern void exit(int);
 
-int
-main ()
-{
-  if (x == 2)
-    {
-      unreachable ();
-      not_defined ();
-    }
-  exit (0);
+int main() {
+  if (x == 2) {
+    unreachable();
+    not_defined();
+  }
+  exit(0);
 }
 
 // SLATE-FILECHECK-BEGIN lowering

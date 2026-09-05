@@ -21,20 +21,20 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: unsafe {
-// LOWERING-DAG:     (*{{arg[0-9]+}}).a = {{arg[0-9]+}};
-// LOWERING-DAG: }
-// LOWERING-DAG: unsafe {
-// LOWERING-DAG:     (*{{arg[0-9]+}}).b = {{arg[0-9]+}};
-// LOWERING-DAG: }
-// SLATE-FILECHECK-END lowering
+// SLATE-FILECHECK-BEGIN common-lowering
+// COMMON-LOWERING-DAG: unsafe {
+// COMMON-LOWERING-DAG:     (*{{arg[0-9]+}}).a = {{arg[0-9]+}};
+// COMMON-LOWERING-DAG: }
+// COMMON-LOWERING-DAG: unsafe {
+// COMMON-LOWERING-DAG:     (*{{arg[0-9]+}}).b = {{arg[0-9]+}};
+// COMMON-LOWERING-DAG: }
+// SLATE-FILECHECK-END common-lowering
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: unsafe {
-// REWRITES-DAG:     (*({{arg[0-9]+}} as *mut pair_t)).a = {{arg[0-9]+}};
-// REWRITES-DAG: }
-// REWRITES-DAG: unsafe {
-// REWRITES-DAG:     (*({{arg[0-9]+}} as *mut pair_t)).b = {{arg[0-9]+}};
-// REWRITES-DAG: }
-// SLATE-FILECHECK-END rewrites
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES-DAG: unsafe {
+// COMMON-REWRITES-DAG:     (*({{arg[0-9]+}} as *mut pair_t)).a = {{arg[0-9]+}};
+// COMMON-REWRITES-DAG: }
+// COMMON-REWRITES-DAG: unsafe {
+// COMMON-REWRITES-DAG:     (*({{arg[0-9]+}} as *mut pair_t)).b = {{arg[0-9]+}};
+// COMMON-REWRITES-DAG: }
+// SLATE-FILECHECK-END common-rewrites

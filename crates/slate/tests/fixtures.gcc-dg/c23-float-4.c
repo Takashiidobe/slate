@@ -16,22 +16,20 @@
 
 volatile float f = NAN;
 
-extern void abort (void);
-extern void exit (int);
+extern void abort(void);
+extern void exit(int);
 
 /* @lowering-fn-begin */
 /* @rewrite-fn-begin */
-int
-main (void)
-{
-  (void) _Generic (NAN, float : 0);
-  if (!__builtin_isnan (NAN))
-    abort ();
-  if (!__builtin_isnan (f))
-    abort ();
-  if (!__builtin_isnan (f + f))
-    abort ();
-  exit (0);
+int main(void) {
+  (void)_Generic(NAN, float: 0);
+  if (!__builtin_isnan(NAN))
+    abort();
+  if (!__builtin_isnan(f))
+    abort();
+  if (!__builtin_isnan(f + f))
+    abort();
+  exit(0);
 }
 /* @rewrite-fn-end */
 /* @lowering-fn-end */

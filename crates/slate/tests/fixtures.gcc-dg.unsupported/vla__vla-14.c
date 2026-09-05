@@ -6,29 +6,25 @@
 
 #include <stdarg.h>
 
-extern void exit (int);
-extern void abort (void);
+extern void exit(int);
+extern void abort(void);
 
 int a[10];
 int i = 9;
 
-void
-f (int n, ...)
-{
+void f(int n, ...) {
   va_list ap;
-  void *p;
-  va_start (ap, n);
-  p = va_arg (ap, typeof (int (*)[++i]));
+  void   *p;
+  va_start(ap, n);
+  p = va_arg(ap, typeof(int (*)[++i]));
   if (p != a)
-    abort ();
+    abort();
   if (i != n)
-    abort ();
-  va_end (ap);
+    abort();
+  va_end(ap);
 }
 
-int
-main (void)
-{
-  f (10, &a);
-  exit (0);
+int main(void) {
+  f(10, &a);
+  exit(0);
 }

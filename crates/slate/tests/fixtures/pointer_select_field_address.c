@@ -22,122 +22,129 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING: #![feature(c_variadic)]
-// LOWERING-NEXT: #![allow(
-// LOWERING-NEXT:     dead_code,
-// LOWERING-NEXT:     unused,
-// LOWERING-NEXT:     non_camel_case_types,
-// LOWERING-NEXT:     non_snake_case,
-// LOWERING-NEXT:     non_upper_case_globals,
-// LOWERING-NEXT:     arithmetic_overflow,
-// LOWERING-NEXT:     unconditional_panic,
-// LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
-// LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
-// LOWERING-NEXT:     unused_comparisons
-// LOWERING-NEXT: )]
-// LOWERING-EMPTY:
-// LOWERING-NEXT: #[repr(C)]
-// LOWERING-NEXT: #[derive(Clone, Copy)]
-// LOWERING-NEXT: struct Accounting {
-// LOWERING-NEXT:     direct: u64,
-// LOWERING-NEXT:     indirect: u64,
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: static mut acc: Accounting = Accounting {
-// LOWERING-NEXT:     direct: 0,
-// LOWERING-NEXT:     indirect: 0,
-// LOWERING-NEXT: };
-// LOWERING-EMPTY:
-// LOWERING-NEXT: unsafe extern "C" {
-// LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn main() {
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 3;
-// LOWERING-NEXT:     add({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 5;
-// LOWERING-NEXT:     add({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 7;
-// LOWERING-NEXT:     add({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%llu %llu\n\0".as_ptr() as *mut i8;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = unsafe { acc.direct };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = unsafe { acc.indirect };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
-// LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
-// LOWERING-NEXT: }
-// LOWERING-EMPTY:
-// LOWERING-NEXT: fn add({{arg[0-9]+}}: i32, {{arg[0-9]+}}: u64) {
-// LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{arg[0-9]+}} != 0;
-// LOWERING-NEXT:     let {{__v[0-9]+}}: *mut u64 = if {{__v[0-9]+}} {
-// LOWERING-NEXT:         unsafe { std::ptr::addr_of_mut!(acc.direct) }
-// LOWERING-NEXT:     } else {
-// LOWERING-NEXT:         unsafe { std::ptr::addr_of_mut!(acc.indirect) }
-// LOWERING-NEXT:     };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = unsafe { *{{__v[0-9]+}} };
-// LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} + {{arg[0-9]+}};
-// LOWERING-NEXT:     unsafe {
-// LOWERING-NEXT:         *{{__v[0-9]+}} = {{__v[0-9]+}};
-// LOWERING-NEXT:     }
-// LOWERING-NEXT:     return;
-// LOWERING-NEXT: }
-// SLATE-FILECHECK-END lowering
+// SLATE-FILECHECK-BEGIN common-lowering
+// COMMON-LOWERING: #![feature(c_variadic)]
+// COMMON-LOWERING-NEXT: #![allow(
+// COMMON-LOWERING-NEXT:     dead_code,
+// COMMON-LOWERING-NEXT:     unused,
+// COMMON-LOWERING-NEXT:     non_camel_case_types,
+// COMMON-LOWERING-NEXT:     non_snake_case,
+// COMMON-LOWERING-NEXT:     non_upper_case_globals,
+// COMMON-LOWERING-NEXT:     arithmetic_overflow,
+// COMMON-LOWERING-NEXT:     unconditional_panic,
+// COMMON-LOWERING-NEXT:     suspicious_runtime_symbol_definitions,
+// COMMON-LOWERING-NEXT:     unpredictable_function_pointer_comparisons,
+// COMMON-LOWERING-NEXT:     unused_comparisons
+// COMMON-LOWERING-NEXT: )]
+// COMMON-LOWERING-EMPTY:
+// COMMON-LOWERING-NEXT: #[repr(C)]
+// COMMON-LOWERING-NEXT: #[derive(Clone, Copy)]
+// COMMON-LOWERING-NEXT: struct Accounting {
+// COMMON-LOWERING-NEXT:     direct: u64,
+// COMMON-LOWERING-NEXT:     indirect: u64,
+// COMMON-LOWERING-NEXT: }
+// COMMON-LOWERING-EMPTY:
+// COMMON-LOWERING-NEXT: static mut acc: Accounting = Accounting {
+// COMMON-LOWERING-NEXT:     direct: 0,
+// COMMON-LOWERING-NEXT:     indirect: 0,
+// COMMON-LOWERING-NEXT: };
+// COMMON-LOWERING-EMPTY:
+// COMMON-LOWERING-NEXT: unsafe extern "C" {
+// COMMON-LOWERING-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// COMMON-LOWERING-NEXT: }
+// COMMON-LOWERING-EMPTY:
+// COMMON-LOWERING-NEXT: fn main() {
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 3;
+// COMMON-LOWERING-NEXT:     add({{__v[0-9]+}}, {{__v[0-9]+}});
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 5;
+// COMMON-LOWERING-NEXT:     add({{__v[0-9]+}}, {{__v[0-9]+}});
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 1;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = 7;
+// COMMON-LOWERING-NEXT:     add({{__v[0-9]+}}, {{__v[0-9]+}});
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = unsafe { acc.direct };
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = unsafe { acc.indirect };
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: i32 = 0;
+// COMMON-LOWERING-NEXT:     std::process::exit({{__v[0-9]+}} as i32);
+// COMMON-LOWERING-NEXT: }
+// COMMON-LOWERING-EMPTY:
+// COMMON-LOWERING-NEXT: fn add({{arg[0-9]+}}: i32, {{arg[0-9]+}}: u64) {
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: bool = {{arg[0-9]+}} != 0;
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: *mut u64 = if {{__v[0-9]+}} {
+// COMMON-LOWERING-NEXT:         unsafe { std::ptr::addr_of_mut!(acc.direct) }
+// COMMON-LOWERING-NEXT:     } else {
+// COMMON-LOWERING-NEXT:         unsafe { std::ptr::addr_of_mut!(acc.indirect) }
+// COMMON-LOWERING-NEXT:     };
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = unsafe { *{{__v[0-9]+}} };
+// COMMON-LOWERING-NEXT:     let {{__v[0-9]+}}: u64 = {{__v[0-9]+}} + {{arg[0-9]+}};
+// COMMON-LOWERING-NEXT:     unsafe {
+// COMMON-LOWERING-NEXT:         *{{__v[0-9]+}} = {{__v[0-9]+}};
+// COMMON-LOWERING-NEXT:     }
+// COMMON-LOWERING-NEXT:     return;
+// COMMON-LOWERING-NEXT: }
+// SLATE-FILECHECK-END common-lowering
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES: #![feature(c_variadic)]
-// REWRITES-NEXT: #![allow(
-// REWRITES-NEXT:     dead_code,
-// REWRITES-NEXT:     unused,
-// REWRITES-NEXT:     non_camel_case_types,
-// REWRITES-NEXT:     non_snake_case,
-// REWRITES-NEXT:     non_upper_case_globals,
-// REWRITES-NEXT:     arithmetic_overflow,
-// REWRITES-NEXT:     unconditional_panic,
-// REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
-// REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
-// REWRITES-NEXT:     unused_comparisons
-// REWRITES-NEXT: )]
-// REWRITES-EMPTY:
-// REWRITES-NEXT: #[repr(C)]
-// REWRITES-NEXT: #[derive(Clone, Copy)]
-// REWRITES-NEXT: struct Accounting {
-// REWRITES-NEXT:     direct: u64,
-// REWRITES-NEXT:     indirect: u64,
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: static mut acc: Accounting = Accounting {
-// REWRITES-NEXT:     direct: 0,
-// REWRITES-NEXT:     indirect: 0,
-// REWRITES-NEXT: };
-// REWRITES-EMPTY:
-// REWRITES-NEXT: unsafe extern "C" {
-// REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn main() {
-// REWRITES-NEXT:     add(1, 3);
-// REWRITES-NEXT:     add(0, 5);
-// REWRITES-NEXT:     add(1, 7);
-// REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = unsafe { acc.direct };
-// REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = unsafe { acc.indirect };
-// REWRITES-NEXT:     unsafe { printf(c"%llu %llu\n".as_ptr(), {{__v[0-9]+}}, {{__v[0-9]+}}) };
-// REWRITES-NEXT:     std::process::exit(0 as i32);
-// REWRITES-NEXT: }
-// REWRITES-EMPTY:
-// REWRITES-NEXT: fn add({{arg[0-9]+}}: i32, {{arg[0-9]+}}: u64) {
-// REWRITES-NEXT:     let {{__v[0-9]+}}: *mut u64 = if {{arg[0-9]+}} != 0 {
-// REWRITES-NEXT:         unsafe { std::ptr::addr_of_mut!(acc.direct) }
-// REWRITES-NEXT:     } else {
-// REWRITES-NEXT:         unsafe { std::ptr::addr_of_mut!(acc.indirect) }
-// REWRITES-NEXT:     };
-// REWRITES-NEXT:     unsafe {
-// REWRITES-NEXT:         *{{__v[0-9]+}} = (unsafe { *{{__v[0-9]+}} }) + {{arg[0-9]+}};
-// REWRITES-NEXT:     }
-// REWRITES-NEXT:     return;
-// REWRITES-NEXT: }
-// SLATE-FILECHECK-END rewrites
+// SLATE-FILECHECK-BEGIN lowering-x86_64-gnu
+// LOWERING-X86_64-GNU-NEXT:     let {{__v[0-9]+}}: *mut i8 = b"%llu %llu\n\0".as_ptr() as *mut i8;
+// SLATE-FILECHECK-END lowering-x86_64-gnu
+
+// SLATE-FILECHECK-BEGIN lowering-aarch64-gnu
+// LOWERING-AARCH64-GNU-NEXT:     let {{__v[0-9]+}}: *mut u8 = b"%llu %llu\n\0".as_ptr() as *mut u8;
+// SLATE-FILECHECK-END lowering-aarch64-gnu
+
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES: #![feature(c_variadic)]
+// COMMON-REWRITES-NEXT: #![allow(
+// COMMON-REWRITES-NEXT:     dead_code,
+// COMMON-REWRITES-NEXT:     unused,
+// COMMON-REWRITES-NEXT:     non_camel_case_types,
+// COMMON-REWRITES-NEXT:     non_snake_case,
+// COMMON-REWRITES-NEXT:     non_upper_case_globals,
+// COMMON-REWRITES-NEXT:     arithmetic_overflow,
+// COMMON-REWRITES-NEXT:     unconditional_panic,
+// COMMON-REWRITES-NEXT:     suspicious_runtime_symbol_definitions,
+// COMMON-REWRITES-NEXT:     unpredictable_function_pointer_comparisons,
+// COMMON-REWRITES-NEXT:     unused_comparisons
+// COMMON-REWRITES-NEXT: )]
+// COMMON-REWRITES-EMPTY:
+// COMMON-REWRITES-NEXT: #[repr(C)]
+// COMMON-REWRITES-NEXT: #[derive(Clone, Copy)]
+// COMMON-REWRITES-NEXT: struct Accounting {
+// COMMON-REWRITES-NEXT:     direct: u64,
+// COMMON-REWRITES-NEXT:     indirect: u64,
+// COMMON-REWRITES-NEXT: }
+// COMMON-REWRITES-EMPTY:
+// COMMON-REWRITES-NEXT: static mut acc: Accounting = Accounting {
+// COMMON-REWRITES-NEXT:     direct: 0,
+// COMMON-REWRITES-NEXT:     indirect: 0,
+// COMMON-REWRITES-NEXT: };
+// COMMON-REWRITES-EMPTY:
+// COMMON-REWRITES-NEXT: unsafe extern "C" {
+// COMMON-REWRITES-NEXT:     fn printf(_0: *const core::ffi::c_char, ...) -> i32;
+// COMMON-REWRITES-NEXT: }
+// COMMON-REWRITES-EMPTY:
+// COMMON-REWRITES-NEXT: fn main() {
+// COMMON-REWRITES-NEXT:     add(1, 3);
+// COMMON-REWRITES-NEXT:     add(0, 5);
+// COMMON-REWRITES-NEXT:     add(1, 7);
+// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = unsafe { acc.direct };
+// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: u64 = unsafe { acc.indirect };
+// COMMON-REWRITES-NEXT:     unsafe { printf(c"%llu %llu\n".as_ptr(), {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// COMMON-REWRITES-NEXT:     std::process::exit(0 as i32);
+// COMMON-REWRITES-NEXT: }
+// COMMON-REWRITES-EMPTY:
+// COMMON-REWRITES-NEXT: fn add({{arg[0-9]+}}: i32, {{arg[0-9]+}}: u64) {
+// COMMON-REWRITES-NEXT:     let {{__v[0-9]+}}: *mut u64 = if {{arg[0-9]+}} != 0 {
+// COMMON-REWRITES-NEXT:         unsafe { std::ptr::addr_of_mut!(acc.direct) }
+// COMMON-REWRITES-NEXT:     } else {
+// COMMON-REWRITES-NEXT:         unsafe { std::ptr::addr_of_mut!(acc.indirect) }
+// COMMON-REWRITES-NEXT:     };
+// COMMON-REWRITES-NEXT:     unsafe {
+// COMMON-REWRITES-NEXT:         *{{__v[0-9]+}} = (unsafe { *{{__v[0-9]+}} }) + {{arg[0-9]+}};
+// COMMON-REWRITES-NEXT:     }
+// COMMON-REWRITES-NEXT:     return;
+// COMMON-REWRITES-NEXT: }
+// SLATE-FILECHECK-END common-rewrites

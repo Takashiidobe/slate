@@ -9,11 +9,9 @@
 
 volatile int x[1024];
 
-void __attribute__((noinline))
-fill_stack (void)
-{
+void __attribute__((noinline)) fill_stack(void) {
   volatile int y[1024];
-  int i;
+  int          i;
   for (i = 0; i < 1024; i++)
     y[i] = 0x7ff00000;
   for (i = 0; i < 1024; i++)
@@ -22,38 +20,34 @@ fill_stack (void)
 
 volatile _Complex double vc;
 
-void __attribute__((noinline))
-use_complex (_Complex double c)
-{
-  vc = c;
-}
+void __attribute__((noinline)) use_complex(_Complex double c) { vc = c; }
 
 double t0, t1, t2, t3;
 
-#define USE_COMPLEX(X, R, C) \
-  do { __real__ X = R; __imag__ X = C; use_complex (X); } while (0)
+#define USE_COMPLEX(X, R, C)                                                   \
+  do {                                                                         \
+    __real__ X = R;                                                            \
+    __imag__ X = C;                                                            \
+    use_complex(X);                                                            \
+  } while (0)
 
-void __attribute__((noinline))
-use_stack (void)
-{
+void __attribute__((noinline)) use_stack(void) {
   _Complex double a, b, c, d;
-  USE_COMPLEX (a, t0, t1);
-  USE_COMPLEX (b, t1, t2);
-  USE_COMPLEX (c, t2, t3);
-  USE_COMPLEX (d, t3, t0);
+  USE_COMPLEX(a, t0, t1);
+  USE_COMPLEX(b, t1, t2);
+  USE_COMPLEX(c, t2, t3);
+  USE_COMPLEX(d, t3, t0);
 }
 
 // @lowering-fn-begin
 // @rewrite-fn-begin
-int
-main (void)
-{
-  fill_stack ();
-  feclearexcept (FE_INVALID);
-  use_stack ();
-  if (fetestexcept (FE_INVALID))
-    abort ();
-  exit (0);
+int main(void) {
+  fill_stack();
+  feclearexcept(FE_INVALID);
+  use_stack();
+  if (fetestexcept(FE_INVALID))
+    abort();
+  exit(0);
 }
 // @rewrite-fn-end
 // @lowering-fn-end

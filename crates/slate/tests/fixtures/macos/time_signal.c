@@ -239,41 +239,27 @@ void slate_jump(sigjmp_buf environment) {
 
 // SLATE-FILECHECK-BEGIN rewrites-macos
 // REWRITES-MACOS-DAG: fn slate_clock_now({{arg[0-9]+}}: *mut libc::timespec) -> i32 {
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: u32 = 6;
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = unsafe { clock_gettime({{__v[0-9]+}} as u32, {{arg[0-9]+}} as *mut libc::timespec) };
-// REWRITES-MACOS-DAG:     {{__v[0-9]+}}
+// REWRITES-MACOS-DAG:     unsafe { clock_gettime(6 as u32, {{arg[0-9]+}} as *mut libc::timespec) }
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: fn slate_arm_timer({{arg[0-9]+}}: *mut itimerval) -> i32 {
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = 0;
 // REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: *mut itimerval = std::ptr::null_mut();
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = unsafe {
-// REWRITES-MACOS-DAG:         setitimer(
-// REWRITES-MACOS-DAG:             {{__v[0-9]+}} as i32,
-// REWRITES-MACOS-DAG:             {{arg[0-9]+}} as *const itimerval,
-// REWRITES-MACOS-DAG:             {{__v[0-9]+}} as *mut itimerval,
-// REWRITES-MACOS-DAG:         )
-// REWRITES-MACOS-DAG:     };
-// REWRITES-MACOS-DAG:     {{__v[0-9]+}}
+// REWRITES-MACOS-DAG:     unsafe { setitimer(0 as i32, {{arg[0-9]+}} as *const itimerval, {{__v[0-9]+}} as *mut itimerval) }
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: unsafe fn slate_install_handler(
 // REWRITES-MACOS-DAG:     mut action: *mut sigaction,
 // REWRITES-MACOS-DAG:     {{arg[0-9]+}}: *mut __darwin_sigaltstack,
 // REWRITES-MACOS-DAG: ) -> i32 {
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: *mut sigaction = action;
 // REWRITES-MACOS-DAG:     unsafe {
-// REWRITES-MACOS-DAG:         (*{{__v[0-9]+}}).__sigaction_u.__sa_sigaction = unsafe {
+// REWRITES-MACOS-DAG:         (*action).__sigaction_u.__sa_sigaction = unsafe {
 // REWRITES-MACOS-DAG:             std::mem::transmute::<
 // REWRITES-MACOS-DAG:                 *const (),
 // REWRITES-MACOS-DAG:                 Option<unsafe extern "C-unwind" fn(i32, *mut __siginfo, *mut core::ffi::c_void)>,
 // REWRITES-MACOS-DAG:             >(slate_signal_handler as *const ())
 // REWRITES-MACOS-DAG:         };
 // REWRITES-MACOS-DAG:     }
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = 64;
 // REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} | {{__v[0-9]+}};
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: *mut sigaction = action;
 // REWRITES-MACOS-DAG:     unsafe {
-// REWRITES-MACOS-DAG:         (*{{__v[0-9]+}}).sa_flags = {{__v[0-9]+}};
+// REWRITES-MACOS-DAG:         (*action).sa_flags = 64 | {{__v[0-9]+}};
 // REWRITES-MACOS-DAG:     }
 // REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: *mut __darwin_sigaltstack = std::ptr::null_mut();
 // REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = unsafe {
@@ -287,33 +273,27 @@ void slate_jump(sigjmp_buf environment) {
 // REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: bool = true;
 // REWRITES-MACOS-DAG:         {{__v[0-9]+}}
 // REWRITES-MACOS-DAG:     } else {
-// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: i32 = 30;
-// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: *mut sigaction = action;
 // REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: *mut sigaction = std::ptr::null_mut();
 // REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: i32 = unsafe {
 // REWRITES-MACOS-DAG:             sigaction(
-// REWRITES-MACOS-DAG:                 {{__v[0-9]+}} as i32,
-// REWRITES-MACOS-DAG:                 {{__v[0-9]+}} as *const sigaction,
+// REWRITES-MACOS-DAG:                 30 as i32,
+// REWRITES-MACOS-DAG:                 action as *const sigaction,
 // REWRITES-MACOS-DAG:                 {{__v[0-9]+}} as *mut sigaction,
 // REWRITES-MACOS-DAG:             )
 // REWRITES-MACOS-DAG:         };
 // REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
 // REWRITES-MACOS-DAG:         {{__v[0-9]+}}
 // REWRITES-MACOS-DAG:     };
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-MACOS-DAG:     {{__v[0-9]+}}
+// REWRITES-MACOS-DAG:     {{__v[0-9]+}} as i32
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: fn slate_block_signal(mut mask: *mut u32) -> i32 {
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: *mut u32 = mask;
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = unsafe { sigemptyset({{__v[0-9]+}} as *mut u32) };
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = unsafe { sigemptyset(mask as *mut u32) };
 // REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
 // REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: bool = if {{__v[0-9]+}} {
 // REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: bool = true;
 // REWRITES-MACOS-DAG:         {{__v[0-9]+}}
 // REWRITES-MACOS-DAG:     } else {
-// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: *mut u32 = mask;
-// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: i32 = 30;
-// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: i32 = unsafe { sigaddset({{__v[0-9]+}} as *mut u32, {{__v[0-9]+}} as i32) };
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: i32 = unsafe { sigaddset(mask as *mut u32, 30 as i32) };
 // REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
 // REWRITES-MACOS-DAG:         {{__v[0-9]+}}
 // REWRITES-MACOS-DAG:     };
@@ -321,29 +301,19 @@ void slate_jump(sigjmp_buf environment) {
 // REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: bool = true;
 // REWRITES-MACOS-DAG:         {{__v[0-9]+}}
 // REWRITES-MACOS-DAG:     } else {
-// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: *mut u32 = mask;
 // REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: *mut u32 = std::ptr::null_mut();
-// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: i32 =
-// REWRITES-MACOS-DAG:             unsafe { sigprocmask({{__v[0-9]+}} as i32, {{__v[0-9]+}} as *const u32, {{__v[0-9]+}} as *mut u32) };
+// REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: i32 = unsafe { sigprocmask(1 as i32, mask as *const u32, {{__v[0-9]+}} as *mut u32) };
 // REWRITES-MACOS-DAG:         let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != 0;
 // REWRITES-MACOS-DAG:         {{__v[0-9]+}}
 // REWRITES-MACOS-DAG:     };
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = {{__v[0-9]+}} as i32;
-// REWRITES-MACOS-DAG:     {{__v[0-9]+}}
+// REWRITES-MACOS-DAG:     {{__v[0-9]+}} as i32
 // REWRITES-MACOS-DAG: }
 // REWRITES-MACOS-DAG: fn slate_jump(mut environment: *mut i32) {
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: *mut i32 = environment;
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = unsafe { sigsetjmp({{__v[0-9]+}} as *mut i32, {{__v[0-9]+}} as i32) };
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = 0;
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: bool = {{__v[0-9]+}} != {{__v[0-9]+}};
-// REWRITES-MACOS-DAG:     if {{__v[0-9]+}} {
+// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = unsafe { sigsetjmp(environment as *mut i32, 1 as i32) };
+// REWRITES-MACOS-DAG:     if {{__v[0-9]+}} != 0 {
 // REWRITES-MACOS-DAG:         return;
 // REWRITES-MACOS-DAG:     }
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: *mut i32 = environment;
-// REWRITES-MACOS-DAG:     let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-MACOS-DAG:     unsafe { siglongjmp({{__v[0-9]+}} as *mut i32, {{__v[0-9]+}} as i32) };
+// REWRITES-MACOS-DAG:     unsafe { siglongjmp(environment as *mut i32, 1 as i32) };
 // REWRITES-MACOS-DAG:     return;
 // REWRITES-MACOS-DAG: }
 // SLATE-FILECHECK-END rewrites-macos

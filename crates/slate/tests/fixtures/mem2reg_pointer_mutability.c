@@ -23,18 +23,17 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 9;
-// LOWERING-DAG: let {{__v[0-9]+}}: i64 = 1;
-// LOWERING-DAG: unsafe {
-// LOWERING-DAG:     (*{{arg[0-9]+}}).cells[({{__v[0-9]+}} as usize)] = {{__v[0-9]+}};
-// LOWERING-DAG: }
-// SLATE-FILECHECK-END lowering
+// SLATE-FILECHECK-BEGIN common-lowering
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = 9;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i64 = 1;
+// COMMON-LOWERING-DAG: unsafe {
+// COMMON-LOWERING-DAG:     (*{{arg[0-9]+}}).cells[({{__v[0-9]+}} as usize)] = {{__v[0-9]+}};
+// COMMON-LOWERING-DAG: }
+// SLATE-FILECHECK-END common-lowering
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 9;
-// REWRITES-DAG: let {{__v[0-9]+}}: i64 = 1;
-// REWRITES-DAG: unsafe {
-// REWRITES-DAG:     (*({{arg[0-9]+}} as *mut Row)).cells[({{__v[0-9]+}} as usize)] = {{__v[0-9]+}};
-// REWRITES-DAG: }
-// SLATE-FILECHECK-END rewrites
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES-DAG: let {{__v[0-9]+}}: i64 = 1;
+// COMMON-REWRITES-DAG: unsafe {
+// COMMON-REWRITES-DAG:     (*({{arg[0-9]+}} as *mut Row)).cells[({{__v[0-9]+}} as usize)] = 9;
+// COMMON-REWRITES-DAG: }
+// SLATE-FILECHECK-END common-rewrites

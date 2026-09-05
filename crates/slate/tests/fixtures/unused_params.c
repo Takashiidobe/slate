@@ -19,38 +19,39 @@ int main(void) {
   return 0;
 }
 
-// SLATE-FILECHECK-BEGIN lowering
-// LOWERING-DAG: let {{__v[0-9]+}}: *mut i8 = b"%d %d %d %d\n\0".as_ptr() as *mut i8;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 5;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 10;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = add({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 1;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 2;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = get_used({{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 3;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 4;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 5;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = remove_two({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 8;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = 9;
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe { Some(address_taken).unwrap()({{__v[0-9]+}}, {{__v[0-9]+}}) };
-// LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
-// SLATE-FILECHECK-END lowering
+// SLATE-FILECHECK-BEGIN common-lowering
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = 5;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = 10;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = add({{__v[0-9]+}}, {{__v[0-9]+}});
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = 1;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = 2;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = get_used({{__v[0-9]+}}, {{__v[0-9]+}});
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = 3;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = 4;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = 5;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = remove_two({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = 8;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = 9;
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe { Some(address_taken).unwrap()({{__v[0-9]+}}, {{__v[0-9]+}}) };
+// COMMON-LOWERING-DAG: let {{__v[0-9]+}}: i32 = unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
+// SLATE-FILECHECK-END common-lowering
 
-// SLATE-FILECHECK-BEGIN rewrites
-// REWRITES-DAG: let {{__v[0-9]+}}: *mut i8 = c"%d %d %d %d\n".as_ptr() as *mut i8;
-// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 5;
-// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 10;
-// REWRITES-DAG: let {{__v[0-9]+}}: i32 = add({{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 1;
-// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 2;
-// REWRITES-DAG: let {{__v[0-9]+}}: i32 = get_used({{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 3;
-// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 4;
-// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 5;
-// REWRITES-DAG: let {{__v[0-9]+}}: i32 = remove_two({{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}});
-// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 8;
-// REWRITES-DAG: let {{__v[0-9]+}}: i32 = 9;
-// REWRITES-DAG: let {{__v[0-9]+}}: i32 = unsafe { Some(address_taken).unwrap()({{__v[0-9]+}}, {{__v[0-9]+}}) };
-// REWRITES-DAG: unsafe { printf({{__v[0-9]+}} as *const core::ffi::c_char, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}, {{__v[0-9]+}}) };
-// SLATE-FILECHECK-END rewrites
+// SLATE-FILECHECK-BEGIN lowering-x86_64-gnu
+// LOWERING-X86_64-GNU-DAG: let {{__v[0-9]+}}: *mut i8 = b"%d %d %d %d\n\0".as_ptr() as *mut i8;
+// SLATE-FILECHECK-END lowering-x86_64-gnu
+
+// SLATE-FILECHECK-BEGIN lowering-aarch64-gnu
+// LOWERING-AARCH64-GNU-DAG: let {{__v[0-9]+}}: *mut u8 = b"%d %d %d %d\n\0".as_ptr() as *mut u8;
+// SLATE-FILECHECK-END lowering-aarch64-gnu
+
+// SLATE-FILECHECK-BEGIN common-rewrites
+// COMMON-REWRITES-DAG: unsafe {
+// COMMON-REWRITES-DAG:     printf(
+// COMMON-REWRITES-DAG:         c"%d %d %d %d\n".as_ptr(),
+// COMMON-REWRITES-DAG:         add(5, 10),
+// COMMON-REWRITES-DAG:         get_used(1, 2),
+// COMMON-REWRITES-DAG:         remove_two(3, 4, 5),
+// COMMON-REWRITES-DAG:         unsafe { Some(address_taken).unwrap()(8 as i32, 9 as i32) },
+// COMMON-REWRITES-DAG:     )
+// COMMON-REWRITES-DAG: };
+// SLATE-FILECHECK-END common-rewrites
